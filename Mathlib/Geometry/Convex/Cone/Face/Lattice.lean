@@ -119,9 +119,9 @@ instance : Nonempty (Face C) := ⟨⊤⟩
 
 end Semiring
 
-section Field
+section DivisionRing
 
-variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
+variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
 /-- The bottom face of `C` is its lineality space. -/
@@ -193,6 +193,6 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
 
 end Prod
 
-end Field
+end DivisionRing
 
 end PointedCone.Face

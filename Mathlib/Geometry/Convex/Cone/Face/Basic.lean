@@ -25,8 +25,9 @@ in `F` are also in `F`.
 * We do not use `IsExtreme` as a definition because this is an affine notion and does not allow the
   flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
   no proper subset that are extreme. We prove that every face is an extreme set of its cone.
-* Most results proven over a field hold more generally over an Archimedean ring. In particular,
-  `iff_mem_of_add_mem` holds whenever for every `x ∈ R` there is a `y ∈ R` with `1 ≤ x * y`.
+* Most results proven over a division rin hold more generally over an Archimedean ring. In
+  particular, `iff_mem_of_add_mem` holds whenever for every `x ∈ R` there is a `y ∈ R` with
+  `1 ≤ x * y`.
 
 -/
 
@@ -201,9 +202,9 @@ theorem isFaceOf_comap_iff {f : N →ₗ[R] M} (hf : Function.Surjective f) :
 
 end Semiring
 
-section Field
+section DivisionRing
 
-variable [Field R] [LinearOrder R] [IsOrderedRing R]
+variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
 variable {C F F₁ F₂ : PointedCone R M}
 
@@ -211,10 +212,10 @@ theorem isFaceOf_iff_mem_of_add_mem : F.IsFaceOf C ↔
     (F ≤ C ∧ ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) := by
   constructor <;> intro h
   · exact ⟨h.le, IsFaceOf.mem_of_add_mem h⟩
-  · refine ⟨h.1, fun xC yC c0 hcxy => ?_⟩
-    have cxF := h.2 (smul_mem _ (le_of_lt c0) xC) yC hcxy
-    convert smul_mem _ (inv_nonneg.mpr (le_of_lt c0)) cxF
-    simp [← smul_assoc, smul_eq_mul, mul_comm, Field.mul_inv_cancel _ (ne_of_lt c0).symm]
+  · refine ⟨h.1, fun {x y a} xC yC a0 haxy => ?_⟩
+    have := h.2 (smul_mem _ (le_of_lt a0) xC) yC haxy
+    have hxF := smul_mem _ (inv_nonneg.mpr (le_of_lt a0)) this
+    simpa [← smul_assoc, inv_mul_cancel₀ (ne_of_gt a0)] using hxF
 
 namespace IsFaceOf
 
@@ -239,22 +240,9 @@ lemma lineal_eq_lineal (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
   · exact hF.mem_of_add_mem hx hx' (by simp)
   · exact hF.mem_of_add_mem hx' hx (by simp)
 
-end IsFaceOf
-
-end Field
-
-section DivisionRing
-
-variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
-variable {C F F₁ F₂ : PointedCone R M}
-
-namespace IsFaceOf
-
 section Prod
 
 variable [AddCommGroup N] [Module R N]
-
 
 /-- The product of two faces of two cones is a face of the product of the cones. -/
 theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
