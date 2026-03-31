@@ -113,7 +113,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
       exact le_lfpApprox f x
     · intro a' h
       apply f.2; apply lfpApprox_monotone; exact h
-  · exact f_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one a)
+  · exact apply_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one a)
 
 theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
@@ -126,7 +126,7 @@ theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
       (le_iSup (fun b : Set.Iio a => lfpApprox f x b) ⟨0, ha.bot_lt⟩)
   · intro b hb
     trans lfpApprox f x (b+1)
-    · exact f_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one b)
+    · exact apply_lfpApprox_le_lfpApprox_of_lt f x (lt_add_one b)
     · exact (le_iSup (fun c : Set.Iio a => lfpApprox f x c) ⟨b + 1, ha.succ_lt hb⟩)
 
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
@@ -173,7 +173,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_ab : a ≤ b)
     apply And.intro (le_lfpApprox f x)
     intro a' ha'b
     by_cases! haa : a' < a
-    · exact f_lfpApprox_le_lfpApprox_of_lt f x haa
+    · exact apply_lfpApprox_le_lfpApprox_of_lt f x haa
     · rw [IH a' ha'b haa, h]
   · exact lfpApprox_monotone f x h_ab
 
@@ -280,7 +280,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
 
 theorem gfpApprox_le_apply_gfpApprox_of_lt {a b : Ordinal} (h : a < b) :
     gfpApprox f x b ≤ f (gfpApprox f x a) :=
-  f_lfpApprox_le_lfpApprox_of_lt f.dual x h
+  apply_lfpApprox_le_lfpApprox_of_lt f.dual x h
 
 theorem gfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
