@@ -132,7 +132,7 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
   · have v_ne : (v.restrict x : ValueGroup₀ hv.v) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     simp_rw [v.restrict_inj]
-    apply Valued.loc_const (by simpa [restrict₀_apply] using v_ne)
+    apply Valued.locally_const (by simpa [restrict₀_apply] using v_ne)
 
 theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     (hsurj : Function.Surjective hv.v) : Continuous hv.v := by
@@ -148,7 +148,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
-    exact Valued.loc_const (by simpa using h0)
+    exact Valued.locally_const (by simpa using h0)
 
 end
 
@@ -242,7 +242,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
-      convert Valued.loc_const this
+      convert Valued.locally_const this
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by

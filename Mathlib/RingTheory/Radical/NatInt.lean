@@ -141,4 +141,7 @@ lemma radical_pos (z : ℤ) : 0 < radical z := by
   rw [← radical_le_one_iff]
   grind [radical_pos z]
 
+@[simp, norm_cast] lemma radical_natCast {n : ℕ} : radical (n : ℤ) = radical n := by
+  simp [Int.radical_eq_prod_primeFactors, Nat.radical_eq_prod_primeFactors]
+
 end Int
