@@ -117,7 +117,8 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
-  grind [compl, of]
+  simp [compl]
+  grind
 
 @[simp]
 theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
@@ -130,10 +131,10 @@ theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.comp
 
 theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
     (hA : A.IsAdjMatrix) (hB : B.IsAdjMatrix) : A.compl = B.compl ↔ A = B :=
-  ⟨fun h ↦ ext fun i j ↦ by grind [of, congr($h i j), compl, IsAdjMatrix], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun i j ↦ by simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
 
 @[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
-    A.compl.compl = A := by ext; grind [of, compl, IsAdjMatrix]
+    A.compl.compl = A := by ext; simp [compl]; grind [compl, IsAdjMatrix]
 
 namespace IsAdjMatrix
 
