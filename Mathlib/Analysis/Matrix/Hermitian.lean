@@ -39,8 +39,8 @@ lemma IsHermitian.coe_re_apply_self (h : A.IsHermitian) (i : n) : (re (A i i) : 
 lemma IsHermitian.coe_re_diag (h : A.IsHermitian) : (fun i => (re (A.diag i) : 𝕜)) = A.diag :=
   funext h.coe_re_apply_self
 
-/-- A matrix is Hermitian iff the corresponding linear map with an orthonormal basis is self
-adjoint. -/
+/-- A matrix is Hermitian iff the corresponding linear map with an orthonormal basis is
+symmetric. -/
 @[simp]
 lemma isSymmetric_toLin_iff [Fintype n] [DecidableEq n] {E : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (b : OrthonormalBasis n 𝕜 E) :
