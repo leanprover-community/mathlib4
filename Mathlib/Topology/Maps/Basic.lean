@@ -721,7 +721,7 @@ theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
   rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.injective]
 
-theorem _root_.Topology.IsOpenEmbedding.accPt_comap_iff
+theorem accPt_comap_iff
     (hf : IsOpenEmbedding f) {x : X} {l : Filter Y} :
     AccPt x (comap f l) ↔ AccPt (f x) l := by
   refine ⟨fun h => ?_, hf.isOpenMap.accPt_comap⟩
