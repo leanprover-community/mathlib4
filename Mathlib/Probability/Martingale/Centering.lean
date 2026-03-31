@@ -52,6 +52,11 @@ noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → 
 theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 
+lemma predictablePart_add_one (n : ℕ) :
+    predictablePart f ℱ μ (n + 1) =
+      predictablePart f ℱ μ n + μ[f (n + 1) - f n | ℱ n] := by
+  simp [predictablePart, Finset.sum_range_add]
+
 theorem stronglyAdapted_predictablePart :
     StronglyAdapted ℱ fun n => predictablePart f ℱ μ (n + 1) :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
@@ -173,5 +178,20 @@ theorem martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (�
   exact (abs_sub _ _).trans (add_le_add (hω₁ i) (hω₂ i))
 
 end Difference
+
+variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
+
+lemma isPredictable_predictablePart : IsPredictable ℱ (predictablePart f ℱ μ) :=
+  isPredictable_of_measurable_add_one (by simp [measurable_const'])
+    fun n ↦ (stronglyAdapted_predictablePart n).measurable
+
+/-- The predictable part of a submartingale is non-decreasing. -/
+lemma Submartingale.monotone_predictablePart {f : ℕ → Ω → ℝ} (hX : Submartingale f ℱ μ) :
+    ∀ᵐ ω ∂μ, Monotone (predictablePart f ℱ μ · ω) := by
+  have := ae_all_iff.2 <| fun n : ℕ ↦ hX.condExp_sub_nonneg n.le_succ
+  filter_upwards [this] with ω h
+  simp only [Pi.zero_apply, Nat.succ_eq_add_one, ← ge_iff_le] at h
+  refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)
+  grw [predictablePart_add_one, Pi.add_apply, h n, add_zero]
 
 end MeasureTheory
