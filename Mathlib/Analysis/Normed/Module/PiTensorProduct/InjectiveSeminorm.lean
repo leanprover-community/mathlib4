@@ -62,7 +62,7 @@ space.
   `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
-* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
+* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vector space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
@@ -100,7 +100,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
   toFun x := LinearMap.mkContinuous
     (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear)
     (projectiveSeminorm x)
-    (fun _ ↦ by simpa using norm_eval_le_projectiveSeminorm ..)
+    (fun _ ↦ by simpa [mul_comm] using norm_eval_le_projectiveSeminorm ..)
   map_add' x y := by
     ext; simp
   map_smul' a x := by
@@ -213,14 +213,13 @@ theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
 
+-- Use `projectiveSeminorm` to turn the `PiTensorProduct` into a seminormed space.
+-- The definition `injectiveSeminorm` is subject to deprecication in a follow-up PR. See:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injectiveSeminorm/with/568798633
 noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup injectiveSeminorm.toAddGroupSeminorm
+  AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
 
-noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) where
-  norm_smul_le a x := by
-    change injectiveSeminorm.toFun (a • x) ≤ _
-    rw [injectiveSeminorm.smul']
-    rfl
+noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 
 variable (𝕜 E F)
 
@@ -230,11 +229,11 @@ induced by `PiTensorProduct.lift`, for every normed space `F`.
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
   toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
-    norm_eval_le_injectiveSeminorm f x
+    norm_eval_le_projectiveSeminorm f x
   map_add' f g := by ext; simp
   map_smul' a f := by ext; simp
   invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦
-    ContinuousLinearMap.le_opNorm_of_le _ (injectiveSeminorm_tprod_le x)
+    ContinuousLinearMap.le_opNorm_of_le _ (projectiveSeminorm_tprod_le x)
   left_inv f := by ext; simp
   right_inv l := by
     rw [← ContinuousLinearMap.coe_inj]
@@ -246,7 +245,7 @@ linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i
 an isometric linear equivalence; in particular, it is a continuous linear equivalence. -/
 noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   LinearIsometryEquiv.ofBounds (liftEquiv 𝕜 E F)
-  (fun f ↦ LinearMap.mkContinuous_norm_le _ (norm_nonneg f) (norm_eval_le_injectiveSeminorm f))
+  (fun f ↦ LinearMap.mkContinuous_norm_le _ (norm_nonneg f) (norm_eval_le_projectiveSeminorm f))
   (fun f ↦ by
       rw [liftEquiv_symm_apply]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
@@ -367,9 +366,9 @@ protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[�
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   refine (ContinuousLinearMap.opNorm_le_iff (by positivity)).mpr fun x ↦ ?_
-  apply le_trans (norm_eval_le_injectiveSeminorm ..) (mul_le_mul_of_nonneg_right _ (norm_nonneg x))
+  apply le_trans (norm_eval_le_projectiveSeminorm ..) (mul_le_mul_of_nonneg_right _ (norm_nonneg x))
   refine (ContinuousMultilinearMap.opNorm_le_iff (by positivity)).mpr fun m ↦ ?_
-  apply le_trans (injectiveSeminorm_tprod_le fun i ↦ f i (m i))
+  apply le_trans (projectiveSeminorm_tprod_le fun i ↦ f i (m i))
   rw [← Finset.prod_mul_distrib]
   exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
 

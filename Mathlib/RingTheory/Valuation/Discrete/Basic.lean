@@ -126,7 +126,7 @@ noncomputable def generator' : valueGroup v := ⟨generator v, generator_mem_val
 lemma embedding_generator' : ValueGroup₀.embedding (f := v) (generator' v) = generator v := rfl
 
 lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
-  rw [← (Subgroup.map_injective (valueGroup v).subtype_injective).eq_iff, MonoidHom.map_zpowers,
+  rw [← map_subtype_inj, MonoidHom.map_zpowers,
     subtype_apply, ← MonoidHom.range_eq_map, Subgroup.subtype_range]
   apply generator_zpowers_eq_valueGroup
 
@@ -466,7 +466,7 @@ open scoped WithZero
 theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ (1 : ℤᵐ⁰)) :
     ∃ a : A, algebraMap A K a = x := by
   obtain ⟨π, hπ⟩ := exists_irreducible A
-  obtain ⟨a, b, hb, h_frac⟩ := IsFractionRing.div_surjective (A := A) x
+  obtain ⟨a, b, hb, h_frac⟩ := IsFractionRing.div_surjective A x
   by_cases ha : a = 0
   · rw [← h_frac]
     use 0

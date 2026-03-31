@@ -340,7 +340,7 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
 
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
-noncomputable
+@[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
     (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
@@ -441,9 +441,6 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
       Set.compl_univ]
     rw [← Scheme.zeroLocus_span, Set.range_comp', ← Ideal.map_span, H, hf]
     simp)
-
-@[deprecated (since := "2025-08-22")] noncomputable alias openCoverOfMapIrreleventEqTop :=
-  openCoverOfMapIrrelevantEqTop
 
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
 irrelevant ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/

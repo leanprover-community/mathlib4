@@ -57,8 +57,7 @@ namespace CoxeterSystem
 
 open List Matrix Function
 
-variable {B : Type*}
-variable {W : Type*} [Group W]
+variable {B W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
 local prefix:100 "s " => cs.simple
@@ -66,17 +65,14 @@ local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
-set_option backward.privateInPublic true in
 private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
-noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
+@[no_expose] noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 
 local prefix:100 "ℓ " => cs.length
 
@@ -87,7 +83,7 @@ theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω :=
 
 open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
-  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
+  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, rfl, rfl⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
@@ -111,24 +107,31 @@ theorem length_inv (w : W) : ℓ (w⁻¹) = ℓ w := by
     have := cs.length_wordProd_le (List.reverse ω)
     rwa [wordProd_reverse, length_reverse, ← h'ω, hω, inv_inv] at this
 
-theorem length_mul_le (w₁ w₂ : W) :
-    ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
+theorem length_mul_le (w₁ w₂ : W) : ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
   rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
   rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
   have := cs.length_wordProd_le (ω₁ ++ ω₂)
   simpa [hω₁, hω₂, wordProd_append] using this
 
-theorem length_mul_ge_length_sub_length (w₁ w₂ : W) :
-    ℓ w₁ - ℓ w₂ ≤ ℓ (w₁ * w₂) := by
-  simpa [Nat.sub_le_of_le_add] using cs.length_mul_le (w₁ * w₂) w₂⁻¹
+theorem length_le_length_mul_add_left (w₁ w₂ : W) : ℓ w₂ ≤ ℓ (w₁ * w₂) + ℓ w₁ := by
+  simpa [add_comm] using cs.length_mul_le w₁⁻¹ (w₁ * w₂)
 
-theorem length_mul_ge_length_sub_length' (w₁ w₂ : W) :
-    ℓ w₂ - ℓ w₁ ≤ ℓ (w₁ * w₂) := by
-  simpa [Nat.sub_le_of_le_add, add_comm] using cs.length_mul_le w₁⁻¹ (w₁ * w₂)
+theorem length_le_length_mul_add_right (w₁ w₂ : W) : ℓ w₁ ≤ ℓ (w₁ * w₂) + ℓ w₂ := by
+  simpa using cs.length_mul_le (w₁ * w₂) w₂⁻¹
 
-theorem length_mul_ge_max (w₁ w₂ : W) :
-    max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) ≤ ℓ (w₁ * w₂) :=
-  max_le_iff.mpr ⟨length_mul_ge_length_sub_length _ _ _, length_mul_ge_length_sub_length' _ _ _⟩
+@[deprecated length_le_length_mul_add_right (since := "2026-03-25")]
+theorem length_mul_ge_length_sub_length (w₁ w₂ : W) : ℓ w₁ - ℓ w₂ ≤ ℓ (w₁ * w₂) := by
+  rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_right ..
+
+@[deprecated length_le_length_mul_add_left (since := "2026-03-25")]
+theorem length_mul_ge_length_sub_length' (w₁ w₂ : W) : ℓ w₂ - ℓ w₁ ≤ ℓ (w₁ * w₂) := by
+  rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_left ..
+
+set_option linter.deprecated false in
+@[deprecated "use `length_le_length_mul_add_left` and `length_le_length_mul_add_right"
+(since := "2026-03-25")]
+theorem length_mul_ge_max (w₁ w₂ : W) : max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) ≤ ℓ (w₁ * w₂) :=
+  max_le (length_mul_ge_length_sub_length ..) (length_mul_ge_length_sub_length' ..)
 
 /-- The homomorphism that sends each element `w : W` to the parity of the length of `w`.
 (See `lengthParity_eq_ofAdd_length`.) -/
@@ -179,29 +182,17 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
   lia
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
-  convert cs.length_mul_simple_ne w⁻¹ i using 1
-  · convert cs.length_inv ?_ using 2
-    simp
-  · simp
+  rw [← length_inv]
+  simpa using cs.length_mul_simple_ne w⁻¹ i
 
-theorem length_mul_simple (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
-  rcases Nat.lt_or_gt_of_ne (cs.length_mul_simple_ne w i) with lt | gt
-  · -- lt : ℓ (w * s i) < ℓ w
-    right
-    have length_ge := cs.length_mul_ge_length_sub_length w (s i)
-    simp only [length_simple, tsub_le_iff_right] at length_ge
-    -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
-    lia
-  · -- gt : ℓ w < ℓ (w * s i)
-    left
-    have length_le := cs.length_mul_le w (s i)
-    simp only [length_simple] at length_le
-    -- length_le : ℓ (w * s i) ≤ ℓ w + 1
-    lia
+theorem length_mul_simple (w : W) (i : B) : ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
+  rcases (cs.length_mul_simple_ne w i).lt_or_gt with h | h <;> rw [← Nat.add_one_le_iff] at h
+  · refine .inr (h.antisymm ?_)
+    simpa using cs.length_le_length_mul_add_right w (s i)
+  · refine .inl (h.antisymm' ?_)
+    simpa using cs.length_mul_le w (s i)
 
-theorem length_simple_mul (w : W) (i : B) :
-    ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
+theorem length_simple_mul (w : W) (i : B) : ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
   have := cs.length_mul_simple w⁻¹ i
   rwa [(by simp : w⁻¹ * (s i) = ((s i) * w)⁻¹), length_inv, length_inv] at this
 

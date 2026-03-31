@@ -250,12 +250,30 @@ initialize URL : String ← do
       "https://lakecache.blob.core.windows.net/mathlib4"
   return url?.getD defaultUrl
 
-/-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let envVar := if useCloudflareCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
-  let some token ← IO.getEnv envVar
-    | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
-  return token
+/-- Authentication method used for cache upload operations. -/
+inductive UploadAuth where
+  | cloudflareS3 (token : String)
+  | azureSas (token : String)
+  | azureBearer (token : String)
+
+/-- Retrieves upload credentials from the environment. -/
+def getUploadAuth : IO UploadAuth := do
+  if useCloudflareCache then
+    let envVar := "MATHLIB_CACHE_S3_TOKEN"
+    let some token ← IO.getEnv envVar
+      | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
+    return .cloudflareS3 token
+  else
+    if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureBearer token
+    if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureSas token
+    throw <| IO.userError
+      "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
@@ -307,27 +325,95 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
+/-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
+    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
+def hashFromFileName (path : FilePath) : Option UInt64 := do
+  let some stem := path.fileStem | .none
+  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
+  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
+  (toString stem).parseHexToUInt64?
+
+/-- Decompress a batch of files using a single leantar invocation -/
+def decompressBatch (files : Array (FilePath × Lean.Name))
+    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : FilePath) :
+    IO Unit := do
+  if files.isEmpty then return
+
+  -- Build JSON config for all files in batch (similar to unpackCache logic)
+  let config := files.map fun (path, mod) =>
+    if isMathlibRoot || !IO.isFromMathlib mod then
+      .str path.toString
+    else
+      .mkObj [("file", path.toString), ("base", mathlibDepPath.toString)]
+
+  -- Spawn leantar for this batch
+  let exitCode ← IO.spawnLeanTarDecompress config force
+  if exitCode != 0 then
+    let fileList := files.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+    let firstFew := if files.size ≤ 3 then fileList else
+      let preview := files.extract 0 3 |>.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+      s!"{preview}, ... and {files.size - 3} more"
+    throw <| IO.userError s!"leantar exited with code {exitCode} on batch of {files.size} files: {firstFew}"
+
+/-- Configuration for decompression during download -/
+structure DecompConfig where
+  hashToMod : Std.HashMap UInt64 Lean.Name  -- filename hash → module name
+  force : Bool
+  isMathlibRoot : Bool
+  mathlibDepPath : FilePath
+
 private structure TransferState where
   last : Nat
   success : Nat
   failed : Nat
   done : Nat
   speed : Nat
+  -- Decompression state (only used when decompConfig is set)
+  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
+  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
+  lastBatchSize : Nat                              -- size of the last dispatched batch
+  decompressed : Nat                               -- total files decompressed
+  decompFailed : Nat                               -- total decompression failures
+
+/-- Harvest the result of a completed decompression task, updating counters.
+    Returns `(successful, failed, error?)`. -/
+def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
+    (decompressed decompFailed : Nat) : Nat × Nat × Option IO.Error :=
+  match task.get with
+  | .ok () => (decompressed + batchSize, decompFailed, none)
+  | .error e => (decompressed, decompFailed + batchSize, some e)
+
+/-- Dispatch a new decompression batch if there are pending files -/
+def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : DecompConfig)
+    : IO (Option (Task (Except IO.Error Unit))) := do
+  if pending.isEmpty then return none
+  let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
+  return some task
 
 def monitorCurl (args : Array String) (size : Nat)
-    (caption : String) (speedVar : String) (removeOnError := false) : IO TransferState := do
-  let mkStatus success failed done speed := Id.run do
-    let speed :=
-      if speed != 0 then
-        s!", {speed / 1000} KB/s"
+    (caption : String) (speedVar : String) (removeOnError := false)
+    (decompConfig : Option DecompConfig := none) : IO TransferState := do
+  let useAnsi := (← IO.getEnv "TERM").isSome
+  let mkStatus (s : TransferState) : String := Id.run do
+    let speedStr :=
+      if s.speed != 0 then
+        s!", {s.speed / 1000} KB/s"
       else ""
-    let mut msg := s!"\r{caption}: {success} file(s) [attempted {done}/{size} = {100*done/size}%{speed}]"
-    if failed != 0 then
-      msg := msg ++ s!", {failed} failed"
+    let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
+    -- Add decompression progress if enabled
+    if decompConfig.isSome then
+      msg := msg ++ s!", Decompressed: {s.decompressed}"
+      if s.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decompFailed} failed)"
+    if s.failed != 0 then
+      msg := msg ++ s!", {s.failed} download failed"
+    -- Clear to end of line to avoid remnants from longer previous messages
+    if useAnsi then
+      msg := msg ++ "\x1b[K"
     return msg
-  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
-  let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed} := a
+  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let s ← IO.runCurlStreaming args init fun a line => do
+    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
     -- output errors other than 404 and remove corresponding partial downloads
     let line := line.trimAscii
     if !line.isEmpty then
@@ -338,7 +424,37 @@ def monitorCurl (args : Array String) (size : Nat)
         | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              IO.FS.rename fn (fn.dropEnd 5).copy
+              let finalPath := (fn.dropEnd 5).copy
+              IO.FS.rename fn finalPath
+              -- Add to decompression queue if enabled
+              if let some config := decompConfig then
+                let some hash := hashFromFileName finalPath | do
+                  IO.eprintln s!"Warning: Failed to extract hash from filename: {finalPath}"
+                  decompFailed := decompFailed + 1
+                let some mod := config.hashToMod[hash]? | do
+                  IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {finalPath})"
+                  decompFailed := decompFailed + 1
+                pending := pending.push (finalPath, mod)
+                -- Check if we should dispatch a batch
+                match currentTask with
+                | some task =>
+                  if (← IO.hasFinished task) then
+                    -- Harvest completed task
+                    let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                    decompressed := d
+                    decompFailed := f
+                    if let some e := err? then
+                      IO.eprintln s!"Decompression error: {e}"
+                    -- Dispatch new batch with all pending files
+                    lastBatchSize := pending.size
+                    currentTask ← dispatchDecompBatch pending config
+                    pending := #[]
+                  -- else: task still running, just accumulate
+                | none =>
+                  -- No task running, dispatch immediately
+                  lastBatchSize := pending.size
+                  currentTask ← dispatchDecompBatch pending config
+                  pending := #[]
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
@@ -365,49 +481,91 @@ def monitorCurl (args : Array String) (size : Nat)
         if now - last ≥ 100 then -- max 10/s update rate
           speed := match result.getObjValAs? Nat speedVar with
             | .ok speed => speed | .error _ => speed
-          IO.eprint (mkStatus success failed done speed)
+          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
           last := now
        | .error e =>
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
-    pure {last, success, failed, done, speed}
-  if done > 0 then
+    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+  if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
-    IO.eprintln (mkStatus success failed done speed)
+    IO.eprintln (mkStatus s)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Return the number of files which failed to download. -/
+Return the number of files which failed to download.
+If `decompress` is true, decompresses files as they're downloaded (pipelined). -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Nat := do
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (decompress : Bool := false) (forceUnpack : Bool := false)
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return 0
   let size := hashMap.size
   IO.FS.createDirAll IO.CACHEDIR
   IO.println s!"Attempting to download {size} file(s) from {repo} cache"
-  let failed ← if parallel then
+
+  -- Set up decompression config if enabled
+  let decompConfig ← if decompress then
+    -- Build hash → module name mapping
+    let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
+      acc.insert hash mod
+    pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
+  else
+    pure none
+
+  let (downloadFailed, finalState) ← if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
         "--silent",
         "--retry", "5", -- there seem to be some intermittent failures
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    let {success, failed, done, ..} ←
-      monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true) decompConfig
     IO.FS.removeFile IO.CURLCFG
-    if warnOnMissing && success + failed < done then
+    if warnOnMissing && s.success + s.failed < s.done then
       IO.eprintln "Warning: some files were not found in the cache."
       IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
       IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
       IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-    pure failed
+    pure (s.failed, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (← IO.asTask do downloadFile repo hash) :: acc
-    pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-  if failed > 0 then
-    IO.println s!"{failed} download(s) failed"
-  return failed
+    let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+    -- Non-parallel mode doesn't support pipelined decompression
+    let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+    pure (failed, emptyState)
+
+  -- Finalize decompression: wait for current task and process any remaining files
+  if let some config := decompConfig then
+    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
+
+    -- Wait for current task to complete if any
+    if let some task := currentTask then
+      let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+      decompressed := d
+      decompFailed := f
+      if let some e := err? then
+        IO.eprintln s!"Decompression error: {e}"
+
+    -- Process any remaining pending files
+    if !pending.isEmpty then
+      try
+        decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+        decompressed := decompressed + pending.size
+      catch e =>
+        IO.eprintln s!"Decompression error: {e}"
+        decompFailed := decompFailed + pending.size
+
+    IO.println s!"Decompressed {decompressed} file(s)"
+    if decompFailed > 0 then
+      IO.println s!"{decompFailed} decompression(s) failed"
+      IO.Process.exit 1
+
+  if downloadFailed > 0 then
+    IO.println s!"{downloadFailed} download(s) failed"
+  return downloadFailed
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -539,8 +697,12 @@ def getFiles
   else
     getProofWidgets (← read).proofWidgetsBuildDir
 
+  let mathlibDepPath := (← read).mathlibDepPath
+
   if let some repo := repo? then
     let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+      (decompress := decompress) (forceUnpack := forceUnpack)
+      isMathlibRoot mathlibDepPath
     if failed > 0 then IO.Process.exit 1
   else
     let repoInfo ← getRemoteRepo (← read).mathlibDepPath
@@ -556,7 +718,10 @@ def getFiles
 
     let mut failed : Nat := 0
     for h : i in [0:repos.length] do
-      failed := ← (downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1))
+      failed := ← downloadFiles repos[i] hashMap forceDownload parallel
+        (warnOnMissing := i = repos.length - 1)
+        (decompress := decompress) (forceUnpack := forceUnpack)
+        isMathlibRoot mathlibDepPath
       if failed > 10 then
         IO.println s!"Too many downloads failed; stopping the downloading"
         IO.Process.exit 1
@@ -565,6 +730,7 @@ def getFiles
       IO.Process.exit 1
 
   if decompress then
+    -- decompress anything which hasn't already been decompressed during download
     IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
@@ -583,9 +749,20 @@ initialize UPLOAD_URL : String ← do
       "https://lakecache.blob.core.windows.net/mathlib4"
   return url?.getD defaultUrl
 
+def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
+
+def getAzureDateHeader : IO String := do
+  let out ← IO.Process.output
+    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
+  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
+
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String) : IO String := do
-  let token := if useCloudflareCache then "" else s!"?{token}" -- the Cloudflare cache doesn't pass the token here
+def mkPutConfigContent (repo : String) (files : Array FilePath) (auth : UploadAuth) : IO String := do
+  let token := match auth with
+    | .azureSas token => s!"?{token}"
+    | _ => ""
   let l ← files.toList.mapM fun file : FilePath => do
     pure s!"-T {file.toString}\nurl = {mkFileURL repo UPLOAD_URL file.fileName.get!}{token}"
   return "\n".intercalate l
@@ -593,36 +770,47 @@ def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String)
 /-- Calls `curl` to send a set of files to the server -/
 def putFilesAbsolute
   (repo : String) (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (token : String) : IO Unit := do
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let _ := overwrite
   let size := files.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files token)
+    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files auth)
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache"
-    let args := if useCloudflareCache then
-      -- TODO: reimplement using HEAD requests?
-      let _ := overwrite
-      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
-    else if overwrite then
-      #["-H", "x-ms-blob-type: BlockBlob"]
-    else
-      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    let azureDateHeader ← getAzureDateHeader
+    let args := match auth with
+      | .cloudflareS3 token =>
+        -- TODO: reimplement using HEAD requests?
+        let _ := overwrite
+        #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
+      | .azureSas _ =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob"]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+      | .azureBearer token =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
+            azureDateHeader,
+            "--oauth2-bearer", token]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    discard <| monitorCurl args size "Uploaded" "speed_upload"
+    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
   else IO.println "No files to upload"
 
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles
   (repo : String) (fileNames : Array String)
-  (overwrite : Bool) (token : String) : IO Unit := do
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
-  putFilesAbsolute repo files IO.CURLCFG overwrite token
+  putFilesAbsolute repo files IO.CURLCFG overwrite auth
 end Put
 
 section Stage
@@ -680,21 +868,31 @@ Sends a commit file to the server, containing the hashes of the respective commi
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
-def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (token : String) : IO Unit := do
+def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  if useCloudflareCache then
+  let azureDateHeader ← getAzureDateHeader
+  match auth with
+  | .cloudflareS3 token =>
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
     discard <| IO.runCurl #["-T", path.toString,
       "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
-  else
+  | .azureSas token =>
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  | .azureBearer token =>
+    let params := if overwrite
+      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+        "-H", azureDateHeader,
+        "--oauth2-bearer", token]
+      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}"]
   IO.FS.removeFile path
 
 end Commit
