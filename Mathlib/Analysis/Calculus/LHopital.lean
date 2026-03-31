@@ -338,7 +338,7 @@ theorem lhopital_zero_atTop (hff' : ∀ᶠ x in atTop, HasDerivAt f (f' x) x)
   rw [mem_atTop_sets] at hs
   rcases hs with ⟨l, hl⟩
   have hl' : Ioi l ⊆ s := fun x hx => hl x (le_of_lt hx)
-  refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx => hg' x (hl' hx).2) hftop hgtop hdiv <;> grind
+  refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx ↦ hg' x (hl' hx).2) hftop hgtop hdiv <;> grind
 
 /-- L'Hôpital's rule for approaching -∞, `HasDerivAt` version -/
 theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
@@ -354,7 +354,7 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
   rw [mem_atBot_sets] at hs
   rcases hs with ⟨l, hl⟩
   have hl' : Iio l ⊆ s := fun x hx => hl x (le_of_lt hx)
-  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx => hg' x (hl' hx).2) hfbot hgbot hdiv <;> grind
+  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx ↦ hg' x (hl' hx).2) hfbot hgbot hdiv <;> grind
 
 end HasDerivAt
 
