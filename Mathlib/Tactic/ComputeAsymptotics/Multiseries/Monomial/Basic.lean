@@ -29,7 +29,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
 * `UnitMonomial.logToFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
-  the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
+  the asymptotic behavior of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two monomials.
