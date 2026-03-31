@@ -305,7 +305,7 @@ theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     · exact h
     simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
     obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
-    refine ⟨j, ⟨hnj, hji⟩, hj_mem⟩
+    exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
@@ -329,7 +329,7 @@ lemma hittingAfter_lt_iff :
     · exact h_exists
     simp only [Set.mem_setOf_eq] at h'
     obtain ⟨j, hj₁, hj₂⟩ := h'
-    refine ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
+    exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
     refine lt_of_le_of_lt ?_ (mod_cast hj₁.2 : (j : WithTop ι) < i)
     exact hittingAfter_le_of_mem hj₁.1 hj₂
