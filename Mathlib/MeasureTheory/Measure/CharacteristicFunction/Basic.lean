@@ -156,7 +156,6 @@ lemma charFun_eq_integral_innerProbChar : charFun μ t = ∫ v, innerProbChar t 
 lemma charFun_eq_integral_probChar (t : E) : charFun μ t = ∫ x, (probChar ⟪x, t⟫ : ℂ) ∂μ := by
   simp [charFun_apply, probChar_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
 lemma charFun_eq_fourierIntegral (t : E) :
     charFun μ t = VectorFourier.fourierIntegral probChar μ (innerₗ E) 1 (-t) := by
@@ -207,8 +206,20 @@ lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     integral_map (by fun_prop) (by fun_prop)]
   simp_rw [inner_smul_right, ← real_inner_smul_left]
 
+lemma charFun_map_smul_comp {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} [BorelSpace E]
+    {f : X → E} (hf : AEMeasurable f μ) (r : ℝ) (t : E) :
+    charFun (μ.map (fun x ↦ r • (f x))) t = charFun (μ.map f) (r • t) := by
+  rw [show (fun x ↦ r • (f x)) = (r • ·) ∘ f from rfl, ← AEMeasurable.map_map_of_aemeasurable,
+    charFun_map_smul]
+  all_goals fun_prop
+
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
     charFun (μ.map (r * ·)) t = charFun μ (r * t) := charFun_map_smul r t
+
+lemma charFun_map_mul_comp {X : Type*} {mX : MeasurableSpace X} {μ : Measure X}
+    {f : X → ℝ} (hf : AEMeasurable f μ) (r t : ℝ) :
+    charFun (μ.map (fun x ↦ r * (f x))) t = charFun (μ.map f) (r * t) :=
+  charFun_map_smul_comp hf r t
 
 variable {E : Type*} [MeasurableSpace E] {μ ν : Measure E} {t : E}
   [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -466,7 +477,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
     change ∃ L : StrongDual ℝ E, L v ≠ 0
     by_contra! h
-    exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
+    exact hv (SeparatingDual.eq_zero_of_forall_dual_eq_zero (R := ℝ) h)
   · exact isBoundedBilinearMap_apply.symm.continuous
 
 /-- The characteristic function of a measure is a product of

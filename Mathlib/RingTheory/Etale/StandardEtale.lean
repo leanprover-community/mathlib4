@@ -146,7 +146,6 @@ def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
     (I : Ideal S) (hI : I ^ 2 = ⊥) (x : S) (hx : P.HasMap (Ideal.Quotient.mk I x)) :
     ∃! ε, ε ∈ I ∧ P.HasMap (x + ε) := by
@@ -211,7 +210,6 @@ def equivAwayAdjoinRoot :
   · ext; simp [Algebra.algHom]
   · ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ R[X][1/g]/f` -/
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
@@ -371,10 +369,7 @@ def StandardEtalePresentation.baseChange :
     let α : T ⊗[R] S ≃ₐ[T] (P.map (algebraMap R T)).Ring :=
       .ofAlgHom f ((P.map (algebraMap R T)).lift (1 ⊗ₜ[R] P.x)
         (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap) (by
-        ext; simp [f]) (by
-        ext1
-        · ext
-        · apply P.hom_ext; simp [f])
+        ext; simp [f]) (by ext1; apply P.hom_ext; simp [f])
     exact α.symm.bijective
 
 namespace Algebra

@@ -56,7 +56,8 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 /-- Creating a uniform space from an extended distance. -/
-@[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+@[reducible] noncomputable def uniformSpaceOfEDist
+    (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : UniformSpace α :=
   .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
@@ -348,7 +349,6 @@ theorem ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x
 
 end ULift
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
@@ -447,6 +447,7 @@ theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : OrdConnected { r
   ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_eball h₂.2).trans h₁⟩
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/
+@[implicit_reducible]
 def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
@@ -544,7 +545,6 @@ theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε �
 theorem closedEBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
   mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedEBall
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     eball x r ×ˢ eball y r = eball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]

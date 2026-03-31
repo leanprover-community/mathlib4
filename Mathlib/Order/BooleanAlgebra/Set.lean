@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Tauto
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets
@@ -33,18 +34,11 @@ open Function
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
-/- In #35959, to make sure that the defeq abuse between `α → Prop` and `Set α` does not leak from
-`inferInstanceAs (BooleanAlgebra (α → Prop))`, we define explicitly the data fields. This could be
-avoided by using a better elaborator `inferInstanceAs%` fixing the defeqs. -/
-instance instBooleanAlgebra : BooleanAlgebra (Set α) where
-  __ : DistribLattice (Set α) := inferInstance
-  __ : BooleanAlgebra (Set α) := inferInstanceAs (BooleanAlgebra (α → Prop))
-  compl := (·ᶜ)
-  sdiff := (· \ ·)
-  top := univ
-  bot := ∅
+instance : HImp (Set α) where
   himp s t := {x | x ∈ s → x ∈ t}
-  himp_eq s t := by ext; simp [imp_iff_or_not]
+
+instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
+  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
@@ -300,6 +294,7 @@ theorem diff_diff {u : Set α} : (s \ t) \ u = s \ (t ∪ u) :=
 theorem diff_diff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
   sdiff_sdiff_comm
 
+@[simp]
 theorem diff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
   show s \ t ≤ u ↔ s ≤ t ∪ u from sdiff_le_iff
 
@@ -392,10 +387,8 @@ lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.N
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
 
-@[simp]
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
-  rw [← union_singleton, union_comm]
-  apply diff_subset_iff
+  simp
 
 lemma subset_diff_singleton (h : s ⊆ t) (ha : a ∉ s) : s ⊆ t \ {a} :=
   subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 ha

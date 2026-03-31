@@ -123,7 +123,7 @@ meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dif_neg hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
+    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -177,6 +177,7 @@ theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   exact condExp_of_stronglyMeasurable hm stronglyMeasurable_zero (integrable_zero _ _ _)
 
+@[fun_prop]
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]; exact stronglyMeasurable_zero
@@ -275,6 +276,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
+@[simp]
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f | ⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
   rw [probReal_univ, inv_one, one_smul]
