@@ -689,8 +689,9 @@ def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
 
   inverse := {
     obj A := ⟨ModuleCat.of R A⟩
-    map {M N} f := by
-      refine Mon.Hom.mk' ⟨?_⟩
+    map {M N} f :=
+      ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
+        (by sorry) (by sorry)) (by sorry) (by sorry)⟩
   }
 
   unitIso := sorry
