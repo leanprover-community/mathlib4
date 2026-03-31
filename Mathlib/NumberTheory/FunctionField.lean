@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.FieldTheory.RatFunc.IntermediateField
+public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 
 /-!
 # Function fields
@@ -258,5 +260,67 @@ theorem valuedFqtInfty.def {x : FqtInfty Fq} :
   Valued.v x = (inftyValuedFqt Fq).extensionValuation x := rfl
 
 end InftyValuation
+
+section AdjoinTranscendental
+
+variable {Fq F : Type*} [Field Fq] [Field F] [Algebra (RatFunc Fq) F] [FunctionField Fq F]
+
+open IntermediateField RatFunc
+
+-- TODO: Generalize and move to `Mathlib.RingTheory.Finiteness.Basic`
+variable (R M N) in
+variable [CommSemiring R] [CommSemiring M] [Algebra R M] in
+instance Module.Finite.top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
+  .of_equiv_equiv (A₁ := R) (Subsemiring.topEquiv.symm) (.refl M) rfl
+
+instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : RatFunc Fq)⟯ F := by
+  rw [RatFunc.adjoin_X]
+  have : Module.Finite (⊤ : IntermediateField Fq (RatFunc Fq)) (RatFunc Fq) :=
+    Module.Finite.top_left (RatFunc Fq) (RatFunc Fq)
+  exact Module.Finite.trans (RatFunc Fq) _
+
+variable [Algebra Fq F] [IsScalarTower Fq (RatFunc Fq) F]
+
+theorem FiniteDimensional.adjoin_algebraMap_X :
+    FiniteDimensional Fq⟮algebraMap _ F (X : RatFunc Fq)⟯ F :=
+  .of_restrictScalars_finite Fq⟮(X : RatFunc Fq)⟯ _ _
+
+theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
+    Algebra.IsAlgebraic Fq⟮algebraMap _ F (X : RatFunc Fq)⟯ F :=
+  .tower_top (K := Fq⟮(X : RatFunc Fq)⟯) _
+
+variable {y : F}
+
+theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental Fq y) :
+    IsAlgebraic Fq⟮y⟯ (algebraMap _ F (X : RatFunc Fq)) :=
+  isAlgebraic_adjoin_iff.mpr (.adjoin_singleton transcendental_X hy
+    (isAlgebraic_adjoin_iff.mp (Algebra.IsAlgebraic.isAlgebraic y)))
+
+lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental Fq y) :
+    FiniteDimensional Fq⟮y⟯ F :=
+  -- Local Definitions for convenience
+  let x := (algebraMap _ F (X : RatFunc Fq))
+  let Fqyx := restrictScalars Fq Fq⟮y⟯⟮x⟯
+  let Fqxy := restrictScalars Fq Fq⟮x⟯⟮y⟯
+  -- Recalling instance to speed up search
+  let : Algebra Fq⟮y⟯ Fqyx := instAlgebraSubtypeMem_1 Fq⟮y⟯⟮x⟯
+  let : Module Fq⟮y⟯ Fqyx := Algebra.toModule
+  let : SMul Fq⟮y⟯ Fqyx := Algebra.toSMul
+  let : Algebra Fq⟮x⟯ Fqxy := instAlgebraSubtypeMem_1 Fq⟮x⟯⟮y⟯
+  let : Module Fq⟮x⟯ Fqxy := Algebra.toModule
+  let : SMul Fq⟮x⟯ Fqxy := Algebra.toSMul
+  let : FiniteDimensional Fq⟮y⟯ Fqyx :=
+    adjoin.finiteDimensional
+      (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
+  let : FiniteDimensional Fqyx F := by
+    let := FiniteDimensional.adjoin_algebraMap_X (Fq := Fq) (F := F)
+    unfold Fqyx
+    rw [adjoin_simple_comm]
+    let : IsScalarTower Fq⟮x⟯ Fqxy F := isScalarTower_mid' Fq⟮x⟯⟮y⟯
+    exact .right Fq⟮x⟯ Fqxy F
+  let : IsScalarTower Fq⟮y⟯ Fqyx F := isScalarTower_mid' Fq⟮y⟯⟮x⟯
+  .trans Fq⟮y⟯ Fqyx F
+
+end AdjoinTranscendental
 
 end FunctionField
