@@ -184,7 +184,7 @@ end single
 section trace
 
 variable [Fintype m] [Fintype n]
-variable (R) [Semiring α]
+variable (R) [NonUnitalSemiring α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl
