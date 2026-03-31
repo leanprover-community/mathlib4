@@ -86,11 +86,7 @@ variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 has length 1 (is a unit vector). -/
 theorem norm_normal_eq_one_of_unit_speed (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     ‖normal c t‖ = 1 := by
-  simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue,
-             ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero,
-             even_two, Even.neg_pow, Matrix.cons_val_one,Matrix.cons_val_fin_one, one_div]
-  rw [add_comm, ← hc t ht]
-  simp [norm]
+simp[normal_eq, EuclideanSpace.norm_eq, ← hc t ht, add_comm]
 
 /-- For every plane curve `c` parametrized by arc-length, the velocity vector `deriv c` and the
 `normal` vector at each point form an orthonormal basis of the plane, which is sometimes called the
