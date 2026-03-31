@@ -204,7 +204,7 @@ lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₁.app _ x).1 
 
 @[simp]
 lemma ι₁_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
-    (ι₁.app _ x).2 k = 1 := rfl
+    dsimp% (ι₁.app _ x).2 k = 1 := rfl
 
 section
 
