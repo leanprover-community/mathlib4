@@ -37,8 +37,6 @@ class GrpObj (X : C) extends MonObj X where
   left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
   right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
-@[deprecated (since := "2025-09-13")] alias Grp_Class := GrpObj
-
 namespace MonObj
 
 @[inherit_doc] scoped notation "ι" => GrpObj.inv
@@ -72,8 +70,6 @@ namespace Grp
 /-- A group object is a monoid object. -/
 @[simps -isSimp X]
 abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
@@ -296,8 +292,6 @@ lemma toMonObj_injective {X : C} :
   convert @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
-@[deprecated (since := "2025-09-09")] alias toMon_Class_injective := toMonObj_injective
-
 @[ext]
 lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   GrpObj.toMonObj_injective H
@@ -334,13 +328,9 @@ variable (C)
 def forget₂Mon : Grp C ⥤ Mon C :=
   inducedFunctor Grp.toMon
 
-@[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
-
 /-- The forgetful functor from group objects to monoid objects is fully faithful. -/
 def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
-
-@[deprecated (since := "2025-09-15")] alias fullyFaithfulForget₂Mon_ := fullyFaithfulForget₂Mon
 
 instance : (forget₂Mon C).Full := InducedCategory.full _
 instance : (forget₂Mon C).Faithful := InducedCategory.faithful _
@@ -606,8 +596,6 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
     simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
     simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
-
-@[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in

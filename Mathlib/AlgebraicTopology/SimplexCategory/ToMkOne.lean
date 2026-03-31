@@ -114,7 +114,6 @@ lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   have := ConcreteCategory.congr_hom h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [toMk₁_apply, if_pos hij] at this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := by
   intro f
   let S : Finset (Fin (n + 1)) := { i | f i = 1}

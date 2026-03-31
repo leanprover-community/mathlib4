@@ -315,8 +315,8 @@ theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
   Relation.ReflTransGen.symmetric zag_symmetric
 
 theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
-  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
-  (fun h g => Relation.transitive_reflTransGen h g)
+  ⟨Relation.reflexive_reflTransGen, (zigzag_symmetric ·),
+    IsTrans.trans (r := Relation.ReflTransGen _) _ _ _⟩
 
 @[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
