@@ -242,6 +242,7 @@ protected theorem div' [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div' (hv i)
 
+/-- The norm of a progressively measurable process is progressively measurable. -/
 protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup β]
     (hu : ProgMeasurable f u) :
     ProgMeasurable f fun t ω ↦ ‖u t ω‖ := fun t ↦ (hu t).norm
