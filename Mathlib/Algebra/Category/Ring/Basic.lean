@@ -159,7 +159,7 @@ unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
 @[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_coe
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
-  (inferInstance : Semiring R.carrier)
+  inferInstanceAs <| Semiring R.carrier
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
@@ -329,7 +329,7 @@ unif_hint forget_obj_eq_coe (R R' : RingCat) where
 @[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_coe
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
-  (inferInstance : Ring R.carrier)
+  inferInstanceAs <| Ring R.carrier
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
@@ -501,7 +501,7 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
 @[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_coe
 
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
-  (inferInstance : CommSemiring R.carrier)
+  inferInstanceAs <| CommSemiring R.carrier
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -676,7 +676,7 @@ unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
   (forget CommRingCat).obj R ≟ CommRingCat.carrier R'
 
 instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
-  (inferInstance : CommRing R.carrier)
+  inferInstanceAs <| CommRing R.carrier
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
