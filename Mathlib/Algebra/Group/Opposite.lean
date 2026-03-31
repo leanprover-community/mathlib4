@@ -235,7 +235,7 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] protected theorem isDedekindFiniteMonoid_iff [MulOne α] :
     IsDedekindFiniteMonoid αᵐᵒᵖ ↔ IsDedekindFiniteMonoid α := by
   simp_rw [isDedekindFiniteMonoid_iff, ← opEquiv.forall_congr_right]
-  simpa [← op_one, ← op_mul] using forall_swap
+  simpa [← op_one, ← op_mul] using forall_comm
 
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
