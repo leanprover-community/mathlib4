@@ -276,7 +276,6 @@ lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
       Finset.le_sup (f := fun i ↦ ((Φ E).coeff i).natDegree) <|
       mem_support_iff.mpr (Φ_coeff_φ_natDegree_ne_zero h)
 
-
 instance : Algebra K⟮generator E⟯ E :=
   (IntermediateField.inclusion adjoin_generator_le).toAlgebra
 
