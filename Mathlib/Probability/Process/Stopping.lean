@@ -827,7 +827,7 @@ theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
 @[simp] lemma stoppedProcess_sub [Sub β] :
     stoppedProcess (u - v) τ = stoppedProcess u τ - stoppedProcess v τ := rfl
 
-@[simp] lemma stoppedProcess_const_smul [SMul ℝ β] (c : ℝ) :
+@[simp] lemma stoppedProcess_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
     stoppedProcess (c • u) τ = c • stoppedProcess u τ := rfl
 
 @[simp] lemma stoppedProcess_const_bot [OrderBot ι] :
