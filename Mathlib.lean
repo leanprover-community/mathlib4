@@ -7301,7 +7301,9 @@ public import Mathlib.Topology.Algebra.Module.PerfectSpace
 public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Star
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
