@@ -309,8 +309,7 @@ lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul {x : σ →₀ ℕ} (p q : Mv
 theorem totalDegree_truncTotal_lt (p : MvPowerSeries σ R) (h : n ≠ 0) :
     (truncTotal R n p).totalDegree < n := by
   apply (totalDegree_truncFinset p).trans_lt
-  rw [Finset.sup_lt_iff (by simpa [Nat.pos_iff_ne_zero])]
-  simp
+  simp [Finset.sup_lt_iff (Nat.lt_of_sub_ne_zero h)]
 
 end TruncTotal
 
