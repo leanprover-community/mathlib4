@@ -643,20 +643,24 @@ theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
   simpa using preBeth_inj (o₂ := 0)
 
+@[simp]
+theorem isStrongPrelimit_preBeth {o : Ordinal} :
+    IsStrongPrelimit (preBeth o) ↔ IsSuccPrelimit o := by
+  refine ⟨?_, fun ho x hx ↦ ?_⟩
+  · contrapose!
+    rw [not_isSuccPrelimit_iff', not_isStrongPrelimit_iff]
+    rintro ⟨a, rfl⟩
+    refine ⟨preBeth a, ?_, ?_⟩
+    · rw [preBeth_lt_preBeth, lt_succ_iff]
+    · simp
+  · rw [preBeth_limit ho] at hx
+    obtain ⟨a, ha⟩ := exists_lt_of_lt_ciSup' hx
+    apply (preBeth_strictMono (ho.add_one_lt a.2)).trans_le'
+    simpa using power_le_power_left two_ne_zero ha.le
+
+@[simp]
 theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
-  by_cases H : IsSuccLimit o
-  · refine iff_of_true ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩ H
-    rw [preBeth_limit H.isSuccPrelimit] at ha
-    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-    have := power_le_power_left two_ne_zero ha.le
-    rw [← preBeth_succ] at this
-    exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
-  · apply iff_of_false _ H
-    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
-    obtain ho | ⟨a, rfl⟩ := H
-    · simp [ho.eq_bot]
-    · intro h
-      simpa using h.two_power_lt (preBeth_strictMono (lt_add_one a))
+  rw [isStrongLimit_iff, isSuccLimit_iff, preBeth_eq_zero.ne, isStrongPrelimit_preBeth]
 
 @[simp]
 theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lift.{v} o) := by
@@ -742,6 +746,7 @@ theorem _root_.Ordinal.card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
 theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
   simpa using c.ord.card_le_beth
 
+@[simp]
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
 

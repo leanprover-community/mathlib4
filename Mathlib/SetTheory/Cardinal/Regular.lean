@@ -278,7 +278,7 @@ structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is equal to its own cofinality, see `IsInaccessible.isRegular`. -/
   le_cof_ord : c ≤ c.ord.cof
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+  protected isStrongPrelimit : IsStrongPrelimit c
 
 theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
@@ -293,16 +293,16 @@ theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegul
   ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
 theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
-  ⟨h.ne_zero, h.two_power_lt⟩
+  ⟨h.ne_zero, h.isStrongPrelimit⟩
 
 theorem isInaccessible_def {c : Cardinal} :
     IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
-  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
+  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.isStrongPrelimit⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
-  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
+  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.isStrongPrelimit⟩
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
 -- `IsInaccessible (ℶ_ o)`
