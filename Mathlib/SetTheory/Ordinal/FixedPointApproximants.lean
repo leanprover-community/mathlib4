@@ -198,10 +198,8 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
   have lfpApprox_mem_fixedPoint :
       lfpApprox f x a ∈ fixedPoints f := by
     rw [mem_fixedPoints_iff, ← lfpApprox_add_one f x h_init]
-    apply le_antisymm
-    · rw [lfpApprox_add_one f x h_init]
-      simpa [h_fab] using f_lfpApprox_le_lfpApprox_of_lt f x h_ab
-    · exact lfpApprox_monotone f x (SuccOrder.le_succ a)
+    exact Monotone.eq_of_ge_of_le (lfpApprox_monotone f x)
+      h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
   rw [lfpApprox_eq_of_mem_fixedPoints f x]
   · exact lfpApprox_mem_fixedPoint
   · exact h_ac
