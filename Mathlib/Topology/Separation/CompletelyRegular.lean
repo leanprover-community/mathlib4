@@ -5,9 +5,10 @@ Authors: Matias Heikkilä
 -/
 module
 
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
 
@@ -195,21 +196,23 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
-theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
-    (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
-    CompletelyRegularSpace X where
+instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
   completely_regular x K hK hx := by
-    obtain ⟨s, hs, hx, hsK⟩ := h.exists_subset_of_mem_open hx hK.isOpen_compl
+    obtain ⟨s, hs, hx, hsK⟩ :=
+      isTopologicalBasis_setOf_isClopen.exists_subset_of_mem_open hx hK.isOpen_compl
     refine ⟨(sᶜ).indicator 1, ?_, ?_, fun x hx ↦ indicator_of_mem ?_ _⟩
     · exact hs.compl.continuous_indicator continuous_const
     · simpa
     · exact fun hs ↦ hsK hs hx
 
+@[deprecated inferInstance (since := "2026-03-31")]
+alias CompletelyRegularSpace.of_isTopologicalBasis_clopens :=
+  instCompletelyRegularSpaceOfZeroDimensionalSpace
+
 open TopologicalSpace Cardinal in
-theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
-    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
-    IsTopologicalBasis {s : Set X | IsClopen s} := by
-  refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
+theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) : ZeroDimensionalSpace X := by
+  refine .of_isOpen_of_nhds fun x s hxs hs ↦ ?_
   choose f hf using completely_regular_isOpen x s hs hxs
   obtain ⟨hfc, hf₀, hf₁⟩ := hf
   let R := Set.range f
@@ -226,6 +229,10 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   · refine preimage_subset_iff.mpr (fun x ↦ ?_)
     contrapose!; intro hxs
     simpa [hf₁ hxs] using le_one'
+
+@[deprecated (since := "2026-03-31")]
+alias CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum :=
+  CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
