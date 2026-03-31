@@ -168,24 +168,12 @@ In this version the data is implicit. -/
 abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
   ⟨Ici c, isOpen_of_basis c hc⟩
 
+/-- A compact element as a subtype. -/
 abbrev CompactElement (α : Type*) [PartialOrder α] := {c : α // IsCompactElement c}
 
+/-- The upwards closure of a compact element forms an open set. -/
 abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
   ⟨Ici c.val, isOpen_of_basis c.val c.prop⟩
-
-/-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
-`{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
-at the point of usage. Having this lemma in this form helps inference of optional parameters. -/
-private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ Ici e ⊆ u := by
-  constructor
-  · intro e_in_u
-    have u_open := u.isOpen
-    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at u_open
-    let ⟨u_Ici, _⟩ := u_open
-    intro a ha
-    exact u_Ici ha e_in_u
-  · intro h
-    exact h <| mem_Ici.2 (le_refl e)
 
 end CompletePartialOrder
 
@@ -268,11 +256,9 @@ def Sober (X : TopCat) := IsHomeomorph (adjunctionTopToLocalePT.unit.app X)
 variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
   [sD : IsScott D univ]
 
-/-- The set of compact elements generating opens contained in the frame homomorphism `x` -/
-abbrev K (x : PT (Opens D)) := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
-
 /-- The set of compact elements underlying the basic opens is directed -/
-lemma directed_K (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
+lemma directed_setOf_compactElement (x : PT (Opens D))
+    : DirectedOn (· ≤ ·) {c | ∃ hc: IsCompactElement c, x hc.toOpen} := by
   rintro c ⟨hc₀, hc₁⟩ d ⟨hd₀, hd₁⟩
   simp only [mem_setOf_eq]
   let inf := hc₀.toOpen ⊓ hd₀.toOpen
@@ -292,7 +278,8 @@ lemma directed_K (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
 
 /-- The set of compact elements underlying the basic opens is nonempty.  Since `directedOn`
 doesn't include nonemptyness in Mathlib, this is a separate lemma from `directed_K` -/
-lemma nonempty_K (x : PT (Opens D)) : (K x).Nonempty := by
+lemma nonempty_setOf_compactElement (x : PT (Opens D))
+    : {c | ∃ hc: IsCompactElement c, x hc.toOpen}.Nonempty := by
   have h_bot : IsCompactElement (⊥ : D) := by
     rw [isCompactElement_iff_le_of_directed_sSup_le]
     intro s ⟨e, he⟩ _ _
@@ -313,20 +300,21 @@ lemma nonempty_K (x : PT (Opens D)) : (K x).Nonempty := by
 private lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
       intro x
       dsimp [pt, PT] at x
-      use sSup (K x)
+      let K := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
+      use sSup K
       apply FrameHom.ext
       intro u
       simp only [eq_iff_iff]
-      change sSup (K x) ∈ u ↔ x u
+      change sSup K ∈ u ↔ x u
       calc
-        _ ↔ sSup (K x) ∈ u.carrier := by rfl
-        _ ↔ sSup (K x) ∈ ⋃₀ (Ici '' { e : D | IsCompactElement e ∧ Ici e ⊆ u}) := by
+        _ ↔ sSup K ∈ u.carrier := by rfl
+        _ ↔ sSup K ∈ ⋃₀ (Ici '' { e : D | IsCompactElement e ∧ Ici e ⊆ u}) := by
           rw [IsTopologicalBasis.open_eq_sUnion'
             isTopologicalBasis_Ici_image_compactSet u.isOpen (u:= u.carrier)]
           simp_all only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq,
             Opens.coe_mk, true_and, exists_prop, Opens.carrier_eq_coe, mem_sUnion, mem_setOf_eq,
             and_true, mem_Ici, sUnion_image, mem_iUnion]
-        _ ↔ ∃ e : D, IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ sSup (K x) := by
+        _ ↔ ∃ e : D, IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ sSup K := by
           constructor
           · rintro ⟨e', he'₀, he'₁⟩
             simp only [Set.mem_image, Set.mem_setOf_eq] at he'₀
@@ -339,21 +327,23 @@ private lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := 
               simp only [Set.mem_image, Set.mem_setOf_eq]
               use e
             apply Set.subset_sUnion_of_mem at he'₀
-            have he₂ : sSup (K x) ∈ Ici e := by aesop
+            have he₂ : sSup K ∈ Ici e := by aesop
             exact Set.mem_of_mem_of_subset he₂ he'₀
-        _ ↔ ∃ (e c : D), c ∈ (K x) ∧ IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ c := by
+        _ ↔ ∃ (e c : D), c ∈ K ∧ IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ c := by
             constructor
             · rintro ⟨e, he₀, he'₀, he₁⟩
               use e
               have he₀' := (isCompactElement_iff_le_of_directed_sSup_le e).1 he₀
-              choose c hc₁ hc₂ using he₀' (K x) (nonempty_K x) (directed_K x) he₁
+              choose c hc₁ hc₂ using
+                he₀' K (nonempty_setOf_compactElement x) (directed_setOf_compactElement x) he₁
               use c
             · rintro ⟨e, c, hc₀, he₀, he'₀, e_le_c⟩
               use e
-              have he₁ : e ≤ sSup (K x) := by
+              have he₁ : e ≤ sSup K := by
                 trans c
                 · assumption
-                · have sSup_is_LUB := CompletePartialOrder.lubOfDirected (K x) (directed_K x)
+                · have sSup_is_LUB :=
+                    CompletePartialOrder.lubOfDirected K (directed_setOf_compactElement x)
                   exact sSup_is_LUB.1 hc₀
               exact ⟨he₀, he'₀, he₁⟩
         _ ↔ ∃ (e c : D) (hc: IsCompactElement c),
