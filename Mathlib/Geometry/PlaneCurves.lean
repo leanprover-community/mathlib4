@@ -72,6 +72,7 @@ def orientedCurvature : ℝ :=
 differentiable at t, and it's supposed to be used for plane curves parametrized by arc-length. -/
 def normal : EuclideanSpace ℝ (Fin 2) := !₂[-(deriv c t 1), deriv c t 0]
 
+lemma normal_eq : normal c t = !₂[-(deriv c t 1), deriv c t 0] := rfl
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_of_velocity_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
