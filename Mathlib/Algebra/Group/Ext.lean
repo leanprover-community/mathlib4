@@ -109,7 +109,7 @@ theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  grind
+  cases h; rfl
 
 @[to_additive (attr := ext)]
 theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄
