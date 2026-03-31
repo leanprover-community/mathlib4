@@ -77,12 +77,22 @@ lemma hasSum_integral_poissonMeasure [CompleteSpace E] {r : ℝ≥0} {f : ℕ �
   apply hasSum_integral_sum_dirac (by simp)
   convert integrable_poissonMeasure_iff.1 hf
   rw [ENNReal.toReal_ofReal (by positivity)]
+/-- If a function is integrable with respect to `poissonMeasure r`, then its integral
+against this measure is given by its sum weighted by `exp (-r) * r ^ n / n!`.
 
+See `integral_poissonMeasure` for a version where the codomain is finite-dimensional
+and does not require the integrability hypothesis. -/
 lemma integral_poissonMeasure' [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
     (hf : Integrable f (poissonMeasure r)) :
     ∫ n, f n ∂poissonMeasure r = ∑' n, (exp (-r) * r ^ n / (n)!) • f n :=
   (hasSum_integral_poissonMeasure hf).tsum_eq.symm
 
+/-- The integral of a function taking values in a finite-dimensional space
+against `poissonMeasure r` is given by its sum weighted by `exp (-r) * r ^ n / n!`. This version
+does not require integrability, as the integral exists if and only if the sum exists, and otherwise
+they are both defined to be zero.
+
+See `integral_poissonMeasure'` with a general codomain which assumes integrability. -/
 lemma integral_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) (f : ℕ → E) :
     ∫ n, f n ∂poissonMeasure r = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
   rw [poissonMeasure, integral_sum_dirac (by simp)]
