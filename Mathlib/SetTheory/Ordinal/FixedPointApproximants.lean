@@ -94,7 +94,7 @@ theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem f_lfpApprox_le_lfpApprox_of_lt {a b : Ordinal} (h : a < b) :
+theorem apply_lfpApprox_le_lfpApprox_of_lt {a b : Ordinal} (h : a < b) :
     f (lfpApprox f x a) ≤ lfpApprox f x b := by
   nth_rw 2 [lfpApprox]
   exact le_sSup <| Or.inl ⟨a, h, rfl⟩
@@ -278,11 +278,11 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
-theorem gfpApprox_le_f_gfpApprox_of_lt {a b : Ordinal} (h : a < b) :
+theorem gfpApprox_le_apply_gfpApprox_of_lt {a b : Ordinal} (h : a < b) :
     gfpApprox f x b ≤ f (gfpApprox f x a) :=
   f_lfpApprox_le_lfpApprox_of_lt f.dual x h
 
-theorem gfpApprox_limit {a : Ordinal} (ha : Order.IsSuccLimit a) :
+theorem gfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
   lfpApprox_of_isSuccLimit f.dual x ha
 
