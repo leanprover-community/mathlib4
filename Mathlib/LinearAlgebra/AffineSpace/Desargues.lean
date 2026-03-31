@@ -61,31 +61,29 @@ theorem parallel_third_side_of_perspective {A A' B B' C C' S : P}
     line[k, B, C] ∥ line[k, B', C'] := by
   -- The noncollinearity assumptions immediately give the point inequalities we need.
   have hA_ne_B : A ≠ B := ne₁₃_of_not_collinear (k := k) (p₁ := A) (p₂ := A') (p₃ := B) htriB
-  have hA_ne_A' : A ≠ A' := ne₁₂_of_not_collinear (k := k) (p₁ := A) (p₂ := A') (p₃ := B) htriB
-  have hA_ne_C : A ≠ C := ne₁₃_of_not_collinear (k := k) (p₁ := A) (p₂ := A') (p₃ := C) htriC
   -- If `B = S` or `C = S`, then `hASA'` would force one of the forbidden collinearities.
   have hB_ne_S : B ≠ S := by
-    intro hBS
+    rintro rfl
     apply htriB
     convert hASA' using 1
     ext x
-    simp [hBS, or_comm]
+    simp [or_comm]
   have hC_ne_S : C ≠ S := by
-    intro hCS
+    rintro rfl
     apply htriC
     convert hASA' using 1
     ext x
-    simp [hCS, or_comm]
+    simp [or_comm]
   -- If `A = S`, then `B'` lies on `AB`; since `AB ∥ A'B'`, the two lines coincide, forcing
   -- `A'` onto `AB` and contradicting the noncollinearity of `A, A', B`.
   have hA_ne_S : A ≠ S := by
     intro hAS
-    have hcol_BAB' : Collinear k ({B, A, B'} : Set P) := by
-      simpa [hAS, Set.insert_comm] using hBSB'
+    have hcol_ABB' : Collinear k ({A, B, B'} : Set P) := by
+      convert hBSB' using 1
+      ext x
+      simp [hAS, or_comm, or_left_comm]
     have hB'_mem_AB : B' ∈ line[k, A, B] := by
-      have hB'_mem_BA : B' ∈ line[k, B, A] :=
-        Collinear.mem_affineSpan_of_mem_of_ne hcol_BAB' (by simp) (by simp) (by simp) hA_ne_B.symm
-      simpa [AffineSubspace.affineSpan_pair_comm] using hB'_mem_BA
+      exact Collinear.mem_affineSpan_of_mem_of_ne hcol_ABB' (by simp) (by simp) (by simp) hA_ne_B
     have hline_eq : line[k, A', B'] = line[k, A, B] := by
       refine (AffineSubspace.eq_iff_direction_eq_of_mem
         (right_mem_affineSpan_pair k A' B') hB'_mem_AB).2 ?_
