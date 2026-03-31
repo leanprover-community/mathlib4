@@ -51,8 +51,9 @@ variable [P.IsStableUnderRetracts]
 instance : P.IsClosedUnderIsomorphisms where
   of_iso i h := IsStableUnderRetracts.of_retract i.symm.retract h
 
-lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
-  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
+-- see Note [lower instance priority]
+instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
+  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
 
 lemma of_binaryBicone_left [HasZeroMorphisms C] {X Y : C} (c : BinaryBicone X Y) (h : P c.pt) :
     P X :=
@@ -81,10 +82,10 @@ lemma of_biproduct [HasZeroMorphisms C] {J : Type*} (F : J → C) [HasBiproduct 
 end IsStableUnderRetracts
 
 /-- The closure by retracts of a predicate on objects in a category. -/
-def retractClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), Nonempty (Retract X Y)
+def retractClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), _root_.Nonempty (Retract X Y)
 
 lemma prop_retractClosure_iff (X : C) :
-    retractClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (Retract X Y) := by rfl
+    retractClosure P X ↔ ∃ (Y : C) (_ : P Y), _root_.Nonempty (Retract X Y) := by rfl
 
 variable {P} in
 lemma prop_retractClosure {X Y : C} (h : P Y) (r : Retract X Y) : retractClosure P X :=
@@ -92,6 +93,9 @@ lemma prop_retractClosure {X Y : C} (h : P Y) (r : Retract X Y) : retractClosure
 
 lemma le_retractClosure : P ≤ retractClosure P :=
   fun X hX => ⟨X, hX, ⟨Retract.refl X⟩⟩
+
+instance [P.Nonempty] : P.retractClosure.Nonempty :=
+  .mono P.le_retractClosure
 
 variable {P Q} in
 lemma monotone_retractClosure (h : P ≤ Q) : retractClosure P ≤ retractClosure Q := by

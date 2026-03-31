@@ -49,6 +49,8 @@ lemma le_ind : P ≤ ind.{w} P := by
   intro X hX
   exact ⟨PUnit, inferInstance, inferInstance, .self X, by simpa⟩
 
+instance [P.Nonempty] : (ind.{w} P).Nonempty := .mono P.le_ind
+
 instance : P.ind.IsClosedUnderIsomorphisms where
   of_iso {X Y} e := fun ⟨J, _, _, pres, h⟩ ↦ ⟨J, ‹_›, ‹_›, pres.ofIso e, h⟩
 
@@ -81,8 +83,8 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
     exact ⟨_, u, pres.ι.app j, hcomp, h j⟩
   · let incl : P.FullSubcategory ⥤ (isFinitelyPresentable.{w} C).FullSubcategory :=
       ObjectProperty.ιOfLE H
-    have H (d : CostructuredArrow (isFinitelyPresentable.{w} C).ι X) : ∃ c,
-        Nonempty (d ⟶ (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).obj c) := by
+    have H (d : CostructuredArrow (isFinitelyPresentable.{w} C).ι X) : ∃ c, _root_.Nonempty
+        (d ⟶ (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).obj c) := by
       obtain ⟨W, u, v, huv, hW⟩ := hfac d.hom
       exact ⟨CostructuredArrow.mk (Y := FullSubcategory.mk _ hW) v,
         ⟨CostructuredArrow.homMk ⟨u⟩ huv⟩⟩

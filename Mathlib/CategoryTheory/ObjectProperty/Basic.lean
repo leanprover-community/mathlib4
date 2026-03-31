@@ -59,6 +59,31 @@ lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.
 
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
 
+/-- `Nonempty P` is a typeclass saying there exists an object `X : C` that satisfies `P`. -/
+class Nonempty (P : ObjectProperty C) : Prop where
+  exists_prop : ∃ X, P X
+
+lemma exists_prop_of_nonempty (P : ObjectProperty C) [P.Nonempty] : ∃ X, P X :=
+  Nonempty.exists_prop
+
+lemma nonempty_of_prop {P : ObjectProperty C} {X : C} (h : P X) : P.Nonempty := ⟨X, h⟩
+
+lemma nonempty_iff_exists {P : ObjectProperty C} : P.Nonempty ↔ ∃ X, P X :=
+  ⟨fun _ ↦ exists_prop_of_nonempty P, Nonempty.mk⟩
+
+/-- Using `Classical.choice`, extracts an object from a `Nonempty` object property. -/
+noncomputable def arbitrary (P : ObjectProperty C) [P.Nonempty] : C :=
+  (exists_prop_of_nonempty P).choose
+
+lemma prop_arbitrary (P : ObjectProperty C) [P.Nonempty] : P P.arbitrary :=
+  (exists_prop_of_nonempty P).choose_spec
+
+lemma Nonempty.mono {P Q : ObjectProperty C} [P.Nonempty] (hPQ : P ≤ Q) : Q.Nonempty :=
+  nonempty_of_prop (hPQ _ P.prop_arbitrary)
+
+lemma nonempty_of_lt {P Q : ObjectProperty C} (h : P < Q) : Q.Nonempty :=
+  nonempty_of_prop (not_le_iff_exists.mp (not_le_of_gt h)).choose_spec.1
+
 section
 
 variable {ι : Type u'} (X : ι → C)
@@ -81,6 +106,9 @@ lemma ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
 lemma ofObj_le_iff (P : ObjectProperty C) :
     ofObj X ≤ P ↔ ∀ i, P (X i) :=
   ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
+
+instance [_root_.Nonempty ι] : (ofObj X).Nonempty :=
+  nonempty_of_prop (ofObj_apply X (Classical.arbitrary ι))
 
 end
 
@@ -113,6 +141,8 @@ lemma pair_iff (X Y Z : C) :
   · rintro ⟨_ | _⟩ <;> tauto
   · rintro (rfl | rfl); exacts [⟨Sum.inl .unit⟩, ⟨Sum.inr .unit⟩]
 
+instance (X Y : C) : (pair X Y).Nonempty := inferInstanceAs (ofObj _).Nonempty
+
 end
 
 section
@@ -129,14 +159,17 @@ lemma prop_inverseImage_iff (P : ObjectProperty D) (F : C ⥤ D) (X : C) :
 
 /-- The essential image of a property of objects by a functor. -/
 def map (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D :=
-  fun Y ↦ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y)
+  fun Y ↦ ∃ (X : C), P X ∧ _root_.Nonempty (F.obj X ≅ Y)
 
 lemma prop_map_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
-    P.map F Y ↔ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y) := Iff.rfl
+    P.map F Y ↔ ∃ (X : C), P X ∧ _root_.Nonempty (F.obj X ≅ Y) := Iff.rfl
 
 lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=
   ⟨X, hX, ⟨Iso.refl _⟩⟩
+
+instance (P : ObjectProperty C) (F : C ⥤ D) [P.Nonempty] : (P.map F).Nonempty :=
+  nonempty_of_prop (P.prop_map_obj F P.prop_arbitrary)
 
 lemma map_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
     P.map F ≤ Q.map F := by
@@ -154,6 +187,9 @@ lemma strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
 lemma strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.strictMap F (F.obj X) :=
   ⟨X, hX⟩
+
+instance (P : ObjectProperty C) (F : C ⥤ D) [P.Nonempty] : (P.strictMap F).Nonempty :=
+  nonempty_of_prop (P.strictMap_obj F P.prop_arbitrary)
 
 lemma strictMap_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
     P.strictMap F ≤ Q.strictMap F := by

@@ -64,12 +64,11 @@ lemma strictLimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 @[simp]
-lemma strictLimitsOfShape_bot [Nonempty J] :
+lemma strictLimitsOfShape_bot [_root_.Nonempty J] :
     strictLimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro _ ⟨_, h⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the limit of a functor
 `diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
@@ -126,7 +125,7 @@ end LimitOfShape
 /-- The property of objects that are the point of a limit cone for a
 functor `F : J ⥤ C` where all objects `F.obj j` satisfy `P`. -/
 def limitsOfShape : ObjectProperty C :=
-  fun X ↦ Nonempty (P.LimitOfShape J X)
+  fun X ↦ _root_.Nonempty (P.LimitOfShape J X)
 
 variable {P J} in
 lemma LimitOfShape.limitsOfShape {X : C} (h : P.LimitOfShape J X) :
@@ -139,11 +138,10 @@ lemma strictLimitsOfShape_le_limitsOfShape :
   exact ⟨.limit F hF⟩
 
 @[simp]
-lemma limitsOfShape_bot [Nonempty J] : limitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+lemma limitsOfShape_bot [_root_.Nonempty J] : limitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro X ⟨⟨_, h⟩⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 instance : (P.limitsOfShape J).IsClosedUnderIsomorphisms where
   of_iso := by rintro _ _ e ⟨h⟩; exact ⟨h.ofIso e⟩
@@ -203,7 +201,7 @@ lemma IsClosedUnderLimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
     rw [← isoClosure_strictLimitsOfShape]
     exact monotone_isoClosure h
 
-instance [Nonempty J] : IsClosedUnderLimitsOfShape (⊥ : ObjectProperty C) J where
+instance [_root_.Nonempty J] : IsClosedUnderLimitsOfShape (⊥ : ObjectProperty C) J where
   limitsOfShape_le := by rw [limitsOfShape_bot]
 
 instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where

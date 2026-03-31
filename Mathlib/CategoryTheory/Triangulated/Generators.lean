@@ -104,13 +104,9 @@ lemma monotone_triangEnvelopeIter {Q : ObjectProperty C} (hPQ : P ≤ Q) (n : �
 lemma monotone'_triangEnvelopeIter {n m : ℕ} (h : n ≤ m := by lia) :
     P.triangEnvelopeIter n ≤ P.triangEnvelopeIter m := by
   apply monotone_retractClosure
-  by_cases! hP : P = ⊥
+  by_cases! hP : P.Nonempty
+  · exact monotone'_extensionProductIter _ h
   · simp [hP]
-  · obtain ⟨X, hX⟩ := hP
-    letI : (P.shiftClosure ℤ).binaryProductsClosure.retractClosure.ContainsZero :=
-      IsStableUnderRetracts.containsZero _ <| le_retractClosure _ _ <|
-        le_limitsClosure _ _ _ (P.le_shiftClosure _ hX)
-    exact monotone'_extensionProductIter _ h
 
 lemma le_triangEnvelopeIter (n : ℕ) : P ≤ P.triangEnvelopeIter n :=
   calc
@@ -144,6 +140,9 @@ lemma triangEnvelopeIter_le_triangEnvelope (n : ℕ) : P.triangEnvelopeIter n �
 lemma le_triangEnvelope : P ≤ P.triangEnvelope :=
   (P.le_triangEnvelopeIter 0).trans (P.triangEnvelopeIter_le_triangEnvelope 0)
 
+instance [P.Nonempty] : P.triangEnvelope.Nonempty :=
+  .mono P.le_triangEnvelope
+
 variable {P} in
 lemma monotone_triangEnvelope {Q : ObjectProperty C} (h : P ≤ Q) :
     P.triangEnvelope ≤ Q.triangEnvelope :=
@@ -156,13 +155,6 @@ instance : P.triangEnvelope.IsStableUnderRetracts where
     rw [prop_triangEnvelope_iff] at hY ⊢
     obtain ⟨n, hn⟩ := hY
     exact ⟨n, IsStableUnderRetracts.of_retract r hn⟩
-
-lemma triangEnvelope.containsZero {X : C} (h : P X) : P.triangEnvelope.ContainsZero :=
-  IsStableUnderRetracts.containsZero _ (P.le_triangEnvelope X h)
-
-instance [P.ContainsZero] : P.triangEnvelope.ContainsZero := by
-  obtain ⟨_, _, h⟩ := P.exists_prop_of_containsZero
-  exact triangEnvelope.containsZero _ h
 
 instance : P.triangEnvelope.IsStableUnderShift ℤ where
   isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
@@ -182,13 +174,7 @@ instance [IsTriangulated C] : P.triangEnvelope.IsTriangulatedClosed₂ := by
   rw [triangEnvelopeIter_add' P rfl]
   exact le_retractClosure _ _ ⟨_, _, _, _, _, hT, hn, hm⟩
 
-lemma triangEnvelope.isTriangulated [IsTriangulated C] {X : C} (h : P X) :
-    P.triangEnvelope.IsTriangulated where
-  exists_zero := by
-    letI := triangEnvelope.containsZero P h
-    exact ContainsZero.exists_zero
-
-instance [IsTriangulated C] [P.ContainsZero] : P.triangEnvelope.IsTriangulated where
+instance [P.Nonempty] [IsTriangulated C] : P.triangEnvelope.IsTriangulated where
 
 lemma triangEnvelope_le_iff {Q : ObjectProperty C} [Q.IsStableUnderRetracts] [Q.IsTriangulated] :
     P.triangEnvelope ≤ Q ↔ P ≤ Q := by
