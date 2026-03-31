@@ -189,9 +189,21 @@ protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
 theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
   mt IsSuccPrelimit.isMax ha
 
+attribute [deprecated IsSuccPrelimit.isMax (since := "2026-03-31")]
+not_isSuccPrelimit_succ_of_not_isMax
+
+attribute [deprecated IsPredPrelimit.isMin (since := "2026-03-31")]
+not_isPredPrelimit_pred_of_not_isMin
+
 @[to_dual]
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
+
+attribute [deprecated IsSuccLimit.isMax (since := "2026-03-31")]
+not_isSuccLimit_succ_of_not_isMax
+
+attribute [deprecated IsPredLimit.isMin (since := "2026-03-31")]
+not_isPredLimit_pred_of_not_isMin
 
 /-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
 between `j` and `i`. -/
@@ -484,7 +496,7 @@ variable [LinearOrder α] [SuccOrder α]
 @[to_dual]
 theorem isSuccPrelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
     isSuccPrelimitRecOn (Order.succ b) succ isSuccPrelimit = succ b hb := by
-  have hb' := not_isSuccPrelimit_succ_of_not_isMax hb
+  have hb' := mt IsSuccPrelimit.isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb')
   rw [isSuccPrelimitRecOn, dif_neg hb', cast_eq_iff_heq]
   congr!
@@ -595,7 +607,7 @@ variable [LinearOrder α] [SuccOrder α] [WellFoundedLT α]
 theorem prelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
     prelimitRecOn (Order.succ b) succ isSuccPrelimit =
       succ b hb (prelimitRecOn b succ isSuccPrelimit) := by
-  have h := not_isSuccPrelimit_succ_of_not_isMax hb
+  have h := mt IsSuccPrelimit.isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 h)
   rw [prelimitRecOn, WellFounded.fix_eq, dif_neg h]
   have {a c : α} {ha hc} {x : ∀ a, motive a} (h : a = c) :
