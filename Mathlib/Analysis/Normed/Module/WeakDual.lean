@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.LocallyConvex.WeakDual
-public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Weak dual of normed space
