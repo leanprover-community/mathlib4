@@ -358,6 +358,12 @@ theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
   change a ∈ setOf IsUnit ↔ IsUnit a
   rw [Set.mem_setOf_eq]
 
+@[to_additive]
+theorem IsUnit.of_submonoid {S : Submonoid M} (a : S) (h : IsUnit a) : IsUnit (a : M) := by
+  rw [isUnit_iff_exists] at *
+  obtain ⟨b, left, right⟩ := h
+  exact ⟨b, by simpa [Subtype.ext_iff] using left, by simpa [Subtype.ext_iff] using right⟩
+
 end IsUnit
 
 namespace MonoidHom
