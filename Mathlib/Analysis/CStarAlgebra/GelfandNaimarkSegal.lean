@@ -135,7 +135,7 @@ This proves map_smul' of gnsNonUnitalStarAlgHom so that map_zero' can be proven 
 consequence.
 -/
 @[simp]
-private lemma leftMulMapPreGNS_completion_map_smul (m : ℂ) (x : A) :
+private lemma completion_leftMulMapPreGNS_map_smul (m : ℂ) (x : A) :
    (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
   ext a
   induction a using induction_on with
@@ -150,7 +150,7 @@ C⋆-algebra.
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
   toFun a := (f.leftMulMapPreGNS a).completion
   map_smul' := by simp
-  map_zero' := by simpa using f.leftMulMapPreGNS_completion_map_smul 0 0
+  map_zero' := by simpa using f.completion_leftMulMapPreGNS_map_smul 0 0
   map_add' _ _ := by
     ext c
     induction c using induction_on with
