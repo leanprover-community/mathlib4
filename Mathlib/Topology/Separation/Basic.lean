@@ -403,7 +403,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 2 ↔ 3 := by
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
-    refine forall_swap.trans ?_
+    refine forall_comm.trans ?_
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
@@ -412,7 +412,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9 := forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 8 ↔ 9 := forall_comm.trans (by simp only [disjoint_comm, ne_comm])
   tfae_have 1 → 4 := by
     simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
