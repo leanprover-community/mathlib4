@@ -93,18 +93,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]
     have eq0 : depth k = 0 := by
-      rw [IsLocalRing.depth_eq_sSup_length_regular, ← bot_eq_zero', sSup_eq_bot]
-      simp only [exists_prop, Set.mem_setOf_eq, bot_eq_zero', forall_exists_index, and_imp]
-      intro a rs reg mem len
-      match rs with
-      | [] => simp [← len]
-      | a :: rs' =>
-        simp only [RingTheory.Sequence.isRegular_cons_iff] at reg
-        simp only [List.mem_cons, forall_eq_or_imp] at mem
-        absurd reg.1
-        simp only [isSMulRegular_iff_right_eq_zero_of_smul, not_forall]
-        use 1
-        simp only [one_ne_zero, not_false_eq_true, exists_prop, and_true]
-        have : a • (1 : ResidueField R) = 0 := by simpa [Algebra.smul_def] using mem.1
-        rw [← map_one (Shrink.algEquiv R (ResidueField R)).symm, ← map_smul, this, map_zero]
+      apply (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr
+      use LinearMap.id, 0
+      exact LinearMap.ne_zero_of_injective fun ⦃_ _⦄ a ↦ a
     simpa [← eq, eq0] using le_biSup projectiveDimension ‹_›
