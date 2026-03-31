@@ -72,7 +72,6 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   · have := mk_Iio_lt q hα
     rwa [IH _ this hq]
 
-#exit
 /-- If `α` and `β` are infinite types, then the cardinality of `α × β` is the maximum
 of the cardinalities of `α` and `β`. -/
 theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a * b = max a b :=
