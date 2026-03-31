@@ -5,10 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
 /-!
 
