@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -23,8 +25,12 @@ is injective.
 
 In general, a type `A` is `SetLike` with elements of type `B` if it
 has an injective map to `Set B`.  This module provides standard
-boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
-`PartialOrder`, and various extensionality and simp lemmas.
+boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set,
+and various extensionality and simp lemmas. The order induced by set inclusion is
+called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
+The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
+an instance is automatically available when defining a `PartialOrder` as
+`.ofSetLike (MySubobject X) X`.
 
 A typical subobject should be declared as:
 ```
@@ -38,6 +44,8 @@ variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
+
+instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -70,6 +78,8 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
@@ -92,22 +102,18 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
-@[notation_class * carrier Simps.findCoercionArgs]
+@[notation_class* carrier Simps.findCoercionArgs]
 class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
   protected coe_injective' : Function.Injective coe
 
-/-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving. -/
-class IsConcreteLE (A B : Type*) [SetLike A B] [LE A] where
-  /-- The coercion from a `SetLike` type preserves the ordering. -/
-  protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
-
 attribute [coe] SetLike.coe
+
 namespace SetLike
 
-variable {A B : Type*} [i : SetLike A B]
+variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
@@ -124,7 +130,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
 @[app_delab Subtype]
-def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
+meta def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
   let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
@@ -170,19 +176,19 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
   coe_injective.eq_iff.symm.trans Set.ext_iff
 
-@[simp]
+@[simp, push]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
-  Subtype.ext_iff_val.symm
+  Subtype.ext_iff.symm
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 
-@[aesop 5% apply (rule_sets := [SetLike])]
+@[aesop 5% (rule_sets := [SetLike!])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 @[simp]
@@ -190,38 +196,69 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
-variable (A) (B)
+@[nontriviality]
+lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by
+  obtain ⟨s, hs⟩ := nonempty_subtype.mp h
+  simpa [Subsingleton.elim b s]
 
-@[reducible] def toLE : LE A where
-  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
-
-@[reducible] def toPartialOrder : PartialOrder A where
-  __ := toLE A B
-  __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
-
-attribute [local instance] toLE toPartialOrder
-
-instance : IsConcreteLE A B where
-  coe_subset_coe' := Iff.rfl
+/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
+coerces to the universal set, then there exists an element not in `s`. -/
+lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
+    ∃ b : B, b ∉ s := by
+  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
 
 end SetLike
 
-namespace IsConcreteLE
+/-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
+
+An instance of this class is automatically available on any partial order defined as
+`PartialOrder.ofSetLike`.
+-/
+class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
+  /-- The coercion from a `SetLike` type preserves the ordering. -/
+  protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
+
+section default
+
+variable (A B : Type*) [SetLike A B]
+
+/-- The order induced from a `SetLike` instance by inclusion. -/
+@[reducible] def LE.ofSetLike : LE A where
+  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+/-- The partial order induced from a `SetLike` instance by inclusion.
+
+A partial order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`.
+-/
+@[reducible] def PartialOrder.ofSetLike : PartialOrder A where
+  __ := LE.ofSetLike A B
+  __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
+
+instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
+  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
+
+end default
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B]
 
 section LE
 
-variable {A B : Type*} [SetLike A B] [LE A] [IsConcreteLE A B]
-variable {p q : A}
+variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
+@[simp, norm_cast, gcongr] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   IsConcreteLE.coe_subset_coe'
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
   simp [← coe_subset_coe, Set.subset_def]
 
-alias ⟨_, mem_of_le_of_mem⟩ := coe_subset_coe
+@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 
-@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
+@[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simpa [← coe_subset_coe] using Set.not_subset
@@ -230,8 +267,7 @@ end LE
 
 section Preorder
 
-variable {A B : Type*} [SetLike A B] [Preorder A] [IsConcreteLE A B]
-variable {p q : A}
+variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
 @[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
@@ -240,13 +276,10 @@ end Preorder
 
 section PartialOrder
 
-variable {A B : Type*} [SetLike A B] [PartialOrder A] [IsConcreteLE A B]
-variable {p q : A}
+variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+@[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
-
-@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
@@ -281,4 +314,4 @@ end
 
 end PartialOrder
 
-end IsConcreteLE
+end SetLike
