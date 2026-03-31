@@ -12,6 +12,8 @@ public import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 
 /-!
+# Basic control operations
+
 Extends the theory on functors, applicatives and monads.
 -/
 
