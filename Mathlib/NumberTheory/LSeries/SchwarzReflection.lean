@@ -5,6 +5,7 @@ Authors: interleaves
 -/
 module
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Complex.RealDeriv
 
 /-!
 # Schwarz Reflection for the Completed Riemann Zeta Function
@@ -20,6 +21,9 @@ principle: `Λ₀(conj s) = conj(Λ₀(s))`. As a corollary, we establish that
 
 * `completedRiemannZeta₀_im_eq_zero_on_half`: On the critical line,
   `Im(completedRiemannZeta₀(1/2 + it)) = 0` for all real `t`.
+
+* `completedRiemannZeta₀_deriv_re_eq_zero_on_half`: The derivative has vanishing
+  real part on the critical line: `Re(Λ₀'(1/2 + it)) = 0` for all real `t`.
 
 ## Proof strategy
 
@@ -115,18 +119,11 @@ private lemma conj_half_add_mul_I (t : ℝ) :
   · simp [Complex.conj_im, Complex.sub_im, Complex.one_im]
 
 /-- **The completed Riemann zeta function is real-valued on the critical line.**
-
 At every point `1/2 + it` on the critical line, `Im(Λ₀(1/2 + it)) = 0`.
 
-Proof: At `s = 1/2 + it`, conjugation gives `conj(s) = 1/2 - it = 1 - s`.
-By Schwarz reflection: `conj(Λ₀(s)) = Λ₀(conj s) = Λ₀(1 - s)`.
-By the functional equation: `Λ₀(1 - s) = Λ₀(s)`.
-Therefore `conj(Λ₀(s)) = Λ₀(s)`, which holds iff `Im(Λ₀(s)) = 0`.
-
-This establishes that zeros of `Λ₀` on the critical line are sign changes
-of a real-valued function (codimension 1), while off-line zeros would
-require the simultaneous vanishing of both real and imaginary parts
-(codimension 2). -/
+Proof: Schwarz reflection gives `conj(Λ₀(s)) = Λ₀(conj s)`,
+the functional equation gives `Λ₀(1 - s) = Λ₀(s)`,
+and at `s = 1/2 + it` we have `conj(s) = 1 - s`. -/
 theorem completedRiemannZeta₀_im_eq_zero_on_half (t : ℝ) :
     (completedRiemannZeta₀ ⟨1/2, t⟩).im = 0 := by
   suffices h :
@@ -144,3 +141,60 @@ theorem completedRiemannZeta₀_conj_eq_self_on_half (t : ℝ) :
   exact completedRiemannZeta₀_one_sub ⟨1 / 2, t⟩
 
 end CriticalLine
+
+section DerivativeCriticalLine
+
+/-- The affine map `z ↦ 1/2 + z * I` has complex derivative `I`. -/
+private lemma hasDerivAt_half_add_mul_I (z : ℂ) :
+    HasDerivAt (fun w : ℂ => (1/2 : ℂ) + w * I) I z := by
+  convert (hasDerivAt_const z (1/2 : ℂ)).add ((hasDerivAt_id z).mul_const I) using 1; simp
+
+/-- The rotated function `z ↦ Λ₀(1/2 + z · I)` has complex derivative
+`Λ₀'(1/2 + z · I) · I` at `z`. -/
+private lemma hasDerivAt_completedRiemannZeta₀_rotated (z : ℂ) :
+    HasDerivAt (fun w => completedRiemannZeta₀ (1/2 + w * I))
+      (deriv completedRiemannZeta₀ (1/2 + z * I) * I) z :=
+  differentiable_completedZeta₀.differentiableAt.hasDerivAt.comp z (hasDerivAt_half_add_mul_I z)
+
+/-- On the real line, `1/2 + t * I = ⟨1/2, t⟩`. -/
+private lemma half_add_ofReal_mul_I (t : ℝ) :
+    (1/2 : ℂ) + (↑t) * I = ⟨1/2, t⟩ := by
+  apply Complex.ext <;> simp
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Imaginary-part analogue of `HasDerivAt.real_of_complex`: if a complex function
+is ℂ-differentiable at a real point, then the imaginary part of its restriction to ℝ
+is ℝ-differentiable with derivative equal to the imaginary part of the complex derivative. -/
+private lemma HasDerivAt.im_of_complex {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
+    (h : HasDerivAt e e' z) :
+    HasDerivAt (fun x : ℝ => (e x).im) e'.im z := by
+  have A : HasFDerivAt ((↑) : ℝ → ℂ) ofRealCLM z := ofRealCLM.hasFDerivAt
+  have B :
+    HasFDerivAt e ((ContinuousLinearMap.smulRight 1 e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
+      (ofRealCLM z) :=
+    h.hasFDerivAt.restrictScalars ℝ
+  have C : HasFDerivAt im imCLM (e (ofRealCLM z)) := imCLM.hasFDerivAt
+  simpa using (C.comp z (B.comp z A)).hasDerivAt
+
+/-- **The derivative of the completed Riemann zeta function has vanishing
+real part on the critical line:** `Re(Λ₀'(1/2 + it)) = 0` for all real `t`.
+
+Proof: The rotated function `e(z) = Λ₀(1/2 + z · I)` is entire with
+`e'(z) = Λ₀'(1/2 + z · I) · I`. Restricting to ℝ, `Im(e(t)) = 0` for all
+real `t` (by `completedRiemannZeta₀_im_eq_zero_on_half`), so the ℝ-derivative
+of `Im(e(t))` vanishes. But this derivative equals `(e'(t)).im = (Λ₀'(1/2+it) · I).im
+= Re(Λ₀'(1/2 + it))`, giving the result. -/
+theorem completedRiemannZeta₀_deriv_re_eq_zero_on_half (t : ℝ) :
+    (deriv completedRiemannZeta₀ ⟨1/2, t⟩).re = 0 := by
+  have hderiv := hasDerivAt_completedRiemannZeta₀_rotated (↑t)
+  have him_deriv := hderiv.im_of_complex
+  simp only [half_add_ofReal_mul_I] at him_deriv
+  have him_const : HasDerivAt (fun s : ℝ => (completedRiemannZeta₀ ⟨1/2, s⟩).im) 0 t := by
+    have : (fun s : ℝ => (completedRiemannZeta₀ ⟨1/2, s⟩).im) = fun _ => 0 :=
+      funext completedRiemannZeta₀_im_eq_zero_on_half
+    rw [this]; exact hasDerivAt_const t (0 : ℝ)
+  have h_eq := him_deriv.unique him_const
+  simp only [mul_im, I_re, I_im] at h_eq
+  linarith
+
+end DerivativeCriticalLine
