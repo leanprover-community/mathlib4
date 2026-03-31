@@ -408,9 +408,9 @@ theorem nonempty_of_hausdorffEDist_ne_top (hs : s.Nonempty) (fin : hausdorffEDis
 
 theorem empty_or_nonempty_of_hausdorffEDist_ne_top (fin : hausdorffEDist s t ≠ ⊤) :
     (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rcases t.eq_empty_or_nonempty with ht | ht
-    · exact Or.inl ⟨hs, ht⟩
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rcases t.eq_empty_or_nonempty with rfl | ht
+    · exact Or.inl ⟨rfl, rfl⟩
     · rw [hausdorffEDist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEDist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEDist_ne_top hs fin⟩
@@ -827,10 +827,10 @@ theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist
 in each set to the other set -/
 theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, infDist x t ≤ r)
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rwa [hs, hausdorffDist_empty']
-  rcases t.eq_empty_or_nonempty with ht | ht
-  · rwa [ht, hausdorffDist_empty]
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rwa [hausdorffDist_empty']
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · rwa [hausdorffDist_empty]
   have : hausdorffEDist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEDist_le_of_infEDist _ _
     · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEDist_ne_top ht) hr] using H1
