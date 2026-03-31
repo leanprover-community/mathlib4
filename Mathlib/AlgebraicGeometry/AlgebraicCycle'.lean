@@ -5,8 +5,6 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Fiber
-public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Topology.LocallyFinsupp
@@ -28,12 +26,10 @@ nonstandard definition.
 
 @[expose] public section
 
-open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
-  CategoryTheory
+open Set Order Topology TopologicalSpace CategoryTheory
 
 universe u v
-variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y] [PrespectralSpace X]
-    [PrespectralSpace Y] [QuasiSober X] [QuasiSober Y] [T0Space X] [T0Space Y]
+variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
 namespace Function
@@ -58,29 +54,8 @@ of a point z : Y along a morphism `f : X ⟶ Y`.
 -/
 def preimageSupport (c : locallyFinsupp X R) (z : Y) : Set X :=
   f ⁻¹' {z} ∩ c.support
-#check T2Space
-
-lemma test {X : Type*} [TopologicalSpace X] [T0Space X] [QuasiSober X] [PrespectralSpace X] :
-    T2Space (WithConstructibleTopology X) := by sorry
-
-def WithConstructibleTopology.lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (f : X → Y) : WithConstructibleTopology X → WithConstructibleTopology Y := f
-/-
-Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
-of a point z : Y along a quasicompact morphism f : X ⟶ Y is finite.
--/
---lemma preimageSupport_finite (c : locallyFinsupp X R) (hf : IsSpectralMap f) (z : Y) :
-    --(preimageSupport f c z).Finite := by
-
-  --have : @Continuous _ _ (constructibleTopology X) (constructibleTopology Y) f := by sorry
-  --have : T2Space (WithConstructibleTopology X) := sorry
-  --have : T2Space (WithConstructibleTopology Y) := sorry
-  --sorry
-
-
 
 end Zero
-
 
 section map
 
@@ -105,8 +80,6 @@ lemma preimageSupport_preimage_inter_subset : f ⁻¹' W.carrier ∩
     mem_preimage, SetLike.mem_coe, mem_setOf_eq, Function.mem_support, ne_eq, mem_iUnion,
     mem_singleton_iff, exists_and_right, exists_eq', true_and] at hp ⊢
   exact ⟨hp.1.1, hp.2⟩
-
---variable [qc : QuasiCompact f]
 
 lemma preimage_inter_support_finite_of_isAffineOpen (hf : IsSpectralMap f) (hW : IsCompact W.1) :
     (f ⁻¹' W.carrier ∩ c.support).Finite :=
@@ -139,16 +112,21 @@ lemma inter_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompact W.1)
     exact ⟨hx.1, ⟨Nonempty.intro y, hx.2.2⟩⟩
   exact iUnion_preimage_inter_support_finite_of_isAffineOpen c hf hW
 
-variable {N : Type*}
+variable {N : Type*} [PrespectralSpace Y]
 
 /--
 The pushforward of an algebraic cycle has locally finite support.
 -/
-lemma map_locally_finite (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c z).Finite) :
+lemma map_locally_finite (hf : IsSpectralMap f)
+    (h : ∀ z, (preimageSupport f c z).Finite) :
     ∀ z : Y, ∃ t ∈ 𝓝 z, (t ∩ Function.support fun z ↦
     ∑ x ∈ (h z).toFinset, (c x) * w x).Finite := by
   intro y
-  have : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := sorry
+  have : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := by
+    obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
+        (by simp : y ∈ ⊤) (by simp)
+    use ⟨U, hU.1.1⟩
+    exact ⟨hU.1.2, hU.2.1⟩
   obtain ⟨W, hW⟩ := this
   use W
   refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
@@ -160,16 +138,19 @@ lemma map_locally_finite (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c
       contrapose!
       intro aux
       rw [Finset.sum_eq_zero]
-      intro x hx
       simp_all
   exact inter_nonempty_finite c hf hW.1
 
 variable (f) in
 /--
-The pushforward of an algebraic cycle by a quasicompact morphism.
+The pushforward by a spectral map with quasicompact fibers with respect to a weight function `w`.
+This is mainly used when interpretting locally fin supp functions as algebraic cycles (in this case
+the weight function corresponds to a dimension or codimension function).
 
-Note that usually the pushforward is only defined for proper morphisms, and indeed we will need
-properness to prove that the pushforward preserves rational equivalence.
+
+
+NOTE: It is probably more sensible to define this for functions with compact fibers, rather than
+simply functions whose fibers have nonempty intersection with c.support. Maybe this way is fine too
 -/
 noncomputable
 def map (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c z).Finite) :
@@ -183,8 +164,9 @@ def map (hf : IsSpectralMap f) (h : ∀ z, (preimageSupport f c z).Finite) :
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
 lemma map_homogeneneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
+    (h1 : ∀ z, (preimageSupport f c z).Finite)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
-    (map f hf w c).support ⊆ t:= by
+    (map f w c hf h1).support ⊆ t:= by
   intro y hy
   simp only [map, preimageSupport, Function.mem_support,
     ne_eq] at hy
@@ -194,15 +176,16 @@ lemma map_homogeneneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
   specialize h x (hc hx.1.2)
   grind
 
-
 /--
 The pushforward of `c` along the identity morphism is `c`.
 -/
 @[simp]
-lemma map_id (hw : ∀ z : X, w z = 1) : map id isSpectralMap_id w c = c := by
+lemma map_id [PrespectralSpace X] (h : ∀ z, (preimageSupport id c z).Finite)
+    (hw : ∀ z : X, w z = 1) :
+    map id w c isSpectralMap_id h = c := by
    ext z
-   have : (c z ≠ 0 ∧ (preimageSupport_finite c isSpectralMap_id z).toFinset = {z}) ∨
-          (c z = 0 ∧ (preimageSupport_finite c isSpectralMap_id z).toFinset = ∅) := by
+   have : (c z ≠ 0 ∧ (h z).toFinset = {z}) ∨
+          (c z = 0 ∧ (h z).toFinset = ∅) := by
     simp only [ne_eq, Finite.toFinset, preimageSupport, preimage_id_eq, id_eq, toFinset_eq_empty,
       singleton_inter_eq_empty,
       Function.mem_support, not_not, and_self]
@@ -211,17 +194,15 @@ lemma map_id (hw : ∀ z : X, w z = 1) : map id isSpectralMap_id w c = c := by
       Finset.mem_singleton, and_iff_left_iff_imp]
     rintro rfl
     assumption
-   suffices (map id isSpectralMap_id w c).toFun z = c.toFun z from this
+   suffices (map id w c isSpectralMap_id h).toFun z = c.toFun z from this
    obtain h | h := this
    all_goals simp only [map]
              rw[h.2]
              simp only [Finset.sum_singleton, Finset.sum_empty]
-   · specialize hw z
-     rw [hw]
+   · rw [hw]
      exact MulOneClass.mul_one (c z)
    · exact h.1.symm
 
 end map
-
 end locallyFinsupp
 end Function
