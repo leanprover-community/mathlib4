@@ -164,19 +164,12 @@ In this version the data is implicit. -/
 abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
   ⟨Ici c, isOpen_of_basis c hc⟩
 
-/-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
-`{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
-at the point of usage. Having this lemma in this form helps inference of optional parameters. -/
-private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ Ici e ⊆ u := by
-  constructor
-  · intro e_in_u
-    have u_open := u.isOpen
-    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at u_open
-    let ⟨u_Ici, _⟩ := u_open
-    intro a ha
-    exact u_Ici ha e_in_u
-  · intro h
-    exact h <| mem_Ici.2 (le_refl e)
+/-- A compact element as a subtype. -/
+abbrev CompactElement (α : Type*) [PartialOrder α] := {c : α // IsCompactElement c}
+
+/-- The upwards closure of a compact element forms an open set. -/
+abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
+  ⟨Ici c.val, isOpen_of_basis c.val c.prop⟩
 
 end CompletePartialOrder
 
@@ -212,18 +205,21 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
 theorem isTopologicalBasis_Ici_image_compactSet
-    : IsTopologicalBasis (Ici '' {x : D | IsCompactElement x}) := by
+    : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
-    simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk,
+      true_and, exists_prop, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply isOpen_of_basis
   · -- If a point `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
     intro x u x_in_u hu
     choose c hc x_in_c' hc' using exists_basis_mem_basis x u x_in_u hu
-    use Ici c
-    use ⟨c, hc, rfl⟩
+    simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk, true_and,
+      exists_prop, exists_exists_and_eq_and, mem_Ici]
+    use c, hc
+    exact ⟨mem_Ici.1 x_in_c', Subset.refl (LE.le (Ici c)) hc'⟩
 
 end AlgebraicDCPO
 end IsScott
