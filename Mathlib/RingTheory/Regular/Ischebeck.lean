@@ -40,26 +40,21 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
     rename_i r ihr
     by_cases eq0 : r = 0
     · simp only [eq0, CharP.cast_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero] at dim
-      have smul_lt : (maximalIdeal R) • (⊤ : Submodule R M) < (⊤ : Submodule R M) :=
-          Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-            (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
+      have smul_lt := (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+        (maximalIdeal_le_jacobson (Module.annihilator R M))).lt_top'
       simp [eq0, IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt
         (support_of_supportDim_eq_zero R N dim)]
-    · let _ : NeZero r := ⟨eq0⟩
-      have eqr (n : ℕ∞) : n.toNat = r → n = r := by simp
-      refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
+    · refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
         (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
           ((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L)) = r →
           (moduleDepth (ModuleCat.of R L) M ≥ IsLocalRing.depth M - r))) R Nfin)
-          ?_ ?_ ?_ Nntr dim
-      · intro L _ _ _ Ltr Lntr
-        absurd Ltr
+          (fun L _ _ _ Ltr Lntr ↦ ?_) (fun L _ _ _ p e Lntr dim_eq ↦ ?_) ?_ Nntr dim
+      · absurd Ltr
         exact (not_subsingleton_iff_nontrivial.mpr Lntr)
-      · intro L _ _ _ p e Lntr dim_eq
-        obtain ⟨x, hx⟩ : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
+      · obtain ⟨x, hx1, hx2⟩ : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
           rw [Set.diff_nonempty]
           by_contra sub
-          have := Ideal.IsMaximal.eq_of_le (maximalIdeal.isMaximal R) IsPrime.ne_top' sub
+          have := (maximalIdeal.isMaximal R).eq_of_le IsPrime.ne_top' sub
           have : Module.supportDim R (R ⧸ p.asIdeal) = 0 := by
             let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
             rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator, ← this,
@@ -68,25 +63,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           simpa only [Module.supportDim_eq_of_equiv e, this, WithBot.unbot_zero,
             ← ENat.coe_zero, ENat.coe_inj, eq_comm] using eq0
         let S := (ModuleCat.of R L).smulShortComplex x
-        have reg' : Function.Injective (x • (LinearMap.id (R := R) (M := L))) := by
-          rw [← LinearMap.ker_eq_bot]
-          ext l
-          simp only [mem_ker, smul_apply, id_coe, id_eq, Submodule.mem_bot]
-          refine ⟨fun h ↦ ?_, fun h ↦ smul_eq_zero_of_right x h⟩
-          apply e.injective
-          have : (Ideal.Quotient.mk p.asIdeal x) * e l = 0 := by
-            have : (Ideal.Quotient.mk p.asIdeal x) * e l = x • e l := rfl
-            rw [this, ← map_smul, h, map_zero]
-          rcases mul_eq_zero.mp this with xzero|zero
-          · absurd xzero
-            exact Ideal.Quotient.eq_zero_iff_mem.not.mpr (Set.notMem_of_mem_diff hx)
-          · rw [zero, map_zero]
-        have reg : IsSMulRegular (ModuleCat.of R L) x := reg'
+        have reg' : IsSMulRegular (R ⧸ p.asIdeal) (Ideal.Quotient.mk p.1 x) :=
+          (IsRegular.of_ne_zero (Ideal.Quotient.eq_zero_iff_mem.not.mpr hx2)).isSMulRegular
+        have reg : IsSMulRegular (ModuleCat.of R L) x := (e.isSMulRegular_congr _).mpr reg'
         have hS := reg.smulShortComplex_shortExact
         apply le_sSup
         intro i hi
         have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1)) := by
-          have ntr := nontrivial_quotSMulTop_of_mem_maximalIdeal L (Set.mem_of_mem_diff hx)
+          have ntr := nontrivial_quotSMulTop_of_mem_maximalIdeal L hx1
           have dimlt : (Module.supportDim R (QuotSMulTop x L)).unbot
             (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
             have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
@@ -96,9 +80,9 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
                 rw [← p.1.annihilator_quotient, ← LinearEquiv.annihilator_eq e]
                 exact (Submodule.mkQ _).annihilator_le_of_surjective (Submodule.mkQ_surjective _)
               have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.1) := by
-                simpa [Ideal.Quotient.eq_zero_iff_mem] using Set.notMem_of_mem_diff hx
+                simpa [Ideal.Quotient.eq_zero_iff_mem] using hx2
               exact ringKrullDim_succ_le_of_surjective _ (Quotient.factor_surjective ple) this
-                (by simpa [Quotient.eq_zero_iff_mem] using QuotSMulTop.mem_annihilator L x)
+                (by simpa [Ideal.Quotient.eq_zero_iff_mem] using QuotSMulTop.mem_annihilator L x)
             have succle : (Module.supportDim R (QuotSMulTop x L)).unbot
               (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) + 1 ≤ r := by
               simpa [← dim_eq, WithBot.le_unbot_iff] using this
@@ -120,12 +104,10 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             apply lt_of_le_of_lt this
             simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi ⊢
             omega
-        have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
-          @AddCommGrpCat.isZero_of_subsingleton _ this
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
           convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
             (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
-            (zero.eq_zero_of_tgt _)
+            ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
           ext a
           simp only [smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
             Ext.bilinearComp_apply_apply]
@@ -136,57 +118,52 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           ext y
           simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
             Submodule.mem_top, true_and]
-        by_contra ntr
-        rw [not_subsingleton_iff_nontrivial] at ntr
+        by_contra! ntr
         have mem : x ∈ (Module.annihilator R (Ext (of R L) M i)).jacobson :=
-          IsLocalRing.maximalIdeal_le_jacobson _ (Set.mem_of_mem_diff hx)
+          maximalIdeal_le_jacobson _ hx1
         absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator mem
         nth_rw 1 [← LinearMap.range_eq_top_of_surjective _ epi', ← range]
       · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
-        by_cases ntr : Nontrivial L1 ∧ Nontrivial L3
-        · let _ := ntr.1
-          let _ := ntr.2
-          have dimle1 : ((Module.supportDim R L1).unbot
-            (Module.supportDim_ne_bot_of_nontrivial R L1)) ≤ r := by
-            rw [← dim_eq, ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
-            exact Module.supportDim_le_of_injective f inj
-          have dimle3 : ((Module.supportDim R L3).unbot
-            (Module.supportDim_ne_bot_of_nontrivial R L3)) ≤ r := by
-            rw [← dim_eq, ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
-            exact Module.supportDim_le_of_surjective g surj
-          have ge1 : moduleDepth (of R L1) M ≥ IsLocalRing.depth M - ((Module.supportDim R L1).unbot
-            (Module.supportDim_ne_bot_of_nontrivial R L1)) := by
-            rcases lt_or_eq_of_le dimle1 with lt|eq
-            · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
-              simp only [← hm, Nat.cast_lt] at lt
-              simpa [← hm] using ihr m lt (ModuleCat.of.{v} R L1) hm.symm
-            · simpa [eq] using ih1' ntr.1 eq
-          have ge3 : moduleDepth (of R L3) M ≥ IsLocalRing.depth M - ((Module.supportDim R L3).unbot
-            (Module.supportDim_ne_bot_of_nontrivial R L3)) := by
-            rcases lt_or_eq_of_le dimle3 with lt|eq
-            · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
-              simp only [← hm, Nat.cast_lt] at lt
-              simpa [← hm] using ihr m lt (ModuleCat.of.{v} R L3) hm.symm
-            · simpa [eq] using ih3' ntr.2 eq
-          let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
-          have hS := ModuleCat.shortComplex_shortExact S exac inj surj
-          exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
-            ⟨le_trans (tsub_le_tsub_left dimle1 _) ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
-        · have : Subsingleton L1 ∨ Subsingleton L3 := by
-            simpa [← not_nontrivial_iff_subsingleton] using Classical.not_and_iff_not_or_not.mp ntr
-          rcases this with sub1|sub3
-          · have : Function.Injective g := by
-              simp [← ker_eq_bot, exact_iff.mp exac, Subsingleton.eq_zero f]
-            let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
-            rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso]
-            apply ih3' this.nontrivial
-            rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv eg]
+        rcases subsingleton_or_nontrivial L1 with sub1|ntr1
+        · have : Function.Injective g := by
+            simp [← ker_eq_bot, exact_iff.mp exac, Subsingleton.eq_zero f]
+          let eg : L2 ≃ₗ[R] L3 := LinearEquiv.ofBijective g ⟨this, surj⟩
+          rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso]
+          apply ih3' this.nontrivial
+          rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv eg]
+        · rcases subsingleton_or_nontrivial L3 with sub3|ntr3
           · have : Function.Surjective f := by
               simp [← range_eq_top, ← exact_iff.mp exac, Subsingleton.eq_zero g]
             let ef : L1 ≃ₗ[R] L2 := LinearEquiv.ofBijective f ⟨inj, this⟩
             rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso]
             apply ih1' this.nontrivial
             rw [← dim_eq, WithBot.unbot_inj, Module.supportDim_eq_of_equiv ef]
+          · have dimle1 : ((Module.supportDim R L1).unbot
+              (Module.supportDim_ne_bot_of_nontrivial R L1)) ≤ r := by
+              rw [← dim_eq, ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+              exact Module.supportDim_le_of_injective f inj
+            have dimle3 : ((Module.supportDim R L3).unbot
+              (Module.supportDim_ne_bot_of_nontrivial R L3)) ≤ r := by
+              rw [← dim_eq, ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+              exact Module.supportDim_le_of_surjective g surj
+            have ge1 : moduleDepth (of R L1) M ≥ IsLocalRing.depth M -
+              ((Module.supportDim R L1).unbot (Module.supportDim_ne_bot_of_nontrivial R L1)) := by
+              rcases lt_or_eq_of_le dimle1 with lt|eq
+              · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
+                simp only [← hm, Nat.cast_lt] at lt
+                simpa [← hm] using ihr m lt (ModuleCat.of.{v} R L1) hm.symm
+              · simpa [eq] using ih1' ntr1 eq
+            have ge3 : moduleDepth (of R L3) M ≥ IsLocalRing.depth M -
+              ((Module.supportDim R L3).unbot (Module.supportDim_ne_bot_of_nontrivial R L3)) := by
+              rcases lt_or_eq_of_le dimle3 with lt|eq
+              · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt) with ⟨m, hm⟩
+                simp only [← hm, Nat.cast_lt] at lt
+                simpa [← hm] using ihr m lt (ModuleCat.of.{v} R L3) hm.symm
+              · simpa [eq] using ih3' ntr3 eq
+            let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
+            have hS := ModuleCat.shortComplex_shortExact S exac inj surj
+            exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
+              ⟨(tsub_le_tsub_left dimle1 _).trans ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
 
 lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
     ringKrullDim (R ⧸ P) ≠ ⊥ :=
