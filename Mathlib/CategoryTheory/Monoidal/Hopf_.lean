@@ -668,14 +668,19 @@ instance hopfObjOfHopfAlgebra (A : HopfAlgCat R) : HopfObj (ModuleCat.of R A) wh
   antipode_right := congr_arg ModuleCat.ofHom
     (@HopfAlgebra.mul_antipode_lTensor_comul R A _ _ _)
 
+--set_option pp.notation false
+
+def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R where {}
+
+
 def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
   functor := {
     obj M := HopfAlgCat.of R M.X
 
     map {M N} f := HopfAlgCat.ofHom {
       toFun := f.hom.hom.hom
-      map_add' := by simp
-      map_smul' := by simp
+      map_add' := LinearMap.map_add (ModuleCat.Hom.hom f.hom.hom.hom)
+      map_smul' := LinearMap.map_smul (ModuleCat.Hom.hom f.hom.hom.hom)
       counit_comp := congr_arg ModuleCat.Hom.hom (
         congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
       map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
@@ -683,18 +688,42 @@ def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
       map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
         1
       map_mul' := fun x y ↦
-        DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom)) (x ⊗ₜ y)
+        DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom))
+          (x ⊗ₜ[R] y)
     }
   }
 
   inverse := {
     obj A := ⟨ModuleCat.of R A⟩
-    map {M N} f :=
-      ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
-        (by sorry) (by sorry)) (by sorry) (by sorry)⟩
+    map {M N} f := ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
+      (by
+        ext
+        simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
+        convert (show f.toBialgHom'.toLinearMap 1 = 1 from f.toBialgHom.map_one)
+        · change (ModuleCat.ofHom (Algebra.linearMap R M.carrier)) 1 = 1
+          simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
+        · change (ModuleCat.ofHom (Algebra.linearMap R N.carrier)) 1 = 1
+          simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
+      )
+      (by
+        ext t
+        induction t using TensorProduct.induction_on with
+        | zero => simp only [ModuleCat.hom_comp, map_zero]
+        | tmul x y => exact f.toBialgHom.map_mul x y
+        | add x y hx hy =>
+            simp only [map_add]
+            exact congr_arg₂ (· + ·) hx hy
+      )
+      )
+      (by ext m; exact DFunLike.congr_fun f.toBialgHom.counit_comp m)
+      (by ext m; exact DFunLike.congr_fun f.toBialgHom.map_comp_comul.symm m)
+      ⟩
   }
 
-  unitIso := sorry
+  unitIso := {
+    hom :=
+    inv := _
+  }
   counitIso := sorry
 
 
