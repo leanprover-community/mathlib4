@@ -747,13 +747,13 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← toSpanSingleton_deriv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z => by simp [← toSpanSingleton_deriv, hf']) _ _
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← toSpanSingleton_deriv, hf' hx]) t
+    (fun x hx ↦ by simp [← toSpanSingleton_deriv, hf' hx]) t
 
 theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)

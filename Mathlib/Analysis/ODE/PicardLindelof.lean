@@ -124,7 +124,6 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
   rw [this]
   apply hf.comp (by fun_prop)
   intro _ ht
-  rw [mem_prod]
   exact ⟨ht, hmem _ ht⟩
 
 /-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
@@ -254,9 +253,8 @@ protected lemma mem_closedBall
 
 lemma compProj_mem_closedBall
     (α : FunSpace t₀ x₀ r L) (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) {t : ℝ} :
-    α.compProj t ∈ closedBall x₀ a := by
-  rw [compProj_apply]
-  exact α.mem_closedBall h
+    α.compProj t ∈ closedBall x₀ a :=
+  α.mem_closedBall h
 
 end
 
@@ -564,9 +562,7 @@ lemma contDiffOn_enat_picard_Icc
   | top =>
     rw [contDiffOn_infty] at *
     exact fun k ↦ contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
-  | coe n =>
-    simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
+  | coe n => exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
 theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
