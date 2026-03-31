@@ -342,7 +342,6 @@ section Neg
 
 variable [Fact (Even (Fintype.card n))]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
 instance instNeg [Fact (Even (Fintype.card n))] : Neg (SpecialLinearGroup n R) :=

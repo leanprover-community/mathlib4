@@ -79,7 +79,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
     let ⟨y, hyt⟩ := hne
     classical
-      refine ⟨succ (sSup t), succ_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
+      refine ⟨sSup t + 1, add_one_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
       · simp only
         split_ifs with h <;> exact hts ‹_›
       · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)
@@ -142,11 +142,6 @@ theorem isClosed_iff_bsup :
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
   SuccOrder.isSuccLimit_of_mem_frontier ha
 
-@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  Order.isNormal_iff_strictMono_and_continuous
-
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
@@ -195,7 +190,7 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     constructor
     · rintro rfl
       obtain ⟨x, hx⟩ := h (Iio 1) (Iio_mem_nhds zero_lt_one)
-      exact hx.2 <| lt_one_iff_zero.mp hx.1.1
+      exact hx.2 <| lt_one_iff.mp hx.1.1
     · intro p plt
       obtain ⟨x, hx⟩ := h (Ioo p (o + 1)) <| Ioo_mem_nhds plt (lt_succ o)
       use x
@@ -230,74 +225,15 @@ theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
 
--- todo: prove this for a general linear `SuccOrder`.
+@[deprecated IsOpenEmbedding.accPt_comap_iff (since := "2026-03-30")]
 theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
-  constructor
-  · intro h
-    have plim := IsAcc.isSuccLimit h
-    rw [accPt_iff_nhds] at *
-    intro u hu
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, plim.bot_lt.trans hpo⟩, plim.bot_lt⟩
-    obtain ⟨x, hx⟩ := h (Ioo l (p + 1)) (Ioo_mem_nhds hl.1 (lt_add_one _))
-    use ⟨x, lt_of_le_of_lt (lt_succ_iff.mp hx.1.1.2) hpo⟩
-    refine ⟨?_, Subtype.coe_ne_coe.mp hx.2⟩
-    exact ⟨hl.2 ⟨hx.1.1.1, by exact_mod_cast lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩
-  · intro h
-    rw [accPt_iff_nhds] at *
-    intro u hu
-    by_cases ho : p + 1 < o
-    · have ppos : p ≠ 0 := by
-        rintro rfl
-        rw [zero_add] at ho
-        specialize h (Iio ⟨1, ho⟩) (Iio_mem_nhds (Subtype.mk_lt_mk.mpr zero_lt_one))
-        obtain ⟨_, h⟩ := h
-        exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff_zero.mp h.1.1)
-      have plim : IsSuccLimit p := by
-        contrapose! h
-        obtain ⟨q, hq⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
-        use (Ioo ⟨q, ((hq ▸ lt_succ q).trans hpo)⟩ ⟨p + 1, ho⟩)
-        constructor
-        · exact Ioo_mem_nhds (hq ▸ lt_succ q) (lt_succ p)
-        · intro _ mem
-          have aux1 := Subtype.mk_lt_mk.mp mem.1.1
-          have aux2 := Subtype.mk_lt_mk.mp mem.1.2
-          rw [Subtype.mk_eq_mk]
-          subst hq
-          exact ((succ_le_iff.mpr aux1).antisymm (le_of_lt_succ aux2)).symm
-      obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, plim.bot_lt⟩
-      obtain ⟨x, hx⟩ := h (Ioo ⟨l, hl.1.trans hpo⟩ ⟨p + 1, ho⟩) (Ioo_mem_nhds hl.1 (lt_add_one p))
-      use x
-      exact ⟨⟨hl.2 ⟨hx.1.1.1, lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩
-    have hp : o = p + 1 := (le_succ_iff_eq_or_le.mp (le_of_not_gt ho)).resolve_right
-      (not_le_of_gt hpo)
-    have ppos : p ≠ 0 := by
-      rintro rfl
-      obtain ⟨x, hx⟩ := h Set.univ univ_mem
-      have : ↑x < o := x.2
-      simp_rw [hp, zero_add, lt_one_iff_zero] at this
-      exact hx.2 (SetCoe.ext this)
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, pos_iff_ne_zero.mpr ppos⟩
-    obtain ⟨x, hx⟩ := h (Ioi ⟨l, hl.1.trans hpo⟩) (Ioi_mem_nhds hl.1)
-    use x
-    refine ⟨⟨hl.2 ⟨hx.1.1, ?_⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩
-    rw [← lt_add_one_iff, ← hp]
-    exact x.2
+  rw [← comap_principal, isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔
     ∀ p < o, IsAcc p S → p ∈ S := by
-  dsimp [IsClosedBelow]
-  constructor
-  · intro h p plto hp
-    have : AccPt ⟨p, plto⟩ (𝓟 (Iio o ↓∩ S)) := (accPt_subtype _ _).mp hp
-    rw [isClosed_iff_clusterPt] at h
-    exact h ⟨p, plto⟩ this.clusterPt
-  · intro h
-    rw [isClosed_iff_clusterPt]
-    intro r hr
-    match clusterPt_principal.mp hr with
-    | .inl h => exact h
-    | .inr h' => exact h r.1 r.2 <| (accPt_subtype _ _).mpr h'
+  simp [IsClosedBelow, IsAcc, isClosed_iff_accPt, ← comap_principal,
+    isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
 alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 

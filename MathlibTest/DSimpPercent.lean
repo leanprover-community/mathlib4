@@ -41,3 +41,8 @@ variable {a b c : ℕ} in
 /-- info: a + b : ℕ -/
 #guard_msgs in
 #check dsimp% [g_apply] g a b
+
+variable (a b : Int) in
+/-- error: `dsimp%` made no progress -/
+#guard_msgs in
+#check dsimp% a + b

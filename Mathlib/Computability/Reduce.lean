@@ -62,8 +62,10 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
   manyOneReducible_refl
 
-theorem transitive_manyOneReducible {α} [Primcodable α] : Transitive (@ManyOneReducible α α _ _) :=
-  fun _ _ _ => ManyOneReducible.trans
+theorem isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible :=
+  ⟨fun _ _ _ ↦ ManyOneReducible.trans⟩
+
+@[deprecated (since := "2026-02-21")] alias transitive_manyOneReducible := isTrans_manyOneReducible
 
 /--
 `p` is one-one reducible to `q` if there is an injective computable function translating questions
@@ -105,8 +107,10 @@ theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] 
 theorem reflexive_oneOneReducible {α} [Primcodable α] : Reflexive (@OneOneReducible α α _ _) :=
   oneOneReducible_refl
 
-theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneReducible α α _ _) :=
-  fun _ _ _ => OneOneReducible.trans
+theorem isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible :=
+  ⟨fun _ _ _ ↦ OneOneReducible.trans⟩
+
+@[deprecated (since := "2026-02-21")] alias transitive_oneOneReducible := isTrans_oneOneReducible
 
 namespace ComputablePred
 
