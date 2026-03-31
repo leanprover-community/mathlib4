@@ -55,6 +55,7 @@ open Filter
 open Topology
 
 variable {α 𝕜 𝕝 E F : Type*}
+
 section CommSemiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
