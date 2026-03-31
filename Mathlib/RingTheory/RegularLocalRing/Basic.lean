@@ -67,9 +67,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         simpa using fun a ↦ Tsub a
       · rw [← Nat.cast_inj (R := WithBot ℕ∞), (iff_finrank_cotangentSpace R).mp ‹_›, ← card]
         simp
-    have li := LinearIndependent.comp this (Set.inclusion h) (Set.inclusion_injective h)
-    have inc : Set.inclusion Tsub ∘ Set.inclusion h = Set.inclusion sub := rfl
-    simpa [← Function.comp_assoc, ← inc] using li
+    simpa [← Function.comp_assoc, ← Set.inclusion_comp_inclusion h Tsub] using
+      this.comp _ (Set.inclusion_injective h)
   tfae_have 2 → 3 := by
     intro li
     let _ : IsLocalRing (R ⧸ Ideal.span (S : Set R)) :=
@@ -225,8 +224,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
         rw [← Ideal.primeHeight_eq_ringKrullDim_iff.mpr (le_antisymm (le_maximalIdeal_of_isPrime I)
           sub), Ideal.primeHeight_eq_zero_iff.mpr min, ← Nat.cast_zero] at hn
         exact Nat.zero_ne_add_one n (Nat.cast_inj.mp hn)
-    simp only [Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, Set.mem_union,
-      SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
+    replace xnmem : x ∉ maximalIdeal R ^ 2 ∧ ∀ p ∈ minimalPrimes R, x ∉ p := by simpa using xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
     have ih' := ih (R ⧸ Ideal.span {x}) (ENat.WithBot.add_one_cancel.mp dim)
