@@ -8,12 +8,17 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
-# Desargues's theorem
+# Desargues's theorem (parallel form)
 
-This file proves an affine version of Desargues's theorem.
+This file proves a *parallel* (affine) form of Desargues's theorem.
 
 If two triangles are in perspective from a point, and two pairs of corresponding sides are
 parallel, then the third pair of corresponding sides are also parallel.
+
+This should be seen as a special case of the usual projective statement: for two triangles in
+perspective from a point, the three intersection points of corresponding sides are collinear.
+Here we assume two pairs of corresponding sides are parallel (so their intersection points are
+"at infinity"), and deduce parallelism of the remaining pair of sides.
 
 More precisely, we consider points `A A' B B' C C' S` in an affine space over a division ring.
 The hypotheses say that the pairs `(A, A')`, `(B, B')`, and `(C, C')` are each aligned with the
@@ -48,8 +53,8 @@ open AffineSubspace
 
 variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
-/-- If two triangles are in perspective from a point and two corresponding sides are parallel,
-then the third pair of corresponding sides are parallel. -/
+/-- The parallel form of Desargues's theorem: if two triangles are in perspective from a point and
+two corresponding sides are parallel, then the third pair of corresponding sides are parallel. -/
 theorem parallel_third_side_of_perspective {A A' B B' C C' S : P}
     (hASA' : Collinear k ({A, S, A'} : Set P))
     (hBSB' : Collinear k ({B, S, B'} : Set P))
