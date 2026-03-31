@@ -82,15 +82,13 @@ instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-lemma countable_iff_secondCountable [T2Space X]
-    [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
-  refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
+lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
+    Countable (Clopens X) ↔ SecondCountableTopology X := by
+  refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_setOf_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
-  · apply IsTopologicalBasis.eq_generateFrom
-    exact loc_compact_Haus_tot_disc_of_zero_dim
-  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
-      fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
+  · have (s : Clopens X) : ∃ t : Finset (countableBasis X), s.1 = (SetLike.coe t).sUnion :=
+      eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
     let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose
     have hf : f.Injective := by

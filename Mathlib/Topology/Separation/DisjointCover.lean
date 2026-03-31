@@ -42,7 +42,7 @@ lemma exists_finite_clopen_cover (hU : IsOpenCover U) : ∃ (n : ℕ) (V : Fin n
   -- Choose an index `r x` for each point in `X` such that `∀ x, x ∈ U (r x)`.
   choose r hr using hU.exists_mem
   -- Choose a clopen neighbourhood `V x` of each `x` contained in `U (r x)`.
-  choose V hV hVx hVU using fun x ↦ compact_exists_isClopen_in_isOpen (U _).isOpen (hr x)
+  choose V hV hVx hVU using fun x ↦ exists_isClopen_mem_of_isOpen (U _).isOpen (hr x)
   -- Apply compactness to extract a finite subset of the `V`s which covers `X`.
   obtain ⟨t, ht⟩ : ∃ t, univ ⊆ ⋃ i ∈ t, V i :=
     isCompact_univ.elim_finite_subcover V (fun x ↦ (hV x).2) (fun x _ ↦ mem_iUnion.mpr ⟨x, hVx x⟩)

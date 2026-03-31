@@ -290,3 +290,12 @@ lemma t35Space_iff_isEmbedding_stoneCechUnit :
     T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
   mp _ := isEmbedding_stoneCechUnit
   mpr hs := hs.t35Space
+
+theorem CompletelyRegularSpace.totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X]
+    (h : Cardinal.mk X < .continuum) : TotallySeparatedSpace X :=
+  have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum h
+  inferInstance
+
+instance [Countable X] [T35Space X] : TotallySeparatedSpace X :=
+  CompletelyRegularSpace.totallySeparatedSpace_of_cardinalMk_lt_continuum <| 
+    (Cardinal.mk_le_aleph0_iff.mpr inferInstance).trans_lt Cardinal.aleph0_lt_continuum
