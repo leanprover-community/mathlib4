@@ -118,11 +118,9 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
-  map_mul' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) _)
+  map_mul' x y := Subtype.ext <| funext fun v ↦ UniformSpace.Completion.coe_mul _ _
   map_zero' := rfl
-  map_add' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) _)
+  map_add' x y := Subtype.ext <| funext fun v ↦ UniformSpace.Completion.coe_add _ _
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
@@ -167,15 +165,15 @@ theorem isUnit_iff {a : FiniteAdeleRing R K} :
   simpa using fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
-    ∀ᶠ v in Filter.cofinite, Valued.v ((RestrictedProduct.unitsEquiv _ a v)).1 = 1 := by
-  filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun v h ↦
+    ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).1 = 1 := by
+  filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun _ h ↦
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
 theorem infinite_valued_ne_one_of_not_isUnit {a : FiniteAdeleRing R K} (ha₀ : ∀ v, a v ≠ 0)
     (ha : ¬IsUnit a) : {v | Valued.v (a v) ≠ 1}.Infinite := by
   contrapose! ha
   rw [isUnit_iff]
-  exact ⟨ha₀ , ha⟩
+  exact ⟨ha₀, ha⟩
 
 variable (R)
 
