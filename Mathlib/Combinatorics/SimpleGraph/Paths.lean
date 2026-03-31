@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Order.Preorder.Finite
@@ -83,10 +83,6 @@ structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p 
 is `u` (which appears exactly twice). -/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
-
-@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
 
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -409,14 +405,21 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
         (by lia : (m - 1) ≤ p.length) hnm
       lia
 
-lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (h : ¬p.Nil) :
     p.getVert i = u ↔ i = 0 := by
-  refine ⟨?_, by simp_all⟩
-  intro h
-  by_cases hi : i = 0
-  · exact hi
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  by_cases h' : i ≤ p.length
   · apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
     simp [h]
+  · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
+    subst h
+    simp_all
+
+lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = u ↔ i = 0 := by
+  by_cases h' : p.Nil
+  · simp_all [nil_iff_length_eq.mp h']
+  · exact hp.getVert_eq_start_iff_of_not_nil h'
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
