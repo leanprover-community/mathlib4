@@ -263,33 +263,9 @@ theorem even_length_cons_of_isPath
 /-- If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1. -/
 lemma IsPath.length_eq_one_of_mem_edges
     {u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
-  by_contra h_non_simple_cycle
-  have h_cycle : ∃ q : G.Walk u u, q.IsCycle := by
-    rcases p with (_ | ⟨_, _, p⟩)
-    · aesop
-    · aesop
-    · aesop (config := {warnOnNonterminal := false})
-      have := by exact Walk.fst_mem_support_of_mem_edges p h_3
-      exact Classical.not_forall_not.mp fun a ↦ right this
-  obtain ⟨q, hq⟩ := h_cycle
-  cases q <;> simp_all +decide only [isCycle_def, IsTrail.nil, ne_eq, not_true_eq_false,
-    support_nil, List.tail_cons, List.nodup_nil, and_true, and_false]
-  cases p <;> simp_all +decide only [isTrail_def, edges_cons, List.nodup_cons, reduceCtorEq,
-    not_false_eq_true, support_cons, List.tail_cons, true_and, isPath_iff_eq_nil, edges_nil,
-    List.not_mem_nil]
-  simp_all only [cons_isPath_iff, List.mem_cons, Sym2.eq, Sym2.rel_iff',
-  Prod.mk.injEq, true_and, Prod.swap_prod_mk, length_cons, Nat.add_eq_right]
-  obtain ⟨left, right⟩ := hq
-  obtain ⟨left_1, right_1⟩ := hp
-  obtain ⟨left, right_2⟩ := left
-  cases h with
-  | inl h_3 =>
-    cases h_3 with
-    | inl h =>
-      subst h
-      simp_all only [length_eq_zero_iff, isPath_iff_eq_nil]
-    | inr h_4 => simp_all only [SimpleGraph.irrefl]
-  | inr h_4 => exact right_1 (Walk.fst_mem_support_of_mem_edges _ h_4)
+  rcases p with (_ | ⟨h, p⟩) <;> simp_all +decide;
+  cases p <;> simp_all +decide;
+  grind +suggestions
 
 /-- If all cycles in a graph have even length, then extending a path by an adjacent edge
     and taking until a vertex `u` results in a walk of even length. -/
