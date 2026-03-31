@@ -251,6 +251,7 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
 
 end WeakDual
+
 namespace WeakSpace
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
