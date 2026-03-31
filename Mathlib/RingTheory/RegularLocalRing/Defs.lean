@@ -65,15 +65,15 @@ lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R := by
   rw [isRegularLocalRing_iff, spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
 
-instance {k : Type*} [Field k] : IsRegularLocalRing k := by
-  simp [isRegularLocalRing_iff, maximalIdeal_eq_bot]
-
 set_option backward.isDefEq.respectTransparency false in
-instance [IsDomain R] [IsDiscreteValuationRing R] : IsRegularLocalRing R := by
-  apply of_spanFinrank_maximalIdeal_le
-  rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩
-  simpa only [(IsPrincipalIdealRing.ringKrullDim_eq_one R) (IsDiscreteValuationRing.not_isField R),
-    Nat.cast_le_one, ← Set.ncard_singleton x, hx] using
-    Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton x)
+instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalRing R := by
+  by_cases isf : IsField R
+  · let _ := isf.toField
+    simp [isRegularLocalRing_iff, maximalIdeal_eq_bot]
+  · apply of_spanFinrank_maximalIdeal_le
+    rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩
+    simpa only [(IsPrincipalIdealRing.ringKrullDim_eq_one R) isf,
+      Nat.cast_le_one, ← Set.ncard_singleton x, hx] using
+        Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton x)
 
 end IsRegularLocalRing
