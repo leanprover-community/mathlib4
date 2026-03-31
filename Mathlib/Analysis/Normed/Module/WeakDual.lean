@@ -110,10 +110,6 @@ noncomputable section
 
 open Filter Function Bornology Metric Set Topology Filter
 
-/-!
-### Equivalences between `StrongDual` and `WeakDual`
--/
-
 variable {𝕜 M E : Type*}
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
