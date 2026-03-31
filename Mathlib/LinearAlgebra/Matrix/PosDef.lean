@@ -171,9 +171,8 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef :=
 theorem submatrix {M : Matrix n n R} (hM : M.PosDef) {e : m → n}
     (he : Function.Injective e) : (M.submatrix e e).PosDef := by
   refine ⟨hM.1.submatrix _, fun x hx ↦ ?_⟩
-  have hne : x.mapDomain e ≠ 0 :=
-    Finsupp.mapDomain_injective he |>.ne_iff' Finsupp.mapDomain_zero |>.2 hx
-  simpa [Finsupp.sum_mapDomain_index, add_mul, mul_add] using hM.2 hne
+  simpa [Finsupp.sum_mapDomain_index, add_mul, mul_add] using
+    hM.2 <| Finsupp.mapDomain_injective he |>.ne_iff' Finsupp.mapDomain_zero |>.2 hx
 
 theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   have (a b c : R') : a * b * c = c * b * a := by ring
