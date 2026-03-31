@@ -274,10 +274,9 @@ instance Module.Finite.top_left [Module.Finite R M] : Module.Finite (⊤ : Subse
   .of_equiv_equiv (A₁ := R) (Subsemiring.topEquiv.symm) (.refl M) rfl
 
 instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : RatFunc Fq)⟯ F := by
-  rw [RatFunc.adjoin_X]
   have : Module.Finite (⊤ : IntermediateField Fq (RatFunc Fq)) (RatFunc Fq) :=
     Module.Finite.top_left (RatFunc Fq) (RatFunc Fq)
-  exact Module.Finite.trans (RatFunc Fq) _
+  exact RatFunc.adjoin_X (K := Fq) ▸ Module.Finite.trans (RatFunc Fq) _
 
 variable [Algebra Fq F] [IsScalarTower Fq (RatFunc Fq) F]
 
