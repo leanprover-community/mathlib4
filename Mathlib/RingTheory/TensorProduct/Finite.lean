@@ -126,7 +126,6 @@ lemma Module.exists_isPrincipal_quotient_of_finite :
   ext
   simp [Fin.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.exists_surjective_quotient_of_finite :
     ∃ (I : Ideal R) (f : M →ₗ[R] R ⧸ I), I ≠ ⊤ ∧ Function.Surjective f := by
   obtain ⟨N, hN, ⟨x, hx⟩⟩ := Module.exists_isPrincipal_quotient_of_finite R M
