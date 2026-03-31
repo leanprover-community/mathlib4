@@ -610,7 +610,7 @@ noncomputable def Spec.homEquiv' {R : Type u} [CommRing R] {A B : Type u} [CommR
       {f : CommRingCat.of A ⟶ CommRingCat.of B // f.hom.comp (algebraMap R A) = algebraMap R B} :=
   homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← ConcreteCategory.hom_injective.eq_iff]
 
-/-- A version of `AlgebraicGeometry.Spec.homEquiv'` over c for concrete `AlgHom`. -/
+/-- A version of `AlgebraicGeometry.Spec.homEquiv'` for concrete `AlgHom`. -/
 noncomputable def Spec.homEquivAlgHom {R : Type u} [CommRing R] {A B : Type u} [CommRing A]
     [CommRing B] [Algebra R A] [Algebra R B] :
     {f : Spec (.of B) ⟶ Spec (.of A) // f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃
