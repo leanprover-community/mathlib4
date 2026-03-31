@@ -555,39 +555,6 @@ theorem lift_eq_aleph_one {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ�
 @[deprecated (since := "2025-12-22")]
 alias lift_eq_aleph1 := lift_eq_aleph_one
 
-end Cardinal
-
--- These theorems have to go after `Ordinal.lift_omega`.
-namespace Ordinal
-
-variable {o : Ordinal.{u}}
-
-@[simp]
-theorem omega_one_le_lift : ω₁ ≤ lift.{v} o ↔ ω₁ ≤ o := by
-  simpa using lift_le (a := ω₁)
-
-@[simp]
-theorem lift_le_omega_one : lift.{v} o ≤ ω₁ ↔ o ≤ ω₁ := by
-  simpa using lift_le (b := ω₁)
-
-@[simp]
-theorem omega_one_lt_lift : ω₁ < lift.{v} o ↔ ω₁ < o := by
-  simpa using lift_lt (a := ω₁)
-
-@[simp]
-theorem lift_lt_omega_one : lift.{v} o < ω₁ ↔ o < ω₁ := by
-  simpa using lift_lt (b := ω₁)
-
-@[simp]
-theorem omega_one_eq_lift : ω₁ = lift.{v} o ↔ ω₁ = o := by
-  simpa using lift_inj (a := ω₁)
-
-@[simp]
-theorem lift_eq_omega_one {o : Ordinal.{u}} : lift.{v} o = ω₁ ↔ o = ω₁ := by
-  simpa using lift_inj (b := ω₁)
-
-end Ordinal
-
 /-! ### Beth cardinals -/
 
 namespace Cardinal
