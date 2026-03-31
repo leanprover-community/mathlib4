@@ -66,10 +66,7 @@ given in the Wikipedia article about curvature in the section about plane curves
 meaningful only for regular plane curves which are twice continuously differentiable on an
 interval I. -/
 def orientedCurvature : ℝ :=
-  let c' := deriv c t
-  let c'' := iteratedDeriv 2 c t
-  let M : Matrix (Fin 2) (Fin 2) ℝ := !![c' 0, c' 1; c'' 0, c'' 1]
-  M.det / (‖deriv c t‖^3)
+  !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
 /-- Normal vector at a point of a plane curve. This definition is only meaningful when c is
 differentiable at t, and it's supposed to be used for plane curves parametrized by arc-length. -/
