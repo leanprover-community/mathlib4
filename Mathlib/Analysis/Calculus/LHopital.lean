@@ -74,13 +74,19 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
       (tendsto_nhdsWithin_of_tendsto_nhds (hff' x hx).continuousAt.tendsto)
   choose! c hc using this
   have : ∀ x ∈ Ioo a b, ((fun x' => f' x' / g' x') ∘ c) x = f x / g x := by grind
+  have cmp : ∀ x ∈ Ioo a b, a < c x ∧ c x < x := fun x hx ↦ (hc x hx).1
   rw [← nhdsWithin_Ioo_eq_nhdsGT hab]
   apply tendsto_nhdsWithin_congr this
   apply hdiv.comp
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
     (tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
       (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id) ?_ ?_) ?_
-  all_goals grind [eventually_nhdsWithin_of_forall]
+  all_goals
+    apply eventually_nhdsWithin_of_forall
+    intro x hx
+    have := cmp x hx
+    simp
+    linarith [this]
 
 theorem lhopital_zero_right_on_Ico (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
     (hgg' : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x) (hcf : ContinuousOn f (Ico a b))
