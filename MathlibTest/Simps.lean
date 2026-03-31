@@ -1272,3 +1272,20 @@ example : foo.1 = 2 := by
   rfl
 
 end Grind
+
+def MyNat := Nat
+
+def MyNat.zero : MyNat := Nat.zero
+
+structure MyNatStruct where
+  n : MyNat
+
+@[simps]
+def zero : MyNatStruct where
+  n := MyNat.zero
+
+-- Verify that the equality type is not reduced from `MyNat` to `Nat`:
+set_option pp.explicit true in
+/-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
+#guard_msgs in
+#check zero_n
