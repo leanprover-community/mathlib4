@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.DedekindDomain.Factorization
 
 /-!
 # I-Primary Components of modules
@@ -15,7 +16,7 @@ Let `A` be a commutative ring and `I`, an ideal of `A`.
 Given an `A`-Module `M` it's `I`-primary component is defined as
   $$M(I) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  I ^ i.$$
 
-For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
+For `P : HeightOneSpectrum A`, the main result of this file is that
   $$M \cong \bigoplus_{P} M(P).$$
 
 ## Main definitions
@@ -27,6 +28,8 @@ For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
 @[expose] public section
 
 variable {A M M₁ M₂ : Type*} [CommRing A]
+
+open DirectSum IsDedekindDomain Submodule Module HeightOneSpectrum Set Function
 
 namespace Ideal
 
@@ -126,6 +129,70 @@ theorem primaryComponent_sup (N₁ N₂ : Submodule A M) (hD : Disjoint N₁ N�
       specialize hz a (Ideal.pow_le_pow_right (by simp : n₂ ≤ max n₁ n₂) ha)
       aesop
     · use y, hymem, z, hzmem
+
+section IsDedekindDomain
+
+variable [IsDedekindDomain A]
+
+theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
+    ⨆ P : HeightOneSpectrum A, primaryComponent M P.asIdeal = ⊤ := by
+  rw [eq_top_iff']
+  intro x
+  obtain ⟨⟨a, ha⟩, h0⟩ := h (x := x)
+  have hmem : x ∈ torsionBySet A M (span {a}) := by
+    simp_all [← torsionBySet_eq_torsionBySet_span {a}]
+  have ha0 : span {a} ≠ 0 := by simpa using nonZeroDivisors.ne_zero ha
+  rw [← iInf_maxPowDividing_eq ha0] at hmem
+  let : Fintype (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})) :=
+    Finite.fintype (hasFiniteMulSupport ha0)
+  let S := (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})).toFinset
+  have : (⨅ i : HeightOneSpectrum A, i.maxPowDividing (span {a})) =
+    (⨅ i ∈ S, i.maxPowDividing (span {a})) := by
+    ext x
+    constructor
+    · aesop
+    · simp only [mem_iInf]
+      intro h i
+      by_cases htop : i.maxPowDividing (span {a}) = ⊤ <;> simp_all [S]
+  rw [this, ← Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf] at hmem
+  · clear h0
+    revert x
+    rw [← SetLike.le_def]
+    refine iSup_mono (fun P x hxmem ↦ ?_)
+    by_cases hPS : P ∈ S
+    · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
+      one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
+      Subtype.forall, iSup_pos, S]
+      exact ⟨_, fun a₁ b ↦ hxmem _ b⟩
+    · simp_all
+  · intro r hr s hs hrs
+    exact (isCoprime_pow_of_ne _ _ hrs _ _).sup_eq
+
+variable (A M) in
+theorem iSupIndep_primaryComponent :
+    iSupIndep fun P : HeightOneSpectrum A => primaryComponent M P.asIdeal := by
+  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  intro s p h d
+  simp only [primaryComponent_mem] at h
+  have (n : ℕ) := supIndep_torsionBySet_ideal (S := s) (M := M) (p := (·.asIdeal ^ n)) ?_
+  · choose! f h using h
+    let m := s.sup (f ·)
+    have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
+    apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero
+      (fun i ↦ torsionBySet A M ↑(i.asIdeal ^ m : Ideal A)) (R := A)).mp _ s p _ d
+    · rw [iSupIndep_iff_supIndep]
+      exact fun _ ↦ Submodule.supIndep_torsionBySet_ideal
+        fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+    · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
+  · exact fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+
+open Classical in
+theorem isInternal_primaryComponent (h : IsTorsion A M) :
+    IsInternal (fun P : HeightOneSpectrum A ↦ primaryComponent M P.asIdeal) := by
+  rw [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
+  exact ⟨iSupIndep_primaryComponent A M, iSup_primaryComponent_eq_top h⟩
+
+end IsDedekindDomain
 
 end AddCommGroup
 
