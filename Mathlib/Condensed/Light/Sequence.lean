@@ -12,7 +12,7 @@ public import Mathlib.Topology.Category.LightProfinite.Injective
 public import Mathlib.Topology.FiberPartition
 /-!
 
-# The free condensed `R`-module `R[ℕ∪∞]` is internally projective
+# The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
 -/
 
 open CategoryTheory Category Functor LightProfinite OnePoint LightCondensed
