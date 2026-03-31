@@ -196,7 +196,7 @@ instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
-  `Subsingleton (H F (n + 1))` which can be proven by `infer_instance` -/
+`Subsingleton (H F (n + 1))` which can be proven by `TopCat.Sheaf.IsFlasque.subsingleton_H` -/
 theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     IsZero (AddCommGrpCat.of (H F (n+1))) := by
   induction n generalizing F with
@@ -217,15 +217,14 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     exact epi_of_shortExact hS
   | succ n hn =>
     obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
-    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
-    have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hX₃ : S.X₃.IsFlasque := of_shortExact_of_isFlasque₁₂ hS
-    have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2) rfl
-    exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn _)
+    have hS := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
+    haveI := of_shortExact_of_isFlasque₁₂ hS
+    exact ShortComplex.Exact.isZero_of_both_isZero
+      ((Sheaf.H.longSequence_exact hS (n+1) (n+2) rfl).exact 2) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
 
-set_option backward.isDefEq.respectTransparency false in
-instance {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) : Subsingleton (H F (n + 1)) :=
+instance subsingleton_H {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) :
+    Subsingleton (H F (n + 1)) :=
   AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 
 end TopCat.Sheaf.IsFlasque
