@@ -25,6 +25,89 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 @[expose] public section
 
+-- PR #37380
+namespace Localization
+
+open TensorProduct Algebra
+
+variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ]
+  (S : Type*) [CommRing S] [Algebra R S]
+
+/-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
+but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
+noncomputable def tensor_localization_algEquiv :
+    (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
+  (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
+
+@[simp]
+theorem tensor_localization_algEquiv_apply_tmul_one (x : S) :
+    Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (Localization.tensor_localization_algEquiv M S).commutes x
+
+@[simp]
+theorem tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
+    Localization.tensor_localization_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
+  let Rₘ := Localization M
+  let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
+  obtain ⟨x, y, rfl⟩ := IsLocalization.exists_mk'_eq M x
+  letI : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
+  have h1 : (1 : S) ⊗ₜ[R] IsLocalization.mk' Rₘ x y = algebraMap _ _ (IsLocalization.mk' Rₘ x y) :=
+    rfl
+  rw [h1, Localization.tensor_localization_algEquiv, Localization.algEquiv_symm_apply,
+    IsLocalization.algebraMap_mk' S, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul]
+  simp_rw [RingHom.id_apply]
+  have h x : algebraMap S Sₘ ((algebraMap R S) x) = algebraMap Rₘ Sₘ ((algebraMap R Rₘ) x) := by
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  rw [h, h, ← map_mul, IsLocalization.mk'_spec]
+
+/-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
+noncomputable def localization_tensor_algEquiv :
+    (Localization M ⊗[R] S) ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+  { __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
+      (Localization.tensor_localization_algEquiv M S).toRingEquiv
+    commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
+
+@[simp]
+theorem localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
+    Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (Localization.localization_tensor_algEquiv M S).commutes x
+
+@[simp]
+theorem localization_tensor_algEquiv_apply_one_tmul (x : S) :
+    Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
+  (Localization.tensor_localization_algEquiv M S).commutes x
+
+end Localization
+
+--PR #37382
+namespace Algebra.TensorProduct
+
+open _root_.TensorProduct
+
+variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
+  [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+
+/-- The tensor product over `R` of the quotient of an `S`-algebra `A` by an ideal `I` with `T`
+is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
+noncomputable def quotientTensorEquiv (I : Ideal A) :
+    (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) :=
+  { __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
+      (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
+      Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv <| (I.map_map _ _).symm
+    commutes' _ := rfl }
+
+@[simp]
+lemma quotientTensorEquiv_apply_tmul (I : Ideal A) (a : A) (t : T) :
+    quotientTensorEquiv (R := R) S T A I (a ⊗ₜ t) = a ⊗ₜ[R] t :=
+  rfl
+
+@[simp]
+lemma quotientTensorEquiv_symm_apply_tmul (I : Ideal A) (a : A) (t : T) :
+    (quotientTensorEquiv (R := R) S T A I).symm (a ⊗ₜ[R] t) = Ideal.Quotient.mk _ a ⊗ₜ[R] t :=
+  rfl
+
+end Algebra.TensorProduct
+
 open Algebra TensorProduct nonZeroDivisors
 
 variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
@@ -43,6 +126,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
+@[deprecated "Use `Ideal.Fiber.exists_smul_eq_algebraMap` instead." (since := "2026-03-31")]
 lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     (x : S ⊗[R] p.ResidueField) : ∃ r ∉ p, ∃ s, r • x = s ⊗ₜ[R] 1 := by
   obtain ⟨t, r, a, hrt, e⟩ := RingHom.SurjectiveOnStalks.exists_mul_eq_tmul
@@ -68,7 +152,8 @@ structure Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebr
 
 namespace Ideal.Fiber
 
-def equiv : (p.Fiber S) ≃ (p.ResidueField ⊗[R] S) where
+/-- The bijection used to transfer instances from `κ(p) ⊗ S` to `p.Fiber S`. -/
+def equiv : p.Fiber S ≃ p.ResidueField ⊗[R] S where
   toFun := Ideal.Fiber.of
   invFun x := ⟨x⟩
   left_inv _ := rfl
@@ -100,86 +185,99 @@ noncomputable def algEquivTensor : p.Fiber S ≃ₐ[p.ResidueField] p.ResidueFie
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
-noncomputable def algEquivTensor' : p.Fiber S ≃ₐ[S] p.ResidueField ⊗[R] S :=
+noncomputable def algEquivTensorRight : p.Fiber S ≃ₐ[S] p.ResidueField ⊗[R] S :=
   (Ideal.Fiber.equiv p S).algEquiv S
-
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
 noncomputable def algEquivQuotient :
     letI Rp := Localization p.primeCompl
     letI pRp := IsLocalRing.maximalIdeal Rp
-    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
     letI pSp := pRp.map (algebraMap Rp Sp)
-    p.Fiber S ≃ₐ[S] Sp ⧸ pSp := by
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
   letI Rp := Localization p.primeCompl
   letI pRp := IsLocalRing.maximalIdeal Rp
-  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
   letI pSp := pRp.map (algebraMap Rp Sp)
-  refine (algEquivTensor' p S).trans ?_
-  have := Algebra.TensorProduct.tensorQuotientEquiv (R := R) S Rp S pRp
-  change p.Fiber S ≃ₐ[S] Sp ⧸ pSp
-  let foo : (Rp ⧸ pRp) ⊗[R] S ≃ₐ[Rp ⧸ pRp] Rp ⊗[R] S ⧸ map (algebraMap Rp (Rp ⊗[R] S)) pRp :=
-  { __ := Algebra.TensorProduct.quotientTensorEquiv (R := R) R Rp S pRp
-    commutes' x := by
-      obtain ⟨y, rfl⟩ := Quotient.mk_surjective x
-      rfl }
-  refine foo.trans ?_
-  exact
-    { __ := quotientEquiv _ _ (Localization.localization_tensor_algEquiv p.primeCompl S) (by
-        rw [map_map, AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom,
-          AlgHom.comp_algebraMap])
-      commutes' x := by
-        obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-        rw [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
-          ← IsScalarTower.algebraMap_apply]
-        simp [-AlgEquiv.symm_toRingEquiv]
-        rw [Localization.localization_tensor_algEquiv_apply_tmul_one p.primeCompl]
-        rfl }
+  (algEquivTensorRight p S).trans <| (commRight R S p.ResidueField).symm.trans <|
+    (tensorQuotientEquiv S Rp S pRp).trans <|
+    { __ := quotientEquiv _ _ (Localization.tensor_localization_algEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensor_localization_algEquiv_apply_one_tmul p.primeCompl])
+      commutes' x := by simp }
+
+noncomputable instance : Algebra (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S) :=
+  ((algEquivQuotient p S).symm.toAlgHom.comp (Ideal.Quotient.mkₐ S _)).toAlgebra
+
+theorem algebraMap_localization_surjective :
+    Function.Surjective
+      (algebraMap (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S)) := by
+  sorry
+
+theorem ker_algebraMap_localization :
+    RingHom.ker (algebraMap (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S)) =
+      (p.map (algebraMap R (Localization (algebraMapSubmonoid S p.primeCompl)))) := by
+  sorry
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
+instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
+    (q.map (algebraMap S (p.Fiber S))).IsPrime := by
+  -- maybe go via the quotient?
+  sorry
+
+lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
+    ∃ r ∉ p, ∃ s, r • x = algebraMap S (p.Fiber S) s := by
+  obtain ⟨x, rfl⟩ := (algEquivQuotient p S).symm.surjective x
+  obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
+  obtain ⟨s, ⟨-, r, hr, rfl⟩, rfl⟩ :=
+    IsLocalization.exists_mk'_eq (algebraMapSubmonoid S p.primeCompl) x
+  refine ⟨r, hr, s, ?_⟩
+  rw [← AlgEquiv.toAlgHom_apply, ← AlgHom.map_smul_of_tower,
+    AlgEquiv.toAlgHom_apply, AlgEquiv.symm_apply_eq, AlgEquiv.commutes]
+  simpa using congrArg (Ideal.Quotient.mk _)
+    (IsLocalization.smul_mk'_self (M := algebraMapSubmonoid S p.primeCompl)
+      (S := Localization (algebraMapSubmonoid S p.primeCompl))
+        (r := s) (m := ⟨algebraMap R S r, r, hr, rfl⟩))
+
+@[deprecated (since := "2026-03-31")] alias exists_smul_eq_one_tmul := exists_smul_eq_algebraMap
+
 end Ideal.Fiber
 
-lemma Ideal.Fiber.exists_smul_eq_algebraMap (x : p.Fiber S) :
-    ∃ r ∉ p, ∃ s, r • x = algebraMap S (p.Fiber S) s := by
-  obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _ _
-    (Algebra.TensorProduct.comm _ _ _ x.of)
-  exact ⟨r, hr, s, by simpa [Fiber.ext_iff] using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
-
-@[deprecated (since := "2026-03-31")] alias Ideal.Fiber.exists_smul_eq_one_tmul :=
-  Ideal.Fiber.exists_smul_eq_algebraMap
+variable (R)
 
 set_option backward.isDefEq.respectTransparency false in
-variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
 noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     comap (algebraMap R S) ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
-  toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
-    (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal (Algebra.ofId _ _) congr($(q.2.symm).asIdeal))
-      (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _).toRingHom, RingHom.ker_isPrime _⟩
-  invFun q := ⟨q.comap Algebra.TensorProduct.includeRight.toRingHom, by
-    simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← comap_comp_apply,
-      AlgHom.comp_algebraMap_of_tower]
-    exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩⟩
-  left_inv q := by ext x; simp
+  toFun q := ⟨q.1.1.map (algebraMap S (p.1.Fiber S)),
+    have : q.1.1.LiesOver p.1 := ⟨PrimeSpectrum.ext_iff.mp q.2.symm⟩
+    inferInstance⟩
+  invFun q := ⟨⟨q.1.under S, q.2.under S⟩, PrimeSpectrum.ext Ideal.LiesOver.over.symm⟩
+  left_inv q := by
+    ext : 2
+    simp only
+    rw [Ideal.under_def,
+      IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.1.primeCompl)),
+      ← Ideal.map_map, ← Ideal.comap_comap,
+      Ideal.comap_map_of_surjective _ (Ideal.Fiber.algebraMap_localization_surjective p.1 S),
+      ← RingHom.ker_eq_comap_bot, sup_of_le_left,
+      IsLocalization.comap_map_of_isPrime_disjoint (Algebra.algebraMapSubmonoid S p.1.primeCompl) _
+      q.1.2]
+    · exact Set.disjoint_image_left.mpr (Set.disjoint_compl_left_iff_subset.mpr q.2.le)
+    · sorry
   right_inv q := by
-    ext x
-    obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
-    have := @PrimeSpectrum.isPrime -- times out if removed
-    rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), iff_comm,
-      ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
-    · simp
-    · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
-      convert hr
-      exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
-    · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
-        -Ideal.ResidueField.map_algebraMap]
+    ext1
+    simp only
+    rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.1.primeCompl))]
+    sorry
 
-variable (R S) in
 /-- The `OrderIso` between the fiber of `PrimeSpectrum S → PrimeSpectrum R` at a prime
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
@@ -191,18 +289,11 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
     · obtain ⟨q₁, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₁
       obtain ⟨q₂, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₂
       simpa using Ideal.comap_mono
-    · intro H x hx
-      obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
-      rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
-      · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
-        simpa using H hx
-      · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
-      · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
+    · exact Ideal.map_mono
 
 @[deprecated (since := "2025-12-07")]
 alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
-variable (R S) in
 /-- The `OrderIso` between the set of primes lying over a prime ideal `p : Ideal R`,
 and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
