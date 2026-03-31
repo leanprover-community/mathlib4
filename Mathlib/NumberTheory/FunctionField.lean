@@ -267,12 +267,6 @@ variable {Fq F : Type*} [Field Fq] [Field F] [Algebra (RatFunc Fq) F] [FunctionF
 
 open IntermediateField RatFunc
 
--- TODO: Generalize and move to `Mathlib.RingTheory.Finiteness.Basic`
-variable (R M N) in
-variable [CommSemiring R] [CommSemiring M] [Algebra R M] in
-instance Module.Finite.top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
-  .of_equiv_equiv (A₁ := R) (Subsemiring.topEquiv.symm) (.refl M) rfl
-
 instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : RatFunc Fq)⟯ F := by
   have : Module.Finite (⊤ : IntermediateField Fq (RatFunc Fq)) (RatFunc Fq) :=
     Module.Finite.top_left (RatFunc Fq) (RatFunc Fq)
