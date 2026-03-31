@@ -314,7 +314,9 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   let currentHash := a.1; let currentPRdescr := a.2
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
-  let (pastHash, pastPRdescr) ← getHashAndMessage n
+  -- should `let (pastHash, pastPRdescr) ← getHashAndMessage n` work?
+  let b ← getHashAndMessage n
+  let pastHash := b.1; let pastPRdescr := b.2
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past commit {pastPRdescr}"
   let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
