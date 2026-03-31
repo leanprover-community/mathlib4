@@ -46,7 +46,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
-  rcases ord_eq α with ⟨r, wo, e⟩
+  rcases exists_ord_eq α with ⟨r, wo, e⟩
   classical
   letI := linearOrderOfSTO r
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
