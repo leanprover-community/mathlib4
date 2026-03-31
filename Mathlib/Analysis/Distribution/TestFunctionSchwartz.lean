@@ -235,6 +235,10 @@ theorem restrictToTestFunctionsCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω
       T ((TestFunction.toComplexSchwartzMapCLM (E := E) (Ω := Ω)) φ) :=
   rfl
 
+/--
+The distribution associated to a tempered distribution by restricting
+to ℝ-valued test functions, repackaging restrictToTestFunctionsCLM.
+-/
 noncomputable def toDistribution (T : 𝓢'(E, F)) : Distribution Ω F ⊤ :=
   (ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id ℝ) F
       {s : Set (TestFunction Ω ℝ ⊤) | IsCompact s})
