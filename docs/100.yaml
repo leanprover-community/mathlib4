@@ -374,6 +374,8 @@
   authors: Johannes Hölzl
 87:
   title  : Desargues’s Theorem
+  decl   : parallel_third_side_of_perspective
+  authors: Robert Joseph George
 88:
   title  : Derangements Formula
   decls  :
