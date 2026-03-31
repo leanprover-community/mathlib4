@@ -20,8 +20,8 @@ Note that, more generally, we defined the "topology of `𝔖`-convergence" for a
 `𝔖 : Set (Set E)` in `Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM`.
 
 Here is a list of type aliases for `E →L[𝕜] F` endowed with various topologies :
+* `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
-* `ContinuousLinearMap`: topology of bounded convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence
 * `PointwiseConvergenceCLM`: topology of pointwise convergence, also called "weak-* topology"
   or "strong-operator topology" depending on the context
