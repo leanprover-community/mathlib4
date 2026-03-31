@@ -76,7 +76,6 @@ theorem isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R] [
     IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
     DimensionLEOne (integralClosure R A) :=
   DimensionLEOne.isIntegralClosure R A (integralClosure R A)

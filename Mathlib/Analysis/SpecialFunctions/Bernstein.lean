@@ -201,7 +201,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)
-  /- Use uniform continuity of `f` to hcoose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
+  /- Use uniform continuity of `f` to choose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
   whenever `dist x y < δ`. -/
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0, ∀ x y : I, dist x y < δ → gauge U (f x - f y) < 1 / 2 := by
     have := CompactSpace.uniformContinuous_of_continuous (map_continuous f)
