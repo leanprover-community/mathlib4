@@ -40,7 +40,7 @@ semiring structure.
 ## Main statements
 
 * Cantor's theorem: `Cardinal.cantor c : c < 2 ^ c`.
-* König's theorem: `Cardinal.sum_lt_prod`
+* Kőnig's theorem: `Cardinal.sum_lt_prod`
 
 ## Implementation notes
 
@@ -54,8 +54,7 @@ That is reflected in this file containing both the order and algebra structure.
 
 ## Tags
 
-cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
-Cantor's theorem, König's theorem, Konig's theorem
+Cantor's theorem, Kőnig's theorem, König's theorem, Konig's theorem
 -/
 
 @[expose] public section
@@ -557,7 +556,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
 
 /-! ### Indexed cardinal `prod` -/
 
-/-- **König's theorem** -/
+/-- **Kőnig's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
     have : Inhabited (∀ i : ι, (g i).out) := by

@@ -22,7 +22,7 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 
 ## Main Statements
 
-* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Cardinal.lt_power_cof`: A consequence of Kőnig's theorem stating that `c < c ^ c.ord.cof` for
   `c ≥ ℵ₀`.
 
 ## Implementation Notes
@@ -786,7 +786,7 @@ alias unbounded_of_unbounded_sUnion := isCofinal_of_isCofinal_sUnion
 @[deprecated (since := "2026-02-25")]
 alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
-/-! ### Consequences of König's lemma -/
+/-! ### Consequences of Kőnig's theorem -/
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
   Cardinal.inductionOn c fun α h => by

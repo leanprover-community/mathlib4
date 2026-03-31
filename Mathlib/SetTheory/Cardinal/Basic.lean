@@ -27,11 +27,6 @@ finite/countable/small types and sets.
 ## References
 
 * <https://en.wikipedia.org/wiki/Cardinal_number>
-
-## Tags
-
-cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
-Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 @[expose] public section

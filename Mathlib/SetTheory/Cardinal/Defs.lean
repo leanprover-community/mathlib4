@@ -45,8 +45,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Tags
 
-cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
-Cantor's theorem, König's theorem, Konig's theorem
+cardinal number, cardinal arithmetic, cardinal exponentiation
 -/
 
 @[expose] public section
