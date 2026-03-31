@@ -604,7 +604,6 @@ theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearDisjoint L :=
   letI : Field (AlgHom.range (IsScalarTower.toAlgHom F L E)) :=
