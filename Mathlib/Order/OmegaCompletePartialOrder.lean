@@ -166,13 +166,13 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
   ext n : 2; cases n <;> rfl
 
 /-- Left injection for chains of sums. -/
-def inl (c : Chain α) : Chain (α ⊕ β) := c.map OrderHom.inl
+def inl (c : Chain α) : Chain (α ⊕ β) := c.map OrderEmbedding.inl.toOrderHom
 
 @[simp]
 lemma inl_apply (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
 
 /-- Right injection for chains of sums. -/
-def inr (c : Chain β) : Chain (α ⊕ β) := c.map OrderHom.inr
+def inr (c : Chain β) : Chain (α ⊕ β) := c.map OrderEmbedding.inr.toOrderHom
 
 @[simp]
 lemma inr_apply (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl

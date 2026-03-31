@@ -547,22 +547,6 @@ def inr : β ↪o α ⊕ β where
 
 end OrderEmbedding
 
-/-! ### Order homomorphisms -/
-
-namespace OrderHom
-
-variable [Preorder α] [Preorder β]
-
-/-- `Sum.inl` as an `OrderHom`. -/
-@[simps!]
-def inl : α →o α ⊕ β := OrderEmbedding.inl.toOrderHom
-
-/-- `Sum.inr` as an `OrderHom`. -/
-@[simps!]
-def inr : β →o α ⊕ β := OrderEmbedding.inr.toOrderHom
-
-end OrderHom
-
 /-! ### Order isomorphisms -/
 
 
