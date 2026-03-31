@@ -48,7 +48,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `w` is a ramified place over `v` then `w.Completion` has `v.Completion` dimension two. -/
 theorem finrank_eq_two_of_isRamified (w : InfinitePlace L) [w.1.LiesOver v.1]
     (h : w.IsRamified K) : Module.finrank v.Completion w.Completion = 2 := by
-  letI := LiesOver.extensionEmbedding_liesOver_of_isReal w <| h.liesOver_isReal_under w v
+  have := LiesOver.extensionEmbedding_liesOver_of_isReal w <| h.liesOver_isReal_under w v
   rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal <| h.liesOver_isReal_under w v)
       (ringEquivComplexOfIsComplex h.isComplex) (by ext; simp [this.over_apply]),
     Complex.finrank_real_complex]
@@ -58,21 +58,21 @@ set_option backward.isDefEq.respectTransparency false in
 theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K) :
     Module.finrank v.Completion w.Completion = 1 := by
   by_cases hv : v.IsReal
-  · letI := LiesOver.extensionEmbedding_liesOver_of_isReal w hv
+  · have := LiesOver.extensionEmbedding_liesOver_of_isReal w hv
     rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal hv) (ringEquivRealOfIsReal
         (h.liesOver_isReal_over _ _ hv)) (RingHom.ext fun _ ↦ Complex.ofReal_inj.1 <| by
         simp [this.over_apply]), Module.finrank_self]
   · have hv : v.IsComplex := not_isReal_iff_isComplex.1 hv
     cases LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v with
     | inl hl =>
-      letI : ComplexEmbedding.LiesOver w.embedding v.embedding := ⟨hl⟩
-      letI := liesOver_extensionEmbedding w v
+      have : ComplexEmbedding.LiesOver w.embedding v.embedding := ⟨hl⟩
+      have := liesOver_extensionEmbedding w v
       rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
           (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv))
           (by ext; simp [this.over_apply]), Module.finrank_self]
     | inr hr =>
-      letI : ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding := ⟨hr⟩
-      letI := liesOver_conjugate_extensionEmbedding w v
+      have : ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding := ⟨hr⟩
+      have := liesOver_conjugate_extensionEmbedding w v
       rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
         ((ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv)).trans
           (starRingAut (R := ℂ))) (by ext; simp [← conjugate_coe_eq, this.over_apply]),
