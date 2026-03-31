@@ -247,7 +247,7 @@ instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
 
 instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
   isPreirreducible_univ u v := by
-    simp only [IndiscreteTopology.isOpen_iff, Set.univ_inter]
+    simp only [IndiscreteTopology.isOpen_iff, univ_inter]
     rintro ⟨h | h⟩ <;> simp_all
 
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
