@@ -5,6 +5,7 @@ Authors: Apurva Nakade, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Analysis.Convex.Hull
@@ -238,29 +239,30 @@ section AddCommGroup
 
 open Pointwise
 
-variable [AddCommGroup M] [Module 𝕜 M] [AddCommGroup M] [Module 𝕜 M]
-         {C : PointedCone 𝕜 M} {s : Set M} {x : M}
+variable [AddCommGroup M] [Module 𝕜 M] {C : PointedCone 𝕜 M} {s : Set M} {x : M}
 
-/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
-lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s where
-  mp hx := (Submodule.span_le (p := {
+/-- The cone hull of a convex set is simply the union of the halflines through that set. -/
+lemma mem_hull_of_convex {hs : Convex 𝕜 s} {hs₂ : s.Nonempty} :
+    x ∈ hull 𝕜 s ↔ ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s where
+  mp hx := (Submodule.span_le (R := {c : 𝕜 // 0 ≤ c}) (p := {
               carrier := {y | ∃ r : 𝕜, 0 ≤ r ∧ y ∈ r • s}
-              smul_mem' := by
-                intro r₁ hr₁ y ⟨r₂, hr₂, hy⟩
-                refine ⟨r₁ * r₂, mul_pos hr₁ hr₂, ?_⟩
-                rw [mul_smul]
-                exact smul_mem_smul_set hy
+              zero_mem' := ⟨0, by simp [hs₂]⟩
               add_mem' := by
-                rintro y₁ ⟨r₁, hr₁, hy₁⟩ y₂ ⟨r₂, hr₂, hy₂⟩
-                refine ⟨r₁ + r₂, add_pos hr₁ hr₂, ?_⟩
-                rw [hs.add_smul hr₁.le hr₂.le]
-                exact add_mem_add hy₁ hy₂
-            })).mp (fun y hy ↦ ⟨1, by simpa⟩) hx
+                rintro y₁ y₂ ⟨r₁, hr₁, hy₁⟩ ⟨r₂, hr₂, hy₂⟩
+                refine ⟨r₁ + r₂, add_nonneg hr₁ hr₂, ?_⟩
+                rw [hs.add_smul hr₁ hr₂]
+                exact Set.add_mem_add hy₁ hy₂
+              smul_mem' := by
+                intro ⟨r₁, hr₁⟩ y ⟨r₂, hr₂, hy⟩
+                refine ⟨r₁ * r₂, mul_nonneg hr₁ hr₂, ?_⟩
+                rw [mul_smul]
+                exact Set.smul_mem_smul_set hy
+            })).mpr (fun y hy ↦ ⟨1, by simpa⟩) hx
   mpr := by rintro ⟨r, hr, y, hy, rfl⟩; exact (hull 𝕜 s).smul_mem hr <| subset_hull hy
 
-/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
-lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
-  ext; exact mem_hull_of_convex hs
+/-- The cone hull of a convex set is simply the union of the halflines through that set. -/
+lemma coe_hull_of_convex (hs : Convex 𝕜 s) (hs₂ : s.Nonempty) :
+    hull 𝕜 s = {x | ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s} := by ext; simp [mem_hull_of_convex, *]
 
 end AddCommGroup
 
