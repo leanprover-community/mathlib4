@@ -558,27 +558,21 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
     (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
-  haveI : Nonempty ι := by
-    obtain ⟨i, -⟩ := hfin
-    exact ⟨i⟩
-  set t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)} with ht
+  obtain ⟨i, hi⟩ := hfin
+  have : Nonempty ι := ⟨i⟩
+  let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
   have hst (i : ι) : s i =ᵐ[μ] t i := by
     filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i by
-      exact propext this
-    simp only [ht, mem_inter_iff, mem_setOf_eq, iff_self_and]
-    exact fun _ ↦ hω
+    suffices ω ∈ s i ↔ ω ∈ t i from propext this
+    simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
     ← hMono.measure_iInter (μ := μ) (fun i ↦ (hsm i).congr (hst i))]
   · refine measure_congr ?_
-    simp only [ht]
-    rw [← iInter_inter]
-    nth_rw 1 [← inter_univ (⋂ i, s i)]
+    nth_rw 1 [← iInter_inter, ← inter_univ (⋂ i, s i)]
     exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
   · obtain ⟨i, hi⟩ := hfin
-    refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
-    rw [measure_congr (hst i)]
+    exact ⟨i, by rwa [← measure_congr (hst i)]⟩
 
 /-- **Continuity from above**:
 the measure of the intersection of an antitone family of measurable sets
