@@ -12,10 +12,10 @@ public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
-# Lemmas about IsBaseChange under Exact Sequences
+# Lemmas about `IsBaseChange` under exact sequences
 
-In this file, we show that cokernel preserves `IsBaseChange S`.
-For kernel version (needs flat), see `Mathlib.RingTheory.Flat.IsBaseChange`.
+In this file, we show that taking cokernels commutes with base change.
+If `S` is flat, the same holds for kernels, see `Mathlib.RingTheory.Flat.IsBaseChange`.
 
 # Main Results
 

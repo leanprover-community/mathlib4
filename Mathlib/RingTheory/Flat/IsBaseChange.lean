@@ -10,9 +10,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
-# Lemmas about IsBaseChange under Exact Sequences
+# Lemmas about `IsBaseChange` under exact sequences
 
-In this file, we show that kernel preserves `IsBaseChange S` and when `S` is flat.
+In this file, we show that if `S` is flat, taking kernels commutes with base change.
 
 # Main Results
 
