@@ -34,26 +34,24 @@ variable
 lemma ker_mapOfCompatibleSMul :
     (mapOfCompatibleSMul A R A M N).ker =
       span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)} := by
-  refine Eq.symm (span_eq_of_le (mapOfCompatibleSMul A R A M N).ker ?_ ?_)
-  · rintro x ⟨a, m, n, h⟩
-    simp [← h, smul_tmul]
+  refine (span_eq_of_le (mapOfCompatibleSMul A R A M N).ker ?_ ?_).symm
+  · rintro - ⟨a, m, n, rfl⟩
+    simp [smul_tmul]
   · let S := span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)}
-    let F : M ⊗[A] N →ₗ[A]  (M ⊗[R] N) ⧸ S := TensorProduct.lift ({
+    let F : M ⊗[A] N →ₗ[A] (M ⊗[R] N) ⧸ S := TensorProduct.lift ({
       toFun m := {
-        toFun n :  (M ⊗[R] N) ⧸ S := S.mkQ (m⊗ₜn)
+        toFun n := S.mkQ (m ⊗ₜ[R] n)
         map_add' _ _ := by simp [tmul_add]
-        map_smul' (a : A) n := by
-          symm
-          simp_rw [Submodule.mkQ_apply, ←Submodule.Quotient.mk_smul, Submodule.Quotient.eq]
+        map_smul' a n := by
+          rw [Submodule.mkQ_apply, Submodule.mkQ_apply, ← Submodule.Quotient.mk_smul, eq_comm,
+            Submodule.Quotient.eq, RingHom.id_apply]
           exact Submodule.subset_span ⟨a, m, n, rfl⟩ }
       map_add' _ _ := by ext _; simp [add_tmul]
       map_smul' _ _ := by simp; rfl })
-    have h : F ∘ₗ(mapOfCompatibleSMul A R A M N) = S.mkQ := by
-      ext m n
-      simp [mkQ_apply, S, F]
+    have h : F ∘ₗ mapOfCompatibleSMul A R A M N = S.mkQ := by ext; simp [S, F]
     change (mapOfCompatibleSMul A R A M N).ker ≤ S
     rw [← ker_mkQ S, ← h]
-    exact LinearMap.ker_le_ker_comp (mapOfCompatibleSMul A R A M N) F
+    exact (mapOfCompatibleSMul A R A M N).ker_le_ker_comp F
 
 end TensorProduct
 end
