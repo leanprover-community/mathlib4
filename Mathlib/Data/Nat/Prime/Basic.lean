@@ -131,7 +131,7 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
 /-- If `0 < m < minFac n`, then `n` and `m` are coprime. -/
 lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m := by
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
-  push_neg
+  push Not
   exact fun p hp hn hm ↦
     ((le_of_dvd (by lia) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
