@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Algebra.Order.Antidiag.Prod
-public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.RingTheory.MvPowerSeries.test
 
 /-!
 # Multivariate restricted power series
