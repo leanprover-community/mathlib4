@@ -918,8 +918,6 @@ abbrev leftRegularTensorTrivialIsoFree :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
 
-variable {α}
-
 end
 end
 end Finsupp
