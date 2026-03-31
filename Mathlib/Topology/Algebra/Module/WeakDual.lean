@@ -237,6 +237,7 @@ theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α �
 end Semiring
 
 end CommSemiring
+
 section Ring
 
 variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
