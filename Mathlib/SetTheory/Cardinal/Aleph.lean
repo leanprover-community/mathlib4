@@ -550,7 +550,7 @@ alias aleph1_eq_lift := aleph_one_eq_lift
 
 @[simp]
 theorem lift_eq_aleph_one {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simpa using lift_inj (b := ℵ₁)
+  simp
 
 @[deprecated (since := "2025-12-22")]
 alias lift_eq_aleph1 := lift_eq_aleph_one
