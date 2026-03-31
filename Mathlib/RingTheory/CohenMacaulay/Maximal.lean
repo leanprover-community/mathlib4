@@ -80,17 +80,13 @@ lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
 set_option backward.isDefEq.respectTransparency false in
 lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
     (h : ringKrullDim R = 0) : IsField R := by
-  rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot]
-  have := (isRegularLocalRing_iff R).mp ‹_›
-  simp only [h, Nat.cast_eq_zero] at this
-  have fg : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
-  simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using this
+  simpa [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot,
+    Submodule.FG.spanRank_eq_spanFinrank (maximalIdeal R).fg_of_isNoetherianRing, h] using
+    (isRegularLocalRing_iff R).mp ‹_›
 
 local instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (x : R) :
     Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
-  let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
-    __ := Submodule.mkQ _
-    map_smul' r m := rfl }
+  let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := { __ := Submodule.mkQ _ }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -109,8 +105,7 @@ lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) 
   have surjf : Function.Surjective f := by
     simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
   have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson :=
-    le_trans ((Ideal.span_singleton_le_iff_mem (maximalIdeal R)).mpr mem)
-    (IsLocalRing.maximalIdeal_le_jacobson _)
+    ((maximalIdeal R).span_singleton_le_iff_mem.mpr mem).trans (maximalIdeal_le_jacobson _)
   have surjg : Function.Surjective g := by
     rw [← LinearMap.range_eq_top, ← top_le_iff]
     apply Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) lejac
@@ -147,10 +142,11 @@ set_option backward.isDefEq.respectTransparency false in
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
   rcases exist_nat_eq R with ⟨n, hn⟩
-  induction n generalizing R M
-  · let _ : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
+  induction n generalizing R M with
+  | zero =>
+    let _ : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
     exact Module.Free.of_divisionRing R M
-  · rename_i n ih _ _ _ _ _
+  | succ n ih =>
     rcases subsingleton_or_nontrivial M with sub|ntr
     · exact Module.Free.of_subsingleton R M
     · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by

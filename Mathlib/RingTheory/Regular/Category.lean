@@ -25,8 +25,8 @@ variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 
 open CategoryTheory Abelian Pointwise
 
-lemma LinearMap.exact_smul_id_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
-    Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
+lemma LinearMap.exact_lsmul_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
+    Function.Exact (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
@@ -34,21 +34,17 @@ namespace ModuleCat
 
 /-- The short (exact) complex `M → M → M⧸xM` obtain from the scalar multiple of `x : R` on `M`. -/
 @[simps]
-def smulShortComplex (r : R) :
-    ShortComplex (ModuleCat R) where
-  X₁ := M
-  X₂ := M
-  X₃ := ModuleCat.of R (QuotSMulTop r M)
-  f := ModuleCat.ofHom (r • LinearMap.id)
-  g := ModuleCat.ofHom (r • (⊤ : Submodule R M)).mkQ
-  zero := by
-    ext x
-    exact (LinearMap.exact_smul_id_smul_top_mkQ M r).apply_apply_eq_zero x
+def smulShortComplex (r : R) : ShortComplex (ModuleCat R) :=
+  ModuleCat.shortComplexOfCompEqZero (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ
+    (LinearMap.exact_lsmul_smul_top_mkQ M r).linearMap_comp_eq_zero
 
-set_option backward.isDefEq.respectTransparency false in
-lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
-  simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-    LinearMap.exact_smul_id_smul_top_mkQ, -LinearMap.coe_smul]
+lemma smulShortComplex_f_eq_smul_id (r : R) : (M.smulShortComplex r).f = r • 𝟙 M := rfl
+
+lemma smulShortComplex_f_hom_eq_smul_id (r : R) :
+    (M.smulShortComplex r).f.hom = r • LinearMap.id := rfl
+
+lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact :=
+  ModuleCat.shortComplex_exact _ (LinearMap.exact_lsmul_smul_top_mkQ M r)
 
 instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
   simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
@@ -61,14 +57,21 @@ lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r
   exact := ModuleCat.smulShortComplex_exact M r
   mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
 
-variable {R : Type u} [CommRing R] [Small.{v} R] {M N : ModuleCat.{v} R} {n : ℕ}
+namespace CategoryTheory.Abelian
+
+variable [Small.{v} R] {M N : ModuleCat.{v} R}
 
 set_option backward.isDefEq.respectTransparency false in
-lemma CategoryTheory.Abelian.Ext.smul_id_postcomp_eq_zero_of_mem_ann {r : R}
-    (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
-    AddCommGrpCat.ofHom (((Ext.mk₀ (r • (𝟙 M)))).postcomp N (add_zero n)) = 0 := by
+lemma Ext.smul_id_postcomp_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N)
+    (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
   ext h
-  have eq0 : r • (𝟙 N) = 0 := ModuleCat.hom_ext
-    (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp mem_ann _))
-  have : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
-  simp [Ext.mk₀_smul, this, eq0]
+  have : r • (𝟙 N) = 0 := ModuleCat.hom_ext (LinearMap.ext (Module.mem_annihilator.mp mem_ann ·))
+  have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
+  simp [Ext.mk₀_smul, this, smul_eq]
+
+lemma Ext.smulShortComplex_f_postcomp_eq_zero_of_mem_ann {r : R}
+    (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
+    AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex r).f).postcomp N (add_zero n)) = 0 := by
+  simpa [M.smulShortComplex_f_eq_smul_id] using Ext.smul_id_postcomp_eq_zero_of_mem_ann mem_ann n
+
+end CategoryTheory.Abelian
