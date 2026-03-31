@@ -55,7 +55,7 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   let g : α × α → α := uncurry max
   let f : α × α ↪ α ×ₗ (α ×ₗ α) := ⟨fun p ↦ toLex (g p, toLex p), fun p q ↦ congrArg Prod.snd⟩
   let s := f ⁻¹'o (· < ·)
-  have : IsWellOrder _ s := (RelEmbedding.preimage _ _).isWellOrder
+  have : IsWellOrder _ s := (RelEmbedding.preimage ..).isWellOrder
   -- Every initial segment of `s` is contained in `β × β` for some `β` of cardinality `< c`.
   -- By the inductive hypothesis, this means `#(β × β) < c`. Thus, `α × α` must have
   -- cardinality `≤ c`.
