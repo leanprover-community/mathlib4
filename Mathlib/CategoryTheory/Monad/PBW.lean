@@ -100,14 +100,35 @@ instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) [HasReflexiveCoequalizer
     HasCoequalizer (N.map (φ.app c.A) ≫ N.μ.app c.A) (N.map c.a) := by
   infer_instance
 
+/-- This is the left adjoint diagram corresponding to `algebra_equiv_of_iso_monads_comp_forget`. -/
+def directImageFunctor_preserves_free {M N : Monad C} (φ : M ⟶ N)
+    [HasReflexiveCoequalizers N.Algebra] :
+    free _ ⋙ directImageFunctor φ ≅ free _ := by
+  sorry -- how to apply left adjointness to a diagram???
+
+
+instance {N : Monad C} [HasReflexiveCoequalizers C] :
+    HasReflexiveCoequalizers N.Algebra where
+  has_coeq A B f g h := by
+    obtain ⟨s, hsf, hsg⟩ := h.common_section'
+    have : IsReflexivePair f.f g.f := ⟨s.f, congr_arg Monad.Algebra.Hom.f hsf, congr_arg
+      Monad.Algebra.Hom.f hsg⟩
+    have : HasCoequalizer f.f g.f := HasReflexiveCoequalizers.has_coeq f.f g.f
+    sorry
+
+noncomputable def directImageCofork {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra)
+    [HasReflexiveCoequalizers C] :
+    Cofork (N.map (φ.app c.A) ≫ N.μ.app c.A) (N.map c.a) :=
+  Cofork.ofπ (coequalizer.π _ _) (coequalizer.condition _ _)
+
 -- we will probably need an instance proving `algerba N` has reflexive coequalizers if `C` does,
 -- until we prove the previous lemmas using `HasReflexiveCoequalizers (Algebra N)`.
 theorem hasPBW_iff {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :
     HasPBW φ ↔ (inducedRightModule φ).IsFree := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  ·
+  · obtain ⟨X, h⟩ := h
     sorry
+  · sorry
 
 end Monad
 
