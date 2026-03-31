@@ -43,6 +43,8 @@ inductive limitsClosure : ObjectProperty C
 lemma le_limitsClosure : P ≤ P.limitsClosure J :=
   fun X hX ↦ .of_mem X hX
 
+instance [P.Nonempty] : (P.limitsClosure J).Nonempty := .mono (P.le_limitsClosure J)
+
 instance : (P.limitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX
 
@@ -71,7 +73,7 @@ lemma limitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
   le_antisymm (limitsClosure_le (le_refl P)) (P.le_limitsClosure J)
 
 @[simp]
-lemma limitsClosure_bot [∀ (a : α), Nonempty (J a)] :
+lemma limitsClosure_bot [∀ (a : α), _root_.Nonempty (J a)] :
     limitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
   limitsClosure_eq_self _ _
 
@@ -103,6 +105,9 @@ def strictLimitsClosureStep : ObjectProperty C :=
 @[simp]
 lemma le_strictLimitsClosureStep : P ≤ P.strictLimitsClosureStep J := le_sup_left
 
+instance [P.Nonempty] : (P.strictLimitsClosureStep J).Nonempty :=
+  .mono (P.le_strictLimitsClosureStep J)
+
 variable {P} in
 lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictLimitsClosureStep J ≤ Q.strictLimitsClosureStep J := by
@@ -125,6 +130,9 @@ lemma le_strictLimitsClosureIter (b : β) :
     P ≤ P.strictLimitsClosureIter J b :=
   le_of_eq_of_le (transfiniteIterate_bot _ _).symm
     (monotone_transfiniteIterate _ _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
+
+instance (b : β) [P.Nonempty] : (P.strictLimitsClosureIter J b).Nonempty :=
+  .mono (P.le_strictLimitsClosureIter J b)
 
 lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     P.strictLimitsClosureIter J b ≤ P.limitsClosure J := by

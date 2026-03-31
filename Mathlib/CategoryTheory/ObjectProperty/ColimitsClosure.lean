@@ -44,6 +44,9 @@ inductive colimitsClosure : ObjectProperty C
 lemma le_colimitsClosure : P ≤ P.colimitsClosure J :=
   fun X hX ↦ .of_mem X hX
 
+instance [P.Nonempty] : (P.colimitsClosure J).Nonempty :=
+  .mono (P.le_colimitsClosure J)
+
 instance : (P.colimitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX
 
@@ -72,7 +75,7 @@ lemma colimitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
   le_antisymm (colimitsClosure_le (le_refl P)) (P.le_colimitsClosure J)
 
 @[simp]
-lemma colimitsClosure_bot [∀ (a : α), Nonempty (J a)] :
+lemma colimitsClosure_bot [∀ (a : α), _root_.Nonempty (J a)] :
     colimitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
   colimitsClosure_eq_self _ _
 
