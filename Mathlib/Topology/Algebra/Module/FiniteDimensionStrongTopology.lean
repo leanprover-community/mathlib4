@@ -94,37 +94,51 @@ theorem isUniformEmbedding_coeFn_of_finiteDimensional
 
 /-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
-def flipOfFiniteDimensionalAux
-    [FiniteDimensional 𝕜 E]
+def flipOfFiniteDimensional [FiniteDimensional 𝕜 E]
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
     (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) →L[𝕜]
       (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) where
-  toFun φ :=
-    { toFun f := sorry
-      map_add' := sorry
-      map_smul' := sorry
-      cont := sorry }
-  map_add' := sorry
-  map_smul' := sorry
-  cont := sorry
+  toFun L :=
+    { toFun f := LinearMap.toContinuousLinearMap ⟨⟨(L · f), fun _ _ ↦ by simp⟩, fun _ _ ↦ by simp⟩
+      map_add' _ _ := by ext e; exact map_add (L e) _ _
+      map_smul' _ _ := by ext e; exact map_smul (L e) _ _
+      cont := by
+        rw [isEmbedding_coeFn_of_finiteDimensional h𝔖₁ h𝔖₂ |>.continuous_iff, continuous_pi_iff]
+        intro e
+        exact (L e).continuous }
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := by
+    let : UniformSpace V := IsTopologicalAddGroup.rightUniformSpace V
+    have : IsUniformAddGroup V := isUniformAddGroup_of_addCommGroup
+    have : ContinuousEvalConst (UniformConvergenceCLM (.id 𝕜) V 𝔖) E V :=
+      continuousEvalConst _ _ _ h𝔖₂
+    have : ContinuousEvalConst
+        (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) E
+        (UniformConvergenceCLM (.id 𝕜) V 𝔗) :=
+      continuousEvalConst _ _ _ h𝔖₂
+    let Φ : UniformConvergenceCLM (.id 𝕜) V 𝔖 →L[𝕜] E → V :=
+      ⟨⟨⟨(↑), fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩, continuous_coeFun⟩
+    have : IsUniformEmbedding Φ :=
+      isUniformEmbedding_coeFn_of_finiteDimensional h𝔖₁ h𝔖₂
+    have := isUniformEmbedding_postcomp (.id 𝕜) Φ this 𝔗
+    have := isUniformEmbedding_coeFn (.id 𝕜) _ 𝔗 |>.comp this
+    have := UniformOnFun.uniformEquivPiComm 𝔗 (fun e : E ↦ V) |>.isUniformEmbedding.comp this
+    rw [this.isEmbedding.continuous_iff, continuous_pi_iff]
+    intro e
+    exact isEmbedding_coeFn (.id 𝕜) V 𝔗 |>.continuous.comp (continuous_eval_const e)
+
 
 /-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
-def flipOfFiniteDimensional
+def flipOfFiniteDimensionalCLE
     [FiniteDimensional 𝕜 E]
-    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
-    (h𝔖₂ : ⋃₀ 𝔖 = .univ) :
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s) (h𝔖₂ : ⋃₀ 𝔖 = .univ)
+    (h𝔗₁ : ∀ t ∈ 𝔗, IsVonNBounded 𝕜 t) (h𝔗₂ : ⋃₀ 𝔗 = .univ) :
     (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) ≃L[𝕜]
-      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) where
-  toFun f := sorry
-  invFun := sorry
-  map_add' := sorry
-  map_smul' := sorry
-  left_inv := sorry
-  right_inv := sorry
-  continuous_toFun := sorry
-  continuous_invFun := sorry
+      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) :=
+  .equivOfInverse (flipOfFiniteDimensional h𝔖₁ h𝔖₂) (flipOfFiniteDimensional h𝔗₁ h𝔗₂) _ _
 
 end UniformConvergenceCLM
 
