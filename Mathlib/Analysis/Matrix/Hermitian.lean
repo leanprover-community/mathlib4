@@ -50,8 +50,8 @@ lemma isSymmetric_toLin_iff [Fintype n] [DecidableEq n] {E : Type*}
   refine ⟨fun h ↦ ?_, fun h _ _ ↦ by rw [h.eq]⟩
   simpa using (LinearMap.ext fun x ↦ ext_inner_right _ (h x)).symm
 
-/-- A matrix is Hermitian iff the corresponding linear map on the Euclidean space is self
-adjoint. -/
+/-- A matrix is Hermitian iff the corresponding linear map on the Euclidean space is
+symmetric. -/
 @[simp]
 lemma isSymmetric_toEuclideanLin_iff [Fintype n] [DecidableEq n] :
     A.toEuclideanLin.IsSymmetric ↔ A.IsHermitian :=
