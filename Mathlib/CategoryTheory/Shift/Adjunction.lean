@@ -542,7 +542,6 @@ instance : (Equivalence.refl (C := C)).inverse.CommShift A :=
   inferInstanceAs <| (𝟭 C).CommShift A
 
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The identity equivalence is compatible with shifts.
 -/
