@@ -112,10 +112,15 @@ open scoped Kronecker
 section CommSemigroup
 variable [CommSemigroup R]
 
-theorem hadamard_kronecker_hadamard
+theorem hadamard_kronecker_hadamard (A B : Matrix l m R) (C D : Matrix n p R) :
+    (A ⊙ B) ⊗ₖ (C ⊙ D) = (A ⊗ₖ C) ⊙ (B ⊗ₖ D) :=
+  ext fun _ _ => mul_mul_mul_comm _ _ _ _
+
+-- Having both versions is consistent with `mul_div_mul_comm` and `div_mul_div_comm` etc
+theorem kronecker_hadamard_kronecker
     (A : Matrix l m R) (B : Matrix n p R) (C : Matrix l m R) (D : Matrix n p R) :
     (A ⊗ₖ B) ⊙ (C ⊗ₖ D) = (A ⊙ C) ⊗ₖ (B ⊙ D) :=
-  ext fun _ _ => mul_mul_mul_comm _ _ _ _
+  hadamard_kronecker_hadamard _ _ _ _ |>.symm
 
 end CommSemigroup
 
