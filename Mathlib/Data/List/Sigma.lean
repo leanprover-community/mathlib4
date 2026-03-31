@@ -229,7 +229,19 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
 
 #adaptation_note /-- After nightly-2026-03-29
 the grind proof here timed out, after changes to the canonicalizer in
-https://github.com/leanprover/lean4/issues/13166 -/
+https://github.com/leanprover/lean4/issues/13166.
+Changes to grind attributes in Batteries in
+https://github.com/leanprover-community/batteries/pull/1744
+may allow restoring the original proof:
+```
+  induction l with
+  | nil => grind [nodupKeys_nil]
+  | cons hd tl =>
+    have := dlookup_map₁ tl hf hd.fst
+    grind [dlookup_isSome, → notMem_keys_of_nodupKeys_cons, nodupKeys_of_nodupKeys_cons,
+      nodupKeys_cons]
+```
+-/
 omit [DecidableEq α] [DecidableEq α'] in
 theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
     (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
