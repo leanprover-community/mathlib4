@@ -582,7 +582,7 @@ Probability Theory:
     Lévy's theorem: ''
     weak law of large numbers: ''
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
-    central limit theorem: 'tendstoInDistribution_inv_sqrt_mul_sum_sub'
+    central limit theorem: 'ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub'
 
 # 12.
 Distribution calculus:
