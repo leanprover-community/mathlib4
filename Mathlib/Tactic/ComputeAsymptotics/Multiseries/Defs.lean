@@ -605,6 +605,11 @@ theorem Sorted_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
   apply Multiseries.Sorted_cons (by simpa using h)
 
+theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
+    (ms.replaceFun f).Sorted := by
+  simpa using h_sorted
+
 end Sorted
 
 end MultiseriesExpansion
