@@ -284,7 +284,7 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hittingBtwn_le_iff_of_exists h_exists]
   · simp_rw [hittingBtwn, if_neg h_exists]
-    push_neg at h_exists
+    push Not at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
