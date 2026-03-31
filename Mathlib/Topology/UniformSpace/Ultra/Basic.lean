@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.UniformSpace.Defs
 
