@@ -451,6 +451,7 @@ set_option linter.deprecated false in
 /-- The empty convex cone is generating iff the module is a subsingleton. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem isGenerating_bot_iff : (⊥ : ConvexCone R M).IsGenerating ↔ Subsingleton M := by
+  simp only [IsGenerating, coe_bot]
   simpa only [IsGenerating, coe_bot, Submodule.span_empty, ← Submodule.subsingleton_iff R] using
     subsingleton_iff_bot_eq_top
 
@@ -486,9 +487,7 @@ theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrd
   rw [IsReproducing, Set.eq_univ_iff_forall]
   intro x
   -- A generating cone in a nontrivial module must be nonempty
-  have hne : (C : Set M).Nonempty := Set.nonempty_iff_ne_empty.2 fun h' => by
-      simp [h', Submodule.span_empty, subsingleton_iff_bot_eq_top] at h
-      exact false_of_nontrivial_of_subsingleton M
+  have hne : (C : Set M).Nonempty := Set.nonempty_iff_ne_empty.2 fun h' => by simp [h'] at h
   -- Build the submodule S = C - C and show span C ⊆ S
   let S : Submodule R M := {
     carrier := (C : Set M) - (C : Set M)
