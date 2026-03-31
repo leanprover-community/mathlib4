@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits
@@ -18,6 +20,8 @@ This is in a separate file to avoid having to import the development of the abel
 `ModuleCat` in the main file about the preadditive Yoneda embedding.
 
 -/
+
+@[expose] public section
 
 
 universe v u

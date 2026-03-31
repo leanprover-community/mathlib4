@@ -3,12 +3,16 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Util.Delaborators
 
 /-! # Units in pi types -/
+
+@[expose] public section
 
 variable {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
 
@@ -28,6 +32,10 @@ lemma Pi.isUnit_iff :
     IsUnit x ↔ ∀ i, IsUnit (x i) := by
   simp_rw [isUnit_iff_exists, funext_iff, ← forall_and]
   exact Classical.skolem (p := fun i y ↦ x i * y = 1 ∧ y * x i = 1).symm
+
+@[to_additive]
+instance Pi.instSubsingletonUnits [∀ i, Subsingleton (M i)ˣ] : Subsingleton (∀ i, M i)ˣ :=
+  .units_of_isUnit <| by simp [Pi.isUnit_iff, funext_iff]
 
 @[to_additive]
 alias ⟨IsUnit.apply, _⟩ := Pi.isUnit_iff

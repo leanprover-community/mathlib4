@@ -3,9 +3,11 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Restricted products of topological spaces, topological groups and rings
@@ -57,9 +59,9 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
   *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
   * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-  `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-  *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-  is continuous.
+    `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+    *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+    is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
@@ -88,6 +90,8 @@ restrain from specializing these instances to principal and cofinite filters if 
 
 restricted product, adeles, ideles
 -/
+
+@[expose] public section
 
 open Set Topology Filter
 
@@ -177,6 +181,7 @@ section principal
 
 variable {S : Set ι}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
@@ -299,7 +304,8 @@ See also `RestrictedProduct.continuous_dom_prod_left`. -/
 theorem continuous_dom {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i]_[𝓕] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), Continuous (f ∘ inclusion R A hS) := by
-  simp_rw [topologicalSpace_eq_of_principal, continuous_iSup_dom, continuous_coinduced_dom]
+  simp_rw +instances [topologicalSpace_eq_of_principal, continuous_iSup_dom,
+    continuous_coinduced_dom]
 
 theorem isEmbedding_inclusion_principal {S : Set ι} (hS : 𝓕 ≤ 𝓟 S) :
     IsEmbedding (inclusion R A hS) :=
@@ -355,13 +361,13 @@ theorem isOpen_forall_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) :
 include hAopen in
 theorem isOpen_forall_imp_mem {p : ι → Prop} :
     IsOpen {f : Πʳ i, [R i, A i] | ∀ i, p i → f.1 i ∈ A i} := by
-  simp_rw [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
+  simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_imp_mem_of_principal hAopen hS
 
 include hAopen in
 theorem isOpen_forall_mem :
     IsOpen {f : Πʳ i, [R i, A i] | ∀ i, f.1 i ∈ A i} := by
-  simp_rw [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
+  simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_mem_of_principal hAopen hS
 
 include hAopen in

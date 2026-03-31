@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 ### Lattice of group topologies
@@ -18,6 +20,8 @@ Any function `f : α → β` induces `coinduced f : TopologicalSpace α → Grou
 
 The additive version `AddGroupTopology α` and corresponding results are provided as well.
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -106,11 +110,10 @@ instance : Bot (GroupTopology α) :=
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
-  top := ⊤
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
-  bot := ⊥
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
@@ -123,7 +126,7 @@ theorem toTopologicalSpace_inf (x y : GroupTopology α) :
 
 @[to_additive]
 instance : SemilatticeInf (GroupTopology α) :=
-  toTopologicalSpace_injective.semilatticeInf _ toTopologicalSpace_inf
+  toTopologicalSpace_injective.semilatticeInf _ .rfl .rfl toTopologicalSpace_inf
 
 @[to_additive]
 instance : Inhabited (GroupTopology α) :=
@@ -162,23 +165,16 @@ topologies contained in the intersection of `s` and `t`. -/
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`. -/]
 instance : CompleteSemilatticeInf (GroupTopology α) :=
-  { inferInstanceAs (InfSet (GroupTopology α)),
-    inferInstanceAs (PartialOrder (GroupTopology α)) with
-    sInf_le := fun _ a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
-    le_sInf := by
-      intro S a hab
-      apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_sInf
-      rintro _ ⟨b, hbS, rfl⟩
-      exact hab b hbS }
+  { (inferInstance : InfSet (GroupTopology α)),
+    (inferInstance : PartialOrder (GroupTopology α)) with
+    isGLB_sInf _ := .of_image toTopologicalSpace_le (isGLB_sInf _) }
 
 @[to_additive]
 instance : CompleteLattice (GroupTopology α) :=
-  { inferInstanceAs (BoundedOrder (GroupTopology α)),
-    inferInstanceAs (SemilatticeInf (GroupTopology α)),
+  { (inferInstance : BoundedOrder (GroupTopology α)),
+    (inferInstance : SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
-    inf := (· ⊓ ·)
-    top := ⊤
-    bot := ⊥ }
+    inf := (· ⊓ ·) }
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced group topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological group. -/
@@ -188,6 +184,7 @@ topology such that `f` is continuous and `β` is a topological group. -/
 def coinduced {α β : Type*} [t : TopologicalSpace α] [Group β] (f : α → β) : GroupTopology β :=
   sInf { b : GroupTopology β | TopologicalSpace.coinduced f t ≤ b.toTopologicalSpace }
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f := by

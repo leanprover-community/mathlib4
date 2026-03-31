@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -29,6 +31,8 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   is the trailing degree of its characteristic polynomial
 
 -/
+
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
@@ -128,7 +132,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
       ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
-  push_neg at this
+  push Not at this
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
   have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
@@ -194,9 +198,6 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   generalize_proofs h'
   clear hx
   induction n <;> simp [pow_succ', *]
-
-@[deprecated (since := "2025-09-07")] alias finrank_maxGenEigenspace :=
-  finrank_maxGenEigenspace_zero_eq
 
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
     finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by

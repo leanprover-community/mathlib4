@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Adjunctions and (co)monads
@@ -24,6 +26,8 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 `ComonadicLeftAdjoint`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
@@ -37,6 +41,7 @@ variable {L : C ⥤ D} {R : D ⥤ C}
 
 namespace Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
@@ -54,6 +59,7 @@ def toMonad (h : L ⊣ R) : Monad C where
     rw [← R.map_comp]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
@@ -87,7 +93,7 @@ unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
-  inv :=  i.hom ≫ (adj.toMonad.transport i).μ
+  inv := i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
     rw [← assoc]
     ext X
@@ -109,6 +115,7 @@ noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ �
   haveI := adj.isIso_unit_of_iso i
   adj.fullyFaithfulLOfIsIsoUnit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
 counit is an isomorphism.
@@ -139,6 +146,7 @@ noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ �
 
 end Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
@@ -183,6 +191,7 @@ instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
         assoc := by simpa using X.assoc },
     ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
@@ -292,11 +301,13 @@ noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
   adj := G.adj
   eqv := { }
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toMonad.μ := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance δ_iso_of_coreflective [Coreflective R] : IsIso (coreflectorAdjunction R).toComonad.δ := by
   dsimp
   infer_instance
@@ -306,6 +317,7 @@ attribute [instance] ComonadicLeftAdjoint.eqv
 
 namespace Reflective
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
     IsIso ((reflectorAdjunction R).unit.app X.A) :=
   ⟨⟨X.a,
@@ -317,6 +329,7 @@ instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
         dsimp [X.unit]
         simpa using congrArg (fun t ↦ R.map ((reflector R).map t)) X.unit ⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance comparison_essSurj [Reflective R] :
     (Monad.comparison (reflectorAdjunction R)).EssSurj := by
   refine ⟨fun X => ⟨(reflector R).obj X.A, ⟨?_⟩⟩⟩
@@ -339,6 +352,7 @@ end Reflective
 
 namespace Coreflective
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
     IsIso ((coreflectorAdjunction R).counit.app X.A) :=
   ⟨⟨X.a,
@@ -349,6 +363,7 @@ instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
         rw [counit_obj_eq_map_counit, ← Functor.map_comp, ← Functor.map_comp]
         simpa using congrArg (fun t ↦ R.map ((coreflector R).map t)) X.counit, X.counit⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance comparison_essSurj [Coreflective R] :
     (Comonad.comparison (coreflectorAdjunction R)).EssSurj := by
   refine ⟨fun X => ⟨(coreflector R).obj X.A, ⟨?_⟩⟩⟩

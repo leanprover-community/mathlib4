@@ -3,13 +3,17 @@ Copyright (c) 2024 Colva Roney-Dougal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colva Roney-Dougal, Inna Capdeboscq, Susanna Fishel, Kim Morrison
 -/
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.Order.Atoms
 
 /-!
 # The radical of a lattice
 
 This file contains results on the order radical of a lattice: the infimum of the coatoms.
 -/
+
+@[expose] public section
 
 /--
 The infimum of all coatoms.

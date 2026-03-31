@@ -3,9 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.SimpleModule.Isotypic
-import Mathlib.RingTheory.SimpleRing.Congr
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.RingTheory.SimpleModule.Isotypic
+public import Mathlib.RingTheory.SimpleRing.Congr
+public import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Wedderburn–Artin Theorem
@@ -36,6 +40,8 @@ import Mathlib.RingTheory.SimpleRing.Congr
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
 
 -/
+
+@[expose] public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
@@ -70,18 +76,18 @@ namespace IsSimpleRing
 
 variable (R) [IsSimpleRing R] [IsArtinianRing R]
 
-theorem isIsotypic : IsIsotypic R R :=
-  (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1
-
 instance (priority := low) : IsSemisimpleRing R :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).1
+
+theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
+  (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
 
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over the opposite of the endomorphism ring of its simple module. -/
 theorem exists_ringEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
-  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R).linearEquiv_fun
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R) <| .trans e.conjRingEquiv (endVecRingEquivMatrixEnd ..)
 
@@ -98,9 +104,9 @@ to a matrix algebra over the opposite of the endomorphism algebra of its simple 
 theorem exists_algEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
-  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R).linearEquiv_fun
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
-  exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
+  exact .trans (.moduleEndSelf R₀) <| .trans (e.conjAlgEquiv R₀) (endVecAlgEquivMatrixEnd ..)
 
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over a division algebra. -/
@@ -126,24 +132,47 @@ namespace IsSemisimpleModule
 
 open Module (End)
 
-variable (R) (M : Type*) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+universe v
+variable (R) (M : Type v) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
   [IsSemisimpleModule R M] [Module.Finite R M]
 
-theorem exists_end_algEquiv :
+theorem exists_end_algEquiv_pi_matrix_end :
     ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
       Nonempty (End R M ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) := by
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
   classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
-    (.piCongrRight fun c ↦ ((e c).some.algConj R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
-theorem exists_end_ringEquiv :
+theorem exists_end_ringEquiv_pi_matrix_end :
     ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
       Nonempty (End R M ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) :=
-  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := exists_end_algEquiv ℕ R M; ⟨n, S, d, hS, hd, ⟨e⟩⟩
+  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_end ℕ R M; ⟨n, S, d, hS, hd, ⟨e⟩⟩
+
+@[deprecated (since := "2025-11-16")] alias exists_end_algEquiv := exists_end_algEquiv_pi_matrix_end
+@[deprecated (since := "2025-11-16")]
+alias exists_end_ringEquiv := exists_end_ringEquiv_pi_matrix_end
+
+-- TODO: can also require D be in `Type u`, since every simple module is the quotient by an ideal.
+theorem exists_end_algEquiv_pi_matrix_divisionRing :
+    ∃ (n : ℕ) (D : Fin n → Type v) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i))
+      (_ : ∀ i, Algebra R₀ (D i)), (∀ i, NeZero (d i)) ∧
+      Nonempty (End R M ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) := by
+  have ⟨n, S, d, _, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_end R₀ R M
+  classical exact ⟨n, _, d, inferInstance, inferInstance, hd, ⟨e⟩⟩
+
+theorem exists_end_ringEquiv_pi_matrix_divisionRing :
+    ∃ (n : ℕ) (D : Fin n → Type v) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i)),
+      (∀ i, NeZero (d i)) ∧ Nonempty (End R M ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) :=
+  have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_divisionRing ℕ R M
+  ⟨n, D, d, _, hd, ⟨e⟩⟩
+
+theorem _root_.IsSemisimpleRing.moduleEnd : IsSemisimpleRing (Module.End R M) :=
+  have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_end_ringEquiv_pi_matrix_divisionRing R M
+  e.symm.isSemisimpleRing
 
 end IsSemisimpleModule
 
@@ -157,7 +186,7 @@ theorem exists_algEquiv_pi_matrix_end_mulOpposite :
     ∃ (n : ℕ) (S : Fin n → Ideal R) (d : Fin n → ℕ),
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
       Nonempty (R ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (Module.End R (S i))ᵐᵒᵖ) :=
-  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := IsSemisimpleModule.exists_end_algEquiv R₀ R R
+  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := IsSemisimpleModule.exists_end_algEquiv_pi_matrix_end R₀ R R
   ⟨n, S, d, hS, hd, ⟨.trans (.opOp R₀ R) <| .trans (.op <| .trans (.moduleEndSelf R₀) e) <|
     .trans (.piMulOpposite _ _) (.piCongrRight fun _ ↦ .symm .mopMatrix)⟩⟩
 
@@ -200,4 +229,34 @@ theorem exists_ringEquiv_pi_matrix_divisionRing :
   have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing ℕ R
   ⟨n, D, d, _, hd, ⟨e⟩⟩
 
+instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
+  (isEmpty_or_nonempty n).elim (fun _ ↦ inferInstance) fun _ ↦
+    have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
+    (e.mapMatrix (m := n).trans Matrix.piRingEquiv).symm.isSemisimpleRing
+
+instance [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ :=
+  have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
+  ((e.op.trans (.piMulOpposite _)).trans (.piCongrRight fun _ ↦ .symm .mopMatrix)).symm
+    |>.isSemisimpleRing
+
 end IsSemisimpleRing
+
+theorem isSemisimpleRing_mulOpposite_iff : IsSemisimpleRing Rᵐᵒᵖ ↔ IsSemisimpleRing R :=
+  ⟨fun _ ↦ (RingEquiv.opOp R).symm.isSemisimpleRing, fun _ ↦ inferInstance⟩
+
+/-- The existence part of the Artin–Wedderburn theorem. -/
+theorem isSemisimpleRing_iff_pi_matrix_divisionRing : IsSemisimpleRing R ↔
+    ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ) (_ : Π i, DivisionRing (D i)),
+      Nonempty (R ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) where
+  mp _ := have ⟨n, D, d, _, _, e⟩ := IsSemisimpleRing.exists_ringEquiv_pi_matrix_divisionRing R
+    ⟨n, D, d, _, e⟩
+  mpr := fun ⟨_, _, _, _, ⟨e⟩⟩ ↦ e.symm.isSemisimpleRing
+
+-- Need left-right symmetry of Jacobson radical
+proof_wanted IsSemiprimaryRing.mulOpposite [IsSemiprimaryRing R] : IsSemiprimaryRing Rᵐᵒᵖ
+
+proof_wanted isSemiprimaryRing_mulOpposite_iff : IsSemiprimaryRing Rᵐᵒᵖ ↔ IsSemiprimaryRing R
+
+-- A left Artinian ring is right Noetherian iff it is right Artinian. To be left as an `example`.
+proof_wanted IsArtinianRing.isNoetherianRing_iff_isArtinianRing_mulOpposite
+    [IsArtinianRing R] : IsNoetherianRing Rᵐᵒᵖ ↔ IsArtinianRing Rᵐᵒᵖ

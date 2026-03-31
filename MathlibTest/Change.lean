@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Change
 
 set_option linter.style.setOption false
@@ -6,13 +7,13 @@ set_option autoImplicit true
 
 /--
 info: Try this:
-  change 0 = 1
+  [apply] change 0 = 1
 ---
 info: Try this:
-  change (fun x ↦ x) 0 = 1
+  [apply] change (fun x ↦ x) 0 = 1
 ---
 info: Try this:
-  change (fun x ↦ x) 0 = 1
+  [apply] change (fun x ↦ x) 0 = 1
 ---
 error: The term
   1 = 0

@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -120,7 +119,7 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -140,7 +139,7 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -229,7 +228,7 @@ end
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: ring_nf made no progress at h -/
+/-- error: `ring_nf` made no progress at h -/
 #guard_msgs in
 example {R : Type*} [CommSemiring R] {x y : R} : True := by
   have h : x + y = 3 := test_sorry
@@ -263,3 +262,27 @@ example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
 
 -- Test that `ring` works for division without subtraction
 example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring
+
+theorem test_axioms {R : Type} [CommRing R] (a b : R) :
+    (a + b) ^ 2 + (a * b) ^ 3 = a ^ 2 + (2 : R) * a * b + b ^ 2 + a ^ 3 * b ^ 3 := by
+  ring
+
+/-!
+Test that `ring` does not depend on the axiom of choice.
+-/
+/--
+info: 'test_axioms' depends on axioms: [propext]
+-/
+#guard_msgs in
+#print axioms test_axioms
+
+-- Test that the normalization of `ring_nf` does the right thing
+/--
+trace: a b c d : ℝ
+⊢ a - b - c - d = 0
+-/
+#guard_msgs in
+example (a b c d : ℝ) : a - b - c - d = 0 := by
+  ring_nf
+  trace_state
+  exact test_sorry

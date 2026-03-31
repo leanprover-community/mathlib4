@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
@@ -16,13 +18,15 @@ and `restriction.hasHomology`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff]
 
 namespace restriction
@@ -53,6 +57,7 @@ variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   (hi'' : c'.prev j' = i') (hk'' : c'.next j' = k')
   [K.HasHomology j'] [(K.restriction e).HasHomology j]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `(K.restriction e).cycles j ≅ K.cycles j'` when `e.f j = j'`
 and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'`. -/
 noncomputable def restrictionCyclesIso :
@@ -74,12 +79,14 @@ lemma restrictionCyclesIso_hom_iCycles :
       (K.restriction e).iCycles j ≫ (K.restrictionXIso e hj').hom := by
   simp [restrictionCyclesIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma restrictionCyclesIso_inv_iCycles :
     (K.restrictionCyclesIso e j k hk hj' hk' hk'').inv ≫ (K.restriction e).iCycles j =
       K.iCycles j' ≫ (K.restrictionXIso e hj').inv := by
   simp [restrictionCyclesIso]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `(K.restriction e).opcycles j ≅ K.opcycles j'` when `e.f j = j'`
 and the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`. -/
 noncomputable def restrictionOpcyclesIso :
@@ -95,6 +102,7 @@ noncomputable def restrictionOpcyclesIso :
   hom_inv_id := by simp [← cancel_epi ((K.restriction e).pOpcycles j)]
   inv_hom_id := by simp [← cancel_epi (K.pOpcycles j')]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_restrictionOpcyclesIso_hom :
     (K.restriction e).pOpcycles j ≫ (K.restrictionOpcyclesIso e i j hi hi' hj' hi'').hom =
@@ -118,6 +126,7 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
@@ -144,6 +153,7 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫

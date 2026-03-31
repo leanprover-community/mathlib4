@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Properties of objects which hold for a zero object
@@ -16,17 +20,19 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits ZeroObject Opposite
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace ObjectProperty
 
-variable (P : ObjectProperty C)
+variable (P Q : ObjectProperty C)
 
 /-- Given `P : ObjectProperty C`, we say that `P.ContainsZero` if there exists
 a zero object for which `P` holds. When `P` is closed under isomorphisms,
@@ -72,10 +78,31 @@ instance [P.ContainsZero] : P.isoClosure.ContainsZero where
     obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
     exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
 
+instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.prop_of_isZero hZ, hQ⟩
+
+instance [P.ContainsZero] : P.op.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨op Z, hZ.op, mem⟩
+
+instance (P : ObjectProperty Cᵒᵖ) [P.ContainsZero] : P.unop.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z.unop, hZ.unop, mem⟩
+
+instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
+  zero := by
+    obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
+    exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
+
 end ObjectProperty
 
 /-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
-satisfies by those `X : C` such that `IsZero (F.obj X)`. -/
+satisfied by those `X : C` such that `IsZero (F.obj X)`. -/
 abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
   ObjectProperty.inverseImage IsZero F
 

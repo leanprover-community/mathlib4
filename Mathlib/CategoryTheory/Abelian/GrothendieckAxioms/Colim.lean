@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Exactness of colimits
@@ -22,6 +24,8 @@ is filtered and `C` satisfies AB5).
 
 -/
 
+@[expose] public section
+
 universe v' v u' u
 
 namespace CategoryTheory
@@ -30,6 +34,7 @@ variable {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
 
 namespace Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that `colim : (J ⥤ C) ⥤ C` preserves monomorphisms, and
 `φ : X₁ ⟶ X₂` is a monomorphism in `J ⥤ C`, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of colimit cocones for `X₁` and `X₂` in such a way that `f`
@@ -40,7 +45,7 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
     {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
     (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Mono f := by
   refine ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff ?_).2
-    (inferInstanceAs (Mono (colim.map φ)))
+    ((inferInstance : Mono (colim.map φ)))
   exact Arrow.isoMk
     (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
     (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
@@ -50,6 +55,7 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
         colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
         IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that `φ : X₁ ⟶ X₂` is a natural transformation in `J ⥤ C` which
 consists of epimorphisms, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of cocones `c₁` and `c₂` for `X₁` and `X₂`, in such
@@ -63,6 +69,7 @@ lemma colim.map_epi'
 
 attribute [local instance] IsFiltered.isConnected
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that a functor `X : J ⥤ C` maps any morphism to a monomorphism,
 that `J` is filtered. Then the "inclusion" map `c.ι.app j₀` of a colimit cocone for `X`
 is a monomorphism if `colim : (Under j₀ ⥤ C) ⥤ C` preserves monomorphisms
@@ -92,6 +99,7 @@ variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] [HasZeroMorphism
   (hf : ∀ j, c₁.ι.app j ≫ f = S.f.app j ≫ c₂.ι.app j)
   (hg : ∀ j, c₂.ι.app j ≫ g = S.g.app j ≫ c₃.ι.app j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S : ShortComplex (J ⥤ C)` and (colimit) cocones for `S.X₁`, `S.X₂`,
 `S.X₃` equipped with suitable data, this is the induced
 short complex `c₁.pt ⟶ c₂.pt ⟶ c₃.pt`. -/
@@ -104,6 +112,7 @@ def colim.mapShortComplex : ShortComplex C :=
 
 variable {S c₂ c₃}
 
+set_option backward.isDefEq.respectTransparency false in
 include hc₂ hc₃ hS in
 /-- Assuming `HasExactColimitsOfShape J C`, this lemma rephrases the exactness
 of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J ⥤ C)`
@@ -137,6 +146,7 @@ open Limits
 
 open MorphismProperty
 
+set_option backward.isDefEq.respectTransparency false in
 variable (J C) in
 instance isStableUnderColimitsOfShape_monomorphisms
     [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :

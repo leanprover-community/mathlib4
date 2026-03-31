@@ -3,10 +3,15 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.SuccPred.Basic
+import Mathlib.Data.Finset.Max
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -33,6 +38,8 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -216,7 +223,7 @@ theorem partialSups_eq_ciSup_Iic [ConditionallyCompleteLattice α] (f : ι → �
     partialSups f i = ⨆ i : Set.Iic i, f i := by
   simp only [partialSups_apply]
   apply le_antisymm
-  · exact sup'_le _ _ fun j hj ↦ le_ciSup_of_le (Set.finite_range _).bddAbove
+  · exact sup'_le _ _ fun j hj ↦ Finite.le_ciSup_of_le
       ⟨j, by simpa only [Set.mem_Iic, mem_Iic] using hj⟩ le_rfl
   · exact ciSup_le fun ⟨j, hj⟩ ↦ le_sup' f (by simpa only [mem_Iic, Set.mem_Iic] using hj)
 
@@ -273,12 +280,31 @@ section Set
 ### Functions into `Set α`
 -/
 
-lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+lemma partialSups_eq_sUnion_image (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  simp [partialSups_eq_biSup, Nat.lt_succ]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 end Set
+
+section LinearOrder
+/-!
+### Functions taking values on some `LinearOrder`.
+-/
+
+variable [Preorder ι] [LocallyFiniteOrderBot ι] [LinearOrder α]
+
+theorem exists_partialSups_eq (f : ι → α) (i : ι) :
+    ∃ j ≤ i, partialSups f i = f j := by
+  obtain ⟨j, hj_mem, hj_le⟩ : ∃ j ∈ Finset.Iic i, ∀ k ∈ Finset.Iic i, f k ≤ f j :=
+    Finset.exists_max_image _ _ ⟨i, Finset.mem_Iic.mpr le_rfl⟩
+  simp only [Finset.mem_Iic] at hj_mem hj_le
+  use j, hj_mem
+  apply le_antisymm
+  · exact partialSups_le _ _ _ fun k hk => hj_le k hk
+  · exact le_partialSups_of_le f hj_mem
+
+end LinearOrder

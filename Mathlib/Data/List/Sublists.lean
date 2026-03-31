@@ -3,11 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Induction
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-! # sublists
 
@@ -15,6 +20,8 @@ import Mathlib.Data.List.Induction
 
 This file contains basic results on this function.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -117,14 +124,6 @@ theorem sublistsAux_eq_flatMap :
     (fun r l ih => by
       rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
-
-@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
-  ext α l : 2
-  trans l.foldr sublistsAux [[]]
-  · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl]
-    rw [← foldr_hom Array.toList]
-    · intros; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
@@ -349,12 +348,34 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
   | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
 
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
-  rw [← finRange_map_get l, sublists_map, sublists'_map]
+  rw [← map_get_finRange l, sublists_map, sublists'_map]
   apply Perm.map
   apply (perm_ext_iff_of_nodup _ _).mpr
   · simp
   · exact nodup_sublists.mpr (nodup_finRange _)
   · exact (nodup_sublists'.mpr (nodup_finRange _))
+
+theorem Sublist.sublists' {l₁ l₂ : List α}
+    (sublist : l₁ <+ l₂) :
+    l₁.sublists' <+ l₂.sublists' := by
+  induction sublist with
+  | slnil => exact .refl _
+  | cons a _ ih =>
+    rw [sublists'_cons]
+    exact ih.trans (List.sublist_append_left ..)
+  | cons₂ a _ ih =>
+    rw [sublists'_cons, sublists'_cons]
+    exact ih.append (ih.map _)
+
+@[simp]
+theorem sublists'_sublist_sublists'_iff {l₁ l₂ : List α} :
+    l₁.sublists' <+ l₂.sublists' ↔ l₁ <+ l₂ where
+  mpr := Sublist.sublists'
+  mp sublist := mem_sublists'.mp <| sublist.subset <| mem_sublists'.mpr <| .refl _
+
+theorem subperm_of_sublists'_subperm_sublists' {l₁ l₂ : List α}
+    (subperm : l₁.sublists' <+~ l₂.sublists') : l₁ <+~ l₂ :=
+  Sublist.subperm <| mem_sublists'.mp <| subperm.subset <| mem_sublists'.mpr <| .refl _
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=

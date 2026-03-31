@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 /-!
 # Urysohn's Metrization Theorem
 
@@ -20,6 +22,8 @@ space structure.
 
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
+
+@[expose] public section
 
 open Filter Metric Set Topology
 open scoped BoundedContinuousFunction
@@ -38,7 +42,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
   let s : Set (Set X × Set X) := { UV ∈ B ×ˢ B | closure UV.1 ⊆ UV.2 }
   -- `s` is a countable set.
-  haveI : Encodable s := ((hBc.prod hBc).mono inter_subset_left).toEncodable
+  haveI : Encodable s := ((hBc.prod hBc).mono (sep_subset _ _)).toEncodable
   -- We don't have the space of bounded (possibly discontinuous) functions, so we equip `s`
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
   letI : TopologicalSpace s := ⊥

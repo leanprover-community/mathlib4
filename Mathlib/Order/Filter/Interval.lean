@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Bases.Finite
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Convergence of intervals
@@ -72,6 +74,8 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` |
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

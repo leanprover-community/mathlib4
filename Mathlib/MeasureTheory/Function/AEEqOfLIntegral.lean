@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
-import Mathlib.MeasureTheory.Measure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-! # From equality of integrals to equality of functions
 
@@ -26,6 +28,8 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 -/
 
+public section
+
 
 open Filter
 
@@ -39,22 +43,21 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
     [OrderTopology β] [FirstCountableTopology β] (f : α → β) (c : β) :
     (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b < c, μ {x | f x ≤ b} = 0 := by
   rw [ae_iff]
-  push_neg
+  push Not
   constructor
   · intro h b hb
     exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
   intro hc
-  by_cases h : ∀ b, c ≤ b
+  by_cases! h : ∀ b, c ≤ b
   · have : {a : α | f a < c} = ∅ := by
       apply Set.eq_empty_iff_forall_notMem.2 fun x hx => ?_
       exact (lt_irrefl _ (lt_of_lt_of_le hx (h (f x)))).elim
     simp [this]
-  by_cases H : ¬IsLUB (Set.Iio c) c
+  by_cases! H : ¬IsLUB (Set.Iio c) c
   · have : c ∈ upperBounds (Set.Iio c) := fun y hy => le_of_lt hy
     obtain ⟨b, b_up, bc⟩ : ∃ b : β, b ∈ upperBounds (Set.Iio c) ∧ b < c := by
       simpa [IsLUB, IsLeast, this, lowerBounds] using H
     exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
-  push_neg at H h
   obtain ⟨u, _, u_lt, u_lim, -⟩ :
     ∃ u : ℕ → β,
       StrictMono u ∧ (∀ n : ℕ, u n < c) ∧ Tendsto u atTop (𝓝 c) ∧ ∀ n : ℕ, u n ∈ Set.Iio c :=

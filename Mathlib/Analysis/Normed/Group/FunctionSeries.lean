@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions
@@ -12,11 +14,13 @@ import Mathlib.Topology.Instances.ENNReal.Lemmas
 We show that series of functions are continuous when each individual function in the series is and
 additionally suitable uniform summable bounds are satisfied, in `continuous_tsum`.
 
-For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSeries`.
+For smoothness of series of functions, see the file `Mathlib/Analysis/Calculus/SmoothSeries.lean`.
 
 TODO: update this to use `SummableUniformlyOn`.
 
 -/
+
+public section
 
 open Set Metric TopologicalSpace Function Filter
 
@@ -72,7 +76,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   apply (A.subtype _).tsum_le_tsum _ (hu.subtype _)
   simp only [comp_apply, Subtype.forall, imp_false]
   apply fun i hi => HN i ?_ x hx
-  have :  i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
+  have : i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   simp_all
 
 theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
@@ -113,7 +117,7 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
   classical
-    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Eventually.of_forall ?_)
+    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
     intro t
     exact continuousOn_finset_sum _ fun i _ => hf i
 

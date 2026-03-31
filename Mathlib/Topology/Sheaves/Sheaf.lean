@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Presheaf
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Spaces
+module
+
+public import Mathlib.Topology.Sheaves.Presheaf
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Spaces
 
 /-!
 # Sheaves
@@ -24,6 +26,8 @@ We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full
 presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
 
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -128,10 +132,10 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance forget_full : (forget C X).Full where
-  map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
+  map_surjective f := ⟨ObjectProperty.homMk f, rfl⟩
 
 instance forgetFaithful : (forget C X).Faithful where
-  map_injective := Sheaf.Hom.ext
+  map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
 theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
@@ -155,8 +159,8 @@ lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
   have := (isSheaf_iff_isSheaf_of_type _ _).mp
     ((Presheaf.isSheaf_iff_isSheaf_forget (C := Opens X) (A' := A) _ F (forget _)).mp hF)
   choose V hV hxV H using fun x : U.unop ↦ hst x.1 x.2
-  refine (this.isSheafFor _ (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
-  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.le_generate _ _ (.mk _), hxV _⟩
+  refine (this.isSheafFor (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
+  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.ofArrows_mk _ _ _, hxV _⟩
   · rintro _ _ ⟨x⟩; exact H x
 
 end TopCat

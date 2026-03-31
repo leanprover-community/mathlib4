@@ -3,9 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Logic.Equiv.Defs
-import Batteries.Tactic.SeqFocus
+module
+
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.SeqFocus
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
@@ -22,6 +26,8 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 * `Equiv.traversable`: `Equiv.traverse` as a traversable functor.
 * `Equiv.isLawfulTraversable`: `Equiv.traverse` as a lawful traversable functor.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -44,6 +50,7 @@ protected def map {α β : Type u} (f : α → β) (x : t' α) : t' β :=
 
 /-- The function `Equiv.map` transfers the functoriality of `t` to
 `t'` using the equivalences `eqv`. -/
+@[implicit_reducible]
 protected def functor : Functor t' where map := Equiv.map eqv
 
 variable [LawfulFunctor t]
@@ -96,6 +103,7 @@ theorem traverse_def (f : α → m β) (x : t' α) :
 
 /-- The function `Equiv.traverse` transfers a traversable functor
 instance across the equivalences `eqv`. -/
+@[implicit_reducible]
 protected def traversable : Traversable t' where
   toFunctor := Equiv.functor eqv
   traverse := Equiv.traverse eqv

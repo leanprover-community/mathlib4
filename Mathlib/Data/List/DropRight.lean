@@ -3,8 +3,11 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.TakeWhile
+module
+
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Data.List.Basic
 
 /-!
 
@@ -30,6 +33,8 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 `L = l.length`, the function would do the right thing.
 
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

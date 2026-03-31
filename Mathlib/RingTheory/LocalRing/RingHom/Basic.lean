@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Ideal.Maps
 We prove basic properties of local rings homomorphisms.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*}
 section
@@ -76,7 +80,7 @@ i.e. any preimage of a unit is still a unit. -/
 @[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
-      [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
+      [IsLocalHom f, f '' maximalIdeal R ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
@@ -88,6 +92,16 @@ theorem local_hom_TFAE (f : R →+* S) :
   | _ => by ext; exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm
   tfae_finish
+
+lemma maximalIdeal_comap (f : R →+* S) [IsLocalHom f] : (maximalIdeal S).comap f = maximalIdeal R :=
+  ((local_hom_TFAE _).out 0 4).mp ‹_›
+
+theorem map_maximalIdeal_le (f : R →+* S) [IsLocalHom f] :
+    (maximalIdeal R).map f ≤ maximalIdeal S := by
+  rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
+
+theorem map_maximalIdeal_lt_top (f : R →+* S) [IsLocalHom f] : (maximalIdeal R).map f < ⊤ :=
+  (map_maximalIdeal_le f).trans_lt (maximalIdeal.isMaximal S).lt_top
 
 end
 
@@ -128,6 +142,16 @@ local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
+lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (f : R →+* S) (hf : Function.Surjective f) : (maximalIdeal R).map f = maximalIdeal S := by
+  let := IsLocalHom.of_surjective f hf
+  rw [← maximalIdeal_comap f, Ideal.map_comap_of_surjective f hf]
+
+@[simp]
+lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
+  map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
 
 end IsLocalRing
 

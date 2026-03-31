@@ -64,7 +64,7 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
 -/
 /--
 info: Try this:
-  rfl
+  [apply] rfl
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
@@ -80,7 +80,7 @@ example : 1 + 1 = 2 := by
 
 /--
 info: Try this:
-  (intros; rfl)
+  [apply] (intros; rfl)
 -/
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by
@@ -138,6 +138,7 @@ example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x 
 /-!
 The same, but now there's a universe level metavariable.
 -/
+set_option warn.classDefReducibility false in
 def fdef : ∀ {β : Type _} [BEq β], Subsingleton β := test_sorry
 
 example {α : Type} [BEq α] (x y : α) : x = y := by

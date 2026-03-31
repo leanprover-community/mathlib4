@@ -3,9 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Group action on rings
@@ -31,6 +33,8 @@ defined in `Mathlib/Algebra/Ring/Action/Invariant.lean`.
 group action
 
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
@@ -65,7 +69,7 @@ instance (priority := 100) MulSemiringAction.toMulDistribMulAction
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
-  { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
+  { MulDistribMulAction.toMonoidHom R x, DistribSMul.toAddMonoidHom R x with }
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
@@ -78,8 +82,8 @@ instance RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
   smul := (· <| ·)
   smul_one := map_one
   smul_mul := map_mul
-  smul_zero := RingHom.map_zero
-  smul_add := RingHom.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

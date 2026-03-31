@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.Topology.Algebra.Order.Group
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.Topology.Algebra.Order.Group
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on archimedean groups and fields
@@ -22,6 +24,8 @@ In this file we prove the following theorems:
 - `AddSubgroup.dense_or_cyclic`: an additive subgroup of an archimedean linear ordered additive
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
+
+public section
 
 open Set
 
@@ -75,7 +79,7 @@ topology either is dense in `G` or is a cyclic subgroup. -/
 with order topology either is dense in `G` or is a cyclic subgroup. -/]
 theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
   refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
-  push_neg at h
+  push Not at h
   rcases h with ⟨ε, ε1, hε⟩
   exact cyclic_of_isolated_one ε1 (disjoint_left.2 hε)
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Henselian rings
@@ -52,12 +54,15 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 universe u v
 
 open Polynomial IsLocalRing Function List
+open scoped Ring
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
@@ -132,7 +137,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
     refine ⟨a, ha₁, ?_⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
-    rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
+    rwa [← sub_eq_zero, ← map_sub] at ha₂
   tfae_have 1 → 3
   | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
@@ -172,8 +177,8 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       -- we define a sequence `c n` by starting at `a₀` and then continually
       -- applying the function sending `b` to `b - f(b)/f'(b)` (Newton's method).
       -- Note that `f'.eval b` is a unit, because `b` has the same residue as `a₀` modulo `I`.
-      let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
-      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
+      let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * (f'.eval b)⁻¹ʳ
+      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * (f'.eval (c n))⁻¹ʳ := by
         intro n
         simp only [c]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`

@@ -3,12 +3,14 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Integrability for Logarithms of Meromorphic Functions
@@ -18,6 +20,8 @@ functions are interval integrable over every interval of the real line. This imp
 that logarithms of trigonometric functions are interval integrable. In the complex setting, the
 functions are circle integrable over every circle in the complex plane.
 -/
+
+public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 
@@ -54,7 +58,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       apply h₁g.continuousOn.norm.log
       simp_all
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_Icc inf_le_sup)] at t₀
-    push_neg at t₀
+    push Not at t₀
     have : (log ‖f ·‖) =ᶠ[Filter.codiscreteWithin (Ι a b)] 0 := by
       apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
@@ -143,7 +147,7 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
         apply h₂g ⟨circleMap c R x, circleMap_mem_sphere' c R x⟩
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_sphere (by simp) c
       (abs_nonneg R))] at t₀
-    push_neg at t₀
+    push Not at t₀
     have : (log ‖f ·‖) =ᶠ[codiscreteWithin (sphere c |R|)] 0 := by
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         self_mem_codiscreteWithin (sphere c |R|)] with x h₁x h₂x

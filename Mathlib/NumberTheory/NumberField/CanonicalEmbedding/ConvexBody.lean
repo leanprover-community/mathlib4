@@ -3,10 +3,12 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.MeasureTheory.Group.GeometryOfNumbers
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+module
+
+public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Convex Bodies
@@ -36,6 +38,8 @@ associated to a number field of signature `K` and proves several existence theor
 
 number field, infinite places
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -287,11 +291,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
   rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
     fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
-  conv =>
-    enter [1, w, hw]
-    rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
-  simp_rw [Finset.mem_univ, true_implies]
+  simp
 
 open scoped Classical in
 theorem norm_le_convexBodySumFun (x : mixedSpace K) : ‖x‖ ≤ convexBodySumFun x := by
@@ -346,6 +346,7 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   classical
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
+  simp_rw [dist_eq_norm]
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
   · exact le_trans (norm_le_convexBodySumFun x) hx
   · exact le_trans (norm_le_convexBodySumFun y) hy
@@ -367,6 +368,7 @@ theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   exact mul_ne_zero (pow_ne_zero _ two_ne_zero)
     (pow_ne_zero _ (div_ne_zero NNReal.pi_ne_zero two_ne_zero))
 
+set_option backward.isDefEq.respectTransparency false in
 open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
@@ -461,11 +463,10 @@ theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
     ENNReal.pow_lt_top ENNReal.ofNat_lt_top
 
-theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
-  classical
-  refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)
-  · exact ZSpan.measure_fundamentalDomain_ne_zero _
-  · exact ENNReal.pow_ne_zero two_ne_zero _
+theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
+  -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.
+  ENNReal.mul_pos (by classical exact ZSpan.measure_fundamentalDomain_ne_zero _) <|
+    ENNReal.pow_ne_zero two_ne_zero _
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 

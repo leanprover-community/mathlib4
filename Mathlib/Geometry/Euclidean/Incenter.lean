@@ -3,11 +3,14 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Altitude
-import Mathlib.Geometry.Euclidean.SignedDist
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Topology.Instances.Sign
+module
+
+public import Mathlib.Analysis.Convex.Side
+public import Mathlib.Geometry.Euclidean.Altitude
+public import Mathlib.Geometry.Euclidean.SignedDist
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Topology.Instances.Sign
 
 /-!
 # Incenters and excenters of simplices.
@@ -15,11 +18,23 @@ import Mathlib.Topology.Instances.Sign
 This file defines the insphere and exspheres of a simplex (tangent to the faces of the simplex),
 and the center and radius of such spheres.
 
+The terms "exsphere", "excenter" and "exradius" are used in this file in a general sense where
+a `Finset` `signs` of indices is given that determine, up to negating all the signs, which
+vertices of the simplex lie on the same side of the opposite face as the excenter and which lie
+on the opposite side of that face. This includes the cases of the insphere, incenter and
+inradius, when `signs` is `∅` (or `univ`); the insphere always exists. It also includes the case
+of an exsphere opposite a vertex, when `signs` is a singleton (or its complement), which always
+exists in two or more dimensions. In three or more dimensions, there are further possibilities
+for `signs`, and the corresponding excenters may or may not exist, depending on the choice of
+simplex. For convenience, the most common definitions `exsphere`, `excenter` and `exradius` have
+corresponding `insphere`, `incenter` and `inradius` definitions, and various lemmas are duplicated
+for the case of the insphere to avoid needing to pass an `ExcenterExists` hypothesis in that case.
+However, other definitions such as `excenterWeights`, `touchpoint` and `touchpointWeights` are not
+duplicated.
+
 ## Main definitions
 
-* `Affine.Simplex.ExcenterExists` says whether an excenter exists with a given set of indices
-  (that determine, up to negating all the signs, which vertices of the simplex lie on the same
-  side of the opposite face as the excenter and which lie on the opposite side of that face).
+* `Affine.Simplex.ExcenterExists` says whether an excenter exists with a given set of indices.
 * `Affine.Simplex.excenterWeights` are the weights of the excenter with the given set of
   indices, if it exists, as an affine combination of the vertices.
 * `Affine.Simplex.exsphere` is the exsphere with the given set of indices, if it exists, with
@@ -29,6 +44,10 @@ and the center and radius of such spheres.
 * `Affine.Simplex.insphere` is the insphere, with shorthands:
   * `Affine.Simplex.incenter` for the center of this sphere
   * `Affine.Simplex.inradius` for the radius of this sphere
+* `Affine.Simplex.touchpoint` for the point where an exsphere of a simplex is tangent to one of
+  the faces.
+* `Affine.Simplex.touchpointWeights` for the weights of a touchpoint as an affine combination of
+  the vertices.
 
 ## References
 
@@ -37,12 +56,16 @@ and the center and radius of such spheres.
 
 -/
 
+@[expose] public section
+
 
 open EuclideanGeometry
 open scoped Finset RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 noncomputable section
 
@@ -50,7 +73,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+variable {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
 
 /-- The unnormalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices (for the empty set, this is the incenter; for a
@@ -59,19 +82,87 @@ and only if the sum of these weights is nonzero (so the normalized weights sum t
 def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
 
+lemma excenterWeightsUnnorm_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
+    (s.reindex e).excenterWeightsUnnorm signs =
+      s.excenterWeightsUnnorm (signs.map e.symm) ∘ e.symm := by
+  ext i
+  simp [excenterWeightsUnnorm]
+
+@[simp] lemma excenterWeightsUnnorm_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenterWeightsUnnorm = s.excenterWeightsUnnorm := by
+  ext
+  simp [excenterWeightsUnnorm]
+
+@[simp] lemma excenterWeightsUnnorm_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenterWeightsUnnorm = s.excenterWeightsUnnorm := by
+  ext
+  simp [excenterWeightsUnnorm]
+
 @[simp] lemma excenterWeightsUnnorm_empty_apply (i : Fin (n + 1)) :
     s.excenterWeightsUnnorm ∅ i = (s.height i)⁻¹ :=
   one_mul _
 
+lemma excenterWeightsUnnorm_ne_zero (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    s.excenterWeightsUnnorm signs i ≠ 0 := by
+  rw [excenterWeightsUnnorm]
+  refine mul_ne_zero ?_ ?_
+  · grind
+  · simp [(s.height_pos i).ne']
+
 /-- Whether an excenter exists with a given choice of signs. -/
 def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
+
+lemma excenterExists_reindex {e : Fin (n + 1) ≃ Fin (m + 1)} {signs : Finset (Fin (m + 1))} :
+    (s.reindex e).ExcenterExists signs ↔ s.ExcenterExists (signs.map e.symm) := by
+  simp_rw [ExcenterExists, excenterWeightsUnnorm_reindex, Finset.sum_comp_equiv,
+    Finset.map_univ_equiv]
+
+@[simp] lemma excenterExists_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).ExcenterExists = s.ExcenterExists := by
+  ext
+  simp [ExcenterExists]
+
+@[simp] lemma excenterExists_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).ExcenterExists = s.ExcenterExists := by
+  ext
+  simp [ExcenterExists]
 
 /-- The normalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices.  An excenter with those signs exists if and only if
 the sum of these weights is 1. -/
 def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
+
+lemma excenterWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
+    (s.reindex e).excenterWeights signs =
+      s.excenterWeights (signs.map e.symm) ∘ e.symm := by
+  simp_rw [excenterWeights, excenterWeightsUnnorm_reindex, Finset.sum_comp_equiv,
+    Finset.map_univ_equiv, Pi.smul_comp]
+
+@[simp] lemma excenterWeights_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenterWeights = s.excenterWeights := by
+  ext
+  simp [excenterWeights]
+
+@[simp] lemma excenterWeights_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenterWeights = s.excenterWeights := by
+  ext
+  simp [excenterWeights]
+
+variable {s} in
+lemma ExcenterExists.excenterWeights_ne_zero {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.excenterWeights signs i ≠ 0 := by
+  rw [excenterWeights]
+  refine mul_ne_zero ?_ (s.excenterWeightsUnnorm_ne_zero _ _)
+  rw [ExcenterExists] at h
+  simp [h]
 
 @[simp] lemma excenterWeightsUnnorm_compl (signs : Finset (Fin (n + 1))) :
     s.excenterWeightsUnnorm signsᶜ = -s.excenterWeightsUnnorm signs := by
@@ -105,11 +196,14 @@ lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm �
   simp_rw [excenterWeightsUnnorm_empty_apply]
   positivity
 
+lemma excenterWeights_empty_pos (i : Fin (n + 1)) : 0 < s.excenterWeights ∅ i := by
+  simp only [excenterWeights, excenterWeightsUnnorm_empty_apply, Pi.smul_apply, smul_eq_mul]
+  positivity
+
 @[simp]
 lemma sign_excenterWeights_empty (i : Fin (n + 1)) : SignType.sign (s.excenterWeights ∅ i) = 1 := by
-  simp only [excenterWeights, excenterWeightsUnnorm_empty_apply, Pi.smul_apply, smul_eq_mul]
   rw [sign_eq_one_iff]
-  positivity
+  exact s.excenterWeights_empty_pos i
 
 /-- The existence of the incenter, expressed in terms of `ExcenterExists`. -/
 @[simp] lemma excenterExists_empty : s.ExcenterExists ∅ :=
@@ -181,8 +275,8 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
-it also implies that the image of the incenter under a homothety with scale factor 2 about a
-vertex lies outside the simplex. -/
+it also gives information about the location of the incenter (see
+`excenterWeights_empty_lt_inv_two`). -/
 lemma inv_height_lt_sum_inv_height [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     (s.height i)⁻¹ < ∑ j ∈ {k | k ≠ i}, (s.height j)⁻¹ := by
   rw [inv_height_eq_sum_mul_inv_dist]
@@ -208,10 +302,42 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   · rw [Finset.mem_filter_univ] at h
     simp [excenterWeightsUnnorm, h]
 
+lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    SignType.sign (s.excenterWeights {i} i) = -1 := by
+  simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
+  convert one_mul _
+  · rw [sign_eq_one_iff, inv_pos]
+    exact s.sum_excenterWeightsUnnorm_singleton_pos i
+  · simp [excenterWeightsUnnorm]
+
+lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    SignType.sign (s.excenterWeights {i} j) = 1 := by
+  simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
+  convert one_mul _
+  · rw [sign_eq_one_iff, inv_pos]
+    exact s.sum_excenterWeightsUnnorm_singleton_pos i
+  · simp [excenterWeightsUnnorm, h.symm]
+
 /-- The existence of the excenter opposite a vertex (in two or more dimensions), expressed in
 terms of `ExcenterExists`. -/
 lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
   (s.sum_excenterWeightsUnnorm_singleton_pos i).ne'
+
+open Finset in
+/-- The barycentric coordinates of the incenter are less than `2⁻¹` (thus, it lies closer on an
+angle bisector to the opposite side than to the vertex, or equivalently the image of the incenter
+under a homothety with scale factor 2 about a vertex lies outside the simplex). -/
+lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
+    s.excenterWeights ∅ i < 2⁻¹ := by
+  have h : (s.height i)⁻¹ + (s.height i)⁻¹ < (s.height i)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    have := s.inv_height_lt_sum_inv_height i
+    rwa [filter_ne', ← compl_singleton, ← add_lt_add_iff_left (s.height i)⁻¹] at this
+  replace h : 2 * (s.height i)⁻¹ < ∑ j ∈ {i}, (s.height j)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    rwa [two_mul, sum_singleton]
+  replace h : (s.height i)⁻¹ / ∑ i, (s.height i)⁻¹ < 2⁻¹ := by
+    rwa [sum_add_sum_compl, ← lt_inv_mul_iff₀ zero_lt_two, ← div_lt_iff₀ (by positivity)] at h
+  convert h
+  simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
@@ -221,9 +347,20 @@ def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
   center := Finset.univ.affineCombination ℝ s.points (s.excenterWeights signs)
   radius := |(∑ i, s.excenterWeightsUnnorm signs i)⁻¹|
 
+lemma exsphere_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
+    (s.reindex e).exsphere signs = s.exsphere (signs.map e.symm) := by
+  simp_rw [exsphere, excenterWeightsUnnorm_reindex, excenterWeights_reindex, Finset.sum_comp_equiv,
+    reindex, ← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
+  simp
+
 /-- The insphere of a simplex. -/
 def insphere : Sphere P :=
   s.exsphere ∅
+
+@[simp] lemma insphere_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).insphere = s.insphere := by
+  simp_rw [insphere, exsphere_reindex]
+  simp
 
 /-- The excenter with signs determined by the given set of indices (for the empty set, this is
 the incenter; for a singleton set, this is the excenter opposite a vertex).  This is only
@@ -231,18 +368,85 @@ meaningful if `s.ExcenterExists signs`; otherwise, it is some arbitrary point. -
 def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center
 
+lemma excenter_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
+    (s.reindex e).excenter signs = s.excenter (signs.map e.symm) := by
+  simp_rw [excenter, exsphere_reindex]
+
+variable {s} in
+@[simp] lemma ExcenterExists.excenter_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenter signs = f (s.excenter signs) := by
+  simp [excenter, exsphere, ← AffineIsometry.coe_toAffineMap, h.sum_excenterWeights_eq_one,
+    Finset.map_affineCombination]
+
+variable {s} in
+@[simp] lemma ExcenterExists.excenter_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenter signs = s.excenter signs := by
+  rw [← s.excenterExists_restrict S hS] at h
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (h.excenter_map S.subtypeₐᵢ).symm
+
 /-- The incenter of a simplex. -/
 def incenter : P :=
   (s.exsphere ∅).center
+
+@[simp] lemma incenter_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).incenter = s.incenter := by
+  simp_rw [incenter, exsphere_reindex]
+  simp
+
+@[simp] lemma incenter_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).incenter = f s.incenter :=
+  s.excenterExists_empty.excenter_map f
+
+@[simp] lemma incenter_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).incenter = s.incenter :=
+  s.excenterExists_empty.excenter_restrict S hS
 
 /-- The distance between an excenter and a face of the simplex (zero if no such excenter
 exists). -/
 def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
   (s.exsphere signs).radius
 
+lemma exradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
+    (s.reindex e).exradius signs = s.exradius (signs.map e.symm) := by
+  simp_rw [exradius, exsphere_reindex]
+
+@[simp] lemma exradius_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).exradius = s.exradius := by
+  ext
+  simp [exradius, exsphere]
+
+@[simp] lemma exradius_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).exradius = s.exradius := by
+  ext
+  simp [exradius, exsphere]
+
 /-- The distance between the incenter and a face of the simplex. -/
 def inradius : ℝ :=
   (s.exsphere ∅).radius
+
+@[simp] lemma inradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).inradius = s.inradius := by
+  simp_rw [inradius, exsphere_reindex]
+  simp
+
+@[simp] lemma inradius_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).inradius = s.inradius :=
+  congr_fun (s.exradius_map f) _
+
+@[simp] lemma inradius_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).inradius = s.inradius :=
+  congr_fun (s.exradius_restrict S hS) _
 
 @[simp] lemma exsphere_center (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).center = s.excenter signs :=
@@ -267,9 +471,20 @@ def inradius : ℝ :=
 @[simp] lemma exradius_empty : s.exradius ∅ = s.inradius :=
   rfl
 
+@[simp] lemma exsphere_compl (signs : Finset (Fin (n + 1))) :
+    s.exsphere signsᶜ = s.exsphere signs := by
+  simp [exsphere, excenterWeights_compl, excenterWeightsUnnorm_compl, Pi.neg_apply]
+
+@[simp] lemma excenter_compl (signs : Finset (Fin (n + 1))) :
+    s.excenter signsᶜ = s.excenter signs := by
+  simp_rw [excenter, exsphere_compl]
+
+@[simp] lemma exradius_compl (signs : Finset (Fin (n + 1))) :
+    s.exradius signsᶜ = s.exradius signs := by
+  simp_rw [exradius, exsphere_compl]
+
 @[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
-  rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
-  simp [Pi.neg_apply, Finset.sum_neg_distrib, insphere, exsphere]
+  rw [← Finset.compl_empty, exsphere_compl, insphere]
 
 @[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
   rw [excenter, exsphere_univ, insphere_center]
@@ -314,6 +529,22 @@ lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Finset (Fin (n + 1))
 lemma incenter_mem_affineSpan_range : s.incenter ∈ affineSpan ℝ (Set.range s.points) :=
   s.excenterExists_empty.excenter_mem_affineSpan_range
 
+lemma incenter_mem_interior : s.incenter ∈ s.interior := by
+  have h := s.excenterExists_empty.sum_excenterWeights_eq_one
+  rw [incenter_eq_affineCombination, s.affineCombination_mem_interior_iff h]
+  intro i
+  refine ⟨s.excenterWeights_empty_pos i, ?_⟩
+  by_contra! hp
+  obtain ⟨j, hj⟩ := exists_ne i
+  rw [← Finset.sum_add_sum_compl {j, i}, Finset.sum_pair hj] at h
+  revert h
+  apply ne_of_gt
+  nth_rw 2 [add_comm]
+  grw [hp]
+  rw [add_assoc, lt_add_iff_pos_right]
+  exact add_pos_of_pos_of_nonneg (s.excenterWeights_empty_pos j)
+    (Finset.sum_nonneg fun k _ ↦ (s.excenterWeights_empty_pos k).le)
+
 lemma excenter_singleton_mem_affineSpan_range [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     s.excenter {i} ∈ affineSpan ℝ (Set.range s.points) :=
   (s.excenterExists_singleton i).excenter_mem_affineSpan_range
@@ -345,9 +576,229 @@ lemma sign_signedInfDist_incenter (i : Fin (n + 1)) :
   convert s.excenterExists_empty.sign_signedInfDist_excenter i
   simp
 
+variable {s} in
+lemma ExcenterExists.affineCombination_eq_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {w : Fin (n + 1) → ℝ} (hw : ∑ j, w j = 1) :
+    Finset.univ.affineCombination ℝ s.points w = s.excenter signs ↔
+      w = s.excenterWeights signs := by
+  constructor
+  · simp_rw [excenter, exsphere]
+    exact fun he ↦ (affineIndependent_iff_eq_of_fintype_affineCombination_eq ℝ s.points).1
+      s.independent _ _ hw h.sum_excenterWeights_eq_one he
+  · rintro rfl
+    rw [excenter, exsphere]
+
+variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_face {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {fs : Finset (Fin (n + 1))} {m : ℕ} (hfs : #fs = m + 1)
+    (hne : m ≠ n) : s.excenter signs ∉ affineSpan ℝ (Set.range (s.face hfs).points) := by
+  intro hm
+  rw [range_face_points] at hm
+  obtain ⟨i, hi⟩ : ∃ i, i ∉ (fs : Set (Fin (n + 1))) := by
+    simp only [SetLike.mem_coe]
+    have hc : #fs < #(Finset.univ : Finset (Fin (n + 1))) := by
+      have : m + 1 ≤ #fs := hfs.ge
+      grw [fs.subset_univ] at this
+      simp only [Finset.card_univ, Fintype.card_fin] at *
+      lia
+    obtain ⟨i, -, hi⟩ := Finset.exists_mem_notMem_of_card_lt_card hc
+    exact ⟨i, hi⟩
+  rw [excenter_eq_affineCombination] at hm
+  exact h.excenterWeights_ne_zero i (s.independent.eq_zero_of_affineCombination_mem_affineSpan
+    h.sum_excenterWeights_eq_one hm (Finset.mem_univ i) hi)
+
+lemma incenter_notMem_affineSpan_face {fs : Finset (Fin (n + 1))} {m : ℕ} (hfs : #fs = m + 1)
+    (hne : m ≠ n) : s.incenter ∉ affineSpan ℝ (Set.range (s.face hfs).points) :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_face hfs hne
+
+variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_faceOpposite {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    s.excenter signs ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  h.excenter_notMem_affineSpan_face _ (by have := NeZero.ne n; lia)
+
+lemma incenter_notMem_affineSpan_faceOpposite (i : Fin (n + 1)) :
+    s.incenter ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_faceOpposite i
+
+variable {s} in
+lemma ExcenterExists.excenter_ne_point {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.excenter signs ≠ s.points i := by
+  have hf := h.excenter_notMem_affineSpan_face (fs := {i}) (m := 0) (by simp) (NeZero.ne' _)
+  simpa using hf
+
+lemma incenter_ne_point (i : Fin (n + 1)) :
+    s.incenter ≠ s.points i :=
+  s.excenterExists_empty.excenter_ne_point i
+
+variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
+    {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i j : Fin (n + 1)) :
+    s.excenter signs ∉ line[ℝ, s.points i, s.points j] := by
+  by_cases hij : i = j
+  · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
+      AffineSubspace.mem_affineSpan_singleton]
+    exact h.excenter_ne_point j
+  · convert h.excenter_notMem_affineSpan_face (fs := {i, j}) (m := 1) (by simp_all)
+      Nat.AtLeastTwo.ne_one.symm
+    simp [Set.image_insert_eq]
+
+lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
+    s.incenter ∉ line[ℝ, s.points i, s.points j] :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_pair i j
+
+variable {s} in
+lemma ExcenterExists.excenterWeights_eq_excenterWeights_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
+    (h₁ : s.ExcenterExists signs₁) (h₂ : s.ExcenterExists signs₂) :
+    s.excenterWeights signs₁ = s.excenterWeights signs₂ ↔ signs₁ = signs₂ ∨ signs₁ = signs₂ᶜ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have hi : ∀ i, SignType.sign (s.excenterWeights signs₁ i) =
+        SignType.sign (s.excenterWeights signs₂ i) := by
+      simp [h]
+    simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul] at hi
+    have hn₁ : ∑ i, s.excenterWeightsUnnorm signs₁ i ≠ 0 := h₁
+    have hn₂ : ∑ i, s.excenterWeightsUnnorm signs₂ i ≠ 0 := h₂
+    rcases sign_eq_sign_or_eq_neg (inv_ne_zero hn₁) (inv_ne_zero hn₂) with hs | hs
+    · simp only [hs, mul_eq_mul_left_iff, sign_eq_zero_iff, inv_eq_zero, hn₂, or_false] at hi
+      simp only [excenterWeightsUnnorm, sign_mul, inv_pos, height_pos, sign_pos, mul_one] at hi
+      left
+      ext i
+      replace hi := hi i
+      split_ifs at hi <;> simp_all
+    · simp_rw [hs, neg_mul, ← mul_neg, mul_eq_mul_left_iff] at hi
+      simp only [sign_eq_zero_iff, inv_eq_zero, hn₂, or_false] at hi
+      simp only [excenterWeightsUnnorm, sign_mul, inv_pos, height_pos, sign_pos, mul_one] at hi
+      right
+      ext i
+      replace hi := hi i
+      split_ifs at hi <;> simp_all
+  · rcases h with rfl | rfl
+    · rfl
+    · simp
+
+variable {s} in
+lemma ExcenterExists.excenter_eq_excenter_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
+    (h₁ : s.ExcenterExists signs₁) (h₂ : s.ExcenterExists signs₂) :
+    s.excenter signs₁ = s.excenter signs₂ ↔ signs₁ = signs₂ ∨ signs₁ = signs₂ᶜ := by
+  rw [excenter_eq_affineCombination,
+    h₂.affineCombination_eq_excenter_iff (s.sum_excenterWeights_eq_one_iff.2 h₁)]
+  exact h₁.excenterWeights_eq_excenterWeights_iff h₂
+
+variable {s} in
+lemma ExcenterExists.excenter_eq_incenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) :
+    s.excenter signs = s.incenter ↔ signs = ∅ ∨ signs = Finset.univ := by
+  rw [incenter, ← excenter, h.excenter_eq_excenter_iff s.excenterExists_empty]
+  simp
+
+lemma excenter_singleton_ne_incenter [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.excenter {i} ≠ s.incenter := by
+  intro h
+  rw [(s.excenterExists_singleton i).excenter_eq_incenter_iff] at h
+  simp at h
+
+lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
+    Function.Injective fun i ↦ s.excenter {i} := by
+  intro i j hij
+  dsimp only at hij
+  rw [(s.excenterExists_singleton i).excenter_eq_excenter_iff (s.excenterExists_singleton j)] at hij
+  rcases hij with hij | hij
+  · simpa using hij
+  · have : 2 ≤ n := Nat.AtLeastTwo.prop
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
+    rw [Finset.ext_iff] at hij
+    replace hij := hij k
+    simp_all
+
+variable {s} in
+lemma ExcenterExists.sSameSide_excenter_point_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.excenter signs) (s.points i) ↔
+      0 < s.excenterWeights signs i := by
+  rw [excenter_eq_affineCombination,
+    s.sSameSide_affineSpan_faceOpposite_point_right_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sSameSide_point_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i) (s.excenter signs) ↔
+      0 < s.excenterWeights signs i := by
+  rw [excenter_eq_affineCombination,
+    s.sSameSide_affineSpan_faceOpposite_point_left_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sOppSide_excenter_point_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.excenter signs) (s.points i) ↔
+      s.excenterWeights signs i < 0 := by
+  rw [excenter_eq_affineCombination,
+    s.sOppSide_affineSpan_faceOpposite_point_right_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sOppSide_point_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.points i) (s.excenter signs) ↔
+      s.excenterWeights signs i < 0 := by
+  rw [excenter_eq_affineCombination,
+    s.sOppSide_affineSpan_faceOpposite_point_left_iff h.sum_excenterWeights_eq_one]
+
+lemma sSameSide_incenter_point (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide s.incenter (s.points i) :=
+  s.excenterExists_empty.sSameSide_excenter_point_iff.2 (s.excenterWeights_empty_pos i)
+
+lemma sSameSide_point_incenter (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i) s.incenter :=
+  s.excenterExists_empty.sSameSide_point_excenter_iff.2 (s.excenterWeights_empty_pos i)
+
+lemma sOppSide_excenter_singleton_point [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.excenter {i})
+      (s.points i) := by
+  rw [(s.excenterExists_singleton i).sOppSide_excenter_point_iff, ← sign_eq_neg_one_iff,
+    s.sign_excenterWeights_singleton_neg i]
+
+lemma sOppSide_point_excenter_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.points i)
+      (s.excenter {i}) := by
+  rw [(s.excenterExists_singleton i).sOppSide_point_excenter_iff, ← sign_eq_neg_one_iff,
+    s.sign_excenterWeights_singleton_neg i]
+
+lemma sSameSide_excenter_singleton_point [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.excenter {j})
+      (s.points i) := by
+  rw [(s.excenterExists_singleton j).sSameSide_excenter_point_iff, ← sign_eq_one_iff,
+    s.sign_excenterWeights_singleton_pos h.symm]
+
+lemma sSameSide_point_excenter_singleton [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i)
+      (s.excenter {j}) := by
+  rw [(s.excenterExists_singleton j).sSameSide_point_excenter_iff, ← sign_eq_one_iff,
+    s.sign_excenterWeights_singleton_pos h.symm]
+
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
+
+lemma touchpoint_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
+    (i : Fin (m + 1)) :
+    (s.reindex e).touchpoint signs i = s.touchpoint (signs.map e.symm) (e.symm i) :=
+  orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex _ _) (s.excenter_reindex _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+variable {s} in
+@[simp] lemma ExcenterExists.touchpoint_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
+    (s.map f.toAffineMap f.injective).touchpoint signs i = f (s.touchpoint signs i) := by
+  simp [touchpoint, h.excenter_map, ← orthogonalProjectionSpan_map]
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpoint_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).touchpoint signs i = s.touchpoint signs i := by
+  rw [← s.excenterExists_restrict S hS] at h
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (h.touchpoint_map S.subtypeₐᵢ i).symm
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
@@ -404,6 +855,19 @@ lemma dist_incenter (i : Fin (n + 1)) :
   s.excenterExists_empty.dist_excenter _
 
 variable {s} in
+/-- An excenter is equidistant to any two of its touchpoints. -/
+lemma ExcenterExists.dist_excenter_eq_dist_excenter {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i₁ i₂ : Fin (n + 1)) :
+    dist (s.excenter signs) (s.touchpoint signs i₁) =
+      dist (s.excenter signs) (s.touchpoint signs i₂) := by
+  simp_rw [h.dist_excenter]
+
+/-- The incenter is equidistant to any two of its touchpoints. -/
+lemma dist_incenter_eq_dist_incenter (i₁ i₂ : Fin (n + 1)) :
+    dist s.incenter (s.touchpoint ∅ i₁) = dist s.incenter (s.touchpoint ∅ i₂) :=
+  s.excenterExists_empty.dist_excenter_eq_dist_excenter _ _
+
+variable {s} in
 lemma ExcenterExists.touchpoint_mem_exsphere {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.touchpoint signs i ∈ s.exsphere signs :=
   mem_sphere'.2 (h.dist_excenter i)
@@ -445,6 +909,22 @@ lemma isTangentAt_insphere_iff_eq_touchpoint {i : Fin (n + 1)} {p : P} :
     s.insphere.IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points)) ↔
       p = s.touchpoint ∅ i :=
   s.excenterExists_empty.isTangentAt_exsphere_iff_eq_touchpoint
+
+variable {s} in
+lemma ExcenterExists.affineSpan_faceOpposite_eq_orthRadius [hf : Fact (Module.finrank ℝ V = n)]
+    {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    affineSpan ℝ (Set.range (s.faceOpposite i).points) =
+      (s.exsphere signs).orthRadius (s.touchpoint signs i) := by
+  refine (h.isTangentAt_touchpoint i).eq_orthRadius_of_finrank_add_one_eq (h.exradius_pos.ne') ?_
+  rw [direction_affineSpan, (s.faceOpposite i).independent.finrank_vectorSpan_add_one,
+    Fintype.card_fin, hf.out]
+  have := NeZero.ne n
+  lia
+
+lemma affineSpan_faceOpposite_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = n)]
+    (i : Fin (n + 1)) :
+    affineSpan ℝ (Set.range (s.faceOpposite i).points) = s.insphere.orthRadius (s.touchpoint ∅ i) :=
+  s.excenterExists_empty.affineSpan_faceOpposite_eq_orthRadius i
 
 lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
@@ -495,7 +975,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
-    grind [Finset.mem_filter_univ]
+    grind
   · rintro ⟨signs, h⟩
     replace h := (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
     rcases h with ⟨r, h⟩
@@ -523,7 +1003,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
         exact ⟨h', this⟩
       rw [← norm_eq_zero, ← dist_eq_norm_vsub, h.dist_excenter] at h0
       exact h.exradius_pos.ne' h0
-    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
       simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]
@@ -634,6 +1114,40 @@ variable {s} in
   · rintro rfl
     simp
 
+lemma touchpointWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
+    (i : Fin (m + 1)) :
+    (s.reindex e).touchpointWeights signs i =
+      s.touchpointWeights (signs.map e.symm) (e.symm i) ∘ e.symm := by
+  rw [eq_comm, ← affineCombination_eq_touchpoint_iff]
+  · rw [touchpoint_reindex, ← affineCombination_touchpointWeights, reindex]
+    dsimp only
+    rw [← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
+    simp
+  · rw [Finset.sum_comp_equiv]
+    simp
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpointWeights_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).touchpointWeights signs = s.touchpointWeights signs := by
+  ext i : 1
+  rw [← affineCombination_eq_touchpoint_iff
+    ((s.map f.toAffineMap f.injective).sum_touchpointWeights _ _)]
+  have hc := (s.map f.toAffineMap f.injective).affineCombination_touchpointWeights signs i
+  rwa [h.touchpoint_map, map_points, ← Finset.univ.map_affineCombination _ _
+    ((s.map f.toAffineMap f.injective).sum_touchpointWeights _ _), AffineIsometry.coe_toAffineMap,
+    AffineIsometry.map_eq_iff] at hc
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpointWeights_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
+  rw [← s.excenterExists_restrict S hS] at h
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
+
 variable {s} in
 lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) :
@@ -652,7 +1166,7 @@ lemma sign_touchpointWeights_empty {i j : Fin (n + 1)} (hne : i ≠ j) :
   simp
 
 variable {s} in
-lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1)) :
+@[simp] lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1)) :
     s.touchpointWeights signs i i = 0 := by
   refine s.independent.eq_zero_of_affineCombination_mem_affineSpan
     (s.sum_touchpointWeights signs i) ?_ (Finset.mem_univ _)
@@ -661,6 +1175,209 @@ lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1))
   convert s.touchpoint_mem_affineSpan _ _
   simp
 
+lemma touchpointWeights_empty_pos {i j : Fin (n + 1)} (hne : i ≠ j) :
+    0 < s.touchpointWeights ∅ i j := by
+  simpa [sign_eq_one_iff] using s.sign_touchpointWeights_empty hne
+
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
+lemma touchpoint_empty_mem_interior_faceOpposite [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.touchpoint ∅ i ∈ (s.faceOpposite i).interior := by
+  rw [faceOpposite, ← affineCombination_touchpointWeights,
+    s.affineCombination_mem_interior_face_iff_pos _ (s.sum_touchpointWeights _ _)]
+  simp only [Finset.mem_compl, Finset.mem_singleton, Decidable.not_not, forall_eq,
+    touchpointWeights_eq_zero, and_true]
+  intro j hj
+  exact s.touchpointWeights_empty_pos (Ne.symm hj)
+
+lemma sign_touchpointWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights {i} i j) = 1 := by
+  rw [(s.excenterExists_singleton i).sign_touchpointWeights hne,
+    s.sign_excenterWeights_singleton_pos hne]
+
+lemma touchpointWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    0 < s.touchpointWeights {i} i j := by
+  simpa [sign_eq_one_iff] using s.sign_touchpointWeights_singleton_pos hne
+
+lemma touchpoint_singleton_mem_interior_faceOpposite [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.touchpoint {i} i ∈ (s.faceOpposite i).interior := by
+  rw [faceOpposite, ← affineCombination_touchpointWeights,
+    s.affineCombination_mem_interior_face_iff_pos _ (s.sum_touchpointWeights _ _)]
+  simp only [Finset.mem_compl, Finset.mem_singleton, Decidable.not_not, forall_eq,
+    touchpointWeights_eq_zero, and_true]
+  intro j hj
+  exact s.touchpointWeights_singleton_pos (Ne.symm hj)
+
+lemma sign_touchpointWeights_singleton_neg [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights {i} j i) = -1 := by
+  rw [(s.excenterExists_singleton i).sign_touchpointWeights hne.symm,
+    s.sign_excenterWeights_singleton_neg]
+
+lemma touchpointWeights_singleton_neg [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    s.touchpointWeights {i} j i < 0 := by
+  simpa [sign_eq_neg_one_iff] using s.sign_touchpointWeights_singleton_neg hne
+
+variable {s} in
+lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i j : Fin (n + 1)) : s.touchpoint signs i ≠ s.points j := by
+  intro he
+  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
+    (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
+    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  have : 1 < n := Nat.AtLeastTwo.one_lt
+  obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
+  have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
+    rw [he]
+  simp only [ne_eq, hkj, not_false_eq_true,
+    Finset.affineCombinationSingleWeights_apply_of_ne] at he'
+  rw [eq_comm] at he'
+  apply_fun SignType.sign at he'
+  rw [h.sign_touchpointWeights hki.symm, excenterWeights] at he'
+  have h' := h
+  rw [ExcenterExists] at h'
+  simp only [Pi.smul_apply, smul_eq_mul, sign_zero, sign_eq_zero_iff, mul_eq_zero, inv_eq_zero,
+    h', false_or] at he'
+  rw [excenterWeightsUnnorm] at he'
+  by_cases hk : k ∈ signs <;> simp [hk, (s.height_pos k).ne'] at he'
+
+lemma touchpoint_empty_ne_point [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
+    s.touchpoint ∅ i ≠ s.points j :=
+  s.excenterExists_empty.touchpoint_ne_point i j
+
 end Simplex
+
+namespace Triangle
+
+variable (t : Triangle ℝ P)
+
+/-- All excenters exist for a triangle. -/
+lemma excenterExists (signs : Finset (Fin 3)) : t.ExcenterExists signs := by
+  have h : signs = ∅ ∨ signs = ∅ᶜ ∨ ∃ i, signs = {i} ∨ signs = {i}ᶜ := by decide +revert
+  rcases h with rfl | rfl | ⟨i, rfl | rfl⟩
+  · exact t.excenterExists_empty
+  · rw [Simplex.excenterExists_compl]
+    exact t.excenterExists_empty
+  · exact t.excenterExists_singleton _
+  · rw [Simplex.excenterExists_compl]
+    exact t.excenterExists_singleton _
+
+/-- An excenter of a triangle is either the incenter or the excenter opposite a vertex. -/
+lemma excenter_eq_incenter_or_excenter_singleton (signs : Finset (Fin 3)) :
+    t.excenter signs = t.incenter ∨ ∃ i, t.excenter signs = t.excenter {i} := by
+  have h : signs = ∅ ∨ signs = Finset.univ ∨ ∃ i, signs = {i} ∨ signs = {i}ᶜ := by decide +revert
+  rcases h with rfl | rfl | ⟨i, rfl | rfl⟩
+  · exact .inl rfl
+  · exact .inl t.excenter_univ
+  · exact .inr ⟨i, rfl⟩
+  · refine .inr ⟨i, ?_⟩
+    rw [t.excenter_compl]
+
+/-- An excenter of a triangle is either the incenter or the excenter opposite one of three
+enumerated different vertices. This is intended for when it is known a point is an excenter and
+it is to be proved which excenter it is by elimination of the other cases. -/
+lemma excenter_eq_incenter_or_excenter_singleton_of_ne (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    t.excenter signs = t.incenter ∨ t.excenter signs = t.excenter {i₁} ∨
+      t.excenter signs = t.excenter {i₂} ∨ t.excenter signs = t.excenter {i₃} := by
+  rcases t.excenter_eq_incenter_or_excenter_singleton signs with h | ⟨i, h⟩
+  · exact .inl h
+  · refine .inr ?_
+    rw [h]
+    have : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear h; decide +revert
+    grind
+
+lemma sSameSide_affineSpan_pair_incenter_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide t.incenter (t.points i₁) := by
+  convert t.sSameSide_incenter_point i₁
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_point_incenter {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) t.incenter := by
+  convert t.sSameSide_point_incenter i₁
+  simp
+  grind
+
+lemma sOppSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SOppSide (t.excenter {i₁}) (t.points i₁) := by
+  convert t.sOppSide_excenter_singleton_point i₁
+  simp
+  grind
+
+lemma sOppSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SOppSide (t.points i₁) (t.excenter {i₁}) := by
+  convert t.sOppSide_point_excenter_singleton i₁
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.excenter {i₂}) (t.points i₁) := by
+  convert t.sSameSide_excenter_singleton_point h₁₂
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) (t.excenter {i₂}) := by
+  convert t.sSameSide_point_excenter_singleton h₁₂
+  simp
+  grind
+
+lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
+    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃] =
+      (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
+  convert (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
+  have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
+  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+
+lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
+    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃] = t.insphere.orthRadius (t.touchpoint ∅ i₁) :=
+  t.affineSpan_pair_eq_orthRadius ∅ h₁₂ h₁₃ h₂₃
+
+lemma sbtw_touchpoint_empty {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.points i₁) (t.touchpoint ∅ i₂) (t.points i₃) := by
+  rw [← t.mem_interior_face_iff_sbtw h₁₃]
+  convert t.touchpoint_empty_mem_interior_faceOpposite i₂
+  rw [Affine.Simplex.faceOpposite]
+  convert rfl using 2
+  decide +revert
+
+lemma sbtw_touchpoint_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.points i₁) (t.touchpoint {i₂} i₂) (t.points i₃) := by
+  rw [← t.mem_interior_face_iff_sbtw h₁₃]
+  convert t.touchpoint_singleton_mem_interior_faceOpposite i₂
+  rw [Affine.Simplex.faceOpposite]
+  convert rfl using 2
+  decide +revert
+
+lemma touchpoint_singleton_sbtw {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.touchpoint {i₁} i₂) (t.points i₃) (t.points i₁) := by
+  rw [← Affine.Simplex.affineCombination_touchpointWeights]
+  have hw := t.sum_touchpointWeights {i₁} i₂
+  rw [(by clear hw; decide +revert : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃})] at hw
+  simp only [Nat.reduceAdd, Finset.mem_insert, h₁₂, Finset.mem_singleton, h₁₃, or_self,
+    not_false_eq_true, Finset.sum_insert, h₂₃, Simplex.touchpointWeights_eq_zero,
+    Finset.sum_singleton, zero_add] at hw
+  have h : t.touchpointWeights {i₁} i₂ =
+      Finset.affineCombinationLineMapWeights i₁ i₃ (t.touchpointWeights {i₁} i₂ i₃) := by
+    ext i
+    have h : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear hw; decide +revert
+    rcases h with rfl | rfl | rfl
+    · rw [Finset.affineCombinationLineMapWeights_apply_left h₁₃]
+      simp [← hw]
+    · simp [h₁₂.symm, h₂₃]
+    · simp [h₁₃]
+  rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+    (Finset.mem_univ _), sbtw_iff_right_ne_and_left_mem_image_Ioi]
+  simp [t.independent.injective.ne h₁₃, ← hw, t.touchpointWeights_singleton_neg h₁₂]
+
+end Triangle
 
 end Affine

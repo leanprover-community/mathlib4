@@ -3,8 +3,10 @@ Copyright (c) 2025 Junqi Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junqi Liu, Jinzhao Pan
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
 
 /-!
 # shifted Legendre Polynomials
@@ -26,7 +28,9 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 shifted Legendre polynomials, derivative
 -/
 
-open Nat BigOperators Finset
+@[expose] public section
+
+open Nat Finset
 
 namespace Polynomial
 
@@ -36,6 +40,7 @@ These polynomials appear in combinatorics and the theory of orthogonal polynomia
 noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1 : ℤ) ^ k * n.choose k * (n + k).choose n) * X ^ k
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shifted Legendre polynomial multiplied by a factorial equals the higher-order derivative of
 the combinatorial function `X ^ n * (1 - X) ^ n`. This is the analogue of Rodrigues' formula for
 the shifted Legendre polynomials. -/
@@ -58,7 +63,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr! 1 with x _
     rw [show (n.choose x • (-1) ^ x : ℤ[X]) = C (n.choose x • (-1) ^ x) by simp,
       iterate_derivative_C_mul, iterate_derivative_X_pow_eq_smul,
-      descFactorial_eq_div (by cutsat), show n + x - n = x by cutsat]
+      descFactorial_eq_div (by lia), show n + x - n = x by lia]
     simp only [Int.reduceNeg, nsmul_eq_mul, eq_intCast, Int.cast_mul, Int.cast_natCast,
       Int.cast_pow, Int.cast_neg, Int.cast_one, zsmul_eq_mul]
     ring
@@ -81,7 +86,7 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
     (shiftedLegendre n).coeff k = (-1) ^ k * n.choose k * (n + k).choose n := by
   rw [shiftedLegendre, finset_sum_coeff]
   simp_rw [coeff_C_mul_X_pow]
-  simp +contextual [choose_eq_zero_of_lt, add_one_le_iff]
+  simp +contextual [choose_eq_zero_of_lt]
 
 /-- The degree of `shiftedLegendre n` is `n`. -/
 @[simp] theorem degree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).degree = n := by
@@ -102,7 +107,7 @@ theorem neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq (n : ℕ) :
     factorial_mul_shiftedLegendre_eq, ← iterate_derivative_comp_one_sub_X]
   simp [mul_comm]
 
-/-- The values ​​of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
+/-- The values of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
 lemma shiftedLegendre_eval_symm (n : ℕ) {R : Type*} [Ring R] (x : R) :
     aeval x (shiftedLegendre n) = (-1) ^ n * aeval (1 - x) (shiftedLegendre n) := by
   have := congr(aeval x $(neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq n))

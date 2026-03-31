@@ -3,9 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Order.WellFoundedSet
 
 /-! # Multiplication antidiagonal -/
+
+@[expose] public section
 
 
 namespace Set
@@ -99,7 +103,7 @@ variable {s t}
 
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
-  refine not_infinite.1 fun h => ?_
+  by_contra! h
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
     fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
   have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=

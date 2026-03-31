@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces
@@ -15,6 +17,8 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
+
+@[expose] public section
 
 open Module
 open scoped InnerProductSpace
@@ -29,7 +33,7 @@ noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜
   norm_sq_eq_re_inner x := by
-    simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_re_inner]
+    simp [prod_norm_sq_eq_of_L2]
   conj_inner_symm x y := by
     simp
   add_left x y z := by
@@ -59,19 +63,86 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
     · simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
-        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
-        WithLp.prod_inner_apply, WithLp.ofLp_toLp, Sum.forall, Sum.elim_inl,
-        Function.comp_apply, inner_zero_right, add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq,
-        reduceCtorEq, not_false_eq_true, inner_zero_left, imp_self, implies_true, and_true,
-        Sum.inr.injEq, true_and]
+        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.coe_symm_linearEquiv,
+        WithLp.prod_inner_apply, Sum.forall, Sum.elim_inl, Function.comp_apply, inner_zero_right,
+        add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq, reduceCtorEq, not_false_eq_true,
+        inner_zero_left, imp_self, implies_true, and_true, Sum.inr.injEq, true_and]
       exact ⟨v.orthonormal.2, w.orthonormal.2⟩)
 
 @[simp] theorem prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     ∀ i : ι₁ ⊕ ι₂, v.prod w i =
-      Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
+      Sum.elim ((WithLp.toLp 2) ∘ (LinearMap.inl 𝕜 E F) ∘ v)
+        ((WithLp.toLp 2) ∘ (LinearMap.inr 𝕜 E F) ∘ w) i := by
   rw [Sum.forall]
   unfold OrthonormalBasis.prod
   aesop
 
 end OrthonormalBasis
+
+namespace Submodule
+
+variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
+
+/-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then `E` is
+isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
+@[simps! symm_apply]
+def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
+  __ := (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm
+    ≪≫ₗ (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm
+  norm_map' _ := by
+    rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2,
+      K.norm_sq_eq_add_norm_sq_projection]
+    simp [starProjection_apply_eq_isComplProjection]
+
+@[simp]
+theorem orthogonalDecomposition_apply :
+    K.orthogonalDecomposition x =
+      .toLp 2 (K.orthogonalProjection x, Kᗮ.orthogonalProjection x) := by
+  simp [orthogonalDecomposition, orthogonalProjection_apply_eq_linearProjOfIsCompl]
+
+theorem toLinearEquiv_orthogonalDecomposition :
+    K.orthogonalDecomposition.toLinearEquiv =
+      (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm ≪≫ₗ
+        (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm :=
+  rfl
+
+theorem toLinearEquiv_orthogonalDecomposition_symm :
+    K.orthogonalDecomposition.symm.toLinearEquiv =
+      WithLp.linearEquiv 2 𝕜 (K × Kᗮ) ≪≫ₗ
+        K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+theorem coe_orthogonalDecomposition :
+    (K.orthogonalDecomposition : E →L[𝕜] WithLp 2 (K × Kᗮ)) =
+      (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘L
+        K.orthogonalProjection.prod Kᗮ.orthogonalProjection := by
+  ext; simp
+
+set_option backward.isDefEq.respectTransparency false in
+theorem coe_orthogonalDecomposition_symm :
+    (K.orthogonalDecomposition.symm : WithLp 2 (K × Kᗮ) →L[𝕜] E) =
+      K.subtypeL.coprod Kᗮ.subtypeL ∘L WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ :=
+  rfl
+
+theorem fst_orthogonalDecomposition_apply :
+    (K.orthogonalDecomposition x).fst = K.orthogonalProjection x := by
+  simp
+
+theorem snd_orthogonalDecomposition_apply :
+    (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjection x := by
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+theorem fstL_comp_coe_orthogonalDecomposition :
+    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjection := by
+  ext; simp
+
+set_option backward.isDefEq.respectTransparency false in
+theorem sndL_comp_coe_orthogonalDecomposition :
+    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjection := by
+  ext; simp
+
+end Submodule
+
 end

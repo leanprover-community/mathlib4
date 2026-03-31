@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Images
 Note that we don't need to register any of the constructions here as instances, because we get them
 from the fact that `ModuleCat R` is an abelian category.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -59,14 +63,14 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
     map_add' := fun x y => by
       apply (mono_iff_injective F'.m).1
       · infer_instance
-      rw [LinearMap.map_add]
+      rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
       simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
       rfl
     map_smul' := fun c x => by
       apply (mono_iff_injective F'.m).1
       · infer_instance
-      rw [LinearMap.map_smul]
+      rw [map_smul]
       change (F'.e ≫ F'.m) _ = _ • (F'.e ≫ F'.m) _
       simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
       rfl }

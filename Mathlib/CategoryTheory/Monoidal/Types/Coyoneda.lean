@@ -3,12 +3,16 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -16,6 +20,7 @@ namespace CategoryTheory
 
 open Opposite MonoidalCategory
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (coyoneda.obj (op (𝟙_ C))).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom

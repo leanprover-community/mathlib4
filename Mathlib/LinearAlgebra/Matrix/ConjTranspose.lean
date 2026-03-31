@@ -3,15 +3,17 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Star.BigOperators
-import Mathlib.Algebra.Star.Module
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Star.BigOperators
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over star rings.
@@ -23,6 +25,8 @@ The scope `Matrix` gives the following notation:
 * `ᴴ` for `Matrix.conjTranspose`
 
 -/
+
+@[expose] public section
 
 
 universe u u' v w
@@ -46,8 +50,6 @@ lemma conjTranspose_single [DecidableEq n] [DecidableEq m] [AddMonoid α]
     (single i j a)ᴴ = single j i (star a) := by
   change (single i j a).transpose.map starAddEquiv = single j i (star a)
   simp
-
-@[deprecated (since := "2025-05-05")] alias conjTranspose_stdBasisMatrix := conjTranspose_single
 
 section Diagonal
 
@@ -131,6 +133,11 @@ theorem conjTranspose_apply [Star α] (M : Matrix m n α) (i j) :
 @[simp]
 theorem conjTranspose_conjTranspose [InvolutiveStar α] (M : Matrix m n α) : Mᴴᴴ = M :=
   Matrix.ext <| by simp
+
+variable (n α) in
+theorem conjTranspose_involutive [InvolutiveStar α] :
+    (conjTranspose : Matrix n n α → Matrix n n α).Involutive :=
+  conjTranspose_conjTranspose
 
 theorem conjTranspose_transpose [Star α] (M : Matrix m n α) :
     Mᴴᵀ = M.map star :=
@@ -245,15 +252,13 @@ theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n �
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
 
-@[simp]
 theorem conjTranspose_nsmul [AddMonoid α] [StarAddMonoid α] (c : ℕ) (M : Matrix m n α) :
-    (c • M)ᴴ = c • Mᴴ :=
-  Matrix.ext <| by simp
+    (c • M)ᴴ = c • Mᴴ := by
+  simp
 
-@[simp]
 theorem conjTranspose_zsmul [AddGroup α] [StarAddMonoid α] (c : ℤ) (M : Matrix m n α) :
-    (c • M)ᴴ = c • Mᴴ :=
-  Matrix.ext <| by simp
+    (c • M)ᴴ = c • Mᴴ := by
+  simp
 
 @[simp]
 theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
@@ -350,8 +355,9 @@ variable (m n R α)
 /-- `Matrix.conjTranspose` as a `LinearMap` -/
 @[simps apply]
 def conjTransposeLinearEquiv [CommSemiring R] [StarRing R] [AddCommMonoid α] [StarAddMonoid α]
-    [Module R α] [StarModule R α] : Matrix m n α ≃ₗ⋆[R] Matrix n m α :=
-  { conjTransposeAddEquiv m n α with map_smul' := conjTranspose_smul }
+    [Module R α] [StarModule R α] : Matrix m n α ≃ₗ⋆[R] Matrix n m α where
+  __ := conjTransposeAddEquiv m n α
+  map_smul' := conjTranspose_smul
 
 @[simp]
 theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMonoid α]
@@ -363,14 +369,11 @@ variable {m n R α}
 variable (m α)
 
 /-- `Matrix.conjTranspose` as a `RingEquiv` to the opposite ring -/
-@[simps]
-def conjTransposeRingEquiv [Semiring α] [StarRing α] [Fintype m] :
-    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  { (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᴴ
-    invFun := fun M => M.unopᴴ
-    map_mul' := fun M N =>
-      (congr_arg MulOpposite.op (conjTranspose_mul M N)).trans (MulOpposite.op_mul _ _) }
+@[simps!]
+def conjTransposeRingEquiv [NonUnitalNonAssocSemiring α] [StarRing α] [Fintype m] :
+    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
+  __ := (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv
+  map_mul' M N := (congrArg MulOpposite.op <| conjTranspose_mul M N).trans <| MulOpposite.op_mul ..
 
 variable {m α}
 

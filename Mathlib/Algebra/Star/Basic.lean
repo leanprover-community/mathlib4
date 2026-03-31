@@ -3,15 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Star monoids, rings, and modules
@@ -31,7 +33,11 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
+@[expose] public section
+
 assert_not_exists Finset Subgroup Rat.instField
+
+open scoped Ring
 
 universe u v w
 
@@ -144,6 +150,8 @@ alias ⟨_, Commute.star_star⟩ := commute_star_star
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
 
+alias ⟨Commute.star_right, Commute.star_left⟩ := commute_star_comm
+
 end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
@@ -169,6 +177,11 @@ variable (R) in
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
+
+@[simp]
+lemma Pi.star_mulSingle {ι : Type*} {R : ι → Type*} [DecidableEq ι] [∀ i, MulOneClass (R i)]
+    [∀ i, StarMul (R i)] (i : ι) (r : R i) : star (mulSingle i r) = mulSingle i (star r) := by
+  ext; exact apply_mulSingle (fun _ ↦ star) (fun _ ↦ star_one _) ..
 
 @[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
@@ -231,6 +244,11 @@ theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 
 @[simp]
+lemma Pi.star_single {ι : Type*} {R : ι → Type*} [DecidableEq ι] [∀ i, AddMonoid (R i)]
+    [∀ i, StarAddMonoid (R i)] (i : ι) (r : R i) : star (single i r) = single i (star r) := by
+  ext; exact apply_single (fun _ ↦ star) (fun _ ↦ star_zero _) ..
+
+@[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
   starAddEquiv.map_eq_zero_iff (M := R)
 
@@ -245,11 +263,9 @@ theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
 theorem star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star r - star s :=
   (starAddEquiv : R ≃+ R).map_sub _ _
 
-@[simp]
 theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_nsmul _ _
 
-@[simp]
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
@@ -390,10 +406,10 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] :
-    StarModule ℕ α where star_smul := star_nsmul
+instance StarAddMonoid.toStarModuleNat {α} [AddMonoid α] [StarAddMonoid α] : StarModule ℕ α where
+  star_smul := star_nsmul
 
-instance StarAddMonoid.toStarModuleInt {α} [AddCommGroup α] [StarAddMonoid α] : StarModule ℤ α where
+instance StarAddMonoid.toStarModuleInt {α} [AddGroup α] [StarAddMonoid α] : StarModule ℤ α where
   star_smul := star_zsmul
 
 namespace RingHomInvPair
@@ -453,7 +469,7 @@ theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit 
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
-    Ring.inverse (star a) = star (Ring.inverse a) := by
+    (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
     rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]

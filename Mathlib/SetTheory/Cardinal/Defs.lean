@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.ULift
-import Mathlib.Util.Delaborators
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.ULift
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Util.Delaborators
 
 /-!
 # Cardinal Numbers
@@ -46,6 +48,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -89,22 +93,22 @@ instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 
 @[elab_as_elim]
-theorem inductionOn {p : Cardinal → Prop} (c : Cardinal) (h : ∀ α, p #α) : p c :=
-  Quotient.inductionOn c h
+theorem inductionOn {motive : Cardinal → Prop} (c : Cardinal) (mk : ∀ α, motive #α) : motive c :=
+  Quotient.inductionOn c mk
 
 @[elab_as_elim]
-theorem inductionOn₂ {p : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (h : ∀ α β, p #α #β) : p c₁ c₂ :=
-  Quotient.inductionOn₂ c₁ c₂ h
+theorem inductionOn₂ {motive : Cardinal → Cardinal → Prop} (c₁ c₂ : Cardinal)
+    (mk : ∀ α β, motive #α #β) : motive c₁ c₂ :=
+  Quotient.inductionOn₂ c₁ c₂ mk
 
 @[elab_as_elim]
-theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
-  Quotient.inductionOn₃ c₁ c₂ c₃ h
+theorem inductionOn₃ {motive : Cardinal → Cardinal → Cardinal → Prop} (c₁ c₂ c₃ : Cardinal)
+    (mk : ∀ α β γ, motive #α #β #γ) : motive c₁ c₂ c₃ :=
+  Quotient.inductionOn₃ c₁ c₂ c₃ mk
 
-theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
-  Quotient.induction_on_pi f h
+theorem induction_on_pi {ι : Type*} {motive : (ι → Cardinal) → Prop}
+    (f : ι → Cardinal) (mk : ∀ f : ι → Type v, motive fun i ↦ #(f i)) : motive f :=
+  Quotient.induction_on_pi f mk
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
@@ -225,6 +229,9 @@ theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α :=
 theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
   mk_ne_zero_iff.2 ‹_›
 
+theorem nonempty_out {x : Cardinal} (h : x ≠ 0) : Nonempty x.out := by
+  rwa [← mk_ne_zero_iff, mk_out]
+
 instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
@@ -273,7 +280,7 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 
-theorem mk_arrow (α : Type u) (β : Type v) : #(α → β) = (lift.{u} #β^lift.{v} #α) :=
+theorem mk_arrow (α : Type u) (β : Type v) : #(α → β) = (lift.{u} #β ^ lift.{v} #α) :=
   mk_congr (Equiv.ulift.symm.arrowCongr Equiv.ulift.symm)
 
 @[simp]
@@ -380,7 +387,7 @@ theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
     Equiv.ulift.trans <|
       Equiv.sigmaCongrRight fun a =>
     -- Porting note: Inserted universe hint .{_,_,v} below
-        Nonempty.some <| by rw [← lift_mk_eq.{_,_,v}, mk_out, mk_out, lift_lift]
+        Nonempty.some <| by rw [← lift_mk_eq.{_, _, v}, mk_out, mk_out, lift_lift]
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
@@ -442,16 +449,20 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
 
-theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
-    a ^ sum f = prod fun i ↦ a ^ f i := by
+theorem lift_power_sum {ι : Type u} (a : Cardinal.{v}) (f : ι → Cardinal.{v}) :
+    lift.{u, v} a ^ sum f = prod fun i ↦ a ^ f i := by
   induction a using Cardinal.inductionOn with | _ α =>
   induction f using induction_on_pi with | _ f =>
-  simp_rw [prod, sum, power_def]
+  simp_rw [← mk_uLift, prod, sum, power_def]
   apply mk_congr
-  refine (Equiv.piCurry fun _ _ => α).trans ?_
+  refine (Equiv.piCurry fun _ _ => ULift α).trans ?_
   refine Equiv.piCongrRight fun b => ?_
-  refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
+  refine (Equiv.arrowCongr outMkEquiv Equiv.ulift).trans ?_
   exact outMkEquiv.symm
+
+theorem power_sum {ι : Type u} (a : Cardinal.{max u v}) (f : ι → Cardinal.{max u v}) :
+    a ^ sum f = prod fun i ↦ a ^ f i := by
+  simpa [← lift_umax] using lift_power_sum a f
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
@@ -466,8 +477,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 def aleph0 : Cardinal.{u} :=
   lift #ℕ
 
-@[inherit_doc]
-scoped notation "ℵ₀" => Cardinal.aleph0
+@[inherit_doc] scoped notation "ℵ₀" => Cardinal.aleph0
+recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm

@@ -3,9 +3,11 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Algebra.Order.Floor.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+public import Mathlib.Algebra.ContinuedFractions.Translations
+public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -16,15 +18,15 @@ This is a collection of simple lemmas between the different structures used for 
 of continued fractions defined in `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
 The file consists of three sections:
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
-  rules and recurrences for the computation of the stream of integer and fractional parts of
-  a value.
+   rules and recurrences for the computation of the stream of integer and fractional parts of
+   a value.
 2. Translation lemmas for the head term: these lemmas show us that the head term of the computed
-  continued fraction of a value `v` is `⌊v⌋` and how this head term is moved along the structures
-  used in the computation process.
+   continued fraction of a value `v` is `⌊v⌋` and how this head term is moved along the structures
+   used in the computation process.
 3. Translation lemmas for the sequence: these lemmas show how the sequences of the involved
-  structures (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected,
-  i.e. how the values are moved along the structures and the termination of one sequence implies
-  the termination of another sequence.
+   structures (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected,
+   i.e. how the values are moved along the structures and the termination of one sequence implies
+   the termination of another sequence.
 
 ## Main Theorems
 
@@ -37,6 +39,8 @@ The file consists of three sections:
   of the computed continued fraction can be obtained from the stream of integer and fractional
   parts.
 -/
+
+public section
 
 assert_not_exists Finset
 

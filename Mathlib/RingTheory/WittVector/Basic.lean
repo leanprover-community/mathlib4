@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Counit
-import Mathlib.Algebra.MvPolynomial.Invertible
-import Mathlib.RingTheory.WittVector.Defs
+module
+
+public import Mathlib.Algebra.MvPolynomial.Counit
+public import Mathlib.Algebra.MvPolynomial.Invertible
+public import Mathlib.RingTheory.WittVector.Defs
 
 /-!
 # Witt vectors
@@ -43,6 +45,8 @@ in this file.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -124,6 +128,7 @@ end WittVector
 
 namespace WittVector
 
+set_option backward.privateInPublic true in
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`.
 This function will be bundled as the ring homomorphism `WittVector.ghostMap`
@@ -160,12 +165,15 @@ theorem matrix_vecEmpty_coeff {R} (i j) :
 variable [Fact p.Prime]
 variable (x y : WittVector p R)
 
+set_option backward.privateInPublic true in
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
   ghost_fun_tac 0, ![]
 
+set_option backward.privateInPublic true in
 private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
   ghost_fun_tac 1, ![]
 
+set_option backward.privateInPublic true in
 private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
 
@@ -176,6 +184,7 @@ private theorem ghostFun_natCast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
 
+set_option backward.privateInPublic true in
 private theorem ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
   ghost_fun_tac X 0 * X 1, ![x.coeff, y.coeff]
 
@@ -198,6 +207,7 @@ end GhostFun
 
 variable (p) (R)
 
+set_option backward.privateInPublic true in
 /-- The bijection between `𝕎 R` and `ℕ → R`, under the assumption that `p` is invertible in `R`.
 In `WittVector.ghostEquiv` we upgrade this to an isomorphism of rings. -/
 private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
@@ -219,18 +229,19 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 variable [Fact p.Prime]
 
-@[local instance]
-private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
+private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
     ghostFun_pow ghostFun_natCast ghostFun_intCast
 
-@[local instance]
-private abbrev comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
+set_option backward.privateInPublic true in
+private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
@@ -258,6 +269,21 @@ theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f :
 theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
 
+variable (R) in
+@[simp]
+theorem map_id : WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
+  ext; simp
+
+theorem map_eq_zero_iff (f : R →+* S) {x : WittVector p R} :
+    ((map f) x) = 0 ↔ ∀ n, f (x.coeff n) = 0 := by
+  refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
+  · apply_fun (·.coeff n) at h
+    simpa using h
+  · ext n
+    simpa using h n
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `WittVector.ghostMap` is a ring homomorphism that maps each Witt vector
 to the sequence of its ghost components. -/
 def ghostMap : 𝕎 R →+* ℕ → R where
@@ -275,6 +301,21 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
 
+theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
+    (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
+  rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]
+  apply Finset.dvd_sum
+  intro i hi
+  simp only [Finset.mem_range] at hi
+  have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
+      (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
+    simp [MvPolynomial.aeval_monomial, map_pow]
+  rw [this, show n + 1 = (n - i) + 1 + i by lia, pow_add, mul_comm]
+  gcongr
+  · exact hx i (Nat.le_of_lt_succ hi)
+  · exact ((n - i).lt_two_pow_self).succ_le.trans
+        (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
+
 @[simp]
 theorem ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n x :=
   rfl
@@ -284,6 +325,8 @@ section Invertible
 variable (p R)
 variable [Invertible (p : R)]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `WittVector.ghostMap` is a ring isomorphism when `p` is invertible in `R`. -/
 def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
   { (ghostMap : 𝕎 R →+* ℕ → R), ghostEquiv' p R with }

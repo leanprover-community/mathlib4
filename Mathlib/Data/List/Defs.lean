@@ -3,13 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Control.Functor
-import Mathlib.Data.SProd
-import Mathlib.Util.CompileInductive
-import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Basic
-import Batteries.Logic
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Control.Functor
+public import Mathlib.Data.SProd
+public import Mathlib.Util.CompileInductive
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Data.List.Basic
+public import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -17,6 +19,8 @@ import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -143,11 +147,14 @@ section Permutations
 `(ys ++ ts, (insert_left ys t ts).map f ++ r)`, where `insert_left ys t ts` (not explicitly
 defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤ n < length ys`.
 
+```
     permutations_aux2 10 [4, 5, 6] [] [1, 2, 3] id =
       ([1, 2, 3, 4, 5, 6],
        [[10, 1, 2, 3, 4, 5, 6],
         [1, 10, 2, 3, 4, 5, 6],
-        [1, 2, 10, 3, 4, 5, 6]]) -/
+        [1, 2, 10, 3, 4, 5, 6]])
+```
+-/
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
@@ -173,9 +180,12 @@ def permutationsAux : List α → List α → List (List α) :=
 
 /-- List of all permutations of `l`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [3, 2, 1],
-        [2, 3, 1], [3, 1, 2], [1, 3, 2]] -/
+        [2, 3, 1], [3, 1, 2], [1, 3, 2]]
+```
+-/
 def permutations (l : List α) : List (List α) :=
   l :: permutationsAux l []
 
@@ -186,10 +196,13 @@ which plays roughly the same role in `permutations`.
 Note that `(permutationsAux2 t [] [] ts id).2` is similar to this function, but skips the last
 position:
 
+```
     permutations'Aux 10 [1, 2, 3] =
       [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3], [1, 2, 3, 10]]
     (permutationsAux2 10 [] [] [1, 2, 3] id).2 =
-      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]] -/
+      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]]
+```
+-/
 @[simp]
 def permutations'Aux (t : α) : List α → List (List α)
   | [] => [[t]]
@@ -199,9 +212,12 @@ def permutations'Aux (t : α) : List α → List (List α)
 simpler definitional equations. The permutations are in a different order,
 but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
-        [1, 3, 2], [3, 1, 2], [3, 2, 1]] -/
+        [1, 3, 2], [3, 1, 2], [3, 2, 1]]
+```
+-/
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
@@ -463,5 +479,12 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
+
+section consecutivePairs
+
+/-- `consecutivePairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
+abbrev consecutivePairs (l : List α) : List (α × α) := l.zip l.tail
+
+end consecutivePairs
 
 end List

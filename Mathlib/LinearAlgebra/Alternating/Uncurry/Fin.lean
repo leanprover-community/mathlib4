@@ -3,41 +3,47 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.Data.Fin.Parity
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps
 
 Given a function `f` which is linear in the first argument
 and is alternating form in the other `n` arguments,
-this file defines an alternating form `AlternatingMap.uncurryFin f` in `n + 1` arguments.
+this file defines an alternating form `AlternatingMap.alternatizeUncurryFin f` in `n + 1` arguments.
 
 This function is given by
 ```
-AlternatingMap.uncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
+AlternatingMap.alternatizeUncurryFin f v =
+  ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
 ```
 
 Given an alternating map `f` of `n + 1` arguments,
 each term in the sum above written for `f.curryLeft` equals the original map,
-thus `f.curryLeft.uncurryFin = (n + 1) • f`.
+thus `f.curryLeft.alternatizeUncurryFin = (n + 1) • f`.
 
-We do not multiply the result of `uncurryFin` by `(n + 1)⁻¹`
+We do not multiply the result of `alternatizeUncurryFin` by `(n + 1)⁻¹`
 so that the construction works for `R`-multilinear maps over any commutative ring `R`,
 not only a field of characteristic zero.
 
 ## Main results
 
-- `AlternatingMap.uncurryFin_curryLeft`: the round-trip formula for currying/uncurrying, see above.
+- `AlternatingMap.alternatizeUncurryFin_curryLeft`:
+  the round-trip formula for currying/uncurrying, see above.
 
-- `AlternatingMap.uncurryFin_uncurryFinLM_comp_of_symmetric`:
+- `AlternatingMap.alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric`:
   If `f` is a symmetric bilinear map taking values in the space of alternating maps,
   then the twice uncurried `f` is zero.
 
 A version of the latter theorem for continuous alternating maps
 will be used to prove that the second exterior derivative of a differential form is zero.
 -/
+
+@[expose] public section
 
 open Fin Function
 
@@ -67,7 +73,7 @@ Then `(-1) ^ i • f (w i) + (-1) ^ j • f (w j) = 0`.
 This follows from the fact that these two vectors differ by a permutation of sign `(-1) ^ (i + j)`.
 
 These are the only two nonzero terms in the proof of `map_eq_zero_of_eq`
-in the definition of `uncurryFin` below. -/
+in the definition of `alternatizeUncurryFin` below. -/
 theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→ₗ[R] N)
     {v : Fin (n + 1) → M} {i j : Fin (n + 1)} (hvij : v i = v j) (hij : i ≠ j) :
     (-1) ^ (i : ℕ) • f (i.removeNth v) + (-1) ^ (j : ℕ) • f (j.removeNth v) = 0 := by
@@ -87,12 +93,12 @@ build an alternating form in `n + 1` arguments.
 
 The function is given by
 ```
-uncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
+alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
 ```
 
 Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
 since we want to avoid division in this definition. -/
-def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
+def alternatizeUncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
   toMultilinearMap :=
     ∑ p : Fin (n + 1), (-1) ^ (p : ℕ) • LinearMap.uncurryMid p (toMultilinearMapLM ∘ₗ f)
@@ -108,59 +114,110 @@ def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
       _ = 0 := by
         rw [hvij, neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq] <;> assumption
 
-theorem uncurryFin_apply (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 1) → M) :
-    uncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v) := by
-  simp [uncurryFin]
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin := alternatizeUncurryFin
+
+theorem alternatizeUncurryFin_apply (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 1) → M) :
+    alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v) := by
+  simp [alternatizeUncurryFin]
+
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin_apply := alternatizeUncurryFin_apply
 
 @[simp]
-theorem uncurryFin_add (f g : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
-    uncurryFin (f + g) = uncurryFin f + uncurryFin g := by
+theorem alternatizeUncurryFin_add (f g : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
+    alternatizeUncurryFin (f + g) = alternatizeUncurryFin f + alternatizeUncurryFin g := by
   ext
-  simp [uncurryFin_apply, Finset.sum_add_distrib]
+  simp [alternatizeUncurryFin_apply, Finset.sum_add_distrib]
+
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin_add := alternatizeUncurryFin_add
 
 @[simp]
-lemma uncurryFin_curryLeft (f : M [⋀^Fin (n + 1)]→ₗ[R] N) :
-    uncurryFin (curryLeft f) = (n + 1) • f := by
+lemma alternatizeUncurryFin_curryLeft (f : M [⋀^Fin (n + 1)]→ₗ[R] N) :
+    alternatizeUncurryFin (curryLeft f) = (n + 1) • f := by
   ext v
-  simp [uncurryFin_apply, ← map_insertNth]
+  simp [alternatizeUncurryFin_apply, ← map_insertNth]
+
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin_curryLeft := alternatizeUncurryFin_curryLeft
 
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
 @[simp]
-theorem uncurryFin_smul
-    (c : S) (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
-    uncurryFin (c • f) = c • uncurryFin f := by
+theorem alternatizeUncurryFin_smul (c : S) (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
+    alternatizeUncurryFin (c • f) = c • alternatizeUncurryFin f := by
   ext v
-  simp [uncurryFin_apply, smul_comm _ c, Finset.smul_sum]
+  simp [alternatizeUncurryFin_apply, smul_comm _ c, Finset.smul_sum]
 
-/-- `AlternatingMap.uncurryFin` as a linear map. -/
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin_smul := alternatizeUncurryFin_smul
+
+/-- `AlternatingMap.alternatizeUncurryFin` as a linear map. -/
 @[simps! apply]
-def uncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M [⋀^Fin (n + 1)]→ₗ[R] N where
-  toFun := uncurryFin
-  map_add' := uncurryFin_add
-  map_smul' := uncurryFin_smul
+def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M [⋀^Fin (n + 1)]→ₗ[R] N where
+  toFun := alternatizeUncurryFin
+  map_add' := alternatizeUncurryFin_add
+  map_smul' := alternatizeUncurryFin_smul
+
+@[deprecated (since := "2025-09-30")]
+alias uncurryFinLM := alternatizeUncurryFinLM
+
+/-- If `f` is a bilinear map taking values in the space of alternating maps,
+then evaluation of the twice uncurried `f` on a tuple of vectors `v`
+can be represented as a sum of
+
+$$
+f(v_i, v_j; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-) -
+f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
+$$
+
+over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
+Here $\hat{v_i}$ and $\hat{v_j}$ mean that these vectors are removed from the tuple.
+
+We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
+to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,
+so the power of `-1` is off by one compared to the informal texts.
+
+In particular, if `f` is symmetric in the first two arguments,
+then the resulting alternating map is zero,
+see `alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric` below.
+-/
+theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
+    (f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 2) → M) :
+    alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) v =
+      ∑ (i : Fin (n + 1)), ∑ j ≥ i,
+        (-1 : ℤ) ^ (i + j : ℕ) •
+          (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
+            f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
+  simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
+    alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, val_castSucc,
+    val_succ]
+  refine Fintype.sum_congr _ _ fun i ↦ Finset.sum_congr rfl fun j hj ↦ ?_
+  rw [Finset.mem_Ici] at hj
+  have H₁ : i.castSucc.removeNth v j = v j.succ := by
+    simp [Fin.removeNth_apply, Fin.succAbove_of_le_castSucc, hj]
+  have H₂ : j.succ.removeNth v i = v i.castSucc := by
+    simp [Fin.removeNth_apply, Fin.succAbove_of_castSucc_lt, hj]
+  simp only [pow_add, mul_smul, pow_one, neg_one_smul, smul_neg, smul_sub, ← sub_eq_add_neg,
+    smul_comm ((-1 : ℤ) ^ (j : ℕ)), H₁, H₂]
+  congr 4
+  rw [removeNth_removeNth_eq_swap]
+  simp [Fin.predAbove, hj, Fin.succAbove]
 
 /-- If `f` is a symmetric bilinear map taking values in the space of alternating maps,
-then the twice uncurried `f` is zero. -/
-theorem uncurryFin_uncurryFinLM_comp_of_symmetric {f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N}
-    (hf : ∀ x y, f x y = f y x) :
-    uncurryFin (uncurryFinLM ∘ₗ f) = 0 := by
+then the twice uncurried `f` is zero.
+
+See also `alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply`
+for a formula that does not assume `f` to be symmetric. -/
+theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
+    {f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N} (hf : ∀ x y, f x y = f y x) :
+    alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) = 0 := by
   ext v
-  set a : Fin (n + 2) → Fin (n + 1) → N := fun i j ↦
-    (-1) ^ (i + j : ℕ) • f (v i) (i.removeNth v j) (j.removeNth (i.removeNth v))
-  suffices ∑ ij : Fin (n + 2) × Fin (n + 1), a ij.1 ij.2 = 0 by
-    simpa [a, uncurryFin_apply, Finset.smul_sum, Fintype.sum_prod_type, mul_smul, pow_add]
-      using this
-  set g : Fin (n + 2) × Fin (n + 1) → Fin (n + 2) × Fin (n + 1) := fun (i, j) ↦
-    (i.succAbove j, j.predAbove i)
-  have hg_invol : g.Involutive := by
-    intro (i, j)
-    simp [g, succAbove_succAbove_predAbove, predAbove_predAbove_succAbove]
-  refine Finset.sum_ninvolution g ?_ (by simp [g, succAbove_ne]) (by simp) hg_invol
-  intro (i, j)
-  simp only [a]
-  rw [hf (v i), ← removeNth_removeNth_eq_swap, removeNth_apply (i.succAbove j),
-    succAbove_succAbove_predAbove, neg_one_pow_succAbove_add_predAbove, neg_smul, removeNth_apply,
-    add_neg_cancel]
+  simp [alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply, hf (v <| .castSucc _)]
+
+@[deprecated (since := "2025-09-30")]
+alias uncurryFin_uncurryFinLM_comp_of_symmetric :=
+  alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
 
 end AlternatingMap

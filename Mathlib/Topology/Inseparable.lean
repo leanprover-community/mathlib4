@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
-import Mathlib.Order.UpperLower.Closure
-import Mathlib.Order.UpperLower.Fibration
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -35,6 +37,8 @@ We also prove various basic properties of the relation `Inseparable`.
 
 topological space, separation setoid
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Topology
@@ -186,12 +190,12 @@ theorem specializes_pi {f g : ∀ i, A i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
   rw [specializes_iff_forall_open]
-  push_neg
+  push Not
   rfl
 
 theorem not_specializes_iff_exists_closed : ¬x ⤳ y ↔ ∃ S : Set X, IsClosed S ∧ x ∈ S ∧ y ∉ S := by
   rw [specializes_iff_forall_closed]
-  push_neg
+  push Not
   rfl
 
 theorem IsOpen.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsOpen s)
@@ -207,6 +211,17 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, g x ⤳ f x) :
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
+
+theorem Specializes.clusterPt {f : Filter X} (h : x ⤳ y) (hx : ClusterPt x f) :
+    ClusterPt y f :=
+  Filter.NeBot.mono hx <| inf_le_inf_right _ h
+
+theorem IsCompact.of_subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, x ⤳ y) : IsCompact t := by
+  intro f _ hf
+  obtain ⟨x, hxs, hxf⟩ := hs <| hf.trans <| Filter.monotone_principal hts
+  obtain ⟨y, hyt, hxy⟩ := h x hxs
+  exact ⟨y, hyt, hxy.clusterPt hxf⟩
 
 attribute [local instance] specializationPreorder
 
@@ -373,7 +388,7 @@ lemma SpecializingMap.comp {f : X → Y} {g : Y → Z}
     (hf : SpecializingMap f) (hg : SpecializingMap g) :
     SpecializingMap (g ∘ f) := by
   simp only [specializingMap_iff_stableUnderSpecialization_image, Set.image_comp] at *
-  exact fun s h ↦ hg _ (hf  _ h)
+  exact fun s h ↦ hg _ (hf _ h)
 
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
   specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
@@ -416,7 +431,7 @@ lemma GeneralizingMap.comp {f : X → Y} {g : Y → Z}
     (hf : GeneralizingMap f) (hg : GeneralizingMap g) :
     GeneralizingMap (g ∘ f) := by
   simp only [GeneralizingMap_iff_stableUnderGeneralization_image, Set.image_comp] at *
-  exact fun s h ↦ hg _ (hf  _ h)
+  exact fun s h ↦ hg _ (hf _ h)
 
 /-!
 ### `Inseparable` relation
@@ -536,7 +551,8 @@ In this section we define the quotient of a topological space by the `Inseparabl
 -/
 
 variable (X) in
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
+instance : TopologicalSpace (SeparationQuotient X) :=
+  inferInstanceAs <| TopologicalSpace (Quotient _)
 
 variable {t : Set (SeparationQuotient X)}
 
@@ -579,17 +595,23 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 @[simp]
-theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
-    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
-  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
+    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+  Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
 
-theorem subsingleton_iff {t : TopologicalSpace α} :
-    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+theorem subsingleton_iff [TopologicalSpace α] :
+    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
-theorem nontrivial_iff {t : TopologicalSpace α} :
-    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
-  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+  subsingleton_iff.2 ‹_›
+
+theorem nontrivial_iff [TopologicalSpace α] :
+    Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
+  simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+
+instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQuotient α) :=
+  nontrivial_iff.2 ‹_›
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
@@ -630,9 +652,6 @@ theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
 is the neighborhood of its equivalence class. -/
 theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
-
-@[deprecated map_mk_nhds (since := "2025-03-21")]
-theorem nhds_mk (x : X) : 𝓝 (mk x) = .map mk (𝓝 x) := .symm <| map_mk_nhds ..
 
 theorem map_mk_nhdsSet : map mk (𝓝ˢ s) = 𝓝ˢ (mk '' s) := by
   rw [← comap_mk_nhdsSet_image, map_comap_of_surjective surjective_mk]

@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.Fintype.Parity
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Data.Fintype.Parity
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Quadratic characters of finite fields
@@ -17,6 +19,8 @@ some basic statements about it.
 
 quadratic character
 -/
+
+@[expose] public section
 
 
 /-!
@@ -96,7 +100,7 @@ theorem quadraticCharFun_mul (a b : F) :
   -- now `a ≠ 0` and `b ≠ 0`
   have hab := mul_ne_zero ha hb
   by_cases hF : ringChar F = 2
-  ·-- case `ringChar F = 2`
+  · -- case `ringChar F = 2`
     rw [quadraticCharFun_eq_one_of_char_two hF ha, quadraticCharFun_eq_one_of_char_two hF hb,
       quadraticCharFun_eq_one_of_char_two hF hab, mul_one]
   · -- case of odd characteristic
@@ -149,7 +153,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 :=
-  ⟨fun h ↦ by rw [h]; cutsat, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  ⟨fun h ↦ by rw [h]; lia, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
 
 /-- For `a : F`, `quadraticChar F a = -1 ↔ ¬ IsSquare a`. -/
 theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a := by
@@ -271,6 +275,6 @@ theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F 
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    cutsat
+    lia
 
 end SpecialValues

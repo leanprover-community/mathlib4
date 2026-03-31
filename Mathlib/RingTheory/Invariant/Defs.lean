@@ -3,7 +3,9 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Algebra.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Defs
 
 /-!
 # Invariant Extensions of Rings
@@ -15,6 +17,8 @@ The main application is in algebraic number theory, where `G := Gal(L/K)` is the
 of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their rings of
 integers.
 -/
+
+public section
 
 namespace Algebra
 

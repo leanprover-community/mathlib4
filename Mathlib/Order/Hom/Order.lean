@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Anne Baanen
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Lattice structure on order homomorphisms
@@ -21,6 +23,8 @@ monotone functions.
 
 monotone map, bundled morphism
 -/
+
+@[expose] public section
 
 
 namespace OrderHom
@@ -62,7 +66,6 @@ instance [Preorder β] [OrderBot β] : Bot (α →o β) where
   bot := const α ⊥
 
 instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
-  bot := ⊥
   bot_le _ _ := bot_le
 
 @[simps]
@@ -70,7 +73,6 @@ instance instTopOrderHom [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
-  top := ⊤
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where
@@ -109,11 +111,10 @@ theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
-    le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
-    sSup_le := fun _ _ hf x => iSup₂_le fun g hg => hf g hg x
-    le_sInf := fun _ _ hf x => le_iInf₂ fun g hg => hf g hg x
-    sInf_le := fun _ f hf _ => iInf_le_of_le f (iInf_le _ hf) }
+    isLUB_sSup _ :=
+      .of_image (f := (⇑)) coe_le_coe (by simp [isLUB_pi, Set.image_image, isLUB_biSup])
+    isGLB_sInf _ :=
+      .of_image (f := (⇑)) coe_le_coe (by simp [isGLB_pi, Set.image_image, isGLB_biInf]) }
 
 theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔
@@ -128,10 +129,10 @@ theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α)
       | succ n ih =>
         intro a₁ a₂
         calc
-          f^[n+1] (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
+          f^[n + 1] (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
           _ ≤ f^[n] (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
           _ ≤ f^[n] (f a₁) ⊔ a₂ := ih _ _
-          _ = f^[n+1] a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
+          _ = f^[n + 1] a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
     calc
       f^[n₁ + n₂] (a₁ ⊔ a₂) = f^[n₁] (f^[n₂] (a₁ ⊔ a₂)) :=
         Function.iterate_add_apply f n₁ n₂ _

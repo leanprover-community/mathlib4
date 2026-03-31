@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Comp
-import Mathlib.Probability.Kernel.Composition.ParallelComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.Comp
+public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
 /-!
 # Composition-product of kernels
@@ -35,6 +37,8 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -538,7 +542,7 @@ lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
   · refine lintegral_congr fun b ↦ ?_
     rw [comapRight_apply']
     · congr with x
-      aesop
+      grind
     · exact measurable_prodMk_left ht
   · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 

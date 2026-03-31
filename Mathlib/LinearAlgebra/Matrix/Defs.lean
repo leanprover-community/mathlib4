@@ -3,7 +3,10 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Module.Pi
+module
+
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Matrices
@@ -27,7 +30,7 @@ The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 
-See `Mathlib/Data/Matrix/ConjTranspose.lean` for
+See `Mathlib/LinearAlgebra/Matrix/ConjTranspose.lean` for
 
 * `ᴴ` for `Matrix.conjTranspose`
 
@@ -38,6 +41,8 @@ to be accessed with `A i j`. However, it is not advisable to _construct_ matrice
 form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
 as having the right type. Instead, `Matrix.of` should be used.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra TrivialStar
 
@@ -141,40 +146,43 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   inferInstanceAs <| Inhabited <| m → n → α
 
 instance add [Add α] : Add (Matrix m n α) :=
-  Pi.instAdd
+  fast_instance% Pi.instAdd
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
-  Pi.addSemigroup
+  fast_instance% Pi.addSemigroup
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
-  Pi.addCommSemigroup
+  fast_instance% Pi.addCommSemigroup
 
 instance zero [Zero α] : Zero (Matrix m n α) :=
-  Pi.instZero
+  fast_instance% Pi.instZero
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
-  Pi.addZeroClass
+  fast_instance% Pi.addZeroClass
 
 instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
-  Pi.addMonoid
+  fast_instance% Pi.addMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
-  Pi.addCommMonoid
+  fast_instance% Pi.addCommMonoid
 
 instance neg [Neg α] : Neg (Matrix m n α) :=
-  Pi.instNeg
+  fast_instance% Pi.instNeg
+
+instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
+  Pi.involutiveNeg
 
 instance sub [Sub α] : Sub (Matrix m n α) :=
-  Pi.instSub
+  fast_instance% Pi.instSub
 
 instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
-  Pi.addGroup
+  fast_instance% Pi.addGroup
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
-  Pi.addCommGroup
+  fast_instance% Pi.addCommGroup
 
 instance unique [Unique α] : Unique (Matrix m n α) :=
-  Pi.unique
+  fast_instance% Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   inferInstanceAs <| Subsingleton <| m → n → α
@@ -183,7 +191,7 @@ instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix
   Function.nontrivial
 
 instance smul [SMul R α] : SMul R (Matrix m n α) :=
-  Pi.instSMul
+  fast_instance% Pi.instSMul
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
@@ -198,14 +206,14 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
   Pi.isCentralScalar
 
 instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
-  Pi.mulAction _
+  fast_instance% Pi.mulAction _
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
-  Pi.distribMulAction _
+  fast_instance% Pi.distribMulAction _
 
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
-  Pi.module _ _ _
+  fast_instance% Pi.module _ _ _
 
 section
 
@@ -228,6 +236,7 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem dite_apply (P : Prop) [Decidable P]
     (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
     dite P A B i j = dite P (A · i j) (B · i j) := by
@@ -345,6 +354,10 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
   rfl
 
+variable (n α) in
+theorem transpose_involutive : (transpose : Matrix n n α → Matrix n n α).Involutive :=
+  transpose_transpose
+
 theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
   fun _ _ h => ext fun i j => ext_iff.2 h j i
 
@@ -367,17 +380,14 @@ theorem transpose_sub [Sub α] (M : Matrix m n α) (N : Matrix m n α) : (M - N)
   simp
 
 @[simp]
-theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ := by
-  ext
+theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ :=
   rfl
 
 @[simp]
-theorem transpose_neg [Neg α] (M : Matrix m n α) : (-M)ᵀ = -Mᵀ := by
-  ext
+theorem transpose_neg [Neg α] (M : Matrix m n α) : (-M)ᵀ = -Mᵀ :=
   rfl
 
-theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map f)ᵀ := by
-  ext
+theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map f)ᵀ :=
   rfl
 
 end Transpose

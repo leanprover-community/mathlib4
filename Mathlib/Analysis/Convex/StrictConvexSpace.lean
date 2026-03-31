@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.Normed.Module.Ray
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -51,6 +53,8 @@ formulated only for the case `𝕜 = ℝ`.
 
 convex, strictly convex
 -/
+
+@[expose] public section
 
 open Convex Pointwise Set Metric
 
@@ -208,3 +212,6 @@ theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x +
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
     div_eq_inv_mul, div_lt_iff₀ (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]
+
+instance Real.instStrictConvexSpace : StrictConvexSpace ℝ ℝ where
+  strictConvex_closedBall _ _ := strictConvex_iff_convex.mpr (convex_closedBall _ _)

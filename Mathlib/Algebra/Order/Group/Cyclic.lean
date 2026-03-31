@@ -3,8 +3,10 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Cyclic linearly ordered groups
@@ -17,6 +19,8 @@ The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
+
+@[expose] public section
 
 noncomputable section
 

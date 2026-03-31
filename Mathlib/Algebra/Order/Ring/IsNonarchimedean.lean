@@ -3,8 +3,11 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Nonarchimedean functions
@@ -13,6 +16,8 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of
 nonarchimedean functions.
 -/
+
+public section
 
 namespace IsNonarchimedean
 
@@ -60,6 +65,7 @@ theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
   simp [apply_natCast_le_one_of_isNonarchimedean hna]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
@@ -74,6 +80,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
@@ -171,7 +178,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
     (b : β → α) (m : ℕ) :
     ∃ u : powersetCard (s.card - m) s,
       f ((powersetCard (s.card - m) s).sum fun t : Finset β ↦
-        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β  ↦ -b i)  := by
+        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β ↦ -b i) := by
   set g := fun t : Finset β ↦ t.prod fun i : β ↦ - b i
   obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩
@@ -190,6 +197,22 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     rcases le_max_iff.mp <| nonarch (l i) (∑ i ∈ s, l i) with h₁ | h₂
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
+
+open Finset in
+lemma apply_sum_eq_of_lt {α β F : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (nonarch : IsNonarchimedean f) {s : Finset β} {l : β → α}
+    {k : β} (hk : k ∈ s) (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) :
+    f (∑ i ∈ s, l i) = f (l k) := by
+  have : s.Nonempty := by use k
+  induction this using Nonempty.cons_induction generalizing k with
+  | singleton a => simp_all
+  | cons a s _ hs _ =>
+    by_cases ha : k = a
+    · rw [sum_cons, ha]
+      apply add_eq_left_of_lt nonarch
+      grw [apply_sum_le_sup_of_isNonarchimedean nonarch hs]
+      grind [sup'_lt_iff]
+    · grind [add_eq_right_of_lt nonarch]
 
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and

@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Powerset
+module
+
+public import Mathlib.Data.Multiset.Powerset
 
 /-!
 # The antidiagonal on a multiset.
@@ -12,7 +14,9 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
-assert_not_exists OrderedCommMonoid Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Ring
 
 universe u
 
@@ -68,12 +72,7 @@ theorem antidiagonal_cons (a : α) (s) :
   Quotient.inductionOn s fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       map_coe, antidiagonal_coe', coe_add]
-    rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr
-      · simp only [List.map_id]
-      · rw [map_reverse]
-      · simp
-    · simp
+    rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)] <;> simp
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by

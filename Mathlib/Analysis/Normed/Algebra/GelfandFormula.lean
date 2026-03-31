@@ -3,10 +3,13 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Analytic.RadiusLiminf
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.Analytic.RadiusLiminf
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -25,11 +28,19 @@ complex Banach algebra has nonempty spectrum.
   Banach division algebra, the natural `algebraMap ℂ A` is an algebra isomorphism whose inverse
   is given by selecting the (unique) element of `spectrum ℂ a`
 
+## Implementation notes
+
+Note that it is important here that the complex analysis files are privately imported, since the
+material proven here gets used in contexts that have nothing to do with complex analysis
+(i.e. C⋆-algebras, etc).
+
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
-open scoped NNReal Topology
+open scoped NNReal Topology Ring
 open Filter ENNReal
 
 namespace spectrum
@@ -49,7 +60,7 @@ differentiable on any closed ball centered at zero of radius `r < (spectralRadiu
 theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormedRing A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
-    DifferentiableOn 𝕜 (fun z : 𝕜 => Ring.inverse (1 - z • a)) (Metric.closedBall 0 r) := by
+    DifferentiableOn 𝕜 (fun z : 𝕜 => (1 - z • a)⁻¹ʳ) (Metric.closedBall 0 r) := by
   intro z z_mem
   apply DifferentiableAt.differentiableWithinAt
   have hu : IsUnit (1 - z • a) := by
@@ -145,7 +156,7 @@ open Polynomial in
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval a (X ^ n)
 
 end Nontrivial
 

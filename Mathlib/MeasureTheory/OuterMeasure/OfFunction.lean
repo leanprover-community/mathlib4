@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Operations
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Operations
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Outer measures from functions
@@ -33,6 +35,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -110,7 +114,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     by_cases ht : ∀ i, P (t i)
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
-      push_neg at ht
+      push Not at ht
       obtain ⟨i, hti_notMem⟩ := ht
       have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩

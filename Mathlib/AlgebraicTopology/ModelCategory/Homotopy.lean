@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
-import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
-import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
+public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
 /-!
 # Homotopies in model categories
@@ -25,6 +27,8 @@ then any weak equivalence `X ⟶ Y` is a homotopy equivalence.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Limits
@@ -37,6 +41,7 @@ namespace LeftHomotopyRel
 
 variable {f g : X ⟶ Y} [IsCofibrant X]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `X` cofibrant are related by a left homotopy,
 this is a choice of a right homotopy relative to any good path object for `Y`. -/
 noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.IsGood] :
@@ -65,6 +70,7 @@ namespace RightHomotopyRel
 
 variable {f g : X ⟶ Y} [IsFibrant Y]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `Y` fibrant are related by a right homotopy,
 this is a choice of a left homotopy relative to any good cylinder object for `X`. -/
 noncomputable def leftHomotopy (h : RightHomotopyRel f g) (Q : Cylinder X) [Q.IsGood] :
@@ -89,15 +95,37 @@ lemma leftHomotopyRel (h : RightHomotopyRel f g) : LeftHomotopyRel f g := by
 
 end RightHomotopyRel
 
-lemma leftHomotopyRel_iff_rightHomotopyRel {X Y : C} (f g : X ⟶ Y)
-    [IsCofibrant X] [IsFibrant Y] :
+section
+
+variable {f g : X ⟶ Y} [IsCofibrant X] [IsFibrant Y]
+
+lemma leftHomotopyRel_iff_rightHomotopyRel :
     LeftHomotopyRel f g ↔ RightHomotopyRel f g :=
   ⟨fun h ↦ h.rightHomotopyRel, fun h ↦ h.leftHomotopyRel⟩
+
+/-- When two morphisms `X ⟶ Y` with `X` cofibrant and `Y` fibrant are related
+by a left homotopy, this is a choice of a left homotopy relative
+to any good cylinder object for `X`. -/
+noncomputable def LeftHomotopyRel.leftHomotopy
+    (h : LeftHomotopyRel f g) (Q : Cylinder X) [Q.IsGood] :
+    Q.LeftHomotopy f g :=
+  RightHomotopyRel.leftHomotopy (by rwa [← leftHomotopyRel_iff_rightHomotopyRel]) _
+
+/-- When two morphisms `X ⟶ Y` with `X` cofibrant and `Y` fibrant are related
+by a right homotopy, this is a choice of a right homotopy relative
+to any good path object for `Y`. -/
+noncomputable def RightHomotopyRel.rightHomotopy
+    (h : RightHomotopyRel f g) (P : PathObject Y) [P.IsGood] :
+    P.RightHomotopy f g :=
+  LeftHomotopyRel.rightHomotopy (by rwa [leftHomotopyRel_iff_rightHomotopyRel]) _
+
+end
 
 namespace LeftHomotopyClass
 
 variable (X)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma postcomp_bijective_of_fibration_of_weakEquivalence
     [IsCofibrant X] (g : Y ⟶ Z) [Fibration g] [WeakEquivalence g] :
     Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
@@ -144,6 +172,7 @@ namespace RightHomotopyClass
 
 variable (Z)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma precomp_bijective_of_cofibration_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [Cofibration f] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by

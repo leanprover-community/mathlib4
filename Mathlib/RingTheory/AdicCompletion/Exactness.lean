@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.AdicCompletion.Functoriality
-import Mathlib.RingTheory.Filtration
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.Filtration
 
 /-!
 # Exactness of adic completion
@@ -25,6 +27,8 @@ In this file we establish exactness properties of adic completions. In particula
 All results are proven directly without using Mittag-Leffler systems.
 
 -/
+
+public section
 
 universe u v w t
 
@@ -92,12 +96,12 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
   intro x
   apply AdicCompletion.induction_on I M x (fun a ↦ ?_)
   intro hx
-  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by cutsat, n, by cutsat, ?_⟩⟩
+  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by lia, n, by lia, ?_⟩⟩
   rw [← Submodule.comap_map_eq_of_injective hf (I ^ n • ⊤ : Submodule R M),
     Submodule.map_smul'', Submodule.map_top]
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)
-  nth_rw 1 [show n = n + k - k by cutsat]
-  rw [← hk (n + k) (show n + k ≥ k by cutsat)]
+  nth_rw 1 [show n = n + k - k by lia]
+  rw [← hk (n + k) (show n + k ≥ k by lia)]
   exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
 
 end Injectivity
@@ -128,8 +132,8 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     · abel
     · refine Submodule.sub_mem _ (Submodule.sub_mem _ ?_ ?_) hyₙ
       · rw [← Submodule.Quotient.eq]
-        exact AdicCauchySequence.mk_eq_mk (by cutsat) _
-      · exact (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hdmem
+        exact AdicCauchySequence.mk_eq_mk (by lia) _
+      · exact (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hdmem
   have hincl : I ^ (k + n - k) • (I ^ k • ⊤ ⊓ range f) ≤ I ^ (k + n - k) • (range f) :=
     smul_mono_right _ inf_le_right
   have hyyₙ : y - yₙ ∈ (I ^ n • ⊤ : Submodule R M) := by
@@ -138,7 +142,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     · rw [← Submodule.comap_map_eq_of_injective hf (I ^ (k + n - k) • ⊤ : Submodule R M),
         Submodule.map_smul'', Submodule.map_top]
       apply hincl
-      rw [← hkn (k + n) (by cutsat)]
+      rw [← hkn (k + n) (by lia)]
       exact ⟨h, ⟨y - yₙ, rfl⟩⟩
   ⟨⟨y - yₙ, hyyₙ⟩, by simpa [hd, Nat.succ_eq_add_one, Nat.add_assoc]⟩
 
@@ -192,10 +196,10 @@ theorem map_exact : Function.Exact (map I f) (map I g) := by
     · ext n
       suffices h : Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f (a n)) =
             Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (b (k + n)) by
-        simp [h, AdicCauchySequence.mk_eq_mk (show n ≤ k + n by cutsat)]
+        simp [h, AdicCauchySequence.mk_eq_mk (show n ≤ k + n by lia)]
       rw [Submodule.Quotient.eq]
       have hle : (I ^ (k + n) • ⊤ : Submodule R N) ≤ (I ^ n • ⊤ : Submodule R N) :=
-        Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))
+        Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))
       exact hle (a n).property
 
 end
