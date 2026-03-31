@@ -143,7 +143,7 @@ git considers renames with likelihood at least the input `percent`.
 
 If no input is provided, the default percentage is `100`.
 -/
-def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String.Slice String.Slice) := do
+def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
   let mut dict := ∅
   let gitDiff ← runCmd s!"git diff --name-status origin/master...HEAD"
   let lines := gitDiff.trim.splitOn "\n"
@@ -160,7 +160,7 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String.Slice String.S
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
-      dict := dict.insert oldName newName
+      dict := dict.insert oldName.toString newName.toString
     -- This looks like a rename, but the similarity index is smaller than our threshold:
     -- we report a message and do not add the rename to our dictionary.
     else
