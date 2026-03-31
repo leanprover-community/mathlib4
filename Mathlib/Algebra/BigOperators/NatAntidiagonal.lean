@@ -65,4 +65,31 @@ theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ
   prod_antidiagonal_eq_prod_range_succ_mk _ _
 end Nat
 
+namespace Multiplicative
+
+open _root_.Multiplicative
+
+variable {A : Type*} [AddMonoid A] [HasAntidiagonal A] (a : A)
+
+/-- Given `a : A`, `MultiplicativeofAdd_antidiagonal a` is the
+`Finset (Multiplicative A × Multiplicative A)` consisting of elements `p` such that
+`p.1 * p.2 = Multiplicative.ofAdd a`.
+-/
+abbrev ofAdd_antidiagonal : Finset (Multiplicative A × Multiplicative A) :=
+  Finset.map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ a ↦ a⟩ (antidiagonal a : Finset (A × A))
+
+lemma mem_ofAdd_antidiagonal_iff_prod_eq {p : Multiplicative A × Multiplicative A} :
+    p ∈ ofAdd_antidiagonal a ↔ p.1 * p.2 = ofAdd a := by
+  rw [mem_map, ← ofAdd_toAdd (p.1 * p.2), Equiv.apply_eq_iff_eq ofAdd]
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨(toAdd p.1, toAdd p.2), ⟨by simpa using h, by simp⟩⟩⟩
+  obtain ⟨a, ha, h⟩ := h
+  simpa [← h] using ha
+
+lemma mem_ofAdd_antidiagonal_iff_toAdd_mem_antidiagonal {p : Multiplicative A × Multiplicative A} :
+    p ∈ ofAdd_antidiagonal a ↔ (toAdd p.1, toAdd p.2) ∈ antidiagonal a := by
+  simp only [mem_ofAdd_antidiagonal_iff_prod_eq, mem_antidiagonal]
+  rw [Multiplicative.ext_iff, toAdd_mul, toAdd_ofAdd]
+
+end Multiplicative
+
 end Finset
