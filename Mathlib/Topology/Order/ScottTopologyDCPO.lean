@@ -172,7 +172,8 @@ abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
 
 abbrev CompactElement (α : Type*) [PartialOrder α] := {c : α // IsCompactElement c}
 
-abbrev Subtype.toOpen (c : CompactElement α) : Opens α := ⟨Ici c.val, isOpen_of_basis c.val c.prop⟩
+abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
+  ⟨Ici c.val, isOpen_of_basis c.val c.prop⟩
 
 /-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
 `{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
@@ -222,12 +223,12 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
 theorem isTopologicalBasis_Ici_image_compactSet
-    : Opens.IsBasis (Subtype.toOpen '' (@Set.univ (CompactElement D))) := by
+    : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
-    simp only [setOf_true, image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk,
+    simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk,
       true_and, exists_prop, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply isOpen_of_basis
   · -- If a point `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
@@ -236,42 +237,13 @@ theorem isTopologicalBasis_Ici_image_compactSet
     simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk, true_and,
       exists_prop, exists_exists_and_eq_and, mem_Ici]
     use c, hc
-    exact ⟨(by sorry),
-    use Ici c
+    exact ⟨mem_Ici.1 x_in_c', Subset.refl (LE.le (Ici c)) hc'⟩
 
-    use ⟨c, hc, rfl⟩
-
-lemma open_eq_open_of_basis' (u : Opens D) :
-    u = ⨆ c : {c | IsCompactElement c ∧ c ∈ u}, IsCompactElement.toOpen c.2.1 := by
-  ext e
-  simp only [SetLike.mem_coe]
-  constructor
-  · intro e_in_u
-    choose c hc₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
-    simp only [coe_setOf, IsCompactElement.toOpen, mem_setOf_eq, iSup_mk, mem_mk, mem_iUnion,
-      mem_Ici, Subtype.exists, exists_prop]
-    exact ⟨c, ⟨hc₀, mem_iff_Ici_subset.2 hc'₁⟩, mem_Ici.1 e_in_c'⟩
-  · rintro he
-    simp only [coe_setOf, IsCompactElement.toOpen, mem_setOf_eq, iSup_mk, mem_mk, mem_iUnion,
-      mem_Ici, Subtype.exists, exists_prop] at he
-    obtain ⟨c, ⟨hc₀, c_in_u⟩, he⟩ := he
-    rw [mem_iff_Ici_subset] at c_in_u
-    apply Set.mem_of_mem_of_subset he c_in_u
-
--- theorem bar : Opens.IsBasis (Ici '' {x : D | IsCompactElement x}) := by
---   exact?
-
-/- Any open set, `u`, can be constructed as a union of sets from the basis.
-    The basis consists of the upward closures of those compact elements in `u`
-    This is the weaker version of the lemma using `Set`s instead of `Opens`. -/
-
-/- See `open_eq_open_of_basis`
-    This is the stronger version of the lemma using `Opens` instead of `Set`s.
-    The weaker version is still useful as it is easier to use when sufficient.
-    We don't reuse the previous result to prove this, since the proof turns out just as long -/
-
-lemma IsTopologicalBasis.open_eq_sSup {α : Type*} [t : TopologicalSpace α] {B : Set (Opens α)}
-      (hB : Opens.IsBasis B) (u : Opens α) :
+/- Any open set, `u`, can be constructed as a union (`sSup`) of sets from the basis.
+The basis consists of the upward closures of those compact elements in `u`.
+Strengthening from `Set` to `Opens` of `TopologicalSpace.IsTopologicalBasis.open_eq_sUnion'`. -/
+lemma IsBasis.open_eq_sSup {α : Type*} [t : TopologicalSpace α] {B : Set (Opens α)}
+      (hB : IsBasis B) (u : Opens α) :
     u = sSup {s : Opens α | s ∈ B ∧ s ≤ u} := by
   apply Opens.ext
   calc
@@ -279,23 +251,8 @@ lemma IsTopologicalBasis.open_eq_sSup {α : Type*} [t : TopologicalSpace α] {B 
   _ = ↑(sSup {s | s ∈ B ∧ s ≤ u}) := by
     simp_all only [mem_image, coe_sSup, mem_setOf_eq]
     ext x : 1
-    simp_all only [mem_sUnion, mem_setOf_eq, ↓existsAndEq, and_true, SetLike.coe_subset_coe, SetLike.mem_coe,
-    mem_iUnion, exists_prop]
-
-
-
-/-- Version `of open_eq_open_of_basis'_sSup` using `sSup` rather than `iSup` -/
-lemma open_eq_open_of_basis'_sSup (u : Opens D) :
-    u = sSup ({ o | ∃ (c : D) (hc : IsCompactElement c), c ∈ u ∧ o = hc.toOpen }) := by
-  have TB := (Ici '' {x : D | IsCompactElement x})
-  ext e
-  simp only [SetLike.mem_coe, Opens.mem_sSup, Set.mem_setOf_eq]
-  constructor
-  · intro e_in_u
-    choose c hc₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
-    exact ⟨hc₀.toOpen, ⟨c, hc₀, hc'₁ (Set.mem_Ici.2 le_rfl), rfl⟩, e_in_c'⟩
-  · rintro ⟨_, ⟨c, hc, c_in_u, rfl⟩, e_in_o⟩
-    exact (mem_iff_Ici_subset.mp c_in_u) e_in_o
+    simp_all only [mem_sUnion, mem_setOf_eq, ↓existsAndEq, and_true, SetLike.coe_subset_coe,
+    SetLike.mem_coe, mem_iUnion, exists_prop]
 
 end AlgebraicDCPO
 
@@ -309,27 +266,6 @@ def Sober (X : TopCat) := IsHomeomorph (adjunctionTopToLocalePT.unit.app X)
 -- TODO prove equivalence of alternative defenitions of Sober
 -- lemma alt_def {X: TopCat} : QuasiSober X ∧ T0Space X
 --    ↔ Sober X := by sorry
-
-/-- A frame homomorphism `P` to `Prop` can also be viewed as a completely prime filter, ie,
-a set of those elements which `P` maps to `True`. It has the following 'completely prime' property:
-If `P` contains some set's supremum then, `P` also contains atleast an element of the set.
-Lean's automation can prove this lemma easily enough if a `simp [map_sSup, sSup_Prop_eq]`.
-But using this lemma improves readability, especially as it's used multiple times -/
-lemma of_completelyPrime {D : Type*} [TopologicalSpace D]
-{P : Opens D → Prop} {x : PT (Opens D)} :
-  (x (sSup {u : Opens D | P u})) ↔ ∃ u, P u ∧ x u := by
-  simp only [map_sSup, sSup_Prop_eq]
-  constructor
-  · rintro ⟨p, ⟨u, hu, heq⟩, hxu⟩
-    use u
-    subst heq
-    exact ⟨hu, hxu⟩
-  · rintro ⟨u, hu, hxu⟩
-    use x u
-    simp only [Set.mem_image, Set.mem_setOf_eq, eq_iff_iff]
-    constructor
-    · use u
-    · exact hxu
 
 variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
   [sD : IsScott D {d | DirectedOn (· ≤ ·) d}]
@@ -345,13 +281,16 @@ lemma directed_K (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
   have inf_in_x : x inf := by
     simp only [map_inf, inf]
     exact ⟨hc₁, hd₁⟩
-  rw [IsTopologicalBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet inf] at inf_in_x
+  rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet inf] at inf_in_x
   rw [map_sSup, sSup_Prop_eq] at inf_in_x -- completely prime property of frame hom
-  obtain ⟨P, ⟨e', ⟨⟨e, he₁, he₂⟩, he' ⟩ , e'_in_x⟩, hP⟩ := inf_in_x
+  obtain ⟨P, ⟨e', ⟨⟨e, he₁, he₂⟩, he'⟩, e'_in_x⟩, hP⟩ := inf_in_x
   use e, ⟨e.prop, by grind⟩
-  have : inf = Ici c ∩ Ici d := by grind
-  -- insignificant part of the proof left
-  sorry
+  subst he₂ e'_in_x
+  have inf_eq : inf.carrier = Ici c ∩ Ici d := by simp [inf]
+  have subset_inf : Ici ↑e ⊆ inf.carrier := by apply Subset.refl (LE.le e.toOpen) he'
+  rw [inf_eq] at subset_inf
+  apply subset_inf
+  exact self_mem_Ici
 
 /-- The set of compact elements underlying the basic opens is nonempty.  Since `directedOn`
 doesn't include nonemptyness in Mathlib, this is a separate lemma from `directed_K` -/
@@ -361,7 +300,7 @@ lemma nonempty_K (x : PT (Opens D)) : (K x).Nonempty := by
     intro s ⟨e, he⟩ _ _
     use e, he
     exact OrderBot.bot_le e
-  have top_eq_bot_toOpen : ⊤ = IsCompactElement.toOpen h_bot := by
+  have top_eq_bot_toOpen : (⊤ : Opens D) = h_bot.toOpen := by
     ext e
     simp_all only [Opens.coe_top, mem_univ, Opens.coe_mk, Ici_bot]
   have h_top : x ⊤ := by
@@ -443,27 +382,25 @@ private lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := 
             use e; use e; use he₀;
         _ ↔ x u := by
           constructor
-          · let P (o: Opens D) := ∃ (c: D) (hc: IsCompactElement c), c ∈ u ∧ (o = hc.toOpen)
-            -- intro he
-            rintro ⟨e, he₀, he'₀, he'₁⟩
-
-            have he': ∃ u, P u ∧ x u := by
-              use he₀.toOpen
-              exact ⟨⟨e, he₀, Opens.mem_iff_Ici_subset.2 he'₀, rfl⟩, he'₁⟩
-
-            rw [← of_completelyPrime] at he'
-            rw [IsTopologicalBasis.open_eq_sSup
-              isTopologicalBasis_Ici_image_compactSet u] at he'
-            rw [← open_eq_open_of_basis'_sSup u] at he'
-
-            exact he'
+          · rintro ⟨e, he₀, he'₀, he'₁⟩
+            rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet u]
+            rw [map_sSup, sSup_Prop_eq] -- completely prime property of frame hom
+            use True
+            simp only [image_univ, mem_range, Subtype.exists, mem_image, mem_setOf_eq, eq_iff_iff,
+              iff_true, ↓existsAndEq, true_and, and_true]
+            use e, he₀
+            constructor
+            · apply he'₀
+            · apply he'₁
           · intro hu
-            rw [open_eq_open_of_basis'_sSup u] at hu
-            rw [of_completelyPrime] at hu
-
-            obtain ⟨e', ⟨e, he₀, he'₀, he'₁⟩ , he'₂⟩ := hu
-            rw [he'₁] at he'₂
-            exact ⟨e, he₀, Opens.mem_iff_Ici_subset.1 he'₀, he'₂⟩
+            rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet u] at hu
+            rw [map_sSup, sSup_Prop_eq] at hu -- completely prime property of frame hom
+            obtain ⟨P, ⟨e', ⟨⟨e, he₁, he₂⟩, he'⟩, e'_in_x⟩, hP⟩ := hu
+            subst e'_in_x he₂
+            use e, e.prop
+            constructor
+            · apply he'
+            · exact hP
 
 /-- Scott topologies over algebraic DCPOs are Sober.
   Prop 3.5.3 in [renata2024]. Prop 2.27 in [abramsky_gabbay_maibaum_1994] -/
