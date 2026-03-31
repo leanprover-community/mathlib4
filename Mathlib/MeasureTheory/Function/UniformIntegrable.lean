@@ -102,6 +102,12 @@ namespace UnifIntegrable
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
+protected lemma comp {κ : Type*} (hX : UnifIntegrable f p μ) (g : κ → ι) :
+    UnifIntegrable (f ∘ g) p μ := by
+  intro ε hε
+  obtain ⟨δ, hδ, h⟩ := hX hε
+  exact ⟨δ, ⟨hδ, fun i ↦ h (g i)⟩⟩
+
 protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifIntegrable (f + g) p μ := by
@@ -765,6 +771,31 @@ theorem uniformIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p �
   ⟨fun _ => hg.1, unifIntegrable_const hp hp_ne_top hg,
     ⟨(eLpNorm g p μ).toNNReal, fun _ => le_of_eq (ENNReal.coe_toNNReal hg.2.ne).symm⟩⟩
 
+lemma UniformIntegrable.comp {κ : Type*} (hf : UniformIntegrable f p μ) (g : κ → ι) :
+    UniformIntegrable (f ∘ g) p μ := by
+  obtain ⟨hX1, hX2, ⟨C, hC⟩⟩ := hf
+  exact ⟨fun _ ↦ hX1 _, hX2.comp g, ⟨C, fun i ↦ hC (g i)⟩⟩
+
+lemma UniformIntegrable.add {g : ι → α → β}
+    (hf : UniformIntegrable f p μ) (hg : UniformIntegrable g p μ) (hp : 1 ≤ p) :
+    UniformIntegrable (f + g) p μ := by
+  refine ⟨fun _ ↦ (hf.1 _).add (hg.1 _), hf.2.1.add hg.2.1 hp hf.1 hg.1, ?_⟩
+  obtain ⟨C_X, hC_X⟩ := hf.2.2
+  obtain ⟨C_Y, hC_Y⟩ := hg.2.2
+  exact ⟨C_X + C_Y,
+    fun i ↦ (eLpNorm_add_le (hf.1 i) (hg.1 i) hp).trans (add_le_add (hC_X i) (hC_Y i))⟩
+
+lemma UniformIntegrable.neg (hf : UniformIntegrable f p μ) : UniformIntegrable (-f) p μ := by
+  refine ⟨fun _ ↦ (hf.1 _).neg, hf.2.1.neg, ?_⟩
+  simp only [Pi.neg_apply, eLpNorm_neg]
+  exact hf.2.2
+
+lemma UniformIntegrable.sub {g : ι → α → β}
+    (hf : UniformIntegrable f p μ) (hg : UniformIntegrable g p μ) (hp : 1 ≤ p) :
+    UniformIntegrable (f - g) p μ := by
+  rw [sub_eq_add_neg]
+  exact hf.add hg.neg hp
+
 /-- This lemma is superseded by `uniformIntegrable_of` which only requires
 `AEStronglyMeasurable`. -/
 theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -882,6 +913,58 @@ theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
           ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε :=
   ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne.symm hp'⟩,
     fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
+
+section Dominated
+
+variable {κ γ : Type*} [NormedAddCommGroup γ] {g : κ → α → γ}
+
+lemma uniformIntegrable_of_dominated
+    (hg : UniformIntegrable g p μ) (mf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (hf : ∀ i, ∃ j, ∀ᵐ ω ∂μ, ‖f i ω‖ ≤ ‖g j ω‖) :
+    UniformIntegrable f p μ := by
+  refine ⟨mf, fun ε hε ↦ ?_, ?_⟩
+  · obtain ⟨δ, hδ, h⟩ := hg.2.1 hε
+    refine ⟨δ, hδ, fun i s hs hμs ↦ let ⟨j, hj⟩ := hf i; (eLpNorm_mono_ae ?_).trans <| h j s hs hμs⟩
+    filter_upwards [hj] with ω hω
+    rw [Set.indicator]
+    split_ifs with hmem
+    · rwa [Set.indicator_of_mem hmem]
+    · simp [Set.indicator_of_notMem hmem]
+  · obtain ⟨C, hC⟩ := hg.2.2
+    exact ⟨C, fun i ↦ let ⟨j, hj⟩ := hf i; (eLpNorm_mono_ae hj).trans <| hC j⟩
+
+lemma uniformIntegrable_of_dominated_singleton {g : α → ℝ}
+    (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ)
+    (mX : ∀ i, AEStronglyMeasurable (f i) μ) (hX : ∀ i, ∀ᵐ ω ∂μ, ‖f i ω‖ ≤ g ω) :
+    UniformIntegrable f p μ :=
+  uniformIntegrable_of_dominated (κ := ι) (uniformIntegrable_const hp hp_ne_top hg) mX
+    <| fun i ↦ ⟨i, by filter_upwards [hX i] with ω hω using hω.trans <| Real.le_norm_self _⟩
+
+lemma uniformIntegrable_of_dominated_enorm_singleton {g : α → ℝ≥0∞}
+    (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ)
+    (mX : ∀ i, AEStronglyMeasurable (f i) μ) (hX : ∀ i, ∀ᵐ ω ∂μ, ‖f i ω‖ₑ ≤ g ω) :
+    UniformIntegrable f p μ := by
+  have hg_real : MemLp (fun ω ↦ (g ω).toReal) p μ := hg.toReal
+  have hg_fin : ∀ᵐ ω ∂μ, g ω < ∞ := by
+    filter_upwards [hg.enorm_ae_lt_top (zero_lt_one.trans_le hp).ne'] with ω hω
+    simpa using hω
+  refine uniformIntegrable_of_dominated_singleton hp hp_ne_top hg_real mX fun i => ?_
+  filter_upwards [hX i, hg_fin] with ω hbound hfin
+  rw [← toReal_enorm]
+  gcongr
+  exact hfin.ne
+
+end Dominated
+
+lemma UniformIntegrable.norm (hf : UniformIntegrable f p μ) :
+    UniformIntegrable (fun t ω ↦ ‖f t ω‖) p μ := by
+  refine uniformIntegrable_of_dominated hf ?_ (fun i ↦ ⟨i, by simp⟩)
+  exact fun i ↦ (UniformIntegrable.aestronglyMeasurable hf i).norm
+
+lemma uniformIntegrable_iff_norm (mX : ∀ i, AEStronglyMeasurable (f i) μ) :
+    UniformIntegrable f p μ ↔ UniformIntegrable (fun t ω ↦ ‖f t ω‖) p μ := by
+  refine ⟨UniformIntegrable.norm, fun hNorm ↦ uniformIntegrable_of_dominated hNorm mX ?_⟩
+  exact fun i ↦ ⟨i, by simp⟩
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average
