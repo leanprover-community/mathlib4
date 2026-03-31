@@ -48,7 +48,7 @@ lemma IsBaseChange.of_left_exact (comm1 : h₂.comp f = (f'.restrictScalars R).c
     (isb2 : IsBaseChange S h₂) (isb3 : IsBaseChange S h₃)
     (exac1 : Function.Exact f g) (inj1 : Function.Injective f)
     (exac2 : Function.Exact f' g') (inj2 : Function.Injective f') : IsBaseChange S h₁ := by
-  change Function.Bijective _ at isb2 isb3 ⊢
+  simp only [IsBaseChange, IsTensorProduct] at isb₂ isb₃ ⊢
   refine LinearMap.bijective_of_bijective_of_injective_of_left_exact
     ((f.baseChange S).restrictScalars R) ((g.baseChange S).restrictScalars R)
     (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exac2 isb2 isb3.1 ?_ inj2
