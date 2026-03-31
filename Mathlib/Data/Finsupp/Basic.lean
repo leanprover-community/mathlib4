@@ -308,6 +308,10 @@ theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
 
+lemma mapDomain_sub {α β M : Type*} [AddCommGroup M] {v₁ v₂ : α →₀ M} {f : α → β} :
+    mapDomain f (v₁ - v₂) = mapDomain f v₁ - mapDomain f v₂ := by
+  simp [mapDomain, sum_sub_index]
+
 @[simp]
 theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
@@ -498,6 +502,15 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   intro h a ha
   obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
+
+@[simp]
+lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+    (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
+  classical
+  ext a
+  simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
+  rintro rfl
+  simp at hb
 
 section FInjective
 

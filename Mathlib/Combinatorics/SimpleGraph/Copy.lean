@@ -311,6 +311,22 @@ theorem isContained_iff_exists_iso_subgraph :
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
 
+theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
+    [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
+  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+
+theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
+  cases isEmpty_or_nonempty V
+  · simp
+  obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
+  grind [degree_le_maxDegree H (f v), f.degree_le v]
+
+theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  have ⟨f⟩ := h
+  exact f.max_degree_le
+
 end IsContained
 
 section Free
@@ -545,7 +561,7 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
-    @forall_swap _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
+    @forall_comm _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
     not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
     (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
