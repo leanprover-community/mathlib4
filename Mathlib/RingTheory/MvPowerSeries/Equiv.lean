@@ -83,7 +83,6 @@ power series over the ground ring. -/
 abbrev uniqueEquiv : MvPowerSeries σ R ≃ₐ[R] PowerSeries R :=
   renameEquiv R (Equiv.ofUnique σ Unit)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_uniqueEquiv (p : MvPowerSeries σ R) (n : ℕ) :
     PowerSeries.coeff n (uniqueEquiv σ R p) = p.coeff (single default n) := by
   simp [PowerSeries.coeff, ← coeff_embDomain_rename (Equiv.ofUnique σ Unit).toEmbedding p]
@@ -94,7 +93,6 @@ lemma uniqueEquiv_X : uniqueEquiv σ R (X default) = .X := by
   rw [coeff_uniqueEquiv, coeff_X, PowerSeries.coeff_X]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uniqueEquiv_C (r : R) : uniqueEquiv σ R (C r) = .C r := by simp [PowerSeries.C]
 
@@ -451,7 +449,6 @@ theorem optionEquivLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
     optionEquivLeft σ R (monomial x r) = PowerSeries.monomial (x none) (monomial x.some r) :=
   optionFunLeft_monomial ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma optionEquivLeft_X_some (i : σ) :
     optionEquivLeft σ R (X (Option.some i)) = (PowerSeries.C (X i)) := by
@@ -461,7 +458,6 @@ lemma optionEquivLeft_X_some (i : σ) :
   simpa [← X_def, PowerSeries.monomial_eq_C_mul_X_pow, this] using
     optionEquivLeft_monomial (single (Option.some i) 1 : Option σ →₀ ℕ) (1 : R)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma optionEquivLeft_X_none : optionEquivLeft σ R (X none) = PowerSeries.X := by
   simpa [PowerSeries.monomial_eq_C_mul_X_pow, ← X_def] using
@@ -501,7 +497,6 @@ private theorem optionFunRight_monomial (x : Option σ →₀ ℕ) (r : R) :
     simp [h', h'']
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 private lemma optionFunRight_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunRight σ R (p * q) = optionFunRight σ R p * optionFunRight σ R q := by
