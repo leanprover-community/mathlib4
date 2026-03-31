@@ -94,8 +94,7 @@ lemma preGNS_norm_def (a : f.PreGNS) :
 lemma preGNS_norm_sq (a : f.PreGNS) :
     ‖a‖ ^ 2 = f (star (f.ofPreGNS a) * f.ofPreGNS a) := by
   have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := f.map_nonneg (star_mul_self_nonneg _)
-  simp_all [preGNS_norm_def, ← ofReal_pow, re_nonneg_iff_nonneg, this.isSelfAdjoint,
-    conj_eq_iff_re.mp this.star_eq]
+  simp [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt this.1, conj_eq_iff_re.mp this.star_eq]
 
 /--
 The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
@@ -136,12 +135,12 @@ This proves map_smul' of gnsNonUnitalStarAlgHom so that map_zero' can be proven 
 consequence.
 -/
 @[simp]
-private lemma gnsNonUnitalStarAlgHom_map_smul (m : ℂ) (x : A) :
+private lemma leftMulMapPreGNS_completion_map_smul (m : ℂ) (x : A) :
    (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
- ext a
- induction a using induction_on with
- | hp => apply isClosed_eq <;> fun_prop
- | ih a => simp [smul_mul_assoc]
+  ext a
+  induction a using induction_on with
+  | hp => apply isClosed_eq <;> fun_prop
+  | ih a => simp [smul_mul_assoc]
 
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
@@ -151,7 +150,7 @@ C⋆-algebra.
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
   toFun a := (f.leftMulMapPreGNS a).completion
   map_smul' := by simp
-  map_zero' := by simpa using f.gnsNonUnitalStarAlgHom_map_smul 0 0
+  map_zero' := by simpa using f.leftMulMapPreGNS_completion_map_smul 0 0
   map_add' _ _ := by
     ext c
     induction c using induction_on with
