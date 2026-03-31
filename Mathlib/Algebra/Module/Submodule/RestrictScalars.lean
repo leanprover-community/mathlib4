@@ -179,17 +179,14 @@ variable (S : Type*) {R M : Type*} [Ring R] [AddCommGroup M] [Semiring S]
   [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
 
 /-- Submodules over a ring are right modular in the lattice of submodules over a semiring.
-  This is a version of `IsModularLattice.sup_inf_assoc_of_le` for the non-modular lattice
+  This is a version of `sup_inf_assoc_of_le` for the not-necessarily-modular
   of submodules over a semiring. -/
 lemma sup_inf_assoc_of_le_restrictScalars {s : Submodule S M} (t : Submodule S M)
     {p : Submodule R M} (hsp : s ≤ p.restrictScalars S) :
-    s ⊔ (t ⊓ p.restrictScalars S) = (s ⊔ t) ⊓ p.restrictScalars S := by
+    (s ⊔ t) ⊓ p.restrictScalars S = s ⊔ (t ⊓ p.restrictScalars S) := by
   ext x
   simp only [mem_sup, mem_inf, restrictScalars_mem]
   constructor <;> intro h
-  · obtain ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩ := h
-    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
-    simpa [← hyzx] using p.add_mem (hsp hy) hz'
   · obtain ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩ := h
     refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
     rw [← add_right_inj (-y), neg_add_cancel_left] at hyzx
@@ -197,16 +194,21 @@ lemma sup_inf_assoc_of_le_restrictScalars {s : Submodule S M} (t : Submodule S M
     specialize hsp hy
     rw [restrictScalars_mem, ← neg_mem_iff] at hsp
     exact p.add_mem hsp hx
+  · obtain ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩ := h
+    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
+    simpa [← hyzx] using p.add_mem (hsp hy) hz'
 
 /-- Submodules over a ring are left modular in the lattice of submodules over a semiring.
-  This is a version of `IsModularLattice.inf_sup_assoc_of_le` for the non-modular lattice
+  This is a version of `inf_sup_assoc_of_le` for the not-necessarily-modular lattice
   of submodules over a semiring. -/
 lemma inf_sup_assoc_of_restrictScalars_le {s : Submodule S M} (t : Submodule S M)
     {p : Submodule R M} (hsp : p.restrictScalars S ≤ s) :
-    s ⊓ (t ⊔ p.restrictScalars S) = (s ⊓ t) ⊔ p.restrictScalars S := by
+    (s ⊓ t) ⊔ p.restrictScalars S = s ⊓ (t ⊔ p.restrictScalars S) := by
   ext x
   simp only [mem_inf, mem_sup, restrictScalars_mem]
   constructor <;> intro h
+  · obtain ⟨y, ⟨hys, hyt⟩, z, hzp, hyzx⟩ := h
+    exact ⟨by simpa [← hyzx] using add_mem hys (hsp hzp), ⟨y, hyt, z, hzp, hyzx⟩⟩
   · obtain ⟨hxs, y, hyt, z, hzp, hyzx⟩ := h
     use y
     constructor
@@ -214,8 +216,6 @@ lemma inf_sup_assoc_of_restrictScalars_le {s : Submodule S M} (t : Submodule S M
       rw [← add_left_inj (-z), add_neg_cancel_right] at hyzx
       simpa [hyzx] using add_mem hxs <| hsp <| neg_mem (S := Submodule R M) hzp
     · use z
-  · obtain ⟨y, ⟨hys, hyt⟩, z, hzp, hyzx⟩ := h
-    exact ⟨by simpa [← hyzx] using add_mem hys (hsp hzp), ⟨y, hyt, z, hzp, hyzx⟩⟩
 
 end Ring
 
