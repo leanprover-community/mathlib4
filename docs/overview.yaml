@@ -400,6 +400,7 @@ Probability Theory:
     mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
+    Gaussian measures: 'ProbabilityTheory.IsGaussian'
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
@@ -408,11 +409,13 @@ Probability Theory:
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
     Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
+    central limit theorem: 'ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub'
   Stochastic Processes:
     martingale: 'MeasureTheory.Martingale'
     optional stopping theorem: 'MeasureTheory.submartingale_iff_expected_stoppedValue_mono'
     stopping time: 'MeasureTheory.IsStoppingTime'
     hitting time: 'MeasureTheory.hitting'
+    Gaussian processes: 'ProbabilityTheory.IsGaussianProcess'
 
 Geometry:
   Affine and Euclidean geometry:
