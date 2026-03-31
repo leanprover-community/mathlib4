@@ -304,8 +304,7 @@ lemma truncTotal_one (h : n ≠ 0) : truncTotal R n (1 : MvPowerSeries σ R) = 1
 lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul {x : σ →₀ ℕ} (p q : MvPowerSeries σ R)
     (hx : degree x < n) : MvPolynomial.coeff x ((truncTotal R n) p * (truncTotal R n) q) =
       (coeff x) (p * q) := coeff_truncFinset_mul_truncFinset_eq_coeff_mul
-  (s := (finite_of_degree_lt n).toFinset) (fun _ _ h ↦ by simp; grind [degree_mono h]) p q
-    (by simpa)
+  (fun _ _ h ↦ by simp; grind [degree_mono h]) p q (by simpa)
 
 theorem totalDegree_truncTotal_lt (p : MvPowerSeries σ R) (h : n ≠ 0) :
     (truncTotal R n p).totalDegree < n := by
