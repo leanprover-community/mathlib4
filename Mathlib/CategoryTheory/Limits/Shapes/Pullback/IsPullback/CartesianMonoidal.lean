@@ -8,7 +8,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# Pullback in cartesian monoidal categories.
+# Pullback squares in cartesian monoidal categories.
 
 We show that various pullback squares result from other pullback squares or equalizers, in
 the setting of a category with chosen finite products, i.e. where we have
@@ -45,7 +45,6 @@ universe v u
 namespace CategoryTheory
 open Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-
 
 /--
 In a cartesian monoidal category, the following is a pullback square:
@@ -165,12 +164,12 @@ lemma IsPullback.pullback_monoidal {X₁ X₂ X₃ X₄ : C}
       (f₃ ⊗ₘ f₄) :=
   IsPullback.mk' (by apply CartesianMonoidalCategory.hom_ext <;> simp [hf.w])
     (by
-      introv _ h
-      simp [CartesianMonoidalCategory.hom_ext_iff] at h
+      simp only [CartesianMonoidalCategory.hom_ext_iff]
+      introv _ _
       apply hf.hom_ext <;> cat_disch)
     (by
-      introv h
-      simp [CartesianMonoidalCategory.hom_ext_iff] at h
+      simp only [CartesianMonoidalCategory.hom_ext_iff]
+      introv _
       use hf.lift (b ≫ fst _ _) (b ≫ snd _ _) (by cat_disch)
       cat_disch)
 
@@ -205,10 +204,10 @@ lemma IsPullback.of_pullback_monoidal {W X Y Z : C}
     (by
       simp_rw [← and_imp, ← Category.assoc, ← CartesianMonoidalCategory.hom_ext_iff]
       introv h
-      have hw := hpb.w
-      simp [CartesianMonoidalCategory.hom_ext_iff] at hw
+      have hw := congr($hpb.w ≫ snd _ _)
+      simp_rw [Category.assoc, CartesianMonoidalCategory.lift_snd, Category.comp_id] at hw
       apply hpb.hom_ext _ h
-      rw [hw.left, reassoc_of% h])
+      rw [hw, reassoc_of% h])
     (by
       introv h
       use hpb.lift (a ≫ f) (CartesianMonoidalCategory.lift a b) (by cat_disch)
@@ -242,9 +241,9 @@ lemma IsPullback.equalizer_monoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g]
     (by cat_disch)
     (by
       intro s m m' hm₂
-      simp [CartesianMonoidalCategory.hom_ext_iff] at hm₂
+      rw [CartesianMonoidalCategory.hom_ext_iff] at hm₂
       use (equalizer.lift m (by cat_disch))
-      simpa [equalizer.lift_ι, equalizer.lift_ι_assoc] using ‹m ≫ f = m' ∧ _›.left)
+      simpa [equalizer.lift_ι, equalizer.lift_ι_assoc] using hm₂.left)
 
 /--
 In a cartesian monoidal category, if we have that the following square is a pullback square,
@@ -264,11 +263,11 @@ lemma HasEqualizer.of_isPullback_monoidal {X Y : C} (f g : X ⟶ Y)
     (by nth_rw 1 [← lift_snd f g, ← lift_fst f g, hpb.w_assoc, hpb.w_assoc, lift_fst, lift_snd]),
     (by
       refine Limits.Fork.IsLimit.mk _ (fun s => hpb.lift s.ι (s.ι ≫ f)
-        (by simp [dsimp% s.condition])) ?_ ?_
+        (by simp [s.condition])) ?_ ?_
       · cat_disch
       · intro s m hm
         apply hpb.hom_ext (by simpa using hm)
-        simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι, IsPullback.lift_snd] at hm ⊢
+        simp only [Fork.ofι_pt, Fork.ι_ofι, IsPullback.lift_snd] at hm ⊢
         rw [← Category.comp_id d, ← lift_fst (𝟙 Y) (𝟙 Y), ← hpb.w_assoc, lift_fst,
           reassoc_of% hm])⟩⟩⟩
 
