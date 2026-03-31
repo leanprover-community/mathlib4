@@ -380,7 +380,7 @@ variable (h : IsAdjoinRootMonic S f)
 open IsAdjoinRoot
 
 theorem map_modByMonic (g : R[X]) : h.map (g %ₘ f) = h.map g := by
-  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div _ h.monic, sub_right_comm,
+  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div, sub_right_comm,
     sub_self, zero_sub, dvd_neg]
   exact ⟨_, rfl⟩
 
@@ -659,7 +659,6 @@ section Algebra
 
 open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [IsTorsionFree R S]
     [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by

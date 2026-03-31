@@ -6,14 +6,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 module
 
 public import Batteries.Logic
+public import Batteries.Util.LibraryNote
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
-public import Mathlib.Tactic.Basic
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -623,13 +624,9 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high, to_additive]
+instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}

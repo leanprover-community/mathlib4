@@ -110,8 +110,7 @@ lemma focalSubgroupOf.mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
 
 theorem focalSubgroupOf_eq_closure :
     focalSubgroupOf H = closure { g : H | ∃ x ∈ H, ∃ u : G, g = ⁅x, u⁆ } := by
-  rw [← (map_injective H.subtype_injective).eq_iff, map_focalSubgroupOf,
-    MonoidHom.map_closure, focalSubgroup_def]
+  rw [← map_subtype_inj, map_focalSubgroupOf, MonoidHom.map_closure, focalSubgroup_def]
   congr
   simp
   grind
@@ -186,7 +185,7 @@ lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.foc
 For a Sylow p-subgroup P of a finite group G, `P ∩ G' = P*`,
 where `P*` is the focal subgroup of `P`.
 -/
-theorem commutator_inf_eq_focalSubgroup :  _root_.commutator G ⊓ P = P.focalSubgroup := by
+theorem commutator_inf_eq_focalSubgroup : _root_.commutator G ⊓ P = P.focalSubgroup := by
   apply le_antisymm
   · apply le_trans ?_ (ker_transferFocal_inf_eq_focalSubgroup P).le
     exact inf_le_inf_right _ (Abelianization.commutator_subset_ker P.transferFocal)
