@@ -1117,7 +1117,7 @@ theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α �
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
-  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := exists_ord_eq α; e ▸ card_type r
 
 /-- Galois connection between `Cardinal.ord` and `Ordinal.card`. -/
 theorem gc_ord_card : GaloisConnection ord card := by
