@@ -700,9 +700,10 @@ structure FooHom (α : Type*) where
   toFun : α → α → α
   cont' : Con (Function.uncurry toFun)
 
-instance instFunLike : FunLike (FooHom α) α (α → α) where
+instance : FunLike (FooHom α) α (α → α) where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
 
 @[fun_prop]
 theorem con_foohom {f : FooHom α} {β : Type*} {g₁ : β → α} (hg₁ : Con g₁)
