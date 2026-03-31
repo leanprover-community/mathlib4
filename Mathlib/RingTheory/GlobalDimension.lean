@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Baer
+public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 
 /-!
@@ -119,6 +121,67 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     | top => simp
     | coe n => simpa using aux n
 
+/-- Global dimension is invariant of universe level when assume ring itself small. -/
+lemma globalDimension_eq_of_small [Small.{v} R] :
+    globalDimension.{v} R = globalDimension.{u} R := by
+  apply le_antisymm
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let := Module.Finite.small.{u} R M
+    let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
+    rw [projectiveDimension_eq_of_linearEquiv e]
+    exact le_iSup _ _
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let := Module.Finite.small.{v} R M
+    let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{v} M) := (Shrink.linearEquiv R M).symm
+    rw [projectiveDimension_eq_of_linearEquiv e]
+    exact le_iSup _ _
+
+universe u' in
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
+    (e : R ≃+* R') : globalDimension.{u} R = globalDimension.{u'} R' := by
+  apply le_antisymm
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let : Small.{u'} R := Small.mk' e.toEquiv
+    let := Module.Finite.small.{u'} R M
+    let : Module R' (Shrink.{u'} M) := Module.compHom _ e.symm.toRingHom
+    let e' : (ModuleCat.of R' (Shrink.{u'} M)) ≃ₛₗ[RingHomClass.toRingHom e.symm] M  := {
+      __ := (Shrink.linearEquiv R M)
+      map_smul' r m := map_smul (Shrink.linearEquiv R M) (e.symm r) _ }
+    rw [← projectiveDimension_eq_of_semiLinearEquiv e.symm e']
+    exact le_iSup _ _
+  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+    simp only [iSup_le_iff]
+    intro M hM
+    let : Small.{u} R' := Small.mk' e.symm.toEquiv
+    let := Module.Finite.small.{u} R' M
+    let : Module R (Shrink.{u} M) := Module.compHom _ e.toRingHom
+    let e' : (ModuleCat.of R (Shrink.{u} M)) ≃ₛₗ[RingHomClass.toRingHom e] M  := {
+      __ := (Shrink.linearEquiv R' M)
+      map_smul' r m := map_smul (Shrink.linearEquiv R' M) (e r) _ }
+    rw [← projectiveDimension_eq_of_semiLinearEquiv e e']
+    exact le_iSup _ _
+
+variable {R} in
+lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
+    globalDimension.{v} (Localization S) ≤ globalDimension.{v} R := by
+  simp only [iSup_le_iff, globalDimension]
+  intro M
+  let _ : Module R M := Module.compHom M (algebraMap R (Localization S))
+  have : IsScalarTower R (Localization S) M := IsScalarTower.of_compHom _ _ _
+  apply (le_of_eq_of_le _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
+    S (ModuleCat.of R M))).trans (le_iSup _ (ModuleCat.of R M))
+  let _ := isLocalizedModule_id S M (Localization S)
+  exact (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization S (Localization S)
+    (IsLocalizedModule.linearEquiv S ((ModuleCat.of R M).localizedModuleMkLinearMap S)
+    LinearMap.id)).symm.toModuleIso)
+
 lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
     ⨆ (p : PrimeSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
@@ -127,20 +190,10 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing 
     intro M fin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_prime, iSup_le_iff]
     intro p
-    exact le_trans (le_iSup _ (M.localizedModule p.asIdeal.primeCompl))
-      (le_iSup (fun (p : PrimeSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) p)
-  · simp only [iSup_le_iff, globalDimension]
-    intro p Mp
-    let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
-    let _ : IsScalarTower R (Localization.AtPrime p.1) Mp := IsScalarTower.of_compHom _ _ _
-    apply (le_trans _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
-      p.1.primeCompl (ModuleCat.of R Mp))).trans
-      (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
-    let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
-    exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
-      p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
-      ((ModuleCat.of R Mp).localizedModuleMkLinearMap p.1.primeCompl)
-      LinearMap.id)).symm.toModuleIso)
+    exact (le_iSup _ (M.localizedModule p.1.primeCompl)).trans
+      (le_iSup (fun (p : PrimeSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) p)
+  · refine iSup_le_iff.mpr (fun p ↦ ?_)
+    exact globalDimension_localization_le p.1.primeCompl
 
 lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
@@ -149,18 +202,9 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
   · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
     intro M fin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_maximal, iSup_le_iff]
-    exact fun m ↦ (le_iSup _ (M.localizedModule m.asIdeal.primeCompl)).trans
-      (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) m)
-  · simp only [iSup_le_iff, globalDimension]
-    intro p Mp
-    let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
-    have : IsScalarTower R (Localization.AtPrime p.1) Mp := IsScalarTower.of_compHom _ _ _
-    apply (le_trans _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
-      p.1.primeCompl (ModuleCat.of R Mp))).trans (le_iSup _ (ModuleCat.of R Mp))
-    let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
-    exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
-      p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
-      ((ModuleCat.of R Mp).localizedModuleMkLinearMap p.1.primeCompl)
-      LinearMap.id)).symm.toModuleIso)
+    exact fun m ↦ (le_iSup _ (M.localizedModule m.1.primeCompl)).trans
+      (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) m)
+  · refine iSup_le_iff.mpr (fun m ↦ ?_)
+    exact globalDimension_localization_le m.1.primeCompl
 
 end GlobalDimension
