@@ -84,11 +84,9 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
   ⟨e.symm.injective.isLieAbelian, e.injective.isLieAbelian⟩
 
 theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
-    Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
-  have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
-    ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
+    IsMulCommutative A ↔ IsLieAbelian A := by
+  have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
+  simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
