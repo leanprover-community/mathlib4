@@ -63,7 +63,7 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
+  [StarRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
 
 open scoped ContinuousFunctionalCalculus in
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
@@ -71,7 +71,7 @@ lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
   have h := cfcHom_continuous (R := 𝕜) ha
   have _ : ContinuousOn exp (spectrum 𝕜 a) := exp_continuous.continuousOn
-  let +nondep : Algebra ℚ A := RestrictScalars.algebra ℚ 𝕜 A
+  let +nondep : Algebra ℚ A := .restrictScalars ℚ 𝕜 A
   simp_rw [← map_exp _ h, cfc_apply exp a ha]
   congr 1
   ext
@@ -81,8 +81,7 @@ end RCLikeNormed
 
 section RealNormed
 
-variable {A : Type*} [NormedRing A] [StarRing A]
-  [IsTopologicalRing A] [NormedAlgebra ℝ A]
+variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :

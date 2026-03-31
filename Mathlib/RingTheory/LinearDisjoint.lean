@@ -122,7 +122,7 @@ The following results are related to the equivalent characterizations in
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -589,7 +589,6 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
     hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
       simpa only [AlgHom.range_comp] using (include_range R A B).map i hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint. -/
 theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   nontriviality S
@@ -609,7 +608,6 @@ theorem of_isField' {A : Type v} [Ring A] {B : Type w} [Ring B]
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
     (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField H
 
-set_option backward.isDefEq.respectTransparency false in
 -- need to be in this file since it uses linearly disjoint
 open Cardinal Polynomial in
 variable (R) in
