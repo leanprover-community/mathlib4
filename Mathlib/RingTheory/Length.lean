@@ -295,10 +295,8 @@ theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R
       Module.length R p ≤ Module.length A (p.restrictScalars A) := by
   rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
   let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
-  have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) := ⟨by
-    rintro ⟨x, hx⟩ ⟨y, hy⟩
-    simp only [Subtype.mk.injEq]
-    apply e.injective; grind⟩
+  have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) :=
+    Set.Subsingleton.coe_sort <| Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
   have : ∀ q : Submodule A ↥(restrictScalars A p), Order.krullDim (e ⁻¹' {q}) ≤ (0 : ℕ) := by
     intro p; by_cases h : Nonempty (e ⁻¹' {p})
     · simp [Order.krullDim_eq_zero]
