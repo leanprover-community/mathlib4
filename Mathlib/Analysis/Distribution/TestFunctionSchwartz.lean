@@ -237,7 +237,7 @@ theorem restrictToTestFunctionsCLM_apply (T : 𝓢'(E, F)) (φ : TestFunction Ω
 
 /--
 The distribution associated to a tempered distribution by restricting
-to ℝ-valued test functions, repackaging restrictToTestFunctionsCLM.
+to ℝ-valued test functions, repackaging `restrictToTestFunctionsCLM`.
 -/
 noncomputable def toDistribution (T : 𝓢'(E, F)) : Distribution Ω F ⊤ :=
   (ContinuousLinearMap.toUniformConvergenceCLM (RingHom.id ℝ) F
