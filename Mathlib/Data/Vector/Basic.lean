@@ -238,8 +238,7 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
-  obtain ⟨l, hl⟩ := v
-  subst hl
+  obtain ⟨l, rfl⟩ := v
   exact List.nodup_iff_injective_get
 
 theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
@@ -375,7 +374,7 @@ theorem scanl_get (i : Fin n) :
   | succ n hn =>
     rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp
     · intro i'
       simp only [hn, Fin.castSucc_succ, get_cons_succ]
 

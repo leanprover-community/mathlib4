@@ -3,7 +3,6 @@ on:
   pull_request:
     paths:
       - '.github/**'
-  merge_group:
 
 jobs:
   actionlint:

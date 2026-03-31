@@ -25,7 +25,6 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
@@ -186,7 +185,6 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
@@ -319,6 +317,13 @@ lemma preimage_eq_top_iff (B : X.Subcomplex) (f : Y ⟶ X) :
 lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
+
+@[simp]
+lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
+    (B.preimage f).image f = B := by
+  apply le_antisymm (B.image_preimage_le f)
+  · intro n y hy
+    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← FunctorToTypes.comp]⟩
 
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism

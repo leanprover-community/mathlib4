@@ -282,11 +282,15 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Finite J] :
+lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Finite J] :
     PreservesColimitsOfShape (Discrete J) F :=
   let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
   have := preservesShape_fin_of_preserves_binary_and_initial F n
   preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm _
+
+@[deprecated (since := "2026-03-10")]
+alias preservesFiniteCoproductsOfPreservesBinaryAndInitial :=
+  PreservesFiniteCoproducts.of_preserves_binary_and_initial
 
 end Preserves
 

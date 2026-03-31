@@ -137,7 +137,7 @@ instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f w
 instance : MorphismProperty.IsMultiplicative @IsImmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
-    refine { __ := inferInstanceAs (IsPreimmersion (f ≫ g)), isLocallyClosed_range := ?_ }
+    refine { __ := (inferInstance : IsPreimmersion (f ≫ g)), isLocallyClosed_range := ?_ }
     simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
     exact f.isLocallyClosed_range.image g.isEmbedding.isInducing g.isLocallyClosed_range
 
@@ -222,7 +222,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
 set_option backward.isDefEq.respectTransparency false in
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
-  convert inferInstanceAs (IsImmersion (pullback.diagonal (terminal.from X)))
+  convert (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
   ext : 1 <;> simp
 
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=
