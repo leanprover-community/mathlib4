@@ -5,6 +5,7 @@ Authors: Jingting Wang, Junyan Xu, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 public import Mathlib.RingTheory.TensorProduct.Quotient
@@ -26,7 +27,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 open Algebra TensorProduct nonZeroDivisors
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
 
 set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
@@ -61,16 +62,94 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
-  p.ResidueField ⊗[R] S
+@[ext]
+structure Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] where
+  of : p.ResidueField ⊗[R] S
+
+namespace Ideal.Fiber
+
+def equiv : (p.Fiber S) ≃ (p.ResidueField ⊗[R] S) where
+  toFun := Ideal.Fiber.of
+  invFun x := ⟨x⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+instance : CommRing (p.Fiber S) :=
+  (Ideal.Fiber.equiv p S).commRing
+
+noncomputable instance : Algebra R (p.Fiber S) :=
+  (Ideal.Fiber.equiv p S).algebra R
+
+noncomputable instance : Algebra p.ResidueField (p.Fiber S) :=
+  (Ideal.Fiber.equiv p S).algebra p.ResidueField
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+noncomputable instance : Algebra S (p.Fiber S) :=
+  (Ideal.Fiber.equiv p S).algebra S
+
+instance : IsScalarTower R p.ResidueField (p.Fiber S) :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+instance : IsScalarTower R S (p.Fiber S) :=
+  IsScalarTower.of_algebraMap_eq fun x ↦ congrArg _ (algebraMap_apply' x)
+
+/-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
+noncomputable def algEquivTensor : p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField ⊗[R] S :=
+  (Ideal.Fiber.equiv p S).algEquiv p.ResidueField
+
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
+noncomputable def algEquivTensor' : p.Fiber S ≃ₐ[S] p.ResidueField ⊗[R] S :=
+  (Ideal.Fiber.equiv p S).algEquiv S
+
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp := by
+  letI Rp := Localization p.primeCompl
+  letI pRp := IsLocalRing.maximalIdeal Rp
+  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI pSp := pRp.map (algebraMap Rp Sp)
+  refine (algEquivTensor' p S).trans ?_
+  have := Algebra.TensorProduct.tensorQuotientEquiv (R := R) S Rp S pRp
+  change p.Fiber S ≃ₐ[S] Sp ⧸ pSp
+  let foo : (Rp ⧸ pRp) ⊗[R] S ≃ₐ[Rp ⧸ pRp] Rp ⊗[R] S ⧸ map (algebraMap Rp (Rp ⊗[R] S)) pRp :=
+  { __ := Algebra.TensorProduct.quotientTensorEquiv (R := R) R Rp S pRp
+    commutes' x := by
+      obtain ⟨y, rfl⟩ := Quotient.mk_surjective x
+      rfl }
+  refine foo.trans ?_
+  exact
+    { __ := quotientEquiv _ _ (Localization.localization_tensor_algEquiv p.primeCompl S) (by
+        rw [map_map, AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom,
+          AlgHom.comp_algebraMap])
+      commutes' x := by
+        obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
+        rw [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
+          ← IsScalarTower.algebraMap_apply]
+        simp [-AlgEquiv.symm_toRingEquiv]
+        rw [Localization.localization_tensor_algEquiv_apply_tmul_one p.primeCompl]
+        rfl }
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
-lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
-  obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
-    (Algebra.TensorProduct.comm _ _ _ x)
-  refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
+end Ideal.Fiber
+
+lemma Ideal.Fiber.exists_smul_eq_algebraMap (x : p.Fiber S) :
+    ∃ r ∉ p, ∃ s, r • x = algebraMap S (p.Fiber S) s := by
+  obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _ _
+    (Algebra.TensorProduct.comm _ _ _ x.of)
+  exact ⟨r, hr, s, by simpa [Fiber.ext_iff] using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
+
+@[deprecated (since := "2026-03-31")] alias Ideal.Fiber.exists_smul_eq_one_tmul :=
+  Ideal.Fiber.exists_smul_eq_algebraMap
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
