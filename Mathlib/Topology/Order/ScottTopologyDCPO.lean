@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Order.ScottTopology
-public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Order.Category.FrameAdjunction
 
 /-!
 # Scott Complete Partial Order
@@ -221,6 +221,67 @@ theorem isTopologicalBasis_Ici_image_compactSet
     use c, hc
     exact ⟨mem_Ici.1 x_in_c', Subset.refl (LE.le (Ici c)) hc'⟩
 
+/- Any open set, `u`, can be constructed as a union (`sSup`) of sets from the basis.
+The basis consists of the upward closures of those compact elements in `u`.
+Strengthening from `Set` to `Opens` of `TopologicalSpace.IsTopologicalBasis.open_eq_sUnion'`. -/
+lemma IsBasis.open_eq_sSup {α : Type*} [t : TopologicalSpace α] {B : Set (Opens α)}
+      (hB : IsBasis B) (u : Opens α) :
+    u = sSup {s : Opens α | s ∈ B ∧ s ≤ u} := by
+  apply Opens.ext
+  calc
+  ↑u = ⋃₀ {s | s ∈ ((↑): _ → Set α) '' B ∧ s ⊆ u} := IsTopologicalBasis.open_eq_sUnion' hB u.isOpen
+  _ = ↑(sSup {s | s ∈ B ∧ s ≤ u}) := by
+    simp_all only [mem_image, coe_sSup, mem_setOf_eq]
+    ext x : 1
+    simp_all only [mem_sUnion, mem_setOf_eq, ↓existsAndEq, and_true, SetLike.coe_subset_coe,
+    SetLike.mem_coe, mem_iUnion, exists_prop]
+
 end AlgebraicDCPO
+
+section Sober
+open Locale TopCat CategoryTheory TopologicalSpace Topology.IsScott Set
+variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D] [sD : IsScott D univ]
+
+/-- The set of compact elements underlying the basic opens contained in a `PT` is directed.
+It is helpful to think of a `PT`, as a set of `Opens` with some additional structure. -/
+lemma directed_setOf_compactElement (x : PT (Opens D))
+    : DirectedOn (· ≤ ·) {c | ∃ hc: IsCompactElement c, x hc.toOpen} := by
+  rintro c ⟨hc₀, hc₁⟩ d ⟨hd₀, hd₁⟩
+  simp only [mem_setOf_eq]
+  let inf := hc₀.toOpen ⊓ hd₀.toOpen
+  have inf_in_x : x inf := by
+    simp only [map_inf, inf]
+    exact ⟨hc₁, hd₁⟩
+  rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet inf] at inf_in_x
+  rw [map_sSup, sSup_Prop_eq] at inf_in_x -- completely prime property of frame hom
+  obtain ⟨P, ⟨e', ⟨⟨e, he₁, he₂⟩, he'⟩, e'_in_x⟩, hP⟩ := inf_in_x
+  use e, ⟨e.prop, by grind⟩
+  subst he₂ e'_in_x
+  have inf_eq : inf.carrier = Ici c ∩ Ici d := by simp [inf]
+  have subset_inf : Ici ↑e ⊆ inf.carrier := by apply Subset.refl (LE.le e.toOpen) he'
+  rw [inf_eq] at subset_inf
+  apply subset_inf
+  exact self_mem_Ici
+
+/-- The set of compact elements underlying the basic opens contained in a `PT` is nonempty.
+It is helpful to think of a `PT`, as a set of `Opens` with some additional structure. -/
+lemma nonempty_setOf_compactElement (x : PT (Opens D))
+    : {c | ∃ hc: IsCompactElement c, x hc.toOpen}.Nonempty := by
+  have h_bot : IsCompactElement (⊥ : D) := by
+    rw [isCompactElement_iff_le_of_directed_sSup_le]
+    intro s ⟨e, he⟩ _ _
+    use e, he
+    exact OrderBot.bot_le e
+  have top_eq_bot_toOpen : (⊤ : Opens D) = h_bot.toOpen := by
+    ext e
+    simp_all only [Opens.coe_top, mem_univ, Opens.coe_mk, Ici_bot]
+  have h_top : x ⊤ := by
+    simp only [map_top, «Prop».top_eq_true]
+  rw [Set.Nonempty]
+  use ⊥
+  use h_bot
+  rw [← top_eq_bot_toOpen]
+  exact h_top
+end Sober
 end IsScott
 end Topology
