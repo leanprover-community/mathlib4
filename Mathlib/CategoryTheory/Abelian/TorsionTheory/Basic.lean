@@ -161,19 +161,26 @@ lemma prop_sSup_subobjectOf (P : ObjectProperty C)
     (X : C) : P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
   let subobjs := {A : Subobject X | P (A : C)}
   let I := equivShrink (Subobject X) '' subobjs
-  let D : Discrete I ⥤ C := Discrete.functor fun j => ((equivShrink (Subobject X)).symm j : C)
-  have hPDi (i : Discrete I) : P (D.obj i) := by
-    obtain ⟨⟨_, A, hA, rfl⟩⟩ := i
-    simpa [D] using hA
-  have hPcolimD : P (colimit D) := by
-    simpa using P.prop_colimit D hPDi
-  let f := Subobject.smallCoproductDesc subobjs
-  have hPimage : P (image f) :=
-    P.prop_of_epi (factorThruImage f) hPcolimD
-  let e : ((Subobject.mk (Limits.image.ι (Subobject.smallCoproductDesc subobjs))) : C) ≅
-      Limits.image (Subobject.smallCoproductDesc subobjs) :=
-    Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))
-  simpa [Subobject.sSup] using P.prop_of_iso e.symm hPimage
+  let eqv := Discrete.equivalence
+    (Equiv.Set.image (equivShrink (Subobject X)) subobjs (equivShrink (Subobject X)).injective)
+  haveI : HasColimitsOfShape (Discrete ↥subobjs) C :=
+    hasColimitsOfShape_of_equivalence eqv.symm
+  haveI : P.IsClosedUnderColimitsOfShape (Discrete ↥subobjs) :=
+    CategoryTheory.ObjectProperty.IsClosedUnderColimitsOfShape.of_equivalence eqv.symm
+  let D : Discrete ↥subobjs ⥤ C := Discrete.functor (fun A : ↥subobjs => (A.val : C))
+  have hPDi (i : Discrete ↥subobjs) : P (D.obj i) := i.as.2
+  have hPcolimD : P (colimit D) := by simpa using P.prop_colimit D hPDi
+  let φ : colimit D ≅ ∐ fun j : ↥I => ((equivShrink (Subobject X)).symm j : C) :=
+    Sigma.whiskerEquiv
+      (Equiv.Set.image (equivShrink (Subobject X)) subobjs (equivShrink (Subobject X)).injective)
+      (fun j => eqToIso (by simp))
+  have hPsigma : P (∐ fun j : ↥I => ((equivShrink (Subobject X)).symm j : C)) :=
+    P.prop_of_iso φ hPcolimD
+  have hPimage : P (image (Subobject.smallCoproductDesc subobjs)) :=
+    P.prop_of_epi (factorThruImage _) hPsigma
+  simpa [Subobject.sSup] using P.prop_of_iso
+    (Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))).symm hPimage
+
 
 /-
 These should be all the ingredients for the converse of `isTorsion_iff`, but currently in an
