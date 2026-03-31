@@ -213,9 +213,8 @@ theorem isFaceOf_iff_mem_of_add_mem : F.IsFaceOf C ↔
   constructor <;> intro h
   · exact ⟨h.le, IsFaceOf.mem_of_add_mem h⟩
   · refine ⟨h.1, fun {x y a} xC yC a0 haxy => ?_⟩
-    have := h.2 (smul_mem _ (le_of_lt a0) xC) yC haxy
-    have hxF := smul_mem _ (inv_nonneg.mpr (le_of_lt a0)) this
-    simpa [← smul_assoc, inv_mul_cancel₀ (ne_of_gt a0)] using hxF
+    have := smul_mem _ (inv_nonneg.mpr (le_of_lt a0)) <| h.2 (smul_mem _ (le_of_lt a0) xC) yC haxy
+    simpa [← smul_assoc, inv_mul_cancel₀ (ne_of_gt a0)] using this
 
 namespace IsFaceOf
 
