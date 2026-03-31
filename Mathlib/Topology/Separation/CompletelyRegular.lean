@@ -297,5 +297,5 @@ theorem CompletelyRegularSpace.totallySeparatedSpace_of_cardinalMk_lt_continuum 
   inferInstance
 
 instance [Countable X] [T35Space X] : TotallySeparatedSpace X :=
-  CompletelyRegularSpace.totallySeparatedSpace_of_cardinalMk_lt_continuum <| 
+  CompletelyRegularSpace.totallySeparatedSpace_of_cardinalMk_lt_continuum <|
     (Cardinal.mk_le_aleph0_iff.mpr inferInstance).trans_lt Cardinal.aleph0_lt_continuum
