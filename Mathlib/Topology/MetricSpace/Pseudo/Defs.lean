@@ -39,14 +39,10 @@ Additional useful definitions:
 
 * `PseudoMetricSpace.ext` and `PseudoMetricSpace.ofDistTopology`: extensionality and
   construction from a compatible topology and distance.
-* `dist_triangle`, `dist_triangle_left`, `dist_triangle_right`, `dist_nonneg`,
-  `nndist_triangle`: basic distance inequalities.
-* `edist_dist`, `edist_nndist`, `nndist_edist`, `dist_edist`: comparison lemmas between
-  `dist`, `nndist`, and `edist`.
-* `ball`, `closedBall`, `sphere` together with `mem_ball`, `mem_closedBall`, `mem_sphere`:
+* `dist_triangle`, `dist_nonneg`, `nndist_triangle`: core distance inequalities.
+* `Metric.ball`, `Metric.closedBall`, `Metric.sphere` together with
+  `Metric.mem_ball`, `Metric.mem_closedBall`, `Metric.mem_sphere`:
   basic metric neighborhoods.
-* `ball_eq_empty`, `closedBall_eq_empty`, `ball_subset_closedBall`, `closedBall_eq_bInter_ball`:
-  basic structural lemmas for balls.
 
 ## Tags
 
