@@ -67,6 +67,14 @@ lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) 
     DifferentiableAt ℂ (hurwitzZeta a) s :=
   (differentiableAt_hurwitzZetaEven a hs).add (differentiable_hurwitzZetaOdd a s)
 
+@[fun_prop]
+lemma meromorphicAt_hurwitzZeta (a s) : MeromorphicAt (hurwitzZeta a) s := by
+  unfold hurwitzZeta; fun_prop
+
+@[fun_prop]
+lemma meromorphic_hurwitzZeta (a) : Meromorphic (hurwitzZeta a) :=
+  meromorphicAt_hurwitzZeta a
+
 /-- Formula for `hurwitzZeta s` as a Dirichlet series in the convergence range. We
 restrict to `a ∈ Icc 0 1` to simplify the statement. -/
 lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :

@@ -92,6 +92,10 @@ lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)�
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
 
+@[fun_prop]
+lemma meromorphicAt_Gammaℝ (s) : MeromorphicAt Gammaℝ s := by
+  simpa using differentiable_Gammaℝ_inv.analyticAt s |>.meromorphicAt.fun_inv
+
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
     refine tendsto_self_mul_Gamma_nhds_zero.comp ?_

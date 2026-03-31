@@ -342,6 +342,15 @@ lemma differentiable_completedHurwitzZetaOdd (a : UnitAddCircle) :
   ((hurwitzOddFEPair a).differentiable_Λ.comp
     ((differentiable_id.add_const 1).div_const 2)).div_const 2
 
+@[fun_prop]
+lemma meromorphicAt_completedHurwitzZetaOdd (a s) :
+    MeromorphicAt (completedHurwitzZetaOdd a) s := by
+  unfold completedHurwitzZetaOdd; fun_prop
+
+@[fun_prop]
+lemma meromorphic_completedHurwitzZetaOdd (a) : Meromorphic (completedHurwitzZetaOdd a) :=
+  meromorphicAt_completedHurwitzZetaOdd a
+
 /-- The entire function of `s` which agrees with
 ` Gamma ((s + 1) / 2) * π ^ (-(s + 1) / 2) * ∑' (n : ℕ), sin (2 * π * a * n) / n ^ s`
 for `1 < re s`.
@@ -463,6 +472,14 @@ lemma differentiable_hurwitzZetaOdd (a : UnitAddCircle) :
     Differentiable ℂ (hurwitzZetaOdd a) :=
   (differentiable_completedHurwitzZetaOdd a).mul <| differentiable_Gammaℝ_inv.comp <|
     differentiable_id.add <| differentiable_const _
+
+@[fun_prop]
+lemma meromorphicAt_hurwitzZetaOdd (a s) : MeromorphicAt (hurwitzZetaOdd a) s := by
+  unfold hurwitzZetaOdd; fun_prop
+
+@[fun_prop]
+lemma meromorphic_hurwitzZetaOdd (a) : Meromorphic (hurwitzZetaOdd a) :=
+  meromorphicAt_hurwitzZetaOdd a
 
 /-- The sine zeta function, i.e. the meromorphic function of `s` which agrees
 with `∑' (n : ℕ), sin (2 * π * a * n) / n ^ s` for `1 < re s`. -/

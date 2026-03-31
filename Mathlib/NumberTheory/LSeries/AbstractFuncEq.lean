@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.MellinTransform
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Abstract functional equations for Mellin transforms
@@ -215,6 +216,20 @@ theorem differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
   let ⟨_, hu⟩ := exists_lt s.re
   mellin_differentiableAt_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu
 
+@[fun_prop]
+lemma analyticAt_Λ (s : ℂ) : AnalyticAt ℂ P.Λ s := by
+  by_cases hE : CompleteSpace E
+  case neg => unfold Λ mellin; simp [integral_def, hE, analyticAt_const]
+  exact P.differentiable_Λ.analyticAt s
+
+@[fun_prop]
+lemma meromorphicAt_Λ (s : ℂ) : MeromorphicAt P.Λ s :=
+  P.analyticAt_Λ s |>.meromorphicAt
+
+@[fun_prop]
+lemma meromorphic_Λ : Meromorphic P.Λ :=
+  fun s => P.meromorphicAt_Λ s
+
 /-- Main theorem about strong FE pairs: if `(f, g)` are a strong FE pair, then the Mellin
 transforms of `f` and `g` are related by `s ↦ k - s`.
 
@@ -408,6 +423,16 @@ lemma symm_Λ₀_eq (s : ℂ) :
 
 theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.toStrongFEPair.differentiable_Λ
 
+@[fun_prop]
+lemma analyticAt_Λ₀ (s : ℂ) : AnalyticAt ℂ P.Λ₀ s := by
+  by_cases hE : CompleteSpace E
+  case neg => unfold Λ₀ mellin; simp [integral_def, hE, analyticAt_const]
+  exact P.differentiable_Λ₀.analyticAt s
+
+@[fun_prop]
+lemma meromorphicAt_Λ₀ (s : ℂ) : MeromorphicAt P.Λ₀ s :=
+  P.analyticAt_Λ₀ s |>.meromorphicAt
+
 theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
@@ -419,6 +444,14 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
       apply (differentiableAt_const _).div ((differentiableAt_const _).sub (differentiable_id _))
       simpa [sub_eq_zero, eq_comm]
     · simp [hs']
+
+@[fun_prop]
+lemma meromorphicAt_Λ (s : ℂ) : MeromorphicAt P.Λ s := by
+  unfold Λ; fun_prop
+
+@[fun_prop]
+lemma meromorphic_Λ : Meromorphic P.Λ :=
+  fun s => P.meromorphicAt_Λ s
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
 theorem hasMellin [CompleteSpace E]
