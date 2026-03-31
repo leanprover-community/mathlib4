@@ -8,7 +8,6 @@ module -- shake: keep-all
 
 public import Lean.Expr
 public import Mathlib.Util.MemoFix
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # ReplaceRec
