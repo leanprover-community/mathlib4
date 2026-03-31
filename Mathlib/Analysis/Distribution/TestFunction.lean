@@ -52,13 +52,13 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
-  {n : ℕ∞}
+  {n n₁ n₂ k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -335,7 +335,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
 variable (𝕜) in
 /-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
 custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
-locally convex topological vector space. -/
+locally convex topological vector space. See also `limitCLM`. -/
 @[simps]
 protected noncomputable def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V]
     [IsScalarTower ℝ 𝕜 V]
@@ -348,6 +348,36 @@ protected noncomputable def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] 
   letI Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] V := ⟨⟨toFun, map_add⟩, map_smul⟩
   { toLinearMap := Φ
     cont := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
+
+variable (𝕜) in
+/-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
+custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
+locally convex topological vector space. See also `mkCLM`. -/
+@[simps!]
+protected noncomputable def limitCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V]
+    [IsScalarTower ℝ 𝕜 V]
+    (toFun : 𝓓^{n}(Ω, F) → V)
+    (T : Π (K : Compacts E), (K : Set E) ⊆ Ω → 𝓓^{n}_{K}(E, F) →L[𝕜] V)
+    (toFun_eq_T : ∀ K K_sub_Ω f, toFun (ofSupportedIn K_sub_Ω f) = T K K_sub_Ω f) :
+    𝓓^{n}(Ω, F) →L[𝕜] V :=
+  haveI toFun_add (f g : 𝓓^{n}(Ω, F)) : toFun (f + g) = toFun f + toFun g := by
+    set K : Compacts E := ⟨tsupport f ∪ tsupport g, .union f.hasCompactSupport g.hasCompactSupport⟩
+    have K_sub_Ω : (K : Set E) ⊆ Ω := union_subset f.tsupport_subset g.tsupport_subset
+    let f_K : 𝓓^{n}_{K}(E, F) :=
+      .of_support_subset f.contDiff (subset_closure.trans subset_union_left)
+    let g_K : 𝓓^{n}_{K}(E, F) :=
+      .of_support_subset g.contDiff (subset_closure.trans subset_union_right)
+    change toFun (ofSupportedIn K_sub_Ω (f_K + g_K)) =
+      toFun (ofSupportedIn K_sub_Ω f_K) + toFun (ofSupportedIn K_sub_Ω g_K)
+    simp [toFun_eq_T]
+  haveI toFun_smul (c : 𝕜) (f : 𝓓^{n}(Ω, F)) : toFun (c • f) = c • toFun f := by
+    set K : Compacts E := ⟨tsupport f, f.hasCompactSupport⟩
+    have K_sub_Ω : (K : Set E) ⊆ Ω := f.tsupport_subset
+    let f_K : 𝓓^{n}_{K}(E, F) := .of_support_subset f.contDiff subset_closure
+    change toFun (ofSupportedIn K_sub_Ω (c • f_K)) = c • toFun (ofSupportedIn K_sub_Ω f_K)
+    simp [toFun_eq_T]
+  TestFunction.mkCLM 𝕜 toFun toFun_add toFun_smul
+    (fun K K_sub_Ω ↦ .congr (T K K_sub_Ω).continuous (fun f ↦ (toFun_eq_T K K_sub_Ω f).symm))
 
 end Topology
 
@@ -372,6 +402,10 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
 
+instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
+
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
   .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
@@ -393,13 +427,9 @@ noncomputable def postcompCLM (T : F →L[𝕜] F') :
     ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
       f.hasCompactSupport.comp_left (map_zero _),
       (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
-  haveI key (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
-      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.postcompCLM T f) =
-        Φ (ofSupportedIn K_sub_Ω f) := by
-    ext; simp [Φ]
-  TestFunction.mkCLM 𝕜 Φ
-    (fun f g ↦ by ext; simp [Φ]) (fun c f ↦ by ext; simp [Φ])
-    (fun K K_sub_Ω ↦ by refine .congr ?_ (key K K_sub_Ω); fun_prop)
+  TestFunction.limitCLM 𝕜 Φ
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.postcompCLM T)
+    (fun _ _ _ ↦ by ext; simp [Φ])
 
 @[simp]
 lemma postcompCLM_apply (T : F →L[𝕜] F')
@@ -408,5 +438,99 @@ lemma postcompCLM_apply (T : F →L[𝕜] F')
   rfl
 
 end postcomp
+
+section Monotone
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜) in
+/-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
+
+This is in fact a topological embedding when `n₁ = n₂` and `Ω₁ ⊆ Ω₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, Ω₁, Ω₂` are implicit as they can often be inferred from context, or
+specified by a type ascription. -/
+noncomputable def monoCLM :
+    𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F) :=
+  open scoped Classical in
+  letI Φ (f : 𝓓^{n₁}(Ω₁, F)) : 𝓓^{n₂}(Ω₂, F) :=
+    if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then
+      ⟨f, f.contDiff.of_le (mod_cast h.1), f.hasCompactSupport, f.tsupport_subset.trans h.2⟩
+    else 0
+  TestFunction.limitCLM 𝕜 Φ
+    (fun K K_sub_Ω₁ ↦ if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂
+      then ofSupportedInCLM 𝕜 (K_sub_Ω₁.trans h.2) ∘L ContDiffMapSupportedIn.monoCLM 𝕜
+      else 0)
+    (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}(Ω₁, F)) :
+    ((monoCLM 𝕜 f : 𝓓^{n₂}(Ω₂, F)) : E → F) = if n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then f else 0 := by
+  rw [monoCLM]
+  split_ifs <;> rfl
+
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂)) :
+    (monoCLM 𝕜 : 𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (monoCLM 𝕜 : 𝓓^{n₁}(Ω₁, F) → 𝓓^{n₂}(Ω₂, F)) = monoCLM 𝕜' :=
+  rfl
+
+end Monotone
+
+section FDerivCLM
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜 n k) in
+/-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map. -/
+noncomputable def fderivCLM :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) :=
+  letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{k}(Ω, E →L[ℝ] F) :=
+    if hk : k + 1 ≤ n then
+      ⟨fderiv ℝ f, f.contDiff.fderiv_right (mod_cast hk),
+        f.hasCompactSupport.fderiv ℝ, tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
+    else 0
+  TestFunction.limitCLM 𝕜 Φ
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.fderivCLM 𝕜 n k)
+    (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
+
+@[simp]
+lemma fderivCLM_apply (f : 𝓓^{n}(Ω, F)) :
+    fderivCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+  rw [fderivCLM]
+  split_ifs <;> rfl
+
+lemma fderivCLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
+    fderivCLM 𝕜 n k f = fderiv ℝ f := by
+  simp [hk]
+
+lemma fderivCLM_apply_of_gt (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
+    fderivCLM 𝕜 n k f = 0 := by
+  ext : 1
+  simp [not_le_of_gt hk]
+
+variable (𝕜) in
+lemma fderivCLM_ofSupportedIn {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    fderivCLM 𝕜 n k (ofSupportedIn K_sub_Ω f) =
+      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.fderivCLM 𝕜 n k f) := by
+  ext
+  simp
+
+variable (𝕜) in
+lemma fderivCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) → _) = fderivCLM 𝕜' n k :=
+  rfl
+
+end FDerivCLM
 
 end TestFunction

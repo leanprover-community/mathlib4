@@ -7,16 +7,16 @@ Jovan Gerbscheid
 module
 
 public meta import Lean.Compiler.NoncomputableAttr
-public meta import Lean.Elab.Tactic.Ext
+public meta import Lean.Elab.App
+public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
+public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
@@ -313,14 +313,14 @@ structure Config : Type where
   /-- The given name of the target. -/
   tgt : Name := Name.anonymous
   /-- An optional doc string. -/
-  doc : Option String := none
+  doc : Option String := .none
   /-- If `allowAutoName` is `false` (default) then
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder? : Option Reorder := none
+  reorder? : Option Reorder := .none
   /-- The argument used to determine whether this constant should be translated. -/
-  relevantArg? : Option RelevantArg := none
+  relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
@@ -445,7 +445,7 @@ where
   translated, which would create type-incorrect terms. Instead, we give the free variables
   their original type and the translated type is only used when constructing the final term. -/
   visit (e : Expr) : ReplacementM Expr :=
-    withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} translating {e}") do
+    withTraceNode `translate_detail (fun _ => return m!"translating {e}") do
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
@@ -545,18 +545,25 @@ where
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (renameFun : Name → Option Name) (src : Expr) : Expr :=
-  src.mapForallBinderNames fun n => (renameFun n).getD <|
+def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+  src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
-    | .str p s => .str p (GuessName.guessName t.guessNameData s)
+    | .str p s => .str p <|
+      let s' := GuessName.guessName t.guessNameData s
+      if s' != s then s' else
+      -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
+      if let some suffix := s.dropPrefix? 'h' then
+        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+      else
+        s
     | n => n
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the type {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the type {e}") do
   forallTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
@@ -578,8 +585,8 @@ def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : E
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the value {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the value {e}") do
   lambdaTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
@@ -614,7 +621,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename.get? type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
   type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -865,11 +872,11 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
     (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
-  for (nm, lemmas) in names.zip auxLemmas do
+  for nm in names, lemmas in auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
-    for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
+  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
+    for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
       insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
@@ -951,13 +958,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  let srcDecl := srcDecl.updateLevelParams (reorder.permuteUniv srcDecl.levelParams)
-  -- instantiate both types with the same universes. `instantiateLevelParams` does some
-  -- normalization, so we apply it to both types.
   srcType := srcType.instantiateLevelParams
-    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let tgtType := tgtDecl.type.instantiateLevelParams
-    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+    (reorder.permuteUniv srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
@@ -1134,8 +1137,6 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
     warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-    -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr cfg.ref simpsAttr t.attrName `simps src tgt
     warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
@@ -1153,10 +1154,10 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
-    if attr.name == `simps then
+    if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
         translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
-          (simpsTacFromSyntax · attr.stx)
+          (impl · attr.stx attr.kind)
     else
       for decl in allDecls do
         Term.applyAttributes decl #[attr]
