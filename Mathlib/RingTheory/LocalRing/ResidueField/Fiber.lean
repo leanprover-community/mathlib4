@@ -147,7 +147,7 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
 @[ext]
-structure Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] where
+structure Ideal.Fiber where
   of : p.ResidueField ⊗[R] S
 
 namespace Ideal.Fiber
@@ -214,21 +214,35 @@ noncomputable instance : Algebra (Localization (algebraMapSubmonoid S p.primeCom
 
 theorem algebraMap_localization_surjective :
     Function.Surjective
-      (algebraMap (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S)) := by
-  sorry
+      (algebraMap (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S)) :=
+  (algEquivQuotient p S).symm.surjective.comp (Ideal.Quotient.mkₐ_surjective S _)
 
 theorem ker_algebraMap_localization :
-    RingHom.ker (algebraMap (Localization (algebraMapSubmonoid S p.primeCompl)) (p.Fiber S)) =
-      (p.map (algebraMap R (Localization (algebraMapSubmonoid S p.primeCompl)))) := by
-  sorry
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    RingHom.ker (algebraMap Sp (p.Fiber S)) = pSp :=
+  (RingHom.ker_comp_of_injective _ (algEquivQuotient p S).symm.injective).trans Ideal.mk_ker
+
+/-- Variant of `ker_algebraMap_localization` going the other way around the commutative square. -/
+theorem ker_algebraMap_localization' :
+    letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
+    RingHom.ker (algebraMap Sp (p.Fiber S)) = (p.map (algebraMap R S)).map (algebraMap S Sp) := by
+  rw [ker_algebraMap_localization, ← Localization.AtPrime.map_eq_maximalIdeal, map_map,
+    ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R S, ← map_map]
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
     (q.map (algebraMap S (p.Fiber S))).IsPrime := by
-  -- maybe go via the quotient?
-  sorry
+  rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.primeCompl)), ← map_map]
+  have : ((map (algebraMap S (Localization (algebraMapSubmonoid S p.primeCompl))) q)).IsPrime :=
+    IsLocalization.AtPrime.isPrime_map_of_liesOver S p _ q
+  apply Ideal.map_isPrime_of_surjective (algebraMap_localization_surjective p S)
+  rw [ker_algebraMap_localization']
+  exact map_mono (map_le_iff_le_comap.mpr LiesOver.over.le)
 
 lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
     ∃ r ∉ p, ∃ s, r • x = algebraMap S (p.Fiber S) s := by
@@ -261,22 +275,21 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     inferInstance⟩
   invFun q := ⟨⟨q.1.under S, q.2.under S⟩, PrimeSpectrum.ext Ideal.LiesOver.over.symm⟩
   left_inv q := by
-    ext : 2
-    simp only
-    rw [Ideal.under_def,
-      IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.1.primeCompl)),
-      ← Ideal.map_map, ← Ideal.comap_comap,
+    let m := algebraMapSubmonoid S p.1.primeCompl
+    simp only [Subtype.ext_iff, PrimeSpectrum.ext_iff, Ideal.under_def]
+    rw [IsScalarTower.algebraMap_eq S (Localization m), ← Ideal.map_map, ← Ideal.comap_comap,
       Ideal.comap_map_of_surjective _ (Ideal.Fiber.algebraMap_localization_surjective p.1 S),
       ← RingHom.ker_eq_comap_bot, sup_of_le_left,
-      IsLocalization.comap_map_of_isPrime_disjoint (Algebra.algebraMapSubmonoid S p.1.primeCompl) _
-      q.1.2]
+      IsLocalization.comap_map_of_isPrime_disjoint m _ q.1.2]
     · exact Set.disjoint_image_left.mpr (Set.disjoint_compl_left_iff_subset.mpr q.2.le)
-    · sorry
+    · rw [Ideal.Fiber.ker_algebraMap_localization']
+      exact Ideal.map_mono (Ideal.map_le_iff_le_comap.mpr q.2.ge)
   right_inv q := by
-    ext1
-    simp only
-    rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.1.primeCompl))]
-    sorry
+    simp only [PrimeSpectrum.ext_iff, Ideal.under_def]
+    rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.1.primeCompl)),
+      ← Ideal.map_map, ← Ideal.comap_comap,
+      IsLocalization.map_comap (Algebra.algebraMapSubmonoid S p.1.primeCompl),
+      Ideal.map_comap_of_surjective _ (Ideal.Fiber.algebraMap_localization_surjective p.1 S)]
 
 /-- The `OrderIso` between the fiber of `PrimeSpectrum S → PrimeSpectrum R` at a prime
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
@@ -312,10 +325,9 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
     comap (algebraMap R S) ⁻¹' {p} ≃ₜ PrimeSpectrum (p.asIdeal.Fiber S) := by
   letI H : Topology.IsEmbedding (preimageOrderIsoFiber R S p).symm := by
     refine (Topology.IsEmbedding.of_comp_iff .subtypeVal).mp ?_
-    have := PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks _ S _
-      (Ideal.surjectiveOnStalks_residueField p.asIdeal)
-    exact ((Homeomorph.prodUnique _ _).isEmbedding.comp this).comp
-      (homeomorphOfRingEquiv (Algebra.TensorProduct.comm _ _ _).toRingEquiv).isEmbedding
+    simpa only [← IsScalarTower.algebraMap_eq, ← PrimeSpectrum.comap_comp] using
+      (localization_comap_isEmbedding _ (algebraMapSubmonoid S p.1.primeCompl)).comp
+        (isEmbedding_comap_of_surjective _ _ (Ideal.Fiber.algebraMap_localization_surjective p.1 S))
   exact
   { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
