@@ -72,7 +72,7 @@ abbrev _root_.LE.le.hom := @homOfLE
 theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 
-@[simp]
+@[map (attr := reassoc (attr := simp))]
 theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
     homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl

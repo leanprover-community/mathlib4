@@ -137,9 +137,6 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   inverse := sheafCongr.inverse J K e A
   unitIso := sheafCongr.unitIso J K e A
   counitIso := sheafCongr.counitIso J K e A
-  functor_unitIso_comp X := by
-    ext
-    simp [← Functor.map_comp, ← op_comp]
 
 variable [HasSheafify K A]
 

@@ -184,19 +184,17 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
       pushforward.{v} (φ ≫ (Functor.sheafPushforwardContinuousNatTrans α.hom _ _ _).app S) where
   hom := pushforwardNatTrans _ α.hom
   inv := pushforwardNatTrans _ α.inv ≫
-    (pushforwardCongr (by ext : 3; simp [← Functor.map_comp, ← op_comp])).hom
+    (pushforwardCongr (by ext : 3; simp)).hom
   hom_inv_id := by
     ext X U x
     suffices X.val.presheaf.map (α.hom.app U.unop).op ≫
       X.val.presheaf.map (α.inv.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
-      Iso.inv_hom_id_app, op_id, CategoryTheory.Functor.map_id]
+    simp
   inv_hom_id := by
     ext X U x
     suffices X.val.presheaf.map (α.inv.app U.unop).op ≫
       X.val.presheaf.map (α.hom.app U.unop).op = 𝟙 _ from congr($this x)
-    simp only [← Functor.map_comp, ← op_comp,
-      Iso.hom_inv_id_app, op_id, CategoryTheory.Functor.map_id]
+    simp
 
 end NatTrans
 
@@ -230,13 +228,11 @@ def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
     ext U x
     change (X.val.presheaf.map (adj.counit.app (F.obj U.unop)).op ≫
       X.val.presheaf.map (F.map (adj.unit.app U.unop)).op) _ = _
-    rw [← Functor.map_comp, ← op_comp, adj.left_triangle_components]
     simp
   right_triangle_components X := by
     ext U x
     change (X.val.presheaf.map (G.map (adj.counit.app U.unop)).op ≫
       X.val.presheaf.map (adj.unit.app (G.obj U.unop)).op) _ = _
-    rw [← Functor.map_comp, ← op_comp, adj.right_triangle_components]
     simp
 
 -- Not a simp because the type of the LHS is dsimp-able
@@ -260,7 +256,7 @@ variable {C : Type u'} [Category.{v'} C] [HasBinaryProducts C] {J : Grothendieck
 def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
   ⟨{app U := R.obj.map Limits.prod.snd.op
-    naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
+    naturality U V f := by simp }⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
@@ -270,7 +266,7 @@ def overPushforwardOverAdj (x : C) :
   · ext y : 2
     simp [pushforwardOver]
   · ext y : 2
-    simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
+    simp [pushforwardOver]
 
 instance (x : C) : IsLeftAdjoint (pushforward.{w} (𝟙 (R.over x))) where
   exists_rightAdjoint := ⟨_, Nonempty.intro (overPushforwardOverAdj x)⟩

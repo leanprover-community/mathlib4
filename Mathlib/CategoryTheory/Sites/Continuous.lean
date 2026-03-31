@@ -327,8 +327,6 @@ def sheafPushforwardContinuousIso [IsContinuous F' J K] :
     sheafPushforwardContinuous F A J K ≅ sheafPushforwardContinuous F' A J K where
   hom := sheafPushforwardContinuousNatTrans e.inv _ _ _
   inv := sheafPushforwardContinuousNatTrans e.hom _ _ _
-  hom_inv_id := by ext; simp [← Functor.map_comp, ← op_comp]
-  inv_hom_id := by ext; simp [← Functor.map_comp, ← op_comp]
 
 /-- If a continuous functor between sites is isomorphic to the identity functor,
 then the corresponding pushforward functor on sheaves identifies to the

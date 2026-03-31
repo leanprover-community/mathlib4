@@ -204,12 +204,12 @@ def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h
       { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
   ⟨pushout.desc h k w, pushout.inl_desc _ _ _, pushout.inr_desc _ _ _⟩
 
-@[reassoc]
+@[map (attr := reassoc)]
 theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
     pullback.fst f g ≫ f = pullback.snd f g ≫ g :=
   PullbackCone.condition _
 
-@[reassoc]
+@[map (attr := reassoc)]
 theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] :
     f ≫ (pushout.inl f g) = g ≫ pushout.inr _ _ :=
   PushoutCocone.condition _

@@ -234,8 +234,8 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
     (modulesSpecToSheaf.obj M).1.map (homOfLE le_top).op := by
   wlog hU : U = PrimeSpectrum.basicOpen 1 generalizing U
   · rw [← tilde.toOpen_res _ (PrimeSpectrum.basicOpen 1) _ (homOfLE (by simp)), Category.assoc,
-      NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
-    simp
+      NatTrans.naturality]
+    simp [reassoc_of% this _ rfl]
   subst hU
   simp only [fromTildeΓ, inducedFunctor_obj,
     homOfLE_leOfHom, Functor.FullyFaithful.map_preimage, TopCat.Sheaf.extend_hom_app]

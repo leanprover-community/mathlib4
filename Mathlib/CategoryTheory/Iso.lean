@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
@@ -258,7 +259,7 @@ namespace IsIso
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
   (Classical.choose_spec I.1).left
 
-@[to_dual existing (attr := reassoc (attr := simp), grind =) hom_inv_id]
+@[to_dual existing (attr := reassoc (attr := map (attr := simp)), grind =) hom_inv_id]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
   (Classical.choose_spec I.1).right
 
@@ -453,14 +454,19 @@ section
 
 variable {D : Type*} [Category* D] {X Y : C} (e : X ≅ Y)
 
-@[reassoc +to_dual (attr := simp), grind =]
-lemma map_hom_inv_id (F : C ⥤ D) :
-    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by grind
+attribute [map] hom_inv_id inv_hom_id
+attribute [reassoc +to_dual (attr := simp), grind =] hom_inv_id_map inv_hom_id_map
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[deprecated hom_inv_id_map (since := "2026-03-25")]
+lemma map_hom_inv_id (F : C ⥤ D) :
+    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by simp
+
+@[deprecated inv_hom_id_map (since := "2026-03-25")]
 lemma map_inv_hom_id (F : C ⥤ D) :
     F.map e.inv ≫ F.map e.hom = 𝟙 _ := by grind
 
+@[deprecated (since := "2026-03-25")] alias map_hom_inv_id_assoc := hom_inv_id_map_assoc
+@[deprecated (since := "2026-03-25")] alias map_inv_hom_id_assoc := inv_hom_id_map_assoc
 end
 
 end Iso
@@ -501,11 +507,10 @@ instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
 @[simp, push ←, to_dual self]
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
-  simp [← F.map_comp]
+  simp
 
-@[to_dual (attr := reassoc) map_inv_hom]
-theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
+@[deprecated (since := "2026-03-25")] alias map_hom_inv := IsIso.hom_inv_id_map
+@[deprecated (since := "2026-03-25")] alias map_inv_hom := IsIso.inv_hom_id_map
 
 end Functor
 
