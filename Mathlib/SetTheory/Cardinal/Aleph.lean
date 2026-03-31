@@ -557,8 +557,6 @@ alias lift_eq_aleph1 := lift_eq_aleph_one
 
 /-! ### Beth cardinals -/
 
-namespace Cardinal
-
 /-- The "pre-beth" function is defined so that `preBeth o` is the supremum of `2 ^ preBeth a` for
 `a < o`. This implies `beth 0 = 0`, `beth (succ o) = 2 ^ beth o`, and that for a limit ordinal `o`,
 `beth o` is the supremum of `beth a` for `a < o`.
