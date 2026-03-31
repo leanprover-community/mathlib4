@@ -223,7 +223,7 @@ lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
       (klDiv μ ν).toReal + (c - 1) * ν.real univ - log c * μ.real univ := by
   rw [toReal_klDiv_smul_right_eq_smul_left hμν h_int c, toReal_klDiv_smul_left hμν h_int c⁻¹]
   simp only [NNReal.coe_inv, log_inv, mul_neg, neg_mul, ← sub_eq_add_neg]
-  field_simp
+  field
 
 lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
     (klDiv (c • μ) (c • ν)).toReal = c * (klDiv μ ν).toReal := by

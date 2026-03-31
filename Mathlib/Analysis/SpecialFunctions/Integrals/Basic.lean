@@ -360,7 +360,7 @@ theorem integral_inv_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
   _ = ∫ x : ℝ in a..b, (c ^ 2)⁻¹ * (1 + (x / c) ^ 2)⁻¹ := by field_simp
   _ = _ := by
     simp [integral_comp_div (fun x => (c ^ 2)⁻¹ * (1 + x ^ 2)⁻¹) hc]
-    field_simp
+    field
 
 theorem integral_div_sq_add_sq {c : ℝ} :
     ∫ x : ℝ in a..b, c / (c ^ 2 + x ^ 2) = arctan (b / c) - arctan (a / c) := calc
@@ -369,7 +369,7 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     by_cases hc : c = 0
     · simp [hc]
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
-      field_simp
+      field
 
 section RpowCpow
 
