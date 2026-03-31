@@ -399,46 +399,55 @@ noncomputable section Iso
 
 open CartesianClosed
 
-variable [MonoidalCategory C] [MonoidalClosed C]
+def _root_.CategoryTheory.terminalPow [MonoidalCategory C]
+    {A : C} [Closed A] {T : C} (t : IsTerminal T) :
+    (ihom A).obj T ≅ T where
+  hom := t.from _
+  inv := MonoidalClosed.curry (t.from _)
+  hom_inv_id := by
+    rw [← MonoidalClosed.curry_natural_left, MonoidalClosed.curry_eq_iff]
+    apply t.hom_ext
 
 set_option backward.isDefEq.respectTransparency false in
-def _root_.CategoryTheory.Limits.pullback.isInitialWhiskerLeftIso
+def _root_.CategoryTheory.Limits.pullback.isTerminalIhomMapIso
+    [MonoidalCategory C] [MonoidalClosed C]
     {A B : C} (f : A ⟶ B) {T : C} (hT : IsTerminal T) {W : C} :
     pullback ((ihom A).map (hT.from W)) ((MonoidalClosed.pre f).app T) ≅ A ⟹ W where
   hom := pullback.fst _ _
-  inv := by
-    refine pullback.lift (𝟙 _) (MonoidalClosed.curry (hT.from _)) ?_
-    · rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
-      exact hT.hom_ext _ _
-  hom_inv_id := by
-    apply pullback.hom_ext (by simp)
-    · have : T ≅ B ⟹ T := by
-        refine { hom := ?_, inv := ?_, hom_inv_id := ?_, inv_hom_id := ?_ }
-        · exact MonoidalClosed.curry (hT.from _)
-        · exact (hT.from _)
-        · exact hT.hom_ext _ _
-        · rw [MonoidalClosed.curry_eq, ihom.coev_naturality_assoc, Category.assoc,
-            ← Functor.map_comp, ← MonoidalClosed.curry_eq, MonoidalClosed.curry_eq_iff]
-          exact hT.hom_ext _ _
-      have : IsTerminal <| B ⟹ T := by
-        apply hT.ofIso this
-      exact this.hom_ext _ _
+  inv := pullback.lift (𝟙 _) (MonoidalClosed.curry (hT.from _)) (by
+      rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
+      exact hT.hom_ext _ _)
+  hom_inv_id := pullback.hom_ext (by simp) ((hT.ofIso (terminalPow hT).symm).hom_ext _ _)
 
 set_option backward.isDefEq.respectTransparency false in
-def isTerminalIso_pre (X : Arrow C) {T : C} (hT : IsTerminal T) {W : C} :
+def _root_.CategoryTheory.Limits.pullback.isInitialPreIso
+    [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B : C} (f : A ⟶ B) {I : C} (hI : IsInitial I) {W : C} :
+    pullback ((ihom I).map f) ((MonoidalClosed.pre (hI.to W)).app B) ≅ W ⟹ B where
+  hom := pullback.snd _ _
+  inv := pullback.lift (MonoidalClosed.curry ((hI.ofIso (mulZero hI).symm).to _)) (𝟙 _) (by
+      rw [← MonoidalClosed.curry_natural_right, MonoidalClosed.curry_eq_iff]
+      exact (hI.ofIso (mulZero hI).symm).hom_ext _ _)
+  hom_inv_id := pullback.hom_ext (by
+    simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
+      ← MonoidalClosed.curry_natural_left, MonoidalClosed.curry_eq_iff]
+    exact (hI.ofIso (mulZero hI).symm).hom_ext _ _) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+def isTerminalIso_pre [MonoidalCategory C] [MonoidalClosed C]
+    (X : Arrow C) {T : C} (hT : IsTerminal T) {W : C} :
     ((.op X) ⋔ Arrow.mk (hT.from W)) ≅
       Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
-  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isInitialWhiskerLeftIso X.hom hT)
-    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isInitialWhiskerLeftIso])
+  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isTerminalIhomMapIso X.hom hT)
+    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isTerminalIhomMapIso])
 
-noncomputable
-def isInitialIso_ihom {I : C} (hI : IsInitial I) :
+set_option backward.isDefEq.respectTransparency false in
+def isInitialIso_ihom [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    (X : Arrow C) {I : C} (hI : IsInitial I) {W : C} :
     ((.op (Arrow.mk (hI.to W))) ⋔ X) ≅
-      Arrow.mk ((ihom W).map X.hom) := by
-  refine Arrow.isoMk' _ _ (Iso.refl _) ?_ ?_
-  · dsimp
-    sorry
-  · sorry
+      Arrow.mk ((ihom W).map X.hom) :=
+  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isInitialPreIso X.hom hI)
+    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isInitialPreIso])
 
 end Iso
 
