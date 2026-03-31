@@ -110,7 +110,7 @@ instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularS
 instance (priority := 100) IndiscreteTopology.pseudoMetrizableSpace [IndiscreteTopology X] :
     PseudoMetrizableSpace X where
   exists_countably_generated :=
-    ⟨⊤, (IndiscreteTopology.eq_top X).symm, Filter.isCountablyGenerated_top⟩
+    ⟨⊤, (IndiscreteTopology.eq_top X).symm, isCountablyGenerated_top⟩
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To minimize imports, we implement this class in terms of the existence of a
