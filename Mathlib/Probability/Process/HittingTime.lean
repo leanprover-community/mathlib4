@@ -316,17 +316,17 @@ lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
-    have h_top' : ∃ j, n ≤ j ∧ u j ω ∈ s := by
+    have h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s := by
       rw [ne_eq, hittingAfter_eq_top_iff] at h_top
       push Not at h_top
       exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    rw [hittingAfter, if_pos h_top'] at h'
+    rw [hittingAfter, if_pos h_exists] at h'
     norm_cast at h'
     rw [csInf_lt_iff] at h'
     rotate_left
     · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
-    · exact h_top'
+    · exact h_exists
     simp only [Set.mem_setOf_eq] at h'
     obtain ⟨j, hj₁, hj₂⟩ := h'
     refine ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
