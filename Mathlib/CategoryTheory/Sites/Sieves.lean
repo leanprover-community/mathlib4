@@ -39,11 +39,8 @@ variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A predicate on arrows with codomain `X`. -/
 def Presieve (X : C) :=
-  ∀ ⦃Y⦄, (Y ⟶ X) → Prop -- deriving CompleteLattice
-
-instance : CompleteLattice (Presieve X) := by
-  dsimp [Presieve]
-  infer_instance
+  ∀ ⦃Y⦄, (Y ⟶ X) → Prop
+deriving CompleteLattice, Inhabited
 
 @[simp]
 lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
@@ -54,9 +51,6 @@ lemma bot_apply (f : Y ⟶ X) : (⊥ : Presieve X) f ↔ False :=
   .rfl
 
 namespace Presieve
-
-noncomputable instance : Inhabited (Presieve X) :=
-  ⟨⊤⟩
 
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
