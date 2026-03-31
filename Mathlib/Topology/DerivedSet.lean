@@ -107,6 +107,9 @@ lemma isClosed_derivedSet [T1Space X] (A : Set X) : IsClosed (derivedSet A) := b
 lemma preperfect_iff_subset_derivedSet {U : Set X} : Preperfect U ↔ U ⊆ derivedSet U :=
   Iff.rfl
 
+lemma preperfect_iff_eq_relDerivedSet {U : Set X} : Preperfect U ↔ U = relDerivedSet U := by
+  simp [preperfect_iff_subset_derivedSet, relDerivedSet]
+
 lemma perfect_iff_eq_derivedSet {U : Set X} : Perfect U ↔ U = derivedSet U := by
   rw [perfect_def, isClosed_iff_derivedSet_subset, preperfect_iff_subset_derivedSet,
     ← subset_antisymm_iff, eq_comm]
