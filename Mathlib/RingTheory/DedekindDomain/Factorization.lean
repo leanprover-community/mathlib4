@@ -595,7 +595,7 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
     rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
-    push_neg at h_notMem
+    push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
     rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
