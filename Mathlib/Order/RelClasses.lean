@@ -706,13 +706,23 @@ instance instTrichotomousLe [LinearOrder α] : @Std.Trichotomous α (· ≤ ·) 
 @[to_dual instIsStrictTotalOrderGt]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
-@[to_dual transitive_ge]
-theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
-  transitive_of_trans _
+@[to_dual isTrans_ge]
+theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
+  inferInstance
 
-@[to_dual transitive_gt]
-theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
-  transitive_of_trans _
+@[deprecated (since := "2026-02-21")]
+alias transitive_ge := isTrans_ge
+@[to_dual existing transitive_ge, deprecated (since := "2026-02-21")]
+alias transitive_le := isTrans_le
+
+@[to_dual isTrans_gt]
+theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
+  inferInstance
+
+@[deprecated (since := "2026-02-21")]
+alias transitive_gt := isTrans_gt
+@[to_dual existing transitive_gt, deprecated (since := "2026-02-21")]
+alias transitive_lt := isTrans_lt
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=

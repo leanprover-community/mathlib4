@@ -45,11 +45,11 @@ jobs:
           owner: leanprover-community
 
       - name: Run splice bot action
-        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@146ee716fab40e9cae384b9932fded8b9999b16d
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@a463ae17022e8eb5929a208c1b136aeebcaf77e1
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy
-          min_repo_permission: 'write'
+          min_repo_permission: 'disabled'
           allow_pr_author: 'true'
           allowed_teams: |
             leanprover-community/mathlib-reviewers
@@ -57,3 +57,4 @@ jobs:
           token: ${{ steps.token.outputs.token }}
           authz_token: ${{ steps.authz-token.outputs.token }}
           branch_token: ${{ steps.branch-token.outputs.token }}
+          label_commands: ${{ vars.SPLICEBOT_LABEL_COMMANDS }}
