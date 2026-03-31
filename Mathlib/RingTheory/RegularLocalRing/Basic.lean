@@ -157,10 +157,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     rintro ⟨reg, dim⟩
     simp only [← (isRegularLocalRing_iff _).mp reg, ← Nat.cast_add, ←
       (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_inj] at dim
-    let fg : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).FG :=
-      (isNoetherianRing_iff_ideal_fg _).mp inferInstance _
     have fin : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators.Finite :=
-      Submodule.FG.finite_generators fg
+      (IsNoetherian.noetherian _).finite_generators
     let U := Quotient.out '' (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators
     let _ : Fintype U := (Set.Finite.image _ fin).fintype
     use S ∪ U.toFinset
@@ -177,7 +175,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     · apply Nat.cast_le.mpr (le_trans (Finset.card_union_le _ _) _)
       simp only [Set.toFinset_card, ← dim, add_comm, add_le_add_iff_left]
       rw [Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
-      exact (Set.ncard_image_le fin).trans (le_of_eq (Submodule.FG.generators_ncard fg))
+      exact (Set.ncard_image_le fin).trans (le_of_eq (IsNoetherian.noetherian _).generators_ncard)
     · simp only [← span, ← Set.ncard_coe_finset, Finset.coe_union, Set.coe_toFinset, Nat.cast_le]
       exact Submodule.spanFinrank_span_le_ncard_of_finite (Set.toFinite (S ∪ U))
   tfae_finish
@@ -189,35 +187,33 @@ lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maxima
   apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 1 2).mp
   simpa [← LinearMap.mem_ker, Ideal.mem_toCotangent_ker] using nmem
 
-lemma exist_nat_eq [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
-  have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
-    by_contra eq
-    rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
-    exact ringKrullDim_ne_top eq
-  use ((ringKrullDim R).unbot ringKrullDim_ne_bot).toNat
-  exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
-    (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
+lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
+    ∃ n : ℕ, ringKrullDim R = n := by
+  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
+    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
+  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
 
 set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
-  obtain ⟨n, hn⟩ := exist_nat_eq R
-  induction n generalizing R
-  · simp only [← (isRegularLocalRing_iff R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
+  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
+  induction n generalizing R with
+  | zero =>
+    simp only [← (isRegularLocalRing_iff R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
     have : maximalIdeal R = ⊥ := by
       rw [← Submodule.spanRank_eq_zero_iff_eq_bot, Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
         ((isNoetherianRing_iff_ideal_fg R).mp inferInstance _), hn, Nat.cast_zero]
     exact (isField_iff_maximalIdeal_eq.mpr this).isDomain
-  · rename_i n ih _ _
-    obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R,
-      x ∉ ⋃ I ∈ {(maximalIdeal R) ^ 2} ∪ minimalPrimes R, I := by
+  | succ n ih =>
+    obtain ⟨x, xmem, xnmem⟩ :
+        ∃ x ∈ maximalIdeal R, x ∉ ⋃ I ∈ (insert ((maximalIdeal R) ^ 2) (minimalPrimes R)), I := by
       by_contra! h
-      have fin : ({(maximalIdeal R) ^ 2} ∪ minimalPrimes R).Finite :=
-        Set.Finite.union (Set.finite_singleton _) (minimalPrimes.finite_of_isNoetherianRing R)
+      have fin := (minimalPrimes.finite_of_isNoetherianRing R).insert ((maximalIdeal R) ^ 2)
       rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
         (fun I hI ne _ ↦ Ideal.minimalPrimes_isPrime (by simpa [ne] using hI))).mp h with
         ⟨I, hI, sub⟩
-      simp only [Set.singleton_union, Set.mem_insert_iff] at hI
+      simp only [Set.mem_insert_iff] at hI
       rcases hI with eq|min
       · have : IsField R := by
           simp only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
@@ -229,7 +225,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
         rw [← Ideal.primeHeight_eq_ringKrullDim_iff.mpr (le_antisymm (le_maximalIdeal_of_isPrime I)
           sub), Ideal.primeHeight_eq_zero_iff.mpr min, ← Nat.cast_zero] at hn
         exact Nat.zero_ne_add_one n (Nat.cast_inj.mp hn)
-    simp only [Set.singleton_union, Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, Set.mem_union,
+    simp only [Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, Set.mem_union,
       SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
@@ -246,9 +242,8 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       simp only [← hz, mul_comm, and_true]
       have : z ∈ p ∨ x ∈ p := (Ideal.IsPrime.mem_or_mem ‹_›  (by simpa [hz]))
       simpa [xnmem.2 p min] using this
-    have pfg : p.FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
-    have := Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator pfg eq_smul
-        (((Ideal.span_singleton_le_iff_mem _).mpr xmem).trans (maximalIdeal_le_jacobson _))
+    have := Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator (IsNoetherian.noetherian _)
+      eq_smul (((Ideal.span_singleton_le_iff_mem _).mpr xmem).trans (maximalIdeal_le_jacobson _))
     have : (⊥ : Ideal R).IsPrime := by simpa [← this]
     exact IsDomain.of_bot_isPrime R
 
@@ -263,7 +258,7 @@ lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRe
   apply ((IsDiscreteValuationRing.TFAE R nisf).out 0 4).mpr
   have := (isRegularLocalRing_iff R).mp ‹_›
   simp only [dim, Nat.cast_eq_one, Set.ncard_eq_one,
-    ← Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing] at this
+    ← (IsNoetherian.noetherian _).generators_ncard] at this
   rcases this with ⟨a, ha⟩
   use a
   simpa [← ha] using (maximalIdeal R).span_generators.symm
