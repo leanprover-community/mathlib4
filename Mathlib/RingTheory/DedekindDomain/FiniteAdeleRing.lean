@@ -118,9 +118,9 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
-  map_mul' x y := Subtype.ext <| funext fun v ↦ UniformSpace.Completion.coe_mul _ _
+  map_mul' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_mul _ _
   map_zero' := rfl
-  map_add' x y := Subtype.ext <| funext fun v ↦ UniformSpace.Completion.coe_add _ _
+  map_add' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_add _ _
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
