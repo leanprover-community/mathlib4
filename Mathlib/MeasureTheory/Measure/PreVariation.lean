@@ -77,8 +77,7 @@ explicit measurability assumptions. -/
 noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s)
     (hs : MeasurableSet s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
-    @Finpartition.toSubtype (Set X) _ _ s P MeasurableSet (by intro s t; exact MeasurableSet.union)
-      (by intro s t; exact MeasurableSet.inter) (by exact MeasurableSet.empty) hs hP
+  Finpartition.toSubtype P (by measurability) (by measurability) (by measurability) hs hP
 
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
@@ -86,11 +85,10 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
   simp only [preVariationFun, hs, ↓reduceDIte]
   calc
     ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toMeasurableSet P hs hP).parts, f p :=
-        @Finpartition.sum_eq_sum_finpartition_subtype (Set X) _ _ s P MeasurableSet
-          (by intro s t; exact MeasurableSet.union) (by intro s t; exact MeasurableSet.inter)
-          (by exact MeasurableSet.empty) hs hP _ _ f
+      Finpartition.sum_eq_sum_finpartition_subtype P (by measurability) (by measurability)
+       (by measurability) hs hP f
     _ ≤ ⨆ (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ Q.parts, f p :=
-        le_iSup (fun (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) => ∑ p ∈ Q.parts, f p)
+      le_iSup (fun (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) => ∑ p ∈ Q.parts, f p)
         (Finpartition.toMeasurableSet P hs hP)
 
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then

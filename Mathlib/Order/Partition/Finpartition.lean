@@ -345,7 +345,7 @@ noncomputable def toSubtype :
 lemma mem_toSubtype_iff (p : Subtype Pr) :
     letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
     letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
-    p ∈ (toSubtype P Prsup Prinf Prbot hs hP).parts ↔ p.val ∈ P.parts := by rw [toSubtype]; simp
+    p ∈ (toSubtype P Prsup Prinf Prbot hs hP).parts ↔ p.val ∈ P.parts := by simp [toSubtype]
 
 lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddCommMonoid X] (f : α → X) :
     letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
