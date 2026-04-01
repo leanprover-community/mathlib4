@@ -45,7 +45,7 @@ open PowerSeries Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 
-variable {R : Type u} [CommRing R] {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type u} [CommSemiring R] {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 section toMvPowerSeries
 
@@ -58,39 +58,45 @@ multivariate power series p(X_i) ∈ R⟦X_1, ..., X_n⟧.
 -/
 noncomputable
 def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
-  substAlgHom (HasSubst.X i)
+  MvPowerSeries.rename (fun _ => i)
 
 @[simp]
 theorem toMvPowerSeries_apply :
-    f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
-  rw [toMvPowerSeries, coe_substAlgHom]
+    f.toMvPowerSeries i = f.rename (fun _ => i) := by
+  rw [toMvPowerSeries]
 
-theorem HasSubst.toMvPowerSeries [Finite σ] (hf : f.constantCoeff = 0) :
-    MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) :=
-  MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by
-    rw [toMvPowerSeries_apply, constantCoeff_subst_eq_zero (MvPowerSeries.constantCoeff_X _) _ hf]
+theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
+  have : C r = MvPowerSeries.C r := rfl
+  rw [toMvPowerSeries_apply, this, MvPowerSeries.rename_C]
+
+theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
+  rw [toMvPowerSeries_apply, X, MvPowerSeries.rename_X]
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {f : PowerSeries R} (i : σ) (r : R)
+
+theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst]
+  rfl
+
+theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
+    MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) := by
+  simp_rw [toMvPowerSeries_apply]
+  sorry
+  -- MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by
+  --   rw [toMvPowerSeries_apply, constantCoeff_subst_eq_zero (MvPowerSeries.constantCoeff_X _) _ hf]
 
 theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ)
     (ha : MvPowerSeries.HasSubst a) : (f.toMvPowerSeries i).subst a = f.subst (a i) := by
-  simp_rw [toMvPowerSeries_apply, PowerSeries.subst, MvPowerSeries.subst_comp_subst_apply
-    (HasSubst.const (HasSubst.X i)) ha, MvPowerSeries.subst_X ha]
+  rw [toMvPowerSeries_eq_subst, subst, MvPowerSeries.subst_comp_subst_apply
+    (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
 
-theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
-  rw [toMvPowerSeries_apply, subst_C]
-
-theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
-  rw [toMvPowerSeries_apply, subst_X (HasSubst.X i)]
-
-lemma toMvPowerSeries_eq_rename_comp (i : σ) :
-    toMvPowerSeries (R := R) i = (MvPowerSeries.rename (fun _ : Unit ↦ i)) := by
-  ext f : 1
-  simp only [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst]
-  rfl
+end CommRing
 
 lemma toMvPowerSeries_injective (i : σ) :
-    Function.Injective (toMvPowerSeries (R := R) i) := by
-  rw [toMvPowerSeries_eq_rename_comp]
-  exact MvPowerSeries.rename_injective (Embedding.punit i) (R := R)
+    Function.Injective (toMvPowerSeries (R := R) i) :=
+  MvPowerSeries.rename_injective (Embedding.punit i)
 
 -- @[simp]
 -- lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :

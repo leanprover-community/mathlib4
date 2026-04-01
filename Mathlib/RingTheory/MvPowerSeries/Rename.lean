@@ -167,16 +167,6 @@ theorem rename_id : rename id = AlgHom.id R (MvPowerSeries σ R) := by
 
 lemma rename_id_apply (p : MvPowerSeries σ R) : rename id p = p := by simp
 
-theorem rename_eq_subst {R : Type} [CommRing R] (p : MvPowerSeries σ R) :
-    rename f p = p.subst (X ∘ f) := by
-  ext n
-  have : HasSubst (X ∘ f : σ → MvPowerSeries τ R) := by
-
-    sorry
-  rw [coeff_rename, coeff_subst this p n, finsum_eq_sum _ (coeff_subst_finite this p n)]
-
-  sorry
-
 @[simp]
 theorem constantCoeff_rename (p : MvPowerSeries σ R) :
     constantCoeff (rename f p) = constantCoeff p := by
@@ -300,5 +290,21 @@ theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
   ext; simp [coeff_killCompl]
 
 end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R]
+
+theorem rename_eq_subst (p : MvPowerSeries σ R) :
+    rename f p = p.subst (X ∘ f) := by
+  ext n
+  have : HasSubst (X ∘ f : σ → MvPowerSeries τ R) := by
+
+    sorry
+  rw [coeff_rename, coeff_subst this p n, finsum_eq_sum _ (coeff_subst_finite this p n)]
+
+  sorry
+
+end CommRing
 
 end MvPowerSeries
