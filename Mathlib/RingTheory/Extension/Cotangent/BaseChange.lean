@@ -151,6 +151,7 @@ lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
     0 0
     (h1Cotangentι.restrictScalars R)
     ((P.baseChange (T := T)).cotangentComplex.restrictScalars R)
+    -- The vertical maps induced by base change.
     0 0
     ((P.tensorToH1Cotangent T).restrictScalars R)
     ((P.tensorCotangentOfFlat T).restrictScalars R)
