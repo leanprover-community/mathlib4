@@ -248,7 +248,7 @@ variable (G) in
 theorem chromaticIndex_le_one_of_subsingleton [Subsingleton G.edgeSet] : G.chromaticIndex ≤ 1 :=
   chromaticNumber_le_one_of_subsingleton _
 
-theorem chromaticIndex_pos {n : ℕ} (h : G.EdgeColorable n) (he : G.edgeSet.Nonempty) :
+theorem EdgeColorable.chromaticIndex_pos (h : G.EdgeColorable n) (he : G.edgeSet.Nonempty) :
     0 < G.chromaticIndex :=
   have := he.to_subtype
   chromaticNumber_pos h
