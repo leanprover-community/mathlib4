@@ -218,6 +218,8 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
+@[deprecated (since := "2026-04-01")] alias Ideal.height_le_spanRank_toENat_of_mem_minimal_primes :=
+    Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
 
 lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :

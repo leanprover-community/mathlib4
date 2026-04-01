@@ -120,6 +120,8 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
 theorem Ideal.minimalPrimes_comap_subset (f : R →+* S) (J : Ideal S) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
   fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
+@[deprecated (since := "2026-04-01")] alias Ideal.minimal_primes_comap_subset :=
+    Ideal.minimalPrimes_comap_subset
 
 end
 
