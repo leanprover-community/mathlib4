@@ -178,7 +178,6 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -236,6 +235,9 @@ theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
 
 @[simp]
 theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (map_empty f)
+
+@[simp]
+theorem empty_eq_map : ∅ = s.map f ↔ s = ∅ := by rw [eq_comm, map_eq_empty]
 
 @[simp]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
@@ -429,6 +431,9 @@ theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Fin
 @[simp]
 theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)
 
+@[simp]
+theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq_empty]
+
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff hf s t
@@ -472,7 +477,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =

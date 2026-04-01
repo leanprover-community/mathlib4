@@ -37,7 +37,7 @@ the concept of strict monoidal categories due to the feature of dependent type t
 normalization tactic can remove associators and unitors from the expression, extracting the
 necessary data for drawing string diagrams.
 
-The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidget.
+The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidgets.
 However, it should be noted that the normalization procedure in this file does not rely on specific
 settings, allowing for broader application. Future plans include the following. At least I (Yuma)
 would like to work on these in the future, but it might not be immediate. If anyone is interested,
@@ -56,8 +56,8 @@ I would be happy to discuss.
 
 ## Main definitions
 - `Tactic.BicategoryLike.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
-category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of `e`
-and `pf` is a proof that `e = e'`.
+  category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of
+  `e` and `pf` is a proof that `e = e'`.
 
 -/
 

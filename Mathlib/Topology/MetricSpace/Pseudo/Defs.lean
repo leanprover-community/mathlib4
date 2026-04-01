@@ -39,7 +39,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Tags
 
-pseudo_metric, dist
+pseudometric space, dist
 -/
 
 @[expose] public section
@@ -57,6 +57,7 @@ theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), 
   ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
 
 /-- Construct a uniform structure from a distance function and metric space axioms -/
+@[implicit_reducible]
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
@@ -164,6 +165,7 @@ instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
+@[implicit_reducible]
 def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
@@ -574,7 +576,6 @@ theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y �
   rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
   ball_subset <| by rw [sub_self_div_two]; exact le_of_lt h
 
@@ -768,8 +769,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
-  rfl
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left,
+    Set.mem_surjective.exists, eventually_mem_set]
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space. -/
@@ -1139,6 +1140,9 @@ theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
+
+lemma Real.sphere_eq_pair (x : ℝ) {r : ℝ} (hr : 0 ≤ r) : sphere x r = {x - r, x + r} := by
+  ext; simp [dist_eq]; grind
 
 theorem Metric.uniformity_eq_comap_nhds_zero :
     𝓤 α = comap (fun p : α × α => dist p.1 p.2) (𝓝 (0 : ℝ)) := by

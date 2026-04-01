@@ -58,7 +58,7 @@ open fwdDiff
 
 section smul
 
-lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) :
+lemma fwdDiff_smul {R : Type*} [Ring R] [Module R G] (f : M → R) (g : M → G) :
     Δ_[h] (f • g) = Δ_[h] f • g + f • Δ_[h] g + Δ_[h] f • Δ_[h] g := by
   ext y
   simp only [fwdDiff, Pi.smul_apply', Pi.add_apply, smul_sub, sub_smul]
@@ -70,7 +70,7 @@ lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) 
     Δ_[h] (r • f) = r • Δ_[h] f :=
   funext fun _ ↦ (smul_sub ..).symm
 
-@[simp] lemma fwdDiff_smul_const {R : Type} [Ring R] [Module R G] (f : M → R) (g : G) :
+@[simp] lemma fwdDiff_smul_const {R : Type*} [Ring R] [Module R G] (f : M → R) (g : G) :
     Δ_[h] (fun y ↦ f y • g) = Δ_[h] f • fun _ ↦ g := by
   ext y
   simp only [fwdDiff, Pi.smul_apply', sub_smul]
@@ -107,7 +107,6 @@ def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G h + 1
 
 lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G h f y = f (y + h) := by simp [shiftₗ, fwdDiff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftₗ_pow_apply (f : M → G) (k : ℕ) (y : M) : (shiftₗ M G h ^ k) f y = f (y + k • h) := by
   induction k generalizing f with
   | zero => simp
@@ -243,7 +242,6 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; lia), nsmul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
 -/

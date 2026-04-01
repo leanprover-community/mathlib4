@@ -264,7 +264,7 @@ defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
 subgroup `H` of the normalizer of `N` in `G`,
 defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N` -/]
 noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
-    (hLE : H ≤ N.normalizer) :
+    (hLE : H ≤ normalizer N) :
     letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
     letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
@@ -342,7 +342,6 @@ section CorrespTheorem
 -- All these theorems are primed because `QuotientGroup.mk'` is.
 set_option linter.docPrime false
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
     N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
@@ -353,7 +352,6 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
     Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
   simp [Subgroup.comap_map_eq, sup_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **correspondence theorem**, or lattice theorem,
 or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
@@ -374,7 +372,6 @@ section trivial
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]
@@ -444,3 +441,38 @@ theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := b
   rw [← zsmul_eq_mul, mk_zsmul N a n]
 
 end QuotientAddGroup
+
+namespace QuotientGroup
+
+section powMonoidHom
+
+-- TODO: Generalize to arbitrary products of homomorphisms
+
+variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
+
+/-- The isomorphism between the quotient of a product by the image of the `n`th power map
+and the product of the quotients by the images of the `n`th power maps on the factors. -/
+@[to_additive
+  /-- The isomorphism between the quotient of a product by the image of the multiplication-by-`n`
+  map and the product of the quotients by the images of the multiplication-by-`n` maps
+  on the factors. -/ ]
+noncomputable
+def mulEquivPiModRangePowMonoidHom :
+    ((i : ι) → A i) ⧸ (powMonoidHom n).range ≃* ((i : ι) → A i ⧸ (powMonoidHom n).range) :=
+  let φ : ((i : ι) → A i) →* (i : ι) → A i ⧸ (powMonoidHom n).range := {
+    toFun x := (x ·)
+    map_one' := by simp [Pi.one_def]
+    map_mul' x y := by simp [Pi.mul_def]
+  }
+  liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
+    ext x : 1
+    simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
+
+@[to_additive (attr := simp)]
+lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
+    mulEquivPiModRangePowMonoidHom A n ↑x = fun i ↦ ↑(x i) :=
+  rfl
+
+end powMonoidHom
+
+end QuotientGroup

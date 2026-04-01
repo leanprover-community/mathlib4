@@ -50,23 +50,28 @@ variable {V W X : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 /-! ## Map and comap -/
 
 
-/-- Given an injective function, there is a covariant induced map on graphs by pushing forward
+/-- Given a function, there is a covariant induced map on graphs by pushing forward
 the adjacency relation.
 
-This is injective (see `SimpleGraph.map_injective`). -/
-protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
-  Adj := Relation.Map G.Adj f f
+This is injective when the function is (see `SimpleGraph.map_injective`). -/
+protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
+  Adj := Ne ⊓ Relation.Map G.Adj f f
   symm a b := by
     rintro ⟨v, w, h, _⟩
     aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
-  loopless := ⟨fun a ↦ by aesop (add norm unfold Relation.Map)⟩
 
-instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
-    Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
+instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
+    [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
+  inferInstanceAs <| Decidable (_ ∧ _)
 
 @[simp]
 theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
-    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
+    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
+  dsimp [SimpleGraph.map, Relation.Map]
+  grind [SimpleGraph.Adj.ne]
+
+theorem map_adj' (f : V → W) (G : SimpleGraph V) (u v : W) :
+    (G.map f).Adj u v ↔ u ≠ v ∧ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
 
 theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
@@ -86,15 +91,19 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 
-theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
-  rintro G G' h _ _ ⟨u, v, ha, rfl, rfl⟩
-  exact ⟨_, _, h ha, rfl, rfl⟩
+theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
+  rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
+  exact ⟨huv, _, _, h ha, rfl, rfl⟩
 
-@[simp] lemma map_id : G.map (Function.Embedding.refl _) = G :=
-  SimpleGraph.ext <| Relation.map_id_id _
+@[simp] lemma map_id : G.map id = G := by
+  ext
+  dsimp [SimpleGraph.map, Relation.Map]
+  grind [SimpleGraph.Adj.ne]
 
-@[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
-  SimpleGraph.ext <| Relation.map_map _ _ _ _ _
+@[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
+  ext
+  dsimp [SimpleGraph.map, Relation.Map]
+  grind [SimpleGraph.Adj.ne]
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
@@ -158,11 +167,10 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
-    rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
+  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, by
+    rintro h _ _ ⟨-, u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
 
@@ -224,7 +232,6 @@ lemma support_induce_subset_coe_inv_support (s : Set V) :
     (G.induce s).support ⊆ (↑) ⁻¹' G.support :=
   fun _ ⟨v, hadj⟩ ↦ ⟨v, hadj⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
 
@@ -371,6 +378,12 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
   toFun := f
   map_rel' := by simp
 
+theorem le_comap (f : H →g G) : H ≤ G.comap f :=
+  fun _ _ ↦ f.map_adj
+
+theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
+
 variable {G'' : SimpleGraph X}
 
 /-- Composition of graph homomorphisms. -/
@@ -379,6 +392,10 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
+  rfl
+
+@[simp]
+theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
   rfl
 
 end Hom
@@ -431,6 +448,10 @@ protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Embedding.comap f G v = f v := rfl
+
+theorem comap_eq (f : H ↪g G) : G.comap f = H := by
+  ext
+  exact f.map_adj_iff
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
 -- Porting note: @[simps] does not work here since `f` is not a constructor application.
@@ -573,16 +594,12 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
     rintro ⟨e, h⟩
-    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
-      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
-      Subtype.mk.injEq]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
-    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
-      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
-      Subtype.mk.injEq]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.apply_symm_apply _ _
 
@@ -612,15 +629,15 @@ protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding �
 lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Iso.comap f G v = f v := rfl
 
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 @[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
-/-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
+/-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by aesop (add simp map_adj') }
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
