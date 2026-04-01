@@ -47,7 +47,7 @@ name_power_vars X, Y, Z over R
 syntax (name := namePowerVarsOver) "name_power_vars" (ppSpace ident),+ " over " term : command
 
 @[command_elab namePowerVarsOver, inherit_doc namePowerVarsOver]
-def elabNameVariablesOver : CommandElab
+def elabNamePowerSeriesVariablesOver : CommandElab
 | `(command|name_power_vars $vars:ident,* over $R:term) => do
   let vars := vars.getElems
   let size := vars.size
