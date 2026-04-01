@@ -567,7 +567,7 @@ namespace NonemptyInterval
 
 section Preorder
 
-variable [Preorder α] {s : NonemptyInterval α} {a : α}
+variable [Preorder α] {s t : NonemptyInterval α} {a : α}
 
 @[simp, norm_cast]
 theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
@@ -580,6 +580,8 @@ theorem coe_eq_pure : (s : Interval α) = Interval.pure a ↔ s = pure a := by
 @[simp, norm_cast]
 theorem coe_top_interval [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Interval α) = ⊤ :=
   rfl
+
+theorem coe_inj : (s : Interval α) = t ↔ s = t := WithBot.coe_inj
 
 end Preorder
 
