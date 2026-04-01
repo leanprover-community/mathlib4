@@ -515,8 +515,8 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 
-lemma compl_compl (l : Language α) : lᶜᶜ = l := by
-  simp [compl]
+lemma compl_compl (l : Language α) : lᶜᶜ = l :=
+  _root_.compl_compl l
 
 end Language
 
