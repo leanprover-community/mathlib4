@@ -226,9 +226,9 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact (orderOf_sr 0).symm
 
 lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)
-  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h'.comm (r 1) (sr 0)
-  | n + 3, _, _ => fun ⟨h'⟩ ↦ by
-    have := h'.comm (r 1) (sr 0)
+  | 0, _, _, h' => by simpa using h'.is_comm.comm (r 1) (sr 0)
+  | n + 3, _, _, h' => by
+    have := h'.is_comm.comm (r 1) (sr 0)
     rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
       one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at this
     simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero this
