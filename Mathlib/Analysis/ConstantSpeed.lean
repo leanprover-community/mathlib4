@@ -194,7 +194,6 @@ theorem HasUnitSpeedOn.Icc_Icc {x y z : ℝ} (hfs : HasUnitSpeedOn f (Icc x y))
     (hft : HasUnitSpeedOn f (Icc y z)) : HasUnitSpeedOn f (Icc x z) :=
   HasConstantSpeedOnWith.Icc_Icc hfs hft
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If both `f` and `f ∘ φ` have unit speed (on `t` and `s` respectively) and `φ`
 monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 -/

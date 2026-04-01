@@ -56,7 +56,6 @@ variable {X : Type*}
 
 namespace PseudoMetricSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The maximal pseudometric space structure on `X` such that `dist x y ≤ d x y` for all `x y`,
 where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y = d y x` for all `x`, `y`. -/
 @[implicit_reducible]
@@ -91,7 +90,6 @@ theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0
       ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
     @dist X (@PseudoMetricSpace.toDist X (PseudoMetricSpace.ofPreNNDist d dist_self dist_comm)) x

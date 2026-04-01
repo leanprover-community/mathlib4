@@ -135,7 +135,6 @@ instance : IsOrderedRing ℝ≥0∞ :=
 instance : CanonicallyOrderedAdd ℝ≥0∞ :=
   inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NoZeroDivisors ℝ≥0∞ :=
   inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
 

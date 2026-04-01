@@ -370,7 +370,6 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
     apply (cv ⟨h₁, le_trans h₂ (le_of_lt bcd.1)⟩).resolve_left (fun h ↦ ?_)
     order [(Iotop_subset_Ioc h).1]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b - f a) := by
   /- It suffices to show that, if `(a, b]` is covered by sets `s i`, then `f b - f a` is bounded

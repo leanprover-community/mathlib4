@@ -182,7 +182,6 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
 
 variable [CompactSpace X] [T2Space X]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by

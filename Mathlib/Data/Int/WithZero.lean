@@ -40,7 +40,6 @@ open Multiplicative WithZero
 
 namespace WithZeroMulInt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤᵐ⁰ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(WithZero.unzero hx).toAdd` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
@@ -69,7 +68,6 @@ theorem toNNReal_neg_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x 
     toNNReal he x = e ^ (WithZero.unzero hx).toAdd := by
   simp [toNNReal, hx]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `toNNReal` sends nonzero elements to nonzero elements. -/
 theorem toNNReal_ne_zero {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m ≠ 0) : toNNReal he m ≠ 0 := by
   simp only [ne_eq, map_eq_zero, hm, not_false_eq_true]
@@ -91,7 +89,6 @@ theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
       WithZero.coe_unzero hy]
     exact hxy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 : e ≠ 1) :
     toNNReal he0 m = 1 ↔ m = 1 := by
   by_cases hm : m = 0

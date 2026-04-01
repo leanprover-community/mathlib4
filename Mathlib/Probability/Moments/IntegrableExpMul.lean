@@ -527,7 +527,6 @@ lemma integrable_pow_of_mem_interior_integrableExpSet
   convert integrable_pow_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
 finite `p`. -/
 lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :

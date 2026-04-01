@@ -88,7 +88,6 @@ local infixr:25 " →ₛ " => SimpleFunc
 /-! ### Lower semicontinuous upper bound for nonnegative functions -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
 function `g ≥ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
@@ -193,7 +192,6 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
         · simp_rw [tsum_eapproxDiff f hf, le_refl]
         · intro n; exact (SimpleFunc.measurable _).coe_nnreal_ennreal.aemeasurable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a measurable function `f` with values in `ℝ≥0` in a sigma-finite space, there exists a
 lower semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
 Formulation in terms of `lintegral`.
@@ -307,7 +305,6 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
 /-! ### Upper semicontinuous lower bound for nonnegative functions -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
 function `g ≤ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.

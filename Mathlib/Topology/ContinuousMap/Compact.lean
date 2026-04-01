@@ -371,7 +371,6 @@ lemma nnnorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 /-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
 of their sum is the maximum of their norms. -/
