@@ -815,6 +815,10 @@ lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTra
       exact hw.2 <| edges_bypass_subset _ hvv'
     · simpa using (bypass_isPath _).support_nodup
 
+lemma length_cycleBypass_le : ∀ {w : G.Walk v v}, w.cycleBypass.length ≤ w.length
+  | .nil => by simp
+  | .cons hvv' w => by simp [cycleBypass, length_cons, length_bypass_le]
+
 end Walk
 
 /-! ### Mapping paths -/
