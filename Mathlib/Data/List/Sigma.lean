@@ -227,9 +227,8 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
-#adaptation_note /-- After nightly-2026-03-29
-the grind proof here timed out, after changes to the canonicalizer in
-https://github.com/leanprover/lean4/issues/13166.
+#adaptation_note /-- Before leanprover/lean4#13166
+the grind proof here worked, but after changes to the canonicalizer it now times out.
 Changes to grind attributes in Batteries in
 https://github.com/leanprover-community/batteries/pull/1744
 may allow restoring the original proof:
