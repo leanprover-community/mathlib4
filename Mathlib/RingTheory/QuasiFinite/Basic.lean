@@ -111,9 +111,13 @@ instance baseChange [QuasiFinite R S] {A : Type*} [CommRing A] [Algebra R A] :
     QuasiFinite A (A ⊗[R] S) := by
   refine ⟨fun P hP ↦ ?_⟩
   let p := P.under R
-  let e : P.Fiber (A ⊗[R] S) ≃ₐ[P.ResidueField] P.ResidueField ⊗[p.ResidueField] (p.Fiber S) :=
+  let e₀ : P.ResidueField ⊗[A] (A ⊗[R] S) ≃ₐ[P.ResidueField]
+      P.ResidueField ⊗[p.ResidueField] (p.ResidueField ⊗[R] S) :=
     (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans
       (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm
+  let e : P.Fiber (A ⊗[R] S) ≃ₐ[P.ResidueField] P.ResidueField ⊗[p.ResidueField] (p.Fiber S) :=
+    (Ideal.Fiber.algEquivTensor P (A ⊗[R] S)).trans <| e₀.trans <|
+      Algebra.TensorProduct.congr AlgEquiv.refl (Ideal.Fiber.algEquivTensor p S).symm
   exact .of_surjective e.symm.toLinearMap e.symm.surjective
 
 open IsLocalRing in

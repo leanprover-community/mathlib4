@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Bilinear
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
@@ -92,6 +93,11 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
         ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
     | add x y hx hy => exact Submodule.add_mem _ hx hy
+
+instance Module.Finite.fiber [CommRing R] [CommRing A] [Algebra R A] [h : Module.Finite R A]
+    (P : Ideal R) [P.IsPrime] : Module.Finite P.ResidueField (P.Fiber A) :=
+  .of_injective (Ideal.Fiber.algEquivTensor P A).toLinearMap
+    (Ideal.Fiber.algEquivTensor P A).injective
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
@@ -47,6 +48,10 @@ instance baseChange [hfa : FiniteType R A] : Algebra.FiniteType B (B ⊗[R] A) :
   have : Function.Surjective g := baseChangeAux_surj B hf
   use n, AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv R B).symm.toAlgHom
   simpa
+
+instance fiber [FiniteType R A] (P : Ideal R) [P.IsPrime] : FiniteType P.ResidueField (P.Fiber A) :=
+  .of_surjective (Ideal.Fiber.algEquivTensor P A).symm.toAlgHom
+    (Ideal.Fiber.algEquivTensor P A).symm.surjective
 
 end FiniteType
 

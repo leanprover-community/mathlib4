@@ -271,6 +271,10 @@ lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
 
 end Ideal.Fiber
 
+instance Algebra.EssFiniteType.fiber [h : EssFiniteType R S] :
+    EssFiniteType p.ResidueField (p.Fiber S) :=
+  .of_surjective (Ideal.Fiber.algEquivTensor p S).symm.toAlgHom (Ideal.Fiber.algEquivTensor p S).symm.surjective
+
 variable {S}
 
 variable (R S) in
