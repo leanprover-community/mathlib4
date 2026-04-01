@@ -397,7 +397,7 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
     ← add_assoc, add_tsub_cancel_right]
 
 theorem ofSupport_support {u v : V} (p : G.Walk u v) :
-    ofSupport p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
+    ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
   match p with
   | nil => rfl
   | cons (v := w) h .nil => rfl
@@ -432,7 +432,7 @@ theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
 
 @[simp]
 theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
-    ofDarts (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
+    ofDarts _ (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
   match p, hp with
   | nil, hp => simp at hp
   | cons (v := w) h .nil, _ => rfl
