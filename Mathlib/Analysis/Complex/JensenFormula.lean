@@ -217,8 +217,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   -- Estimate the circleAverage using the bound on f
   have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
-    · exact circleIntegrable_log_norm_meromorphicOn
-        (h₁f.mono sphere_subset_closedBall).meromorphicOn
+    · exact (h₁f.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm
     · peel f_bound with z hz _
       obtain (h | h) := eq_zero_or_norm_pos (f z)
       · simpa [h] using log_nonneg hM
