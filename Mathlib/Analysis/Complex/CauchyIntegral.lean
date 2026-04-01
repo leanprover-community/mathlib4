@@ -705,27 +705,32 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       exact (d z m).differentiableWithinAt
     exact h _ m
 
+open scoped Nat
 /-- If a function `R : ℂ → ℂ` factors as `R z = (z - z₀) ^ r * R₁ z`, where `R₁` is
 analytic everywhere, then for any `k ≤ r`, there exists an everywhere analytic function
 `R₂ : ℂ → ℂ` such that the `k`-th iterated derivative of `R` is given by
 `deriv^[k] R z = (z - z₀) ^ (r - k) * (r! / (r - k)! * R₁ z + (z - z₀) * R₂ z)`. -/
-lemma iterated_deriv_mul_pow_sub_of_analytic' (r : ℕ) (z₀ : ℂ) {R R₁ : ℂ → ℂ}
-    (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z) (hR₁ : ∀ z, R z = (z - z₀) ^ r * R₁ z) :
-    ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧ ∀ z, deriv^[k] R z =
-    (z - z₀) ^ (r - k) * (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z) := by
-  intros k hkr
-  induction k generalizing r with
+lemma iterated_deriv_mul_pow_sub_of_analytic {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
+    [CompleteSpace 𝕜] {k t : ℕ} {z₀ : 𝕜} {R R₁ : 𝕜 → 𝕜}
+    (hf1 : ∀ z, AnalyticAt 𝕜 R₁ z) (hR₁ : ∀ z, R z = (z - z₀) ^ (k + t) * R₁ z) :
+    ∃ R₂, (∀ z, AnalyticAt 𝕜 R₂ z) ∧ ∀ z, deriv^[k] R z =
+      (z - z₀) ^ t * ((k + t).factorial / t.factorial * R₁ z + (z - z₀) * R₂ z) := by
+  induction k generalizing t with
   | zero =>
-    refine ⟨0, ?_⟩
-    · simp only [Function.iterate_zero, id_eq, tsub_zero, Pi.zero_apply, mul_zero, add_zero]
-      refine ⟨fun z ↦ Differentiable.analyticAt (differentiable_zero) z, fun z ↦ ?_⟩
-      · rw [hR₁ z, mul_eq_mul_left_iff, pow_eq_zero_iff', div_self
-        (h:= mod_cast Nat.factorial_ne_zero r)]; grind
+    refine ⟨0, fun _ ↦ analyticAt_const, fun z ↦ ?_⟩
+    have : (t.factorial : ℂ) ≠ 0 := mod_cast t.factorial_ne_zero
+    simp [hR₁]
+    left
+    rw [div_self]
+    simp
+    exact mod_cast t.factorial_ne_zero
   | succ k IH =>
-    obtain ⟨R₂, hR₂, hR1⟩ := IH r hR₁ (by linarith)
+    rw [add_assoc] at hR₁
+    obtain ⟨R₂, hR₂, hR1⟩ := IH (t := 1 + t) hR₁
     refine ⟨fun z ↦ (↑(r - k) * R₂ z +
-         (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))), ?_⟩
-    · refine ⟨fun z ↦ by fun_prop, fun z ↦ ?_⟩
+         (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))),
+          fun _ ↦ by fun_prop, fun z ↦ ?_⟩
+
       · calc _ = deriv (deriv^[k] R) z := by rw [Function.iterate_succ_apply' deriv k R]
              _ = ↑(r - k) * (z - z₀) ^ (r - k - 1) * (↑r.factorial / ↑(r - k).factorial *
                  R₁ z + (z - z₀) * R₂ z) + (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
