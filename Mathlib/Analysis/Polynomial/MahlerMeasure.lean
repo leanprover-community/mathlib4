@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fabrizio Barroero
+Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
@@ -25,6 +25,8 @@ properties.
   `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
 - `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
   to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
+- `Polynomial.mapMahlerMeasure p v`: the (exponential) Mahler measure of a polynomial `p` over a
+  ring `A` whose coefficients are mapped to `ℂ` via `v : A →+* ℂ`
 
 ## Main results
 
@@ -221,7 +223,7 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
   the product of the absolute values of its roots lying outside the unit disk. -/
 theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
     ‖p.leadingCoeff‖ * (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
-  by_cases hp : p = 0;
+  by_cases hp : p = 0
   · simp [hp]
   have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
   rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
@@ -411,87 +413,88 @@ section generic
 ### Mahler Measure on Other Rings
 
 While the Mahler measure is an inherently Complex concept, we often want to work with it for
-polynomials with coefficients in subrings of `ℂ`. To do so, we introduce `mahlerMeasure'`. This
+polynomials with coefficients in subrings of `ℂ`. To do so, we introduce `mapMahlerMeasure`. This
 takes a `RingHom A ℂ` which takes the polynomial from `A[X]` to `ℂ[X]`.
 
 Some lemmas require the `RingHom` to also preserve the norm on the base ring, e.g.,
-`leadingCoeff_le_mahlerMeasure'`. Those will come below.
+`leadingCoeff_le_mapMahlerMeasure`. Those will come below.
 -/
 
 namespace Polynomial
 
-variable {A F : Type*} [Semiring A] (p : A[X]) (v : A →+* ℂ)
+variable {A : Type*} [Semiring A] (p : A[X]) (v : A →+* ℂ)
 
 /-- The Mahler measure for polynomials on rings other than `ℂ`. Most theorems
 will require `A` to be a `NormedRing` and `v` to be an isometry. See, e.g.,
-`mahlerMeasure'_const` -/
-noncomputable def mahlerMeasure' := (p.map v).mahlerMeasure
+`mapMahlerMeasure_const` -/
+noncomputable def mapMahlerMeasure := (p.map v).mahlerMeasure
 
-lemma mahlerMeasure'_mul (f g : A[X]) :
-    (f * g).mahlerMeasure' v = (f.mahlerMeasure' v) * (g.mahlerMeasure' v) := by
-  simp [mahlerMeasure', mahlerMeasure_mul]
+lemma mapMahlerMeasure_eq : p.mapMahlerMeasure v = (p.map v).mahlerMeasure := rfl
 
-lemma mahlerMeasure'_nonneg : 0 ≤ p.mahlerMeasure' v :=
+lemma mapMahlerMeasure_mul (f g : A[X]) :
+    (f * g).mapMahlerMeasure v = (f.mapMahlerMeasure v) * (g.mapMahlerMeasure v) := by
+  simp [mapMahlerMeasure, mahlerMeasure_mul]
+
+lemma mapMahlerMeasure_nonneg : 0 ≤ p.mapMahlerMeasure v :=
   Polynomial.mahlerMeasure_nonneg _
 
 @[simp]
-lemma mahlerMeasure'_zero : (0 : A[X]).mahlerMeasure' v = 0 := by
-  simp [mahlerMeasure']
+lemma mapMahlerMeasure_zero : (0 : A[X]).mapMahlerMeasure v = 0 := by
+  simp [mapMahlerMeasure]
 
 @[simp]
-lemma mahlerMeasure'_one : (1 : A[X]).mahlerMeasure' v = 1 := by
-  simp [mahlerMeasure']
+lemma mapMahlerMeasure_one : (1 : A[X]).mapMahlerMeasure v = 1 := by
+  simp [mapMahlerMeasure]
+
+variable {A : Type*} [NormedRing A] (p : A[X]) {v : A →+* ℂ}
+
+lemma mapMahlerMeasure_const (hv : Isometry v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
+  simp [mapMahlerMeasure, Isometry.norm_map_of_map_zero hv (map_zero v)]
+
+lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
+    ‖p.leadingCoeff‖ ≤ p.mapMahlerMeasure v := by
+  by_cases hp : p.leadingCoeff = 0
+  · simp [hp, mapMahlerMeasure_nonneg]
+  · have hv_ne : v p.leadingCoeff ≠ 0 :=
+      fun h ↦ hp (Isometry.injective hv (h.trans (map_zero v).symm))
+    have hmap : v p.leadingCoeff = (p.map v).leadingCoeff :=
+      (leadingCoeff_map_of_leadingCoeff_ne_zero (R := A) (S := ℂ) v hv_ne).symm
+    have hv_norm : ‖p.leadingCoeff‖ = ‖v p.leadingCoeff‖ :=
+      (Isometry.norm_map_of_map_zero hv (map_zero v) _).symm
+    grw [hv_norm, hmap, leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
+
+variable {p} in
+lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometry v) (hp : p.Monic) :
+    1 ≤ p.mapMahlerMeasure v := by
+  grw [← p.leadingCoeff_le_mapMahlerMeasure hv, hp.leadingCoeff, norm_one]
+
+variable {p} in
+theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
+    0 < p.mapMahlerMeasure v := by
+  refine mahlerMeasure_pos_of_ne_zero fun h ↦ ?_
+  apply hp
+  ext i
+  have hci := h ▸ Polynomial.coeff_zero i
+  simp only [coeff_map] at hci
+  exact Isometry.injective hv (hci.trans (map_zero v).symm)
+
+theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
+    p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
+  have hinj : Function.Injective (v : A → ℂ) := Isometry.injective hv
+  apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
+  rw [sum_def, sum_def, support_map_of_injective _ hinj]
+  exact Finset.sum_congr rfl fun x _ ↦ by
+    simp [Isometry.norm_map_of_map_zero hv (map_zero v)]
+
+theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
+    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
+  have hinj : Function.Injective (v : A → ℂ) := Isometry.injective hv
+  have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
+    (Isometry.norm_map_of_map_zero hv (map_zero v) _).symm
+  have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
+  grw [hv_norm, hcoeff, norm_coeff_le_choose_mul_mahlerMeasure,
+    natDegree_map_eq_of_injective hinj, mapMahlerMeasure]
 
 end Polynomial
 
 end generic
-
-section norm
-
-namespace Polynomial
-
-variable {A F : Type*} [NormedRing A] [FunLike F A ℂ] [RingHomClass F A ℂ]
-  [IsometryClass F A ℂ] (p : A[X]) (v : F)
-
-@[simp]
-lemma mahlerMeasure'_const (z : A) : (C z).mahlerMeasure' v = ‖z‖ := by
-  simp [mahlerMeasure']
-
-lemma leadingCoeff_le_mahlerMeasure' :
-    ‖p.leadingCoeff‖ ≤ p.mahlerMeasure' v := by
-  by_cases hp : p.leadingCoeff = 0
-  · simp [hp, mahlerMeasure'_nonneg]
-  · have : v p.leadingCoeff = (p.map v).leadingCoeff := by
-      refine leadingCoeff_map_of_leadingCoeff_ne_zero (R := A) (S := ℂ) v ?_ |>.symm
-      simp [norm_map, leadingCoeff_ne_zero.mp hp, (not_iff_not.mpr norm_eq_zero).mp]
-    grw [← norm_map v, this, leadingCoeff_le_mahlerMeasure, mahlerMeasure']
-
-variable {p} in
-lemma Monic.one_le_mahlerMeasure' [NormOneClass A] (hp : p.Monic) :
-    1 ≤ p.mahlerMeasure' v := by
-  grw [← p.leadingCoeff_le_mahlerMeasure' _, hp.leadingCoeff, norm_one]
-
-variable {p} in
-theorem mahlerMeasure'_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.mahlerMeasure' v := by
-  refine mahlerMeasure_pos_of_ne_zero fun h ↦ ?_
-  apply hp
-  ext i
-  have := h ▸ Polynomial.coeff_zero i
-  exact (IsometryClass.isometry v).injective (by simpa)
-
-theorem mahlerMeasure'_le_sum_norm_coeff : p.mahlerMeasure' v ≤ p.sum fun _ a ↦ ‖a‖ := by
-  have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
-  apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
-  rw [sum_def, sum_def, support_map_of_injective _ hinj]
-  exact Finset.sum_congr rfl (by simp)
-
-theorem norm_coeff_le_choose_mul_mahlerMeasure' (n : ℕ) (p : A[X]) :
-    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure' v := by
-  have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
-  have : ‖v (p.coeff n)‖ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
-  grw [← norm_map v, this, norm_coeff_le_choose_mul_mahlerMeasure,
-    natDegree_map_eq_of_injective hinj, mahlerMeasure']
-
-end Polynomial
-
-end norm
