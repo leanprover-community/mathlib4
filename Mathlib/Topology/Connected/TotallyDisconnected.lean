@@ -293,28 +293,21 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
     (h : Continuous f) : ConnectedComponents α → ConnectedComponents β :=
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 
-theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
-    (h : Continuous f) : Continuous h.connectedComponentsMap :=
-  Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
-
-lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
-    (hf : Topology.IsCoinducing f) :
-    Topology.IsCoinducing hf.continuous.connectedComponentsMap := by
-  refine Topology.IsCoinducing.of_comp ConnectedComponents.isQuotientMap_coe.isCoinducing ?_
-  change IsCoinducing (ConnectedComponents.mk ∘ _)
-  exact .comp ConnectedComponents.isQuotientMap_coe.isCoinducing hf
-
-lemma Topology.IsCoinducing.isOpenMap_of_injective {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → β} (hf : Topology.IsCoinducing f) (hf' : Function.Injective f) :
-    IsOpenMap f := by
-  intro s hs
-  rwa [← hf.isOpen_preimage, Set.preimage_image_eq _ hf']
-
 @[simp]
 lemma Continuous.connectedComponentsMap_mk {β : Type*} [TopologicalSpace β] {f : α → β}
     (hf : Continuous f) (x : α) :
     hf.connectedComponentsMap (.mk x) = .mk (f x) :=
   rfl
+
+theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
+    (h : Continuous f) : Continuous h.connectedComponentsMap :=
+  Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
+
+lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : IsCoinducing f) :
+    IsCoinducing hf.continuous.connectedComponentsMap := by
+  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
 
 @[simp]
 lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
