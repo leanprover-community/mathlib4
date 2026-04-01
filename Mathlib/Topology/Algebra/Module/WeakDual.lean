@@ -64,12 +64,10 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
-section Equivalences
+namespace StrongDual
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-
-namespace StrongDual
 
 /-- For vector spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
@@ -88,6 +86,11 @@ end StrongDual
 
 namespace WeakDual
 
+section Semiring
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
 /-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `StrongDual.toWeakDual` in the other direction. -/
@@ -101,18 +104,6 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
-
-end WeakDual
-
-end Equivalences
-
-namespace WeakDual
-
-section Semiring
-
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
