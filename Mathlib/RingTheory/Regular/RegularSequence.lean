@@ -18,7 +18,7 @@ Properties of regular sequences encode information about singularities of a
 ring and regularity of a sequence can be tested homologically.
 However the notion of a regular sequence is only really sensible for Noetherian local rings.
 
-TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, depth.
+TODO: Koszul regular sequences, `H_1`-regular sequences, quasi-regular sequences, depth.
 
 ## Tags
 
@@ -69,12 +69,6 @@ lemma ofList_cons_smul {R} [CommSemiring R] (r : R) (rs : List R) {M}
 end Ideal
 
 namespace Submodule
-
-lemma smul_top_le_comap_smul_top [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] (I : Ideal R)
-    (f : M →ₗ[R] M₂) : I • ⊤ ≤ comap f (I • ⊤) :=
-  map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
-    smul_mono_right _ le_top
 
 variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R M₂] (r : R) (rs : List R)

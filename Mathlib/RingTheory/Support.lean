@@ -64,7 +64,7 @@ lemma Module.notMem_support_iff' :
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
   rw [← @not_not (_ ∈ _), notMem_support_iff']
-  push_neg
+  push Not
   rfl
 
 lemma Module.mem_support_iff_exists_annihilator :
@@ -85,7 +85,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
       ← hs, Submodule.span_le, Set.subset_def]
     simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
-    push_neg
+    push Not
     simp_rw [and_comm]
     exact id
   · intro ⟨m, _, hm⟩
