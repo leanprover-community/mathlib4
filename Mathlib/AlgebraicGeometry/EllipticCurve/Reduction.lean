@@ -309,6 +309,7 @@ class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
 
+-- TODO: add characterization in terms of the discriminant when the characteristic is not 2
 open Polynomial in
 /-- A minimal Weierstrass equation has split multiplicative reduction if and only if
 the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
