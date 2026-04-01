@@ -243,6 +243,8 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
 instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Regular local ring of dimension one is discrete valuation ring.
+For iff version, should exist after making `IsDiscreteValuationRing` extend `IsDomain`. -/
 lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
     (dim : ringKrullDim R = 1) : IsDiscreteValuationRing R := by
   have nisf : ¬ IsField R := (mt ringKrullDim_eq_zero_of_isField (by simp [dim]))
