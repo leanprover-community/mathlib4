@@ -205,13 +205,6 @@ theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
   exact Ideal.mul_mem_mul (Ideal.mem_span_singleton_self _)
     ((Ideal.IsPrime.mul_mem_left_iff hx).mp hyp)
 
-lemma IsLocalRing.maximalIdeal_sq_lt_maximalIdeal [IsLocalRing R] [IsNoetherianRing R] :
-    maximalIdeal R ^ 2 < maximalIdeal R ↔ ¬ IsField R := by
-  trans ¬ IsIdempotentElem (maximalIdeal R)
-  · simp [IsIdempotentElem, ← pow_two, lt_iff_le_and_ne, Ideal.pow_le_self]
-  · simp [Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing, Ideal.IsPrime.ne_top,
-      isField_iff_maximalIdeal_eq]
-
 set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
