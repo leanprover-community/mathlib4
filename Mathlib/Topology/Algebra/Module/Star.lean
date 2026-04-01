@@ -52,18 +52,22 @@ def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R]
 variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
+@[fun_prop]
 theorem continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
     Continuous (selfAdjointPart R (A := A)) :=
   ((continuous_const_smul _).comp <| continuous_id.add continuous_star).subtype_mk _
 
+@[fun_prop]
 theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
     Continuous (skewAdjointPart R (A := A)) :=
   ((continuous_const_smul _).comp <| continuous_id.sub continuous_star).subtype_mk _
 
+@[fun_prop]
 theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousStar A]
     [ContinuousConstSMul R A] : Continuous (StarModule.decomposeProdAdjoint R A) :=
   (continuous_selfAdjointPart R A).prodMk (continuous_skewAdjointPart R A)
 
+@[fun_prop]
 theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
