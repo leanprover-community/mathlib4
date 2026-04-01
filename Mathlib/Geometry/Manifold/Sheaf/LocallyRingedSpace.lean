@@ -133,7 +133,7 @@ variable (M)
 def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
-  IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
+  IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
 
 open CategoryTheory Limits

@@ -127,6 +127,12 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
     AEMeasurable f (μ + ν) :=
   aemeasurable_add_measure_iff.2 ⟨hμ, hν⟩
 
+protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
+    (hμ : AEMeasurable f μ) (hν : AEMeasurable f ν) :
+    (μ + ν).map f = μ.map f + ν.map f := by
+  ext
+  simp [*]
+
 @[measurability]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=

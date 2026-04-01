@@ -54,15 +54,24 @@ assert_not_exists TrivialStar
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
--- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+def NNReal := { r : ℝ // 0 ≤ r }
 
 namespace NNReal
+
+deriving instance
+  Nontrivial, Inhabited,
+  PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Sub, OrderedSub, OrderBot,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
+  for NNReal
+
+noncomputable section
+deriving instance LinearOrder for NNReal
+end
+
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
@@ -71,22 +80,9 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := Nonneg.orderBot
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
-instance : Min ℝ≥0 := SemilatticeInf.toMin
-instance : Max ℝ≥0 := SemilatticeSup.toMax
-instance : Sub ℝ≥0 := Nonneg.sub
-instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
-
-noncomputable instance : LinearOrder ℝ≥0 :=
-  Subtype.instLinearOrder _
 
 noncomputable instance : Inv ℝ≥0 where
   inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
@@ -100,7 +96,6 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -110,14 +105,9 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-instance : IsOrderedRing ℝ≥0 :=
-  Nonneg.isOrderedRing
-
-instance : IsStrictOrderedRing ℝ≥0 :=
-  Nonneg.isStrictOrderedRing
-
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+noncomputable section
+deriving instance LinearOrderedCommGroupWithZero for NNReal
+end
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
@@ -437,7 +427,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot 0
+  fast_instance% Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
@@ -514,7 +504,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 
 instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
     [Module ℝ M] [IsStrictOrderedModule ℝ M] :
-    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
+    IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Subtype _) M
 
 end NNReal
 
@@ -683,7 +673,6 @@ theorem toNNReal_pow {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (x ^ n).toNNReal = x.t
 theorem toNNReal_zpow {x : ℝ} (hx : 0 ≤ x) (n : ℤ) : (x ^ n).toNNReal = x.toNNReal ^ n := by
   rw [← coe_inj, NNReal.coe_zpow, Real.coe_toNNReal _ (zpow_nonneg hx _), Real.coe_toNNReal x hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
@@ -836,7 +825,6 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -906,18 +894,15 @@ theorem nnabs_coe (x : ℝ≥0) : nnabs x = x := by simp
 theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
   obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..

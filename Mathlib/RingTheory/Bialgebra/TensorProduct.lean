@@ -42,7 +42,6 @@ lemma comul_eq_algHom_toLinearMap :
       (Bialgebra.comulAlgHom R B))).toLinearMap :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R] B) := by
   have hcounit := congr(DFunLike.coe $(counit_eq_algHom_toLinearMap R S A B))
   have hcomul := congr(DFunLike.coe $(comul_eq_algHom_toLinearMap R S A B))

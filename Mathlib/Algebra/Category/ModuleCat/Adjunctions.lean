@@ -110,7 +110,6 @@ variable [CommRing R]
 
 namespace FreeMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
@@ -129,7 +128,6 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
 @[simp]
 lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
   dsimp [εIso, freeMk]
@@ -144,7 +142,6 @@ def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
     (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
@@ -160,8 +157,6 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
-
-set_option backward.isDefEq.respectTransparency false in
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
 instance : (free R).Monoidal :=

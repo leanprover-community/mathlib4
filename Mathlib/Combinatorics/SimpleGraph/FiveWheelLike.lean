@@ -170,9 +170,9 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.1 (by simp [hw.isNClique_fst_left.2])
   have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.1 (by simp [hw.isNClique_snd_right.2])
   -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
-  -- `x` which shares its colour with `v`
+  -- `x` which shares its color with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
-  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its colour with `v`.
+  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its color with `v`.
   obtain ⟨y, hy, hcy⟩ := this (a := C v) trivial
   rw [coe_insert] at *
   -- However since `insert v s` and `insert v t` are cliques, we must have `x = w₁` and `y = w₂`.
@@ -234,7 +234,7 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   classical
   match r with
-  | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
+  | 0 => exact ⟨fun _ ↦ ⟨fun x ↦ cliqueFree_one.1 h.1 |>.elim' x⟩,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
   | r + 1 =>
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
@@ -346,7 +346,6 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
         notMem_mono inter_subset_left hbs, erase_eq_of_notMem <| notMem_mono inter_subset_right hat,
         card_insert_of_notMem (fun h ↦ G.irrefl (hW h)), hw.card_inter]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`

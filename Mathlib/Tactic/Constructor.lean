@@ -23,9 +23,9 @@ public meta section
 open Lean Elab Tactic
 
 /--
-`fconstructor` is like `constructor`
-(it calls `apply` using the first matching constructor of an inductive datatype)
-except that it does not reorder goals.
+`fconstructor`, on a goal which is an inductive type, solves it by applying the first matching
+constructor, creating new goals for all arguments to the constructor in the same order.
+This is like `constructor` except the goals are not reordered.
 -/
 elab "fconstructor" : tactic => withMainContext do
   let mvarIds' ← (← getMainGoal).constructor {newGoals := .all}
@@ -33,9 +33,9 @@ elab "fconstructor" : tactic => withMainContext do
   replaceMainGoal mvarIds'
 
 /--
-`econstructor` is like `constructor`
-(it calls `apply` using the first matching constructor of an inductive datatype)
-except only non-dependent premises are added as new goals.
+`econstructor`, on a goal which is an inductive type, solves it by applying the first matching
+constructor, creating new goals for non-dependent arguments to the constructor in the same order.
+This is like `constructor` except only non-dependent arguments are shown as new goals.
 -/
 elab "econstructor" : tactic => withMainContext do
   let mvarIds' ← (← getMainGoal).constructor {newGoals := .nonDependentOnly}

@@ -520,7 +520,7 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
   ext i
   refine inductionOn i ?_ ?_
-  · simp only [partialProd_zero, Function.comp_apply, succ_succAbove_zero]
+  · simp
   · intro i hi
     simp only [Function.comp_apply, succ_succAbove_succ] at *
     rw [partialProd_succ, partialProd_succ, hi]
@@ -575,7 +575,6 @@ end PartialProd
 
 end Fin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
@@ -734,11 +733,8 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
     · have : i < length (ofFn f) := by rwa [length_ofFn]
       rw [prod_take_succ _ _ this]
       have A : ({j | j.val < i + 1} : Finset (Fin n)) =
-          insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by
-        ext ⟨_, _⟩
-        simp [Nat.lt_succ_iff_lt_or_eq, or_comm]
-      rw [A, prod_insert (by simp), IH, mul_comm]
-      simp
+          insert ⟨i, h⟩ ({j | Fin.val j < i} : Finset (Fin n)) := by grind
+      grind
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
         rw [← length_ofFn (f := f)] at h
         have : length (ofFn f) ≤ i := not_lt.mp h

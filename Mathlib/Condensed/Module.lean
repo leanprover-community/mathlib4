@@ -76,7 +76,7 @@ noncomputable abbrev Condensed.setAbAdjunction : freeAb ⊣ abForget := freeForg
 namespace CondensedMod
 
 lemma hom_naturality_apply {X Y : CondensedMod.{u} R} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
-    (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
-  NatTrans.naturality_apply f.val g x
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
 
 end CondensedMod

@@ -201,8 +201,6 @@ theorem lsmul_flip_apply (x : E) :
     (lsmul 𝕜 𝕜).flip x = toSpanSingleton 𝕜 x :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
-
 variable {𝕜} in
 theorem lsmul_flip_inj {x y : E} :
     (lsmul 𝕜 R).flip x = (lsmul 𝕜 R).flip y ↔ x = y :=
@@ -249,7 +247,6 @@ theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of `lsmul` equals 1 in any nontrivial normed group.
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/

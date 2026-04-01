@@ -100,6 +100,7 @@ theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Se
 
 /-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `Gal(L/K)`
 whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
+@[implicit_reducible]
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     GroupFilterBasis Gal(L/K) where
   toFilterBasis := galBasis K L
@@ -153,7 +154,6 @@ lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra 
   · rintro ⟨E, fin, hE⟩
     exact ⟨E.fixingSubgroup, ⟨E.fixingSubgroup, ⟨E, fin, rfl⟩, rfl⟩, hE⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
     [Normal K L] (s : Set Gal(L/K)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
@@ -185,7 +185,6 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space Gal(L/K) :=
@@ -307,7 +306,6 @@ theorem map_fixingSubgroup_index [Normal k E] [Normal k K] :
   rw [L.map_fixingSubgroup K, L.fixingSubgroup.index_comap_of_surjective
     (AlgEquiv.restrictNormalHom_surjective _)]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 /-- If `K / k` is a Galois extension, `L` is an intermediate field of `K / k`, then `[L : k]`
 as a natural number is equal to the index of the fixing subgroup of `L`. -/
