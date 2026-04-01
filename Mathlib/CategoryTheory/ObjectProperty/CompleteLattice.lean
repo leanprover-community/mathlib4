@@ -38,7 +38,7 @@ instance nonempty_sup_left [P.Nonempty] : (P ⊔ Q).Nonempty :=
 instance nonempty_sup_right [Q.Nonempty] : (P ⊔ Q).Nonempty :=
   nonempty_of_prop (Or.inr Q.prop_arbitrary)
 
-instance nonempty_top [Nonempty C] : Nonempty (⊤ : ObjectProperty C) :=
+instance nonempty_top [Nonempty C] : (⊤ : ObjectProperty C).Nonempty :=
   nonempty_of_prop (X := Classical.arbitrary C) (by trivial)
 
 lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := by
@@ -104,7 +104,7 @@ lemma ne_bot_iff_exists (P : ObjectProperty C) : ¬ P = ⊥ ↔ ∃ X, P X := by
   simp [← le_bot_iff, not_le_iff_exists]
 
 lemma nonempty_iff_ne_bot (P : ObjectProperty C) : P.Nonempty ↔ ¬ P = ⊥ := by
-  rw [ne_bot_iff_exists, nonempty_iff_exists]
+  rw [ne_bot_iff_exists, nonempty_iff]
 
 @[push]
 lemma not_nonempty_iff_eq_bot (P : ObjectProperty C) : ¬ P.Nonempty ↔ P = ⊥ := by
