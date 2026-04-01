@@ -115,14 +115,13 @@ variable [DecidableEq α] [DecidableEq V] (A : Matrix V V α)
 @[simp]
 theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp [compl]
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-(replacing grind's canonicalizer with a type-directed normalizer), `grind` closed the goals in
-the three theorems below without the `simp` preprocessing. It is not yet clear whether this is
-due to defeq abuse in Mathlib or a problem in the new canonicalizer; a minimization would help.
-The original proofs used `grind [compl, of]`, `grind [of, congr($h i j), compl, IsAdjMatrix]`,
-and `grind [of, compl, IsAdjMatrix]` respectively. -/
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [compl, of]` -/
   simp [compl]
   grind
 
@@ -137,10 +136,23 @@ theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.comp
 
 theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
     (hA : A.IsAdjMatrix) (hB : B.IsAdjMatrix) : A.compl = B.compl ↔ A = B :=
-  ⟨fun h ↦ ext fun i j ↦ by simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun i j ↦ by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [of, congr($h i j), compl, IsAdjMatrix]` -/
+    simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
 
 @[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
-    A.compl.compl = A := by ext; simp [compl]; grind [compl, IsAdjMatrix]
+    A.compl.compl = A := by
+  ext
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [of, compl, IsAdjMatrix]` -/
+  simp [compl]; grind [compl, IsAdjMatrix]
 
 namespace IsAdjMatrix
 
