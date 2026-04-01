@@ -368,6 +368,7 @@ variable [AddCommMonoid M₁] [Module R₁ M₁]
 variable [AddCommMonoid M₂] [Module R₂ M₂]
 variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
+variable (B) in
 /-- The orthogonal complement of a submodule `N` with respect to some bilinear map is the set of
 elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
 
@@ -375,7 +376,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Submodule R₂ M₂ where
+def orthogonalBilin (N : Submodule R₁ M₁) : Submodule R₂ M₂ where
   carrier := { m | ∀ n ∈ N, B n m = 0 }
   zero_mem' x _ := map_zero _
   add_mem' hx hy n hn := by
@@ -408,7 +409,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
-    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
+    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin B  (K₁ ∙ x)= ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
@@ -422,7 +423,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
-    Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
+    Submodule.orthogonalBilin B (K ∙ x) = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
