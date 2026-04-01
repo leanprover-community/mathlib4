@@ -64,8 +64,8 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .id => .id
   | .const => .const
   | .comp .. => .comp
-  | .apply  => .apply
-  | .pi => .pi
+  | .apply ..  => .apply
+  | .pi .. => .pi
 
 /-- Decides whether `f` is a function corresponding to one of the lambda theorems. -/
 def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
@@ -80,13 +80,14 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     unless xBody.hasLooseBVars do return some .const
     match xBody with
     | .bvar 0 => return some .id
-    | .app (.bvar 0) (.fvar _) =>  return some .apply
+    | .app (.bvar 0) (.fvar _iId) =>
+      return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
       let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
       let some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
       return some <| .comp argId_f argId_g
-    | .lam _ _ (.app (.app (.fvar _) (.bvar 1)) (.bvar 0)) _ =>
+    | .lam _ _ (.app (.app (.fvar _fId) (.bvar 1)) (.bvar 0)) _ =>
       return some .pi
     | _ => return none
   | _ => return none
@@ -100,6 +101,8 @@ structure LambdaTheorem where
   thmName : Name
   /-- Type and important argument of the theorem. -/
   thmArgs : LambdaTheoremArgs
+  /-- priority -/
+  priority    : Nat  := eval_prio default
   deriving Inhabited, BEq
 
 /-- Collection of lambda theorems -/
@@ -131,7 +134,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Array LambdaTheorem) := do
   return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName,type) #[]
-
+    |>.qsort (fun t s => t.priority > s.priority)
 
 --------------------------------------------------------------------------------
 
@@ -240,10 +243,11 @@ For example calling on `e` equal to `Continuous f` might return theorems implyin
 from linearity over finite-dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return (← MonadExcept.ofExcept candidates).toArray.qsort (fun t s => t.priority > s.priority)
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -262,10 +266,11 @@ For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would 
 inferring continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).morTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return (← MonadExcept.ofExcept candidates).toArray.qsort (fun t s => t.priority > s.priority)
 
 
 --------------------------------------------------------------------------------
@@ -349,6 +354,10 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
+
+      let b' ← abstractAppArgs b' decl.outArgIds
+      let (_,_,b') ← lambdaMetaTelescope b'
+
       let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
       let thm : GeneralTheorem := {
         funPropName := funPropName
@@ -393,12 +402,14 @@ form: {toString thm.form} form"
   | .mor thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 morphism theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 transition theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     transitionTheoremsExt.add thm attrKind
 
 end Meta.FunProp

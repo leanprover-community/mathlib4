@@ -157,11 +157,13 @@ theorem arsinh_pos_iff : 0 < arsinh x ↔ 0 < x :=
 theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
   lt_iff_lt_of_le_iff_le arsinh_nonneg_iff
 
+@[fun_prop]
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (√(1 + x ^ 2))⁻¹ x := by
   convert sinhHomeomorph.toOpenPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
     (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 
+@[fun_prop]
 theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (√(1 + x ^ 2))⁻¹ x :=
   (hasStrictDerivAt_arsinh x).hasDerivAt
 
@@ -227,14 +229,17 @@ section fderiv
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
   {f' : StrongDual ℝ E} {n : ℕ∞}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.arsinh (hf : HasStrictFDerivAt f f' a) :
     HasStrictFDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasStrictDerivAt_arsinh _).comp_hasStrictFDerivAt a hf
 
+@[fun_prop]
 theorem HasFDerivAt.arsinh (hf : HasFDerivAt f f' a) :
     HasFDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasDerivAt_arsinh _).comp_hasFDerivAt a hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.arsinh (hf : HasFDerivWithinAt f f' s a) :
     HasFDerivWithinAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') s a :=
   (hasDerivAt_arsinh _).comp_hasFDerivWithinAt a hf
@@ -280,14 +285,17 @@ section deriv
 
 variable {f : ℝ → ℝ} {s : Set ℝ} {a f' : ℝ}
 
+@[fun_prop]
 theorem HasStrictDerivAt.arsinh (hf : HasStrictDerivAt f f' a) :
     HasStrictDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasStrictDerivAt_arsinh _).comp a hf
 
+@[fun_prop]
 theorem HasDerivAt.arsinh (hf : HasDerivAt f f' a) :
     HasDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasDerivAt_arsinh _).comp a hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.arsinh (hf : HasDerivWithinAt f f' s a) :
     HasDerivWithinAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') s a :=
   (hasDerivAt_arsinh _).comp_hasDerivWithinAt a hf

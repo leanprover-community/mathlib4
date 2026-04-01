@@ -25,9 +25,11 @@ open Set Filter
 
 open scoped Topology Real
 
+@[fun_prop]
 theorem hasStrictDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x :=
   mod_cast (Complex.hasStrictDerivAt_tan (by exact mod_cast h)).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^ 2) x :=
   mod_cast (Complex.hasDerivAt_tan (by exact mod_cast h)).real_of_complex
 
@@ -71,11 +73,13 @@ theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : �
     DifferentiableAt ℝ tan x :=
   (hasDerivAt_tan_of_mem_Ioo h).differentiableAt
 
+@[fun_prop]
 theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
   simpa [cos_sq_arctan] using
     tanPartialHomeomorph.hasStrictDerivAt_symm trivial (by simpa) (hasStrictDerivAt_tan A)
 
+@[fun_prop]
 theorem hasDerivAt_arctan (x : ℝ) : HasDerivAt arctan (1 / (1 + x ^ 2)) x :=
   (hasStrictDerivAt_arctan x).hasDerivAt
 
@@ -115,14 +119,17 @@ section deriv
 
 variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
+@[fun_prop]
 theorem HasStrictDerivAt.arctan (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => arctan (f x)) (1 / (1 + f x ^ 2) * f') x :=
   (Real.hasStrictDerivAt_arctan (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.arctan (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => arctan (f x)) (1 / (1 + f x ^ 2) * f') x :=
   (Real.hasDerivAt_arctan (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.arctan (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => arctan (f x)) (1 / (1 + f x ^ 2) * f') s x :=
   (Real.hasDerivAt_arctan (f x)).comp_hasDerivWithinAt x hf

@@ -70,20 +70,26 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap_nhds hf.continuousAt.tendsto
 
-@[fun_prop]
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp hg hf <| .prodMap (hf.continuousWithinAt.tendsto_nhdsWithin hst) <|
     tendsto_pure_pure ..
 
+-- This theorem will be usable by `fun_prop` only once `Mapsto` is marked as `fun_prop` with
+-- `t` as output argument. It is necessary to reorder the arguments in order for `fun_prop`
+-- to determine `t` before it tries to prove `hg`.
 @[fun_prop]
+theorem HasFDerivWithinAt.fun_comp' {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+    (hst : MapsTo f s t) (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) :
+    HasFDerivWithinAt (fun x => g (f x)) (g'.comp f') s x :=
+  hg.comp x hf hst
+
 theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   hg.hasFDerivWithinAt.comp x hf (mapsTo_univ _ _)
 
-@[fun_prop]
 theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
@@ -101,18 +107,16 @@ theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜
   subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure ..
 
-@[fun_prop]
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x)
     (h : MapsTo f s t) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).differentiableWithinAt
 
-@[fun_prop]
 theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=

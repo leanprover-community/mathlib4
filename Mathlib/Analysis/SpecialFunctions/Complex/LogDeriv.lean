@@ -29,11 +29,13 @@ namespace Complex
 theorem isOpenMap_exp : IsOpenMap exp :=
   isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 
+@[fun_prop]
 theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := slitPlane_ne_zero h
   expOpenPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 
+@[fun_prop]
 lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
   HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
 
@@ -65,10 +67,12 @@ theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
     HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).comp_hasStrictFDerivAt x h₁
 
+@[fun_prop]
 theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   rw [div_eq_inv_mul]; exact (hasStrictDerivAt_log h₂).comp x h₁
 
+@[fun_prop]
 theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasStrictDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
@@ -77,10 +81,12 @@ theorem HasFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E} (h₁ :
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
 
+@[fun_prop]
 theorem HasDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasDerivAt (fun t => log (f t)) (f' / f x) x := by
   rw [div_eq_inv_mul]; exact (hasStrictDerivAt_log h₂).hasDerivAt.comp x h₁
 
+@[fun_prop]
 theorem HasDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using
@@ -95,11 +101,13 @@ theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {s : Set 
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivWithinAt x h₁
 
+@[fun_prop]
 theorem HasDerivWithinAt.clog {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ} (h₁ : HasDerivWithinAt f f' s x)
     (h₂ : f x ∈ slitPlane) : HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
   exact (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasDerivWithinAt x h₁
 
+@[fun_prop]
 theorem HasDerivWithinAt.clog_real {f : ℝ → ℂ} {s : Set ℝ} {x : ℝ} {f' : ℂ}
     (h₁ : HasDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by

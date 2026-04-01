@@ -37,9 +37,9 @@ theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) L := by
   rw [f.decomp]
   exact f.linear.hasDerivAtFilter.add_const (f 0)
 
-theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := f.hasDerivAtFilter
-theorem hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
-theorem hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
+@[fun_prop] theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := f.hasDerivAtFilter
+@[fun_prop] theorem hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
+@[fun_prop] theorem hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 
 protected theorem derivWithin (hs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = f.linear 1 :=
@@ -62,12 +62,15 @@ In this section we specialize some lemmas to `AffineMap.lineMap` because this ma
 deduce higher-dimensional lemmas from one-dimensional versions.
 -/
 
+@[fun_prop]
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
 
+@[fun_prop]
 theorem hasDerivAt_lineMap : HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt
 
+@[fun_prop]
 theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=
   hasDerivAt_lineMap.hasDerivWithinAt
 

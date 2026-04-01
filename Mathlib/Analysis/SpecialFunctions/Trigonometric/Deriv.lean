@@ -31,6 +31,7 @@ open Set
 namespace Complex
 
 /-- The complex sine function is everywhere strictly differentiable, with the derivative `cos x`. -/
+@[fun_prop]
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
   convert ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
@@ -40,6 +41,7 @@ theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
 
 /-- The complex sine function is everywhere differentiable, with the derivative `cos x`. -/
+@[fun_prop]
 theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
@@ -80,6 +82,7 @@ theorem deriv_sin : deriv sin = cos :=
 
 /-- The complex cosine function is everywhere strictly differentiable, with the derivative
 `-sin x`. -/
+@[fun_prop]
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
   convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
@@ -88,6 +91,7 @@ theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   ring
 
 /-- The complex cosine function is everywhere differentiable, with the derivative `-sin x`. -/
+@[fun_prop]
 theorem hasDerivAt_cos (x : ℂ) : HasDerivAt cos (-sin x) x :=
   (hasStrictDerivAt_cos x).hasDerivAt
 
@@ -138,14 +142,17 @@ variable {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ}
 /-! #### `Complex.cos` -/
 
 
+@[fun_prop]
 theorem HasStrictDerivAt.ccos (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.cos (f x)) (-Complex.sin (f x) * f') x :=
   (Complex.hasStrictDerivAt_cos (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.ccos (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.cos (f x)) (-Complex.sin (f x) * f') x :=
   (Complex.hasDerivAt_cos (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.ccos (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Complex.cos (f x)) (-Complex.sin (f x) * f') s x :=
   (Complex.hasDerivAt_cos (f x)).comp_hasDerivWithinAt x hf
@@ -162,14 +169,17 @@ theorem deriv_ccos (hc : DifferentiableAt ℂ f x) :
 /-! #### `Complex.sin` -/
 
 
+@[fun_prop]
 theorem HasStrictDerivAt.csin (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.sin (f x)) (Complex.cos (f x) * f') x :=
   (Complex.hasStrictDerivAt_sin (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.csin (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.sin (f x)) (Complex.cos (f x) * f') x :=
   (Complex.hasDerivAt_sin (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.csin (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Complex.sin (f x)) (Complex.cos (f x) * f') s x :=
   (Complex.hasDerivAt_sin (f x)).comp_hasDerivWithinAt x hf
@@ -309,9 +319,11 @@ namespace Real
 
 variable {x y z : ℝ}
 
+@[fun_prop]
 theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
   (Complex.hasStrictDerivAt_sin x).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
@@ -349,9 +361,11 @@ lemma analyticOn_sin {s : Set ℝ} : AnalyticOn ℝ sin s :=
 theorem deriv_sin : deriv sin = cos :=
   funext fun x => (hasDerivAt_sin x).deriv
 
+@[fun_prop]
 theorem hasStrictDerivAt_cos (x : ℝ) : HasStrictDerivAt cos (-sin x) x :=
   (Complex.hasStrictDerivAt_cos x).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_cos (x : ℝ) : HasDerivAt cos (-sin x) x :=
   (Complex.hasDerivAt_cos x).real_of_complex
 
@@ -554,14 +568,17 @@ variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 /-! #### `Real.cos` -/
 
 
+@[fun_prop]
 theorem HasStrictDerivAt.cos (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.cos (f x)) (-Real.sin (f x) * f') x :=
   (Real.hasStrictDerivAt_cos (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.cos (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.cos (f x)) (-Real.sin (f x) * f') x :=
   (Real.hasDerivAt_cos (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.cos (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Real.cos (f x)) (-Real.sin (f x) * f') s x :=
   (Real.hasDerivAt_cos (f x)).comp_hasDerivWithinAt x hf
@@ -578,14 +595,17 @@ theorem deriv_cos (hc : DifferentiableAt ℝ f x) :
 /-! #### `Real.sin` -/
 
 
+@[fun_prop]
 theorem HasStrictDerivAt.sin (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.sin (f x)) (Real.cos (f x) * f') x :=
   (Real.hasStrictDerivAt_sin (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.sin (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.sin (f x)) (Real.cos (f x) * f') x :=
   (Real.hasDerivAt_sin (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.sin (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Real.sin (f x)) (Real.cos (f x) * f') s x :=
   (Real.hasDerivAt_sin (f x)).comp_hasDerivWithinAt x hf

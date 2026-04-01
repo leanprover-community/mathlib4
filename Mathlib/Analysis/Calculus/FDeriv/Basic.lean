@@ -409,6 +409,22 @@ protected theorem HasFDerivAt.fderiv
   ext
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
+protected theorem HasFDerivAt.fderiv_forall (f' : E → E →L[𝕜] F)
+    [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+    (h : ∀ x, HasFDerivAt f (f' x) x) :
+    fderiv 𝕜 f = f' := by
+  funext x; exact (h x).fderiv
+
+/-- Simproc simplifying `fderiv _ _ _` using `fun_prop`. -/
+simproc_decl fderiv_simproc_at (fderiv _ _ _) :=
+  Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv
+
+/-- Simproc simplifying `fderiv _ _` using `fun_prop`. -/
+simproc_decl fderiv_simproc_forall (fderiv _ _) :=
+  Mathlib.Meta.FunProp.mkFunPropSimproc decl_name% ``HasFDerivAt.fderiv_forall
+
+attribute [deriv_simproc] fderiv_simproc_at fderiv_simproc_forall
+
 theorem fderiv_eq
     [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
     {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x) : fderiv 𝕜 f = f' :=
@@ -677,11 +693,24 @@ theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _
 
 @[fun_prop]
+theorem hasStrictFDerivAt_fun_id (x : E) : HasStrictFDerivAt (fun x : E => x) (.id 𝕜 E) x :=
+  hasFDerivAtFilter_id _
+
+@[fun_prop]
 theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (.id 𝕜 E) s x :=
   hasFDerivAtFilter_id _
 
 @[fun_prop]
+theorem hasFDerivWithinAt_fun_id (x : E) (s : Set E) :
+    HasFDerivWithinAt (fun x : E => x) (.id 𝕜 E) s x :=
+  hasFDerivAtFilter_id _
+
+@[fun_prop]
 theorem hasFDerivAt_id (x : E) : HasFDerivAt id (.id 𝕜 E) x :=
+  hasFDerivAtFilter_id _
+
+@[fun_prop]
+theorem hasFDerivAt_fun_id (x : E) : HasFDerivAt (fun x : E => x) (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _
 
 @[simp, fun_prop]

@@ -58,6 +58,7 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     · exact fun n => sqPartialHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (√x))
         (contDiffAt_id.pow 2)
 
+@[fun_prop]
 theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt (√·) (1 / (2 * √x)) x :=
   (deriv_sqrt_aux hx).1
 
@@ -65,6 +66,7 @@ theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt (√·
 theorem contDiffAt_sqrt {x : ℝ} {n : WithTop ℕ∞} (hx : x ≠ 0) : ContDiffAt ℝ n (√·) x :=
   (deriv_sqrt_aux hx).2 n
 
+@[fun_prop]
 theorem hasDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasDerivAt (√·) (1 / (2 * √x)) x :=
   (hasStrictDerivAt_sqrt hx).hasDerivAt
 
@@ -76,15 +78,18 @@ section deriv
 
 variable {f : ℝ → ℝ} {s : Set ℝ} {f' x : ℝ}
 
+@[fun_prop]
 theorem HasDerivWithinAt.sqrt (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasDerivWithinAt (fun y => √(f y)) (f' / (2 * √(f x))) s x := by
   simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using
     (hasDerivAt_sqrt hx).comp_hasDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasDerivAt.sqrt (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
     HasDerivAt (fun y => √(f y)) (f' / (2 * √(f x))) x := by
   simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasDerivAt_sqrt hx).comp x hf
 
+@[fun_prop]
 theorem HasStrictDerivAt.sqrt (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictDerivAt (fun t => √(f t)) (f' / (2 * √(f x))) x := by
   simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasStrictDerivAt_sqrt hx).comp x hf
@@ -106,14 +111,17 @@ section fderiv
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : WithTop ℕ∞}
   {s : Set E} {x : E} {f' : StrongDual ℝ E}
 
+@[fun_prop]
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
     HasFDerivAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') x :=
   (hasDerivAt_sqrt hx).comp_hasFDerivAt x hf
 
+@[fun_prop]
 theorem HasStrictFDerivAt.sqrt (hf : HasStrictFDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictFDerivAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') x :=
   (hasStrictDerivAt_sqrt hx).comp_hasStrictFDerivAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.sqrt (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasFDerivWithinAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') s x :=
   (hasDerivAt_sqrt hx).comp_hasFDerivWithinAt x hf

@@ -201,6 +201,7 @@ private theorem aux_sum_eq_pow (n : ℕ) :
   congr
   exact add_tsub_cancel_of_le (Nat.le_pred_of_lt <| Finset.mem_range.1 ha)
 
+@[fun_prop]
 theorem HasStrictFDerivAt.pow (h : HasStrictFDerivAt f f' x) (n : ℕ) :
     HasStrictFDerivAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') x :=
   h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _
@@ -210,6 +211,7 @@ theorem hasStrictFDerivAt_pow (n : ℕ) {x : 𝔸} :
       (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) x :=
   hasStrictFDerivAt_id _ |>.pow n
 
+@[fun_prop]
 theorem HasFDerivWithinAt.pow (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     HasFDerivWithinAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') s x :=
   h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _
@@ -219,6 +221,7 @@ theorem hasFDerivWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
       (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) s x :=
   hasFDerivWithinAt_id _ _ |>.pow n
 
+@[fun_prop]
 theorem HasFDerivAt.pow (h : HasFDerivAt f f' x) (n : ℕ) :
     HasFDerivAt (fun x ↦ f x ^ n) ((n • f x ^ (n - 1)) • f') x :=
   h.pow' n |>.congr_fderiv <| aux_sum_eq_pow _

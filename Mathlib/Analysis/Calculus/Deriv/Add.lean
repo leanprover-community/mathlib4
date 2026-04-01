@@ -45,17 +45,17 @@ theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' L)
     (hg : HasDerivAtFilter g g' L) : HasDerivAtFilter (f + g) (f' + g') L := by
   simpa using (hf.hasFDerivAtFilter.add hg.hasFDerivAtFilter).hasDerivAtFilter
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.add (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
     HasStrictDerivAt (f + g) (f' + g') x :=
   HasDerivAtFilter.add hf hg
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
     (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (f + g) (f' + g') s x :=
   HasDerivAtFilter.add hf hg
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
     HasDerivAt (f + g) (f' + g') x :=
   HasDerivAtFilter.add hf hg
@@ -195,26 +195,32 @@ theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) L) 
   convert HasDerivAtFilter.fun_sum h
   simp
 
+@[fun_prop]
 theorem HasStrictDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictDerivAt (A i) (A' i) x) :
     HasStrictDerivAt (fun y ↦ ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
   HasDerivAtFilter.fun_sum h
 
+@[fun_prop]
 theorem HasStrictDerivAt.sum (h : ∀ i ∈ u, HasStrictDerivAt (A i) (A' i) x) :
     HasStrictDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
   HasDerivAtFilter.sum h
 
+@[fun_prop]
 theorem HasDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasDerivWithinAt (A i) (A' i) s x) :
     HasDerivWithinAt (fun y ↦ ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
   HasDerivAtFilter.fun_sum h
 
+@[fun_prop]
 theorem HasDerivWithinAt.sum (h : ∀ i ∈ u, HasDerivWithinAt (A i) (A' i) s x) :
     HasDerivWithinAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) s x :=
   HasDerivAtFilter.sum h
 
+@[fun_prop]
 theorem HasDerivAt.fun_sum (h : ∀ i ∈ u, HasDerivAt (A i) (A' i) x) :
     HasDerivAt (fun y ↦ ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
   HasDerivAtFilter.fun_sum h
 
+@[fun_prop]
 theorem HasDerivAt.sum (h : ∀ i ∈ u, HasDerivAt (A i) (A' i) x) :
     HasDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
   HasDerivAtFilter.sum h
@@ -251,16 +257,16 @@ section Neg
 theorem HasDerivAtFilter.neg (h : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (-f) (-f') L := by simpa using (HasFDerivAtFilter.neg h).hasDerivAtFilter
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.neg (h : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (-f) (-f') s x :=
   HasDerivAtFilter.neg h
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (-f) (-f') x :=
   HasDerivAtFilter.neg h
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) : HasStrictDerivAt (-f) (-f') x :=
   HasDerivAtFilter.neg h
 
@@ -289,15 +295,19 @@ variable (s x L)
 theorem hasDerivAtFilter_neg : HasDerivAtFilter Neg.neg (-1) L :=
   HasDerivAtFilter.neg <| hasDerivAtFilter_id _
 
+@[fun_prop]
 theorem hasDerivWithinAt_neg : HasDerivWithinAt Neg.neg (-1) s x :=
   hasDerivAtFilter_neg _
 
+@[fun_prop]
 theorem hasDerivAt_neg : HasDerivAt Neg.neg (-1) x :=
   hasDerivAtFilter_neg _
 
+@[fun_prop]
 theorem hasDerivAt_neg' : HasDerivAt (fun x ↦ -x) (-1) x :=
   hasDerivAtFilter_neg _
 
+@[fun_prop]
 theorem hasStrictDerivAt_neg : HasStrictDerivAt Neg.neg (-1) x :=
   HasStrictDerivAt.neg <| hasStrictDerivAt_id _
 
@@ -343,17 +353,17 @@ theorem HasDerivAtFilter.sub (hf : HasDerivAtFilter f f' L) (hg : HasDerivAtFilt
     HasDerivAtFilter (f - g) (f' - g') L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.sub (hf : HasDerivWithinAt f f' s x)
     (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (f - g) (f' - g') s x :=
   HasDerivAtFilter.sub hf hg
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.sub (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
     HasDerivAt (f - g) (f' - g') x :=
   HasDerivAtFilter.sub hf hg
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
     HasStrictDerivAt (f - g) (f' - g') x :=
   HasDerivAtFilter.sub hf hg
@@ -419,14 +429,17 @@ theorem HasDerivAtFilter.const_sub (c : F) (hf : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (fun x ↦ c - f x) (-f') L := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
 
+@[fun_prop]
 theorem HasDerivWithinAt.const_sub (c : F) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x ↦ c - f x) (-f') s x :=
   HasDerivAtFilter.const_sub c hf
 
+@[fun_prop]
 theorem HasStrictDerivAt.const_sub (c : F) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x ↦ c - f x) (-f') x :=
   HasDerivAtFilter.const_sub c hf
 
+@[fun_prop]
 nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x ↦ c - f x) (-f') x :=
   hf.const_sub c

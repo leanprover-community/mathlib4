@@ -35,6 +35,7 @@ namespace Complex
 
 /-- The complex hyperbolic sine function is everywhere strictly differentiable, with the derivative
 `cosh x`. -/
+@[fun_prop]
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
   convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
@@ -43,6 +44,7 @@ theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
 
 /-- The complex hyperbolic sine function is everywhere differentiable, with the derivative
 `cosh x`. -/
+@[fun_prop]
 theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
   (hasStrictDerivAt_sinh x).hasDerivAt
 
@@ -82,6 +84,7 @@ theorem deriv_sinh : deriv sinh = cosh :=
 
 /-- The complex hyperbolic cosine function is everywhere strictly differentiable, with the
 derivative `sinh x`. -/
+@[fun_prop]
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
   convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
@@ -90,6 +93,7 @@ theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
 
 /-- The complex hyperbolic cosine function is everywhere differentiable, with the derivative
 `sinh x`. -/
+@[fun_prop]
 theorem hasDerivAt_cosh (x : ℂ) : HasDerivAt cosh (sinh x) x :=
   (hasStrictDerivAt_cosh x).hasDerivAt
 
@@ -135,14 +139,17 @@ variable {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ}
 
 /-! #### `Complex.cosh` -/
 
+@[fun_prop]
 theorem HasStrictDerivAt.ccosh (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.cosh (f x)) (Complex.sinh (f x) * f') x :=
   (Complex.hasStrictDerivAt_cosh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.ccosh (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.cosh (f x)) (Complex.sinh (f x) * f') x :=
   (Complex.hasDerivAt_cosh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.ccosh (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Complex.cosh (f x)) (Complex.sinh (f x) * f') s x :=
   (Complex.hasDerivAt_cosh (f x)).comp_hasDerivWithinAt x hf
@@ -158,14 +165,17 @@ theorem deriv_ccosh (hc : DifferentiableAt ℂ f x) :
 
 /-! #### `Complex.sinh` -/
 
+@[fun_prop]
 theorem HasStrictDerivAt.csinh (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.sinh (f x)) (Complex.cosh (f x) * f') x :=
   (Complex.hasStrictDerivAt_sinh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.csinh (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.sinh (f x)) (Complex.cosh (f x) * f') x :=
   (Complex.hasDerivAt_sinh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.csinh (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Complex.sinh (f x)) (Complex.cosh (f x) * f') s x :=
   (Complex.hasDerivAt_sinh (f x)).comp_hasDerivWithinAt x hf
@@ -302,9 +312,11 @@ namespace Real
 
 variable {x y z : ℝ}
 
+@[fun_prop]
 theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
   (Complex.hasStrictDerivAt_sinh x).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
   (Complex.hasDerivAt_sinh x).real_of_complex
 
@@ -342,9 +354,11 @@ lemma analyticOn_sinh {s : Set ℝ} : AnalyticOn ℝ sinh s :=
 theorem deriv_sinh : deriv sinh = cosh :=
   funext fun x => (hasDerivAt_sinh x).deriv
 
+@[fun_prop]
 theorem hasStrictDerivAt_cosh (x : ℝ) : HasStrictDerivAt cosh (sinh x) x :=
   (Complex.hasStrictDerivAt_cosh x).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_cosh (x : ℝ) : HasDerivAt cosh (sinh x) x :=
   (Complex.hasDerivAt_cosh x).real_of_complex
 
@@ -611,14 +625,17 @@ variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
 /-! #### `Real.cosh` -/
 
+@[fun_prop]
 theorem HasStrictDerivAt.cosh (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.cosh (f x)) (Real.sinh (f x) * f') x :=
   (Real.hasStrictDerivAt_cosh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.cosh (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.cosh (f x)) (Real.sinh (f x) * f') x :=
   (Real.hasDerivAt_cosh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.cosh (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Real.cosh (f x)) (Real.sinh (f x) * f') s x :=
   (Real.hasDerivAt_cosh (f x)).comp_hasDerivWithinAt x hf
@@ -634,14 +651,17 @@ theorem deriv_cosh (hc : DifferentiableAt ℝ f x) :
 
 /-! #### `Real.sinh` -/
 
+@[fun_prop]
 theorem HasStrictDerivAt.sinh (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.sinh (f x)) (Real.cosh (f x) * f') x :=
   (Real.hasStrictDerivAt_sinh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.sinh (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.sinh (f x)) (Real.cosh (f x) * f') x :=
   (Real.hasDerivAt_sinh (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.sinh (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Real.sinh (f x)) (Real.cosh (f x) * f') s x :=
   (Real.hasDerivAt_sinh (f x)).comp_hasDerivWithinAt x hf
