@@ -282,7 +282,7 @@ instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
-  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.image_connectedComponent, ←
+  rw [← ConnectedComponents.isQuotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
   refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
   rw [connectedComponents_preimage_singleton]
