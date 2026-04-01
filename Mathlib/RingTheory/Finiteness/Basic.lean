@@ -128,26 +128,28 @@ theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
 theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    (P : Submodule R M → Prop) (bot : P ⊥) (sup : ∀ M x, M.FG → P M → P (M ⊔ R ∙ x))
-    (N : Submodule R M) (hN : N.FG) : P N := by classical
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (bot : motive ⊥ fg_bot)
+    (sup : ∀ (N : Submodule R M) (x : M) (hN : N.FG),
+      motive N hN → motive (N ⊔ (R ∙ x)) (hN.sup <| fg_span_singleton x))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
   obtain ⟨s, rfl⟩ := hN
   induction s using Finset.induction with
   | empty => simp [bot]
-  | insert _ s _ ih =>
-    simpa [span_insert, sup_comm] using sup _ _ (by use s) ih
+  | insert x s hxs ih => simpa [span_insert, sup_comm] using sup (span R s) x (by use s) ih
 
 theorem fg_induction' (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    (P : Submodule R M → Prop) (singleton : ∀ x, P (R ∙ x))
-    (sup : ∀ M₁ M₂, M₁.FG → M₂.FG → P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) :
-    P N := by classical
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (singleton : ∀ x : M, motive (R ∙ x) (fg_span_singleton _))
+    (sup : ∀ (N₁ N₂ : Submodule R M) (hN₁ : N₁.FG) (hN₂ : N₂.FG),
+      motive N₁ hN₁ → motive N₂ hN₂ → motive (N₁ ⊔ N₂) (hN₁.sup hN₂))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
   obtain ⟨s, rfl⟩ := hN
   induction s using Finset.induction with
-  | empty =>
-    rw [Finset.coe_empty, span_empty, ← span_zero_singleton]
-    exact singleton _
-  | insert _ s _ ih =>
-    rw [Finset.coe_insert, span_insert]
-    exact sup _ _ (fg_span_singleton _) (by use s) (singleton _) ih
+  | empty => simpa using singleton 0
+  | insert x s hxs ih =>
+    simpa [span_insert, sup_comm] using
+      sup (span R s) (R ∙ x) _ (fg_span_singleton _) ih (singleton x)
 
 section RestrictScalars
 
