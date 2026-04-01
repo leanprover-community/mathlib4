@@ -426,7 +426,7 @@ def ofSupport (l : List V) (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
     G.Walk (l.head hne) (l.getLast hne) :=
   match l with
   | [_] => .nil
-  | _ :: v :: l => .cons hchain.rel <| .ofSupport _ (l.cons_ne_nil v) hchain.of_cons
+  | _ :: v :: l => .cons hchain.rel <| .ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons
 
 variable (G v) in
 @[simp]
@@ -455,28 +455,29 @@ theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj
 
 /-- Construct a walk from a list of darts where adjacent darts in the list are also adjacent
 in the graph -/
-def ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+def ofDarts (l : List G.Dart) (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     G.Walk (l.head hne).fst (l.getLast hne).snd :=
   match l with
   | [d] => .cons d.adj .nil
-  | d₁ :: d₂ :: l => .cons (hchain.rel ▸ d₁.adj) <| ofDarts (l.cons_ne_nil d₂) hchain.of_cons
+  | d₁ :: d₂ :: l =>
+    .cons (hchain.rel ▸ d₁.adj) <| ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons
 
 variable (G) in
 @[simp]
 theorem ofDarts_singleton (d : G.Dart) :
-    ofDarts ([].cons_ne_nil d) (.singleton d) = .cons d.adj .nil :=
+    ofDarts [d] ([].cons_ne_nil d) (.singleton d) = .cons d.adj .nil :=
   rfl
 
 @[simp]
 theorem ofDarts_cons_cons {d₁ d₂ : G.Dart} {l : List G.Dart}
     (hchain : d₁ :: d₂ :: l |>.IsChain G.DartAdj) :
-    ofDarts ((d₂ :: l).cons_ne_nil d₁) hchain =
-      .cons (hchain.rel ▸ d₁.adj) (ofDarts (l.cons_ne_nil d₂) hchain.of_cons) :=
+    ofDarts (d₁ :: d₂ :: l) ((d₂ :: l).cons_ne_nil d₁) hchain =
+      .cons (hchain.rel ▸ d₁.adj) (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons) :=
   rfl
 
 @[simp]
 theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
-    (ofDarts hne hchain).darts = l := by
+    (ofDarts l hne hchain).darts = l := by
   match l with
   | [_] => rfl
   | d₁ :: d₂ :: l =>
@@ -484,12 +485,12 @@ theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.D
 
 @[simp]
 theorem edges_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
-    (ofDarts hne hchain).edges = l.map Dart.edge := by
+    (ofDarts l hne hchain).edges = l.map Dart.edge := by
   simp [edges]
 
 @[simp, grind =]
 theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
-    (ofDarts hne hchain).length = l.length := by
+    (ofDarts l hne hchain).length = l.length := by
   grind [darts_ofDarts]
 
 end Walk
