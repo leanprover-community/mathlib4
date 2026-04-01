@@ -49,8 +49,8 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
   simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
   by_cases h0 : (p.coeff i) = 0
   · simp [h0, map_zero, zero_mul, one_mul, hv.eq_one p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
-      pow_pos (lt_trans zero_lt_one hpos) p.natDegree]
-  · simp [one_mul, hv.eq_one p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+      pow_pos (zero_lt_one.trans hpos) p.natDegree]
+  · simp [one_mul, hv.eq_one p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       hv.eq_one _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
 
 end Polynomial
@@ -70,12 +70,11 @@ theorem Valuation.transcendental_of_lt_one (y : L) (h0 : y ≠ 0)
     (hy : v y < 1) : Transcendental K y := by
   simp_all only [ne_eq, Transcendental]
   by_contra!
-  rw [Valuation.val_lt_one_iff _ (by contrapose! h0; aesop)] at hy
-  replace ha : IsAlgebraic K (y) := IsAlgebraic.algebraMap this
+  rw [val_lt_one_iff _ (by contrapose! h0; aesop)] at hy
+  replace ha : IsAlgebraic K y := .algebraMap this
   rw [← IsAlgebraic.inv_iff] at ha
   obtain ⟨p, hpnt, hp⟩ := ha
   suffices v y⁻¹ ^ p.natDegree = 0 by simp_all
-  rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
-    (v := v) _ _ _ (by exact_mod_cast hy)] <;> simp_all
+  rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ _ _ hy] <;> simp_all
 
 end Field
