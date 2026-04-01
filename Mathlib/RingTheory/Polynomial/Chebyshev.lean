@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.LinearAlgebra.Span.Basic
@@ -254,6 +255,11 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
 
 theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
   (T R n).degree_ne_bot.mp (by simp [degree_T R n])
+
+/-- ChebyshevT as a polynomial sequence. -/
+noncomputable def chebyshevTsequence [IsDomain R] [NeZero (2 : R)] : Polynomial.Sequence R where
+  elems' n := T R n
+  degree_eq' n := by simp [degree_T]
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]

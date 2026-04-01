@@ -34,7 +34,6 @@ lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
       _ = eLpNorm f p (count.restrict {i}) := by simp
       _ ≤ eLpNorm f p count := eLpNorm_restrict_le ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) :
     eLpNorm f p .count < ∞ := by
   letI _ := Fintype.ofFinite α
