@@ -752,8 +752,9 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G.deleteEdges {s(u, v)}).Reachable u v := Iff.rfl
 
-@[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) (h : G.Adj u v) :
-    G.IsBridge s(u, v) := ⟨h, fun h ↦ huv <| h.mono <| deleteEdges_le _⟩
+@[deprecated "Use `absurd h.reachable huv` instead." (since := "2026-04-02")]
+lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) (h : G.Adj u v) :
+    G.IsBridge s(u, v) := absurd h.reachable huv
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
