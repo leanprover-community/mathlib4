@@ -239,7 +239,6 @@ lemma inter_orthRadius_eq_empty_of_finrank_eq_one {s : Sphere P} {p : P} (hpc : 
   rw [eq_comm, sub_eq_zero, eq_comm, sq_eq_sq₀ dist_nonneg hr]
   exact hp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     (s ∩ s.orthRadius p : Set P) = ∅ ↔ s.radius < dist p s.center ∨
       (Module.finrank ℝ V = 1 ∧ dist p s.center < s.radius ∧ p ≠ s.center) ∨
@@ -300,7 +299,6 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     simpa using h.symm
   · simp [h, inter_orthRadius_eq_empty_of_radius_lt_dist]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
@@ -358,7 +356,6 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
   · simp [div_eq_mul_inv, smul_smul]
   · simp [norm_smul, norm_ne_zero_iff.2 hv0]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at exactly two points so long as `p`
 lies strictly within `s` and not at its center. -/
 lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
