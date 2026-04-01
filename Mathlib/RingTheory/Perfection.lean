@@ -567,7 +567,6 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -577,7 +576,6 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -742,7 +740,6 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
