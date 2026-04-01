@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 public import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -328,7 +328,7 @@ lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
   rw [tail_support_append, List.nodup_append'] at this
-  rw [isPath_def, support_eq_cons, List.nodup_cons]
+  rw [isPath_def, ← cons_tail_support, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
 
 lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)

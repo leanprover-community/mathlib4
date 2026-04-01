@@ -222,6 +222,7 @@ instance : SubringClass (Subring R) R where
   neg_mem {s} := s.neg_mem'
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
 
 @[simp]
