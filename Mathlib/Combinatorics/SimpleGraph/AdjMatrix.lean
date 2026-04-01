@@ -115,6 +115,12 @@ variable [DecidableEq α] [DecidableEq V] (A : Matrix V V α)
 @[simp]
 theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp [compl]
 
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+(replacing grind's canonicalizer with a type-directed normalizer), `grind` closed the goals in
+the three theorems below without the `simp` preprocessing. It is not yet clear whether this is
+due to defeq abuse in Mathlib or a problem in the new canonicalizer; a minimization would help.
+The original proofs used `grind [compl, of]`, `grind [of, congr($h i j), compl, IsAdjMatrix]`,
+and `grind [of, compl, IsAdjMatrix]` respectively. -/
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
   simp [compl]
