@@ -56,21 +56,17 @@ open Topology
 
 variable {α 𝕜 𝕝 E F : Type*}
 
-section CommSemiring
-
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-
-variable (𝕜 E) in
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual := WeakBilin (topDualPairing 𝕜 E)
+def WeakDual (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+     [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] := WeakBilin (topDualPairing 𝕜 E)
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
-/-!
-### Equivalences between `StrongDual` and `WeakDual`
--/
+section Equivalences
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace StrongDual
 
@@ -105,7 +101,15 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
+end WeakDual
+
+end Equivalences
+
+namespace WeakDual
 section Semiring
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -152,6 +156,19 @@ instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
 
 end Semiring
 
+section Ring
+
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+
+instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
+  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
+
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
+  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
+
+end Ring
+
 end WeakDual
 
 /-- The weak topology is the topology coarsest topology on `E` such that all functionals
@@ -161,9 +178,11 @@ def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAd
   WeakBilin (topDualPairing 𝕜 E).flip
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd
 
+namespace WeakSpace
 section Semiring
 
-namespace WeakSpace
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
@@ -190,8 +209,6 @@ theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
 @[simp]
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
-
-end WeakSpace
 
 variable (𝕜 E) in
 /-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
@@ -222,7 +239,7 @@ theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/
-theorem WeakSpace.isOpen_of_isOpen (V : Set E)
+theorem isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
@@ -234,24 +251,10 @@ theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α �
 
 end Semiring
 
-end CommSemiring
-
 section Ring
 
 variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-
-namespace WeakDual
-
-instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
-  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
-
-instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
-  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
-
-end WeakDual
-
-namespace WeakSpace
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
   inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)
@@ -259,6 +262,7 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
 
-end WeakSpace
 
 end Ring
+
+end WeakSpace
