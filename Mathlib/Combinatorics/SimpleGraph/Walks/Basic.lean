@@ -422,27 +422,27 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
 
 /-- Construct a walk from a list of vertices where adjacent vertices in the list are also adjacent
 in the graph -/
-def ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
+def ofSupport (l : List V) (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
     G.Walk (l.head hne) (l.getLast hne) :=
   match l with
   | [_] => .nil
-  | _ :: v :: l => .cons hchain.rel <| .ofSupport (l.cons_ne_nil v) hchain.of_cons
+  | _ :: v :: l => .cons hchain.rel <| .ofSupport _ (l.cons_ne_nil v) hchain.of_cons
 
 variable (G v) in
 @[simp]
 theorem ofSupport_singleton :
-    ofSupport ([].cons_ne_nil v) (.singleton v) = .nil (G := G) (u := v) :=
+    ofSupport [v] ([].cons_ne_nil v) (.singleton v) = .nil (G := G) (u := v) :=
   rfl
 
 @[simp]
 theorem ofSupport_cons_cons {l : List V} (hchain : u :: v :: l |>.IsChain G.Adj) :
-    ofSupport ((v :: l).cons_ne_nil u) hchain =
-      .cons hchain.rel (.ofSupport (l.cons_ne_nil v) hchain.of_cons) :=
+    ofSupport (u :: v :: l) ((v :: l).cons_ne_nil u) hchain =
+      .cons hchain.rel (.ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons) :=
   rfl
 
 @[simp]
 theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
-    (ofSupport hne hchain).support = l := by
+    (ofSupport l hne hchain).support = l := by
   match l with
   | [_] => rfl
   | _ :: v :: l =>
@@ -450,7 +450,7 @@ theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Ad
 
 @[simp, grind =]
 theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
-    (ofSupport hne hchain).length = l.length - 1 := by
+    (ofSupport l hne hchain).length = l.length - 1 := by
   grind [support_ofSupport]
 
 /-- Construct a walk from a list of darts where adjacent darts in the list are also adjacent
