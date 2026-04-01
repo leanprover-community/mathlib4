@@ -333,274 +333,274 @@ end connectHom₀
 
 section connectHom₁
 
-variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
-  {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
-  {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
-  (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
+-- variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
+--   {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
+--   {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
+--   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
 
-include hf hfg hA in
-lemma mem_cocycles₂_of_comp_eq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
-    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : x ∈ cocycles₂ A := by
-  refine funext fun ⟨x, y, z⟩ ↦ hf ?_
-  dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [← Rep.smul_eq_ρ_apply, sub_add_eq_add_sub]
-  change _ = f 0
-  have : g (b (y * z)) = g (b y) + y • g (b z) := hb y z
-  have : (x • b y + x • y • b z + -(x • b (y * z))) ∈ AddSubgroup.center B :=
-    (hA ((hfg _).mp (by simp [this, add_assoc]) : _ ∈ f.range))
-  have := AddSubgroup.mem_center_iff.mp this (b x)
-  simp [sub_eq_add_neg, hx, mul_smul, ← add_assoc, this.symm, mul_assoc]
+-- include hf hfg hA in
+-- lemma mem_cocycles₂_of_comp_eq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
+--     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : x ∈ cocycles₂ A := by
+--   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
+--   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
+--   rw [← Rep.smul_eq_ρ_apply, sub_add_eq_add_sub]
+--   change _ = f 0
+--   have : g (b (y * z)) = g (b y) + y • g (b z) := hb y z
+--   have : (x • b y + x • y • b z + -(x • b (y * z))) ∈ AddSubgroup.center B :=
+--     (hA ((hfg _).mp (by simp [this, add_assoc]) : _ ∈ f.range))
+--   have := AddSubgroup.mem_center_iff.mp this (b x)
+--   simp [sub_eq_add_neg, hx, mul_smul, ← add_assoc, this.symm, mul_assoc]
 
-/-- If `x : G × G → A` satisfy `∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)` (corresponding
-to `f ∘ x = d₁₂ B b` in the commutative case), then we can write `x` as a cocycle.
-Stated for readability of `δ₁_apply`. -/
-abbrev cocycles₂MkOfCompEq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
-    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : cocycles₂ A := ⟨x,
-  mem_cocycles₂_of_comp_eq hf hfg hA b hb x hx⟩
+-- /-- If `x : G × G → A` satisfy `∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)` (corresponding
+-- to `f ∘ x = d₁₂ B b` in the commutative case), then we can write `x` as a cocycle.
+-- Stated for readability of `δ₁_apply`. -/
+-- abbrev cocycles₂MkOfCompEq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
+--     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : cocycles₂ A := ⟨x,
+--   mem_cocycles₂_of_comp_eq hf hfg hA b hb x hx⟩
 
-/-- Auxiliary function used for constructing the connection map `δ₁`. -/
-noncomputable def δ₁_aux : (g ∘ ·) ⁻¹' (Z1 G C) → cocycles₂ A := fun b ↦ ⟨
-  fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b.1 st.1) + st.1 • (b.1 st.2) - b.1 (st.1 * st.2),
-    (hfg _).mp (by simpa [← sub_eq_zero] using (b.2 st.1 st.2).symm)⟩,
-  mem_cocycles₂_of_comp_eq hf hfg hA b.1 b.2 _ (by simp)
-⟩
+-- /-- Auxiliary function used for constructing the connection map `δ₁`. -/
+-- noncomputable def δ₁_aux : (g ∘ ·) ⁻¹' (Z1 G C) → cocycles₂ A := fun b ↦ ⟨
+--   fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b.1 st.1) + st.1 • (b.1 st.2) - b.1 (st.1 * st.2),
+--     (hfg _).mp (by simpa [← sub_eq_zero] using (b.2 st.1 st.2).symm)⟩,
+--   mem_cocycles₂_of_comp_eq hf hfg hA b.1 b.2 _ (by simp)
+-- ⟩
 
-lemma Z1_mem_preimage_Z1 (b : Z1 G B) : g ∘ b ∈ Z1 G C :=
-  fun h h' ↦ by simpa using congr(g $(b.2 h h'))
+-- lemma Z1_mem_preimage_Z1 (b : Z1 G B) : g ∘ b ∈ Z1 G C :=
+--   fun h h' ↦ by simpa using congr(g $(b.2 h h'))
 
-lemma δ₁_aux_zero : δ₁_aux hf hfg hA ⟨0, by simp [Z1]⟩ = 0 := by
-  refine cocycles₂_ext fun g h ↦ hf ?_
-  simp only [δ₁_aux, Pi.zero_apply, smul_zero, add_zero, sub_self, cocycles₂.coe_mk,
-    Equiv.apply_ofInjective_symm]
-  exact f.map_zero.symm
+-- lemma δ₁_aux_zero : δ₁_aux hf hfg hA ⟨0, by simp [Z1]⟩ = 0 := by
+--   refine cocycles₂_ext fun g h ↦ hf ?_
+--   simp only [δ₁_aux, Pi.zero_apply, smul_zero, add_zero, sub_self, cocycles₂.coe_mk,
+--     Equiv.apply_ofInjective_symm]
+--   exact f.map_zero.symm
 
-@[simp]
-lemma apply_δ₁_aux (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
-    ∀ g h : G, f ((δ₁_aux hf hfg hA b) ⟨g, h⟩) = b.1 g + g • b.1 h - b.1 (g * h) := by
-  simp [δ₁_aux]
+-- @[simp]
+-- lemma apply_δ₁_aux (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
+--     ∀ g h : G, f ((δ₁_aux hf hfg hA b) ⟨g, h⟩) = b.1 g + g • b.1 h - b.1 (g * h) := by
+--   simp [δ₁_aux]
 
-lemma apply_δ₁_aux' (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
-    f ∘ (δ₁_aux hf hfg hA b) = fun g ↦ b.1 g.1 + g.1 • b.1 g.2 - b.1 (g.1 * g.2) := by
-  ext ⟨g, h⟩
-  simp
+-- lemma apply_δ₁_aux' (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
+--     f ∘ (δ₁_aux hf hfg hA b) = fun g ↦ b.1 g.1 + g.1 • b.1 g.2 - b.1 (g.1 * g.2) := by
+--   ext ⟨g, h⟩
+--   simp
 
-/-- For a short exact sequence `0 → A →f B →g C → 0` preserving `G`-action, if `A` is commutative
-(here we assume `A` has type `Rep k G`), and the image of `A` under `f` is contained in the center
-of `B`, then we have the connection map `δ₁ : H1 G C → H2 A`. -/
-noncomputable def δ₁ : H1 G C → H2 A :=
-  (Function.extend ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·)))
-    (H2π A ∘ (δ₁_aux hf hfg hA)) 0)
+-- /-- For a short exact sequence `0 → A →f B →g C → 0` preserving `G`-action, if `A` is commutative
+-- (here we assume `A` has type `Rep k G`), and the image of `A` under `f` is contained in the center
+-- of `B`, then we have the connection map `δ₁ : H1 G C → H2 A`. -/
+-- noncomputable def δ₁ : H1 G C → H2 A :=
+--   (Function.extend ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·)))
+--     (H2π A ∘ (δ₁_aux hf hfg hA)) 0)
 
-include hg in
-lemma mk_comp_δ₁_aux_factorsThrough :
-    Function.FactorsThrough (H2π A ∘ (δ₁_aux hf hfg hA))
-    ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·))):= by
-  intro ⟨b1, hb1⟩ ⟨b2, hb2⟩ heq
-  obtain ⟨x, heq⟩ := by
-    simpa only [Function.comp_apply, Set.restrictPreimage_mk, H1.mk_eq_iff] using heq
-  obtain ⟨x, rfl⟩ := hg x
-  replace heq : ∀ (h : G), g (b1 h - h • x - b2 h + x) = 0 := fun h ↦ by
-    simpa using congr($(heq h) - h • g x - (g (b2 h)) + g x)
-  choose a ha using fun h ↦ (hfg _).mp (heq h)
-  replace ha (h : G) : b1 h = (f (a h)) - x + (b2 h) + h • x := by
-    simpa using congr($(ha h) - x + b2 h + h • x).symm
-  simp only [Function.comp_apply, δ₁_aux, H2π_eq_iff (A := A), coboundaries₂, d₁₂,
-    ← Rep.smul_eq_ρ_apply, ModuleCat.hom_ofHom, cocycles₂.coe_mk, LinearMap.mem_range,
-    LinearMap.coe_mk, AddHom.coe_mk, ← hf.comp_left.eq_iff, map_comp_sub]
-  refine ⟨a, funext fun ⟨h1, h2⟩ ↦ ?_⟩
-  have : b2 h1 + h1 • b2 h2 - b2 (h1 * h2) ∈ AddSubgroup.center B := by
-    refine hA ((hfg _).mp ?_)
-    simpa [sub_eq_zero] using (hb2 h1 h2).symm
-  have : -x + b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) = b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) + -x := by
-    simpa [sub_eq_add_neg, ← add_assoc] using AddSubgroup.mem_center_iff.mp this (-x)
-  have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
-    AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
-  simp only [sub_eq_add_neg, Function.comp_apply, map_add, ← f_comm (a h1), ← add_assoc, ha,
-    smul_add, ← map_smul, smul_neg, mul_smul, neg_add_rev, neg_neg, ← map_neg, add_neg_cancel_right,
-    Pi.sub_apply, Equiv.apply_ofInjective_symm]
-  simp only [← add_assoc, ← f_comm (h1 • a h2)]
-  simp only [← add_assoc, ← f_comm (-a (h1 * h2))]
-  simp only [add_assoc, add_right_inj, left_eq_add]
-  simp [← add_assoc, this]
+-- include hg in
+-- lemma mk_comp_δ₁_aux_factorsThrough :
+--     Function.FactorsThrough (H2π A ∘ (δ₁_aux hf hfg hA))
+--     ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·))):= by
+--   intro ⟨b1, hb1⟩ ⟨b2, hb2⟩ heq
+--   obtain ⟨x, heq⟩ := by
+--     simpa only [Function.comp_apply, Set.restrictPreimage_mk, H1.mk_eq_iff] using heq
+--   obtain ⟨x, rfl⟩ := hg x
+--   replace heq : ∀ (h : G), g (b1 h - h • x - b2 h + x) = 0 := fun h ↦ by
+--     simpa using congr($(heq h) - h • g x - (g (b2 h)) + g x)
+--   choose a ha using fun h ↦ (hfg _).mp (heq h)
+--   replace ha (h : G) : b1 h = (f (a h)) - x + (b2 h) + h • x := by
+--     simpa using congr($(ha h) - x + b2 h + h • x).symm
+--   simp only [Function.comp_apply, δ₁_aux, H2π_eq_iff (A := A), coboundaries₂, d₁₂,
+--     ← Rep.smul_eq_ρ_apply, ModuleCat.hom_ofHom, cocycles₂.coe_mk, LinearMap.mem_range,
+--     LinearMap.coe_mk, AddHom.coe_mk, ← hf.comp_left.eq_iff, map_comp_sub]
+--   refine ⟨a, funext fun ⟨h1, h2⟩ ↦ ?_⟩
+--   have : b2 h1 + h1 • b2 h2 - b2 (h1 * h2) ∈ AddSubgroup.center B := by
+--     refine hA ((hfg _).mp ?_)
+--     simpa [sub_eq_zero] using (hb2 h1 h2).symm
+--   have : -x + b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) = b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) + -x := by
+--     simpa [sub_eq_add_neg, ← add_assoc] using AddSubgroup.mem_center_iff.mp this (-x)
+--   have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
+--     AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
+--   simp only [sub_eq_add_neg, Function.comp_apply, map_add, ← f_comm (a h1), ← add_assoc, ha,
+--     smul_add, ← map_smul, smul_neg, mul_smul, neg_add_rev, neg_neg, ← map_neg, add_neg_cancel_right,
+--     Pi.sub_apply, Equiv.apply_ofInjective_symm]
+--   simp only [← add_assoc, ← f_comm (h1 • a h2)]
+--   simp only [← add_assoc, ← f_comm (-a (h1 * h2))]
+--   simp only [add_assoc, add_right_inj, left_eq_add]
+--   simp [← add_assoc, this]
 
-include hg in
-lemma δ₁_mk_eq_H2π_δ₁_aux (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) :
-    δ₁ hf hfg hA (H1.mk G C c) = H2π A (δ₁_aux hf hfg hA ⟨b, ((hb ▸ c.2) : g ∘ b ∈ _)⟩) := by
-  convert mk_comp_δ₁_aux_factorsThrough hf hg hfg hA |>.extend_apply ..
-  exact congrArg _ <| Subtype.ext hb.symm
+-- include hg in
+-- lemma δ₁_mk_eq_H2π_δ₁_aux (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) :
+--     δ₁ hf hfg hA (H1.mk G C c) = H2π A (δ₁_aux hf hfg hA ⟨b, ((hb ▸ c.2) : g ∘ b ∈ _)⟩) := by
+--   convert mk_comp_δ₁_aux_factorsThrough hf hg hfg hA |>.extend_apply ..
+--   exact congrArg _ <| Subtype.ext hb.symm
 
-include hg in
-lemma δ₁_apply (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : G × G → A)
-    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
-    δ₁ hf hfg hA (H1.mk G C c) = H2π A (cocycles₂MkOfCompEq hf hfg hA b (hb ▸ c.2) x hx) :=
-  (δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb).trans <| congrArg _ <| Subtype.ext <|
-  funext fun ⟨g, h⟩ ↦ hf (by simp [δ₁_aux, hx])
+-- include hg in
+-- lemma δ₁_apply (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : G × G → A)
+--     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
+--     δ₁ hf hfg hA (H1.mk G C c) = H2π A (cocycles₂MkOfCompEq hf hfg hA b (hb ▸ c.2) x hx) :=
+--   (δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb).trans <| congrArg _ <| Subtype.ext <|
+--   funext fun ⟨g, h⟩ ↦ hf (by simp [δ₁_aux, hx])
 
-include hg in
-/-- A version of `δ₁_apply` where `x` has type `cocycles₂ A` instead of `G × G → A`, so that
-`cocycles₂MkOfCompEq` is not needed in the theorem statement. -/
-lemma δ₁_apply' (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : cocycles₂ A)
-    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
-    δ₁ hf hfg hA (H1.mk G C c) = H2π A x := δ₁_apply hf hg hfg hA c b hb x hx
+-- include hg in
+-- /-- A version of `δ₁_apply` where `x` has type `cocycles₂ A` instead of `G × G → A`, so that
+-- `cocycles₂MkOfCompEq` is not needed in the theorem statement. -/
+-- lemma δ₁_apply' (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : cocycles₂ A)
+--     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
+--     δ₁ hf hfg hA (H1.mk G C c) = H2π A x := δ₁_apply hf hg hfg hA c b hb x hx
 
-include hg in
-theorem exact_H1_map_δ₁ : Function.Exact (H1.map g) (δ₁ hf hfg hA) := by
-  refine fun c ↦ ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨c, rfl⟩ := H1.mk_surjective G C c
-    obtain ⟨b, hb⟩ := hg.comp_left c
-    rw [δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb] at h
-    obtain ⟨a, ha⟩ := (H2π_eq_zero_iff _).mp h
-    replace ha := fun (g : G × G) ↦ congr((f ∘ $ha) g)
-    simp only [Function.comp_apply, d₁₂_hom_apply, ← Rep.smul_eq_ρ_apply, map_add, map_sub,
-      map_smul, Prod.forall, apply_δ₁_aux] at ha
-    refine ⟨H1.mk G B ⟨fun g ↦ b g - f (a g), fun g h ↦ sub_eq_zero.mp ?_⟩, ?_⟩
-    · convert (sub_eq_zero.mpr (ha g h)) using 1
-      have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
-        AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
-      simp only [sub_eq_add_neg, smul_add, neg_add_rev, neg_neg, ← add_assoc, ← smul_neg, ← map_neg,
-      ← map_smul, ← map_add f, add_left_inj]
-      simp only [f_comm _ (b (g * h)), add_assoc, add_right_inj, ← map_add f]
-      simp only [f_comm _ (g • -b h), ← add_assoc _ (g • -b h) _, add_assoc, add_right_inj,
-        ← map_add f]
-      exact congrArg _ (by abel)
-    · simp only [H1.map_mk]
-      refine congrArg _ <| Subtype.ext <| funext fun h ↦ ?_
-      simpa [hfg.apply_apply_eq_zero] using congr($hb h)
-  · rintro ⟨b, rfl⟩
-    obtain ⟨b, rfl⟩ := H1.mk_surjective G B b
-    rw [H1.map_mk, δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA (Z1.map g b) b (funext fun x ↦ rfl)]
-    have : δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ = 0 := by
-      refine Subtype.ext <| funext fun h ↦ hf ?_
-      simp only [cocycles₂.val_eq_coe, apply_δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ h.1 h.2,
-        b.2 h.1 h.2, sub_self]
-      exact f.map_zero.symm
-    simp [this]
+-- include hg in
+-- theorem exact_H1_map_δ₁ : Function.Exact (H1.map g) (δ₁ hf hfg hA) := by
+--   refine fun c ↦ ⟨fun h ↦ ?_, ?_⟩
+--   · obtain ⟨c, rfl⟩ := H1.mk_surjective G C c
+--     obtain ⟨b, hb⟩ := hg.comp_left c
+--     rw [δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb] at h
+--     obtain ⟨a, ha⟩ := (H2π_eq_zero_iff _).mp h
+--     replace ha := fun (g : G × G) ↦ congr((f ∘ $ha) g)
+--     simp only [Function.comp_apply, d₁₂_hom_apply, ← Rep.smul_eq_ρ_apply, map_add, map_sub,
+--       map_smul, Prod.forall, apply_δ₁_aux] at ha
+--     refine ⟨H1.mk G B ⟨fun g ↦ b g - f (a g), fun g h ↦ sub_eq_zero.mp ?_⟩, ?_⟩
+--     · convert (sub_eq_zero.mpr (ha g h)) using 1
+--       have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
+--         AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
+--       simp only [sub_eq_add_neg, smul_add, neg_add_rev, neg_neg, ← add_assoc, ← smul_neg, ← map_neg,
+--       ← map_smul, ← map_add f, add_left_inj]
+--       simp only [f_comm _ (b (g * h)), add_assoc, add_right_inj, ← map_add f]
+--       simp only [f_comm _ (g • -b h), ← add_assoc _ (g • -b h) _, add_assoc, add_right_inj,
+--         ← map_add f]
+--       exact congrArg _ (by abel)
+--     · simp only [H1.map_mk]
+--       refine congrArg _ <| Subtype.ext <| funext fun h ↦ ?_
+--       simpa [hfg.apply_apply_eq_zero] using congr($hb h)
+--   · rintro ⟨b, rfl⟩
+--     obtain ⟨b, rfl⟩ := H1.mk_surjective G B b
+--     rw [H1.map_mk, δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA (Z1.map g b) b (funext fun x ↦ rfl)]
+--     have : δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ = 0 := by
+--       refine Subtype.ext <| funext fun h ↦ hf ?_
+--       simp only [cocycles₂.val_eq_coe, apply_δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ h.1 h.2,
+--         b.2 h.1 h.2, sub_self]
+--       exact f.map_zero.symm
+--     simp [this]
 
-end connectHom₁
+-- end connectHom₁
 
-section compatibility
+-- section compatibility
 
-variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
+-- variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
 
-open CategoryTheory
+-- open CategoryTheory
 
-/-- `H0 G A` and `A.ρ.invariants` are defEq. -/
-noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A :=
-  (groupCohomology.H0Iso A).toLinearEquiv.toAddEquiv
+-- /-- `H0 G A` and `A.ρ.invariants` are defEq. -/
+-- noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A :=
+--   (groupCohomology.H0Iso A).toLinearEquiv.toAddEquiv
 
-theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
-    (H0Iso B).toAddMonoidHom.comp (groupCohomology.map (.id G) f 0).hom =
-      (H0.map f).comp (H0Iso A).toAddMonoidHom := by
-  ext x
-  conv_lhs =>
-    change (ConcreteCategory.hom (map (MonoidHom.id G) f 0 ≫ (groupCohomology.H0Iso B).hom)) x
-  rw [congr($(groupCohomology.map_id_comp_H0Iso_hom f) x)]
-  rfl
+-- theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
+--     (H0Iso B).toAddMonoidHom.comp (groupCohomology.map (.id G) f 0).hom =
+--       (H0.map f).comp (H0Iso A).toAddMonoidHom := by
+--   ext x
+--   conv_lhs =>
+--     change (ConcreteCategory.hom (map (MonoidHom.id G) f 0 ≫ (groupCohomology.H0Iso B).hom)) x
+--   rw [congr($(groupCohomology.map_id_comp_H0Iso_hom f) x)]
+--   rfl
 
-/-- Bijection between `Z1 G A` and `cocycles₁ A`. -/
-@[simps!]
-def Z1EquivCocycles₁ : Z1 G A ≃ cocycles₁ A where
-  toFun := fun f ↦ ⟨f.val, by
-    refine funext fun ⟨g, h⟩ ↦ Eq.trans ?_ (sub_eq_zero.mpr (f.2 g h).symm)
-    simp [← Rep.smul_eq_ρ_apply]
-    abel⟩
-  invFun := fun f ↦ ⟨f.val, fun g h ↦ by
-    refine sub_eq_zero.mp (Eq.trans ?_ (congrFun (LinearMap.mem_ker.mp f.2) ⟨g, h⟩)) |> .symm
-    simp [← Rep.smul_eq_ρ_apply]
-    abel⟩
-  left_inv f := Subtype.ext rfl
-  right_inv f := Subtype.ext rfl
+-- /-- Bijection between `Z1 G A` and `cocycles₁ A`. -/
+-- @[simps!]
+-- def Z1EquivCocycles₁ : Z1 G A ≃ cocycles₁ A where
+--   toFun := fun f ↦ ⟨f.val, by
+--     refine funext fun ⟨g, h⟩ ↦ Eq.trans ?_ (sub_eq_zero.mpr (f.2 g h).symm)
+--     simp [← Rep.smul_eq_ρ_apply]
+--     abel⟩
+--   invFun := fun f ↦ ⟨f.val, fun g h ↦ by
+--     refine sub_eq_zero.mp (Eq.trans ?_ (congrFun (LinearMap.mem_ker.mp f.2) ⟨g, h⟩)) |> .symm
+--     simp [← Rep.smul_eq_ρ_apply]
+--     abel⟩
+--   left_inv f := Subtype.ext rfl
+--   right_inv f := Subtype.ext rfl
 
-/-- The bijection `Z1EquivCocycles₁` between `Z1 G A` and `cocycles₁ A` preserves the cohomologous
-relationship, so it gives a bijection between the quotients. -/
-noncomputable def H1Iso_aux :
-    H1 G A ≃ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  Quotient.congr (Z1EquivCocycles₁ A) (fun a b ↦ by
-    simp only [Z1.setoid_r, shortComplexH1, LinearMap.codRestrict, QuotientAddGroup.leftRel_apply,
-      Submodule.mem_toAddSubgroup, LinearMap.mem_range, LinearMap.coe_mk, AddHom.coe_mk,
-      Subtype.ext_iff, cocycles₁.val_eq_coe, funext_iff, d₀₁_hom_apply]
-    refine ⟨fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩, fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩⟩
-    · change h • (-g) - -g = -a h + b h
-      exact sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr (hg h)))
-    · have : h • g - g = -a h + b h := hg h
-      refine sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr this))
-    )
+-- /-- The bijection `Z1EquivCocycles₁` between `Z1 G A` and `cocycles₁ A` preserves the cohomologous
+-- relationship, so it gives a bijection between the quotients. -/
+-- noncomputable def H1Iso_aux :
+--     H1 G A ≃ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+--   Quotient.congr (Z1EquivCocycles₁ A) (fun a b ↦ by
+--     simp only [Z1.setoid_r, shortComplexH1, LinearMap.codRestrict, QuotientAddGroup.leftRel_apply,
+--       Submodule.mem_toAddSubgroup, LinearMap.mem_range, LinearMap.coe_mk, AddHom.coe_mk,
+--       Subtype.ext_iff, cocycles₁.val_eq_coe, funext_iff, d₀₁_hom_apply]
+--     refine ⟨fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩, fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩⟩
+--     · change h • (-g) - -g = -a h + b h
+--       exact sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr (hg h)))
+--     · have : h • g - g = -a h + b h := hg h
+--       refine sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr this))
+--     )
 
-/-- Combining `H1Iso_aux` with `groupCohomology.H1Iso`, we have the bijection between
-`groupCohomology.H1 A` and `H1 G A`. -/
-noncomputable nonrec def H1Iso : groupCohomology.H1 A ≃ H1 G A :=
-  ((H1Iso A).toLinearEquiv.toEquiv).trans (H1Iso_aux A).symm
+-- /-- Combining `H1Iso_aux` with `groupCohomology.H1Iso`, we have the bijection between
+-- `groupCohomology.H1 A` and `H1 G A`. -/
+-- noncomputable nonrec def H1Iso : groupCohomology.H1 A ≃ H1 G A :=
+--   ((H1Iso A).toLinearEquiv.toEquiv).trans (H1Iso_aux A).symm
 
-lemma H1Iso_mk_eq_H1π_Z1EquivCocycles₁ :
-    (H1Iso A).symm ∘ (H1.mk G A) = (H1π A) ∘ (Z1EquivCocycles₁ A) := rfl
+-- lemma H1Iso_mk_eq_H1π_Z1EquivCocycles₁ :
+--     (H1Iso A).symm ∘ (H1.mk G A) = (H1π A) ∘ (Z1EquivCocycles₁ A) := rfl
 
-lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm :
-    (H1Iso A) ∘ (H1π A) = (H1.mk G A) ∘ (Z1EquivCocycles₁ A).symm := by
-  simpa [← Function.comp_assoc] using
-    congr((H1Iso A) ∘ $(H1Iso_mk_eq_H1π_Z1EquivCocycles₁ A) ∘ (Z1EquivCocycles₁ A).symm).symm
+-- lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm :
+--     (H1Iso A) ∘ (H1π A) = (H1.mk G A) ∘ (Z1EquivCocycles₁ A).symm := by
+--   simpa [← Function.comp_assoc] using
+--     congr((H1Iso A) ∘ $(H1Iso_mk_eq_H1π_Z1EquivCocycles₁ A) ∘ (Z1EquivCocycles₁ A).symm).symm
 
-lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply (x : cocycles₁ A) :
-    (H1Iso A) ((H1π A) x) = (H1.mk G A) ((Z1EquivCocycles₁ A).symm x) :=
-  congr($(H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm A) x)
+-- lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply (x : cocycles₁ A) :
+--     (H1Iso A) ((H1π A) x) = (H1.mk G A) ((Z1EquivCocycles₁ A).symm x) :=
+--   congr($(H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm A) x)
 
-theorem H1Iso_zero : H1Iso A 0 = 0 := by
-  simp [H1Iso]
-  rfl
+-- theorem H1Iso_zero : H1Iso A 0 = 0 := by
+--   simp [H1Iso]
+--   rfl
 
-theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
-    H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := by
-  refine funext fun x ↦ H1_induction_on x fun x ↦ ?_
-  simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply B,
-    H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply A]
-  rfl
+-- theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
+--     H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := by
+--   refine funext fun x ↦ H1_induction_on x fun x ↦ ?_
+--   simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply B,
+--     H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply A]
+--   rfl
 
-variable {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
+-- variable {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
 
-theorem δ₀_H0Iso_eq_H1Iso_δ :
-    (δ₀ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.exact)) ∘
-    (H0Iso X.X₃) = (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := by
-  have hf := (Rep.mono_iff_injective _).mp hX.mono_f
-  have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
-  have hfg := (Rep.exact_iff_exact _).mp hX.exact
-  refine funext fun x ↦ H0_induction_on _ x fun c ↦ ?_
-  simp only [H0Iso, Function.comp_apply]
-  conv =>
-    enter [1, 3]
-    change (groupCohomology.H0Iso X.X₃).hom _
-    simp only [Iso.inv_hom_id_apply]
-  obtain ⟨b, hb⟩ := hg c
-  have hb' : b ∈ X.g.hom ⁻¹' (H0 G X.X₃) := by simp [hb]
-  rw [groupCohomology.δ₀_apply hX c b hb (δ₀_aux hf hfg ⟨b, hb'⟩) ?_]
-  · rw [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply]
-    exact δ₀_apply' hf hfg c b hb _ fun g ↦ by simp
-  · ext g
-    simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₀_aux hf hfg ⟨b, hb'⟩, ← Rep.smul_eq_ρ_apply,
-      add_comm, sub_eq_add_neg]
+-- theorem δ₀_H0Iso_eq_H1Iso_δ :
+--     (δ₀ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.exact)) ∘
+--     (H0Iso X.X₃) = (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := by
+--   have hf := (Rep.mono_iff_injective _).mp hX.mono_f
+--   have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
+--   have hfg := (Rep.exact_iff_exact _).mp hX.exact
+--   refine funext fun x ↦ H0_induction_on _ x fun c ↦ ?_
+--   simp only [H0Iso, Function.comp_apply]
+--   conv =>
+--     enter [1, 3]
+--     change (groupCohomology.H0Iso X.X₃).hom _
+--     simp only [Iso.inv_hom_id_apply]
+--   obtain ⟨b, hb⟩ := hg c
+--   have hb' : b ∈ X.g.hom ⁻¹' (H0 G X.X₃) := by simp [hb]
+--   rw [groupCohomology.δ₀_apply hX c b hb (δ₀_aux hf hfg ⟨b, hb'⟩) ?_]
+--   · rw [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply]
+--     exact δ₀_apply' hf hfg c b hb _ fun g ↦ by simp
+--   · ext g
+--     simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₀_aux hf hfg ⟨b, hb'⟩, ← Rep.smul_eq_ρ_apply,
+--       add_comm, sub_eq_add_neg]
 
-theorem δ₁_H1Iso_eq_δ :
-    (δ₁ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.1)
-    (by simp [AddCommGroup.center_eq_top])) ∘ (H1Iso X.X₃) = groupCohomology.δ hX 1 2 rfl := by
-  have hf := (Rep.mono_iff_injective _).mp hX.mono_f
-  have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
-  have hfg := (Rep.exact_iff_exact _).mp hX.exact
-  have hA : (X.f : X.X₁ →+[G] X.X₂).toAddMonoidHom.range ≤ AddSubgroup.center X.X₂ := by
-    simp [AddCommGroup.center_eq_top]
-  refine funext fun x ↦ H1_induction_on x fun c ↦ ?_
-  simp only [Function.comp_apply, H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply X.X₃]
-  obtain ⟨b, hb⟩ := hg.comp_left c
-  have hb' : b ∈ (X.g ∘ ·) ⁻¹' (Z1 G X.X₃) := by
-    simp only [Set.mem_preimage, show X.g ∘ b = c from hb]
-    have := (mem_cocycles₁_iff c).mp c.2
-    exact fun g h ↦ by simpa [add_comm] using this g h
-  rw [groupCohomology.δ₁_apply hX c b hb (δ₁_aux hf hfg hA ⟨b, hb'⟩)]
-  · refine δ₁_apply hf hg hfg hA ((Z1EquivCocycles₁ X.X₃).symm c) b ?_ _ fun g h ↦ by simp
-    simpa [← Rep.toDistribMulActionHom_eq_hom]
-  · ext ⟨g, h⟩
-    simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₁_aux, ← Rep.smul_eq_ρ_apply,
-      add_comm, add_sub_assoc]
+-- theorem δ₁_H1Iso_eq_δ :
+--     (δ₁ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.1)
+--     (by simp [AddCommGroup.center_eq_top])) ∘ (H1Iso X.X₃) = groupCohomology.δ hX 1 2 rfl := by
+--   have hf := (Rep.mono_iff_injective _).mp hX.mono_f
+--   have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
+--   have hfg := (Rep.exact_iff_exact _).mp hX.exact
+--   have hA : (X.f : X.X₁ →+[G] X.X₂).toAddMonoidHom.range ≤ AddSubgroup.center X.X₂ := by
+--     simp [AddCommGroup.center_eq_top]
+--   refine funext fun x ↦ H1_induction_on x fun c ↦ ?_
+--   simp only [Function.comp_apply, H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply X.X₃]
+--   obtain ⟨b, hb⟩ := hg.comp_left c
+--   have hb' : b ∈ (X.g ∘ ·) ⁻¹' (Z1 G X.X₃) := by
+--     simp only [Set.mem_preimage, show X.g ∘ b = c from hb]
+--     have := (mem_cocycles₁_iff c).mp c.2
+--     exact fun g h ↦ by simpa [add_comm] using this g h
+--   rw [groupCohomology.δ₁_apply hX c b hb (δ₁_aux hf hfg hA ⟨b, hb'⟩)]
+--   · refine δ₁_apply hf hg hfg hA ((Z1EquivCocycles₁ X.X₃).symm c) b ?_ _ fun g h ↦ by simp
+--     simpa [← Rep.toDistribMulActionHom_eq_hom]
+--   · ext ⟨g, h⟩
+--     simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₁_aux, ← Rep.smul_eq_ρ_apply,
+--       add_comm, add_sub_assoc]
 
-end compatibility
+-- end compatibility
 
-end NonAbelian
+-- end NonAbelian
 
-end groupCohomology
+-- end groupCohomology
