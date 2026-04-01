@@ -669,7 +669,7 @@ protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{
   by_cases hi : i ≤ n
   · simp [hi, forall_const, ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply,
       BoundedContinuousFunction.norm_le hC, this]
-  · push_neg at hi
+  · push Not at hi
     simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
 
 protected theorem seminorm_top_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
@@ -718,6 +718,10 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [Nontrivially
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
+
+instance : ContinuousEval 𝓓^{n}_{K}(E, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}_{K}(E, F) :=
   have : Injective (toBoundedContinuousFunctionCLM ℝ : 𝓓^{n}_{K}(E, F) →L[ℝ] E →ᵇ F) :=
