@@ -262,7 +262,6 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
 
-
 end Ring
 
 end WeakSpace
