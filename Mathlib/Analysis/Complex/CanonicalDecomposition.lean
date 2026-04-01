@@ -15,7 +15,7 @@ poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be us
 as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
 `U` is a disk, one consider a similar decomposition, called *Finite Canonical Decomposition* or
 *Finite Blaschke Product* that replaces the factors `(· - u)` by canonical factors that take only
-values of norm one on the boundary of the circle. This file introduces the canonical factors and
+values of norm one on the boundary of the disk. This file introduces the canonical factors and
 provides API for the canonical decomposition.
 
 See Page 160f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
