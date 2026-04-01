@@ -15,47 +15,42 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 ## Main results
 
+* `isClosed_riemannZeta_zeroes`:
+
 * `riemannZeta_zeroes_on_Compact_finite`: for any compact set `S : Set ℂ`, the intersection
   `S ∩ riemannZeta ⁻¹' {0}` is finite.
 -/
 
-@[expose] public section
+public section
 
 /-- The complement of the zero set of `riemannZeta` is codiscrete within `{1}ᶜ`. -/
-lemma riemannZeta_zeroes_codiscreteWithin_compl_one :
+private lemma riemannZeta_zeroes_codiscreteWithin_compl_one :
     (riemannZeta ⁻¹' {0})ᶜ ∈ Filter.codiscreteWithin {1}ᶜ := by
-  refine analyticOn_riemannZeta.preimage_zero_mem_codiscreteWithin
-    ?_ ?_ ?_ (x := 2)
-  · exact riemannZeta_ne_zero_of_one_le_re Nat.one_le_ofNat
-  · exact Set.mem_compl_singleton_iff.2 (OfNat.one_ne_ofNat 2).symm
-  · refine isConnected_compl_singleton_of_one_lt_rank ?_ 1
-    rw [Complex.rank_real_complex]
-    exact Cardinal.one_lt_two
+  refine analyticOn_riemannZeta.preimage_zero_mem_codiscreteWithin (x := 2) ?_ (by grind) ?_
+  · exact riemannZeta_ne_zero_of_one_le_re (by aesop)
+  · exact isConnected_compl_singleton_of_one_lt_rank (by aesop) 1
 
-private lemma riemannZeta_zeroes_on_compact_finite' {S : Set ℂ} (hS1 : IsCompact S)
-    (hS2 : 1 ∉ S) : (S ∩ riemannZeta ⁻¹' {0}).Finite := by
-  have sub := Set.subset_compl_singleton_iff.mpr hS2
-  refine IsCompact.finite (hS1.of_isClosed_subset ?_ Set.inter_subset_left) ?_
-  · exact analyticOn_riemannZeta.continuousOn.mono sub
-      |>.preimage_isClosed_of_isClosed hS1.isClosed isClosed_singleton
-  · rw [Set.inter_comm]
-    exact IsDiscrete.mono
-      (isDiscrete_of_codiscreteWithin riemannZeta_zeroes_codiscreteWithin_compl_one)
-      <| Set.inter_subset_inter_right _ sub
+/-- The complement of the zero set of `riemannZeta` is codiscrete. -/
+private lemma compl_riemannZeta_zeroes_mem_codiscrete :
+    (riemannZeta ⁻¹' {0})ᶜ ∈ Filter.codiscrete ℂ := by
+  have := riemannZeta_zeroes_codiscreteWithin_compl_one
+  simp only [mem_codiscreteWithin, Set.mem_compl_iff, Set.mem_singleton_iff, sdiff_compl,
+    Set.inf_eq_inter, Filter.disjoint_principal_right, mem_codiscrete, compl_compl] at this ⊢
+  intro x
+  rcases eq_or_ne x 1 with rfl | hx
+  · exact riemannZeta_eventually_ne_zero_nhds_one.filter_mono nhdsWithin_le_nhds
+  · exact Filter.mem_of_superset (this x hx) (by grind [riemannZeta_one_ne_zero])
+
+lemma isClosed_riemannZeta_zeroes : IsClosed (riemannZeta ⁻¹' {0}) :=
+  by simpa using (mem_codiscrete'.mp compl_riemannZeta_zeroes_mem_codiscrete).1
+
+lemma isDiscrete_riemannZeta_zeroes : IsDiscrete (riemannZeta ⁻¹' {0}) :=
+  by simpa using (mem_codiscrete'.mp compl_riemannZeta_zeroes_mem_codiscrete).2
 
 /-- Any compact subset of `ℂ` contains only finitely many zeros of the Riemann zeta function. -/
 lemma riemannZeta_zeroes_on_compact_finite {S : Set ℂ} (hS : IsCompact S) :
     (S ∩ riemannZeta ⁻¹' {0}).Finite := by
-  obtain ⟨ε, hε_pos, hball⟩ := Metric.eventually_nhds_iff.1 <|
-      eventually_nhdsWithin_iff.1 riemannZeta_eventually_ne_zero
-  have hball' : ∀ s ∈ Metric.ball 1 ε, riemannZeta s ≠ 0 := fun s hs hzero ↦ by
-    by_cases h : s = 1
-    · exact riemannZeta_one_ne_zero (h ▸ hzero)
-    · exact hball (Metric.mem_ball.1 hs) (Set.mem_compl_singleton_iff.2 h) hzero
-  have : S ∩ riemannZeta ⁻¹' {0} ⊆ (S ∩ (Metric.ball 1 ε)ᶜ) ∩ riemannZeta ⁻¹' {0} :=
-    fun s ⟨hs, hz⟩ ↦ ⟨⟨hs, fun hmem ↦ hball' s hmem hz⟩, hz⟩
-  refine Set.Finite.subset (riemannZeta_zeroes_on_compact_finite' ?_ ?_) this
-  · exact hS.inter_right Metric.isOpen_ball.isClosed_compl
-  · exact fun ⟨_, h⟩ ↦ h (Metric.mem_ball_self hε_pos)
+  apply (hS.inter_right isClosed_riemannZeta_zeroes).finite
+  exact isDiscrete_riemannZeta_zeroes.mono (by grind)
 
 end

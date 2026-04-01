@@ -420,13 +420,9 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
 
-lemma _root_.riemannZeta_eventually_ne_zero :
-    ∀ᶠ s in 𝓝[≠] 1, riemannZeta s ≠ 0 := by
-  filter_upwards [riemannZeta_residue_one.eventually_ne (zero_ne_one' ℂ).symm,
-    eventually_nhdsWithin_of_forall (fun _ hs ↦ hs)] with s hmul _
-  intro hzero
-  rw [hzero, mul_zero] at hmul
-  exact false_of_ne hmul
+lemma _root_.riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
+  filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
+  grind [riemannZeta_one_ne_zero]
 
 end val_at_one
 
