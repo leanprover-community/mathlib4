@@ -28,7 +28,7 @@ We do **not** define a separate class of graded ring homomorphisms; instead, we 
 ## Implementation notes
 
 * We don't really need the fact that they are graded rings until the theorem
-`DirectSum.decompose_map` which describes how the decomposition interacts with the map.
+  `DirectSum.decompose_map` which describes how the decomposition interacts with the map.
 -/
 
 @[expose] public section
