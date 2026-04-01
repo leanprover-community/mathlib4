@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Circulant
 
 /-!
 # Hamiltonian Graphs
@@ -191,6 +192,10 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
+theorem cycleGraph_EulerianCircuit_isHamiltonianCycle {n : ℕ} :
+    (cycleGraph_EulerianCircuit n).IsHamiltonianCycle :=
+  isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨cycleGraph_EulerianCircuit_isCycle, by simp⟩
+
 end Walk
 
 variable [Fintype α]
@@ -236,6 +241,25 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
   of_card_eq_one <| Fintype.card_unique
+
+theorem isHamiltonian_iff_cycleGraph_isContained (h : 2 < Fintype.card α) :
+    G.IsHamiltonian ↔ cycleGraph (Fintype.card α) ⊑ G := by
+  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
+  · obtain ⟨a, p, hp⟩ := h' (by grind)
+    exact cycleGraph_isContained_iff h |>.mpr ⟨a, p, hp.isCycle, hp.length_eq⟩
+  · obtain ⟨a, p, hp₁, hp₂⟩ := cycleGraph_isContained_iff h |>.mp h'
+    exact fun _ ↦ ⟨a, p, Walk.isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨hp₁, hp₂⟩⟩
+
+@[simp]
+theorem isHamiltonian_cycleGraph (n : ℕ) (hn : 2 < n) : (cycleGraph n).IsHamiltonian := by
+  apply isHamiltonian_iff_cycleGraph_isContained (by simp [hn]) |>.mpr
+  rw [Fintype.card_fin]
+  exact IsContained.rfl
+
+@[simp]
+theorem isHamiltonian_top (h : 2 < Fintype.card α) : (completeGraph α).IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained h |>.mpr <|
+    isContained_completeGraph_of_card_le_card (by simp)
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
