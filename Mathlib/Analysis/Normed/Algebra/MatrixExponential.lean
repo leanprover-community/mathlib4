@@ -82,17 +82,45 @@ theorem IsEmpty.algebraPi (i : ι) [IsEmpty (Algebra R (A i))] : IsEmpty (Algebr
 
 end
 
-/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients are not. -/
+/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients
+are not. -/
 instance IsEmpty.algebraFun {ι R A : Type*} [Nonempty ι] [CommSemiring R] [Semiring A]
     [IsEmpty (Algebra R A)] :
     IsEmpty (Algebra R (ι → A)) :=
   let ⟨i⟩ := ‹Nonempty ι›
   IsEmpty.algebraPi R _ i
 
-/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients are not. -/
-instance IsEmpty.algebraMatrix {ι R A : Type*} [Nonempty ι] [DecidableEq ι] [Fintype ι] [CommSemiring R] [Semiring A]
+/-- Pull back an algebra instance on the coefficients from an instance on a matrix type. -/
+@[implicit_reducible]
+def Matrix.restrictAlgebra {n : Type*} (R A : Type*)
+    [DecidableEq n] [Fintype n] [CommSemiring R] [Semiring A]
+    [Algebra R (Matrix n n A)] (i : n) : Algebra R A where
+  smul r a := (r • Matrix.single i i a : Matrix n n A) i i
+  algebraMap :=
+    { toFun r := algebraMap R (Matrix n n A) r i i
+      map_zero' := by simp
+      map_one' := by simp
+      map_add' x y := by simp
+      map_mul' r s := by
+        rw [map_mul, Matrix.mul_apply]
+        refine Fintype.sum_eq_single i fun j hj => ?_
+        have hij : algebraMap R (Matrix n n A) r i j = 0 := by
+          simpa [hj.symm]
+            using Matrix.ext_iff.2 (Algebra.commutes r (Matrix.single j i (1 : A))) i i
+        rw [hij, zero_mul] }
+  commutes' r x := by
+    simpa using Matrix.ext_iff.2 (Algebra.commutes r (Matrix.single i i x)) i i
+  smul_def' r x := by
+    simpa using Matrix.ext_iff.2 (Algebra.smul_def r (Matrix.single i i x)) i i
+
+/-- Provided the index type is nonempty, a function type cannot be an R-algebra if its coefficients
+are not. -/
+instance IsEmpty.algebraMatrix
+    {ι R A : Type*} [Nonempty ι] [DecidableEq ι] [Fintype ι] [CommSemiring R] [Semiring A]
     [IsEmpty (Algebra R A)] :
-    IsEmpty (Algebra R (Matrix ι ι A)) := sorry
+    IsEmpty (Algebra R (Matrix ι ι A)) :=
+  let ⟨i⟩ := ‹Nonempty ι›
+  Function.isEmpty fun _ => by classical exact Matrix.restrictAlgebra R A i
 
 open scoped Matrix
 
@@ -117,7 +145,7 @@ theorem exp_diagonal (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := b
   · simp
   · simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
 
-theorem exp_blockDiagonal(v : m → Matrix n n 𝔸) :
+theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
     exp (blockDiagonal v) = blockDiagonal (exp v) := by
   cases isEmpty_or_nonempty m
   · exact Subsingleton.elim _ _
@@ -152,9 +180,13 @@ end Ring
 section CommRing
 
 variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
-  [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
+  [IsTopologicalRing 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
+  cases isEmpty_or_nonempty m
+  · exact Subsingleton.elim _ _
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
   simp_rw [exp_eq_tsum_rat, transpose_tsum, transpose_smul, transpose_pow]
 
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
