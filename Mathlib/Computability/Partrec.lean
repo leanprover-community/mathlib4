@@ -718,6 +718,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
+    #adaptation_note /-- After leanprover/lean4#13166, the proof from here to the end of the
+    first branch was:
+    ```
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
       induction m generalizing a' with simp [F] at am
@@ -728,6 +731,25 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     cases n <;> simp [F] at h₂
     have := h₁ (Nat.lt_succ_self _)
     grind [mem_unique, PFun.mem_fix_iff]
+    ```
+    -/
+    have hmem : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
+      intro m a' am ba
+      induction m generalizing a' with simp [F] at am
+      | zero => rwa [← am]
+      | succ m IH =>
+        rcases am with ⟨a₂, am₂, fa₂⟩
+        exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
+    cases n with
+    | zero => simp only [Nat.rec_zero, mem_some_iff, reduceCtorEq, F] at h₂
+    | succ n =>
+      simp only [mem_bind_iff, Sum.exists, mem_some_iff, Sum.inl.injEq,
+        exists_eq_right', F] at h₂
+      obtain ⟨a', ha'⟩ := h₁ (Nat.lt_succ_self _)
+      rcases h₂ with h₂ | ⟨b₁, hb₁, hfb₁⟩
+      · exact absurd (mem_unique ha' h₂) Sum.inr_ne_inl
+      · cases mem_unique ha' hb₁
+        exact hmem _ _ ha' (PFun.mem_fix_iff.2 (Or.inl hfb₁))
   · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
         ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
       rcases this _ h 0 (by simp [F]) with ⟨n, hn₁, hn₂⟩
@@ -740,7 +762,11 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      grind
+      #adaptation_note /-- After leanprover/lean4#13166, the rest of this branch was `grind`. -/
+      refine ⟨n, hn₁, fun m mn km => ?_⟩
+      rcases Nat.eq_or_lt_of_le km with rfl | hlt
+      · exact ⟨_, hk⟩
+      · exact hn₂ m mn hlt
 
 theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
   let F : α → ℕ →. σ ⊕ α := fun a n =>
