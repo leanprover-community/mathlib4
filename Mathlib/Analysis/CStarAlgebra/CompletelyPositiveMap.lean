@@ -90,6 +90,7 @@ instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂]
     CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg

@@ -79,11 +79,6 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-/-- Common `@[simps]` configuration options used for manifold-related declarations. -/
-@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-meta def mfld_cfg : Simps.Config where
-  fullyApplied := false
-
 namespace Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
@@ -754,6 +749,7 @@ theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.
 
 section Prod
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The product of two partial equivalences, as a partial equivalence on the product. -/
 def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α × γ) (β × δ) where
   source := e.source ×ˢ e'.source

@@ -113,7 +113,7 @@ def toLieSubalgebra (t : IsSl2Triple h e f) :
       | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
       | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
       | mem v hv =>
-        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        push _ ∈ _ at hu hv
         rcases hu with rfl | rfl | rfl <;>
         rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
         · rw [t.lie_e_f]

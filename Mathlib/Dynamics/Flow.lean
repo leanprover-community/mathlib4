@@ -9,6 +9,7 @@ public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Flows and invariant sets
@@ -104,13 +105,21 @@ namespace Flow
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
-instance : Inhabited (Flow τ α) :=
-  ⟨{  toFun := fun _ x => x
-      cont' := continuous_snd
-      map_add' := fun _ _ _ => rfl
-      map_zero' := fun _ => rfl }⟩
-
 instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+
+variable (τ α) in
+/-- The identity map as a constant flow. -/
+protected def id : Flow τ α where
+  toFun _ := id
+  cont' := continuous_snd
+  map_add' _ _ _ := rfl
+  map_zero' _ := rfl
+
+@[simp]
+theorem id_apply (t : τ) : Flow.id τ α t = id := rfl
+
+instance : Inhabited (Flow τ α) :=
+  ⟨Flow.id τ α⟩
 
 @[ext]
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
@@ -144,7 +153,7 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
   toFun t := (h t).restrict _ _ _
-  cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
+  cont' := Continuous.subtype_mk (by fun_prop) _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 
@@ -152,7 +161,9 @@ def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
 theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) :
     restrict ϕ h t x = ϕ t x := rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Convert a flow to an additive monoid action. -/
+@[implicit_reducible]
 def toAddAction : AddAction τ α where
   vadd      := ϕ
   add_vadd  := ϕ.map_add'
@@ -282,8 +293,6 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
 
 theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s

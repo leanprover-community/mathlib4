@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.RingQuot
-public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
@@ -70,7 +70,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
-  RingQuot.instAlgebra _
+  inferInstanceAs <| Algebra R (RingQuot _)
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -80,18 +80,18 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
-  RingQuot.instSMulCommClass _
+  inferInstanceAs <| SMulCommClass R S (RingQuot _)
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
-  RingQuot.instIsScalarTower _
+  inferInstanceAs <| IsScalarTower R S (RingQuot _)
 
 namespace TensorAlgebra
 
 instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
-  RingQuot.instRing (Rel S M)
+  inferInstanceAs <| Ring (RingQuot _)
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -100,6 +100,7 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra 
 
 variable {M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
@@ -186,7 +187,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
-    { carrier := C
+    { carrier := {a | C a}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
@@ -315,8 +316,6 @@ def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) 
 @[simp]
 theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
   rfl
-
-variable {R M}
 
 end TensorAlgebra
 

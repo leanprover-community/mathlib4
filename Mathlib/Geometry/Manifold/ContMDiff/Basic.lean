@@ -25,6 +25,8 @@ chain rule, manifolds, higher derivative
 
 public section
 
+assert_not_exists mfderiv
+
 open Filter Function Set Topology
 open scoped Manifold ContDiff
 
@@ -188,7 +190,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine ⟨continuousWithinAt_const, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 
@@ -380,13 +382,8 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Open
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Opens.inclusion h : U → V) := by
-  rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
-  intro y
-  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
-  rw [Set.univ_inter]
-  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
+    ContMDiff I I n (Opens.inclusion h : U → V) := fun _ ↦
+  (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
 

@@ -62,6 +62,8 @@ instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
   ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
     congr⟩
 
+instance : PartialOrder (L.ElementarySubstructure M) := .ofSetLike (L.ElementarySubstructure M) M
+
 instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
   Substructure.inducedStructure
 

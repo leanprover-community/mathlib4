@@ -80,7 +80,8 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   exact mul_comm y x
 
 /-- A group is commutative if the center is the whole group -/
-@[to_additive /-- An additive group is commutative if the center is the whole group -/ ]
+@[to_additive (attr := implicit_reducible)
+/-- An additive group is commutative if the center is the whole group -/ ]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -99,7 +100,7 @@ instance instNormalCenter : (center G).Normal :=
   ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
 
 @[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
+theorem center_le_normalizer : center G ≤ normalizer H := fun x hx y => by
   simp [← mem_center_iff.mp hx y, mul_assoc]
 
 end Normalizer

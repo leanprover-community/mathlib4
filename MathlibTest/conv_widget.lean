@@ -154,7 +154,7 @@ example : 1 = Nat.log2 4 → False := by
   test "/0/1/1"
   exact test_sorry
 
-set_option pp.mvars false in
+set_option pp.mvars.anonymous false in
 /--
 info: `conv?` would output:
 conv =>
@@ -182,7 +182,7 @@ trace: inst : Decidable (True ∧ False)
 -/
 #guard_msgs in
 example (inst : Decidable (True ∧ False)) :
-    (clear% inst; inferInstanceAs (Decidable (True ∧ False))) = inst := by
+    (clear% inst; _root_.inferInstanceAs (Decidable (True ∧ False))) = inst := by
   -- go to `instDecidableFalse`
   test "/0/1/1/1"
   exact test_sorry

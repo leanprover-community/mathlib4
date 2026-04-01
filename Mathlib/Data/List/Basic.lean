@@ -71,12 +71,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-
--- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem⟩
@@ -119,6 +114,9 @@ lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) 
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
   ⟨fun _ => let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
+
+theorem length_eq_two' {l : List α} (h : l ≠ []) : l.length = 2 ↔ l = [l.head h, l.getLast h] := by
+  rw [length_eq_two]; grind
 
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
@@ -261,10 +259,6 @@ theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.rev
   rw [reverse_append]; rfl
 
 @[simp]
-theorem reverse_singleton (a : α) : reverse [a] = [a] :=
-  rfl
-
-@[simp]
 theorem reverse_involutive : Involutive (@reverse α) :=
   reverse_reverse
 
@@ -279,7 +273,7 @@ theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
-  simp only [concat_eq_append, reverse_cons, reverse_reverse]
+  grind
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
@@ -394,9 +388,6 @@ theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 
-@[deprecated cons_head_tail (since := "2025-08-15")]
-theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by simp
-
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
   (getElem_zero _).symm
@@ -475,7 +466,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_swap α]
+  simp [mem_iff_getElem, @forall_comm α]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
@@ -985,6 +976,7 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
+@[congr]
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
   induction l <;> simp_all [filterMap_cons]
@@ -999,6 +991,11 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       grind
     · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+
+@[simp]
+lemma filterMap_none (l : List α) :
+    l.filterMap (fun _ ↦ @Option.none β) = [] := by
+  induction l <;> simp [*]
 
 /-! ### filter -/
 

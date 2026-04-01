@@ -256,7 +256,7 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
     (simpTheorems := #[← ext.getTheorems])
-  let discharge := Mathlib.Meta.NormNum.discharge ctx
+  let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
@@ -288,7 +288,7 @@ The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the c
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
-@[inherit_doc reduce_mod_char]
+@[tactic_alt reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
 open Mathlib.Tactic in
