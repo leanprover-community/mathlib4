@@ -234,7 +234,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
+/-- See also `SeparatingDual.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : StrongDual ℝ E, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=

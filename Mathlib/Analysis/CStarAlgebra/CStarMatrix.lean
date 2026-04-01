@@ -725,7 +725,8 @@ instance instUniformSpace : UniformSpace (CStarMatrix m n A) :=
   inferInstanceAs <| UniformSpace (Matrix m n A)
 
 -- TODO: we are missing `Bornology (Matrix m n A)`
-instance instBornology : Bornology (CStarMatrix m n A) := Pi.instBornology
+instance instBornology : Bornology (CStarMatrix m n A) :=
+  inferInstanceAs <| Bornology (m → n → A)
 
 instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) :=
   inferInstanceAs <| CompleteSpace (Matrix m n A)

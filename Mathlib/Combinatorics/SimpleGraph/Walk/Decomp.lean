@@ -5,8 +5,8 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
 /-!
 # Decomposing walks
@@ -265,7 +265,7 @@ lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.sup
   have : p.getVert n ∈ (p.takeUntil _ h).support.dropLast := by
     simp_rw [p.getVert_takeUntil h hn.le ▸ getVert_eq_support_getElem _ hn.le,
       ← List.getElem_dropLast h₁, List.getElem_mem h₁]
-  have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
+  have := dropLast_support_concat _ ▸ p.count_support_takeUntil_eq_one h
   grind [List.not_mem_of_count_eq_zero]
 
 theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
