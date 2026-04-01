@@ -98,7 +98,6 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
     simp [← Ideal.Quotient.mk_algebraMap, I]
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
     {P : Ideal R} [P.IsPrime] {Q : Ideal S} [Q.IsPrime]
@@ -247,7 +246,6 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     refine adjoin_singleton_le ?_
     exact Subalgebra.smul_mem _ (self_mem_adjoin_singleton _ _) _
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Subalgebra.instSMulSubtypeMem
   Subalgebra.toAlgebra Subalgebra.isScalarTower_left in
 /-- Let `S` be an finite `R`-algebra that is unramified at some prime `Q`. Then there exists some
@@ -301,7 +299,6 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     (by exact (H _ (by simp)).surjective.comp hP)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Module.Free.of_divisionRing in
 instance (priority := low)
     [EssFiniteType R S] [FormallyUnramified R S] : QuasiFinite R S where

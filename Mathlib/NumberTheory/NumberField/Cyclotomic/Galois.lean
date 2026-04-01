@@ -118,7 +118,6 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     ← h₀.eq_orderOf, ← ZMod.natCast_eq_natCast_iff', Nat.cast_pow, ← ZMod.coe_unitOfCoprime p hn,
     ← Units.val_pow_eq_pow_val, ZMod.natCast_zmod_val, ← Units.ext_iff, eq_comm] at hi
 
-set_option backward.isDefEq.respectTransparency false in
 theorem galEquivZMod_stabilizer :
     (galEquivZMod n K).mapSubgroup (stabilizer Gal(K/ℚ) P) =
       Subgroup.zpowers (ZMod.unitOfCoprime p hn) := by
