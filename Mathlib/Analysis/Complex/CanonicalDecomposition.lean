@@ -14,13 +14,14 @@ If a function `f` is meromorphic on a compact set `U`, then it has only finitely
 poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be used to re-write `f`
 as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
 `U` is a disk, one consider a similar decomposition, called *Canonical Decomposition* or *Blaschke
-Product* that replaces the factors `(· - u)` by canonical factors that take only values of norm
-one on the boundary of the circle. This file introduces the canonical factors.
+Product* that replaces the factors `(· - u)` by canonical factors that take only values of norm one
+on the boundary of the circle. This file introduces the canonical factors.
 
 See Page 160f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
 discussion.
 
-TODO: Formulate the canonical decomposition.
+TODO: Formulate a refined version of the canonical decomposition that takes zeros on poles on the
+boundary of the ball into account.
 -/
 
 @[expose] public section
@@ -138,6 +139,18 @@ theorem canonicalFactor_ne_zero {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ c
   rw [canonicalFactor_apply]
   positivity
 
+/--
+The function `CanonicalFactor R w` vanishes only at `w`.
+-/
+theorem zero_canonicalFactor_iff {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ ball 0 R) :
+    canonicalFactor R w z = 0 ↔ z = w := by
+  constructor
+  · intro h
+    by_contra h₁
+    have := Complex.canonicalFactor_ne_zero hw (ball_subset_closedBall hz) h₁
+    tauto
+  · simp_all
+
 open scoped ComplexOrder in
 /--
 The canonical factor `CanonicalFactor R w` takes values of norm one on `sphere 0 R`.
@@ -150,5 +163,50 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   obtain rfl := by simpa [mem_sphere_zero_iff_norm] using hz
   rw [← ofReal_pow, ← normSq_eq_norm_sq, normSq_eq_conj_mul_self, ← sub_mul, mul_comm _ z]
   simp [← map_sub]
+
+/-!
+### Orders and Divisors
+-/
+
+/--
+Canonical factors are nowhere locally constant zero.
+-/
+lemma meromorphicOrderAt_canonicalFactor_ne_top {z : ℂ} {R : ℝ} (w : ℂ) (hR : 0 < R) :
+    meromorphicOrderAt (canonicalFactor R w) z ≠ ⊤ := by
+  suffices h : ∀ z ∈ Set.univ, meromorphicOrderAt (canonicalFactor R w) z ≠ ⊤ from
+    h z (Set.mem_univ z)
+  rw [← (meromorphicOn_canonicalFactor R w).exists_meromorphicOrderAt_ne_top_iff_forall_mem
+    isConnected_univ]
+  use 0, Set.mem_univ 0
+  by_cases hw : w = 0
+  · simp_all [meromorphicOrderAt_canonicalFactor (mem_ball_self hR)]
+  have : meromorphicOrderAt (canonicalFactor R w) 0 = 0 := by
+    rw [MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff]
+    · simp_all [canonicalFactor, ne_of_gt hR]
+    · apply AnalyticAt.meromorphicNFAt
+      apply analyticOnNhd_canonicalFactor
+      grind
+  simp_all
+
+/--
+The divisor of `CanonicalFactor R w` is `-w`.
+-/
+theorem divisor_canonicalFactor (hw : w ∈ ball 0 R) :
+    MeromorphicOn.divisor (canonicalFactor R w) (ball 0 R)
+      = -(Function.locallyFinsuppWithin.single w 1).restrict (Set.subset_univ (ball 0 R)) := by
+  ext z
+  by_cases hz : z ∈ ball 0 R
+  · rw [MeromorphicOn.divisor_apply
+      (fun z hz ↦ meromorphicOn_canonicalFactor R w z (Set.mem_univ z)) hz]
+    by_cases h₂z : z = w
+    · subst h₂z
+      rw [meromorphicOrderAt_canonicalFactor hz]
+      have : (-1 : WithTop ℤ).untop₀ = (-1 : ℤ) := by rfl
+      simp_all [Function.locallyFinsuppWithin.restrict_apply]
+    · have : meromorphicOrderAt (canonicalFactor R w) z = 0 := by
+        rw [(meromorphicNFOn_canonicalFactor hw (Set.mem_univ z)).meromorphicOrderAt_eq_zero_iff]
+        exact canonicalFactor_ne_zero hw (ball_subset_closedBall hz) h₂z
+      simp [this, h₂z, Function.locallyFinsuppWithin.restrict_apply, hz]
+  · simp_all
 
 end Complex
