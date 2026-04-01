@@ -306,30 +306,18 @@ this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
 lemma exists_lt_card_cover_of_card_biUnion_lt_card
     [DecidableEq α] [Fintype α] {f : α → Finset β}
-    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < Finset.card (f j))
-    (h₃ : (s.biUnion f).card < (s.card)) : ∃ x ∈ s.biUnion f,
-    (Finset.inf' s h₁ (fun j ↦ Finset.card (f j))) < (Finset.card {j | j ∈ s ∧ x ∈ f j}) := by
-  set k := Finset.inf' s h₁ (fun j ↦ Finset.card (f j)) with hk
-  have nek : NeZero k := by
-    constructor
-    rw [← Finset.lt_inf'_iff] at h₂
-    · grind
-    · exact h₁
-  by_contra! hc
-  have hc' := Finset.sum_le_sum  (s := s.biUnion f) (ι := β)
-    (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ f j})
-    (g := fun _ => k) (by grind)
-  have : (Finset.card (s.biUnion f))*k < s.card*k :=
-    Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
-  simp only [← Finset.sum_card_eq_sum_card_cover_biUnion f s, sum_const, smul_eq_mul] at hc'
-  have h₄ : ∀ j ∈ s, k ≤ Finset.card (f j) := by
-    unfold k
-    apply Finset.inf'_le
-  have : (s.card)*k ≤ ∑ j ∈ s, Finset.card (f j) := by
-    have infh := Finset.sum_le_sum h₄
-    simp only [sum_const, smul_eq_mul] at infh
-    exact infh
-  lia
+    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j))
+    (h₃ : #(s.biUnion f) < #s) : ∃ x ∈ s.biUnion f,
+    s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
+  set k := s.inf' h₁ (fun j ↦ #(f j)) with hk
+  have nek : NeZero k := ⟨by rwa [hk, Nat.ne_zero_iff_zero_lt, Finset.lt_inf'_iff h₁]⟩
+  contrapose! h₃
+  suffices #s • k ≤ #(s.biUnion f) • k by simp_all
+  simp only [← Finset.sum_const]
+  calc ∑ j ∈ s, k
+    _ ≤ ∑ j ∈ s, #(f j) := by gcongr with i hi; exact inf'_le _ hi
+    _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_card_cover_biUnion]
+    _ ≤ ∑ x ∈ s.biUnion f, k := by gcongr; grind
 
 end Finset
 
