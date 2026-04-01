@@ -302,9 +302,8 @@ lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
 
 variable (f g) in
 lemma LinearEquiv.conj_symm_exact_iff_exact (e : N' ≃ₗ[R] N) :
-    Function.Exact (e.symm ∘ₗ f) (g ∘ₗ (e : N' →ₗ[R] N)) ↔ Exact f g := by
-  nth_rw 2 [← e.symm_symm]
-  rw [LinearEquiv.conj_exact_iff_exact]
+    Function.Exact (e.symm ∘ₗ f) (g ∘ₗ (e : N' →ₗ[R] N)) ↔ Exact f g :=
+  LinearEquiv.conj_exact_iff_exact _ _ e.symm
 
 namespace Function
 
