@@ -457,7 +457,37 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
+
+lemma sup_inf_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hp : ∀ x, -x ∈ p ↔ x ∈ p) (hsp : s ≤ p) :
+    (s ⊔ t) ⊓ p = s ⊔ (t ⊓ p) := by
+  ext x
+  simp only [mem_sup, mem_inf]
+  constructor
+  · rintro ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩
+    refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
+    rw [← add_right_inj, neg_add_cancel_left] at hyzx
+    simpa [hyzx] using p.add_mem ((hp y).mpr (hsp hy)) hx
+  · rintro ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩
+    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
+    simpa [← hyzx] using p.add_mem (hsp hy) hz'
+
+lemma inf_sup_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hp : ∀ x, -x ∈ p ↔ x ∈ p) (hsp : p ≤ s) :
+    (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := by
+  ext x
+  simp only [mem_inf, mem_sup]
+  constructor
+  · rintro ⟨y, ⟨hys, hyt⟩, z, hzp, hyzx⟩
+    exact ⟨by simpa [← hyzx] using add_mem hys (hsp hzp), ⟨y, hyt, z, hzp, hyzx⟩⟩
+  · rintro ⟨hxs, y, hyt, z, hzp, hyzx⟩
+    use y
+    refine ⟨⟨?_, hyt⟩, ⟨z, hzp, hyzx⟩⟩
+    rw [← add_left_inj, add_neg_cancel_right] at hyzx
+    simpa [hyzx] using add_mem hxs <| hsp <| (hp _).mpr hzp
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
@@ -472,13 +502,7 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     _ = span R s := by simp
 
 instance : IsModularLattice (Submodule R M) :=
-  ⟨fun y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
-    rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
-    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
-    rw [← add_sub_cancel_right c b, add_comm]
-    apply z.sub_mem haz (xz hb)⟩
+  ⟨fun y _ xz _ _ => by rwa [← sup_inf_assoc_of_le_of_neg_mem_iff y (by simp) xz]⟩
 
 lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
     (h₁ : IsCompl q r) (h₂ : q ≤ p) :
