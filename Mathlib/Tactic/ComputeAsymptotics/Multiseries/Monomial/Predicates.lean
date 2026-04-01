@@ -51,30 +51,29 @@ theorem AllZero_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : AllZe
     AllZero (hd :: tl) := by
   grind [AllZero]
 
-
-theorem FirstNonzeroIsPos_of_head {hd : ℝ} (tl : List ℝ) (h : 0 < hd) :
+theorem FirstNonzeroIsPos.of_head {hd : ℝ} (tl : List ℝ) (h : 0 < hd) :
     FirstNonzeroIsPos (hd :: tl) := by
   simp [FirstNonzeroIsPos]
   grind
 
-theorem FirstNonzeroIsPos_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0)
+theorem FirstNonzeroIsPos.of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0)
     (h_tl : FirstNonzeroIsPos tl) :
     FirstNonzeroIsPos (hd :: tl) := by
   grind [FirstNonzeroIsPos]
 
-theorem FirstNonzeroIsNeg_of_head {hd : ℝ} (tl : List ℝ) (h : hd < 0) :
+theorem FirstNonzeroIsNeg.of_head {hd : ℝ} (tl : List ℝ) (h : hd < 0) :
     FirstNonzeroIsNeg (hd :: tl) := by
   grind [FirstNonzeroIsNeg]
 
-theorem FirstNonzeroIsNeg_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0)
+theorem FirstNonzeroIsNeg.of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0)
     (h_tl : FirstNonzeroIsNeg tl) :
     FirstNonzeroIsNeg (hd :: tl) := by
   grind [FirstNonzeroIsNeg]
 
-theorem AllZero_of_replicate {n : ℕ} : AllZero (List.replicate n 0) := by
+theorem AllZero.replicate {n : ℕ} : AllZero (List.replicate n 0) := by
   cases n <;> simp [AllZero]
 
-theorem not_FirstNonzeroIsPos_of_AllZero {li : List ℝ} (h : AllZero li) :
+theorem AllZero.not_firstNonzeroIsPos {li : List ℝ} (h : AllZero li) :
     ¬ FirstNonzeroIsPos li := by
   induction li with
   | nil => simp [FirstNonzeroIsPos]
@@ -82,7 +81,7 @@ theorem not_FirstNonzeroIsPos_of_AllZero {li : List ℝ} (h : AllZero li) :
     simp [AllZero] at h
     grind [AllZero, FirstNonzeroIsPos]
 
-theorem not_FirstNonzeroIsPos_of_FirstNonzeroIsNeg {li : List ℝ} (h : FirstNonzeroIsNeg li) :
+theorem FirstNonzeroIsNeg.not_firstNonzeroIsPos {li : List ℝ} (h : FirstNonzeroIsNeg li) :
     ¬ FirstNonzeroIsPos li := by
   induction li with
   | nil => simp [FirstNonzeroIsPos]
