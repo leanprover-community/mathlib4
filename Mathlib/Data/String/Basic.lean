@@ -140,6 +140,8 @@ theorem asString_nil : ofList [] = "" :=
 theorem asString_toList (s : String) : ofList s.toList = s :=
   ofList_toList
 
+set_option linter.deprecated false in
+@[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
     ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
   | s, h => by
