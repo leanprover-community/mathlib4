@@ -15,7 +15,9 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 ## Main results
 
-* `isClosed_riemannZeta_zeroes`:
+* `isClosed_riemannZeta_zeroes`: `riemannZeta ⁻¹' {0}` is closed.
+
+* `isDiscrete_riemannZeta_zeroes`: `riemannZeta ⁻¹' {0}` is discrete.
 
 * `riemannZeta_zeroes_on_Compact_finite`: for any compact set `S : Set ℂ`, the intersection
   `S ∩ riemannZeta ⁻¹' {0}` is finite.
