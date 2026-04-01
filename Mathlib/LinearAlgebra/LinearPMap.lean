@@ -118,10 +118,10 @@ theorem map_neg (f : E →ₛₗ.[σ] F) (x : f.domain) : f (-x) = -f x :=
 theorem map_sub (f : E →ₛₗ.[σ] F) (x y : f.domain) : f (x - y) = f x - f y :=
   f.toFun.map_sub x y
 
-theorem map_smul (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) = σ c • f x :=
+theorem map_smul [Module R F] (f : E →ₗ.[R] F) (c : R) (x : f.domain) : f (c • x) = c • f x :=
   f.toFun.map_smulₛₗ c x
 
-theorem map_smul' [Module R F] (f : E →ₗ.[R] F) (c : R) (x : f.domain) : f (c • x) = c • f x :=
+theorem map_smulₛₗ (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) = σ c • f x :=
   f.toFun.map_smulₛₗ c x
 
 @[simp]
@@ -235,7 +235,7 @@ def eqLocus (f g : E →ₛₗ.[σ] F) : Submodule R E where
     ⟨smul_mem _ c hfx, smul_mem _ c hgx, by
       have {f : E →ₛₗ.[σ] F} (hfx) : (⟨c • x, smul_mem _ c hfx⟩ : f.domain) = c • ⟨x, hfx⟩ := by
         simp
-      rw [this hfx, this hgx, f.map_smul, g.map_smul, hx]⟩
+      rw [this hfx, this hgx, f.map_smulₛₗ, g.map_smulₛₗ, hx]⟩
 
 instance bot : Bot (E →ₛₗ.[σ] F) :=
   ⟨⟨⊥, 0⟩⟩
@@ -301,7 +301,7 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
     simp only [coe_add, ← add_assoc]
     rw [add_right_comm (x _), hxy, add_assoc, hxy, coe_mk, coe_mk]
   · intro c z
-    rw [smul_add, ← map_smul, ← map_smul]
+    rw [smul_add, ← map_smulₛₗ, ← map_smulₛₗ]
     apply fg_eq
     simp only [coe_smul, ← smul_add, hxy]
 
@@ -603,7 +603,7 @@ private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
       map_add]
   · intro c x
-    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
+    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smulₛₗ]
   · intro p hpc
     refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
