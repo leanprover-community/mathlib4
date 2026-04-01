@@ -171,13 +171,6 @@ lemma yonedaEquiv_symm_app {S : SSet} (n : SimplexCategory) (x : S.obj (op n))
     (α : (stdSimplex.obj n).obj (op n)) :
     (yonedaEquiv.symm x).app (op n) α = S.map (SSet.stdSimplex.objEquiv α).op x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-lemma yonedaEquiv_symm_apply_app {n : SimplexCategory}
-    {S T : SSet} (f : S ⟶ T) (x : S.obj (op n)) :
-    yonedaEquiv.symm (f.app (op n) x) = SSet.yonedaEquiv.symm x ≫ f := by
-  rw [yonedaEquiv.symm_apply_eq]
-  simp [yonedaEquiv, uliftYonedaEquiv]
-
 @[simp]
 lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
     yonedaEquiv.symm (SSet.stdSimplex.objEquiv.symm (β := n ⟶ _) (𝟙 n)) = 𝟙 (stdSimplex.obj n) :=

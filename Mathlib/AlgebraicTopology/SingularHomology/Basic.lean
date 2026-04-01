@@ -77,7 +77,8 @@ open scoped Simplicial
 open HomologicalComplex (eval)
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] SSet.singularChainComplexFunctor SSet.yonedaEquiv_symm_apply_app in
+attribute [local simp] SSet.singularChainComplexFunctor in
+attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in
 /-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `X : C` and `F : SSet ⥤ C`. -/
 def SSet.singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ _ n)).obj
     (SSet.singularChainComplexFunctor C) ⊣ (evaluation _ _).obj Δ[n] where
