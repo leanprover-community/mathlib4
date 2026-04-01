@@ -1318,6 +1318,7 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
   simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
 
 variable (ι 𝕜 E) in
+/-- In a inner product space with dimension 1, a set `{v}` is a orthonormal basis for `‖v‖ = 1`. -/
 def FiniteDimensional.orthonormalBasisSingleton [Unique ι] (h : Module.finrank 𝕜 E = 1) (v : E)
     (hv : ‖v‖ = 1) : OrthonormalBasis ι 𝕜 E :=
   (basisSingleton ι h v (fun h ↦ by simp [h] at hv)).toOrthonormalBasis (by simpa using hv)
