@@ -162,7 +162,7 @@ theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s
 
 theorem exists_mul_sq_add_linear_part_eq_eval_add (p : R[X]) (x y : R) :
     ∃ c : R, c * y ^ 2 + p.derivative.eval x * y + p.eval x = p.eval (x + y) := by
-  rw [show x + y = y + x from add_comm .., ← p.taylor_eval x y, ((taylor x) p).eval_eq_sum_range'
+  rw [add_comm, ← p.taylor_eval x y, ((taylor x) p).eval_eq_sum_range'
     ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)), Finset.sum_range_succ',
     Finset.sum_range_succ']
   use ∑ x_1 ∈ Finset.range p.natDegree, ((taylor x) p).coeff (x_1 + 1 + 1) * y ^ x_1
