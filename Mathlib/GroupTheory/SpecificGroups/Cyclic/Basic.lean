@@ -70,7 +70,7 @@ instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive �
   isAddCyclic_additive_iff.mpr inferInstance
 
 @[to_additive]
-instance IsCyclic.commutative [Group α] [IsCyclic α] : IsMulCommutative α where
+instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative α where
   is_comm.comm x y :=
     let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
     let ⟨_, hx⟩ := hg x
@@ -84,7 +84,7 @@ proof of `CommGroup`. -/
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α where
   __ := hg
-  mul_comm := commutative.is_comm.comm
+  mul_comm := isMulCommutative.is_comm.comm
 
 variable [Group α] [Group G] [Group G']
 
