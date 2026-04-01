@@ -186,6 +186,26 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 noncomputable def algEquivTensorRight : p.Fiber S ≃ₐ[S] p.ResidueField ⊗[R] S :=
   (Ideal.Fiber.equiv p S).algEquiv S
 
+-- todo: cleanup
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+noncomputable def algEquivBaseChange
+    (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
+    p.Fiber S ⊗[S] T ≃ₐ[p.ResidueField] p.Fiber T := by
+  let e2 := (algEquivTensorRight p S)
+  let e4 := Algebra.TensorProduct.commRight R S p.ResidueField
+  let e5 := ((Algebra.TensorProduct.congr (e2.trans e4.symm) (AlgEquiv.refl : T ≃ₐ[S] T)).trans
+    (Algebra.TensorProduct.comm _ _ _)).trans
+    (Algebra.TensorProduct.cancelBaseChange R S S T p.ResidueField)
+  refine AlgEquiv.trans ?_ (algEquivTensor p T).symm
+  refine AlgEquiv.trans ?_ (Algebra.TensorProduct.commRight R p.ResidueField T).symm
+  exact
+  { __ := e5
+    commutes' _ := by
+      simp [e5, e4, e2]
+      rw [← (cancelBaseChange R S S T p.ResidueField).eq_symm_apply]
+      simp [algebraMap_eq_includeRight]
+      congr 1 }
+
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
 noncomputable def algEquivQuotient :

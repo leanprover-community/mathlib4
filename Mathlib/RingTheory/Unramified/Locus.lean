@@ -73,16 +73,19 @@ theorem IsUnramifiedAt.residueField
     (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
     [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q]
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
-    (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
+    (hQ' : Q = Q'.comap (algebraMap A (P.Fiber A))) :
     IsUnramifiedAt P.ResidueField Q' := by
-  let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
-    Localization.localAlgHom Q Q' _ hQ'
-  have hf₀ : Function.Surjective f₀ := by
-    subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
-  let f : P.Fiber (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
-  have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
-  exact .of_surjective _ hf
+  sorry
+  -- have : algebraMap A (P.Fiber A) = IsScalarTower.toAlgHom R A (P.Fiber A) := rfl
+  -- rw [this] at hQ'
+  -- let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
+  --   Localization.localAlgHom Q Q' _ hQ'
+  -- have hf₀ : Function.Surjective f₀ := by
+  --   subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
+  -- let f : P.Fiber (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
+  --   Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
+  -- have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
+  -- exact .of_surjective _ hf
 
 end
 

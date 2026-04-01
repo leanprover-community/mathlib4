@@ -96,13 +96,14 @@ noncomputable
 def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : Ideal R) [p.IsPrime] :
     p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField[X] ⧸
       ((RingHom.ker (f : R[X] →+* S)).map (mapRingHom (algebraMap R p.ResidueField))) := by
+  refine (Ideal.Fiber.algEquivTensor p S).trans ?_
   refine .ofAlgHom (Algebra.TensorProduct.lift (Algebra.ofId _ _) (AlgHom.liftOfSurjective _ hf
     ((Ideal.Quotient.mkₐ _ _).comp (mapAlgHom (Algebra.ofId _ _))) ?_) fun _ _ ↦ .all _ _)
     (Ideal.Quotient.liftₐ _ (aeval (1 ⊗ₜ f .X)) ?_) ?_ ?_
   · simp [AlgHom.comp_toRingHom, ← RingHom.comap_ker, ← Ideal.map_le_iff_le_comap]
   · change Ideal.map _ _ ≤ RingHom.ker (aeval _).toRingHom
     rw [Ideal.map_le_iff_le_comap, RingHom.comap_ker]
-    have : ((aeval (1 ⊗ₜ[R] f X : p.Fiber S)).restrictScalars R).comp
+    have : ((aeval (1 ⊗ₜ[R] f X : (p.ResidueField ⊗[R] S))).restrictScalars R).comp
         (mapAlgHom (Algebra.ofId R p.ResidueField)) =
         Algebra.TensorProduct.includeRight.comp f := by ext; simp
     exact .trans_eq (by intro; aesop) congr(RingHom.ker $this).symm
@@ -112,11 +113,12 @@ def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : 
   · ext x
     obtain ⟨x, rfl⟩ := hf x
     simpa using aeval_algHom_apply
-      ((Algebra.TensorProduct.includeRight : S →ₐ[_] p.Fiber S).comp f) X x
+      ((Algebra.TensorProduct.includeRight : S →ₐ[_] (p.ResidueField ⊗[R] S)).comp f) X x
 
 lemma fiberEquivQuotient_tmul
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : Ideal R) [p.IsPrime] (a b) :
-    fiberEquivQuotient f hf p (a ⊗ₜ f b) = Ideal.Quotient.mk _ (C a * b.map (algebraMap _ _)) := by
+    fiberEquivQuotient f hf p ((Ideal.Fiber.algEquivTensor p S).symm (a ⊗ₜ f b)) =
+      Ideal.Quotient.mk _ (C a * b.map (algebraMap _ _)) := by
   simp [fiberEquivQuotient, ← Ideal.Quotient.mk_algebraMap]
 
 /-- Given a prime `P` of `R` and an ideal `I` of `R[X]`, the image of `I` in `κ(P)[X]`
