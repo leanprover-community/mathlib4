@@ -351,11 +351,7 @@ lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddCommMonoid X] (f : α → 
     letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
     letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
     ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toSubtype P Prsup Prinf Prbot hs hP).parts, f p := by
-  apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩)
-  · intro _ ht; simpa [Finpartition.toSubtype] using ht
-  · intro _ _ _ _ h; simpa [Subtype.mk.injEq] using h
-  · simp
-  · intro _ _; congr
+  apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩) <;> simp
 
 end ToSubtype
 

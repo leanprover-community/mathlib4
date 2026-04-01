@@ -42,7 +42,7 @@ variable {X V : Type*} {mX : MeasurableSpace X}
   [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 @[simp]
-lemma variation_apply (μ : VectorMeasure X V) {s : Set X} :
+lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
 @[simp]
