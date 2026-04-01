@@ -242,7 +242,7 @@ instance {X Y Z} (f : Y ⟶ X) (g : Z ⟶ Y)
     [P.HasPushoutsAlong f] [P.HasPushoutsAlong g] [P.IsStableUnderCobaseChangeAlong g]
     (A : P.Under Q Z) : HasPushout (pushout.inr A.hom g) f :=
   HasPushoutsAlong.hasPushout (pushout.inr A.hom g)
-  (of_isPushout (IsPushout.of_hasPushout A.hom g).flip A.prop)
+  (IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_hasPushout A.hom g).flip A.prop)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P` and `Q` are stable under cobase change and pushouts along `f` exist for morphisms in `P`,
@@ -284,7 +284,7 @@ lemma Under.inr_pushoutComp_right (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderCo
   simp [pushoutComp]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `f = g`, then base change along `f` is naturally isomorphic to base change along `g`. -/
+/-- If `f = g`, then cobase change along `f` is naturally isomorphic to cobase change along `g`. -/
 noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     [P.IsStableUnderCobaseChangeAlong f] [Q.IsStableUnderCobaseChange] {g : X ⟶ Y} (h : f = g) :
     haveI : P.HasPushoutsAlong g := by subst h; infer_instance
