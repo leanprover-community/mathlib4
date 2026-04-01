@@ -14,6 +14,37 @@ universe u v
 
 open CategoryTheory TopologicalSpace
 
+section
+
+universe u₁ u₂ u₃ v₁ v₂ v₃
+open Limits
+
+theorem preservesColimitsOfShape_of_reflector_comp {C : Type u₁} [Category.{v₁} C]
+    {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
+    (R : C ⥤ D) [Reflective R] {J : Type u} [Category.{v} J]
+    (F : C ⥤ E) [PreservesColimitsOfShape J ((reflector R) ⋙ F)]
+    [HasColimitsOfShape J D] :
+    PreservesColimitsOfShape J F := by
+  constructor
+  intro K
+  refine @preservesColimit_of_iso_diagram _ _ _ _ _ _ _ _ _
+    (NatIso.hcomp (asIso (𝟙 K)) (asIso (reflectorAdjunction R).counit).symm).symm ⟨fun hc => ⟨?_⟩⟩
+  let hc₂ := colimit.isColimit (K ⋙ R)
+  let ψ := IsColimit.uniqueUpToIso (isColimitOfPreserves (reflector R) hc₂) hc
+  have φ := IsColimit.ofIsoColimit (isColimitOfPreserves (reflector R ⋙ F) hc₂)
+    (Functor.mapCoconeMapCocone (H := reflector R) (H' := F) (colimit.cocone (K ⋙ R))).symm
+  exact IsColimit.ofIsoColimit φ ((Cocone.functoriality _ F).mapIso ψ)
+
+theorem preservesColimitsOfSize_of_reflector_comp {C : Type u₁} [Category.{v₁} C]
+    {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
+    (R : C ⥤ D) [Reflective R]
+    (F : C ⥤ E) [PreservesColimitsOfSize.{v, u} ((reflector R) ⋙ F)]
+    [HasColimitsOfSize.{v, u} D] :
+    PreservesColimitsOfSize.{v, u} F where
+      preservesColimitsOfShape := preservesColimitsOfShape_of_reflector_comp R F
+
+end
+
 namespace TopCat.Sheaf
 
 variable {X : TopCat.{u}}
@@ -60,7 +91,21 @@ instance : (toSheaf X).Additive := inferInstanceAs (SheafOfModules.toSheaf X.rin
 instance : Limits.PreservesFiniteLimits (toSheaf X) :=
   inferInstanceAs (Limits.PreservesFiniteLimits (SheafOfModules.toSheaf X.ringCatSheaf))
 
-instance : Limits.PreservesFiniteColimits (toSheaf X) := sorry
+universe u₁ v₁
+
+open Limits
+
+noncomputable instance : CategoryTheory.Reflective (SheafOfModules.forget X.ringCatSheaf) where
+  L := PresheafOfModules.sheafification (𝟙 X.ringCatSheaf.obj)
+  adj := PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)
+
+instance : PreservesColimitsOfSize.{v, u} (toSheaf X) :=
+  haveI : PreservesColimitsOfSize.{v, u} (reflector (SheafOfModules.forget X.ringCatSheaf) ⋙
+    toSheaf X) := comp_preservesColimits (PresheafOfModules.toPresheaf X.ringCatSheaf.obj)
+      (presheafToSheaf (Opens.grothendieckTopology X) AddCommGrpCat)
+  preservesColimitsOfSize_of_reflector_comp (SheafOfModules.forget X.ringCatSheaf) _
+
+instance : PreservesColimits (toSheaf X) where
 
 noncomputable abbrev sheaf : TopCat.Sheaf AddCommGrpCat X := (toSheaf X).obj F
 
@@ -99,8 +144,7 @@ noncomputable abbrev coveringSheaves : I → X.Modules :=
 lemma coveringSheaves_def :
     F.coveringSheaves U = fun i => (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F := rfl
 
-noncomputable def toCoverSheaf :=
-  Pi.lift (fun i => ((restrictAdjunction (U i).ι).unit.app F))
+noncomputable def toCoverSheaf := Pi.lift (fun i => ((restrictAdjunction (U i).ι).unit.app F))
 
 @[simp]
 lemma toCoverSheaf_def :
@@ -131,8 +175,8 @@ theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
     refine ⟨by rw [Opens.mem_inf]; exact ⟨hx, hi⟩, ?_⟩
     rw [map_zero]
     have reszero : ((restrictAdjunction (U i).ι).unit.app F).sheafHom.hom.app W s = 0 := by
-      have := DFunLike.congr_arg (ConcreteCategory.hom ((Pi.π (fun i =>
-        (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafHom.hom.app W)) hs
+      have := congr(((Pi.π (fun i =>
+        (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafHom.hom.app W) $(hs))
       rw [toCoverSheaf_comp_pi_sheafHom_hom_app, map_zero] at this
       simpa using this
     rw [restrictAdjunction_sheafHom] at reszero
