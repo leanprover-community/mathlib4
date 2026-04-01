@@ -49,9 +49,8 @@ theorem mem_cocardinal {s : Set α} :
 
 instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (α := α) hreg) c where
   cardinal_sInter_mem S hS hSs := by
-    rw [mem_cocardinal, Set.compl_sInter]
-    apply (mk_sUnion_le _).trans_lt (mul_lt_of_lt hreg.aleph0_le (mk_image_le.trans_lt hS) _)
-    apply iSup_lt_of_lt_cof_ord
+    grw [mem_cocardinal, Set.compl_sInter, mk_sUnion_le]
+    apply mul_lt_of_lt hreg.aleph0_le (mk_image_le.trans_lt hS) (iSup_lt_of_lt_cof_ord ..)
     · rw [hreg.cof_ord]
       exact mk_image_le.trans_lt hS
     · aesop
