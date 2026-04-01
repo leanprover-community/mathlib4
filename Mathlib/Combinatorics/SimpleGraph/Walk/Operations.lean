@@ -794,7 +794,7 @@ theorem perm_support_tail_support_dropLast (p : G.Walk u u) :
     p.tail.support.Perm p.dropLast.support := by
   cases p with | nil => rfl | cons h p
   grw [← List.perm_cons u, List.perm_comm, ← List.perm_append_singleton,
-    cons_support_tail _ not_nil_cons, support_dropLast_concat not_nil_cons]
+    cons_support_tail not_nil_cons, support_dropLast_concat not_nil_cons]
 
 theorem perm_tail_support_dropLast_support (p : G.Walk u u) :
     p.support.tail.Perm p.support.dropLast := by
