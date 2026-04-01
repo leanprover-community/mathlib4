@@ -920,18 +920,48 @@ theorem apply_omega0_of_isNormal {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNorma
 alias IsNormal.apply_omega0 := apply_omega0_of_isNormal
 
 @[simp]
-theorem iSup_add_natCast (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  apply_omega0_of_isNormal (isNormal_add_right o)
+theorem add_iSup (o : Ordinal.{u}) {ι} [Small.{u} ι] [Nonempty ι] (f : ι → Ordinal) :
+    o + ⨆ i, f i = ⨆ i, o + f i :=
+  (isNormal_add_right o).map_iSup (bddAbove_of_small _)
+
+@[simp]
+theorem add_sSup (o : Ordinal.{u}) {s : Set Ordinal} [Small.{u} s] (hs : s.Nonempty) :
+    o + sSup s = ⨆ i ∈ s, o + i :=
+  ((isNormal_add_right o).map_sSup hs (bddAbove_of_small s)).trans <|
+    csSup_image
+      (have ⟨u, hu⟩ := bddAbove_of_small s
+      ⟨o + u, fun _ ⟨x, hx⟩ ↦ hx ▸ add_le_add_right (hu x.property) _⟩)
+      (csSup_empty.trans_le bot_le)
+
+@[simp]
+lemma mul_iSup (o : Ordinal.{u}) {ι} (f : ι → Ordinal) : o * ⨆ i, f i = ⨆ i, o * f i := by
+  rcases eq_zero_or_pos o with (rfl | ho)
+  · simp only [zero_mul]
+    rw [← bot_eq_zero, ciSup_bot]
+  cases isEmpty_or_nonempty ι
+  · simp
+  by_cases bdd : BddAbove (range f)
+  · exact (isNormal_mul_right ho).map_iSup bdd
+  · rw [ciSup_of_not_bddAbove bdd, ciSup_of_not_bddAbove, csSup_empty, bot_eq_zero', mul_zero]
+    exact fun ⟨u, hu⟩ ↦ bdd ⟨u, fun x ⟨y, hy⟩ ↦ hy ▸ ((f y).le_mul_right ho).trans (hu ⟨y, rfl⟩)⟩
+
+@[simp]
+lemma mul_sSup (o : Ordinal.{u}) (s : Set Ordinal) : o * sSup s = ⨆ i ∈ s, o * i := by
+  simp only [← o.mul_iSup]
+  by_cases bdd : BddAbove s
+  · exact congrArg (o * ·) (cbiSup_id bdd (csSup_empty.trans_le bot_le)).symm
+  · rw [csSup_of_not_bddAbove bdd, cbiSup_of_not_bddAbove (Subtype.range_coe ▸ bdd)]
+
+@[simp]
+theorem iSup_add_natCast (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω := by
+  rw [← iSup_natCast, Ordinal.add_iSup]
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_add_nat := iSup_add_natCast
 
 @[simp]
 theorem iSup_mul_natCast (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
-  rcases eq_zero_or_pos o with (rfl | ho)
-  · rw [zero_mul]
-    exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact apply_omega0_of_isNormal (isNormal_mul_right ho)
+  rw [← iSup_natCast, Ordinal.mul_iSup]
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_mul_nat := iSup_mul_natCast
