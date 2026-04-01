@@ -266,7 +266,7 @@ variable (h2mq : 2 * h7.m ∣ q ^ 2)
 include hq0 h2mq in
 lemma one_le_n : 1 ≤ h7.n q := by
   simp [n, (Nat.one_le_div_iff (by positivity [h7.one_le_m])).2
-  (Nat.le_of_dvd (Nat.pow_pos hq0) h2mq)]
+    (Nat.le_of_dvd (Nat.pow_pos hq0) h2mq)]
 
 /-!
 Let `c₁, c₂, …` be natural numbers independent of `n`. There exists `c₁` such that
@@ -367,7 +367,7 @@ lemma isInt_β_bound : IsIntegral ℤ (h7.c₁ • (↑q + q • h7.β')) := by
 lemma isInt_β_bound_low (q : ℕ) (t : Fin (q * q)) :
     IsIntegral ℤ (h7.c₁ • (↑(a q t) + b q t • h7.β')) := by
   simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_add,
-  mul_assoc, mul_comm, mul_left_comm, add_assoc, add_comm, add_left_comm] using
+    mul_assoc, mul_comm, mul_left_comm, add_assoc, add_comm, add_left_comm] using
   (IsIntegral.add
     ((IsIntegral.Cast h7.K h7.c₁).mul (IsIntegral.Nat h7.K (a q t)))
     ((IsIntegral.Nat h7.K (b q t)).mul h7.isIntegral_c₁β))
