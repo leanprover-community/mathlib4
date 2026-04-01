@@ -43,7 +43,7 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
     [OrderTopology β] [FirstCountableTopology β] (f : α → β) (c : β) :
     (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b < c, μ {x | f x ≤ b} = 0 := by
   rw [ae_iff]
-  push_neg
+  push Not
   constructor
   · intro h b hb
     exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
