@@ -307,7 +307,8 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   refine ⟨fun hL ↦ ?_, fun hL ↦ ⟨hL.localSeq, hL.isLocalizingSequence_localSeq,
     fun n ↦ .of_prop <| hL.stoppedProcess_localSeq n⟩⟩
   choose τ hτ₁ hτ₂ using hL.stoppedProcess_localSeq
-  obtain ⟨nk, hnk, hpre⟩ := hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
+  obtain ⟨nk, hnk, hpre⟩ :=
+    hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
   refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
   convert hτ₂ n (nk n) using 1 with
   ext i ω
