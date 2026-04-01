@@ -220,8 +220,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       by_contra! h
       have fin := (minimalPrimes.finite_of_isNoetherianRing R).insert ((maximalIdeal R) ^ 2)
       rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
-        (fun I hI ne _ ↦ Ideal.minimalPrimes_isPrime (by simpa [ne] using hI))).mp h with
-        ⟨I, hI, sub⟩
+        (fun I hI ne _ ↦ (Set.mem_of_mem_insert_of_ne hI ne).1.1)).mp h with ⟨I, hI, sub⟩
       rcases hI with eq|min
       · exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm <| hn.symm.trans <|
           ringKrullDim_eq_zero_of_isField ((iff_not_comm.mp
@@ -268,14 +267,13 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
       ← List.coe_toFinset rs]
     exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet)
       (Set.ncard_coe_finset rs.toFinset)
-  have reg := ((quotient_isRegularLocalRing_tfae R (List.take i rs).toFinset
-    ((Finset.coe_subset.mpr sub).trans mem)).out 0 2).mp (by
-      use rs.toFinset
-      simpa [sub, card] using span)
   have : IsDomain (R ⧸ Ideal.ofList (List.take i rs)) := by
     refine @isDomain_of_isRegularLocalRing _ _ ?_
-    convert reg.1
-    <;> exact (List.take i rs).coe_toFinset.symm
+    rw [Ideal.ofList, ← (List.take i rs).coe_toFinset]
+    refine And.left (((quotient_isRegularLocalRing_tfae R (List.take i rs).toFinset
+      ((Finset.coe_subset.mpr sub).trans mem)).out 0 2).mp ?_)
+    use rs.toFinset
+    simpa [sub, card] using span
   apply IsSMulRegular.of_right_eq_zero_of_smul (fun x hx ↦ ?_)
   have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by
     simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
