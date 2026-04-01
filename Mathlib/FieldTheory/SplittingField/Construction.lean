@@ -357,10 +357,10 @@ public instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
 @[stacks 09HU "Splitting part"]
-public protected theorem splits : Splits (f.map (algebraMap K (SplittingField f))) :=
+public protected theorem splits (f : K[X]) : Splits (f.map (algebraMap K (SplittingField f))) :=
   IsSplittingField.splits f.SplittingField f
 
-variable [Algebra K L] (hb : Splits (f.map (algebraMap K L)))
+variable [Algebra K L] (f : K[X]) (hb : Splits (f.map (algebraMap K L)))
 
 /-- Embeds the splitting field into any other field that splits the polynomial. -/
 public def lift : SplittingField f →ₐ[K] L :=
