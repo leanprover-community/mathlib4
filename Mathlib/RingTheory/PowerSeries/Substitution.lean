@@ -423,7 +423,7 @@ lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ 
 
 section substInv
 
-variable (P : R⟦X⟧) (hP : P.constantCoeff _ = 0) [Invertible (coeff _ 1 P)]
+variable (P : R⟦X⟧) (hP : P.constantCoeff = 0) [Invertible (coeff 1 P)]
 
 open PowerSeries
 
@@ -432,9 +432,9 @@ this is the construction of a power series `Q` such that `P(Q(X)) = X`. -/
 noncomputable
 def substInvFun : ℕ → R
   | 0 => 0
-  | 1 => ⅟ (coeff _ 1 P)
-  | n + 1 => - ⅟ (coeff _ 1 P) *
-      (coeff _ (n + 1) (P.subst (∑ i : Fin (n + 1), C _ (substInvFun i.1) * X ^ i.1)))
+  | 1 => ⅟ (P.coeff 1)
+  | n + 1 => - ⅟ (P.coeff 1) *
+      (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.1) * X ^ i.1)))
 
 /-- Given a power series `P = u • X + O(X²)` with `u` invertible,
 this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv`. -/
@@ -443,7 +443,7 @@ def substInv : PowerSeries R := .mk (substInvFun P)
 
 include hP in
 lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
-    coeff _ n (P.subst (∑ i : Fin (n + 1), C _ (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
+    coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
   obtain (_|_|n) := n
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
@@ -454,15 +454,15 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
       · rintro (_|_|_) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
     · simp [HasSubst, X, substInvFun]
   · rw [Fin.sum_univ_castSucc]
-    simp only [Fin.coe_castSucc, Fin.val_last, map_sub, substInvFun]
-    generalize hB : ∑ i : Fin (n + 2), C R (substInvFun P i) * X ^ i.1 = B
-    have hB' : constantCoeff R B = 0 := by simp [← hB, zero_pow_eq, substInvFun]
-    simp only [neg_mul, map_neg, map_mul, coeff_X, Nat.add_eq_right, Nat.add_eq_zero, one_ne_zero,
-      and_false, ↓reduceIte, sub_zero]
+    simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
+    generalize hB : ∑ i : Fin (n + 2), C (substInvFun P i) * X ^ i.1 = B
+    have hB' : B.constantCoeff = 0 := by simp [← hB, zero_pow_eq, substInvFun]
+    simp only [neg_mul, map_neg, map_mul, coeff_X, Nat.add_eq_right, Nat.add_eq_zero_iff,
+      one_ne_zero, and_false, ↓reduceIte, sub_zero]
     rw [coeff_subst']
     · simp only [smul_eq_mul, ← map_mul]
-      generalize hk : ⅟ (coeff R 1 P) * coeff R (n + 1 + 1) (subst B P) = k
-      trans ∑ᶠ d, coeff R d P * (coeff R (n + 1 + 1) (B ^ d) - if d = 1 then k else 0)
+      generalize hk : ⅟ (P.coeff 1) * coeff (n + 1 + 1) (subst B P) = k
+      trans ∑ᶠ d, P.coeff d * (coeff (n + 1 + 1) (B ^ d) - if d = 1 then k else 0)
       · refine finsum_congr fun i ↦ ?_
         · congr 1
           obtain (_|_|i) := i
@@ -473,7 +473,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
             · simp
             · rintro (_|_|j) hj hj'
               · simp at hj'
-              · simp [mul_comm (C R k), hB', mul_assoc, coeff_X_pow_mul']
+              · simp [mul_comm (C k), hB', mul_assoc, coeff_X_pow_mul']
               · rw [← neg_mul, mul_pow, ← pow_mul, mul_comm (_ ^ _)]
                 simp [mul_assoc, coeff_X_pow_mul']
             · simp
@@ -484,14 +484,13 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
           · simp only [↓reduceIte, ← hk, mul_invOf_cancel_left', sub_eq_zero]
             rw [coeff_subst']
             · rfl
-            · change IsNilpotent (constantCoeff _ B)
-              simp [hB']
+            · simp [HasSubst, ← PowerSeries.constantCoeff.eq_def, hB']
           · simp +contextual
         · refine .subset (Set.finite_Iio (n + 3)) fun i ↦ ?_
           obtain ⟨B, rfl⟩ : X ∣ B := by rwa [X_dvd_iff]
-          simp +contextual [mul_pow, coeff_X_pow_mul', Nat.lt_succ]
+          simp +contextual [mul_pow, coeff_X_pow_mul', Nat.lt_succ_iff]
         · exact .subset (Set.finite_singleton 1) (fun _ ↦ by simp +contextual)
-    · simp [HasSubst, X, show MvPowerSeries.constantCoeff Unit R B = 0 from hB']
+    · simp [HasSubst, ← PowerSeries.constantCoeff.eq_def, hB']
 
 include hP in
 lemma subst_substInv_right :
@@ -501,7 +500,7 @@ lemma subst_substInv_right :
   rw [map_sub, sub_eq_zero] at this
   rw [← this, coeff_subst', coeff_subst']
   · congr! 3 with m
-    generalize hB : (∑ i : Fin (n + 1), (C R) (substInvFun P ↑i) * X ^ i.1) = B
+    generalize hB : (∑ i : Fin (n + 1), C (substInvFun P ↑i) * X ^ i.1) = B
     have : X ^ (n + 1) ∣ mk (substInvFun P) - B := by
       rw [X_pow_dvd_iff]
       intro m hm
@@ -510,33 +509,32 @@ lemma subst_substInv_right :
     obtain ⟨Q, hQ⟩ := this.trans (sub_dvd_pow_sub_pow _ _ m)
     simp [substInv, sub_eq_iff_eq_add.mp hQ, coeff_X_pow_mul']
   · simp [HasSubst, X, zero_pow_eq, C, substInvFun]
-  · change IsNilpotent (mk (substInvFun P) 0)
-    simp [mk, substInvFun]
+  · simp [HasSubst, ← constantCoeff.eq_def, substInvFun, substInv]
 
 @[simp]
-lemma constantCoeff_substInv : constantCoeff R P.substInv = 0 := by
+lemma constantCoeff_substInv : P.substInv.constantCoeff = 0 := by
   simp [substInv, substInvFun]
 
 lemma hasSubst_substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
 
 @[simp]
-lemma coeff_one_substInv : coeff R 1 P.substInv = ⅟ (coeff R 1 P) := by
+lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟ (P.coeff 1) := by
   simp [substInv, substInvFun]
 
 include hP in
 lemma subst_substInv_left : P.substInv.subst P = X := by
   have hP' : HasSubst P := by simp [HasSubst, ← constantCoeff.eq_def, hP]
   let Q : PowerSeries R := P.substInv.subst P
-  have : Invertible ((coeff R 1) Q) := by
+  have : Invertible (Q.coeff 1) := by
     refine IsUnit.invertible ?_
     rw [PowerSeries.coeff_subst' (hb := hP'), finsum_eq_single (a := 1)]
     · simp
-    · have (n : ℕ) : (coeff R 1) (P ^ (n + 1 + 1)) = 0 := by
+    · have (n : ℕ) : (P ^ (n + 1 + 1)).coeff 1 = 0 := by
         obtain ⟨P, rfl⟩ := X_dvd_iff.mpr hP
         simp [mul_pow, coeff_X_pow_mul']
       rintro (_|_|n) hn <;> simp_all
-  have hQ : constantCoeff R Q = 0 := by
-    trans PowerSeries.coeff R 0 (P.substInv.subst P)
+  have hQ : Q.constantCoeff = 0 := by
+    trans coeff 0 (P.substInv.subst P)
     · simp [Q]
     simp +contextual [PowerSeries.coeff_subst' hP', hP, zero_pow_eq, finsum_eq_single _ 0]
   have hQ' : HasSubst Q := by simp [HasSubst, ← constantCoeff.eq_def, hQ]
