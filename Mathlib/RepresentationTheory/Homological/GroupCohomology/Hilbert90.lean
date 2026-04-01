@@ -140,7 +140,7 @@ theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     use y
     rw [IsUnit.div_eq_iff y.isUnit] at hy
     rw [hy]
-    field_simp
+    field
   intro x hx
   let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
   have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
