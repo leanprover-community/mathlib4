@@ -112,12 +112,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap]
-  simp only [stalkPushforward.id]
-  rw [← map_comp]
-  convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app]
-  rfl
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -202,7 +198,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
     whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
-    colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
+    colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocone.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
   tauto
 

@@ -23,6 +23,9 @@ For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we pro
 * `isRegularEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is a regular epimorphism
   in the category of schemes. This implies `EffectiveEpi π` by `inferInstance`.
 
+For the general result that a quasi-compact, surjective and flat morphism is an effective
+epimorphism, see the file `Mathlib.AlgebraicGeometry.Sites.Fpqc`.
+
 ## Reference
 
 * https://stacks.math.columbia.edu/tag/023Q

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
 /-!
 # Absolutely Continuous Functions
@@ -104,10 +105,7 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
 lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
   simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
-  have := hnI.left i hi
-  dsimp only [uIoc]; gcongr 1
-  · simp only [le_inf_iff]; tauto
-  · simp only [sup_le_iff]; tauto
+  grind
 
 lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) :
@@ -308,6 +306,13 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
+
+/-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
+    AbsolutelyContinuousOnInterval f a b := by
+  obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc
+  exact hK.absolutelyContinuousOnInterval
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
