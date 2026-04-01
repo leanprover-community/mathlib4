@@ -225,10 +225,10 @@ lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .
 lemma induce_bot (s : Set V) : (⊥ : SimpleGraph V).induce s = ⊥ :=
   comap_bot _
 
-lemma support_induce_subset_coe_inv (s : Set V) : (G.induce s).support ⊆ (↑) ⁻¹' s :=
+lemma support_induce_subset_coe_preimage (s : Set V) : (G.induce s).support ⊆ (↑) ⁻¹' s :=
   fun v _ ↦ v.prop
 
-lemma support_induce_subset_coe_inv_support (s : Set V) :
+lemma support_induce_subset_coe_preimage_support (s : Set V) :
     (G.induce s).support ⊆ (↑) ⁻¹' G.support :=
   fun _ ⟨v, hadj⟩ ↦ ⟨v, hadj⟩
 
