@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.UnitInterval
@@ -166,7 +166,7 @@ open PathConnectedSpace (somePath) in
   path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
   independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
   lifted to a specific point `e₀ : E` over `a₀`. -/
-theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
     (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
     (uniq : ∀ γ γ' : C(I, A), ∀ Γ Γ' : C(I, E), γ 0 = a₀ → γ' 0 = a₀ → Γ 0 = e₀ → Γ' 0 = e₀ →
@@ -418,7 +418,7 @@ alias injective_path_homotopic_mapFn := injective_path_homotopic_map
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
   `e₀ : E` of any point `a₀ : A`. -/
-theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
   refine cov.isLocalHomeomorph.existsUnique_continuousMap_lifts f a₀ e₀ he (fun γ γ_0 ↦ ?_)
@@ -437,7 +437,7 @@ open FundamentalGroup Path.Homotopic.Quotient in
   if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02], known as
   the lifting criterion. -/
 theorem existsUnique_continuousMap_lifts_of_range_le
-    [PathConnectedSpace A] [LocPathConnectedSpace A]
+    [PathConnectedSpace A] [LocallyPathConnectedSpace A]
     {f : C(A, X)} {a₀ : A} {e₀ : E} (he : p e₀ = f a₀)
     (le : (map f a₀).range ≤ (mapOfEq ⟨p, cov.continuous⟩ he).range) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
@@ -475,7 +475,7 @@ Given a point `a₀` in the domain of `f` and a lift `e₀` of `f a₀` along `p
 there exists a unique lift `F` of `f` along `p` such that `F a₀ = e₀`.
 -/
 theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A]
-    [LocPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
+    [LocallyPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
     {e₀ : E} (he : p e₀ = f a₀) (hs : ∀ a, f a ∈ s) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
   obtain ⟨f, rfl⟩ : ∃ f' : C(A, s), f = .comp ⟨Subtype.val, by fun_prop⟩ f' :=

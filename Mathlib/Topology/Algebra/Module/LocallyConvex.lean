@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
@@ -100,14 +100,17 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
   (locallyConvexSpace_iff_zero 𝕜 E).trans hasBasis_self
 
 -- see Note [lower instance priority]
-instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
-    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
+instance (priority := 100) LocallyConvexSpace.toLocallyPathConnectedSpace [Module ℝ E]
+    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocallyPathConnectedSpace E :=
   .of_bases (fun x ↦ convex_basis (𝕜 := ℝ) x)
     fun _ _ hs ↦ hs.2.isPathConnected <| nonempty_of_mem <| mem_of_mem_nhds hs.1
 
+@[deprecated (since := "2026-04-01")] alias LocConvexSpace.toLocallyPathConnectedSpace :=
+LocallyConvexSpace.toLocallyPathConnectedSpace
+
 /-- Convex subsets of locally convex spaces are locally path-connected. -/
-theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
-    {S : Set E} (hS : Convex ℝ S) : LocPathConnectedSpace S := by
+theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+    {S : Set E} (hS : Convex ℝ S) : LocallyPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
   let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
@@ -115,6 +118,9 @@ theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [Loca
   · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
     exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
+
+@[deprecated (since := "2026-04-01")] alias Convex.locPathConnectedSpace :=
+Convex.locallyPathConnectedSpace
 
 end Module
 

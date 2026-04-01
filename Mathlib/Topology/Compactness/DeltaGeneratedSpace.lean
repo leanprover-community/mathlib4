@@ -129,9 +129,9 @@ lemma continuous_counit : Continuous (counit : _ → X) := by
   rw [continuous_iff_coinduced_le]; exact deltaGenerated_le
 
 /-- Delta-generated spaces are locally path-connected. -/
-instance [DeltaGeneratedSpace X] : LocPathConnectedSpace X := by
+instance [DeltaGeneratedSpace X] : LocallyPathConnectedSpace X := by
   rw [eq_deltaGenerated (X := X), deltaGenerated_eq_coinduced]
-  exact LocPathConnectedSpace.coinduced _
+  exact LocallyPathConnectedSpace.coinduced _
 
 /-- Delta-generated spaces are sequential. -/
 instance [DeltaGeneratedSpace X] : SequentialSpace X := by
