@@ -220,24 +220,10 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     exact .equiv (Algebra.IsPushout.equiv R Rp S Sp)
   have : FormallySmooth 𝓀[Rp] (𝓀[Rp] ⊗[Rp] Sq) := by
     let : Algebra S (𝓀[Rp] ⊗[R] S) := TensorProduct.rightAlgebra
-    have : FormallySmooth 𝓀[Rp] ((p.Fiber S) ⊗[S] Sq) :=
-      .comp _ (p.Fiber S) _
-    let e₀ : ((p.Fiber S) ⊗[S] Sq) ≃ₐ[𝓀[Rp]] ((𝓀[Rp] ⊗[R] S) ⊗[S] Sq) :=
-      { __ := Algebra.TensorProduct.congr (Ideal.Fiber.algEquivTensorRight p S) AlgEquiv.refl
-        commutes' _ := rfl }
-    have : FormallySmooth 𝓀[Rp] ((𝓀[Rp] ⊗[R] S) ⊗[S] Sq) := .of_equiv e₀
-    let e : 𝓀[Rp] ⊗[R] S ≃ₐ[S] S ⊗[R] 𝓀[Rp] :=
-      { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
-    let e' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[R] 𝓀[Rp] ⊗[Rp] Sq :=
-      ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
-      ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
-      ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
-      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
-    have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
-        IsScalarTower.toAlgHom _ _ _ := by ext
-    let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
-      { __ := e', commutes' r := congr($this r) }
-    exact .of_equiv e''
+    have : FormallySmooth 𝓀[Rp] ((p.Fiber S) ⊗[S] Sq) := .comp _ (p.Fiber S) _
+    have : FormallySmooth 𝓀[Rp] (p.Fiber Sq) := .of_equiv (Ideal.Fiber.algEquivBaseChange p S Sq)
+    have : FormallySmooth 𝓀[Rp] (𝓀[Rp] ⊗[R] Sq) := .of_equiv (Ideal.Fiber.algEquivTensor p Sq)
+    exact .of_equiv (TensorProduct.equivOfCompatibleSMul Rp R ..)
   have := FormallySmooth.of_formallySmooth_residueField_tensor
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)
   exact .comp R Rp Sq

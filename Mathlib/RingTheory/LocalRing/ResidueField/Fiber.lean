@@ -181,30 +181,21 @@ instance : IsScalarTower R S (p.Fiber S) :=
 noncomputable def algEquivTensor : p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField ⊗[R] S :=
   (Ideal.Fiber.equiv p S).algEquiv p.ResidueField
 
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+attribute [local instance] rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the tensor product `κ(p) ⊗[R] S`. -/
 noncomputable def algEquivTensorRight : p.Fiber S ≃ₐ[S] p.ResidueField ⊗[R] S :=
   (Ideal.Fiber.equiv p S).algEquiv S
 
--- todo: cleanup
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+attribute [local instance] rightAlgebra in
 noncomputable def algEquivBaseChange
     (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
-    p.Fiber S ⊗[S] T ≃ₐ[p.ResidueField] p.Fiber T := by
-  let e2 := (algEquivTensorRight p S)
-  let e4 := Algebra.TensorProduct.commRight R S p.ResidueField
-  let e5 := ((Algebra.TensorProduct.congr (e2.trans e4.symm) (AlgEquiv.refl : T ≃ₐ[S] T)).trans
-    (Algebra.TensorProduct.comm _ _ _)).trans
-    (Algebra.TensorProduct.cancelBaseChange R S S T p.ResidueField)
-  refine AlgEquiv.trans ?_ (algEquivTensor p T).symm
-  refine AlgEquiv.trans ?_ (Algebra.TensorProduct.commRight R p.ResidueField T).symm
-  exact
-  { __ := e5
-    commutes' _ := by
-      simp [e5, e4, e2]
-      rw [← (cancelBaseChange R S S T p.ResidueField).eq_symm_apply]
-      simp [algebraMap_eq_includeRight]
-      congr 1 }
+    p.Fiber S ⊗[S] T ≃ₐ[p.ResidueField] p.Fiber T :=
+  letI e : p.Fiber S ⊗[S] T ≃ₐ[p.ResidueField] T ⊗[R] p.ResidueField :=
+  { __ := ((Algebra.TensorProduct.congr ((algEquivTensorRight p S).trans
+      (commRight R S p.ResidueField).symm) AlgEquiv.refl).trans
+        (Algebra.TensorProduct.comm _ _ _)).trans (cancelBaseChange R S S T p.ResidueField)
+    commutes' _ := by simp [← (cancelBaseChange R S S T p.ResidueField).eq_symm_apply]; rfl }
+  e.trans ((algEquivTensor p T).trans (commRight R p.ResidueField T)).symm
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
