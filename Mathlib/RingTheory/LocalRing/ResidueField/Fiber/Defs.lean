@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The fiber at a prime ideal
@@ -265,6 +266,10 @@ lemma exists_smul_eq_algebraMap (x : p.Fiber S) :
 @[deprecated (since := "2026-03-31")] alias exists_smul_eq_one_tmul := exists_smul_eq_algebraMap
 
 end Ideal.Fiber
+
+instance Module.Finite.fiber [h : Module.Finite R S] : Module.Finite p.ResidueField (p.Fiber S) :=
+  .of_injective (Ideal.Fiber.algEquivTensor p S).toLinearMap
+    (Ideal.Fiber.algEquivTensor p S).injective
 
 instance Algebra.EssFiniteType.fiber [h : EssFiniteType R S] :
     EssFiniteType p.ResidueField (p.Fiber S) :=
