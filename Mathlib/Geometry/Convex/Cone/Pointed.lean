@@ -312,15 +312,12 @@ section Ring
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
-open Pointwise
 @[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
   ext x; simp
 
 end Ring
 
 section Lineal
-
-open Pointwise
 
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
