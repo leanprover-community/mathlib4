@@ -12,11 +12,11 @@ public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
-# LatinSquare
+# Latin Squares
 
-A Latin rectangle is an $m \times n$ matrix filled with $n$ different
+A Latin rectangle is an `m × n` matrix filled with `n` different
 symbols such that each symbol occurs exactly once in each row and
-occurs at most once in each column.  When $m = n$, the column
+occurs at most once in each column.  When `m = n`, the column
 condition forces each symbol to occur exactly once in each column.
 This special case is called a Latin Square and their discovery is
 attributed to Leohnard Euler in 1782 [euler1782].
@@ -29,9 +29,8 @@ filled" Latin square can be completed to a Latin square.  In general,
 it is an open question to figure out the number of distinct $n \times
 n$ Latin squares, up to equivalence, although bounds exist.
 
-A classical result in combinatorics, **Hall's Marriage Theorem**, can be
-used to show that any Latin rectangle can be extended to a Latin
-square; this theorem is formalized as
+A classical result in combinatorics, **Hall's Marriage Theorem**, can be used to show that any
+Latin rectangle can be extended to a Latin square; this theorem is formalized as
 `latin_rectangle_extends_to_latin_square`.
 
 ## Main results
@@ -58,8 +57,7 @@ square; this theorem is formalized as
 ## References
 
 * [Euler, *Recherches sur une nouvelle espèce de quarrés magiques*][euler1782]
-* [vanLint, Wilson, *A Course in Combinatorics*, Chapter 17][vanlint_wilson2001]
-
+* [van Lint, Wilson, *A Course in Combinatorics* (Chapter 17)][vanlint_wilson2001]
 -/
 
 variable {m m' : Type*} [Fintype m] [Fintype m']
@@ -68,13 +66,13 @@ variable {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq
 
 @[expose] public section
 
-/-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
-    the first m entries are filled. -/
+/-- For `m ≤ n`, an `m × n` Latin rectangle is a partial `n × n` Latin Square where
+    the first `m` entries are filled. -/
 class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   [Fintype m] [Fintype n] [Fintype α] [DecidableEq α] where
-  /-- An m × n array of symbols. -/
+  /-- An `m × n` array of symbols. -/
   M : Matrix m n α
-  /-- An $m × n$ Latin rectangle contains $n$ distinct entries. -/
+  /-- An `m × n` Latin rectangle contains `n` distinct entries. -/
   exactly_n_symbols : Fintype.card α = Fintype.card n
   /-- Each row contains each symbol exactly once. -/
   once_per_row : ∀ i, Function.Bijective (M.row i)
@@ -94,19 +92,19 @@ instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [Repr α] :
 abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
   LatinRectangle n n α
 
-/-- Get the underlying `Matrix` of the LatinRectangle. -/
+/-- Get the underlying `Matrix` of a `LatinRectangle`. -/
 instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   [Fintype n] [Fintype α] [DecidableEq α] :
   Coe (LatinRectangle m n α) (Matrix m n α) where
   coe A := A.M
 
-/-- Get a specific column of the `LatinRectangle`. -/
+/-- Get a specific column of a `LatinRectangle`. -/
 abbrev LatinRectangle.col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 
-/-- Get a specific row of the `LatinRectangle`. -/
+/-- Get a specific row of a `LatinRectangle`. -/
 abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
-/-- Alernative constructor for LatinSquares using the once_per_column property -/
+/-- Construct a `LatinSquare` given that both the rows and columns are bijective -/
 @[reducible]
 def LatinSquare.fromOncePerColumn
   [Fintype n] [Fintype α] [DecidableEq α]
