@@ -730,43 +730,37 @@ variable {c : Cardinal.{u}} {n : ℕ}
 theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
   simp
 
-@[deprecated (since := "2025-12-22")]
-alias aleph1_le_lift := aleph_one_le_lift
+@[deprecated (since := "2025-12-22")] alias aleph1_le_lift := aleph_one_le_lift
 
 @[simp]
 theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
   simpa using lift_le (b := ℵ₁)
 
-@[deprecated (since := "2025-12-22")]
-alias lift_le_aleph1 := lift_le_aleph_one
+@[deprecated (since := "2025-12-22")] alias lift_le_aleph1 := lift_le_aleph_one
 
 @[simp]
 theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
   simpa using lift_lt (a := ℵ₁)
 
-@[deprecated (since := "2025-12-22")]
-alias aleph1_lt_lift := aleph_one_lt_lift
+@[deprecated (since := "2025-12-22")] alias aleph1_lt_lift := aleph_one_lt_lift
 
 @[deprecated lift_le_aleph0 (since := "2026-03-23")]
 theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
   simp
 
-@[deprecated (since := "2025-12-22")]
-alias lift_lt_aleph1 := lift_lt_aleph_one
+@[deprecated (since := "2025-12-22")] alias lift_lt_aleph1 := lift_lt_aleph_one
 
 @[simp]
 theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
   simpa using lift_inj (a := ℵ₁)
 
-@[deprecated (since := "2025-12-22")]
-alias aleph1_eq_lift := aleph_one_eq_lift
+@[deprecated (since := "2025-12-22")] alias aleph1_eq_lift := aleph_one_eq_lift
 
 @[simp]
 theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
 
-@[deprecated (since := "2025-12-22")]
-alias lift_eq_aleph1 := lift_eq_aleph_one
+@[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
 
 @[simp]
 theorem aleph_natCast_le_lift : ℵ_ n ≤ lift.{v} c ↔ ℵ_ n ≤ c := by
