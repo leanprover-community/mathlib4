@@ -229,7 +229,6 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
         (fun I hI ne _ ↦ Ideal.minimalPrimes_isPrime (by simpa [ne] using hI))).mp h with
         ⟨I, hI, sub⟩
-      simp only [Set.mem_insert_iff] at hI
       rcases hI with eq|min
       · exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm <| hn.symm.trans <|
           ringKrullDim_eq_zero_of_isField ((iff_not_comm.mp
@@ -308,10 +307,9 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
         · exact Ideal.mem_sup_right (Ideal.subset_span (Set.mem_setOf.mpr r))
     have : Submodule.spanFinrank (maximalIdeal R) ≤ rs'.length := by
       rw [← span']
-      apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite rs'.finite_toSet)
+      apply (Submodule.spanFinrank_span_le_ncard_of_finite rs'.finite_toSet).trans
       apply le_of_eq_of_le _ (List.toFinset_card_le rs')
       simp [← (Set.ncard_coe_finset rs'.toFinset)]
     simp only [← len, List.length_append, List.length_take, List.length_drop, rs'] at this
-    absurd this
     omega
   exact (mul_eq_zero_iff_left this).mp hx
