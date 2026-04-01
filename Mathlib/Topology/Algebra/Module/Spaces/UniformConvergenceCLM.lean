@@ -485,8 +485,11 @@ alias postcomp_uniformConvergenceCLM_apply := postcompUniformConvergenceCLM_appl
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
+
 /-! ### Continuous linear equivalences -/
+
 section Semilinear
+
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
