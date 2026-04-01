@@ -116,6 +116,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
       inv_inv]
     simp [WithZero.exp]
 
+variable (v) in
 /-- A discrete valuation has rank one. -/
 @[implicit_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
