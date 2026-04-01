@@ -12,6 +12,10 @@ public import Mathlib.RingTheory.Valuation.RankOne
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
+* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range` : the generator of
+a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range is equal to `exp (-1)`.
+* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_surjective` : the generator of
+a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`.
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
 between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
@@ -61,6 +65,13 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
 
+/-- A discrete valuation has rank one. -/
+@[implicit_reducible]
+noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
+  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
+  strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
+  exists_val_nontrivial := IsNontrivial.exists_val_nontrivial
+
 end LinearOrderedCommGroupWithZero
 
 section WithZeroMulInt
@@ -68,6 +79,9 @@ section WithZeroMulInt
 variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
 open LinearOrderedCommGroup in
+/--
+The generator of a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range
+is equal to `exp (-1)`. -/
 theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
   rw [← Valuation.IsRankOneDiscrete.valueGroup_genLTOne_eq_generator]
@@ -84,6 +98,8 @@ theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
     | ofNat n => refine ⟨1, ?_, π ^ n, ?_⟩ <;> simp [hπ]
     | negSucc n => refine ⟨π ^ (n + 1), ?_, 1, ?_⟩ <;> simp [hπ, Int.negSucc_eq, mul_assoc]
 
+/--
+The generator of a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`. -/
 lemma generator_eq_exp_neg_one_of_surjective (hsurj : Function.Surjective v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
   generator_eq_exp_neg_one_of_mem_range (by aesop)
@@ -115,14 +131,6 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
       Units.val_zpow_eq_zpow_val, Units.val_mk0, inv_zpow', ← exp_zsmul, Int.zsmul_eq_mul, mul_one,
       inv_inv]
     simp [WithZero.exp]
-
-variable (v) in
-/-- A discrete valuation has rank one. -/
-@[implicit_reducible]
-noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
-  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
-  strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
-  exists_val_nontrivial := IsNontrivial.exists_val_nontrivial
 
 end WithZeroMulInt
 
