@@ -333,5 +333,6 @@ public import Mathlib.Tactic.Widget.StringDiagram
 public import Mathlib.Tactic.WithoutCDot
 public import Mathlib.Tactic.Zify
 
+/-! Additional exported attributes for `TensorProduct.comm_comp_comm`. -/
 attribute [reassoc] TensorProduct.comm_comp_comm
 attribute [simp] TensorProduct.comm_comp_comm_assoc
