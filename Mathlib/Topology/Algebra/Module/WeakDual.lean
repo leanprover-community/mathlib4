@@ -58,8 +58,9 @@ variable {α 𝕜 𝕝 E F : Type*}
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-     [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] := WeakBilin (topDualPairing 𝕜 E)
+def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+    [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
+  WeakBilin (topDualPairing 𝕜 E)
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
@@ -106,10 +107,12 @@ end WeakDual
 end Equivalences
 
 namespace WeakDual
+
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -178,11 +181,13 @@ def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAd
   WeakBilin (topDualPairing 𝕜 E).flip
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd
 
-namespace WeakSpace
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+namespace WeakSpace
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
@@ -209,6 +214,8 @@ theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
 @[simp]
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
+
+end WeakSpace
 
 variable (𝕜 E) in
 /-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
@@ -239,7 +246,7 @@ theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/
-theorem isOpen_of_isOpen (V : Set E)
+theorem WeakSpace.isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
@@ -253,6 +260,8 @@ end Semiring
 
 section Ring
 
+namespace WeakSpace
+
 variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
@@ -262,6 +271,6 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
 
-end Ring
-
 end WeakSpace
+
+end Ring
