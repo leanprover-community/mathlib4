@@ -77,14 +77,14 @@ instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative �
     let ⟨_, hy⟩ := hg y
     hy ▸ hx ▸ zpow_mul_comm ..
 
+open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive (attr := implicit_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
-def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α where
-  __ := hg
-  mul_comm := isMulCommutative.is_comm.comm
+def IsCyclic.commGroup [Group α] [IsCyclic α] : CommGroup α :=
+  inferInstance
 
 variable [Group α] [Group G] [Group G']
 
