@@ -260,6 +260,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
+    simp
     grind
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form

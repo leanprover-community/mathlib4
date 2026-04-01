@@ -43,6 +43,7 @@ include hf
 theorem map_add (x y : ℝ≥0) : f (x + y) = f (x * f y) * f y :=
   (hf.map_add_rev x y).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
   refine ⟨fun hx₀ ↦ not_lt.1 fun hlt ↦ hf.map_ne_zero x hlt hx₀, fun hle ↦ ?_⟩
   rcases exists_add_of_le hle with ⟨x, rfl⟩
@@ -60,6 +61,7 @@ theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
     refine (mul_eq_zero.1 ?_).resolve_right hfx
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
   match lt_or_ge x 2 with
   | .inl hx => hf.map_of_lt_two hx

@@ -153,7 +153,8 @@ variable (R S) in
 theorem Smooth.exists_span_eq_top_isStandardSmooth [Smooth R S] :
     ∃ (s : Set S), Ideal.span s = ⊤ ∧ ∀ x ∈ s, IsStandardSmooth R (Localization.Away x) := by
   choose f hf₁ hf₂ using IsSmoothAt.exists_notMem_isStandardSmooth R (S := S)
-  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by grind⟩
+  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by
+    simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]; intro; apply hf₂⟩
   simp [← PrimeSpectrum.iSup_basicOpen_eq_top_iff, TopologicalSpace.Opens.ext_iff, Set.ext_iff]
   grind
 

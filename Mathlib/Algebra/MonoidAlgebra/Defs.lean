@@ -155,7 +155,8 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   inferInstanceAs <| DecidableEq <| M →₀ R
 
--- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
+-- This is needed or we get errors in UniversalFactorizationRing.lean
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
     nsmul n x := x.mapRange (n • ·) (smul_zero _) }

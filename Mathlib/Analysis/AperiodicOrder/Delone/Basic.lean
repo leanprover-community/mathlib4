@@ -176,6 +176,7 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
   · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
   · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a Delone set under an isometry. This is a specialization of
 `DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the
 Lipschitz constants are both 1. -/

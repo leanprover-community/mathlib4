@@ -133,7 +133,7 @@ section Restrict
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    exact ⟨x, by simp [hx0], by grind [restrict_def, restrict₀_eq_one_iff]⟩
+    exact ⟨x, by simp [hx0], by simpa⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 

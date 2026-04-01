@@ -190,6 +190,7 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     r < 1⁻¹ * ‖f x‖₊ := by simpa
     _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnnorm` can
 be tightened to take the supremum over only the `Metric.sphere`. -/
 theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
