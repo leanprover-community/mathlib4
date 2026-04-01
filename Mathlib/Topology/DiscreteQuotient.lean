@@ -120,7 +120,7 @@ theorem proj_continuous : Continuous S.proj :=
 
 instance : DiscreteTopology S :=
   discreteTopology_iff_isOpen_singleton.2 <| S.proj_surjective.forall.2 fun x => by
-    rw [← S.proj_isQuotientMap.isCoinducing.isOpen_preimage, fiber_eq]
+    rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
 theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=

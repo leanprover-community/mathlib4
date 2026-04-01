@@ -146,8 +146,7 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
 
 @[to_additive]
 theorem smul_connectedComponent (g h : G) : g • connectedComponent h = connectedComponent (g * h) :=
-  (Homeomorph.mulLeft g).isQuotientMap.isCoinducing.image_connectedComponent
-    (by simp [isConnected_singleton]) h
+  (Homeomorph.mulLeft g).isQuotientMap.image_connectedComponent (by simp [isConnected_singleton]) h
 
 @[to_additive]
 theorem totallyDisconnectedSpace_iff_connectedComponent_one :
@@ -901,7 +900,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
     isOpenMap := by
       -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
       intro U hU
-      rw [← hφ.isCoinducing.isOpen_preimage]
+      rw [← hφ.isOpen_preimage]
       -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (U * k⁻¹)` as `k` runs through the kernel of `φ`,
       -- as `U * k⁻¹` is open because `x ↦ x * k` is continuous.
       -- Remark: here is where we use that we have groups not monoids (you cannot avoid

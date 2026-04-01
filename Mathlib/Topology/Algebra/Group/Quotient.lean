@@ -158,7 +158,7 @@ instance instIsTopologicalGroup [N.Normal] : IsTopologicalGroup (G ⧸ N) where
 theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
     IsClosedMap ((↑) : G → G ⧸ H) := by
   intro t ht
-  rw [← (isQuotientMap_mk H).isCoinducing.isClosed_preimage, preimage_image_mk_eq_mul]
+  rw [← (isQuotientMap_mk H).isClosed_preimage, preimage_image_mk_eq_mul]
   exact ht.mul_right_of_isCompact hH
 
 @[to_additive]
