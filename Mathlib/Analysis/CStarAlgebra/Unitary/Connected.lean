@@ -47,7 +47,8 @@ products of exponential unitaries.
   `expUnitary x` for a selfadjoint element `x`.
 + `Unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
   C⋆-algebra is path connected.
-+ `Unitary.instLocallyPathConnectedSpace`: the unitary group of a C⋆-algebra is locally path connected.
++ `Unitary.instLocallyPathConnectedSpace`: the unitary group of a
+  C⋆-algebra is locally path -onnected.
 + `Unitary.mem_pathComponentOne_iff`: The path component of the identity in the unitary group of a
   C⋆-algebra is the set of unitaries that can be expressed as a product of exponentials of
   selfadjoint elements.

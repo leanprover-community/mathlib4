@@ -264,7 +264,8 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
 
 /-- If a topological space `M` admits an atlas with locally path-connected charts,
 then `M` itself is locally path-connected. -/
-theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] : LocallyPathConnectedSpace M := by
+theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
+    LocallyPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
   let t := s ∩ e.source
