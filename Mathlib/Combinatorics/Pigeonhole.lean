@@ -316,7 +316,7 @@ lemma exists_lt_card_cover_of_card_biUnion_lt_card
   simp only [← Finset.sum_const]
   calc ∑ j ∈ s, k
     _ ≤ ∑ j ∈ s, #(f j) := by gcongr with i hi; exact inf'_le _ hi
-    _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_card_cover_biUnion]
+    _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_biUnion_card]
     _ ≤ ∑ x ∈ s.biUnion f, k := by gcongr; grind
 
 end Finset
