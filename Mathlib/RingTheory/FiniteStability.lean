@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber.Defs
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!

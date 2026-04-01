@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber.Defs
 
 /-!
 # Residue field of primes in polynomial algebras
