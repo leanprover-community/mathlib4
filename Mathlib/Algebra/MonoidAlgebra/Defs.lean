@@ -155,8 +155,7 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   inferInstanceAs <| DecidableEq <| M →₀ R
 
--- This is needed or we get errors in UniversalFactorizationRing.lean
-set_option backward.inferInstanceAs.wrap false in
+-- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
     nsmul n x := x.mapRange (n • ·) (smul_zero _) }
@@ -165,7 +164,8 @@ set_option backward.inferInstanceAs.wrap false in
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
--- This is needed or we get errors in UniversalFactorizationRing.lean
+#adaptation_note /-- Since nightly-2026-03-22,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
 set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
