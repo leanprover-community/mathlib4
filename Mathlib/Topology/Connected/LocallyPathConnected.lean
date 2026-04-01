@@ -234,7 +234,7 @@ LocallyPathConnectedSpace.coinduced
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 lemma Topology.IsQuotientMap.locallyPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocallyPathConnectedSpace Y :=
-  h.2 ▸ LocallyPathConnectedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ LocallyPathConnectedSpace.coinduced f
 
 @[deprecated (since := "2026-04-01")] alias Topology.IsQuotientMap.locPathConnectedSpace :=
 Topology.IsQuotientMap.locallyPathConnectedSpace
