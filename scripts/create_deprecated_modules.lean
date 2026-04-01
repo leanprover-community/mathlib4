@@ -335,18 +335,12 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   for fname in onlyPastFiles do
     let fnameStx := Syntax.mkStrLit fname
     -- this version also fails
-    let stx ← match dict[fname]? with
-    | some newName =>
-      let newNameStx := Syntax.mkStrLit newName
-      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
-    | none =>
-      `(command|#create_deprecated_module $fnameStx)
-    -- original verfsion was:
-    -- let stx ← if let some newName := dict[fname]? then
-    --             let newNameStx := Syntax.mkStrLit newName
-    --             `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
-    --           else
-    --             `(command|#create_deprecated_module $fnameStx)
+    let stx ←
+      if h : dict[fname]?.isSome then
+        let newNameStx := Syntax.mkStrLit (dict[fname]?.get h)
+        `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
+      else
+        `(command|#create_deprecated_module $fnameStx)
     suggestions := suggestions.push {
       suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
