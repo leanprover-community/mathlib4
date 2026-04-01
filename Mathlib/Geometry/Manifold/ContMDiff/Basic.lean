@@ -397,6 +397,7 @@ lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f :
     ContMDiffWithinAt I I' ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt I I' ∞ f s x :=
   ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
 
+@[simp]
 lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (x : M) :
     ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
   rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
