@@ -23,6 +23,10 @@ in the product space.
 open Asymptotics Filter
 open scoped Convex Topology
 
+/-- Suppose that both `v χ` and `w χ` tend to a point `u : E` and that the derivative of
+`f χ : E → F` tends to `φ : E →L[𝕜] F`. Then the difference between `f χ (v χ)` and `f χ (w χ)` is,
+to first order, `φ (v χ - w χ)`. This can be useful when considering change in a single coordinate
+of `χ`, in which case `v` and `w` are projections. -/
 theorem isLittleO_sub_sub_fderiv
     {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
