@@ -163,6 +163,13 @@ theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
 theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
   simp [← not_lt]
 
+@[simp]
+theorem cof_eq_aleph0 [NoMaxOrder α] [Nonempty α] [Countable α] : cof α = ℵ₀ :=
+  ((cof_le_cardinalMk _).trans mk_le_aleph0).antisymm (by simp)
+
+theorem cof_nat : cof ℕ = ℵ₀ := by simp
+theorem cof_int : cof ℤ = ℵ₀ := by simp
+
 end LinearOrder
 end Order
 
@@ -249,9 +256,13 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
+theorem _root_.Order.cof_Iio [LinearOrder α] [WellFoundedLT α] (x : α) :
+    Order.cof (Iio x) = cof (typein (α := α) (· < ·) x) :=
+  (cof_type _).symm
+
 @[simp]
 theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) := by
-  rw [← lift_cof, ← cof_toType, ← (@ToType.mk o).lift_cof_congr, Cardinal.lift_id'.{u, u + 1}]
+  rw [Order.cof_Iio, typein_ordinal]
 
 theorem cof_le_card (o : Ordinal) : cof o ≤ card o := by
   simpa using cof_le_cardinalMk o.ToType
@@ -269,6 +280,10 @@ theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 := by
 @[deprecated cof_eq_zero (since := "2026-02-18")]
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
+
+@[simp]
+theorem cof_pos {o} : 0 < cof o ↔ 0 < o := by
+  simp [pos_iff_ne_zero]
 
 @[simp]
 theorem cof_zero : cof 0 = 0 :=
@@ -306,20 +321,23 @@ theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
   rw [aleph0_le_cof_iff, one_lt_cof_iff]
 
+/-- A countable limit ordinal has cofinality `ℵ₀`. -/
+theorem cof_eq_aleph0_of_isSuccLimit {o : Ordinal} (ho : IsSuccLimit o) (ho' : o < ω₁) :
+    cof o = ℵ₀ := by
+  apply ((cof_le_card _).trans _).antisymm
+  · rwa [aleph0_le_cof_iff, one_lt_cof_iff]
+  · rwa [card_le_iff, succ_aleph0, ord_aleph]
+
 @[simp]
-theorem cof_omega0 : cof ω = ℵ₀ := by
-  apply le_antisymm
-  · rw [← card_omega0]
-    exact cof_le_card ω
-  · rw [aleph0_le_cof_iff, one_lt_cof_iff]
-    exact isSuccLimit_omega0
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  cof_eq_aleph0_of_isSuccLimit isSuccLimit_omega0 omega0_lt_omega_one
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
 theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
-  obtain ⟨r, hr, hr'⟩ := ord_eq s
+  obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
   have ht := hs.trans (isCofinal_setOf_imp_lt r)
   refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
   rw [← hs', hr', type_le_iff']
@@ -361,9 +379,8 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
         Cardinal.lift_umax.{_, u + 1}, Cardinal.lift_umax.{_, u + 1}, this]
       simp
     · intro ⟨b, hb⟩
-      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
+      rw [mem_Iio, Ordinal.lt_iSup_add_one_iff] at hb
       obtain ⟨i, hi⟩ := hb
-      rw [lt_add_one_iff] at hi
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
     exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
@@ -426,8 +443,7 @@ theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     simp
   rw [← this, sSup_range]
   apply lt_of_le_of_ne
-  · rw [Ordinal.iSup_le_iff]
-    simp [hs]
+  · simp [hs]
   · rintro rfl
     rw [← lift_cof, ← Cardinal.lift_lt.{_, u + 2}, Cardinal.lift_lift,
       lift_cof_iSup_add_one fun _ ↦ by simp, cof_Iio, ← lift_cof, cof_type,
@@ -464,8 +480,7 @@ theorem iSup_lt_of_lt_cof {f : α → Ordinal.{u}} {a : Ordinal.{u}}
 theorem cof_lift_iSup_add_one_le [Small.{u} β] (f : β → Ordinal.{u}) :
     cof (lift.{v} (⨆ i, f i + 1)) ≤ Cardinal.lift.{u} (#β) := by
   by_contra! hf
-  apply (lift_iSup_add_one_lt_of_lt_cof hf _).false
-  exact fun i ↦ (lt_add_one _).trans_le (le_ciSup (bddAbove_of_small _) i)
+  exact (lift_iSup_add_one_lt_of_lt_cof hf <| Ordinal.lt_iSup_add_one _).false
 
 theorem cof_iSup_add_one_le (f : α → Ordinal.{u}) : cof (⨆ i, f i + 1) ≤ #α := by
   simpa using cof_lift_iSup_add_one_le f
@@ -621,7 +636,7 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
 theorem exists_blsub_cof (o : Ordinal) :
     ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
   rcases exists_lsub_cof o with ⟨ι, f, hf, hι⟩
-  rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
+  rcases Cardinal.exists_ord_eq ι with ⟨r, hr, hι'⟩
   rw [← @blsub_eq_lsub' ι r hr] at hf
   rw [← hι, hι']
   exact ⟨_, hf⟩
@@ -630,7 +645,7 @@ theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
     a ≤ cof b ↔ ∀ {o} (f : ∀ a < o, Ordinal), blsub.{u, u} o f = b → a ≤ o.card :=
   le_cof_iff_lsub.trans
     ⟨fun H o f hf => by simpa using H _ hf, fun H ι f hf => by
-      rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
+      rcases Cardinal.exists_ord_eq ι with ⟨r, hr, hι'⟩
       rw [← @blsub_eq_lsub' ι r hr] at hf
       simpa using H _ hf⟩
 
@@ -734,9 +749,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
     apply ciSup_le' _
     intro i
     rw [mk_powerset]
-    apply (h'.two_power_lt _).le
-    rw [coe_setOf, card_typein, ← lt_ord, hr]
-    apply typein_lt_type
+    exact (h'.two_power_lt (card_typein_lt _ hr)).le
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
@@ -749,7 +762,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
-  rcases ord_eq α with ⟨r, wo, hr⟩
+  rcases exists_ord_eq α with ⟨r, wo, hr⟩
   classical
   letI := linearOrderOfSTO r
   apply le_antisymm
@@ -777,7 +790,7 @@ alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
   Cardinal.inductionOn c fun α h => by
-    rcases ord_eq α with ⟨r, wo, re⟩
+    rcases exists_ord_eq α with ⟨r, wo, re⟩
     have := isSuccLimit_ord h
     rw [re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
