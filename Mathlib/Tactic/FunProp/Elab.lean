@@ -60,7 +60,7 @@ syntax (name := funPropTacStx)
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun _ => do pure s!"discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/
@@ -79,7 +79,7 @@ def funPropTac : Tactic
         unless (← getFunProp? type).isSome do
           let hint :=
             if let some n := type.getAppFn.constName?
-            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            then s!" Consider marking `{n}` with `@[fun_prop]`."
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 

@@ -14,7 +14,8 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 # Interaction between Quotients and Tensor Products
 
-This file contains constructions that relate quotients and tensor products.
+This file contains constructions that relate quotients and tensor products. This file is also a home
+for results whose proof depends on both tensor products and linear algebraic quotients.
 Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules and `I ≤ R` an ideal. We prove
 the following isomorphisms:
 
@@ -47,7 +48,6 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules. Then we have a linear
 isomorphism between tensor products of the quotients and the quotient of the tensor product:
@@ -181,7 +181,6 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma quotTensorEquivQuotSMul_mk_one_tmul (I : Ideal R) (x : M) :
     quotTensorEquivQuotSMul M I (1 ⊗ₜ x) = Submodule.Quotient.mk x := by
@@ -298,5 +297,33 @@ lemma tensorQuotientEquiv_symm_apply_mk_tmul (n : Submodule B N) (x : M) (y : N)
     (tensorQuotientEquiv A B M n).symm (Submodule.Quotient.mk (x ⊗ₜ[R] y)) =
       x ⊗ₜ[R] Submodule.Quotient.mk y :=
   rfl
+
+
+variable [Module A N] [IsScalarTower R A N]
+
+/- This lemma characterizes the kernel of `TensorProduct.mapOfCompatibleSMul`. Together with
+`TensorProduct.mapOfCompatibleSMul_surjective` it gives an alternative characterization of
+`M ⊗[A] N` as the quotient of `M ⊗[R] N` by the submodule `S` described below. -/
+lemma ker_mapOfCompatibleSMul :
+    (mapOfCompatibleSMul A R A M N).ker =
+      Submodule.span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)} := by
+  refine (Submodule.span_eq_of_le (mapOfCompatibleSMul A R A M N).ker ?_ ?_).symm
+  · rintro - ⟨a, m, n, rfl⟩
+    simp [smul_tmul]
+  · let S := Submodule.span A {(a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m : M) (n : N)}
+    let F : M ⊗[A] N →ₗ[A] (M ⊗[R] N) ⧸ S := TensorProduct.lift ({
+      toFun m := {
+        toFun n := S.mkQ (m ⊗ₜ[R] n)
+        map_add' _ _ := by simp [tmul_add]
+        map_smul' a n := by
+          rw [Submodule.mkQ_apply, Submodule.mkQ_apply, ← Submodule.Quotient.mk_smul, eq_comm,
+            Submodule.Quotient.eq, RingHom.id_apply]
+          exact Submodule.subset_span ⟨a, m, n, rfl⟩ }
+      map_add' _ _ := by ext _; simp [add_tmul]
+      map_smul' _ _ := by simp; rfl })
+    have h : F ∘ₗ mapOfCompatibleSMul A R A M N = S.mkQ := by ext; simp [S, F]
+    change (mapOfCompatibleSMul A R A M N).ker ≤ S
+    rw [← Submodule.ker_mkQ S, ← h]
+    exact (mapOfCompatibleSMul A R A M N).ker_le_ker_comp F
 
 end TensorProduct.AlgebraTensorModule
