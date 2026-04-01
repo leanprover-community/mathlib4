@@ -477,6 +477,47 @@ noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_symm_apply_tm
       (Ideal.Quotient.mk _ x) ⊗ₜ[R] y :=
   rfl
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+open Algebra Algebra.TensorProduct in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
+  letI Rp := Localization p.primeCompl
+  letI pRp := IsLocalRing.maximalIdeal Rp
+  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI pSp := pRp.map (algebraMap Rp Sp)
+  (commRight R S p.ResidueField).symm.trans <|
+    (tensorQuotientEquiv S Rp S pRp).trans <|
+    { __ := quotientEquiv _ _ (Localization.tensor_localization_algEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensor_localization_algEquiv_apply_one_tmul p.primeCompl])
+      commutes' x := by simp }
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+open Algebra Algebra.TensorProduct in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.ker_includeRight :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    RingHom.ker (includeRight : S →ₐ[R] p.Fiber S) = pSp.comap (algebraMap S Sp) := by
+  let Rp := Localization p.primeCompl
+  let pRp := IsLocalRing.maximalIdeal Rp
+  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  let pSp := pRp.map (algebraMap Rp Sp)
+  let e := Fiber.algEquivQuotient p (S := S)
+  rw [← RingHom.ker_coe_toRingHom, ← algebraMap_eq_includeRight, ← e.symm.toAlgHom.comp_algebraMap]
+  refine (RingHom.ker_equiv_comp _ _).trans ?_
+  rw [IsScalarTower.algebraMap_eq S Sp, Ideal.Quotient.algebraMap_eq, RingHom.ker_eq_comap_bot,
+    ← comap_comap, ← RingHom.ker_eq_comap_bot, mk_ker]
+
 -- open TensorProduct in
 -- variable (S) in
 -- set_option backward.isDefEq.respectTransparency false in
@@ -870,8 +911,21 @@ theorem foo7 (q : MaximalSpectrum (p.Fiber S)) :
     obtain ⟨z, hz⟩ := hx
     obtain ⟨a, ha, b, hb⟩ := Fiber.exists_smul_eq_one_tmul p z.1
     have hz' := congr(a • $hz)
-    rw [← smul_eq_mul, ← smul_assoc, hb, ← includeRight_apply, AlgHom.toRingHom_eq_coe,
-      RingHom.coe_coe, smul_eq_mul, ← map_mul, smul_zero] at hz'
+    rw [← includeRight_apply] at hb
+    rw [← smul_eq_mul, ← smul_assoc, hb, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, smul_eq_mul,
+      ← map_mul, smul_zero, ← RingHom.mem_ker, Fiber.ker_includeRight, mem_comap] at hz'
+    clear hz
+    let Q := q.1.comap includeRight
+    let SQ := Localization.AtPrime Q
+    let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    let Rp := Localization p.primeCompl
+    let pRp := IsLocalRing.maximalIdeal (Localization p.primeCompl)
+    let pSp := pRp.map (algebraMap Rp Sp)
+    have : Q.LiesOver p := comap_liesOver q.asIdeal p includeRight
+    -- Sp is contained in SQ
+    change algebraMap S SQ x ∈ p.map (algebraMap R SQ)
+    change algebraMap S Sp (b * x) ∈ pSp at hz'
+
     -- seem to need the isomorphism with the quotient
     sorry
   · rw [map_le_iff_le_comap]
