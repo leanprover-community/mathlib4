@@ -113,7 +113,7 @@ noncomputable def tensorCotangentOfFlat [Module.Flat R T] :
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
-lemma tensorCotangent_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) :
+lemma tensorCotangentOfFlat_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) : 
     P.tensorCotangentOfFlat T (t ⊗ₜ x) = t • Cotangent.map (P.toBaseChange T) x := by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   simp only [tensorCotangentOfFlat, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
