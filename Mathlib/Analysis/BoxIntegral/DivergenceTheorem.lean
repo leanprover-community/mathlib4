@@ -249,7 +249,9 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ ?_) (hJc rfl)).trans ?_
     · exact ⟨hJδ hy, Box.le_iff_Icc.1 hle hy⟩
     · rw [mul_right_comm (2 : ℝ), ← Box.volume_apply]
-      exact mul_le_mul_of_nonneg_right hlt.le ENNReal.toReal_nonneg
+      gcongr
+      -- TODO: can positivity do the former?
+      exacts [ENNReal.toReal_nonneg, by simp]
 
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 

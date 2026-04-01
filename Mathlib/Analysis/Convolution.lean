@@ -476,7 +476,7 @@ theorem convolution_mono_right {f g g' : G → ℝ} (hfg : ConvolutionExistsAt f
   apply integral_mono hfg hfg'
   simp only [lsmul_apply, smul_eq_mul]
   intro t
-  gcongr--apply mul_le_mul_of_nonneg_left (hg _) (hf _)
+  apply mul_le_mul_of_nonneg_left (hg _) (hf _)
 
 theorem convolution_mono_right_of_nonneg {f g g' : G → ℝ}
     (hfg' : ConvolutionExistsAt f g' x (lsmul ℝ ℝ) μ) (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, g x ≤ g' x)
@@ -738,7 +738,8 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       refine ((L (f t)).dist_le_opNorm _ _).trans ?_
-      exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
+      gcongr
+      exact hg h2t
     · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
       rfl
@@ -748,7 +749,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   refine (norm_integral_le_of_norm_le ((L.integrable_comp hif).norm.mul_const ε)
     (Eventually.of_forall h2)).trans ?_
   rw [integral_mul_const]
-  refine mul_le_mul_of_nonneg_right ?_ hε
+  gcongr
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
     exact L.le_opNorm (f t)
