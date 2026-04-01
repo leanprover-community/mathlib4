@@ -158,29 +158,14 @@ example (P : ObjectProperty C) [P.IsClosedUnderQuotients] {X Y : C} (hX : P X) (
 lemma prop_sSup_subobjectOf (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    (X : C) : P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
-  let subobjs := {A : Subobject X | P (A : C)}
-  let I := equivShrink (Subobject X) '' subobjs
-  let eqv := Discrete.equivalence
-    (Equiv.Set.image (equivShrink (Subobject X)) subobjs (equivShrink (Subobject X)).injective)
-  haveI : HasColimitsOfShape (Discrete ↥subobjs) C :=
-    hasColimitsOfShape_of_equivalence eqv.symm
-  haveI : P.IsClosedUnderColimitsOfShape (Discrete ↥subobjs) :=
-    CategoryTheory.ObjectProperty.IsClosedUnderColimitsOfShape.of_equivalence eqv.symm
-  let D : Discrete ↥subobjs ⥤ C := Discrete.functor (fun A : ↥subobjs => (A.val : C))
-  have hPDi (i : Discrete ↥subobjs) : P (D.obj i) := i.as.2
-  have hPcolimD : P (colimit D) := by simpa using P.prop_colimit D hPDi
-  let φ : colimit D ≅ ∐ fun j : ↥I => ((equivShrink (Subobject X)).symm j : C) :=
-    Sigma.whiskerEquiv
-      (Equiv.Set.image (equivShrink (Subobject X)) subobjs (equivShrink (Subobject X)).injective)
-      (fun j => eqToIso (by simp))
-  have hPsigma : P (∐ fun j : ↥I => ((equivShrink (Subobject X)).symm j : C)) :=
-    P.prop_of_iso φ hPcolimD
-  have hPimage : P (image (Subobject.smallCoproductDesc subobjs)) :=
-    P.prop_of_epi (factorThruImage _) hPsigma
-  simpa [Subobject.sSup] using P.prop_of_iso
-    (Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc subobjs))).symm hPimage
-
+    (X : C) : P (Subobject.sSup {A : Subobject X | P (A : C)}) :=
+  P.prop_of_iso (Subobject.underlyingIso
+    (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
+      (P.prop_of_epi (factorThruImage _)
+        ((ObjectProperty.prop_colimit _ _ (fun ⟨j⟩ ↦ by
+          dsimp
+          obtain ⟨S, hS, hj⟩ := j.2
+          simpa [← hj] using hS))))
 
 /-
 These should be all the ingredients for the converse of `isTorsion_iff`, but currently in an
