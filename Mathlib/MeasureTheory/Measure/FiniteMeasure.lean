@@ -410,7 +410,6 @@ theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_
   gcongr
   apply f_le_g
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem testAgainstNN_zero (μ : FiniteMeasure Ω) : μ.testAgainstNN 0 = 0 := by
   simpa only [zero_mul] using μ.testAgainstNN_const 0
@@ -486,7 +485,6 @@ theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
     suffices ↑(μ.testAgainstNN f₁) ≤ ↑(μ.testAgainstNN f₂) + ↑μ.mass * dist f₁ f₂ by linarith
     simpa using NNReal.coe_mono key
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Finite measures yield elements of the `WeakDual` of bounded continuous nonnegative
 functions via `MeasureTheory.FiniteMeasure.testAgainstNN`, i.e., integration. -/
 def toWeakDualBCNN (μ : FiniteMeasure Ω) : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) where
@@ -512,7 +510,6 @@ instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
 theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
   continuous_induced_dom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Integration of (nonnegative bounded continuous) test functions against finite Borel measures
 depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
@@ -535,7 +532,6 @@ theorem tendsto_iff_weakDual_tendsto {γ : Type*} {F : Filter γ} {μs : γ → 
     Tendsto μs F (𝓝 μ) ↔ Tendsto (fun i ↦ (μs i).toWeakDualBCNN) F (𝓝 μ.toWeakDualBCNN) :=
   IsInducing.tendsto_nhds_iff ⟨rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
@@ -548,7 +544,6 @@ theorem tendsto_iff_forall_testAgainstNN_tendsto {γ : Type*} {F : Filter γ}
       ∀ f : Ω →ᵇ ℝ≥0, Tendsto (fun i ↦ (μs i).testAgainstNN f) F (𝓝 (μ.testAgainstNN f)) := by
   rw [FiniteMeasure.tendsto_iff_forall_toWeakDualBCNN_tendsto]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the total masses of finite measures tend to zero, then the measures tend to
 zero. This formulation concerns the associated functionals on bounded continuous
 nonnegative test functions. See `MeasureTheory.FiniteMeasure.tendsto_zero_of_tendsto_zero_mass` for
@@ -595,7 +590,6 @@ variable [HasOuterApproxClosed Ω] [BorelSpace Ω]
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mapping `toWeakDualBCNN` from finite Borel measures to the weak dual of `Ω →ᵇ ℝ≥0` is
 injective, if in the underlying space `Ω`, indicator functions of closed sets have decreasing
 approximations by sequences of continuous functions (in particular if `Ω` is pseudometrizable). -/
@@ -611,7 +605,6 @@ lemma injective_toWeakDualBCNN :
 
 variable (Ω)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isEmbedding_toWeakDualBCNN :
     IsEmbedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
   eq_induced := rfl
