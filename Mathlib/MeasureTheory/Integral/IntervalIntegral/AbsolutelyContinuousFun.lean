@@ -128,6 +128,11 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc rfl (hu₁ s)
   have hT : univ.MapsTo T (disjWithin d b) := by
     intro s _
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [disjWithin, uIcc_of_le]` -/
     simp [disjWithin]
     grind [uIcc_of_le]
   have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
