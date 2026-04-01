@@ -136,7 +136,8 @@ instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_projective
 
-lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+variable {X} in
+lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] :
     Projective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext X Y 1) := by
   refine ⟨fun h ↦ HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
@@ -146,11 +147,15 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
+variable {X} in
+lemma projective_iff_hasProjectiveDimensionLT_one :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
+
+instance (priority := low) [HasProjectiveDimensionLT X 1] : Projective X :=
+  projective_iff_hasProjectiveDimensionLT_one.mpr ‹_›
 
 end
 
@@ -273,7 +278,6 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩

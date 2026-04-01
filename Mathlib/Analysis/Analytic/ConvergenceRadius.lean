@@ -59,6 +59,12 @@ priori, it only behaves well when `‖x‖ < p.radius`. -/
 protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
 
+theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S F]
+    (h_closed : IsClosed (s : Set F)) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
+    (h : ∀ k, p k (fun _ : Fin k => x) ∈ s) :
+    p.sum x ∈ s :=
+  tsum_mem h_closed h
+
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.partialSum n x` is the sum
 `Σ pₖ xᵏ` for `k ∈ {0,..., n-1}`. -/
 def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
@@ -280,7 +286,6 @@ lemma radius_le_of_le {𝕜' E' F' : Type*}
   gcongr
   exact h n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by

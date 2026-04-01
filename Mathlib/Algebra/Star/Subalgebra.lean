@@ -104,6 +104,7 @@ instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
 /-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r
@@ -120,7 +121,6 @@ lemma toNonUnitalStarSubalgebra_injective : Function.Injective
     (toNonUnitalStarSubalgebra : StarSubalgebra R A → NonUnitalStarSubalgebra R A) :=
   fun _ _ ↦ by simp [SetLike.ext_iff]
 
-@[simp]
 lemma toNonUnitalStarSubalgebra_inj {S U : StarSubalgebra R A} :
     S.toNonUnitalStarSubalgebra = U.toNonUnitalStarSubalgebra ↔ S = U :=
   toNonUnitalStarSubalgebra_injective.eq_iff
@@ -592,12 +592,12 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
-      apply this at h₁
-      apply this at h₂
-      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+  apply this at h₁
+  apply this at h₂
+  rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
 
 open scoped IsMulCommutative in

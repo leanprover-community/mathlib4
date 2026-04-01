@@ -215,12 +215,12 @@ theorem copy_eq (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) : 
 variable (S : NonUnitalStarSubalgebra R A)
 
 /-- A non-unital star subalgebra over a ring is also a `Subring`. -/
+@[reducible]
 def toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : NonUnitalSubring A where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
-@[simp]
 theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
@@ -299,7 +299,6 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
   Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
@@ -1241,12 +1240,12 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
-      apply this at h₁
-      apply this at h₂
-      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+  apply this at h₁
+  apply this at h₂
+  rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
 
 variable (R) in

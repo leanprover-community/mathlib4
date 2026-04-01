@@ -62,11 +62,11 @@ structure InfHom (α β : Type*) [Min α] [Min β] where
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
-structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
-  /-- A `LatticeHom` preserves infima.
+structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β, InfHom α β where
 
-  Do not use this directly. Use `map_inf` instead. -/
-  map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
+attribute [nolint docBlame] LatticeHom.toInfHom
+
+attribute [to_dual existing] LatticeHom.toInfHom
 
 section
 
@@ -89,9 +89,9 @@ class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop w
 
 You should extend this class when you extend `LatticeHom`. -/
 class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
-  extends SupHomClass F α β where
-  /-- A `LatticeHomClass` morphism preserves infima. -/
-  map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
+  extends SupHomClass F α β, InfHomClass F α β where
+
+attribute [to_dual existing] LatticeHomClass.toInfHomClass
 
 end
 
@@ -106,23 +106,10 @@ section Hom
 variable [FunLike F α β]
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [SupHomClass F α β] : OrderHomClass F α β :=
-  { ‹SupHomClass F α β› with
-    map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h] }
-
--- See note [lower instance priority]
-@[to_dual existing]
-instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [SemilatticeInf β]
-    [InfHomClass F α β] : OrderHomClass F α β :=
-  { ‹InfHomClass F α β› with
-    map_rel := fun f a b h => by rw [← inf_eq_left, ← map_inf, inf_eq_left.2 h] }
-
--- See note [lower instance priority]
-@[to_dual existing]
-instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice β]
-    [LatticeHomClass F α β] : InfHomClass F α β :=
-  { ‹LatticeHomClass F α β› with }
+    [SupHomClass F α β] : OrderHomClass F α β where
+  map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h]
 
 end Hom
 
@@ -133,15 +120,13 @@ variable [EquivLike F α β]
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [OrderIsoClass F α β] : SupHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_sup := fun f a b =>
-      eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
+    [OrderIsoClass F α β] : SupHomClass F α β where
+  map_sup := fun f a b =>
+    eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]
-    [OrderIsoClass F α β] : LatticeHomClass F α β :=
-  { OrderIsoClass.toSupHomClass, OrderIsoClass.toInfHomClass with }
+    [OrderIsoClass F α β] : LatticeHomClass F α β where
 
 end Equiv
 
@@ -312,29 +297,16 @@ instance [Bot β] : Bot (SupHom α β) :=
 instance [Top β] : Top (SupHom α β) :=
   ⟨SupHom.const α ⊤⟩
 
--- `OrderBot.lift` is currently not supported by `to_dual`
+@[to_dual]
 instance [OrderBot β] : OrderBot (SupHom α β) :=
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
+@[to_dual]
 instance [OrderTop β] : OrderTop (SupHom α β) :=
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
+@[to_dual]
 instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
-  BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
-
-@[to_dual existing]
-instance _root_.InfHom.instOrderBot [Min α] [SemilatticeInf β] [OrderBot β] :
-    OrderBot (InfHom α β) :=
-  OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
-
-@[to_dual existing]
-instance _root_.InfHom.instOrderTop [Min α] [SemilatticeInf β] [OrderTop β] :
-    OrderTop (InfHom α β) :=
-  OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
-
-@[to_dual existing]
-instance _root_.InfHom.instBoundedOrder [Min α] [SemilatticeInf β] [BoundedOrder β] :
-    BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[to_dual (attr := simp)]
@@ -361,13 +333,13 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-/- We cannot use for `to_dual` for `mk_le_mk` and `subtypeVal` because it does not support renaming
-the arguments -/
-
-@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[to_dual (attr := simp, gcongr) (reorder := toFun₁ toFun₂, map_sup₁ map_sup₂)
+  (rename := toFun₁ ↔ toFun₂, map_sup₁ → map_inf₂, map_sup₂ → map_inf₁)]
+lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
 
 /-- `Subtype.val` as a `SupHom`. -/
+@[to_dual (rename := Psup → Pinf) /-- `Subtype.val` as an `InfHom`. -/]
 def subtypeVal {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     letI := Subtype.semilatticeSup Psup
@@ -375,45 +347,17 @@ def subtypeVal {P : β → Prop}
   letI := Subtype.semilatticeSup Psup
   .mk Subtype.val (by simp)
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_apply {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
     subtypeVal Psup x = x := rfl
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_coe {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     ⇑(subtypeVal Psup) = Subtype.val := rfl
 
 end SupHom
-
-namespace InfHom
-
-variable [Min α] [SemilatticeInf β]
-
-@[to_dual existing, simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
-    mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-/-- `Subtype.val` as an `InfHom`. -/
-@[to_dual existing]
-def subtypeVal {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    letI := Subtype.semilatticeInf Pinf
-    InfHom {x : β // P x} β :=
-  letI := Subtype.semilatticeInf Pinf
-  .mk Subtype.val (by simp)
-
-@[to_dual existing, simp]
-lemma subtypeVal_apply {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
-    subtypeVal Pinf x = x := rfl
-
-@[to_dual existing, simp]
-lemma subtypeVal_coe {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    ⇑(subtypeVal Pinf) = Subtype.val := rfl
-
-end InfHom
 
 /-! ### Lattice homomorphisms -/
 
@@ -421,11 +365,6 @@ end InfHom
 namespace LatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ]
-
-/-- Reinterpret a `LatticeHom` as an `InfHom`. -/
-@[to_dual existing]
-def toInfHom (f : LatticeHom α β) : InfHom α β :=
-  { f with }
 
 instance : FunLike (LatticeHom α β) α β where
   coe f := f.toFun
