@@ -28,13 +28,17 @@ open IsLocalRing
 variable (R : Type*) [CommRing R]
 
 /-- A ring is regular if its localization at any prime `IsRegularLocalRing`. -/
-@[mk_iff]
-class IsRegularRing : Prop where
+class IsRegularRing : Prop extends IsNoetherianRing R where
   localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
 
-lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
+lemma isRegularRing_iff (R : Type u_1) [CommRing R] [IsNoetherianRing R] : IsRegularRing R ↔
+    ∀ (p : Ideal R) (_ : p.IsPrime), IsRegularLocalRing (Localization.AtPrime p) :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [IsNoetherianRing R] [CommRing R']
     (e : R ≃+* R') [reg : IsRegularRing R] : IsRegularRing R' := by
+  let := isNoetherianRing_of_ringEquiv R e
   apply (isRegularRing_iff R').mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
   have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
