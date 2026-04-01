@@ -293,12 +293,11 @@ def instAlgebraAux (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
 public instance (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
     Algebra R (SplittingField f) where
   smul := SplittingField.smul
-  algebraMap :=
-    { toFun := SplittingField.algebraCast
-      map_one' := by exact (instAlgebraAux R f).algebraMap.map_one'
-      map_mul' := by exact (instAlgebraAux R f).algebraMap.map_mul'
-      map_zero' := by exact (instAlgebraAux R f).algebraMap.map_zero'
-      map_add' := by exact (instAlgebraAux R f).algebraMap.map_add' }
+  algebraMap.toFun := SplittingField.algebraCast
+  algebraMap.map_one' := by exact (instAlgebraAux R f).algebraMap.map_one'
+  algebraMap.map_mul' := by exact (instAlgebraAux R f).algebraMap.map_mul'
+  algebraMap.map_zero' := by exact (instAlgebraAux R f).algebraMap.map_zero'
+  algebraMap.map_add' := by exact (instAlgebraAux R f).algebraMap.map_add'
   commutes' := by exact (instAlgebraAux R f).commutes'
   smul_def' := by exact (instAlgebraAux R f).smul_def'
 
