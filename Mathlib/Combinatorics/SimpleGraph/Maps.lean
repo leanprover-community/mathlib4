@@ -251,7 +251,7 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
-theorem spanningCoe_induce_eq_iff (s : Set V) : (G.induce s).spanningCoe = G ↔ G.support ⊆ s := by
+theorem spanningCoe_induce_eq_self (s : Set V) : (G.induce s).spanningCoe = G ↔ G.support ⊆ s := by
   refine ⟨fun h v hv ↦ ?_, fun h ↦ le_antisymm (G.spanningCoe_induce_le s) fun u v hadj ↦ ?_⟩
   · rw [← h, support_spanningCoe] at hv
     have ⟨u, _, hvu⟩ := hv
@@ -260,11 +260,11 @@ theorem spanningCoe_induce_eq_iff (s : Set V) : (G.induce s).spanningCoe = G ↔
 
 @[simp]
 theorem spanningCoe_induce_support : (G.induce G.support).spanningCoe = G :=
-  G.spanningCoe_induce_eq_iff _ |>.mpr .rfl
+  G.spanningCoe_induce_eq_self _ |>.mpr .rfl
 
 @[simp]
 theorem spanningCoe_induce_univ : (G.induce .univ).spanningCoe = G :=
-  G.spanningCoe_induce_eq_iff _ |>.mpr G.support.subset_univ
+  G.spanningCoe_induce_eq_self _ |>.mpr G.support.subset_univ
 
 open Set.Notation in
 theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
