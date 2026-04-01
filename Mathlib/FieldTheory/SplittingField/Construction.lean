@@ -214,10 +214,12 @@ namespace SplittingField
 
 variable {f : K[X]}
 
+/-- The encapsulated scalar multiplication for `SplittingField f`. Use `r • x` instead. -/
 public protected def smul {S : Type*} {f : K[X]} [DistribSMul S K] [IsScalarTower S K K] :
     (r : S) → (x : SplittingField f) → SplittingField f :=
   (inferInstance : SMul S (delta% SplittingField f)).smul
 
+/-- The encapsulated algebra coercion for `SplittingField f`. Use `↑r` instead. -/
 public protected def algebraCast {R : Type*} {f : K[X]} [CommSemiring R] [Algebra R K] :
     (r : R) → SplittingField f :=
   ⇑(inferInstance : Algebra R (delta% SplittingField f)).algebraMap
@@ -226,24 +228,31 @@ public protected def algebraCast {R : Type*} {f : K[X]} [CommSemiring R] [Algebr
 def instCommRingAux (f : K[X]) : CommRing (SplittingField f) :=
   (inferInstance : CommRing (delta% SplittingField f))
 
+/-- The encapsulated addition for `SplittingField f`. Use `x + y` instead. -/
 public protected def add : (x y : SplittingField f) → SplittingField f :=
   (instCommRingAux f).add
 
+/-- The encapsulated zero for `SplittingField f`. Use `0` instead. -/
 public protected def zero : SplittingField f :=
   (instCommRingAux f).zero
 
+/-- The encapsulated multiplication for `SplittingField f`. Use `x * y` instead. -/
 public protected def mul : (x y : SplittingField f) → SplittingField f :=
   (instCommRingAux f).mul
 
+/-- The encapsulated one for `SplittingField f`. Use `1` instead. -/
 public protected def one : SplittingField f :=
   (instCommRingAux f).one
 
+/-- The encapsulated natural power for `SplittingField f`. Use `x ^ n` instead. -/
 public protected def npow : (n : ℕ) → (x : SplittingField f) → SplittingField f :=
   (instCommRingAux f).npow
 
+/-- The encapsulated negation for `SplittingField f`. Use `-x` instead. -/
 public protected def neg : (x : SplittingField f) → SplittingField f :=
   (instCommRingAux f).neg
 
+/-- The encapsulated subtraction for `SplittingField f`. Use `x - y` instead. -/
 public protected def sub : (x y : SplittingField f) → SplittingField f :=
   (instCommRingAux f).sub
 
@@ -316,6 +325,7 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
 public instance (f : K[X]) : Nontrivial (SplittingField f) :=
   (algEquivSplittingFieldAux f).surjective.nontrivial
 
+/-- The encapsulated inverse for `SplittingField f`. Use `x - y` instead. -/
 public protected def inv (a : SplittingField f) :=
   (algEquivSplittingFieldAux f).symm (algEquivSplittingFieldAux f a)⁻¹
 
