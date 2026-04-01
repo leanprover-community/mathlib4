@@ -43,12 +43,12 @@ lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
 set_option backward.isDefEq.respectTransparency false in
-instance [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
+instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
   by_cases eqbot : p = ⊥
-  · let _ : Field (Localization.AtPrime p) := IsField.toField (by
+  · let : Field (Localization.AtPrime p) := IsField.toField (by
       simp [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal, eqbot])
     infer_instance
-  · let _ := IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain
+  · have := IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain
       R eqbot (Localization.AtPrime p)
     infer_instance
