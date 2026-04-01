@@ -190,7 +190,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
   · exact Ideal.mul_mem_right _ _ (hp d hd)
   · apply Ideal.mul_mem_left
     simp only [mem_Iic, D, Finsupp.le_iff] at hd
-    push_neg at hd
+    push Not at hd
     rcases hd with ⟨s, hs', hs⟩
     exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
