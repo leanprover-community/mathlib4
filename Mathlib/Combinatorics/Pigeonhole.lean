@@ -305,12 +305,9 @@ Unlike the classical pigeonhole principle (see
 this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
 lemma exists_lt_card_cover_of_card_biUnion_lt_card
-    [DecidableEq α] [Fintype α]
-    {f : α → Finset β}
-    (h₁ : s.Nonempty)
-    (h₂ : ∀ j ∈ s, 0 < Finset.card (f j))
-    (h₃ : (s.biUnion f).card < (s.card)) :
-    ∃ x ∈ s.biUnion f,
+    [DecidableEq α] [Fintype α] {f : α → Finset β}
+    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < Finset.card (f j))
+    (h₃ : (s.biUnion f).card < (s.card)) : ∃ x ∈ s.biUnion f,
     (Finset.inf' s h₁ (fun j ↦ Finset.card (f j))) < (Finset.card {j | j ∈ s ∧ x ∈ f j}) := by
   set k := Finset.inf' s h₁ (fun j ↦ Finset.card (f j)) with hk
   have nek : NeZero k := by
