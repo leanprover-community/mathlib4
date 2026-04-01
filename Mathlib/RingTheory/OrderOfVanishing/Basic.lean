@@ -170,7 +170,7 @@ of `a • x` for `a` a unit in `S`.
 -/
 @[simp]
 lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
-    (a : S) (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
+    {a : S} (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
   rw [Algebra.smul_def a x]
   exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
 
