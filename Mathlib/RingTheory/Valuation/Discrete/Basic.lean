@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Group.Cyclic
--- public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
