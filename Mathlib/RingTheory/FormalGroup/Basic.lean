@@ -47,7 +47,6 @@ name_power_vars X₀, X₁ over R
 
 name_power_vars Y₀, Y₁, Y₂ over R
 
-
 variable (R) in
 /-- A structure for a 1-dimensional formal group law over `R`. -/
 @[ext]
