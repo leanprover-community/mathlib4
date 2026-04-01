@@ -27,7 +27,7 @@ open IsLocalRing
 
 variable (R : Type*) [CommRing R]
 
-/-- A ring is regular if its localization at any prime `IsRegularLocalRing`. -/
+/-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing : Prop extends IsNoetherianRing R where
   localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
