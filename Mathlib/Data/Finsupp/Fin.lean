@@ -66,12 +66,17 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
   · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
 
 @[simp]
-theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
-  ext a
-  by_cases c : a = 0
-  · simp [c]
-  · rw [← Fin.succ_pred a c, cons_succ]
-    simp
+lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
+  ext j
+  cases j using Fin.cases <;> simp
+
+@[simp]
+lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
+  ext j
+  cases j using Fin.cases <;> simp [single_apply]
+
+@[simp]
+theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp
 
 variable {s} {y}
 
@@ -99,16 +104,6 @@ lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb
 variable (y) in
 lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
   (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
-
-@[simp]
-lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
-  ext j
-  cases j using Fin.cases <;> simp
-
-@[simp]
-lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
-  ext j
-  cases j using Fin.cases <;> simp [single_apply]
 
 /-- As a binary function, `Finsupp.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (fun (y : M) s => cons (n := n) y s) := by
