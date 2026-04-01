@@ -205,6 +205,13 @@ theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
   exact Ideal.mul_mem_mul (Ideal.mem_span_singleton_self _)
     ((Ideal.IsPrime.mul_mem_left_iff hx).mp hyp)
 
+lemma IsLocalRing.maximalIdeal_sq_lt_maximalIdeal [IsLocalRing R] [IsNoetherianRing R] :
+    maximalIdeal R ^ 2 < maximalIdeal R ↔ ¬ IsField R := by
+  trans ¬ IsIdempotentElem (maximalIdeal R)
+  · simp [IsIdempotentElem, ← pow_two, lt_iff_le_and_ne, Ideal.pow_le_self]
+  · simp [Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing, Ideal.IsPrime.ne_top,
+      isField_iff_maximalIdeal_eq]
+
 set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
@@ -224,16 +231,13 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
         ⟨I, hI, sub⟩
       simp only [Set.mem_insert_iff] at hI
       rcases hI with eq|min
-      · have : IsField R := by
-          simp only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
-            IsIdempotentElem]
-          exact le_antisymm Ideal.mul_le_right (le_of_le_of_eq sub (eq.trans (pow_two _)))
-        rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
-        exact Nat.zero_ne_add_one n hn
-      · let _ : I.IsPrime := Ideal.minimalPrimes_isPrime min
-        rw [← Ideal.primeHeight_eq_ringKrullDim_iff.mpr (le_antisymm (le_maximalIdeal_of_isPrime I)
-          sub), Ideal.primeHeight_eq_zero_iff.mpr min, ← Nat.cast_zero] at hn
-        exact Nat.zero_ne_add_one n (Nat.cast_inj.mp hn)
+      · exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm <| hn.symm.trans <|
+          ringKrullDim_eq_zero_of_isField ((iff_not_comm.mp
+            (maximalIdeal_sq_lt_maximalIdeal R)).mpr (not_lt_of_ge (le_of_le_of_eq sub eq)))
+      · rw [← (maximalIdeal.isMaximal R).eq_of_le min.1.1.ne_top sub,
+          ← Ideal.primeHeight_eq_zero_iff, ← Ideal.height_eq_primeHeight, ← WithBot.coe_inj,
+          maximalIdeal_height_eq_ringKrullDim, hn] at min
+        exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm min
     replace xnmem : x ∉ maximalIdeal R ^ 2 ∧ ∀ p ∈ minimalPrimes R, x ∉ p := by simpa using xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
