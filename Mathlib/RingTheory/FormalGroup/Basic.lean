@@ -6,6 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Formal group laws over commutative ring
 
@@ -42,20 +43,10 @@ noncomputable section
 
 open MvPowerSeries Finsupp
 
-/-- The first indeterminate for a power series in two variables. -/
-local notation "X₀" => (X (0 : Fin 2) : MvPowerSeries (Fin 2) R)
+name_power_vars X₀, X₁ over R
 
-/-- The second indeterminate for a power series in two variables. -/
-local notation "X₁" => (X (1 : Fin 2) : MvPowerSeries (Fin 2) R)
+name_power_vars Y₀, Y₁, Y₂ over R
 
-/-- The first indeterminate for a power series in three variables. -/
-local notation "Y₀" => (X (0 : Fin 3) : MvPowerSeries (Fin 3) R)
-
-/-- The second indeterminate for a power series in three variables. -/
-local notation "Y₁" => (X (1 : Fin 3) : MvPowerSeries (Fin 3) R)
-
-/-- The third indeterminate for a power series in three variables. -/
-local notation "Y₂" => (X (2 : Fin 3) : MvPowerSeries (Fin 3) R)
 
 variable (R) in
 /-- A structure for a 1-dimensional formal group law over `R`. -/
@@ -116,7 +107,7 @@ instance : Add (F.Point σ) where
 /- TODO : Zero, SMul, Inv instance. -/
 
 /-- Additive formal group law `Gₐ(X,Y) = X + Y`. -/
-def Gₐ : FormalGroup R where
+def 𝔾ₐ : FormalGroup R where
   toFun := X₀ + X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by simp [coeff_index_single_X]
@@ -128,13 +119,13 @@ def Gₐ : FormalGroup R where
     simp [subst_add .X_X, subst_X .X_X, add_assoc]
 
 @[simp]
-lemma Gₐ_apply : Gₐ.toFun = X₀ + X₁ := rfl
+lemma 𝔾ₐ_apply : 𝔾ₐ.toFun = X₀ + X₁ := rfl
 
-instance : (Gₐ (R := R)).IsComm where
+instance : (𝔾ₐ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_X .X_X, add_comm]
 
 /-- Multiplicative formal group law `Gₘ(X,Y) = X + Y + XY`. -/
-def Gₘ : FormalGroup R where
+def 𝔾ₘ : FormalGroup R where
   toFun := X₀ + X₁ + X₀ * X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by
@@ -151,9 +142,9 @@ def Gₘ : FormalGroup R where
     ring
 
 @[simp]
-lemma Gₘ_apply : Gₘ.toFun = X₀ + X₁ + X₀ * X₁ := rfl
+lemma 𝔾ₘ_apply : 𝔾ₘ.toFun = X₀ + X₁ + X₀ * X₁ := rfl
 
-instance : (Gₘ (R := R)).IsComm where
+instance : (𝔾ₘ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_mul .X_X, subst_X .X_X, add_comm, mul_comm]
 
 omit [Algebra R S] in
