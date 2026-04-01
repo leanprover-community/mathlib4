@@ -41,14 +41,14 @@ variable {p q r : ℝ≥0∞}
 /-- A uniformly bounded family of continuous linear maps, as a continuous linear map
 on the `lp` space. -/
 @[simps!]
-def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
+noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
     (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
     lp E p →L[𝕜] lp F p :=
   haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := by
     simpa only [norm_smul, RCLike.norm_ofReal, abs_of_nonneg hK]
       using (T i).le_of_opNorm_le (hTK i) _
   LinearMap.mkContinuous
-    { toFun x := ⟨fun i ↦ T i (x i), lp.memℓp x |>.norm.const_mul K |>.mono
+    { toFun x := ⟨fun i ↦ T i (⇑x i), lp.memℓp x |>.norm.const_mul K |>.mono
         (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm⟩
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
@@ -93,7 +93,7 @@ theorem bilin_of_top_left (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
   obtain ⟨C, hC⟩ := by
     simpa [memℓp_infty_iff, BddAbove, Set.Nonempty, Set.range, upperBounds] using he
   refine hf.norm.const_mul (K * C) |>.mono fun i ↦ ?_
-  replace hK_nonneg : 0 ≤ K := norm_nonneg (B (Classical.arbitrary ι)) |>.trans <| hBK _
+  have hK_nonneg : 0 ≤ K := norm_nonneg (B (Classical.arbitrary ι)) |>.trans <| hBK _
   calc
     ‖B i (e i) (f i)‖ ≤ ‖B i‖ * ‖e i‖ * ‖f i‖ := (B i (e i)).le_of_opNorm_le ((B i).le_opNorm _) _
     _ ≤ K * C * ‖f i‖ := by gcongr; exacts [hBK i, hC i]
@@ -201,13 +201,10 @@ def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK :
 
 /-- `lp.holder` as a bilinear map. -/
 @[simps!]
-def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
+noncomputable def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →ₗ[𝕜] lp F q →ₗ[𝕜] lp G r :=
-  .mk₂ 𝕜 (holder r B hBK)
-    (fun _ _ _ ↦ by ext; simp)
-    (fun _ _ _ ↦ by ext; simp)
-    (fun _ _ _ ↦ by ext; simp)
-    (fun _ _ _ ↦ by ext; simp)
+  .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_ where finally
+    all_goals intros; ext; simp
 
 /-- `lp.holder` as a continuous bilinear map. -/
 noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
