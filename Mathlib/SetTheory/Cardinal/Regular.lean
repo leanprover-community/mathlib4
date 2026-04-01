@@ -339,9 +339,9 @@ theorem isSingular_aleph_iff {o : Ordinal} : (ℵ_ o).IsSingular ↔ IsSuccLimit
 theorem IsSingular.isSuccLimit_of_aleph {o : Ordinal} (hc : IsSingular (ℵ_ o)) : IsSuccLimit o :=
   (isSingular_aleph_iff.1 hc).1
 
-theorem isSingular_aleph_omega : (ℵ_ ω).IsSingular := by simp [isSingular_aleph_iff]
+theorem isSingular_aleph_omega0 : (ℵ_ ω).IsSingular := by simp [isSingular_aleph_iff]
 
-theorem IsSingular.aleph_omega_le (hc : IsSingular c) : ℵ_ ω ≤ c := by
+theorem IsSingular.aleph_omega0_le (hc : IsSingular c) : ℵ_ ω ≤ c := by
   obtain ⟨o, rfl⟩ := mem_range_aleph_iff.2 hc.aleph0_le
   rw [isSingular_aleph_iff] at hc
   rw [aleph_le_aleph]
