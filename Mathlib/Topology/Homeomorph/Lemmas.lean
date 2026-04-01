@@ -581,3 +581,31 @@ def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y
 theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
   (Homeomorph.ofDiscrete f).isHomeomorph
+
+/-- If `f : α → β` is coinducing and has connected fibers, it induces a homeomorphism on `π₀`. -/
+noncomputable def Topology.IsCoinducing.connectedComponentsEquiv {f : X → Y}
+    (hf : ∀ y, IsConnected (f ⁻¹' {y})) (hf' : Topology.IsCoinducing f) :
+    ConnectedComponents X ≃ₜ ConnectedComponents Y :=
+  IsHomeomorph.homeomorph hf'.continuous.connectedComponentsMap <| by
+    have hbij : Function.Bijective hf'.continuous.connectedComponentsMap := by
+      refine ⟨fun x y h ↦ ?_,
+        Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf y).nonempty⟩
+      obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+      obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+      simp at h
+      simp [h, ← hf'.preimage_connectedComponent hf]
+    refine ⟨?_, ?_, hbij⟩
+    · exact Continuous.connectedComponentsMap_continuous hf'.continuous
+    · exact hf'.connectedComponentsMap.isOpenMap_of_injective hbij.injective
+
+@[simp]
+lemma Topology.IsCoinducing.connectedComponentsEquiv_mk
+    {f : X → Y} (hf : ∀ y, IsConnected (f ⁻¹' {y})) (hf' : Topology.IsCoinducing f) (x : X) :
+    hf'.connectedComponentsEquiv hf (.mk x) = .mk (f x) :=
+  rfl
+
+@[simp]
+lemma Topology.IsCoinducing.connectedComponentsEquiv_symm_mk_apply
+    {f : X → Y} (hf : ∀ y, IsConnected (f ⁻¹' {y})) (hf' : Topology.IsCoinducing f) (x : X) :
+    (hf'.connectedComponentsEquiv hf).symm (.mk (f x)) = .mk x :=
+  (hf'.connectedComponentsEquiv hf).injective (by simp)
