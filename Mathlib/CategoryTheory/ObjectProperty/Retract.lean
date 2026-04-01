@@ -82,10 +82,10 @@ lemma of_biproduct [HasZeroMorphisms C] {J : Type*} (F : J → C) [HasBiproduct 
 end IsStableUnderRetracts
 
 /-- The closure by retracts of a predicate on objects in a category. -/
-def retractClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), _root_.Nonempty (Retract X Y)
+def retractClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), Nonempty (Retract X Y)
 
 lemma prop_retractClosure_iff (X : C) :
-    retractClosure P X ↔ ∃ (Y : C) (_ : P Y), _root_.Nonempty (Retract X Y) := by rfl
+    retractClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (Retract X Y) := by rfl
 
 variable {P} in
 lemma prop_retractClosure {X Y : C} (h : P Y) (r : Retract X Y) : retractClosure P X :=

@@ -110,7 +110,7 @@ lemma EssentiallySmall.exists_small_le (P : ObjectProperty C)
     ∃ (Q : ObjectProperty C) (_ : ObjectProperty.Small.{w} Q), Q ≤ P ∧ P ≤ Q.isoClosure := by
   obtain ⟨Q, _, hQ⟩ := exists_small_le' P
   let P' := Q ⊓ P.isoClosure
-  have h (X' : Subtype P') : ∃ (X : Subtype P), _root_.Nonempty (X'.1 ≅ X.1) :=
+  have h (X' : Subtype P') : ∃ (X : Subtype P), Nonempty (X'.1 ≅ X.1) :=
     ⟨⟨X'.2.2.choose, X'.2.2.choose_spec.choose⟩, X'.2.2.choose_spec.choose_spec⟩
   choose φ hφ using h
   refine ⟨fun X ↦ X ∈ Set.range (Subtype.val ∘ φ), ?_, ?_, ?_⟩
@@ -226,7 +226,7 @@ instance (P : ObjectProperty C) [LocallySmall.{w} C]
   exact essentiallySmall_of_small_of_locallySmall _
 
 lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :
-    (∃ (J : Type w) (_ : Category.{w'} J), _root_.Nonempty (P.FullSubcategory ≌ J)) ↔
+    (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.FullSubcategory ≌ J)) ↔
       ObjectProperty.EssentiallySmall.{w} P := by
   refine ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ?_, fun _ ↦ ?_⟩
   · exact ⟨.ofObj (e.inverse ⋙ P.ι).obj, inferInstance,

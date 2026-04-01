@@ -71,7 +71,7 @@ lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 @[simp]
-lemma strictColimitsOfShape_bot [_root_.Nonempty J] :
+lemma strictColimitsOfShape_bot [Nonempty J] :
     strictColimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro _ ⟨_, h⟩
@@ -133,7 +133,7 @@ end ColimitOfShape
 /-- The property of objects that are the point of a colimit cocone for a
 functor `F : J ⥤ C` where all objects `F.obj j` satisfy `P`. -/
 def colimitsOfShape : ObjectProperty C :=
-  fun X ↦ _root_.Nonempty (P.ColimitOfShape J X)
+  fun X ↦ Nonempty (P.ColimitOfShape J X)
 
 variable {P J} in
 lemma ColimitOfShape.colimitsOfShape {X : C} (h : P.ColimitOfShape J X) :
@@ -146,7 +146,7 @@ lemma strictColimitsOfShape_le_colimitsOfShape :
   exact ⟨.colimit F hF⟩
 
 @[simp]
-lemma colimitsOfShape_bot [_root_.Nonempty J] : colimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+lemma colimitsOfShape_bot [Nonempty J] : colimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro X ⟨⟨_, h⟩⟩
   exact h (Classical.arbitrary J)
@@ -204,7 +204,7 @@ lemma IsClosedUnderColimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
     rw [← isoClosure_strictColimitsOfShape]
     exact monotone_isoClosure h
 
-instance [_root_.Nonempty J] : IsClosedUnderColimitsOfShape (⊥ : ObjectProperty C) J where
+instance [Nonempty J] : IsClosedUnderColimitsOfShape (⊥ : ObjectProperty C) J where
   colimitsOfShape_le := by rw [colimitsOfShape_bot]
 
 instance : IsClosedUnderColimitsOfShape (⊤ : ObjectProperty C) J where

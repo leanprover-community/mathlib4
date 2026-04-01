@@ -38,7 +38,7 @@ instance nonempty_sup_left [P.Nonempty] : (P ⊔ Q).Nonempty :=
 instance nonempty_sup_right [Q.Nonempty] : (P ⊔ Q).Nonempty :=
   nonempty_of_prop (Or.inr Q.prop_arbitrary)
 
-instance nonempty_top [_root_.Nonempty C] : Nonempty (⊤ : ObjectProperty C) :=
+instance nonempty_top [Nonempty C] : Nonempty (⊤ : ObjectProperty C) :=
   nonempty_of_prop (X := Classical.arbitrary C) (by trivial)
 
 lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := by
