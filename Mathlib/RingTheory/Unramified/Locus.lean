@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Kaehler
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber.Spectrum
 public import Mathlib.RingTheory.Support
 
 import Mathlib.RingTheory.Localization.InvSubmonoid
