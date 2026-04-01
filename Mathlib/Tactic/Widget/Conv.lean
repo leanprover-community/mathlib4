@@ -15,7 +15,7 @@ public meta import Lean.PrettyPrinter.Delaborator.Builtins
 /-! # Conv widget
 
 This is a slightly improved version of one of the examples that used to be
-in the ProofWidget library. It defines a `conv?` tactic that displays a widget panel
+in the ProofWidgets library. It defines a `conv?` tactic that displays a widget panel
 allowing to generate a `conv` call zooming to the subexpression selected in the goal.
 -/
 
@@ -263,7 +263,7 @@ public protected def SelectionPanel.rpc :=
   mkSelectionPanelRPC insertEnter
     "Use shift-click to select one sub-expression in the goal or local context that you want to \
     zoom in on."
-    "Conv 🔍" (onlyGoal := false) (onlyOne := true)
+    "Conv 🔍️" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]

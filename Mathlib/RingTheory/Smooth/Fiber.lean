@@ -31,7 +31,7 @@ public import Mathlib.RingTheory.Etale.Locus
 
 ## Note
 
-For the converse that smooth imples flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
+For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
 
 -/
 
@@ -157,7 +157,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   -/
   classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
-    (inferInstanceAs (Algebra.FiniteType R P))
+    (inferInstance : Algebra.FiniteType R P)
   let M' := M.comap f₀
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
@@ -190,7 +190,6 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 -- It is not hard to generalize the proof to get the full generality of the stacks tag.
 -- The hard part is figuring out the right way to state the result. Hence we refrain from this
 -- generalization until we have an application.
@@ -229,7 +228,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
       ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
-      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul _ _ _ _)
+      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
@@ -239,14 +238,12 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)
   exact .comp R Rp Sq
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Smooth.of_formallySmooth_fiber [Algebra.FinitePresentation R S]
     (H : ∀ (I : Ideal R) [I.IsPrime], FormallySmooth I.ResidueField (I.Fiber S)) :
     Algebra.Smooth R S := by
   refine ⟨smoothLocus_eq_univ_iff.mp (Set.eq_univ_iff_forall.mpr fun q ↦ ?_), ‹_›⟩
   exact .of_formallySmooth_fiber (q.asIdeal.under R) _
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FormallyEtale.of_formallyUnramified_of_field in
 @[stacks 08WD "(3) => (1)"]
 lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
