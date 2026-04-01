@@ -220,9 +220,9 @@ public protected def smul {S : Type*} {f : K[X]} [DistribSMul S K] [IsScalarTowe
   (inferInstance : SMul S (delta% SplittingField f)).smul
 
 /-- The encapsulated algebra coercion for `SplittingField f`. Use `↑r` instead. -/
-public protected def algebraCast {R : Type*} {f : K[X]} [CommSemiring R] [Algebra R K] :
-    (r : R) → SplittingField f :=
-  ⇑(inferInstance : Algebra R (delta% SplittingField f)).algebraMap
+public protected def algebraCast {f : K[X]} :
+    (r : K) → SplittingField f :=
+  ⇑(inferInstance : Algebra K (delta% SplittingField f)).algebraMap
 
 @[implicit_reducible]
 def instCommRingAux (f : K[X]) : CommRing (SplittingField f) :=
@@ -275,7 +275,7 @@ public instance (f : K[X]) : CommRing (SplittingField f) where
   one := SplittingField.one
   one_mul := by exact (instCommRingAux f).one_mul
   mul_one := by exact (instCommRingAux f).mul_one
-  natCast := SplittingField.algebraCast
+  natCast n := SplittingField.algebraCast ↑n
   natCast_zero := by exact (instCommRingAux f).natCast_zero
   natCast_succ := by exact (instCommRingAux f).natCast_succ
   npow := SplittingField.npow
@@ -289,7 +289,7 @@ public instance (f : K[X]) : CommRing (SplittingField f) where
   zsmul_succ' := by exact (instCommRingAux f).zsmul_succ'
   zsmul_neg' := by exact (instCommRingAux f).zsmul_neg'
   neg_add_cancel := by exact (instCommRingAux f).neg_add_cancel
-  intCast := SplittingField.algebraCast
+  intCast n := SplittingField.algebraCast ↑n
   intCast_ofNat := by exact (instCommRingAux f).intCast_ofNat
   intCast_negSucc := by exact (instCommRingAux f).intCast_negSucc
   mul_comm := by exact (instCommRingAux f).mul_comm
@@ -302,10 +302,11 @@ def instAlgebraAux (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
     Algebra R (SplittingField f) :=
   (inferInstance : Algebra R (delta% SplittingField f))
 
+open scoped algebraMap in
 public instance (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
     Algebra R (SplittingField f) where
   smul := SplittingField.smul
-  algebraMap.toFun := SplittingField.algebraCast
+  algebraMap.toFun r := SplittingField.algebraCast ↑r
   algebraMap.map_one' := by exact (instAlgebraAux R f).algebraMap.map_one'
   algebraMap.map_mul' := by exact (instAlgebraAux R f).algebraMap.map_mul'
   algebraMap.map_zero' := by exact (instAlgebraAux R f).algebraMap.map_zero'
