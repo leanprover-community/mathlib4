@@ -459,6 +459,9 @@ section AddCommGroup
 
 variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
 
+/-- Over a semiring, symmetric submodules are right-modular in the lattice of submodules.
+  This is a version of `sup_inf_assoc_of_le` for the not-necessarily-modular lattice
+  of submodules over a semiring. -/
 lemma sup_inf_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
     {p : Submodule R M} (hp : ∀ x, -x ∈ p ↔ x ∈ p) (hsp : s ≤ p) :
     (s ⊔ t) ⊓ p = s ⊔ (t ⊓ p) := by
@@ -473,6 +476,9 @@ lemma sup_inf_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
     refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
     simpa [← hyzx] using p.add_mem (hsp hy) hz'
 
+/-- Over a semiring, symmetric submodules are left-modular in the lattice of submodules.
+  This is a version of `inf_sup_assoc_of_le` for the not-necessarily-modular lattice
+  of submodules over a semiring. -/
 lemma inf_sup_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
     {p : Submodule R M} (hp : ∀ x, -x ∈ p ↔ x ∈ p) (hsp : p ≤ s) :
     (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := by
