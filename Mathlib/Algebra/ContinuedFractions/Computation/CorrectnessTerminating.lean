@@ -94,6 +94,7 @@ fraction. Here is an example to illustrate the idea:
 Let `(v : ℚ) := 3.4`. We have
 - `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
 - `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+
 Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
 We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
 This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.

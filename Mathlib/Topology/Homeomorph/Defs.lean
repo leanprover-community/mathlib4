@@ -222,7 +222,7 @@ theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
     simp only [self_comp_symm, IsQuotientMap.id]
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
-  h.isQuotientMap.2.symm
+  h.isQuotientMap.isCoinducing.eq_coinduced.symm
 
 theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injective⟩
 
