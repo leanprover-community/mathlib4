@@ -258,8 +258,27 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
+instance (priority := 100) continuousInv_of_indiscreteTopology [TopologicalSpace H] [Inv H]
+    [IndiscreteTopology H] : ContinuousInv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_discreteTopology [TopologicalSpace H] [Div H]
+    [DiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_discreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace H] [Div H]
+    [IndiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
 instance (priority := 100) topologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
+@[to_additive]
+instance (priority := 100) topologicalGroup_of_indiscreteTopology
+    [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
 section PointwiseLimits
 
@@ -864,12 +883,6 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_one := IsTopologicalGroup.isOpenMap_iff_nhds_one
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_zero := IsTopologicalAddGroup.isOpenMap_iff_nhds_zero
 
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group

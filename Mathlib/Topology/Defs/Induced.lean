@@ -113,7 +113,7 @@ structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   eq_induced : tX = tY.induced f
 
-/-- A function `f : X → Y` between topological spaces is inducing if the topology on `Y` is
+/-- A function `f : X → Y` between topological spaces is coinducing if the topology on `Y` is
 coinduced by the topology on `X` through `f`, meaning that a set `s : Set Y` is open iff its
 preimage is open. -/
 @[fun_prop, mk_iff isCoinducing_iff']

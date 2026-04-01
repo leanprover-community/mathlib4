@@ -281,13 +281,12 @@ protected lemma id : IsCoinducing (id (α := X)) where
 protected lemma comp (hg : IsCoinducing g) (hf : IsCoinducing f) : IsCoinducing (g.comp f) where
   eq_coinduced := by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]
 
-protected lemma of_comp (hf : IsCoinducing f) (hgf : IsCoinducing (g ∘ f)) :
-    IsCoinducing g := by
-  refine .of_isOpen_preimage_iff_isOpen fun s ↦ ?_
+protected lemma of_comp_iff (hf : IsCoinducing f) :
+    IsCoinducing (g ∘ f) ↔ IsCoinducing g := by
+  refine ⟨fun hgf ↦ .of_isOpen_preimage_iff_isOpen fun s ↦ ?_, fun hg ↦ hg.comp hf⟩
   rw [← hgf.isOpen_preimage, Set.preimage_comp, hf.isOpen_preimage]
 
-protected lemma of_comp_of_continuous (hf : Continuous f) (hg : Continuous g)
-    (hgf : IsCoinducing (g ∘ f)) :
+protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsCoinducing (g ∘ f)) :
     IsCoinducing g :=
   ⟨le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
@@ -315,11 +314,11 @@ protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotien
 
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
-  ⟨.of_comp_of_continuous hf hg hgf.1, hgf.2.of_comp⟩
+  ⟨.of_comp hf hg hgf.1, hgf.2.of_comp⟩
 
 theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
     IsQuotientMap g :=
-  ⟨.of_comp hf hgf.1, hgf.2.of_comp⟩
+  ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
 
 @[deprecated (since := "2026-03-21")]
 alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
@@ -336,12 +335,6 @@ protected theorem continuous_iff (hf : IsQuotientMap f) : Continuous g ↔ Conti
 @[fun_prop]
 protected theorem continuous (hf : IsQuotientMap f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
-
-@[deprecated (since := "2026-03-21")]
-alias isOpen_preimage := IsCoinducing.isOpen_preimage
-
-@[deprecated (since := "2026-03-21")]
-alias isClosed_preimage := IsCoinducing.isClosed_preimage
 
 end IsQuotientMap
 
@@ -448,6 +441,17 @@ theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt
   rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
   exact h.neBot.mono <| inf_le_inf_right _ <| hf.nhds_le _
 
+theorem accPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : AccPt (f x) l) :
+    AccPt x (comap f l) := by
+  rw [accPt_iff_clusterPt] at h ⊢
+  apply (hf.clusterPt_comap h).mono
+  rw [comap_inf, comap_principal, preimage_compl]
+  exact inf_le_inf_right (comap f l) (by simp)
+
+theorem clusterPt_comap_iff (hf : IsOpenMap f) (hfc : Continuous f) {x : X} {l : Filter Y} :
+    ClusterPt x (comap f l) ↔ ClusterPt (f x) l :=
+  ⟨fun h => h.map hfc.continuousAt tendsto_comap, hf.clusterPt_comap⟩
+
 end IsOpenMap
 
 /-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed.
@@ -475,8 +479,6 @@ theorem isOpenMap_iff_clusterPt_comap :
 theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
-
-@[deprecated (since := "2025-08-30")] alias isOpenMap_iff_interior := isOpenMap_iff_image_interior
 
 /-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed. -/
 lemma isOpenMap_iff_closure_kernImage :
@@ -759,6 +761,13 @@ theorem of_isEmpty [IsEmpty X] (f : X → Y) : IsOpenEmbedding f :=
 theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X} :
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
   rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.injective]
+
+theorem accPt_comap_iff
+    (hf : IsOpenEmbedding f) {x : X} {l : Filter Y} :
+    AccPt x (comap f l) ↔ AccPt (f x) l := by
+  rw [accPt_iff_clusterPt, accPt_iff_clusterPt, ← hf.injective.preimage_image {x}, image_singleton,
+    ← preimage_compl, ← comap_principal, ← comap_inf,
+    hf.isOpenMap.clusterPt_comap_iff hf.continuous]
 
 end IsOpenEmbedding
 

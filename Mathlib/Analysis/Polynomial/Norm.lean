@@ -49,7 +49,7 @@ namespace Polynomial
 /-- The sup norm of a polynomial on a semi-normed ring, defined as the maximum of its coefficients.
 Often called the _(naive) height_ of the polynomial.
 
-This is defined in terms of `Polynomial.guassNorm`. -/
+This is defined in terms of `Polynomial.gaussNorm`. -/
 noncomputable def supNorm : ℝ := p.gaussNorm (SeminormedRing.toRingSeminorm A) 1
 
 /-- The direct definition of the supNorm -/
