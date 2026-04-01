@@ -64,13 +64,13 @@ theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   intro v
   rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
-/-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+/-- If a path `p` is Hamiltonian then the graph has finitely many vertices. -/
 @[implicit_reducible]
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
 
-/-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+/-- If a path `p` is Hamiltonian then the graph has finitely many vertices. -/
 protected lemma IsHamiltonian.finite (hp : p.IsHamiltonian) : Finite α := by
   have := hp.fintype; infer_instance
 
@@ -163,7 +163,7 @@ lemma IsHamiltonianCycle.map (hf : Bijective f)
     rw [List.count_map_of_injective _ _ hf.injective]
     simpa using hp.isHamiltonian_tail x
 
-/-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+/-- If a cycle `p` is Hamiltonian then the graph has finitely many vertices. -/
 protected lemma IsHamiltonianCycle.finite (hp : p.IsHamiltonianCycle) : Finite α :=
   hp.isHamiltonian_tail.finite
 
@@ -224,7 +224,7 @@ variable [Fintype α]
 
 /-- A Hamiltonian graph is a graph that contains a Hamiltonian cycle.
 
-This is equivalent to there being an hamiltonian cycle based at each vertex.
+This is equivalent to there being an Hamiltonian cycle based at each vertex.
 See `IsHamiltonian.exists_isHamiltonianCycle`.
 
 By convention, the singleton graph is considered to be Hamiltonian and the empty graph is not. -/
@@ -279,7 +279,6 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   obtain ⟨p, hp⟩ := hG.exists_isHamiltonianCycle u
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
     (fun huv ↦ he.2 <| .trans ?_ huv) he.2 (hp.isHamiltonian_tail.mem_support v)
-  apply hp.isTrail.isEdgeReachable_two <;> simp [← ENat.add_one_le_iff]
-  rfl
+  apply hp.isTrail.isEdgeReachable_two <;> simp
 
 end SimpleGraph
