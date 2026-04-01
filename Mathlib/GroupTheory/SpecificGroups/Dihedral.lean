@@ -240,7 +240,7 @@ lemma commutative_iff : IsMulCommutative (DihedralGroup n) ↔ n = 1 ∨ n = 2 w
 lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
   by_cases h2 : n = 2
   · simpa [exponent, card, h2] using h.exponent_eq_card
-  · exact not_commutative h1 h2 h.commutative
+  · exact not_commutative h1 h2 h.isMulCommutative
 
 lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic
