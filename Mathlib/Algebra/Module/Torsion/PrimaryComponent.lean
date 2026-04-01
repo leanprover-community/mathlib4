@@ -186,6 +186,61 @@ theorem iSupIndep_primaryComponent :
   apply hSupIndep _ _ ?_ hsum
   exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (Finset.le_sup hP) _ (hmem P hP)
 
+open Classical in
+theorem primaryComponent.map_surjective (M₁ M₂ : Type*)
+    [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂]
+    (hM₁ : IsTorsion A M₁) (hM₂ : IsTorsion A M₂)
+    (P : HeightOneSpectrum A) (φ : M₁ →ₗ[A] M₂) (hf : Surjective φ) :
+    Surjective (primaryComponent.map P.asIdeal φ) := by
+  rintro ⟨y, hy⟩
+  obtain ⟨b, rfl⟩ := hf y
+  simp only [primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall] at hy
+  obtain ⟨n, hn⟩ := hy
+  obtain ⟨h1, h2⟩ := by simpa [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eq_top_iff']
+    using isInternal_primaryComponent hM₁
+  specialize h2 b
+  rw [mem_iSup_iff_exists_dfinsupp] at h2
+  obtain ⟨f, hf⟩ := h2
+  use f P
+  ext
+  simp only [map, LinearMap.codRestrict_apply, LinearMap.domRestrict_apply, ← hf, DFinsupp.sum,
+    DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply, LinearMap.toAddMonoidHom_coe,
+    subtype_apply, map_sum]
+  rw [Finset.sum_eq_add_sum_diff_singleton P _ (by aesop), left_eq_add]
+  obtain ⟨h1, h2⟩ := by simpa [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
+    using isInternal_primaryComponent hM₂
+  specialize h1 P
+  simp only [ne_eq, disjoint_iff, Submodule.eq_bot_iff, Submodule.mem_inf] at h1
+  apply h1
+  constructor
+  · have := (Finset.sum_eq_add_sum_diff_singleton (s := f.support) P (fun P ↦ φ (f P))
+      (by clear h1; aesop))
+    rw [← sub_eq_of_eq_add' this]
+    replace hf := by simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using congr(φ $hf)
+    rw [hf]
+    exact Submodule.sub_mem _ hy (primaryComponent_map_mem _ _ _)
+  · rw [Submodule.mem_biSup_iff_exists_dfinsupp]
+    use (DFinsupp.mapRange (fun Q : HeightOneSpectrum A ↦ map Q.asIdeal φ) (by simp) f)
+    simp only [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply, DFinsupp.sum,
+      DFinsupp.filter_ne_eq_erase, DFinsupp.support_erase, DFinsupp.erase_apply,
+      DFinsupp.mapRange_apply, LinearMap.toAddMonoidHom_coe, subtype_apply, Finset.erase_eq]
+    apply Finset.sum_congr_of_eq_on_inter
+    · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, DFinsupp.mapRange_apply, ne_eq,
+      Finset.mem_singleton, not_and, Decidable.not_not, ZeroMemClass.coe_eq_zero, ite_eq_left_iff,
+      and_imp]
+      grind
+    · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, ne_eq, Finset.mem_singleton,
+      DFinsupp.mapRange_apply, not_and, Decidable.not_not, and_imp]
+      intro a ha hne hnfa
+      by_contra!
+      suffices ¬(primaryComponent.map a.asIdeal φ) (f a) = 0 by grind
+      simpa [Subtype.ext_iff, primaryComponent.map, LinearMap.codRestrict_apply,
+        LinearMap.domRestrict_apply]
+    · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, DFinsupp.mapRange_apply, ne_eq,
+      Finset.mem_singleton, and_imp]
+      intro a ha hne hnfa hne
+      simp [if_neg hne, map]
+
 end IsDedekindDomain
 
 end AddCommGroup
