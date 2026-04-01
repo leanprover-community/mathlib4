@@ -693,10 +693,4 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-/--
-A quadratic extension has abelian Galois group.
--/
-instance IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
-  IsCyclic.commutative
-
 end Algebra
