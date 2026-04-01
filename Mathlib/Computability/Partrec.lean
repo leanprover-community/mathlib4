@@ -718,7 +718,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    #adaptation_note /-- After leanprover/lean4#13166, the proof from here to the end of the
+    #adaptation_note /-- Before leanprover/lean4#13166, the proof from here to the end of the
     first branch was:
     ```
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
@@ -732,6 +732,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     have := h₁ (Nat.lt_succ_self _)
     grind [mem_unique, PFun.mem_fix_iff]
     ```
+    After leanprover/lean4#13166, `grind` seems to be blowing up,
+    and some grind annotations from Batteries seem to be implicated.
+    https://github.com/leanprover-community/batteries/pull/1744 may improve matters.
     -/
     have hmem : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
@@ -762,7 +765,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      #adaptation_note /-- After leanprover/lean4#13166, the rest of this branch was `grind`. -/
+      #adaptation_note /-- Before leanprover/lean4#13166, the rest of this branch was `grind`. -/
       refine ⟨n, hn₁, fun m mn km => ?_⟩
       rcases Nat.eq_or_lt_of_le km with rfl | hlt
       · exact ⟨_, hk⟩
