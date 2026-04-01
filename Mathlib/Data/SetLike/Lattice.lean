@@ -26,7 +26,6 @@ closure operator.
 
 * `LatticeSetLike.gi` : the operations `SetLike.closure` and `SetLike.coe` (the embedding)
   form a Galois insertion.
-
 -/
 
 @[expose] public section
