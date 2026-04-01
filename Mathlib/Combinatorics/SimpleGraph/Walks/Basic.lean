@@ -482,6 +482,11 @@ theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.D
   | d₁ :: d₂ :: l =>
     simpa [hchain.rel.symm] using darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons
 
+@[simp]
+theorem edges_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    (ofDarts hne hchain).edges = l.map Dart.edge := by
+  simp [edges]
+
 @[simp, grind =]
 theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     (ofDarts hne hchain).length = l.length := by
