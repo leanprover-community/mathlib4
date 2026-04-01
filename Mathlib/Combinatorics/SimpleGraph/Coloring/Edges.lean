@@ -253,6 +253,12 @@ theorem EdgeColorable.chromaticIndex_pos (h : G.EdgeColorable n) (he : G.edgeSet
   have := he.to_subtype
   chromaticNumber_pos h
 
+theorem EdgeColoring.apply_eq_iff_of_adj (C : G.EdgeColoring α) {u v w : V} (huv : G.Adj u v)
+    (huw : G.Adj u w) : C ⟨s(u, v), huv⟩ = C ⟨s(u, w), huw⟩ ↔ v = w := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  contrapose! h
+  exact C.map_adj ⟨by grind, u, by simp⟩
+
 theorem two_le_chromaticIndex_of_adj {u v w : V} (huv : G.Adj u v) (huw : G.Adj u w) (h : v ≠ w) :
     2 ≤ G.chromaticIndex :=
   @two_le_chromaticNumber_of_adj _ _ ⟨s(u, v), huv⟩ ⟨s(u, w), huw⟩ ⟨by grind, u, by simp⟩
