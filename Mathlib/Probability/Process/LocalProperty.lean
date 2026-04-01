@@ -258,7 +258,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
 
 /-- Auxiliary definition for `isPreLocalizingSequence_of_isLocalizingSequence` which constructs a
 strictly increasing sequence from a given sequence. -/
-def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
+private def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
   | 0 => x 0
   | n + 1 => max (x (n + 1)) (mkStrictMonoAux x n) + 1
 
