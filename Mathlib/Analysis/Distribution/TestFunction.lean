@@ -42,9 +42,28 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 ## Notation
 
 - `𝓓^{n}(Ω, F)`: the space of bundled `n`-times continuously differentiable functions `E → F`
-  with compact support contained in `Ω`.
+  with compact support contained in `Ω`. If `Ω` and `F` can be inferred from context,
+  you can simply use `𝓓^{n}`.
 - `𝓓(Ω, F)`: the space of bundled smooth (infinitely differentiable) functions `E → F`
-  with compact support contained in `Ω`, i.e. `𝓓^{⊤}(Ω, F)`.
+  with compact support contained in `Ω`, i.e. `𝓓^{⊤}(Ω, F)`. If `Ω` and `F` can be inferred from
+  context, you can simply use `𝓓`.
+
+## Implementation notes
+
+The motivation for allowing control of the regularity, through the parameter `n`,
+is that the space of distributions of order less than `n` is precisely the dual of `𝓓^{n}`.
+Hence, tracking regularity of operations at the level of test functions will allow
+to track the orders at the level of distributions.
+
+Unfortunately, this comes with a lot of extra parameter. It is hard to guess in advance
+which approach will be best to make this as smooth as possible (maybe we need to duplicate
+everything to the smooth case ?), so the approach may change as we develop the theory.
+
+One mitigation we implement is that, in operations like `fderivCLM` or `lineDerivCLM`,
+the regularity parameters are kept *implicit*. This may seem wrong, because you need
+to add type ascriptions when the regularity parameters cannot be inferred from context, but the
+idea is that `fderivCLM 𝕜 : 𝓓^{n} → 𝓓^{k}` is easier to interpret than `fderivCLM 𝕜 n k`,
+where one would need to look at the definition to understand what `n` and `k` refer to.
 
 ## Tags
 
@@ -75,9 +94,19 @@ structure TestFunction : Type _ where
 with compact support. -/
 scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω F n
 
+/-- Notation for the space of bundled `n`-times continuously differentiable maps
+with compact support. In this version of the notation, the spaces `E` and `F` are left implicit,
+allowing one to write things like `fderivCLM 𝕜 f : 𝓓^{k}` without specifying the spaces. -/
+scoped[Distributions] notation "𝓓^{" n "}" => TestFunction _ _ n
+
 /-- Notation for the space of "test functions", i.e. bundled smooth (infinitely differentiable) maps
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
+
+/-- Notation for the space of bundled `n`-times continuously differentiable maps
+with compact support. In this version of the notation, the spaces `E` and `F` are left implicit,
+allowing one to write things like `fderivCLM 𝕜 f : 𝓓` without specifying the spaces. -/
+scoped[Distributions] notation "𝓓" => TestFunction _ _ ⊤
 
 open Distributions
 
@@ -489,10 +518,13 @@ section FDerivCLM
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
-variable (𝕜 n k) in
+variable (𝕜) in
 /-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
-This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map. -/
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. -/
 noncomputable def fderivCLM :
     𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) :=
   letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{k}(Ω, E →L[ℝ] F) :=
@@ -501,36 +533,36 @@ noncomputable def fderivCLM :
         f.hasCompactSupport.fderiv ℝ, tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
     else 0
   TestFunction.limitCLM 𝕜 Φ
-    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.fderivCLM 𝕜 n k)
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.fderivCLM 𝕜)
     (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
 
 @[simp]
 lemma fderivCLM_apply (f : 𝓓^{n}(Ω, F)) :
-    fderivCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+    (fderivCLM 𝕜 : 𝓓^{n} → 𝓓^{k}) f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
   rw [fderivCLM]
   split_ifs <;> rfl
 
 lemma fderivCLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
-    fderivCLM 𝕜 n k f = fderiv ℝ f := by
+    (fderivCLM 𝕜 : 𝓓^{n} → 𝓓^{k}) f = fderiv ℝ f := by
   simp [hk]
 
 lemma fderivCLM_apply_of_gt (hk : n < k + 1) :
-    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F)) = 0 := by
+    (fderivCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F)) = 0 := by
   ext : 2
   simp [not_le_of_gt hk]
 
 variable (𝕜) in
 lemma fderivCLM_ofSupportedIn {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
-    fderivCLM 𝕜 n k (ofSupportedIn K_sub_Ω f) =
-      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.fderivCLM 𝕜 n k f) := by
+    (fderivCLM 𝕜 : 𝓓^{n} → 𝓓^{k}) (ofSupportedIn K_sub_Ω f) =
+      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.fderivCLM 𝕜 f) := by
   ext
   simp
 
 variable (𝕜) in
 lemma fderivCLM_eq_of_scalars (𝕜' : Type*)
     [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
-    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) → _) = fderivCLM 𝕜' n k :=
+    (fderivCLM 𝕜 : 𝓓^{n}(Ω, F) → 𝓓^{k}(Ω, E →L[ℝ] F)) = fderivCLM 𝕜' :=
   rfl
 
 end FDerivCLM
@@ -554,15 +586,15 @@ noncomputable def lineDerivCLM (v : E) :
   { toFun f := f v
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
-  postcompCLM ev_v ∘L fderivCLM 𝕜 n k
+  postcompCLM ev_v ∘L fderivCLM 𝕜
 
 lemma lineDerivCLM_eq_fderivCLM {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
-    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = fderivCLM 𝕜 n k f x v :=
+    (lineDerivCLM 𝕜 v : 𝓓^{n} → 𝓓^{k}) f x = (fderivCLM 𝕜 : 𝓓^{n} → 𝓓^{k}) f x v :=
   rfl
 
 @[simp]
 lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
-    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
+    (lineDerivCLM 𝕜 v : 𝓓^{n} → 𝓓^{k}) f x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
   rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
   split_ifs with hk
   · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
@@ -570,7 +602,7 @@ lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
   · rfl
 
 lemma lineDerivCLM_apply_of_le {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} (hk : k + 1 ≤ n) :
-    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = lineDeriv ℝ f x v := by
+    (lineDerivCLM 𝕜 v : 𝓓^{n} → 𝓓^{k}) f x = lineDeriv ℝ f x v := by
   simp [hk]
 
 lemma lineDerivCLM_apply_of_gt {v : E} (hk : n < k + 1) :

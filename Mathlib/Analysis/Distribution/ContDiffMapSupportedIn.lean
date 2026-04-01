@@ -50,9 +50,11 @@ larger space of test functions.
 
 In the `Distributions` scope, we introduce the following notations:
 - `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
-  which vanish outside of `K`.
+  which vanish outside of `K`. If `E` and `F` can be inferred from context, you can simply
+  use `𝓓^{n}_{K}`.
 - `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
-  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`.
+  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`. If `E` and `F` can be inferred from context,
+  you can simply use `𝓓_{K}`.
 - `N[𝕜; F]_{K, n, i}` (or simply `N[𝕜]_{K, n, i}`): the `𝕜`-seminorm on `𝓓^{n}_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
@@ -70,6 +72,11 @@ In the `Distributions` scope, we introduce the following notations:
   with the downside of many regularity parameters; we considered specializing all the
   definitions to the (most common) smooth case, but we believe it is better to wait and see
   what is more practical to use later on.
+* To mitigate the above downside, we keep the regularity parameters *implicit* in operations
+  like `fderivCLM` or `iteratedFDerivLM`. This may seem wrong, because you need
+  to add type ascriptions when the parameters cannot be inferred from context, but the idea is that
+  `fderivCLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}` is easier to interpret than `fderivCLM 𝕜 n k`, where one
+  would need to look at the definition to understand what `n` and `k` refer to.
 * In `iteratedFDerivLM`, we define the `i`-th iterated differentiation operator as
   a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
   this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
@@ -104,10 +111,24 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
+/-- Notation for the space of bundled `n`-times continuously differentiable
+functions with support in a compact set `K`. In this version of the notation,
+the spaces `E` and `F` are left implicit, allowing one to write things like
+`fderivCLM 𝕜 f : 𝓓^{k}_{K}` without specifying the spaces. -/
+scoped[Distributions] notation "𝓓^{" n "}_{" K "}" =>
+  ContDiffMapSupportedIn _ _ n K
+
 /-- Notation for the space of bundled smooth (infinitely differentiable)
 functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
+
+/-- Notation for the space of bundled smooth (infinitely differentiable)
+functions with support in a compact set `K`. In this version of the notation,
+the spaces `E` and `F` are left implicit, allowing one to write things like
+`fderivCLM 𝕜 f : 𝓓_{K}` without specifying the spaces. -/
+scoped[Distributions] notation "𝓓_{" K "}" =>
+  ContDiffMapSupportedIn _ _ ⊤ K
 
 open Distributions
 
@@ -358,12 +379,15 @@ lemma monoLM_eq_of_scalars (𝕜' : Type*)
     (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoLM 𝕜' :=
   rfl
 
-variable (n k) in
-/-- `fderivLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `fderivLM 𝕜` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
-This is subsumed by `fderivCLM`, which also bundles the continuity. -/
+This is subsumed by `fderivCLM`, which also bundles the continuity.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription.
+-/
 noncomputable def fderivLM :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
   toFun f :=
@@ -388,31 +412,33 @@ noncomputable def fderivLM :
 
 @[simp]
 lemma fderivLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    fderivLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+    (fderivLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
   rw [fderivLM]
   split_ifs <;> rfl
 
 lemma fderivLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
-    fderivLM 𝕜 n k f = fderiv ℝ f := by
+    (fderivLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = fderiv ℝ f := by
   simp [hk]
 
 lemma fderivLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
-    fderivLM 𝕜 n k f = 0 := by
+    (fderivLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = 0 := by
   ext : 1
   simp [not_le_of_gt hk]
 
 lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (fderivLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivLM 𝕜' n k :=
+    (fderivLM 𝕜 : 𝓓^{n}_{K}(E, F) → 𝓓^{k}_{K}(E, E →L[ℝ] F)) = fderivLM 𝕜' :=
   rfl
 
-variable (n k) in
-/-- `iteratedFDerivLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
 This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
 
 This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
-continuity. -/
+continuity.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. -/
 noncomputable def iteratedFDerivLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
   /-
@@ -444,29 +470,30 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
 
 @[simp]
 lemma iteratedFDerivLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    iteratedFDerivLM 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+    (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f =
+      if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   rw [ContDiffMapSupportedIn.iteratedFDerivLM]
   split_ifs <;> rfl
 
 lemma iteratedFDerivLM_apply_of_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : k + i ≤ n) :
-    iteratedFDerivLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+    (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
 lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : n < k + i) :
-    iteratedFDerivLM 𝕜 n k i f = 0 := by
+    (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = 0 := by
   ext : 1
   simp [not_le_of_gt hin]
 
 lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (iteratedFDerivLM 𝕜 n k i : 𝓓^{n}_{K}(E, F) → _)
-      = iteratedFDerivLM 𝕜' n k i :=
+    (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K}(E, F) → 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F))
+      = iteratedFDerivLM 𝕜' i :=
   rfl
 
 variable (n) in
 /-- `structureMapLM 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
 `i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`. In other words, it
-is the composition of `toBoundedContinuousFunctionLM 𝕜` and `iteratedFDerivLM 𝕜 n 0 i`.
+is the composition of `toBoundedContinuousFunctionLM 𝕜` and `iteratedFDerivLM 𝕜 i`.
 This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`.
@@ -475,12 +502,12 @@ This is subsumed by `structureMapCLM`, which also bundles the
 continuity. -/
 noncomputable def structureMapLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  toBoundedContinuousFunctionLM 𝕜 ∘ₗ iteratedFDerivLM 𝕜 n 0 i
+  toBoundedContinuousFunctionLM 𝕜 ∘ₗ (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K} →ₗ[𝕜] 𝓓^{0}_{K})
 
 lemma structureMapLM_eq {i : ℕ} :
     (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) =
       (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{0}_{K}(E, E [×i]→L[ℝ] F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) ∘ₗ
-      (iteratedFDerivLM 𝕜 n 0 i : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{0}_{K}(E, E [×i]→L[ℝ] F)) :=
+      (iteratedFDerivLM 𝕜 i : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{0}_{K}(E, E [×i]→L[ℝ] F)) :=
   rfl
 
 lemma structureMapLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
@@ -813,7 +840,7 @@ lemma monoCLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
+    N[𝕜]_{K, k, i} (fderivLM 𝕜 f) ≤ N[𝕜]_{K, n, i+1} f := by
   by_cases! hk : k + 1 ≤ n
   · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
     intro hi x hx
@@ -823,38 +850,40 @@ theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   · simp [fderivLM_apply_of_gt 𝕜 f hk]
 
 theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i+1} f := by
+    N[𝕜]_{K, i} (fderivLM 𝕜 f) = N[𝕜]_{K, i+1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
     norm_iteratedFDeriv_fderiv]
 
-variable (n k) in
-/-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `fderivCLM 𝕜` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
-This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map. -/
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. -/
 noncomputable def fderivCLM :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
-  toLinearMap := fderivLM 𝕜 n k
-  cont := show Continuous (fderivLM 𝕜 n k) by
+  toLinearMap := fderivLM 𝕜
+  cont := show Continuous (fderivLM 𝕜) by
     refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_fderivLM_le 𝕜 f
 
 @[simp]
 lemma fderivCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    fderivCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 :=
+    (fderivCLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = if k + 1 ≤ n then fderiv ℝ f else 0 :=
   fderivLM_apply 𝕜 f
 
 lemma fderivCLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
-    fderivCLM 𝕜 n k f = fderiv ℝ f :=
+    (fderivCLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = fderiv ℝ f :=
   fderivLM_apply_of_le 𝕜 f hk
 
 lemma fderivCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
-    fderivCLM 𝕜 n k f = 0 :=
+    (fderivCLM 𝕜 : 𝓓^{n}_{K} → 𝓓^{k}_{K}) f = 0 :=
   fderivLM_apply_of_gt 𝕜 f hk
 
 lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (fderivCLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivCLM 𝕜' n k :=
+    (fderivCLM 𝕜 : 𝓓^{n}_{K}(E, F) → 𝓓^{k}_{K}(E, E →L[ℝ] F)) = fderivCLM 𝕜' :=
   rfl
 
 end Topology
