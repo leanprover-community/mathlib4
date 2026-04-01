@@ -68,7 +68,8 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
-  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry]
+  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry,
+    `Function.hasUncurryBase, `Function.hasUncurryInduction]
 
 /-- `fun_prop` configuration -/
 structure Config where

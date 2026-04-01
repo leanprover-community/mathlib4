@@ -305,7 +305,6 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_ofSupportedIn K_sub_Ω
 
 @[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
 

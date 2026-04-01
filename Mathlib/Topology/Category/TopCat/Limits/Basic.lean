@@ -145,8 +145,8 @@ lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
   refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
-        continuous_toFun := h ▸ by fun_prop,
-        continuous_invFun := h ▸ by fun_prop }
+        continuous_toFun := h ▸ continuous_id,
+        continuous_invFun := h ▸ @continuous_id .. }
   · intro; rfl
 
 variable (F : J ⥤ TopCat.{u})
@@ -273,8 +273,8 @@ lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forge
   refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
-        continuous_toFun := h ▸ by fun_prop,
-        continuous_invFun := h ▸ by fun_prop }
+        continuous_toFun := h ▸ continuous_id,
+        continuous_invFun := h ▸ @continuous_id .. }
   · intro; rfl
 
 variable (F)

@@ -177,9 +177,11 @@ theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
 statements along measurable equivalences. -/
 structure MeasurableEquiv (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] extends α ≃ β where
   /-- The forward function of a measurable equivalence is measurable. -/
-  measurable_toFun : Measurable toEquiv := by measurability
+  measurable_toFun : Measurable toEquiv := by
+    first | measurability | eta_expand; dsimp -failIfUnchanged; measurability
   /-- The inverse function of a measurable equivalence is measurable. -/
-  measurable_invFun : Measurable toEquiv.symm := by measurability
+  measurable_invFun : Measurable toEquiv.symm := by
+    first | measurability | eta_expand; dsimp -failIfUnchanged; measurability
 
 @[inherit_doc]
 infixl:25 " ≃ᵐ " => MeasurableEquiv
@@ -395,6 +397,7 @@ def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ �
 /-- `s ×ˢ t ≃ (s × t)` as measurable spaces. -/
 def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ᵐ s × t where
   toEquiv := Equiv.Set.prod s t
+  measurable_toFun := .prodMk (by measurability) (by measurability)
   measurable_invFun := Measurable.subtype_mk <| by fun_prop
 
 /-- `univ α ≃ α` as measurable spaces. -/

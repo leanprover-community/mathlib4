@@ -135,7 +135,7 @@ Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
 def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
     F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
-  toFun f := ⟨B.flip f, by fun_prop⟩
+  toFun f := ⟨B.flip f, show Continuous fun x : WeakBilin B => B x f by fun_prop⟩
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 

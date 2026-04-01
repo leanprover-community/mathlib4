@@ -486,8 +486,6 @@ lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induc
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
   toEquiv := WithLp.equiv p (α × β)
-  continuous_toFun := prod_continuous_ofLp p α β
-  continuous_invFun := prod_continuous_toLp p α β
 
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
@@ -567,13 +565,11 @@ lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
   __ := fstₗ ..
-  cont := WithLp.continuous_fst ..
 
 /-- `WithLp.snd` as a continuous linear map. -/
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where
   __ := sndₗ ..
-  cont := WithLp.continuous_snd ..
 
 end ContinuousLinearEquiv
 

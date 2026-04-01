@@ -38,8 +38,8 @@ variable
 
 /-- The Cartesian product of two bounded linear maps, as a bounded linear map. -/
 protected def prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
-    M₁ →L[R] M₂ × M₃ :=
-  ⟨(f₁ : M₁ →ₗ[R] M₂).prod f₂, f₁.2.prodMk f₂.2⟩
+    M₁ →L[R] M₂ × M₃ where
+  toLinearMap := .prod f₁ f₂
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
@@ -92,12 +92,10 @@ variable (R M₁ M₂)
 
 /-- `Prod.fst` as a `ContinuousLinearMap`. -/
 def fst : M₁ × M₂ →L[R] M₁ where
-  cont := continuous_fst
   toLinearMap := LinearMap.fst R M₁ M₂
 
 /-- `Prod.snd` as a `ContinuousLinearMap`. -/
 def snd : M₁ × M₂ →L[R] M₂ where
-  cont := continuous_snd
   toLinearMap := LinearMap.snd R M₁ M₂
 
 variable {R M₁ M₂}
@@ -162,8 +160,8 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoi
 
 /-- `pi` construction for continuous linear functions. From a family of continuous linear functions
 it produces a continuous linear function into a family of topological modules. -/
-def pi (f : ∀ i, M →L[R] φ i) : M →L[R] ∀ i, φ i :=
-  ⟨LinearMap.pi fun i => f i, continuous_pi fun i => (f i).continuous⟩
+def pi (f : ∀ i, M →L[R] φ i) : M →L[R] ∀ i, φ i where
+  toLinearMap := .pi fun i => f i
 
 @[simp]
 theorem coe_pi' (f : ∀ i, M →L[R] φ i) : ⇑(pi f) = fun c i => f i c :=
@@ -188,8 +186,8 @@ theorem pi_comp (f : ∀ i, M →L[R] φ i) (g : M₂ →L[R] M) :
   rfl
 
 /-- The projections from a family of topological modules are continuous linear maps. -/
-def proj (i : ι) : (∀ i, φ i) →L[R] φ i :=
-  ⟨LinearMap.proj i, continuous_apply _⟩
+def proj (i : ι) : (∀ i, φ i) →L[R] φ i where
+  toLinearMap := .proj i
 
 @[simp]
 theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] φ i) b = b i :=
@@ -244,7 +242,6 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
@@ -253,7 +250,6 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 @[simps! -fullyApplied]
 def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
   toLinearMap := .single R φ i
-  cont := continuous_single _
 
 lemma sum_comp_single [Fintype ι] [DecidableEq ι] (L : (Π i, φ i) →L[R] M) (v : Π i, φ i) :
     ∑ i, L.comp (.single R φ i) (v i) = L v := by
@@ -329,8 +325,8 @@ variable [AddCommMonoid M] [Module R M] [ContinuousAdd M] [AddCommMonoid N] [Mod
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 @[simps! coe apply]
-def coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) : M₁ × M₂ →L[R] M :=
-  ⟨.coprod f₁ f₂, (f₁.cont.comp continuous_fst).add (f₂.cont.comp continuous_snd)⟩
+def coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) : M₁ × M₂ →L[R] M where
+  toLinearMap := .coprod f₁ f₂
 
 @[simp] lemma coprod_add (f₁ g₁ : M₁ →L[R] M) (f₂ g₂ : M₂ →L[R] M) :
     (f₁ + g₁).coprod (f₂ + g₂) = f₁.coprod f₂ + g₁.coprod g₂ := by ext <;> simp

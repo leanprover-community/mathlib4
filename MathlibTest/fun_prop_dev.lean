@@ -118,8 +118,10 @@ instance : FunLike (α -o β) α β where
   Lean.Meta.registerCoercion ``ConHom.toFun
     (some { numArgs := 3, coercee := 2, type := .coeFun })
 
+@[reducible]
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
+@[reducible]
 instance [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
   ⟨fun f p ↦ ↿(f p.1) p.2⟩
 

@@ -392,7 +392,7 @@ def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   if (← fData.isMorApplication) != .none then
     applyMorRules funPropDecl e fData funProp
   else
-    if let some (f, g) ← fData.nontrivialDecomposition then
+    if let .comp f g ← fData.decomposition then
       applyCompRule funPropDecl e f g funProp
     else
       applyApplyRule funPropDecl e funProp
@@ -441,8 +441,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
 
-      let dec? ← fData.nontrivialDecomposition
-
+      let dec ← fData.decomposition
       let thm : FunctionTheorem := {
         funPropName := funPropDecl.funPropName
         thmOrigin := .fvar var.fvarId
@@ -450,7 +449,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := eval_prio default
-        form := if dec?.isSome then .comp else .uncurried
+        form := dec.toTheoremForm
       }
 
       return some thm
@@ -476,9 +475,8 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     FunPropM (Option Result) := do
 
   -- none - decomposition not tried
-  -- some none - decomposition failed
-  -- some some (f, g) - successful decomposition
-  let mut dec? : Option (Option (Expr × Expr)) := none
+  -- some result - result of decomposition
+  let mut dec? : Option DecompositionResult := none
 
   for thm in thms do
 
@@ -503,18 +501,18 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
         if thm.mainArgs.size == fData.mainArgs.size then
           if dec?.isNone then
-            dec? := some (← fData.nontrivialDecomposition)
+            dec? ← fData.decomposition
           match dec? with
-          | some none =>
-            if let some r ← tryTheorem? e thm.thmOrigin funProp then
-              return r
-          | some (some (f, g)) =>
+          | some (.comp f g) =>
             trace[Meta.Tactic.fun_prop]
               s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
                    ({← ppExpr f}) ∘ ({← ppExpr g})"
             if let some r ← applyCompRule funPropDecl e f g funProp then
               return r
-          | _ => continue
+          | some _ =>
+            if let some r ← tryTheorem? e thm.thmOrigin funProp then
+              return r
+          | none => unreachable!
         else
           let some (f, g) ← fData.decompositionOverArgs thm.mainArgs | continue
           trace[Meta.Tactic.fun_prop]
@@ -530,7 +528,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   -- fvar theorems are almost exclusively in uncurried form so we decompose if we can
-  if let some (f, g) ← fData.nontrivialDecomposition then
+  if let .comp f g ← fData.decomposition then
     applyCompRule funPropDecl e f g funProp
   else
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
@@ -551,7 +549,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       if let some r ← applyMorRules funPropDecl e fData funProp then
         return r
 
-    if (← fData.nontrivialDecomposition).isNone then
+    if not <| (← fData.decomposition) matches .comp .. then
       if let some r ← applyTransitionRules e funProp then
         return r
 
@@ -592,7 +590,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if let some (f, g) ← fData.nontrivialDecomposition then
+  if let .comp f g ← fData.decomposition then
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
          trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
