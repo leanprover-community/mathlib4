@@ -109,14 +109,11 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     (_ : c % 3 = 1 ∨ c % 3 = 2) (xs : Miustr)
     (hder : Derivable (↑(M :: replicate (c + 3 * k) I) ++ xs)) :
     Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
-  revert xs
-  induction k with
+  induction k generalizing xs with
   | zero =>
-    simp only [replicate, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
+    simpa only [replicate, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
   | succ a ha =>
-    intro xs
     specialize ha (U :: xs)
-    intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
     rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
       singleton_append]
@@ -177,7 +174,7 @@ theorem replicate_pow_minus_append {m : ℕ} :
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
 
 /--
-`der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisiting just
+`der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisting just
 of `I`s, where `count I y` is 1 or 2 modulo 3.
 -/
 theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
@@ -331,7 +328,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
 -/
 theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   /- The next three lines have the effect of introducing `count U en` as a variable that can be used
-   for induction -/
+  for induction -/
   have hu : ∃ n, count U en = n := exists_eq'
   obtain ⟨n, hu⟩ := hu
   induction n generalizing en with

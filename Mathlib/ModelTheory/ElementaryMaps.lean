@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.ModelTheory.Substructures
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.ModelTheory.Substructures
 
 /-!
 # Elementary Maps Between First-Order Structures
@@ -23,6 +25,8 @@ import Mathlib.ModelTheory.Substructures
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
 -/
+
+@[expose] public section
 
 
 open FirstOrder
@@ -64,8 +68,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe_injective' f g h := by
     cases f
     cases g
-    simp only [ElementaryEmbedding.mk.injEq]
-    assumption
+    simpa only [ElementaryEmbedding.mk.injEq]
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
@@ -103,12 +106,7 @@ theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
 @[simp]
 theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
-  have h :=
-    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
-  rw [Formula.realize_equal, Formula.realize_equal] at h
-  simp only [Term.realize, Fin.one_eq_zero_iff, if_true,
-    Function.comp_apply] at h
-  exact h.1
+  exact (φ.map_formula ((var 0).equal (var 1)) fun i => if i = 0 then x else y).1
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
   { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
@@ -185,10 +183,7 @@ theorem refl_apply (x : M) : refl L M x = x :=
 @[trans]
 def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
   toFun := hnp ∘ hmn
-  map_formula' n φ x := by
-    obtain ⟨_, hhnp⟩ := hnp
-    obtain ⟨_, hhmn⟩ := hmn
-    erw [hhnp, hhmn]
+  map_formula' n φ x := by simp [Function.comp_assoc]
 
 @[simp]
 theorem comp_apply (g : N ↪ₑ[L] P) (f : M ↪ₑ[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -199,6 +194,21 @@ theorem comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
+/-- Lifts an elementary embedding to the expanded language with constants -/
+def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
+    M ↪ₑ[L[[A]]] (f.toEmbedding.withConstants A) := by
+  refine ⟨f, ?_⟩
+  intro n φ x
+  have h :
+    (Sum.elim (fun a ↦ ↑(L.con a)) (⇑f ∘ x) :
+      ↑A ⊕ Fin n → f.toEmbedding.withConstants A) =
+    f ∘ Sum.elim (fun a ↦ ↑(L.con a)) x :=
+    (Sum.comp_elim _ _ _).symm
+  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using
+    f.map_formula
+      (BoundedFormula.constantsVarsEquiv φ)
+      (Sum.elim (fun a ↦ ↑(L.con a)) x)
+
 end ElementaryEmbedding
 
 variable (L) (M)
@@ -208,6 +218,7 @@ variable (L) (M)
 abbrev elementaryDiagram : L[[M]].Theory :=
   L[[M]].completeTheory M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical elementary embedding of an `L`-structure into any model of its elementary diagram
 -/
 @[simps]

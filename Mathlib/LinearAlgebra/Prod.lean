@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
@@ -294,10 +298,21 @@ theorem prodMap_comap_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S :
     (Submodule.prod S S').comap (LinearMap.prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 
+theorem prodMap_map_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S : Submodule R M)
+    (S' : Submodule R M₃) :
+    (Submodule.prod S S').map (LinearMap.prodMap f g) = (S.map f).prod (S'.map g) :=
+  SetLike.coe_injective <| Set.prodMap_image_prod f g _ _
+
+@[simp]
 theorem ker_prodMap (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) :
     ker (LinearMap.prodMap f g) = Submodule.prod (ker f) (ker g) := by
   dsimp only [ker]
   rw [← prodMap_comap_prod, Submodule.prod_bot]
+
+@[simp]
+theorem range_prodMap (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) :
+    (f.prodMap g).range = f.range.prod g.range := by
+  ext ⟨_, _⟩; simp
 
 @[simp]
 theorem prodMap_id : (id : M →ₗ[R] M).prodMap (id : M₂ →ₗ[R] M₂) = id :=
@@ -462,6 +477,20 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
+/-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
+equivalence between `C` and `range f`. -/
+@[simps!]
+noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddCommGroup M]
+    [AddCommGroup M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
+    (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
+  .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
+  ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
+   by
+    rintro ⟨-, x, rfl⟩
+    obtain ⟨y, z, hy, hz, rfl⟩ := codisjoint_iff_exists_add_eq.mp h.codisjoint x
+    use ⟨y, hy⟩
+    simpa [Subtype.ext_iff]⟩
+
 end LinearMap
 
 namespace Submodule
@@ -528,16 +557,12 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
-  invFun m := ⟨⟨m, 0⟩, by simp [fst]⟩
+  invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hy⟩
-    simp only [fst, comap_bot, mem_ker, snd_apply] at hy
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, true_and] using hy.symm
-  right_inv := by rintro x; rfl
+  left_inv x := by aesop (add norm simp Submodule.fst)
+  right_inv x := by simp
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
   aesop
@@ -552,15 +577,11 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
-  invFun n := ⟨⟨0, n⟩, by simp [snd]⟩
+  invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hx⟩
-    simp only [snd, comap_bot, mem_ker, fst_apply] at hx
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, and_true] using hx.symm
+  left_inv x := by aesop (add norm simp Submodule.snd)
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
   aesop (add simp snd)
@@ -643,6 +664,9 @@ theorem snd_comp_prodComm :
     (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
   ext <;> simp
 
+@[simp]
+theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
+
 end prodComm
 
 /-- Product of modules is associative up to linear isomorphism. -/
@@ -666,10 +690,40 @@ theorem fst_comp_prodAssoc :
 
 theorem snd_comp_prodAssoc :
     (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
-    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃) := by
   ext <;> simp
 
 end prodAssoc
+
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
 
 section
 
@@ -711,25 +765,17 @@ protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
-@[deprecated (since := "2025-04-17")] alias prod := LinearEquiv.prodCongr
-
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias prod_symm := prodCongr_symm
 
 @[simp]
 theorem prodCongr_apply (p) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
   rfl
 
-@[deprecated (since := "2025-04-17")] alias prod_apply := prodCongr_apply
-
 @[simp, norm_cast]
 theorem coe_prodCongr :
     (e₁.prodCongr e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias coe_prod := coe_prodCongr
 
 end
 
@@ -775,7 +821,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
 
 lemma coe_uniqueProd :
-  (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
+    (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
@@ -784,7 +830,7 @@ def prodUnique : (M × M₂) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
 
 lemma coe_prodUnique :
-  (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
+    (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
 
 end Unique
 
@@ -817,29 +863,6 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
 end LinearMap
 
 namespace LinearMap
-
-/-!
-## Tunnels and tailings
-
-NOTE: The proof of strong rank condition for noetherian rings is changed.
-`LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
-These are marked as deprecated with no replacements.
-If you use them in external projects, please consider using other arguments instead.
-
-Some preliminary work for establishing the strong rank condition for noetherian rings.
-
-Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
-we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
-and sitting beside these, an infinite sequence of copies of `N`.
-
-We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n+1` copies:
-they are the pieces left behind, sitting inside the tunnel.
-
-By construction, each `tailing f i (n+1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-noetherian ring.
--/
 
 section Graph
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Order
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy
@@ -84,6 +86,8 @@ and the circular order of months. Is `α →c β` a good notation?
 
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -343,6 +347,21 @@ See note [reducible non-instances]. -/
 abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 
+section
+
+variable {α : Type*} {a b c : α}
+
+attribute [local instance] LE.toBtw LT.toSBtw
+
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma btw_iff [LE α] : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
+
+end
+
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
@@ -358,9 +377,6 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
       | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_ge]
-    have h1 := le_trans a b c
-    have h2 := le_trans b c a
-    have h3 := le_trans c a b
     grind
 
 /-- The circular partial order obtained from "looping around" a partial order.
@@ -400,26 +416,22 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 namespace OrderDual
 
-instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c : α => Btw.btw c b a⟩
+instance btw (α : Type*) [h : Btw α] : Btw αᵒᵈ :=
+  ⟨fun a b c => h.btw c b a⟩
 
-instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c : α => SBtw.sbtw c b a⟩
+instance sbtw (α : Type*) [h : SBtw α] : SBtw αᵒᵈ :=
+  ⟨fun a b c => h.sbtw c b a⟩
 
-instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
-  { OrderDual.btw α,
-    OrderDual.sbtw α with
-    btw_refl := fun _ => @btw_refl α _ _
-    btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
-    sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
-    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
+instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ where
+  btw_refl _ := btw_refl _
+  btw_cyclic_left {_ _ _} := @btw_cyclic_right α _ _ _ _
+  sbtw_trans_left {_ _ _ _} habc hbdc := hbdc.trans_right habc
+  sbtw_iff_btw_not_btw {a b c} := @sbtw_iff_btw_not_btw α _ c b a
 
-instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
-  { OrderDual.circularPreorder α with
-    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ where
+  btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc
 
-instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
-  { OrderDual.circularPartialOrder α with
-    btw_total := fun {a b c} => @btw_total α _ c b a }
+instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ where
+  btw_total := fun {a b c} => @btw_total α _ c b a
 
 end OrderDual

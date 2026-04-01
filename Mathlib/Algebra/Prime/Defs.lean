@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Irreducible.Defs
-import Mathlib.Algebra.GroupWithZero.Divisibility
+module
+
+public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Prime elements
@@ -26,7 +28,9 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset
 
 variable {M : Type*}
 
@@ -93,8 +97,16 @@ theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
 
 end Prime
 
+theorem Irreducible.not_dvd_isUnit [CommMonoid M] {p u : M} (hp : Irreducible p) (hu : IsUnit u) :
+    ¬p ∣ u :=
+  mt (isUnit_of_dvd_unit · hu) hp.not_isUnit
+
 theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
-  mt (isUnit_of_dvd_one ·) hp.not_isUnit
+  hp.not_dvd_isUnit isUnit_one
+
+theorem Irreducible.not_dvd_unit [CommMonoid M] {p : M} (u : Mˣ) (hp : Irreducible p) :
+    ¬ p ∣ u :=
+  hp.not_dvd_isUnit u.isUnit
 
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)
@@ -132,7 +144,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M] {p : M}
+variable [CommMonoidWithZero M] [IsCancelMulZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
   ⟨hp.not_unit, fun a b ↦ by

@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # The set lattice and (pre)images of functions
@@ -34,6 +36,8 @@ In lemma names,
 * `⋃₀`: `Set.sUnion`
 * `⋂₀`: `Set.sInter`
 -/
+
+public section
 
 open Function Set
 
@@ -113,16 +117,16 @@ section Function
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
     MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t :=
-  sUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans sUnion_subset_iff
 
 @[simp]
 theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t :=
-  iUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion_subset_iff
 
 theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
-  iUnion₂_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion₂_subset_iff
 
 theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋃ i, s i) (⋃ i, t i) :=
@@ -135,7 +139,7 @@ theorem mapsTo_iUnion₂_iUnion₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i
 @[simp]
 theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} :
     MapsTo f s (⋂₀ T) ↔ ∀ t ∈ T, MapsTo f s t :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} :
@@ -310,7 +314,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_swap (α := α)]
+  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_comm (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]
@@ -368,6 +372,16 @@ lemma iInter₂_union_iInter₂ {ι₁ κ₁ : Sort*} {ι₂ : ι₁ → Sort*} 
     (⋂ i₁, ⋂ i₂, f i₁ i₂) ∪ ⋂ j₁, ⋂ j₂, g j₁ j₂ = ⋂ i₁, ⋂ i₂, ⋂ j₁, ⋂ j₂, f i₁ i₂ ∪ g j₁ j₂ := by
   simp_rw [iInter_union, union_iInter]
 
+theorem biUnion_inter_of_pairwise_disjoint {ι : Type*} {f : ι → Set α}
+    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+    (⋃ i ∈ (s ∩ t), f i) = (⋃ i ∈ s, f i) ∩ (⋃ i ∈ t, f i) :=
+  biSup_inter_of_pairwise_disjoint h s t
+
+theorem biUnion_iInter_of_pairwise_disjoint {ι κ : Type*}
+    [hκ : Nonempty κ] {f : ι → Set α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+    (⋃ i ∈ (⋂ j, s j), f i) = ⋂ j, (⋃ i ∈ s j, f i) :=
+  biSup_iInter_of_pairwise_disjoint h s
+
 end Image
 
 section Preimage
@@ -382,13 +396,9 @@ theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
     (f ⁻¹' ⋃ (i) (j), s i j) = ⋃ (i) (j), f ⁻¹' s i j := by simp_rw [preimage_iUnion]
 
 theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
-  ext b
-  simp only [mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
-  constructor
-  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
-    exact ⟨t, ht₁, a, ht₂, rfl⟩
-  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
-    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+  ext
+  simp only [Set.mem_iUnion, Set.sUnion_image]
+  grind
 
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀ s = ⋃ t ∈ s, f ⁻¹' t := by
@@ -452,6 +462,16 @@ theorem iUnion_prod_of_monotone [SemilatticeSup α] {s : α → Set β} {t : α 
     exact ⟨⟨x, hz⟩, x, hw⟩
   · intro x hz x' hw
     exact ⟨x ⊔ x', hs le_sup_left hz, ht le_sup_right hw⟩
+
+lemma biUnion_prod {α β γ} (s : Set α) (t : Set β) (f : α → Set γ) (g : β → Set δ) :
+    ⋃ x ∈ s ×ˢ t, f x.1 ×ˢ g x.2 = (⋃ x ∈ s, f x) ×ˢ (⋃ x ∈ t, g x) := by
+  ext ⟨_, _⟩
+  simp only [mem_iUnion, mem_prod, exists_prop, Prod.exists]; tauto
+
+/-- Analogue of `biSup_prod` for sets. -/
+lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
+    ⋃ x ∈ s ×ˢ t, f x = ⋃ (i ∈ s) (j ∈ t), f (i, j) :=
+  biSup_prod
 
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=

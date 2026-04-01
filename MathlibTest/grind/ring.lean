@@ -1,5 +1,5 @@
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Preliminary tests for `grind` using Mathlib typeclasses.
@@ -15,6 +15,10 @@ notation "ℝ" => Real
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
+example (R : Type) [I : Ring R] :
+  @AddCommGroup.toGrindIntModule R (@Ring.toAddCommGroup R I) =
+    @Lean.Grind.Ring.toIntModule R (@Ring.toGrindRing R I) := rfl
+
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by grind
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by grind
 example {α} [CommRing α] (x : α) : x ^ 2 = x * x := by grind
@@ -27,3 +31,5 @@ example {α} [CommRing α] (a b c d e : α) :
 
 example {α} [CommRing α] (x y z : α) (h₁ : x^2 = y) (h₂ : x^3 = z) : y^3 = z^2 := by grind
 example (x y : ℝ) (h₁ : x^2 = x * y^3) (h₂ : x^3 * y^2 = y) : y^2 = x^4 := by grind
+example {α} [CommSemiring α] [IsRightCancelAdd α] (x y z : α) (h : x + z = y + z) : x = y := by
+  grind

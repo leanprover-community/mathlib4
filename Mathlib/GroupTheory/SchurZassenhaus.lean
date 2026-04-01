@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.GroupTheory.Transfer
 
 /-!
 # The Schur-Zassenhaus Theorem
@@ -20,12 +22,15 @@ In this file we prove the Schur-Zassenhaus theorem.
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
 
+@[expose] public section
+
 
 namespace Subgroup
 
 section SchurZassenhausAbelian
 
-open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
+open MulOpposite MulAction Subgroup.leftTransversals
+open scoped IsMulCommutative
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
@@ -159,8 +164,8 @@ include h2 in
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
-    rw [← N.relindex_top_right, ← hK]
-    exact (relindex_sup_right K N).symm
+    rw [← N.relIndex_top_right, ← hK]
+    exact (relIndex_sup_right K N).symm
   have h5 : Nat.card K < Nat.card G := by
     rw [← K.index_mul_card]
     exact lt_mul_of_one_lt_left Nat.card_pos (one_lt_index_of_ne_top h3)
@@ -169,9 +174,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Nat.card (H.map K.subtype) = N.index := by
-    rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      range_subtype, ← relindex_sup_right, hK, relindex_top_right]
+    rw [← relIndex_bot_left, ← relIndex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relIndex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      range_subtype, ← relIndex_sup_right, hK, relIndex_top_right]
   have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by
@@ -218,8 +223,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
     rhs
     rhs
     rw [← N.range_subtype, N.subtype.range_eq_map]
-  have inj := map_injective N.subtype_injective
-  rwa [inj.eq_iff, inj.eq_iff] at key
+  rwa [map_subtype_inj, map_subtype_inj] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
@@ -238,7 +242,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in
@@ -275,15 +279,14 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     rw [hN]
     exact ⟨⊥, isComplement'_top_bot⟩
   by_cases hN2 : N.index = 0
-  · rw [hN2, Nat.coprime_zero_right] at hN
-    haveI := (Cardinal.toNat_eq_one_iff_unique.mp hN).1
+  · rw [hN2, Nat.coprime_zero_right, Nat.card_eq_one_iff_unique] at hN
+    have := hN.1
     rw [N.eq_bot_of_subsingleton]
     exact ⟨⊤, isComplement'_bot_top⟩
-  have hN3 : Nat.card G ≠ 0 := by
+  have hN3 : Finite G := by
+    apply Nat.finite_of_card_ne_zero
     rw [← N.card_mul_index]
     exact mul_ne_zero hN1 hN2
-  haveI := (Cardinal.lt_aleph0_iff_fintype.mp
-    (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   exact exists_right_complement'_of_coprime_aux' rfl hN
 
 /-- **Schur-Zassenhaus** for normal subgroups:

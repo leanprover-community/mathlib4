@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Opposite
+module
+
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Calculus of fractions
@@ -26,9 +28,11 @@ Similar results are obtained when `W` has a right calculus of fractions.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 open Category
 
@@ -165,7 +169,7 @@ lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInverted
 variable {W}
 
 lemma cases (α : W.RightFraction X Y) :
-    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y) , α = RightFraction.mk s hs f :=
+    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y), α = RightFraction.mk s hs f :=
   ⟨_, _, _, _, rfl⟩
 
 end RightFraction
@@ -248,7 +252,7 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
   obtain ⟨⟨v₄, v₅, hv₅⟩, fac⟩ := HasLeftCalculusOfFractions.exists_leftFraction
     (RightFraction.mk (z₁.s ≫ t₁) ht (z₃.s ≫ u₃))
   simp only [Category.assoc] at fac
-  have eq : z₂.s ≫ u₂ ≫ v₅  = z₂.s ≫ t₂ ≫ v₄ := by
+  have eq : z₂.s ≫ u₂ ≫ v₅ = z₂.s ≫ t₂ ≫ v₄ := by
     simpa only [← reassoc_of% hsu, reassoc_of% hst] using fac
   obtain ⟨Z₇, w, hw, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₂.hs eq
   simp only [Category.assoc] at fac'
@@ -435,14 +439,12 @@ noncomputable instance : Category (Localization W) where
   comp_id := by
     rintro (X Y : C) f
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
-    change (Hom.mk z).comp (Hom.mk (ofHom W (𝟙 Y))) = Hom.mk z
     rw [Hom.comp_eq, comp_eq z (ofHom W (𝟙 Y)) (ofInv z.s z.hs) (by simp)]
     dsimp [comp₀]
     simp only [comp_id, id_comp]
   id_comp := by
     rintro (X Y : C) f
     obtain ⟨z, rfl⟩ := Hom.mk_surjective f
-    change (Hom.mk (ofHom W (𝟙 X))).comp (Hom.mk z) = Hom.mk z
     rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
     dsimp
     simp only [id_comp, comp_id]
@@ -451,8 +453,6 @@ noncomputable instance : Category (Localization W) where
     obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
     obtain ⟨z₂, rfl⟩ := Hom.mk_surjective f₂
     obtain ⟨z₃, rfl⟩ := Hom.mk_surjective f₃
-    change ((Hom.mk z₁).comp (Hom.mk z₂)).comp (Hom.mk z₃) =
-      (Hom.mk z₁).comp ((Hom.mk z₂).comp (Hom.mk z₃))
     rw [Hom.comp_eq z₁ z₂, Hom.comp_eq z₂ z₃]
     obtain ⟨z₁₂, fac₁₂⟩ := exists_leftFraction (RightFraction.mk z₁.s z₁.hs z₂.f)
     obtain ⟨z₂₃, fac₂₃⟩ := exists_leftFraction (RightFraction.mk z₂.s z₂.hs z₃.f)
@@ -491,6 +491,7 @@ lemma Q_map {X Y : C} (f : X ⟶ Y) : (Q W).map f = homMk (ofHom W f) := rfl
 
 variable {W}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
@@ -538,14 +539,14 @@ lemma Qiso_hom_inv_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
 
 @[reassoc (attr := simp)]
 lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
-    Qinv s hs  ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
+    Qinv s hs ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
 
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
-  (inferInstance : IsIso (Qiso s hs).inv)
+  inferInstanceAs <| IsIso (Qiso s hs).inv
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 /-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
@@ -559,19 +560,19 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
-    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
-  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
 namespace StrictUniversalPropertyFixedTarget
 
 variable (W)
 
 lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
-  (inferInstance : IsIso (Qiso s hs).hom)
+  inferInstanceAs <| IsIso (Qiso s hs).hom
 
 variable {W}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Localization W ⥤ E` that is induced by a functor `C ⥤ E` which inverts `W`,
 when `W` has a left calculus of fractions. -/
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
@@ -599,11 +600,13 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     dsimp
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
   Functor.ext (fun _ => rfl) (fun X Y f => by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
   Functor.ext (fun X => Functor.congr_obj h X) (by
     rintro (X Y : C) f
@@ -630,7 +633,7 @@ variable (W)
 open StrictUniversalPropertyFixedTarget in
 /-- The universal property of the localization for the constructed localized category
 when there is a left calculus of fractions. -/
-noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
+noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (Q W) W E where
   inverts := inverts W
   lift := lift
@@ -671,8 +674,9 @@ lemma map_eq {W} {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocaliza
     φ.map L (Localization.inverts L W) =
       L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_compatibility {W} {X Y : C}
-    (φ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (φ : W.LeftFraction X Y) {E : Type*} [Category* E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
     (Localization.uniq L₁ L₂ W).functor.map (φ.map L₁ (Localization.inverts L₁ W)) =
       (Localization.compUniqFunctor L₁ L₂ W).hom.app X ≫
@@ -685,7 +689,7 @@ lemma map_compatibility {W} {X Y : C}
   simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
 
 lemma map_eq_of_map_eq {W} {X Y : C}
-    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category* E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W]
     (h : φ₁.map L₁ (Localization.inverts L₁ W) = φ₂.map L₁ (Localization.inverts L₁ W)) :
     φ₁.map L₂ (Localization.inverts L₂ W) = φ₂.map L₂ (Localization.inverts L₂ W) := by
@@ -721,6 +725,7 @@ section
 
 variable [W.HasLeftCalculusOfFractions]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
   let E := Localization.uniq (MorphismProperty.LeftFraction.Localization.Q W) L W
@@ -757,8 +762,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
       LeftFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [id_comp] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
@@ -966,8 +970,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
       RightFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [comp_id] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]

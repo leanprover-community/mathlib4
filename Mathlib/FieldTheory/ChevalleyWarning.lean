@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # The Chevalley–Warning theorem
@@ -32,6 +34,8 @@ and `q` is notation for the cardinality of `K`.
 - `σ` is the indexing type for the variables of a multivariate polynomial ring over `K`
 
 -/
+
+public section
 
 
 universe u v
@@ -145,7 +149,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
     _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
-    _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
+    _ < (q - 1) * Fintype.card σ := by gcongr
   -- Now we prove the remaining step from the preceding calculation
   change (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree
   calc

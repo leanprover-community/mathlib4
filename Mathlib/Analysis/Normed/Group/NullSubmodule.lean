@@ -3,8 +3,10 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Analysis.Normed.MulAction
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # The null subgroup in a seminormed commutative group
@@ -26,11 +28,13 @@ subspace as a submodule of `E`.
 
 -/
 
+@[expose] public section
+
 variable {M : Type*} [SeminormedCommGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
-@[to_additive "The additive null subgroup with respect to the norm."]
+@[to_additive /-- The additive null subgroup with respect to the norm. -/]
 def nullSubgroup : Subgroup M where
   carrier := {x : M | ‖x‖ = 0}
   mul_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by

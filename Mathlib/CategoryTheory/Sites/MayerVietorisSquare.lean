@@ -3,16 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.Square
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.Square
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares
@@ -35,7 +36,7 @@ the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
 standard case of a covering by two open subsets, all
 the morphisms in the square would be monomorphisms,
-but this dissymetry allows the example of Nisnevich distinguished
+but this dissymmetry allows the example of Nisnevich distinguished
 squares in the case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over
@@ -50,6 +51,8 @@ that it is indeed satisfied by sheaves.
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
+
+@[expose] public section
 universe v v' u u'
 
 namespace CategoryTheory
@@ -59,11 +62,12 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
     (F : Sheaf J (Type v)) (sq : Square C) :
     (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
-      (sq.op.map F.val).IsPullback := by
+      (sq.op.map F.obj).IsPullback := by
   refine Square.IsPullback.iff_of_equiv _ _
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
@@ -104,7 +108,7 @@ a square `sq` such that `sq.f₁₃` is a mono and that for every
 sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
 @[simps toSquare]
 noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
-    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.val).IsPullback) :
+    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.obj).IsPullback) :
     J.MayerVietorisSquare where
   toSquare := sq
   isPushout := by
@@ -112,6 +116,7 @@ noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     intro F
     exact (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff sq).2 (H F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for Mayer-Vietoris squares taking as an input
 a pullback square `sq` such that `sq.f₂₄` and `sq.f₃₄` are two monomorphisms
 which form a covering of `S.X₄`. -/
@@ -126,19 +131,19 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
       (fun s ↦ F.2.amalgamateOfArrows _ h₂
         (fun j ↦ WalkingPair.casesOn j s.fst s.snd)
         (fun W ↦ by
-          rintro (_|_) (_|_) a b fac
+          rintro (_ | _) (_ | _) a b fac
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₂₄] using fac
             rfl
           · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac
-            simpa using s.condition =≫ F.val.map φ.op
+            simpa using s.condition =≫ F.obj.map φ.op
           · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac.symm
-            simpa using s.condition.symm =≫ F.val.map φ.op
+            simpa using s.condition.symm =≫ F.obj.map φ.op
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₃₄] using fac
             rfl)) (fun _ ↦ ?_) (fun _ ↦ ?_) (fun s m hm₁ hm₂ ↦ ?_)
     · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
     · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
     · apply F.2.hom_ext_ofArrows _ h₂
-      rintro (_|_)
+      rintro (_ | _)
       · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
         exact hm₁
       · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
@@ -146,12 +151,12 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
 
 variable (S : J.MayerVietorisSquare)
 
-lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
-    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrpCat.{v}] :
+    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).IsPushout :=
-  (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrp.free)).of_iso
+  (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrpCat.free)).of_iso
     ((Square.mapFunctor.mapIso
-      (presheafToSheafCompComposeAndSheafifyIso J AddCommGrp.free)).app
+      (presheafToSheafCompComposeAndSheafifyIso J AddCommGrpCat.free)).app
         (S.map yoneda))
 
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
@@ -210,16 +215,16 @@ lemma map_f₃₄_op_glue : P.map S.f₃₄.op (h.glue u v huv) = v :=
 end SheafCondition
 
 lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
-    (F : Sheaf J A) : S.SheafCondition F.val := by
+    (F : Sheaf J A) : S.SheafCondition F.obj := by
   rw [sheafCondition_iff_comp_coyoneda]
   intro X
   exact (Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff _ S.toSquare).1
     (S.isPushout.op.map
-      (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩))
+      (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.property X.unop)⟩))
 
 end
 
-variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
+variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
 /-- The short complex of abelian sheaves
@@ -227,11 +232,11 @@ variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
 where the left map is a difference and the right map a sum. -/
 @[simps]
 noncomputable def shortComplex :
-    ShortComplex (Sheaf J AddCommGrp.{v}) where
-  X₁ := (presheafToSheaf J _).obj (yoneda.obj S.X₁ ⋙ AddCommGrp.free)
-  X₂ := (presheafToSheaf J _).obj (yoneda.obj S.X₂ ⋙ AddCommGrp.free) ⊞
-    (presheafToSheaf J _).obj (yoneda.obj S.X₃ ⋙ AddCommGrp.free)
-  X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrp.free)
+    ShortComplex (Sheaf J AddCommGrpCat.{v}) where
+  X₁ := (presheafToSheaf J _).obj (yoneda.obj S.X₁ ⋙ AddCommGrpCat.free)
+  X₂ := (presheafToSheaf J _).obj (yoneda.obj S.X₂ ⋙ AddCommGrpCat.free) ⊞
+    (presheafToSheaf J _).obj (yoneda.obj S.X₃ ⋙ AddCommGrpCat.free)
+  X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrpCat.free)
   f :=
     biprod.lift
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₂) _))
@@ -240,9 +245,10 @@ noncomputable def shortComplex :
     biprod.desc
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₂₄) _))
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₃₄) _))
-  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp

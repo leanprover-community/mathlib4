@@ -3,12 +3,16 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Some `Ordering` lemmas
 -/
+
+public section
 
 universe u
 

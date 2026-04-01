@@ -3,10 +3,12 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -32,6 +34,8 @@ character space, Gelfand transform, functional calculus
 
 -/
 
+@[expose] public section
+
 
 namespace WeakDual
 
@@ -52,7 +56,7 @@ section NonUnitalNonAssocSemiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
-instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
+noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
 
@@ -62,8 +66,8 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
--- until the `ContinuousLinearMapClass` instance is declared
+/-- This has to come after `WeakDual.CharacterSpace.instFunLike`, otherwise the right-hand side
+gets coerced via `Subtype.val` instead of directly via `DFunLike`. -/
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
@@ -88,7 +92,7 @@ instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A)
     map_mul := fun φ => φ.prop.2 }
 
 /-- An element of the character space, as a non-unital algebra homomorphism. -/
-def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
+noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
   toFun := (φ : A → 𝕜)
   map_mul' := map_mul φ
   map_smul' := map_smul φ
@@ -141,12 +145,12 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
     commutes := fun φ r => by
-      rw [Algebra.algebraMap_eq_smul_one, Algebra.id.map_eq_id, RingHom.id_apply]
-      rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
+      rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
+      rw [map_smul, smul_eq_mul, map_one' φ, mul_one] }
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]
-def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
+noncomputable def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
   { toNonUnitalAlgHom φ with
     map_one' := map_one φ
     commutes' := AlgHomClass.commutes φ }
@@ -198,8 +202,7 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
-  RingHom.ker_isMaximal_of_surjective φ fun z =>
-    ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
+  RingHom.ker_isMaximal_of_surjective φ fun z ↦ ⟨algebraMap 𝕜 A z, by simp [AlgHomClass.commutes]⟩
 
 end Kernel
 
@@ -214,7 +217,7 @@ variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] 
 `A` into the `𝕜`-algebra of continuous `𝕜`-valued functions on the `characterSpace 𝕜 A`.
 The character space itself consists of all algebra homomorphisms from `A` to `𝕜`. -/
 @[simps]
-def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
+noncomputable def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
   toFun a :=
     { toFun := fun φ => φ a
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }

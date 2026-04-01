@@ -3,9 +3,11 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # The natural numbers form a linear order
@@ -18,6 +20,8 @@ See note [foundational algebra order theory].
 
 Move the `LinearOrder ℕ` instance here (https://github.com/leanprover-community/mathlib4/pull/13092).
 -/
+
+@[expose] public section
 
 namespace Nat
 

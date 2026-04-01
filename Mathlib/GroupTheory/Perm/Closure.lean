@@ -3,8 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Closure results for permutation groups
@@ -19,6 +20,8 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
     a prime cycle and a transposition
 
 -/
+
+public section
 
 open Equiv Function Finset
 
