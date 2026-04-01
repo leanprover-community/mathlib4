@@ -615,6 +615,7 @@ theorem aeval_unique (φ : MvPolynomial σ R →ₐ[R] S₁) : φ = aeval (φ �
   ext i
   simp
 
+@[simp]
 theorem aeval_X_left : aeval X = AlgHom.id R (MvPolynomial σ R) :=
   (aeval_unique (AlgHom.id R _)).symm
 
