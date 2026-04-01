@@ -98,7 +98,6 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the convolution is given by the bilinear map applied to the Fourier
 transform of the individual functions. -/
 theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
