@@ -106,9 +106,9 @@ lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fi
   (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
 
 /-- As a binary function, `Finsupp.cons` is injective. -/
-theorem cons_injective2 : Function.Injective2 (fun (y : M) s => cons (n := n) y s) := by
+theorem cons_injective2 : Function.Injective2 (cons (n := n) (M := M)) := by
   refine fun x₀ y₀ x y h ↦ ?_
-  have : (fun y s ↦ cons y s) x₀ x 0 = (fun y s ↦ cons y s) y₀ y 0 := by simp [h]
+  have := DFunLike.congr_fun h 0
   simp only [cons_zero] at this
   exact ⟨this, cons_right_injective y₀ (this ▸ h)⟩
 
