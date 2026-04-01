@@ -19,6 +19,13 @@ TODO: I need to figure out later how references work in mathlib and fix tis one
 
 namespace CategoryTheory
 
+
+def iso_of_adjoint_iso {C D E : Type*} [Category C] [Category D] [Category E] (F : C ⥤ D)
+    (G : D ⥤ E) (H : C ⥤ E) (I : D ⥤ C) (J : E ⥤ D) (K : E ⥤ C)
+    (hIF : I ⊣ F) (hJG : J ⊣ G) (hKH : K ⊣ H) (h : F ⋙ G ≅ H) :
+    J ⋙ I ≅ K := by
+  exact hJG.leftAdjointCompIso hIF hKH h
+
 namespace Monad
 
 open Limits
@@ -36,6 +43,10 @@ instance {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) [HasReflexiveCoequalizers (Al
 noncomputable def directImageFunctor {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂)
     [HasReflexiveCoequalizers T₂.Algebra] : Algebra T₁ ⥤ Algebra T₂ :=
   (algebraFunctorOfMonadHom h).leftAdjoint
+
+noncomputable def directImageFunctor_adj_algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂)
+    [HasReflexiveCoequalizers T₂.Algebra] : directImageFunctor h ⊣ algebraFunctorOfMonadHom h :=
+  Adjunction.ofIsRightAdjoint (algebraFunctorOfMonadHom h)
 
 structure RightModule (T : Monad C) where
   F : C ⥤ C
@@ -101,11 +112,11 @@ instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) [HasReflexiveCoequalizer
   infer_instance
 
 /-- This is the left adjoint diagram corresponding to `algebra_equiv_of_iso_monads_comp_forget`. -/
-def directImageFunctor_preserves_free {M N : Monad C} (φ : M ⟶ N)
+noncomputable def directImageFunctor_preserves_free {M N : Monad C} (φ : M ⟶ N)
     [HasReflexiveCoequalizers N.Algebra] :
     free _ ⋙ directImageFunctor φ ≅ free _ := by
-  sorry -- how to apply left adjointness to a diagram???
-
+  apply M.adj.leftAdjointCompIso (directImageFunctor_adj_algebraFunctorOfMonadHom φ) N.adj
+  rfl
 
 instance {N : Monad C} [HasReflexiveCoequalizers C] :
     HasReflexiveCoequalizers N.Algebra where
