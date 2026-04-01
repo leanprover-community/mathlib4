@@ -403,13 +403,4 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
 
 end ObjectProperty
 
-namespace Limits
-
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape :=
-  ObjectProperty.IsClosedUnderColimitsOfShape
-@[deprecated (since := "2025-09-22")] alias closedUnderColimitsOfShape_of_colimit :=
-  ObjectProperty.IsClosedUnderColimitsOfShape.mk'
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape.colimit :=
-  ObjectProperty.prop_colimit
-
-end CategoryTheory.Limits
+end CategoryTheory

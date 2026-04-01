@@ -134,9 +134,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
-
-instance Machine.inhabited [Inhabited Λ] : Inhabited (Machine Γ Λ) := by
-  unfold Machine; infer_instance
+deriving Inhabited
 
 /-- The configuration state of a Turing machine during operation
   consists of a label (machine state), and a tape.
@@ -826,8 +824,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
       (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
-  intro i f L' R' l₁ l₂ _
-  subst i
+  rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
   | nil => rfl
   | cons a l₂ IH =>
