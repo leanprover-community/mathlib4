@@ -469,7 +469,7 @@ theorem not_isStrongPrelimit_iff {c} : ¬ IsStrongPrelimit c ↔ ∃ x < c, c �
   simp [IsStrongPrelimit]
 
 @[simp]
-theorem isStrongPrelimit_zero : IsStrongPrelimit 0 := by
+theorem IsStrongPrelimit.zero : IsStrongPrelimit 0 := by
   simp [IsStrongPrelimit]
 
 @[simp]
