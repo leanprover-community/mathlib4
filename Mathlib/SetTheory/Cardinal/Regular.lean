@@ -332,7 +332,7 @@ theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.
 theorem isSingular_aleph_iff {o : Ordinal} : (ℵ_ o).IsSingular ↔ IsSuccLimit o ∧ o.cof < ℵ_ o := by
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
   · simp
-  · simp
+  · simp [← succ_aleph]
   · rw [isSingular_iff, ← (cof_ord_le _).lt_iff_ne]
     simp [ho]
 
