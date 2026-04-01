@@ -939,8 +939,7 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd sα a) (vb : ExProd sℕ 
     | .mul vxa₁ vea₁ va₂, vb =>
       let ⟨_, vc₁, pc₁⟩ ← evalMulProd sℕ vea₁ vb
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
-      let one : ExProd sα q((nat_lit 1).rawCast : $α) := .const 1 none
-      let ⟨_, vd, pd⟩ ← evalMulProd sα (.mul vxa₁ vc₁ one) vc₂
+      let ⟨_, vd, pd⟩ ← evalMulProd sα (vxa₁.toProd vc₁) vc₂
       return ⟨_, vd, q(mul_pow_mul $pc₁ $pc₂ $pd)⟩
     | _, _ => OptionT.fail
   return (← res.run).getD (evalPowProdAtom sα va vb)
