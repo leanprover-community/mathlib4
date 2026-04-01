@@ -66,12 +66,6 @@ theorem AlgHom.isLocalHom_comp (f : R →ₐ[A] S) (g : S →ₐ[A] T) [IsLocalH
     IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
--- see note [lower instance priority]
-@[instance 100]
-theorem isLocalHom_toAlgHom {F : Type*} [FunLike F R S]
-    [AlgHomClass F A R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →ₐ[A] S) :=
-  ⟨IsLocalHom.map_nonunit (f := f)⟩
-
 end AlgHom
 
 end
