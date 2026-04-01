@@ -131,7 +131,7 @@ variable (R M) in
 lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by
   intro p hp
-  have prime := hp.1.1
+  have prime := Ideal.minimalPrimes_isPrime hp
   let Rₚ := Localization.AtPrime p
   have : Nontrivial (LocalizedModule p.primeCompl M) := by
     simpa [← Module.mem_support_iff (p := ⟨p, prime⟩), Module.support_eq_zeroLocus] using hp.1.2

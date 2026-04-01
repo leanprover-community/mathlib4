@@ -106,7 +106,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   has height at most 1. -/
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
     (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
-  have := hp.1.1
+  have := Ideal.minimalPrimes_isPrime hp
   let f := algebraMap R (Localization.AtPrime p)
   have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing (I.map f) ?_
   · rwa [← IsLocalization.height_comap p.primeCompl,
@@ -117,7 +117,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
 theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
-  have : p.IsPrime := hp.1.1
+  have : p.IsPrime := Ideal.minimalPrimes_isPrime hp
   have hfp : RingHom.ker f ≤ p := I.mk_ker.trans_le (le_sup_left.trans hp.1.2)
   height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f)
     ⟨⟨map_isPrime_of_surjective Quotient.mk_surjective hfp, map_mono (le_sup_right.trans hp.1.2)⟩,
@@ -176,7 +176,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
   induction hn : s.card using Nat.strong_induction_on generalizing R with
   | h n H =>
     replace hn : s.card ≤ n := hn.le
-    have := hp.1.1
+    have := Ideal.minimalPrimes_isPrime hp
     cases n with
     | zero =>
       rw [ENat.coe_zero, nonpos_iff_eq_zero, height_eq_primeHeight p,
@@ -239,7 +239,7 @@ lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
   obtain ⟨J, hJ⟩ := nonempty_minimalPrimes hI
   refine (iInf₂_le J hJ).trans ?_
   convert (I.height_le_spanRank_toENat_of_mem_minimal_primes J hJ)
-  exact Eq.symm (@height_eq_primeHeight _ _ J hJ.1.1)
+  exact Eq.symm (@height_eq_primeHeight _ _ J (Ideal.minimalPrimes_isPrime hJ))
 
 lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanFinrank := by
