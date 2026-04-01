@@ -205,7 +205,7 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
   simp_all [Pi.neg_comp]
 
 /-- In a Banach space `E` with a measure `μ`, then for any `f : α → E`, we have
-`‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
+`‖𝔼[f | m]‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
 theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
   · simp [condExp_of_not_le hm]; aesop
