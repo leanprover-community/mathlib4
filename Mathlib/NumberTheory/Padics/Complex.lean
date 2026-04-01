@@ -78,8 +78,8 @@ instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm.no
 theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p) x = ‖x‖ := rfl
 
 /-- The norm on `PadicAlgCl p` extends the `p`-adic norm on `ℚ_[p]`. -/
-@[simp] theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ :=
-  spectralAlgNorm_extends (K := ℚ_[p]) (L := PadicAlgCl p) _
+theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ := by
+  simp
 
 /-- The underlying metric space of `PadicAlgCl p` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
