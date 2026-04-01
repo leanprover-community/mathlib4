@@ -34,8 +34,8 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
   any countable open cover.
 * `isCountablyCompact_iff_countable_open_cover`: countable compactness is equivalent to the
   finite subcover property for countable covers.
-* `IsCompact.IsCountablyCompact`: compact sets are countably compact.
-* `IsSeqCompact.IsCountablyCompact`: sequentially compact sets are countably compact.
+* `IsCompact.isCountablyCompact`: compact sets are countably compact.
+* `IsSeqCompact.isCountablyCompact`: sequentially compact sets are countably compact.
 * `IsCountablyCompact.isSeqCompact`: in a first-countable space, countable compactness implies
   sequential compactness.
 * `IsCountablyCompact.exists_accPt_of_infinite`: every infinite subset of a countably compact
@@ -167,6 +167,11 @@ theorem isCountablyCompact_iff_countable_open_cover' :
 theorem IsCompact.isCountablyCompact (hA : IsCompact A) : IsCountablyCompact A :=
   fun _ _ _ hle => hA hle
 
+/-- A compact space is countably compact. -/
+instance instCompactSpaceCountablyCompactSpace
+    {X : Type*} [TopologicalSpace X] [CompactSpace X] : CountablyCompactSpace X where
+  isCountablyCompact_univ := isCompact_univ.isCountablyCompact
+
 /-- A sequentially compact set is countably compact. -/
 theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
     IsCountablyCompact A := IsCountablyCompact.of_seq_clusterPt fun x hx => by
@@ -292,12 +297,21 @@ theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace 
 
 theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
   isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
+/-- A sequentially compact space is countably compact. -/
+instance instSeqCompactSpaceCountablyCompactSpace
+    {X : Type*} [TopologicalSpace X] [SeqCompactSpace X] : CountablyCompactSpace X where
+  isCountablyCompact_univ := isSeqCompact_univ.isCountablyCompact
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A :=
   have : CountablyCompactSpace A := isCountablyCompact_iff_countablyCompactSpace.1 hA
   isSeqCompact_iff_seqCompactSpace.2 inferInstance
+
+/-- A first-countable countably compact space is sequentially compact. -/
+instance instCountablyCompactSpaceSeqCompactSpace {X : Type*} [TopologicalSpace X]
+    [FirstCountableTopology X] [CountablyCompactSpace X] : SeqCompactSpace X where
+  isSeqCompact_univ := CountablyCompactSpace.isCountablyCompact_univ.isSeqCompact
 
 /-- In a first-countable space, a set is countably compact iff it is sequentially compact. -/
 theorem isCountablyCompact_iff_isSeqCompact [FirstCountableTopology E] :
@@ -350,6 +364,11 @@ theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
     classical
     exact ⟨t.image f, by simp_all⟩
   · exact ⟨∅, by simp_all⟩
+
+/-- A countably compact Lindelöf space is compact. -/
+theorem LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
+    [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
+  isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
 
 /-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
 theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]
