@@ -297,12 +297,8 @@ theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R
   let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
   have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) :=
     Set.Subsingleton.coe_sort <| Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
-  have : ∀ q : Submodule A ↥(restrictScalars A p), Order.krullDim (e ⁻¹' {q}) ≤ (0 : ℕ) := by
-    intro p; by_cases h : Nonempty (e ⁻¹' {p})
-    · simp [Order.krullDim_eq_zero]
-    rw [not_nonempty_iff] at h
-    simp [Order.krullDim_eq_bot]
-  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone this
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
+    Order.krullDim_nonpos_of_subsingleton
 
 theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
     (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
