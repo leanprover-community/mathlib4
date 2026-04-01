@@ -51,11 +51,11 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     ∃ n : ℕ, I.radical ^ n ≤ I := by
   have := le_refl I.radical
   revert this
-  refine Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
+  refine Submodule.fg_induction' _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
   · intro x hx
     obtain ⟨n, hn⟩ := hx (subset_span (Set.mem_singleton x))
     exact ⟨n, by rwa [← span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
-  · intro J K hJ hK hJK
+  · intro J K _ _ hJ hK hJK
     obtain ⟨n, hn⟩ := hJ fun x hx => hJK <| mem_sup_left hx
     obtain ⟨m, hm⟩ := hK fun x hx => hJK <| mem_sup_right hx
     use n + m
@@ -75,12 +75,12 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
     (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
   revert h'
-  apply Submodule.fg_induction _ _ _ _ _ I h
+  apply Submodule.fg_induction' _ _ _ _ _ I h
   · intro x hJ
     simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at hJ
     obtain ⟨n, hn⟩ := hJ
     refine ⟨n, by simpa [span_singleton_pow, span_le]⟩
-  · intro I₁ I₂ h₁ h₂ hJ
+  · intro I₁ I₂ _ _ h₁ h₂ hJ
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂

@@ -235,11 +235,11 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
   have (K' : Submodule R K) (hK' : K'.FG) : ∃ (k : ℕ) (a : (Fin n →₀ R) →ₗ[R] (Fin k →₀ R))
       (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
     revert n
-    apply Submodule.fg_induction (N := K') (hN := hK')
+    apply Submodule.fg_induction' (N := K') (hN := hK')
     · intro k n f x hfx
       have : x (f k) = 0 := by simpa using LinearMap.congr_fun hfx k
       simpa using exists_factorization_of_apply_eq_zero_of_free this
-    · intro K₁ K₂ ih₁ ih₂ n f x hfx
+    · intro K₁ K₂ _ _ ih₁ ih₂ n f x hfx
       obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ hfx
       have : y₁ ∘ₗ (a₁ ∘ₗ f) = 0 := by rw [← comp_assoc, hfx]
       obtain ⟨k₂, a₂, y₂, rfl, ha₂⟩ := ih₂ this
