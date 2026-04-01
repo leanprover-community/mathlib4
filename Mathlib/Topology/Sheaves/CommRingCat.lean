@@ -94,10 +94,10 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     rw [IsLocalization.map_comp_map]
 
 instance (U) : Algebra (F.obj U) (G.localizationPresheaf.obj U) :=
-  show Algebra _ (Localization (G.obj U)) from inferInstance
+  inferInstanceAs <| Algebra (F.obj U) (Localization (G.obj U))
 
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
-  show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
+  inferInstanceAs <| IsLocalization (G.obj U) (Localization (G.obj U))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The map into the localization presheaf. -/

@@ -333,7 +333,6 @@ lemma isQuasiregular_inr_iff (a : A) :
   lift y to A using by simpa using congr(fstHom R A $(hy₁))
   refine ⟨y, ?_, ?_⟩ <;> exact inr_injective (R := R) <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
     [CommRing S] [Nontrivial S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
@@ -342,13 +341,11 @@ lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
   rintro ⟨u, hu⟩
   simpa [-Units.mul_inv, hu] using congr($(u.mul_inv).fst)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [CommRing R]
     [NonUnitalRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     (a : A) (r : R) (hr : ¬ IsUnit r) : r ∈ spectrum R (a : Unitization R A) :=
   fun h ↦ hr <| by simpa [map_sub] using h.map (fstHom R A)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] (a : A) :
     quasispectrum R a = spectrum R (a : Unitization R A) := by
@@ -358,7 +355,6 @@ lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [NonUni
   apply forall_congr' fun hr ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
     [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
@@ -369,7 +365,6 @@ lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
   apply forall_congr' fun x ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
     [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
@@ -379,7 +374,6 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] (a b : A) :
     quasispectrum R (a * b) = quasispectrum R (b * a) := by
@@ -452,7 +446,6 @@ lemma quasispectrumRestricts_iff
       Function.LeftInverse f (algebraMap R S) :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem quasispectrum.algebraMap_mem_iff (S : Type*) {R A : Type*} [Semifield R] [Field S]
     [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
@@ -614,7 +607,6 @@ end Unital
 
 end SpectrumRestricts
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quasispectrumRestricts_iff_spectrumRestricts_inr (S : Type*) {R A : Type*} [Semifield R]
     [Field S] [NonUnitalRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [IsScalarTower R S A] {a : A} {f : S → R} :
@@ -622,7 +614,6 @@ theorem quasispectrumRestricts_iff_spectrumRestricts_inr (S : Type*) {R A : Type
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff,
     ← Unitization.quasispectrum_eq_spectrum_inr']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The difference from `quasispectrumRestricts_iff_spectrumRestricts_inr` is that the
 `Unitization` may be taken with respect to a different scalar field. -/
 lemma quasispectrumRestricts_iff_spectrumRestricts_inr'

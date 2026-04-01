@@ -174,6 +174,7 @@ instance : SubsemiringClass (Subsemiring R) R where
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
 
 @[simp]
@@ -224,7 +225,6 @@ lemma toNonUnitalSubsemiring_injective :
   fun S₁ S₂ h => SetLike.ext'_iff.2
     (show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
-@[simp]
 lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
     S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
   toNonUnitalSubsemiring_injective.eq_iff

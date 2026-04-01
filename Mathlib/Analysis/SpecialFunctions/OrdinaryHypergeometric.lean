@@ -190,10 +190,11 @@ theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
         rw [norm_ne_zero_iff]
       any_goals
         apply (ascPochhammer_eval_eq_zero_iff n _).not.2
-        push_neg
+        push Not
         exact fun kn hkn ↦ by simp [habc kn hkn]
       exact cast_ne_zero.2 (factorial_ne_zero n)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The radius of convergence of `ordinaryHypergeometricSeries` is unity if none of the parameters
 are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one

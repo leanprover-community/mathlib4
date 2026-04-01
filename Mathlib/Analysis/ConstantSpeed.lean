@@ -156,7 +156,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
   constructor
   · by_contra! ⟨h, hfs⟩
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
-    push_neg at hfs
+    push Not at hfs
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs
     rcases le_total x y with (xy | yx)
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
@@ -194,6 +194,7 @@ theorem HasUnitSpeedOn.Icc_Icc {x y z : ℝ} (hfs : HasUnitSpeedOn f (Icc x y))
     (hft : HasUnitSpeedOn f (Icc y z)) : HasUnitSpeedOn f (Icc x z) :=
   HasConstantSpeedOnWith.Icc_Icc hfs hft
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If both `f` and `f ∘ φ` have unit speed (on `t` and `s` respectively) and `φ`
 monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 -/

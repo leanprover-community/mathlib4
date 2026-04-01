@@ -680,6 +680,7 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
   simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
@@ -704,6 +705,7 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
@@ -760,7 +762,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
     · rw [le_zero_iff] at hb
       simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
-  rw [MutuallySingular] at h; push_neg at h
+  rw [MutuallySingular] at h; push Not at h
   have := h _ hAmeas hμ
   simp_rw [A, compl_iInter, compl_compl] at this
   -- as `Aᶜ = ⋃ n, f n`, `ν Aᶜ > 0` implies there exists some `n` such that `ν (f n) > 0`

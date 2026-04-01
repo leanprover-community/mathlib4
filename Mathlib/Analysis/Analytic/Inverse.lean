@@ -566,6 +566,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries List
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
     {p : FormalMultilinearSeries 𝕜 E F} {x : E}

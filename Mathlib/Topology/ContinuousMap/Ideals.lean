@@ -105,7 +105,7 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
   convert Iff.rfl
 
 theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
-  simp_rw [mem_idealOfSet]; push_neg; rfl
+  simp_rw [mem_idealOfSet]; push Not; rfl
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
@@ -118,7 +118,7 @@ theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
-  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push_neg; rfl
+  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push Not; rfl
 
 theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
   simp only [setOfIdeal, Set.setOf_forall, isOpen_compl_iff]
@@ -182,6 +182,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
 
 variable [CompactSpace X] [T2Space X]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by

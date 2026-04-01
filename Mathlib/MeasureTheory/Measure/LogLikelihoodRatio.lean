@@ -148,6 +148,7 @@ lemma llr_smul_inv_left_eq_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgue
   rw [hx_left, hx_right]
   simp [sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma llr_smul_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
@@ -188,7 +189,7 @@ lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     · simp only [ne_eq, inv_eq_zero]
       exact (integral_exp_pos hf).ne'
     · simp only [ne_eq, div_eq_zero_iff]
-      push_neg
+      push Not
       exact ⟨(exp_pos _).ne', (integral_exp_pos hf).ne'⟩
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 

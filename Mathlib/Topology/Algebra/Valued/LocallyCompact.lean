@@ -42,6 +42,7 @@ namespace Valued.integer
 
 -- should we do this all in the Valuation namespace instead?
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
 `Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
 lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
@@ -241,7 +242,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       exact z0.ne'
     · simp_rw [← v.restrict_inj]
       refine Valued.isOpen_sphere _ ?_
-      push_neg at hw
+      push Not at hw
       rw [← map_zero v.restrict, ne_eq, v.restrict_inj]
       refine (hw.trans' ?_).ne'
       simp [z0]
@@ -258,7 +259,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
-    push_neg at hi'
+    push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
     simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]

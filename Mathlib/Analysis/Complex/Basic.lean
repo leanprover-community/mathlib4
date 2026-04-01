@@ -91,6 +91,7 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
@@ -636,7 +637,7 @@ lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]
   rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
+  push Not at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2

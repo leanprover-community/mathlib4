@@ -117,7 +117,8 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
-  grind [compl, of]
+  simp [compl]
+  grind
 
 @[simp]
 theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
@@ -130,10 +131,10 @@ theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.comp
 
 theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
     (hA : A.IsAdjMatrix) (hB : B.IsAdjMatrix) : A.compl = B.compl ↔ A = B :=
-  ⟨fun h ↦ ext fun i j ↦ by grind [of, congr($h i j), compl, IsAdjMatrix], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun i j ↦ by simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
 
 @[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
-    A.compl.compl = A := by ext; grind [of, compl, IsAdjMatrix]
+    A.compl.compl = A := by ext; simp [compl]; grind [compl, IsAdjMatrix]
 
 namespace IsAdjMatrix
 
@@ -209,7 +210,6 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
     (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
 
-set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
     [One α] {H : SimpleGraph V} [DecidableRel H.Adj] (h : IsCompl G H) :

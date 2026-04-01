@@ -133,7 +133,13 @@ section Restrict
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    exact ⟨x, by simp [hx0], by grind [restrict_def, restrict₀_eq_one_iff]⟩
+    exact ⟨x, by simp [hx0], by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was:
+      `grind [restrict_def, restrict₀_eq_one_iff]` -/
+      simpa⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
@@ -175,8 +181,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
@@ -185,8 +190,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val

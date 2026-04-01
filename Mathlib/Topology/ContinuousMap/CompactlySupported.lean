@@ -671,6 +671,7 @@ open NNReal
 
 namespace CompactlySupportedContinuousMap
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
@@ -700,6 +701,7 @@ lemma nnrealPart_neg_eq_zero_of_nonneg {f : C_c(α, ℝ)} (hf : 0 ≤ f) : (-f).
   ext x
   simpa using hf x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
     (a • f).nnrealPart = a.toNNReal • f.nnrealPart := by
   ext x
@@ -709,6 +711,7 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   · simp [ha, hfx, mul_nonneg]
   · simp [mul_nonpos_iff, ha, hfx]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
   ext x
@@ -718,11 +721,13 @@ lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
   · simp [mul_nonpos_iff, ha, hfx]
   · simp [ha, hfx, mul_nonneg_of_nonpos_of_nonpos]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
   intro x
   simpa using Real.toNNReal_add_le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
     (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by

@@ -471,6 +471,7 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 /-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
+@[implicit_reducible]
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
   le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
@@ -487,7 +488,7 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     (by ext; simp [Classical.skolem])
 
 instance : CompletelyDistribLattice G.Subgraph :=
-  .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
+  fast_instance% .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
 
 @[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
 lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
@@ -607,7 +608,6 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
@@ -1182,7 +1182,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]` -/
+  rw [induce_eq_coe_induce_top]
+  exact (Subgraph.spanningCoe_coe _).symm
 
 section Induce
 

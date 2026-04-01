@@ -163,7 +163,8 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
   have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
-  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
+  simp_all
+  grind [IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -410,7 +411,6 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   refine h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
   grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, huv.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
     Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
