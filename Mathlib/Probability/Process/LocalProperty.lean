@@ -76,7 +76,8 @@ section LinearOrder
 
 variable [LinearOrder ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
 
-lemma IsLocalizingSequence.min [TopologicalSpace ι] [OrderTopology ι] {τ σ : ℕ → Ω → WithTop ι}
+protected lemma IsLocalizingSequence.min [TopologicalSpace ι] [OrderTopology ι]
+    {τ σ : ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : IsLocalizingSequence 𝓕 σ P) :
     IsLocalizingSequence 𝓕 (min τ σ) P where
   isStoppingTime n := (hτ.isStoppingTime n).min (hσ.isStoppingTime n)
@@ -289,8 +290,7 @@ lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction
       IsPreLocalizingSequence 𝓕 (fun i ω ↦ (τ i ω) ⊓ (σ i (nk i) ω)) P := by
   obtain ⟨nk, T, hnk, hT, hP⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux hτ hσ
   refine ⟨nk, hnk, fun n ↦ (hτ.isStoppingTime n).min ((hσ _).isStoppingTime _), ?_⟩
-  have : ∑' n, P {ω | σ n (nk n) ω < (τ n ω) ⊓ (T n)} < ∞ :=
-    -- care: min no longer works because of `IsLocalizingSequence.min`
+  have : ∑' n, P {ω | σ n (nk n) ω < min (τ n ω) (T n)} < ∞ :=
     lt_of_le_of_lt (ENNReal.summable.tsum_mono ENNReal.summable hP)
       (tsum_geometric_lt_top.2 <| by simp)
   filter_upwards [ae_eventually_notMem this.ne, hτ.tendsto_top] with ω hω hωτ
