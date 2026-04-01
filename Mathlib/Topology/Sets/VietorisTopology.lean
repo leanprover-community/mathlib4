@@ -409,8 +409,7 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩
 
 @[fun_prop]
-theorem _root_.Continuous.compacts_map (hf : Continuous f) :
-    Continuous (Compacts.map f hf) :=
+theorem _root_.Continuous.compacts_map (hf : Continuous f) : Continuous (Compacts.map f hf) :=
   isEmbedding_coe.continuous_iff.mpr <| hf.image_vietoris.comp continuous_coe
 
 @[fun_prop]
@@ -625,8 +624,7 @@ theorem _root_.Topology.IsOpenEmbedding.nonemptyCompacts_map (hf : IsOpenEmbeddi
 @[fun_prop]
 theorem _root_.Topology.IsClosedEmbedding.nonemptyCompacts_map (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (NonemptyCompacts.map f hf.continuous) :=
-  isClosedEmbedding_toCompacts.of_comp_iff.mp <|
-    hf.compacts_map.comp isClosedEmbedding_toCompacts
+  isClosedEmbedding_toCompacts.of_comp_iff.mp <| hf.compacts_map.comp isClosedEmbedding_toCompacts
 
 instance [DiscreteTopology α] : DiscreteTopology (NonemptyCompacts α) :=
   isEmbedding_toCompacts.discreteTopology
