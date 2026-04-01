@@ -386,7 +386,6 @@ theorem IsSemisimpleModule.exists_linearEquiv_dfinsupp [IsSemisimpleModule R M] 
   exact .symm <| .trans (.ofInjective _ ind.dfinsupp_lsum_injective) <| .trans (.ofEq _ ⊤ <|
     by rw [← Submodule.iSup_eq_range_dfinsupp_lsum, ← sSup, sSup_eq_iSup']) Submodule.topEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_exists_linearEquiv_dfinsupp : IsSemisimpleModule R M ↔
     ∃ (s : Set (Submodule R M)) (_ : M ≃ₗ[R] Π₀ m : s, m.1), ∀ m : s, IsSimpleModule R m.1 := by
   refine ⟨fun _ ↦ ?_, fun ⟨s, e, h⟩ ↦ .congr e⟩

@@ -88,7 +88,6 @@ theorem IsSMulRegular.notMem_of_mem_minimalPrimes
   rcases not_forall.mp (Module.mem_annihilator.not.mp hy) with ⟨m, hm⟩
   exact hm (reg.right_eq_zero_of_smul ((smul_smul x y m).trans (Module.mem_annihilator.mp hxy m)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
@@ -201,5 +200,20 @@ theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
   conv_rhs => rw [← map_comap S A J, minimalPrimes_map S]
   refine (Set.image_preimage_eq_iff.mpr ?_).symm
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
+
+theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
+    (q : Ideal R) [hqp : q.IsPrime] [IsLocalization.AtPrime A q]
+    (I : Ideal R) (hIq : q ∈ I.minimalPrimes) :
+    (I.map (algebraMap R A)).radical = q.map (algebraMap R A) := by
+  have : IsLocalRing A := AtPrime.isLocalRing A q
+  rw [← Ideal.sInf_minimalPrimes, IsLocalization.minimalPrimes_map q.primeCompl A I]
+  refine le_antisymm (sInf_le ?_) (le_sInf fun J hJ ↦ ?_)
+  · rwa [Set.mem_preimage, AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
+  · rw [← IsLocalization.comap_le_comap_iff q.primeCompl A,
+      AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
+    apply hIq.2 hJ.1
+    have := hJ.1.1.ne_top
+    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_comap_iff q.primeCompl A J] at this
+    exact Set.disjoint_compl_left_iff_subset.mp this
 
 end

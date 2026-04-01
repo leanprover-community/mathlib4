@@ -226,9 +226,6 @@ theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
   rw [span_le]
   exact AddSubmonoid.subset_closure
 
-@[deprecated (since := "2025-08-20")]
-alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
-
 @[simp]
 theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid = s := by
   rw [span_nat_eq_addSubmonoidClosure, s.closure_eq]
@@ -240,14 +237,10 @@ theorem span_int_eq_addSubgroupClosure {M : Type*} [AddCommGroup M] (s : Set M) 
       span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
 
-@[deprecated (since := "2025-08-20")]
-alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
-
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
     (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroupClosure, s.closure_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
     Disjoint (s \ {0}) t := by
   rw [disjoint_iff_forall_ne]

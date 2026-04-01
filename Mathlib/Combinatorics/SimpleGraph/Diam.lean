@@ -54,7 +54,7 @@ lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
 lemma eccent_eq_top_of_not_connected (h : ¬ G.Connected) (u : α) :
     G.eccent u = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
-  push_neg at h
+  push Not at h
   obtain ⟨v, h⟩ := h u
   rw [eq_top_iff, ← edist_eq_top_of_not_reachable h]
   exact le_iSup (G.edist u) v
@@ -179,7 +179,7 @@ lemma ediam_eq_zero_iff_subsingleton :
 
 lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬ G.Connected) : G.ediam = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
-  push_neg at h
+  push Not at h
   obtain ⟨_, hw⟩ := h Classical.ofNonempty
   rw [eq_top_iff, ← edist_eq_top_of_not_reachable hw]
   exact edist_le_ediam
@@ -319,7 +319,6 @@ lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
   rw [diam, ENat.toNat_eq_zero, or_comm, ediam_eq_zero_iff_subsingleton]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]

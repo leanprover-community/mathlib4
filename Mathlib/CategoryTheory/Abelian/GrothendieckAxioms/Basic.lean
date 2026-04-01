@@ -97,7 +97,7 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       apply isLimitOfReflects F
       refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesColimitNatIso F).symm)
         ((_ ⋙ colim).mapCone c) _ ?_) (isLimitOfPreserves _ hc)
-      exact Cones.ext ((preservesColimitNatIso F).symm.app _)
+      exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
 variable {C} in
@@ -115,10 +115,10 @@ lemma HasExactLimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Category*
       apply isColimitOfReflects F
       refine (IsColimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesLimitNatIso F).symm)
         ((_ ⋙ lim).mapCocone c) _ ?_) (isColimitOfPreserves _ hc)
-      refine Cocones.ext ((preservesLimitNatIso F).symm.app _) fun i ↦ ?_
+      refine Cocone.ext ((preservesLimitNatIso F).symm.app _) fun i ↦ ?_
       simp only [Functor.comp_obj, lim_obj, Functor.mapCocone_pt, isoWhiskerLeft_inv, Iso.symm_inv,
-        Cocones.precompose_obj_pt, whiskeringRight_obj_obj, Functor.const_obj_obj,
-        Cocones.precompose_obj_ι, NatTrans.comp_app, whiskerLeft_app, preservesLimitNatIso_hom_app,
+        Cocone.precompose_obj_pt, whiskeringRight_obj_obj, Functor.const_obj_obj,
+        Cocone.precompose_obj_ι, NatTrans.comp_app, whiskerLeft_app, preservesLimitNatIso_hom_app,
         Functor.mapCocone_ι_app, Functor.comp_map, whiskeringRight_obj_map, lim_map, Iso.app_hom,
         Iso.symm_hom, preservesLimitNatIso_inv_app, Category.assoc]
       rw [← Iso.eq_inv_comp]
@@ -555,7 +555,6 @@ variable [Abelian C] (J : Type u') [Category.{v'} J]
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has exact
 colimits of shape `J`.
@@ -567,7 +566,6 @@ lemma hasExactColimitsOfShape_of_preservesMono [HasColimitsOfShape J C]
     · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has exact
 limits of shape `J`.

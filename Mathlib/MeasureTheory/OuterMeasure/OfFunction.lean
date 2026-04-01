@@ -114,7 +114,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     by_cases ht : ∀ i, P (t i)
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
-      push_neg at ht
+      push Not at ht
       obtain ⟨i, hti_notMem⟩ := ht
       have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
@@ -283,7 +283,6 @@ theorem le_boundedBy' {μ : OuterMeasure α} :
   intro s
   rcases s.eq_empty_or_nonempty with h | h <;> simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
   rw [eq_top_iff, le_boundedBy']
