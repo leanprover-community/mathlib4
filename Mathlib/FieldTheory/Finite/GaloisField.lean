@@ -64,20 +64,185 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
-public def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
-
-@[expose] section
-
-deriving instance Field, Algebra (ZMod p), Inhabited for GaloisField p n
-
-end
-
-deriving instance CharP _ p, Finite, FiniteDimensional (ZMod p),
-  IsSplittingField (ZMod p) _ (X ^ p ^ n - X) for GaloisField p n
+@[expose] public def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 
 namespace GaloisField
 
+@[implicit_reducible]
+def instFieldAux (p : ℕ) [Fact p.Prime] (n : ℕ) : Field (GaloisField p n) :=
+  inferInstanceAs (Field (delta% GaloisField p n))
+
+variable {p : ℕ} [h_prime : Fact p.Prime] {n : ℕ}
+
+/-- The encapsulated addition for `GaloisField p n`. Use `x + y` instead. -/
+public protected def add : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).add
+
+/-- The encapsulated zero for `GaloisField p n`. Use `0` instead. -/
+public protected def zero : GaloisField p n :=
+  (instFieldAux p n).zero
+
+/-- The encapsulated natural scalar multiplication for `GaloisField p n`. Use `m • x` instead. -/
+public protected def nsmul : (m : ℕ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).nsmul
+
+/-- The encapsulated multiplication for `GaloisField p n`. Use `x * y` instead. -/
+public protected def mul : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).mul
+
+/-- The encapsulated one for `GaloisField p n`. Use `1` instead. -/
+public protected def one : GaloisField p n :=
+  (instFieldAux p n).one
+
+/-- The encapsulated cast from natural for `GaloisField p n`. Use `↑m` instead. -/
+public protected def natCast : (m : ℕ) → GaloisField p n :=
+  (instFieldAux p n).natCast
+
+/-- The encapsulated natural power for `GaloisField p n`. Use `x ^ m` instead. -/
+public protected def npow : (m : ℕ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).npow
+
+/-- The encapsulated negation for `GaloisField p n`. Use `-x` instead. -/
+public protected def neg : (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).neg
+
+/-- The encapsulated subtraction for `GaloisField p n`. Use `x - y` instead. -/
+public protected def sub : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).sub
+
+/-- The encapsulated integer scalar multiplication for `GaloisField p n`. Use `m • x` instead. -/
+public protected def zsmul : (m : ℤ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).zsmul
+
+/-- The encapsulated cast from integer for `GaloisField p n`. Use `↑m` instead. -/
+public protected def intCast : (m : ℤ) → GaloisField p n :=
+  (instFieldAux p n).intCast
+
+/-- The encapsulated inverse for `GaloisField p n`. Use `x⁻¹` instead. -/
+public protected def inv : (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).inv
+
+/-- The encapsulated division for `GaloisField p n`. Use `x / y` instead. -/
+public protected def div : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).div
+
+/-- The encapsulated integer power for `GaloisField p n`. Use `x ^ m` instead. -/
+public protected def zpow : (m : ℤ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).zpow
+
+/-- The encapsulated cast from nonnegative rational for `GaloisField p n`. Use `↑q` instead. -/
+public protected def nnratCast : (q : ℚ≥0) → GaloisField p n :=
+  (instFieldAux p n).nnratCast
+
+/-- The encapsulated cast from rational for `GaloisField p n`. Use `↑q` instead. -/
+public protected def ratCast : (q : ℚ) → GaloisField p n :=
+  (instFieldAux p n).ratCast
+
+/-- The encapsulated nonnegative rational scalar multiplication for `GaloisField p n`.
+Use `q • x` instead. -/
+public protected def nnqsmul : (q : ℚ≥0) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).nnqsmul
+
+/-- The encapsulated rational scalar multiplication for `GaloisField p n`. Use `q • x` instead. -/
+public protected def qsmul : (q : ℚ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).qsmul
+
+public instance (p : ℕ) [Fact p.Prime] (n : ℕ) : Field (GaloisField p n) where
+  add := GaloisField.add
+  add_assoc := by exact (instFieldAux p n).add_assoc
+  zero := GaloisField.zero
+  zero_add := by exact (instFieldAux p n).zero_add
+  add_zero := by exact (instFieldAux p n).add_zero
+  nsmul := GaloisField.nsmul
+  nsmul_zero := by exact (instFieldAux p n).nsmul_zero
+  nsmul_succ := by exact (instFieldAux p n).nsmul_succ
+  add_comm := by exact (instFieldAux p n).add_comm
+  mul := GaloisField.mul
+  left_distrib := by exact (instFieldAux p n).left_distrib
+  right_distrib := by exact (instFieldAux p n).right_distrib
+  zero_mul := by exact (instFieldAux p n).zero_mul
+  mul_zero := by exact (instFieldAux p n).mul_zero
+  mul_assoc := by exact (instFieldAux p n).mul_assoc
+  one := GaloisField.one
+  one_mul := by exact (instFieldAux p n).one_mul
+  mul_one := by exact (instFieldAux p n).mul_one
+  natCast := GaloisField.natCast
+  natCast_zero := by exact (instFieldAux p n).natCast_zero
+  natCast_succ := by exact (instFieldAux p n).natCast_succ
+  npow := GaloisField.npow
+  npow_zero := by exact (instFieldAux p n).npow_zero
+  npow_succ := by exact (instFieldAux p n).npow_succ
+  neg := GaloisField.neg
+  sub := GaloisField.sub
+  sub_eq_add_neg := by exact (instFieldAux p n).sub_eq_add_neg
+  zsmul := GaloisField.zsmul
+  zsmul_zero' := by exact (instFieldAux p n).zsmul_zero'
+  zsmul_succ' := by exact (instFieldAux p n).zsmul_succ'
+  zsmul_neg' := by exact (instFieldAux p n).zsmul_neg'
+  neg_add_cancel := by exact (instFieldAux p n).neg_add_cancel
+  intCast := GaloisField.intCast
+  intCast_ofNat := by exact (instFieldAux p n).intCast_ofNat
+  intCast_negSucc := by exact (instFieldAux p n).intCast_negSucc
+  mul_comm := by exact (instFieldAux p n).mul_comm
+  inv := GaloisField.inv
+  div := GaloisField.div
+  div_eq_mul_inv := by exact (instFieldAux p n).div_eq_mul_inv
+  zpow := GaloisField.zpow
+  zpow_zero' := by exact (instFieldAux p n).zpow_zero'
+  zpow_succ' := by exact (instFieldAux p n).zpow_succ'
+  zpow_neg' := by exact (instFieldAux p n).zpow_neg'
+  exists_pair_ne := by exact (instFieldAux p n).exists_pair_ne
+  nnratCast := GaloisField.nnratCast
+  ratCast := GaloisField.ratCast
+  mul_inv_cancel := by exact (instFieldAux p n).mul_inv_cancel
+  inv_zero := by exact (instFieldAux p n).inv_zero
+  nnratCast_def := by exact (instFieldAux p n).nnratCast_def
+  nnqsmul := GaloisField.nnqsmul
+  nnqsmul_def := by exact (instFieldAux p n).nnqsmul_def
+  ratCast_def := by exact (instFieldAux p n).ratCast_def
+  qsmul := GaloisField.qsmul
+  qsmul_def := by exact (instFieldAux p n).qsmul_def
+
+@[implicit_reducible]
+def instAlgebraZModAux (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ) :
+    Algebra (ZMod p) (GaloisField p n) :=
+  inferInstanceAs (Algebra (ZMod p) (delta% GaloisField p n))
+
+/-- The encapsulated integers modulo `p` scalar multiplication for `GaloisField p n`.
+Use `m • x` instead. -/
+public protected def zmodsmul : (m : ZMod p) → (x : GaloisField p n) → GaloisField p n :=
+  (instAlgebraZModAux p n).smul
+
+/-- The encapsulated cast from integers modulo `p` for `GaloisField p n`. Use `↑m` instead. -/
+public protected def zmodCast : (m : ZMod p) → GaloisField p n :=
+  ⇑(instAlgebraZModAux p n).algebraMap
+
+public instance (p : ℕ) [Fact p.Prime] (n : ℕ) : Algebra (ZMod p) (GaloisField p n) where
+  smul := GaloisField.zmodsmul
+  algebraMap.toFun := GaloisField.zmodCast
+  algebraMap.map_one' := by exact (instAlgebraZModAux p n).algebraMap.map_one'
+  algebraMap.map_mul' := by exact (instAlgebraZModAux p n).algebraMap.map_mul'
+  algebraMap.map_zero' := by exact (instAlgebraZModAux p n).algebraMap.map_zero'
+  algebraMap.map_add' := by exact (instAlgebraZModAux p n).algebraMap.map_add'
+  commutes' := by exact (instAlgebraZModAux p n).commutes'
+  smul_def' := by exact (instAlgebraZModAux p n).smul_def'
+
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
+
+public instance : Inhabited (GaloisField p n) where
+  default := 0
+
+public instance : CharP (GaloisField p n) p :=
+  inferInstanceAs (CharP (delta% GaloisField p n) p)
+
+public instance : Finite (GaloisField p n) :=
+  inferInstanceAs (Finite (delta% GaloisField p n))
+
+public instance : FiniteDimensional (ZMod p) (GaloisField p n) :=
+  inferInstanceAs (FiniteDimensional (ZMod p) (delta% GaloisField p n))
+
+public instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
+  inferInstanceAs (IsSplittingField (ZMod p) (delta% GaloisField p n) (X ^ p ^ n - X))
 
 public theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
