@@ -1,4 +1,4 @@
-module  -- shake: keep-all deprecated_module: ignore
+module  -- shake: keep-all
 
 public import Std
 public import Batteries
@@ -52,7 +52,7 @@ public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.AlgebraicCard
-public import Mathlib.Algebra.ArithmeticGeometric
+public import Mathlib.Algebra.ArithmeticGeometric --deprecated_module: ignore
 public import Mathlib.Algebra.Azumaya.Basic
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.Algebra.Azumaya.Matrix
@@ -496,7 +496,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
-public import Mathlib.Algebra.GroupWithZero.Action.Faithful
+public import Mathlib.Algebra.GroupWithZero.Action.Faithful --deprecated_module: ignore
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
@@ -517,7 +517,7 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.GroupWithZero.Int
+public import Mathlib.Algebra.GroupWithZero.Int --deprecated_module: ignore
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.GroupWithZero.NeZero
@@ -695,7 +695,7 @@ public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.Basis
 public import Mathlib.Algebra.Lie.CartanExists
-public import Mathlib.Algebra.Lie.CartanMatrix
+public import Mathlib.Algebra.Lie.CartanMatrix --deprecated_module: ignore
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Character
 public import Mathlib.Algebra.Lie.Classical
@@ -744,7 +744,7 @@ public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 public import Mathlib.Algebra.LinearRecurrence
-public import Mathlib.Algebra.ModEq
+public import Mathlib.Algebra.ModEq --deprecated_module: ignore
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Module.Bimodule
@@ -868,7 +868,7 @@ public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-public import Mathlib.Algebra.NoZeroSMulDivisors.Prod
+public import Mathlib.Algebra.NoZeroSMulDivisors.Prod --deprecated_module: ignore
 public import Mathlib.Algebra.NonAssoc.LieAdmissible.Defs
 public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 public import Mathlib.Algebra.Notation
@@ -915,7 +915,7 @@ public import Mathlib.Algebra.Order.CompleteField
 public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Canonical
-public import Mathlib.Algebra.Order.Field.Defs
+public import Mathlib.Algebra.Order.Field.Defs --deprecated_module: ignore
 public import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Algebra.Order.Field.Pi
 public import Mathlib.Algebra.Order.Field.Pointwise
@@ -993,7 +993,7 @@ public import Mathlib.Algebra.Order.Interval.Set.Monoid
 public import Mathlib.Algebra.Order.Interval.Set.SuccPred
 public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Order.Module.Algebra
+public import Mathlib.Algebra.Order.Module.Algebra --deprecated_module: ignore
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Algebra.Order.Module.Defs
@@ -1103,7 +1103,7 @@ public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.CoeffMem
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Definitions --deprecated_module: ignore
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
@@ -1127,7 +1127,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Irreducible
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Eval.Subring
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Factors --deprecated_module: ignore
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.GroupRingAction
 public import Mathlib.Algebra.Polynomial.HasseDeriv
@@ -1159,7 +1159,7 @@ public import Mathlib.Algebra.Polynomial.UnitTrinomial
 public import Mathlib.Algebra.PresentedMonoid.Basic
 public import Mathlib.Algebra.Prime.Defs
 public import Mathlib.Algebra.Prime.Lemmas
-public import Mathlib.Algebra.QuadraticAlgebra
+public import Mathlib.Algebra.QuadraticAlgebra --deprecated_module: ignore
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
@@ -1742,7 +1742,7 @@ public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Calculus.Rademacher
 public import Mathlib.Analysis.Calculus.SmoothSeries
-public import Mathlib.Analysis.Calculus.TangentCone
+public import Mathlib.Analysis.Calculus.TangentCone --deprecated_module: ignore
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Analysis.Calculus.TangentCone.DimOne
@@ -1891,8 +1891,8 @@ public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierMultiplier
-public import Mathlib.Analysis.Distribution.FourierSchwartz
-public import Mathlib.Analysis.Distribution.SchwartzSpace
+public import Mathlib.Analysis.Distribution.FourierSchwartz --deprecated_module: ignore
+public import Mathlib.Analysis.Distribution.SchwartzSpace --deprecated_module: ignore
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
@@ -1930,7 +1930,7 @@ public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-public import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic --deprecated_module: ignore
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
@@ -1986,7 +1986,7 @@ public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Matrix
+public import Mathlib.Analysis.Matrix --deprecated_module: ignore
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.LDL
@@ -2096,7 +2096,7 @@ public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Dual
-public import Mathlib.Analysis.Normed.Module.ENormedSpace
+public import Mathlib.Analysis.Normed.Module.ENormedSpace --deprecated_module: ignore
 public import Mathlib.Analysis.Normed.Module.Extr
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.Normed.Module.HahnBanach
@@ -2136,7 +2136,7 @@ public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Operator.Prod
-public import Mathlib.Analysis.Normed.Order.Basic
+public import Mathlib.Analysis.Normed.Order.Basic --deprecated_module: ignore
 public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Analysis.Normed.Order.Hom.Ultra
 public import Mathlib.Analysis.Normed.Order.Lattice
@@ -2159,25 +2159,25 @@ public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-public import Mathlib.Analysis.NormedSpace.Alternating.Basic
-public import Mathlib.Analysis.NormedSpace.Alternating.Curry
-public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
-public import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-public import Mathlib.Analysis.NormedSpace.Connected
-public import Mathlib.Analysis.NormedSpace.ENormedSpace
-public import Mathlib.Analysis.NormedSpace.Extend
-public import Mathlib.Analysis.NormedSpace.Extr
-public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
-public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-public import Mathlib.Analysis.NormedSpace.MStructure
-public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
-public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
-public import Mathlib.Analysis.NormedSpace.Normalize
-public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
-public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
-public import Mathlib.Analysis.NormedSpace.RieszLemma
+public import Mathlib.Analysis.NormedSpace.Alternating.Basic --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Alternating.Curry --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.ConformalLinearMap --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Connected --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.ENormedSpace --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Extend --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Extr --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.MStructure --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Multilinear.Curry --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.Normalize --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm --deprecated_module: ignore
+public import Mathlib.Analysis.NormedSpace.RieszLemma --deprecated_module: ignore
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
@@ -2228,7 +2228,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog --deprecated_module: ignore
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Order
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
@@ -2293,7 +2293,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev --deprecated_module: ignore
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.ChebyshevGauss
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Extremal
@@ -2380,7 +2380,7 @@ public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.CategoryTheory.Action.Continuous
 public import Mathlib.CategoryTheory.Action.Limits
 public import Mathlib.CategoryTheory.Action.Monoidal
-public import Mathlib.CategoryTheory.Adhesive
+public import Mathlib.CategoryTheory.Adhesive --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Adhesive.Subobject
 public import Mathlib.CategoryTheory.Adjunction.Additive
@@ -2423,7 +2423,7 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-public import Mathlib.CategoryTheory.Bicategory.Functor.Strict
+public import Mathlib.CategoryTheory.Bicategory.Functor.Strict --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Lax
@@ -2446,7 +2446,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
-public import Mathlib.CategoryTheory.Bicategory.Strict
+public import Mathlib.CategoryTheory.Bicategory.Strict --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Yoneda
@@ -2463,7 +2463,7 @@ public import Mathlib.CategoryTheory.Category.Cat.Op
 public import Mathlib.CategoryTheory.Category.Cat.Terminal
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Category.GaloisConnection
-public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Category.Grpd --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Category.Pairwise
@@ -2480,17 +2480,17 @@ public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
-public import Mathlib.CategoryTheory.Closed.Cartesian
-public import Mathlib.CategoryTheory.Closed.Enrichment
-public import Mathlib.CategoryTheory.Closed.Functor
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
-public import Mathlib.CategoryTheory.Closed.FunctorToTypes
-public import Mathlib.CategoryTheory.Closed.Ideal
-public import Mathlib.CategoryTheory.Closed.Monoidal
-public import Mathlib.CategoryTheory.Closed.Types
-public import Mathlib.CategoryTheory.Closed.Zero
+public import Mathlib.CategoryTheory.Closed.Cartesian --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Enrichment --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Functor --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Ideal --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Monoidal --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Types --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Closed.Zero --deprecated_module: ignore
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
@@ -2517,12 +2517,12 @@ public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom --deprecated_module: ignore
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-public import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
+public import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Conj
 public import Mathlib.CategoryTheory.ConnectedComponents
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
@@ -2545,7 +2545,7 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
-public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
+public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
@@ -2722,7 +2722,7 @@ public import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 public import Mathlib.CategoryTheory.Limits.Final.Type
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.Limits.FintypeCat
-public import Mathlib.CategoryTheory.Limits.FormalCoproducts
+public import Mathlib.CategoryTheory.Limits.FormalCoproducts --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.ExtraDegeneracy
@@ -2831,7 +2831,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.ChosenPullback
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
@@ -2878,7 +2878,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Pushouts
-public import Mathlib.CategoryTheory.Limits.Types.Shapes
+public import Mathlib.CategoryTheory.Limits.Types.Shapes --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Unit
 public import Mathlib.CategoryTheory.Limits.VanKampen
@@ -2910,7 +2910,7 @@ public import Mathlib.CategoryTheory.Localization.HomEquiv
 public import Mathlib.CategoryTheory.Localization.Linear
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Localization.LocallySmall
-public import Mathlib.CategoryTheory.Localization.Monoidal
+public import Mathlib.CategoryTheory.Localization.Monoidal --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
@@ -3307,13 +3307,13 @@ public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 public import Mathlib.CategoryTheory.Subobject.Types
 public import Mathlib.CategoryTheory.Subobject.WellPowered
-public import Mathlib.CategoryTheory.Subpresheaf.Basic
-public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
-public import Mathlib.CategoryTheory.Subpresheaf.Finite
-public import Mathlib.CategoryTheory.Subpresheaf.Image
-public import Mathlib.CategoryTheory.Subpresheaf.OfSection
-public import Mathlib.CategoryTheory.Subpresheaf.Sieves
-public import Mathlib.CategoryTheory.Subpresheaf.Subobject
+public import Mathlib.CategoryTheory.Subpresheaf.Basic --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.Finite --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.Image --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves --deprecated_module: ignore
+public import Mathlib.CategoryTheory.Subpresheaf.Subobject --deprecated_module: ignore
 public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
@@ -3394,7 +3394,7 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.Enumerative.DyckWord
 public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
-public import Mathlib.Combinatorics.Enumerative.Partition
+public import Mathlib.Combinatorics.Enumerative.Partition --deprecated_module: ignore
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
@@ -3518,7 +3518,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.VertexCover
-public import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walk --deprecated_module: ignore
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
@@ -3543,20 +3543,20 @@ public import Mathlib.Computability.MyhillNerode
 public import Mathlib.Computability.NFA
 public import Mathlib.Computability.Partrec
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Computability.PostTuringMachine
-public import Mathlib.Computability.Primrec
+public import Mathlib.Computability.PostTuringMachine --deprecated_module: ignore
+public import Mathlib.Computability.Primrec --deprecated_module: ignore
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Computability.Primrec.List
 public import Mathlib.Computability.RecursiveIn
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Computability.StateTransition
-public import Mathlib.Computability.TMComputable
-public import Mathlib.Computability.TMConfig
-public import Mathlib.Computability.TMToPartrec
-public import Mathlib.Computability.Tape
+public import Mathlib.Computability.TMComputable --deprecated_module: ignore
+public import Mathlib.Computability.TMConfig --deprecated_module: ignore
+public import Mathlib.Computability.TMToPartrec --deprecated_module: ignore
+public import Mathlib.Computability.Tape --deprecated_module: ignore
 public import Mathlib.Computability.TuringDegree
-public import Mathlib.Computability.TuringMachine
+public import Mathlib.Computability.TuringMachine --deprecated_module: ignore
 public import Mathlib.Computability.TuringMachine.Computable
 public import Mathlib.Computability.TuringMachine.Config
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
@@ -3623,7 +3623,7 @@ public import Mathlib.Control.ULift
 public import Mathlib.Control.ULiftable
 public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Data.Analysis.Topology
-public import Mathlib.Data.Array.Defs
+public import Mathlib.Data.Array.Defs --deprecated_module: ignore
 public import Mathlib.Data.Array.Extract
 public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
@@ -3912,7 +3912,7 @@ public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.List.SplitBy
 public import Mathlib.Data.List.SplitLengths
-public import Mathlib.Data.List.SplitOn
+public import Mathlib.Data.List.SplitOn --deprecated_module: ignore
 public import Mathlib.Data.List.Sublists
 public import Mathlib.Data.List.Sym
 public import Mathlib.Data.List.TFAE
@@ -4000,7 +4000,7 @@ public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.Nat.Choose.Factorization
 public import Mathlib.Data.Nat.Choose.Lucas
-public import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Mul --deprecated_module: ignore
 public import Mathlib.Data.Nat.Choose.Multinomial
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Choose.Vandermonde
@@ -4044,7 +4044,7 @@ public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Nat.Pairing
 public import Mathlib.Data.Nat.Periodic
-public import Mathlib.Data.Nat.PowModTotient
+public import Mathlib.Data.Nat.PowModTotient --deprecated_module: ignore
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Prime.Factorial
@@ -4128,12 +4128,12 @@ public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.CompleteField
+public import Mathlib.Data.Real.CompleteField --deprecated_module: ignore
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Hom
-public import Mathlib.Data.Real.Irrational
+public import Mathlib.Data.Real.Irrational --deprecated_module: ignore
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
@@ -4232,7 +4232,7 @@ public import Mathlib.Data.Sym.Sym2.Init
 public import Mathlib.Data.Sym.Sym2.Order
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Data.Tree.Get
-public import Mathlib.Data.Tree.RBMap
+public import Mathlib.Data.Tree.RBMap --deprecated_module: ignore
 public import Mathlib.Data.Tree.Traversable
 public import Mathlib.Data.TwoPointing
 public import Mathlib.Data.TypeVec
@@ -4675,11 +4675,11 @@ public import Mathlib.Lean.Elab.Term
 public import Mathlib.Lean.EnvExtension
 public import Mathlib.Lean.Environment
 public import Mathlib.Lean.Exception
-public import Mathlib.Lean.Expr
+public import Mathlib.Lean.Expr --deprecated_module: ignore
 public import Mathlib.Lean.Expr.Basic
 public import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Lean.Expr.Rat
-public import Mathlib.Lean.Expr.ReplaceRec
+public import Mathlib.Lean.Expr.ReplaceRec --deprecated_module: ignore
 public import Mathlib.Lean.FoldEnvironment
 public import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
@@ -4710,7 +4710,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -4844,7 +4844,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Norm
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeProduct.Basic
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Goursat
@@ -4892,14 +4892,14 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
+public import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.LDL
+public import Mathlib.LinearAlgebra.Matrix.LDL --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -4961,7 +4961,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Basis
-public import Mathlib.LinearAlgebra.QuadraticForm.Complex
+public import Mathlib.LinearAlgebra.QuadraticForm.Complex --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.QuadraticForm.Dual
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
@@ -5004,12 +5004,12 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
 public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
-public import Mathlib.LinearAlgebra.SModEq
+public import Mathlib.LinearAlgebra.SModEq --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.LinearAlgebra.SesquilinearForm
+public import Mathlib.LinearAlgebra.SesquilinearForm --deprecated_module: ignore
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
@@ -5092,7 +5092,7 @@ public import Mathlib.Logic.Function.OfArity
 public import Mathlib.Logic.Function.ULift
 public import Mathlib.Logic.Godel.GodelBetaFunction
 public import Mathlib.Logic.Hydra
-public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty --deprecated_module: ignore
 public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Lemmas
@@ -5305,7 +5305,7 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction --deprecated_module: ignore
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 public import Mathlib.MeasureTheory.Measure.Comap
@@ -5447,7 +5447,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction --deprecated_module: ignore
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
@@ -5468,12 +5468,12 @@ public import Mathlib.NumberTheory.ClassNumber.FunctionField
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.NumberTheory.Cyclotomic.CyclotomicCharacter
 public import Mathlib.NumberTheory.Cyclotomic.Discriminant
-public import Mathlib.NumberTheory.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.Cyclotomic.Embeddings --deprecated_module: ignore
 public import Mathlib.NumberTheory.Cyclotomic.Gal
-public import Mathlib.NumberTheory.Cyclotomic.PID
+public import Mathlib.NumberTheory.Cyclotomic.PID --deprecated_module: ignore
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.NumberTheory.Cyclotomic.Rat
-public import Mathlib.NumberTheory.Cyclotomic.Three
+public import Mathlib.NumberTheory.Cyclotomic.Rat --deprecated_module: ignore
+public import Mathlib.NumberTheory.Cyclotomic.Three --deprecated_module: ignore
 public import Mathlib.NumberTheory.Dioph
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 public import Mathlib.NumberTheory.DiophantineApproximation.ContinuedFractions
@@ -5589,7 +5589,7 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCon
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.ClassNumber
-public import Mathlib.NumberTheory.NumberField.Completion
+public import Mathlib.NumberTheory.NumberField.Completion --deprecated_module: ignore
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
@@ -5603,7 +5603,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.EquivReindex
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.FinitePlaces --deprecated_module: ignore
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
@@ -5611,7 +5611,7 @@ public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion --deprecated_module: ignore
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
@@ -5665,8 +5665,8 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
-public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
-public import Mathlib.NumberTheory.VonMangoldt
+public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal --deprecated_module: ignore
+public import Mathlib.NumberTheory.VonMangoldt --deprecated_module: ignore
 public import Mathlib.NumberTheory.WellApproximable
 public import Mathlib.NumberTheory.Wilson
 public import Mathlib.NumberTheory.ZetaValues
@@ -5954,7 +5954,7 @@ public import Mathlib.Order.SuccPred.WithBot
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.SymmDiff
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.Synonym --deprecated_module: ignore
 public import Mathlib.Order.TeichmullerTukey
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.Order.TypeTags
@@ -6021,7 +6021,7 @@ public import Mathlib.Probability.Independence.Conditional
 public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Independence.Integrable
 public import Mathlib.Probability.Independence.Integration
-public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.Probability.Independence.Kernel --deprecated_module: ignore
 public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Independence.Process.Basic
@@ -6154,7 +6154,7 @@ public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Adjoin.FG
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Adjoin.Field
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial --deprecated_module: ignore
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.RingTheory.Adjoin.PowerBasis
@@ -6623,7 +6623,7 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuasiFinite.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 public import Mathlib.RingTheory.QuotSMulTop
-public import Mathlib.RingTheory.Radical
+public import Mathlib.RingTheory.Radical --deprecated_module: ignore
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
 public import Mathlib.RingTheory.ReesAlgebra
@@ -6968,7 +6968,7 @@ public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
 public import Mathlib.Tactic.Generalize
-public import Mathlib.Tactic.GeneralizeProofs
+public import Mathlib.Tactic.GeneralizeProofs --deprecated_module: ignore
 public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
@@ -7002,7 +7002,7 @@ public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
-public import Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Tactic.Linter.CommandStart --deprecated_module: ignore
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -7089,7 +7089,7 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.ProdAssoc
-public import Mathlib.Tactic.Propose
+public import Mathlib.Tactic.Propose --deprecated_module: ignore
 public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
@@ -7302,7 +7302,7 @@ public import Mathlib.Topology.Algebra.PontryaginDual
 public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
-public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
+public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous --deprecated_module: ignore
 public import Mathlib.Topology.Algebra.ProperConstSMul
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
@@ -7430,13 +7430,13 @@ public import Mathlib.Topology.Compactness.CompactSystem
 public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
-public import Mathlib.Topology.Compactness.HilbertCubeEmbedding
+public import Mathlib.Topology.Compactness.HilbertCubeEmbedding --deprecated_module: ignore
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Compactness.LocallyFinite
 public import Mathlib.Topology.Compactness.NhdsKer
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.Compactness.PseudometrizableLindelof
+public import Mathlib.Topology.Compactness.PseudometrizableLindelof --deprecated_module: ignore
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.CardComponents
@@ -7483,7 +7483,7 @@ public import Mathlib.Topology.ContinuousMap.Weierstrass
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.GeneratedBy
-public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering --deprecated_module: ignore
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Quotient
@@ -7646,7 +7646,7 @@ public import Mathlib.Topology.NhdsSet
 public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Topology.OmegaCompletePartialOrder
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph --deprecated_module: ignore
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
@@ -7707,7 +7707,7 @@ public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 public import Mathlib.Topology.Semicontinuity.Lindelof
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuous --deprecated_module: ignore
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
 public import Mathlib.Topology.Separation.Basic
