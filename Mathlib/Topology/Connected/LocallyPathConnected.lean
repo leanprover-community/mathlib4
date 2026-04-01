@@ -247,8 +247,8 @@ instance Quot.locallyPathConnectedSpace {r : X → X → Prop} : LocallyPathConn
 Quot.locallyPathConnectedSpace
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
-instance Quotient.locallyPathConnectedSpace {s : Setoid X} : LocallyPathConnectedSpace (Quotient s) :=
-  isQuotientMap_quotient_mk'.locallyPathConnectedSpace
+instance Quotient.locallyPathConnectedSpace {s : Setoid X} :
+    LocallyPathConnectedSpace (Quotient s) := isQuotientMap_quotient_mk'.locallyPathConnectedSpace
 
 @[deprecated (since := "2026-04-01")] alias Quotient.locPathConnectedSpace :=
 Quotient.locallyPathConnectedSpace
