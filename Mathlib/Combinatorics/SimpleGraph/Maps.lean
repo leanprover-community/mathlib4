@@ -260,7 +260,7 @@ theorem spanningCoe_induce_eq_iff (s : Set V) : (G.induce s).spanningCoe = G ↔
 
 @[simp]
 theorem spanningCoe_induce_support : (G.induce G.support).spanningCoe = G :=
-  G.spanningCoe_induce_eq_iff _ |>.mpr <| refl _
+  G.spanningCoe_induce_eq_iff _ |>.mpr .rfl
 
 @[simp]
 theorem spanningCoe_induce_univ : (G.induce .univ).spanningCoe = G :=
