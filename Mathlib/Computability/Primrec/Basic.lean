@@ -688,8 +688,6 @@ theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
-@[deprecated (since := "2025-08-23")] alias dom_fintype := dom_finite
-
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -824,7 +822,11 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
       by_cases h : p a <;> simp [h]; rfl⟩
 
 instance fin {n} : Primcodable (Fin n) :=
-  @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
+  letI : Primcodable { i : ℕ // i < n } := subtype <| nat_lt.comp .id (const n)
+  ofEquiv { i : ℕ // i < n } Fin.equivSubtype
+
+example (n) : (fin (n := n)).toEncodable = Fin.encodable n := by
+  with_reducible_and_instances rfl
 
 section ULower
 
@@ -891,7 +893,7 @@ theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   option_get (Primrec.decode₂.comp subtype_val)
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI : Primcodable { a // id a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
+  letI : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
   exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
 
 theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=

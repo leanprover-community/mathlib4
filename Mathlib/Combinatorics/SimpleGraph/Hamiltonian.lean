@@ -178,12 +178,12 @@ lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
-  rw [support_eq_cons, List.count_cons_self,
+  rw [← cons_tail_support, List.count_cons_self,
     ← support_tail_of_not_nil _ hp.1.not_nil, hp.isHamiltonian_tail]
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
+  rw [← cons_support_tail hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
 lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Fintype.card α := by
@@ -264,10 +264,10 @@ theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
   have hWalkAllMem :
       ∀ p : G.Walk x y, s(x, y) ∈ p.edges :=
     (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).2
-  let cX := c.rotate (hcHam.mem_support x)
+  let cX := c.rotate x (hcHam.mem_support x)
   have hcycleX : cX.IsCycle := hcHam.isCycle.rotate (hcHam.mem_support x)
   have he_not_in_cX : s(x, y) ∉ cX.edges :=
-    fun h => he_not_in_cycle ((Walk.rotate_edges c (hcHam.mem_support x)).mem_iff.mp h)
+    fun h => he_not_in_cycle ((c.rotate_edges x (hcHam.mem_support x)).mem_iff.mp h)
   have hyX : y ∈ cX.support := by
     by_cases hxy : x = y
     · subst hxy
@@ -280,7 +280,7 @@ theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
         Walk.support_tail_of_not_nil c hc_not_nil
       rw [this] at hy_tail
       have hperm : cX.support.tail.Perm c.support.tail :=
-        (Walk.support_rotate c (hcHam.mem_support x)).perm
+        (c.support_rotate _ (hcHam.mem_support x)).perm
       have : y ∈ cX.support.tail := hperm.symm.mem_iff.mp hy_tail
       exact List.mem_of_mem_tail this
   let p := cX.takeUntil y hyX
