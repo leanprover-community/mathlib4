@@ -121,7 +121,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
   simp_rw [hf.isOpen_iff,
     (Set.image_surjective.mpr hq.surjective).exists,
-    ← hq.isQuotientMap.isCoinducing.isOpen_preimage]
+    ← hq.isQuotientMap.isOpen_preimage]
   constructor
   · rintro ⟨V, hV, e⟩
     refine ⟨V, hq.continuous.1 _ (hq.isOpenMap _ hV), ?_⟩

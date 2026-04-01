@@ -248,7 +248,7 @@ theorem nontrivialTopology_iff (h : X ≃ₜ Y) : NontrivialTopology X ↔ Nontr
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
-  h.isQuotientMap.isCoinducing.isOpen_preimage
+  h.isQuotientMap.isOpen_preimage
 
 @[simp]
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by

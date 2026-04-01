@@ -269,7 +269,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
   obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
-  rw [← isQuotientMap_quotient_mk'.isCoinducing.isOpen_preimage]
+  rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
   grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
 
 /-- A locally path-connected compact space has finitely many path components. -/

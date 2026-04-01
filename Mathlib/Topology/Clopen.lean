@@ -135,7 +135,7 @@ theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)
 
 protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
     {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
-  and_congr hf.isCoinducing.isClosed_preimage hf.isCoinducing.isOpen_preimage
+  and_congr hf.isClosed_preimage hf.isOpen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

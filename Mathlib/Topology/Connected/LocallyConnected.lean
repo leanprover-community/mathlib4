@@ -155,7 +155,7 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
 instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
-  simp [← ConnectedComponents.isQuotientMap_coe.isCoinducing.isOpen_preimage,
+  simp [← ConnectedComponents.isQuotientMap_coe.isOpen_preimage,
     connectedComponents_preimage_singleton, isOpen_connectedComponent]
 
 /-- A locally connected compact space has finitely many connected components. -/

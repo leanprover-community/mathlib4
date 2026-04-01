@@ -137,7 +137,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
     exact hs.preimage (_ ≫ p).continuous
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  refine ((PrimeSpectrum.isQuotientMap_of_generalizingMap ?_ ?_).isCoinducing.isOpen_preimage).mp hs
+  refine ((PrimeSpectrum.isQuotientMap_of_generalizingMap ?_ ?_).isOpen_preimage).mp hs
   · exact (surjective_iff (Spec.map φ)).mp inferInstance
   · apply RingHom.Flat.generalizingMap_comap
     rwa [← HasRingHomProperty.Spec_iff (P := @Flat)]
