@@ -154,11 +154,11 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
 
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of types) `𝒪_N ⟶ f_* 𝒪_M`
 by pre-composing with `f`. -/
-@[simps -isSimp val_app_coe]
-def smoothSheafCompRight (f : M → P) (hf : ContMDiff IM IP ∞ f) :
+@[simps -isSimp hom_app_coe]
+def ContMDiff.smoothSheafHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     smoothSheaf IP I P N ⟶ (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
       (smoothSheaf IM I M N) where
-  val.app U g := ⟨g ∘ Set.restrictPreimage _ f, by
+  hom.app U g := ⟨g ∘ Set.restrictPreimage _ f, by
     apply ContMDiff.comp (I' := IP) g.2
     rw [← ContMDiff.subtypeVal_comp_iff]
     exact hf.comp contMDiff_subtype_val⟩
@@ -402,13 +402,13 @@ variable {IM I M R}
 
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of rings) `𝒪_N ⟶ f_* 𝒪_M`,
 by pre-composing with `f`. -/
-@[simps! -isSimp val_app_hom_apply]
-def smoothSheafCommRingCompRight (f : M → P) (hf : ContMDiff IM IP ∞ f) :
+@[simps! -isSimp hom_app_hom_apply]
+def ContMDiff.smoothSheafCommRingHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     smoothSheafCommRing IP I P R ⟶
       (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
         (smoothSheafCommRing IM I M R) where
-  val.app U := CommRingCat.ofHom
-    { toFun := (smoothSheafCompRight _ _ f hf).val.app U
+  hom.app U := CommRingCat.ofHom
+    { toFun := (hf.smoothSheafHom _ _ f).hom.app U
       map_one' := rfl
       map_mul' _ _ := rfl
       map_zero' := rfl

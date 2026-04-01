@@ -145,7 +145,7 @@ def IsManifold.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ 
     (IsManifold.locallyRingedSpace IM M).toPresheafedSpace ⟶
       (IsManifold.locallyRingedSpace IN N).toPresheafedSpace where
   base := TopCat.ofHom ⟨f, hf.continuous⟩
-  c := (smoothSheafCommRingCompRight _ _ f hf).val
+  c := (hf.smoothSheafCommRingHom _ _ f).hom
 
 /-- (Implementation): Use `IsManifold.stalkMap_locallyRingedSpaceMap_evalHom`. -/
 lemma IsManifold.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) (x : M) :
@@ -159,6 +159,7 @@ lemma IsManifold.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff
   refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
   apply smoothSheafCommRing.evalHom_germ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
 @[simps! base]
 def IsManifold.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
