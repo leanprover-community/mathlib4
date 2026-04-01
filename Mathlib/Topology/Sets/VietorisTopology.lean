@@ -167,7 +167,7 @@ theorem continuous_singleton : Continuous ({·} : α → Set α) :=
 /-- Auxiliary lemma showing that singleton sets form a closed set. It takes the required topological
 properties as arguments, so that it applies to both the Vietoris topology and the Hausdorff
 uniformity. -/
-theorem _root_.isClosed_range_singleton_aux [T2Space α] {t : TopologicalSpace (Set α)}
+theorem _root_.TopologicalSpace.isClosed_range_singleton [T2Space α] {t : TopologicalSpace (Set α)}
     (h₁ : IsOpen {(∅ : Set α)}) (h₂ : ∀ {U : Set α}, IsOpen U → IsOpen {s | (s ∩ U).Nonempty}) :
     IsClosed (Set.range ({·} : α → Set α)) := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
@@ -187,7 +187,7 @@ theorem isClosedEmbedding_singleton [T2Space α] :
     Topology.IsClosedEmbedding ({·} : α → Set α) where
   __ := isEmbedding_singleton
   isClosed_range :=
-    isClosed_range_singleton_aux isClopen_singleton_empty.isOpen isOpen_inter_nonempty_of_isOpen
+    isClosed_range_singleton isClopen_singleton_empty.isOpen isOpen_inter_nonempty_of_isOpen
 
 @[fun_prop]
 theorem continuous_union : Continuous (fun x : Set α × Set α => x.1 ∪ x.2) := by

@@ -188,7 +188,9 @@ theorem isClosedEmbedding_singleton [T0Space α] :
     Topology.IsClosedEmbedding ({·} : α → Set α) where
   __ := isUniformEmbedding_singleton.isEmbedding
   isClosed_range :=
-    isClosed_range_singleton_aux isClopen_singleton_empty.isOpen isOpen_inter_nonempty_of_isOpen
+    TopologicalSpace.isClosed_range_singleton
+      isClopen_singleton_empty.isOpen
+      isOpen_inter_nonempty_of_isOpen
 
 theorem uniformContinuous_union : UniformContinuous (fun x : Set α × Set α => x.1 ∪ x.2) := by
   refine Filter.tendsto_lift'.mpr fun U hU => ?_
