@@ -217,7 +217,7 @@ variable {f : K[X]}
 /-- The encapsulated scalar multiplication for `SplittingField f`. Use `r • x` instead. -/
 public protected def smul {S : Type*} {f : K[X]} [DistribSMul S K] [IsScalarTower S K K] :
     (r : S) → (x : SplittingField f) → SplittingField f :=
-  (inferInstance : SMul S (delta% SplittingField f)).smul
+  (inferInstanceAs (SMul S (delta% SplittingField f)) : SMul S (SplittingField f)).smul
 
 /-- The encapsulated algebra coercion for `SplittingField f`. Use `↑r` instead. -/
 public protected def algebraCast {f : K[X]} :
@@ -226,7 +226,7 @@ public protected def algebraCast {f : K[X]} :
 
 @[implicit_reducible]
 def instCommRingAux (f : K[X]) : CommRing (SplittingField f) :=
-  (inferInstance : CommRing (delta% SplittingField f))
+  inferInstanceAs (CommRing (delta% SplittingField f))
 
 /-- The encapsulated addition for `SplittingField f`. Use `x + y` instead. -/
 public protected def add : (x y : SplittingField f) → SplittingField f :=
@@ -300,7 +300,7 @@ public instance (f : K[X]) : Inhabited (SplittingField f) where
 @[implicit_reducible]
 def instAlgebraAux (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
     Algebra R (SplittingField f) :=
-  (inferInstance : Algebra R (delta% SplittingField f))
+  inferInstanceAs (Algebra R (delta% SplittingField f))
 
 open scoped algebraMap in
 public instance (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
