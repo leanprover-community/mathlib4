@@ -1397,7 +1397,7 @@ protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancell
 @[to_additive]
 protected theorem injective_left [Mul α] [i : IsMulCommutative α] [PartialOrder α] {a : α}
     (ha : MulLECancellable a) : Injective (· * a) :=
-  fun b c h ↦ ha.Injective <| by dsimp; rwa [i.comm a, i.comm a]
+  fun b c h ↦ ha.Injective <| by dsimp; rwa [i.is_comm.comm a, i.is_comm.comm a]
 
 @[to_additive]
 protected theorem inj_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a b c : α}
@@ -1414,7 +1414,7 @@ protected theorem mul_le_mul_iff_left [Mul α] [MulLeftMono α] {a b c : α}
 @[to_additive]
 protected theorem mul_le_mul_iff_right [Mul α] [i : IsMulCommutative α] [MulLeftMono α] {a b c : α}
     (ha : MulLECancellable a) : b * a ≤ c * a ↔ b ≤ c := by
-  rw [i.comm b, i.comm c, ha.mul_le_mul_iff_left]
+  rw [i.is_comm.comm b, i.is_comm.comm c, ha.mul_le_mul_iff_left]
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [MulLeftMono α]
@@ -1431,12 +1431,12 @@ protected theorem mul_le_iff_le_one_right [MulOneClass α] [MulLeftMono α]
 @[to_additive]
 protected theorem le_mul_iff_one_le_left [MulOneClass α] [i : IsMulCommutative α] [MulLeftMono α]
     {a b : α} (ha : MulLECancellable a) : a ≤ b * a ↔ 1 ≤ b := by
-  rw [i.comm, ha.le_mul_iff_one_le_right]
+  rw [i.is_comm.comm, ha.le_mul_iff_one_le_right]
 
 @[to_additive]
 protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : IsMulCommutative α] [MulLeftMono α]
     {a b : α} (ha : MulLECancellable a) : b * a ≤ a ↔ b ≤ 1 := by
-  rw [i.comm, ha.mul_le_iff_le_one_right]
+  rw [i.is_comm.comm, ha.mul_le_iff_le_one_right]
 
 @[to_additive] lemma mul [Semigroup α] {a b : α} (ha : MulLECancellable a)
     (hb : MulLECancellable b) : MulLECancellable (a * b) :=

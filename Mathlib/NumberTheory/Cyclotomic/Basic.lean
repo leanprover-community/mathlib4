@@ -354,7 +354,7 @@ theorem algEquiv_eq_of_apply_eq [IsCyclotomicExtension S A B] [IsDomain B] {f g 
 /-- Cyclotomic extensions are abelian. -/
 theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
     IsMulCommutative (B ≃ₐ[A] B) := by
-  refine ⟨fun f g ↦ algEquiv_eq_of_apply_eq S A B fun n hn h1 ↦ ?_⟩
+  refine ⟨⟨fun f g ↦ algEquiv_eq_of_apply_eq S A B fun n hn h1 ↦ ?_⟩⟩
   obtain ⟨r, hr⟩ := ‹IsCyclotomicExtension S A B›.exists_isPrimitiveRoot hn h1
   use r, hr
   simp only [AlgEquiv.mul_apply]

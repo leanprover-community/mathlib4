@@ -83,7 +83,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ IsMulCommutati
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h ↦ ⟨fun x y ↦ h (x, y)⟩, fun h x ↦ h.comm x.1 x.2⟩
+  · exact ⟨fun h ↦ ⟨⟨fun x y ↦ h (x, y)⟩⟩, fun h x ↦ h.is_comm.comm x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
 variable (G : Type*) [Group G]

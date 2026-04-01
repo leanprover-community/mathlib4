@@ -389,24 +389,24 @@ theorem lt_mul_of_lt_mul_of_nonneg_right [MulPosMono α] (h : a < b * c) (hle : 
 variable [IsMulCommutative α]
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp [posMulMono_iff, mulPosMono_iff, Std.Commutative.comm]
+  simp [posMulMono_iff, mulPosMono_iff, IsMulCommutative.is_comm.comm]
 
 theorem PosMulMono.toMulPosMono [PosMulMono α] : MulPosMono α := posMulMono_iff_mulPosMono.mp ‹_›
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp [posMulStrictMono_iff, mulPosStrictMono_iff, Std.Commutative.comm]
+  simp [posMulStrictMono_iff, mulPosStrictMono_iff, IsMulCommutative.is_comm.comm]
 
 theorem PosMulStrictMono.toMulPosStrictMono [PosMulStrictMono α] : MulPosStrictMono α :=
   posMulStrictMono_iff_mulPosStrictMono.mp ‹_›
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
-  simp [posMulReflectLE_iff, mulPosReflectLE_iff, Std.Commutative.comm]
+  simp [posMulReflectLE_iff, mulPosReflectLE_iff, IsMulCommutative.is_comm.comm]
 
 theorem PosMulReflectLE.toMulPosReflectLE [PosMulReflectLE α] : MulPosReflectLE α :=
   posMulReflectLE_iff_mulPosReflectLE.mp ‹_›
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp [posMulReflectLT_iff, mulPosReflectLT_iff, Std.Commutative.comm]
+  simp [posMulReflectLT_iff, mulPosReflectLT_iff, IsMulCommutative.is_comm.comm]
 
 theorem PosMulReflectLT.toMulPosReflectLT [PosMulReflectLT α] : MulPosReflectLT α :=
   posMulReflectLT_iff_mulPosReflectLT.mp ‹_›

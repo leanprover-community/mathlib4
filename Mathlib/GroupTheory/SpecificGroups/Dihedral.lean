@@ -226,16 +226,16 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact (orderOf_sr 0).symm
 
 lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)
-  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
+  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h'.comm (r 1) (sr 0)
   | n + 3, _, _ => fun ⟨h'⟩ ↦ by
-    have := h' (r 1) (sr 0)
+    have := h'.comm (r 1) (sr 0)
     rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
       one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at this
     simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero this
 
 lemma commutative_iff : IsMulCommutative (DihedralGroup n) ↔ n = 1 ∨ n = 2 where
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
-  mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
+  mpr := by rintro (rfl | rfl) <;> exact ⟨⟨by decide⟩⟩
 
 lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
   by_cases h2 : n = 2
