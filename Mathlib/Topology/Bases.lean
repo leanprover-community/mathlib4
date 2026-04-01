@@ -619,7 +619,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, X i) → X i) := by
   classical
-  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
+  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOp.enMap_iff.2 ?_
   rintro _ ⟨U, s, hU, rfl⟩
   obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
   · simp [h]
