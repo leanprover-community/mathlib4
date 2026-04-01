@@ -648,7 +648,7 @@ lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : �
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
   have := @h {s(u, w)} (by simp)
   obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
-  exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
+  exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), hp₁.rotate _⟩
 
 lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
     G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
