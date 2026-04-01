@@ -38,6 +38,11 @@ def toMk₁ {n : ℕ} (i : Fin (n + 2)) : ⦋n⦌ ⟶ ⦋1⦌ :=
 lemma toMk₁_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
   dsimp% toMk₁ i j = if j.castSucc < i then 0 else 1 := rfl
 
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+(replacing grind's canonicalizer with a type-directed normalizer), `grind` closed the goals in
+the four lemmas below. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+problem in the new canonicalizer; a minimization would help. The original proof was: `grind` -/
+
 lemma toMk₁_apply_eq_zero_iff {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     dsimp% toMk₁ i j = 0 ↔ j.castSucc < i := by
   simp [toMk₁_apply]

@@ -133,7 +133,13 @@ section Restrict
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    exact ⟨x, by simp [hx0], by simpa⟩
+    exact ⟨x, by simp [hx0], by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was:
+      `grind [restrict_def, restrict₀_eq_one_iff]` -/
+      simpa⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
