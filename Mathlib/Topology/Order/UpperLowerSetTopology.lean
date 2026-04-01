@@ -106,7 +106,9 @@ instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpperSet α) := upperSet α
+
+instance : TopologicalSpace (WithUpperSet α) :=
+  fast_instance% upperSet α
 
 lemma ofUpperSet_le_iff {a b : WithUpperSet α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b := Iff.rfl
 lemma toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
@@ -153,7 +155,9 @@ instance [Inhabited α] : Inhabited (WithLowerSet α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithLowerSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithLowerSet α) := lowerSet α
+
+instance : TopologicalSpace (WithLowerSet α) :=
+  fast_instance% lowerSet α
 
 lemma ofLowerSet_le_iff {a b : WithLowerSet α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b := Iff.rfl
 lemma toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
