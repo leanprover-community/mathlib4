@@ -154,8 +154,8 @@ public import Mathlib.Tactic.Linarith.Verification
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.Tactic.LinearMapReassoc
+public import Mathlib.Tactic.LinearMapReassocTensorProduct
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
@@ -332,7 +332,3 @@ public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import Mathlib.Tactic.Widget.StringDiagram
 public import Mathlib.Tactic.WithoutCDot
 public import Mathlib.Tactic.Zify
-
-/-! Additional exported attributes for `TensorProduct.comm_comp_comm`. -/
-attribute [reassoc] TensorProduct.comm_comp_comm
-attribute [simp] TensorProduct.comm_comp_comm_assoc

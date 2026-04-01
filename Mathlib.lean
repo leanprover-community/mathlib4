@@ -7046,6 +7046,7 @@ public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.LinearMapReassoc
+public import Mathlib.Tactic.LinearMapReassocTensorProduct
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
