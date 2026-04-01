@@ -133,8 +133,8 @@ as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
-/-- `P.HasPullbacksAlong f` states that for any morphism satisfying `P` with the same codomain
-as `f`, the pullback of that morphism along `f` exists. -/
+/-- `P.HasPushoutsAlong f` states that for any morphism satisfying `P` with the same domain
+as `f`, the pushout of that morphism along `f` exists. -/
 protected class HasPushoutsAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPushout {W} (g : X ⟶ W) : P g → HasPushout g f
 
@@ -157,7 +157,7 @@ instance [P.IsStableUnderCobaseChange] {X Y : C} (f : X ⟶ Y) :
     P.IsStableUnderCobaseChangeAlong f where
   of_isPushout := IsStableUnderCobaseChange.of_isPushout
 
-alias of_isPullback := IsStableUnderBaseChangeAlong.of_isPullback
+alias of_isPullback := IsStableUnderBaseChange.of_isPullback
 
 lemma isStableUnderBaseChange_iff_pullbacks_le :
     P.IsStableUnderBaseChange ↔ P.pullbacks ≤ P := by
@@ -280,7 +280,7 @@ instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
     rw [this, cancel_left_of_respectsIso (P := P)]
     exact P.pullback_snd _ _ hcomp
 
-alias of_isPushout := IsStableUnderCobaseChangeAlong.of_isPushout
+alias of_isPushout := IsStableUnderCobaseChange.of_isPushout
 
 lemma isStableUnderCobaseChange_iff_pushouts_le :
     P.IsStableUnderCobaseChange ↔ P.pushouts ≤ P := by
@@ -339,11 +339,49 @@ instance IsStableUnderCobaseChange.respectsIso
 theorem pushout_inl {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g]
     [P.IsStableUnderCobaseChangeAlong f] (H : P g) :
     P (pushout.inl f g) :=
-  of_isPushout (IsPushout.of_hasPushout f g) H
+  IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_hasPushout f g) H
 
 theorem pushout_inr {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g]
     [P.IsStableUnderCobaseChangeAlong g] (H : P f) : P (pushout.inr f g) :=
-  of_isPushout (IsPushout.of_hasPushout f g).flip H
+  IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_hasPushout f g).flip H
+
+set_option backward.isDefEq.respectTransparency false in
+theorem pushoutDesc_inl_inr [IsStableUnderCobaseChange P] {S S' X Y : C} (f : S ⟶ S')
+    {v₁₂ : S ⟶ X} {v₂₂ : S ⟶ Y} {g : Y ⟶ X} (hv₁₂ : v₁₂ = v₂₂ ≫ g) [HasPushout v₁₂ f]
+    [HasPushout v₂₂ f] (H : P g) :
+    P (pushout.desc (f := v₂₂) (g := f) (g ≫ pushout.inl v₁₂ f)
+      (pushout.inr v₁₂ f) (by simp [pushout.condition, ← reassoc_of% hv₁₂])) := by
+  subst hv₁₂
+  refine IsStableUnderCobaseChangeAlong.of_isPushout (f' := pushout.inl (v₂₂ ≫ g) f)
+    (f := pushout.inl v₂₂ f) ?_ H
+  refine IsPushout.of_top ?_ (by simp) (IsPushout.of_hasPushout v₂₂ f).flip
+  simpa using (IsPushout.of_hasPushout (v₂₂ ≫ g) f).flip
+
+theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
+    [HasPushoutsAlong f] {X Y : Under S'} (g : X ⟶ Y) (H : P g.right) :
+    P ((Under.pushout f).map g).right := by
+  dsimp only [Under.pushout_obj, Functor.const_obj_obj, Functor.id_obj, Under.mk_right,
+    Under.pushout_map, Under.homMk_right]
+  convert pushoutDesc_inl_inr f (g.w) H <;> simp
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
+theorem pushoutMap
+    [IsStableUnderCobaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : S ⟶ X}
+    {g : S ⟶ Y} {f' : S ⟶ X'} {g' : S ⟶ Y'} {i₁ : X ⟶ X'} [HasPushoutsAlong f]
+    [HasPushoutsAlong g'] {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
+    (e₁ : f' = f ≫ i₁) (e₂ : g' = g ≫ i₂) :
+    P (pushout.map f g f' g' i₁ i₂ (𝟙 _) (by simp [e₁]) (by simp [e₂])) := by
+  have : HasPushoutsAlong (Under.mk g').hom := by cat_disch
+  have : pushout.map f g f' g' i₁ i₂ (𝟙 _) (by simp [e₁]) (by simp [e₂]) =
+      ((pushoutSymmetry _ _).hom ≫
+        ((Under.pushout f).map (Under.homMk _ e₂.symm : Under.mk g ⟶ Under.mk g')).right) ≫
+        (pushoutSymmetry _ _).hom ≫
+        ((Under.pushout g').map (Under.homMk _ e₁.symm : Under.mk f ⟶ Under.mk f')).right := by
+    ext <;> simp
+  rw [this]
+  apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
+  exacts [underPushoutMap _ _ h₂, underPushoutMap _ _ h₁]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem pushoutDesc_inl_inr [IsStableUnderCobaseChange P] {S S' X Y : C} (f : S ⟶ S')
@@ -831,7 +869,7 @@ instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.Respect
       introv h
       rw [diagonal_iff, diagonal_pullback_fst, P.cancel_left_of_respectsIso,
         P.cancel_right_of_respectsIso]
-      exact P.baseChange_map f _ (by simpa))
+      exact P.overPullbackMap f _ (by simpa))
 
 lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
   ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _

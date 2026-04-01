@@ -202,25 +202,23 @@ theorem binary_cofan_inl_toCocone (c : BinaryBicone P Q) : BinaryCofan.inl c.toC
 theorem binary_cofan_inr_toCocone (c : BinaryBicone P Q) : BinaryCofan.inr c.toCocone = c.inr :=
   rfl
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inl :=
-  IsSplitMono.mk'
-    { retraction := c.fst
-      id := c.inl_fst }
+/-- The retract of a binary bicone `c` given by `c.inl` and `c.fst`. -/
+def retract_left (c : BinaryBicone P Q) : Retract P c.pt where
+  i := c.inl
+  r := c.fst
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inr :=
-  IsSplitMono.mk'
-    { retraction := c.snd
-      id := c.inr_snd }
+/-- The retract of a binary bicone `c` given by `c.inr` and `c.snd`. -/
+def retract_right (c : BinaryBicone P Q) : Retract Q c.pt where
+  i := c.inr
+  r := c.snd
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.fst :=
-  IsSplitEpi.mk'
-    { section_ := c.inl
-      id := c.inl_fst }
+instance (c : BinaryBicone P Q) : IsSplitMono c.inl := c.retract_left.instIsSplitMonoI
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
-  IsSplitEpi.mk'
-    { section_ := c.inr
-      id := c.inr_snd }
+instance (c : BinaryBicone P Q) : IsSplitMono c.inr := c.retract_right.instIsSplitMonoI
+
+instance (c : BinaryBicone P Q) : IsSplitEpi c.fst := c.retract_left.instIsSplitEpiR
+
+instance (c : BinaryBicone P Q) : IsSplitEpi c.snd := c.retract_right.instIsSplitEpiR
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Convert a `BinaryBicone` into a `Bicone` over a pair. -/
