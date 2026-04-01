@@ -138,7 +138,7 @@ lemma ord_zero : ord R 0 = Module.length R R := by
 
 variable {R}
 /--
-For `x : R` a non zero divisor, `ord R (x^n) = n • ord R x`.
+For `x : R` a non zero divisor, `ord R (x ^ n) = n • ord R x`.
 -/
 @[simp]
 theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n) = n • ord R x := by
