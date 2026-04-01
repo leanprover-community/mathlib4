@@ -375,7 +375,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 @[to_additive] instance (priority := low) (M) [MulOne M] [IsMulCommutative M] :
     IsDedekindFiniteMonoid M where
-  mul_eq_one_symm := IsMulCommutative.is_comm.comm .. |>.trans
+  mul_eq_one_symm := mul_comm' .. |>.trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -1325,9 +1325,8 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 commutativity.
 
 See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] :
-    CommMagma M where
-  mul_comm := IsMulCommutative.is_comm.comm
+scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] : CommMagma M where
+  mul_comm := mul_comm'
 
 /-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
 

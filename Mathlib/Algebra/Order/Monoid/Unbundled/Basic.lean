@@ -1395,9 +1395,9 @@ protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancell
   ha.Injective.eq_iff
 
 @[to_additive]
-protected theorem injective_left [Mul α] [i : IsMulCommutative α] [PartialOrder α] {a : α}
+protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
     (ha : MulLECancellable a) : Injective (· * a) :=
-  fun b c h ↦ ha.Injective <| by dsimp; rwa [i.is_comm.comm a, i.is_comm.comm a]
+  fun b c h ↦ ha.Injective <| by dsimp; rwa [mul_comm' a, mul_comm' a]
 
 @[to_additive]
 protected theorem inj_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a b c : α}
@@ -1412,9 +1412,9 @@ protected theorem mul_le_mul_iff_left [Mul α] [MulLeftMono α] {a b c : α}
   ⟨fun h => ha h, fun h => mul_le_mul_right h a⟩
 
 @[to_additive]
-protected theorem mul_le_mul_iff_right [Mul α] [i : IsMulCommutative α] [MulLeftMono α] {a b c : α}
+protected theorem mul_le_mul_iff_right [Mul α] [IsMulCommutative α] [MulLeftMono α] {a b c : α}
     (ha : MulLECancellable a) : b * a ≤ c * a ↔ b ≤ c := by
-  rw [i.is_comm.comm b, i.is_comm.comm c, ha.mul_le_mul_iff_left]
+  rw [mul_comm' b, mul_comm' c, ha.mul_le_mul_iff_left]
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [MulLeftMono α]
@@ -1429,14 +1429,14 @@ protected theorem mul_le_iff_le_one_right [MulOneClass α] [MulLeftMono α]
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
 
 @[to_additive]
-protected theorem le_mul_iff_one_le_left [MulOneClass α] [i : IsMulCommutative α] [MulLeftMono α]
+protected theorem le_mul_iff_one_le_left [MulOneClass α] [IsMulCommutative α] [MulLeftMono α]
     {a b : α} (ha : MulLECancellable a) : a ≤ b * a ↔ 1 ≤ b := by
-  rw [i.is_comm.comm, ha.le_mul_iff_one_le_right]
+  rw [mul_comm', ha.le_mul_iff_one_le_right]
 
 @[to_additive]
-protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : IsMulCommutative α] [MulLeftMono α]
+protected theorem mul_le_iff_le_one_left [MulOneClass α] [IsMulCommutative α] [MulLeftMono α]
     {a b : α} (ha : MulLECancellable a) : b * a ≤ a ↔ b ≤ 1 := by
-  rw [i.is_comm.comm, ha.mul_le_iff_le_one_right]
+  rw [mul_comm', ha.mul_le_iff_le_one_right]
 
 @[to_additive] lemma mul [Semigroup α] {a b : α} (ha : MulLECancellable a)
     (hb : MulLECancellable b) : MulLECancellable (a * b) :=
