@@ -612,12 +612,13 @@ Present a function with with finite support as a finsum of singleton indicator f
     {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :
     ∑ᶠ x, ((single x (F x)).restrict (subset_univ U)) = F := by
   have : (fun x ↦ (single x (F x)).restrict (subset_univ U)).support ⊆ h.toFinset := by
-    intro x
+    have h1 {x : X} : single x (0 : Y) = 0 := by ext; simp
+    have h2 {U V : Set X} (hV : V ⊆ U) :
+        restrict (0 : Function.locallyFinsuppWithin U Y) hV = 0 := by
+      ext; simp [restrict_apply]
+    intro
     contrapose
-    intro hx
-    rw [mem_support, ne_eq, not_not]
-    ext z
-    simp_all [restrict_apply]
+    simp +contextual [h1, h2]
   rw [finsum_eq_sum_of_support_subset _ this]
   ext z
   by_cases hz : z ∉ U
