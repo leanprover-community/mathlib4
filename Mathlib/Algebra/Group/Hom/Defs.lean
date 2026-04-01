@@ -912,11 +912,11 @@ and `M` is commutative, then `N` is commutative. -/
 and `M` is commutative, then `N` is commutative. -/]
 theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
     (is_comm : IsMulCommutative M) : IsMulCommutative N where
-  is_comm.comm := fun a b ↦ by
+  comm := fun a b ↦ by
     obtain ⟨a', ha'⟩ := is_surj a
     obtain ⟨b', hb'⟩ := is_surj b
     simp only [← ha', ← hb', ← map_mul]
-    rw [is_comm.is_comm.comm]
+    rw [is_comm.comm]
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)

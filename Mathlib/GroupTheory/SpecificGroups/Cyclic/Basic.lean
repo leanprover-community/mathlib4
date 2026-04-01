@@ -71,7 +71,7 @@ instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive �
 
 @[to_additive]
 instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative α where
-  is_comm.comm x y :=
+  comm x y :=
     let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
     let ⟨_, hx⟩ := hg x
     let ⟨_, hy⟩ := hg y

@@ -116,7 +116,7 @@ def starRingOfCommCentroidHom (mul_comm : IsMulCommutative (CentroidHom α)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
   star_mul _ _ := ext fun _ ↦ by
-    rw [mul_comm.is_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star]
+    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star]
 
 end NonUnitalNonAssocStarSemiring
 

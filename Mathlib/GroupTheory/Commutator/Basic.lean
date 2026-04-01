@@ -369,13 +369,13 @@ variable {G}
 @[to_additive]
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
     IsMulCommutative (G ⧸ N) ↔ _root_.commutator G ≤ N := by
-  refine ⟨fun hcomm ↦ ?_, fun hGN ↦ ⟨⟨fun x' y' ↦ ?_⟩⟩⟩
+  refine ⟨fun hcomm ↦ ?_, fun hGN ↦ ⟨fun x' y' ↦ ?_⟩⟩
   · rw [commutator_eq_normalClosure, ← Subgroup.normalClosure_subset_iff]
     rintro x ⟨p, q, rfl⟩
     rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
     simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
     simp only [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm]
-    apply hcomm.is_comm.comm
+    apply hcomm.comm
   · obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
     obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
     rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement, QuotientGroup.mk'_apply,

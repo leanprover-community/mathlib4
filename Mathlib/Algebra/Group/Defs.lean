@@ -195,21 +195,14 @@ end Semigroup
 
 section IsCommutative
 
-/-- A Prop stating that the addition is commutative. -/
-class IsAddCommutative (M : Type*) [Add M] : Prop where
-  is_comm : Std.Commutative (α := M) (· + ·)
-
 /-- A Prop stating that the multiplication is commutative. -/
-@[to_additive existing]
-class IsMulCommutative (M : Type*) [Mul M] : Prop where
-  is_comm : Std.Commutative (α := M) (· * ·)
-
-attribute [instance] IsAddCommutative.is_comm
-attribute [instance] IsMulCommutative.is_comm
+@[to_additive /-- A Prop stating that the addition is commutative. -/]
+abbrev IsMulCommutative (M : Type*) [Mul M] : Prop :=
+  Std.Commutative (α := M) (· * ·)
 
 @[to_additive]
 lemma isMulCommutative_iff {M : Type*} [Mul M] : IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
-  grind [IsMulCommutative, Std.Commutative]
+  grind [Std.Commutative]
 
 @[to_additive]
 alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
@@ -222,7 +215,7 @@ with commutative subobjects in a noncommutative algebraic structure. -/
 commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
 with commutative subobjects in a noncommutative algebraic structure. -/ ]
 lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
-  IsMulCommutative.is_comm.comm ..
+  Std.Commutative.comm ..
 
 end IsCommutative
 
@@ -258,7 +251,7 @@ variable [CommMagma G] {a : G}
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 @[to_additive]
-instance CommMagma.to_isCommutative : IsMulCommutative G := ⟨⟨mul_comm⟩⟩
+instance CommMagma.to_isCommutative : IsMulCommutative G := ⟨mul_comm⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
@@ -375,7 +368,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 @[to_additive] instance (priority := low) (M) [MulOne M] [IsMulCommutative M] :
     IsDedekindFiniteMonoid M where
-  mul_eq_one_symm := IsMulCommutative.is_comm.comm .. |>.trans
+  mul_eq_one_symm := Std.Commutative.comm .. |>.trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -1327,7 +1320,7 @@ commutativity.
 See note [commutative subobjects]. -/ ]
 scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] :
     CommMagma M where
-  mul_comm := IsMulCommutative.is_comm.comm
+  mul_comm := Std.Commutative.comm
 
 /-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
 
