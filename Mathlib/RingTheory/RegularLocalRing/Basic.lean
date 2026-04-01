@@ -194,11 +194,9 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
   obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
   induction n generalizing R with
   | zero =>
-    simp only [← (isRegularLocalRing_iff R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
-    have : maximalIdeal R = ⊥ := by
-      rw [← Submodule.spanRank_eq_zero_iff_eq_bot, Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
-        ((isNoetherianRing_iff_ideal_fg R).mp inferInstance _), hn, Nat.cast_zero]
-    exact (isField_iff_maximalIdeal_eq.mpr this).isDomain
+    suffices IsField R from this.isDomain
+    simpa [← (isRegularLocalRing_iff R).mp ‹_›, Submodule.spanFinrank_eq_zero_iff_eq_bot,
+      IsNoetherian.noetherian, ← isField_iff_maximalIdeal_eq] using hn
   | succ n ih =>
     obtain ⟨x, xmem, xnmem⟩ :
         ∃ x ∈ maximalIdeal R, x ∉ ⋃ I ∈ (insert ((maximalIdeal R) ^ 2) (minimalPrimes R)), I := by
@@ -225,13 +223,10 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
     have ih' := ih (R ⧸ Ideal.span {x}) (ENat.WithBot.add_one_cancel.mp dim)
     have : (Ideal.span {x}).IsPrime := (Ideal.Quotient.isDomain_iff_prime _).mp ih'
     obtain ⟨p, min, hp⟩ := Ideal.exists_minimalPrimes_le (bot_le (a := Ideal.span {x}))
-    let _ : p.IsPrime := Ideal.minimalPrimes_isPrime min
-    have eq_smul : p = Ideal.span {x} • p :=
-      (Ideal.span_singleton_mul_eq_self_of_isPrime x (xnmem.2 p min) hp).symm
-    have := Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator (IsNoetherian.noetherian _)
-      eq_smul (((Ideal.span_singleton_le_iff_mem _).mpr xmem).trans (maximalIdeal_le_jacobson _))
-    have : (⊥ : Ideal R).IsPrime := by simpa [← this]
-    exact IsDomain.of_bot_isPrime R
+    suffices p = ⊥ from @IsDomain.of_bot_isPrime R _ (this ▸ min.1.1)
+    exact Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator (IsNoetherian.noetherian _)
+      (@Ideal.span_singleton_mul_eq_self_of_isPrime _ _ _ min.1.1 _ (xnmem.2 _ min) hp).symm
+      (((Ideal.span_singleton_le_iff_mem _).mpr xmem).trans (maximalIdeal_le_jacobson _))
 
 instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
 
