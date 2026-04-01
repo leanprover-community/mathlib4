@@ -140,6 +140,7 @@ def closure : LowerAdjoint (SetLike.coe : A → Set B) where
       (mem_of_le_of_mem h),
     (sInf_le ·)⟩)
 
+/- The operations `SetLike.closure` and `SetLike.coe` (the embedding) form a Galois insertion. -/
 def gi : GaloisInsertion (closure A) (SetLike.coe : A → Set B) :=
   (closure A).gc.toGaloisInsertion fun _ => le_sInf (fun _ => coe_subset_coe.1)
 
