@@ -90,7 +90,6 @@ theorem exists_adjoin_eq_top [Algebra.Etale R S] :
         rw [map_aeval_eq_aeval_map
           (ψ := IsLocalRing.residue S) (φ := IsLocalRing.residue R) rfl, hp])
 
-
 /-- When `β` generates `S` over `R`, the residue `β₀ = β mod m_S`
 generates `S/m_S` over `R/m_R`. -/
 lemma adjoin_residue_eq_top_of_adjoin_eq_top
@@ -103,7 +102,6 @@ lemma adjoin_residue_eq_top_of_adjoin_eq_top
   exact ⟨p.map (IsLocalRing.residue R),
     (map_aeval_eq_aeval_map (ψ := IsLocalRing.residue S)
       (φ := IsLocalRing.residue R) rfl p β).symm⟩
-
 
 /-- For finite étale extensions of local rings,
 `finrank R S = finrank (ResidueField R) (ResidueField S)`. -/
@@ -120,48 +118,44 @@ lemma finrank_eq_finrank_residueField [Algebra.Etale R S] :
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp only [RingEquiv.toAddEquiv_eq_coe]; rfl
 
+/-- For a monogenic étale extension of local rings, the minimal polynomial of `β`
+maps to the minimal polynomial of `β mod m_S` over the residue field. -/
+lemma minpoly_map_residue [Algebra.Etale R S]
+    {β : S} (hadj : Algebra.adjoin R {β} = ⊤) :
+    (minpoly R β).map (IsLocalRing.residue R) = minpoly (IsLocalRing.ResidueField R)
+      (IsLocalRing.residue S β) := by
+  have hmonic := minpoly.monic <| Algebra.IsIntegral.isIntegral (R:=R) β
+  set kR := IsLocalRing.ResidueField R
+  set β₀ := IsLocalRing.residue S β
+  -- Both monic, same degree, divisibility ⟹ equal
+  refine eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic <| Algebra.IsIntegral.isIntegral β₀)
+    (hmonic.map _) (minpoly.dvd kR β₀ ?_) ?_
+  · rw [← map_aeval_eq_aeval_map (ψ := IsLocalRing.residue S)
+      (φ := IsLocalRing.residue R) rfl, minpoly.aeval, map_zero]
+  · suffices ((minpoly R β).map (IsLocalRing.residue R)).natDegree
+      = (minpoly kR β₀).natDegree from this.le
+    haveI : Module.Free R S := Module.free_of_flat_of_isLocalRing
+    erw [hmonic.natDegree_map _,
+      ← (IsAdjoinRootMonic.mkOfAdjoinEqTop' hadj).finrank,
+      finrank_eq_finrank_residueField,
+      ← IntermediateField.finrank_top']
+    rw [← show IntermediateField.adjoin kR {β₀} = ⊤ by
+      have hβ₀_gen : Algebra.adjoin kR {β₀} = ⊤ := adjoin_residue_eq_top_of_adjoin_eq_top hadj
+      rw [← IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+        (Algebra.IsAlgebraic.isAlgebraic β₀)] at hβ₀_gen
+      exact IntermediateField.toSubalgebra_injective hβ₀_gen]
+    rw [IntermediateField.adjoin.finrank <| Algebra.IsIntegral.isIntegral β₀]
 
--- /-- For a monogenic étale extension of local rings, the minimal polynomial of `β`
--- maps to the minimal polynomial of `β mod m_S` over the residue field. -/
--- lemma minpoly_map_residue [Algebra.Etale R S]
---     {β : S} (hadj : Algebra.adjoin R {β} = ⊤) :
---     (minpoly R β).map (IsLocalRing.residue R) = minpoly (IsLocalRing.ResidueField R)
---       (IsLocalRing.residue S β) := by
---   have hmonic := minpoly.monic <| Algebra.IsIntegral.isIntegral (R:=R) β
---   set kR := IsLocalRing.ResidueField R
---   set β₀ := IsLocalRing.residue S β
---   -- Both monic, same degree, divisibility ⟹ equal
---   refine eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic <| Algebra.IsIntegral.isIntegral β₀)
---     (hmonic.map _) (minpoly.dvd kR β₀ ?_) ?_
---   · rw [← map_aeval_eq_aeval_map (ψ := IsLocalRing.residue S)
---       (φ := IsLocalRing.residue R) rfl, minpoly.aeval, map_zero]
---   · suffices ((minpoly R β).map (IsLocalRing.residue R)).natDegree
---       = (minpoly kR β₀).natDegree from this.le
---     haveI : Module.Free R S := Module.free_of_flat_of_isLocalRing
---     erw [hmonic.natDegree_map _,
---       ← (IsAdjoinRootMonic.mkOfAdjoinEqTop' hadj).finrank,
---       finrank_eq_finrank_residueField,
---       ← IntermediateField.finrank_top']
---     rw [← show IntermediateField.adjoin kR {β₀} = ⊤ by
---       have hβ₀_gen : Algebra.adjoin kR {β₀} = ⊤ := adjoin_residue_eq_top_of_adjoin_eq_top hadj
---       rw [← IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
---         (Algebra.IsAlgebraic.isAlgebraic β₀)] at hβ₀_gen
---       exact IntermediateField.toSubalgebra_injective hβ₀_gen]
---     rw [IntermediateField.adjoin.finrank <| Algebra.IsIntegral.isIntegral β₀]
-
--- /-- If `R → S` is étale and `R[β] = S`, then `f'(β)` is a unit in `S`,
--- where `f = minpoly R β`. The proof reduces to separability of the
--- residue field extension via `minpoly_map_residue`. -/
--- lemma isUnit_aeval_derivative_minpoly_of_adjoin_eq_top
---     [Algebra.Etale R S] {β : S}
---     (hadj : Algebra.adjoin R {β} = ⊤) :
---     IsUnit (aeval β (minpoly R β).derivative) := by
---   -- alternative:
---   -- suffices h : IsLocalRing.residue S (aeval β (minpoly R β).derivative) ≠ 0 from
---   --   (IsLocalRing.residue_ne_zero_iff_isUnit _).mp h
---   apply fun s => (IsLocalRing.residue_ne_zero_iff_isUnit s).mp
---   rw [map_aeval_eq_aeval_map (ψ := IsLocalRing.residue S)
---     (φ := IsLocalRing.residue R) rfl, ← derivative_map, minpoly_map_residue hadj]
---   exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+/-- If `R → S` is étale and `R[β] = S`, then `f'(β)` is a unit in `S`,
+where `f = minpoly R β`. The proof reduces to separability of the
+residue field extension via `minpoly_map_residue`. -/
+lemma isUnit_aeval_derivative_minpoly_of_adjoin_eq_top
+    [Algebra.Etale R S] {β : S}
+    (hadj : Algebra.adjoin R {β} = ⊤) :
+    IsUnit (aeval β (minpoly R β).derivative) := by
+  apply fun s => (IsLocalRing.residue_ne_zero_iff_isUnit s).mp
+  rw [map_aeval_eq_aeval_map (ψ := IsLocalRing.residue S)
+    (φ := IsLocalRing.residue R) rfl, ← derivative_map, minpoly_map_residue hadj]
+  exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
 
 end IsLocalRing
