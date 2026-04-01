@@ -290,18 +290,13 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
         intro x hx
         have : rs = List.take i rs ++ (rs[i] :: List.drop (i + 1) rs) := by
           rw [List.cons_getElem_drop_succ, List.take_append_drop]
-        rw [this] at hx
-        simp only [List.mem_append, List.mem_cons] at hx
+        rw [Set.mem_setOf, this, List.mem_append, List.mem_cons] at hx
         simp only [Ideal.ofList_append, SetLike.mem_coe]
         rcases hx with l|eq|r
-        · apply Ideal.mem_sup_left
-          apply Ideal.subset_span
-          exact l
+        · exact Ideal.mem_sup_left (Ideal.subset_span (Set.mem_setOf.mpr l))
         · apply Ideal.mem_sup_left
           simpa [eq] using mem
-        · apply Ideal.mem_sup_right
-          apply Ideal.subset_span
-          exact r
+        · exact Ideal.mem_sup_right (Ideal.subset_span (Set.mem_setOf.mpr r))
     have : Submodule.spanFinrank (maximalIdeal R) ≤ rs'.length := by
       rw [← span']
       apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite rs'.finite_toSet)
