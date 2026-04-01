@@ -71,7 +71,7 @@ lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {f
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism from the fiber of `Spec S ⟶ Spec R` at some prime `p` to `Spec κ(p)`
 is isomorphic to the map induced by `κ(p) ⟶ κ(p) ⊗[R] S`. -/
-noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [CommRing S]
+noncomputable def Spec.fiberToSpecResidueFieldIso' (R S : Type u) [CommRing R] [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :
     Arrow.mk ((Spec.map (CommRingCat.ofHom <| algebraMap R S)).fiberToSpecResidueField p) ≅
       Arrow.mk (Spec.map <| CommRingCat.ofHom <|
@@ -84,6 +84,19 @@ noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [C
       (𝟙 _) (𝟙 _) (by simp) (by simp)
   · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
   · cat_disch
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The morphism from the fiber of `Spec S ⟶ Spec R` at some prime `p` to `Spec κ(p)`
+is isomorphic to the map induced by `κ(p) ⟶ κ(p) ⊗[R] S`. -/
+noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] (p : PrimeSpectrum R) :
+    Arrow.mk ((Spec.map (CommRingCat.ofHom <| algebraMap R S)).fiberToSpecResidueField p) ≅
+      Arrow.mk (Spec.map <| CommRingCat.ofHom <|
+        algebraMap p.asIdeal.ResidueField (p.asIdeal.Fiber S)) := by
+  refine (Spec.fiberToSpecResidueFieldIso' R S p).trans (Arrow.isoMk ?_ (Iso.refl _) ?_)
+  · exact asIso (Spec.map (Ideal.Fiber.algEquivTensor p.1 S).toCommRingCatIso.hom)
+  · simp only [asIso_hom, Arrow.mk_hom, ← Spec.map_comp]
+    cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.range_fiberι (f : X ⟶ Y) (y : Y) :

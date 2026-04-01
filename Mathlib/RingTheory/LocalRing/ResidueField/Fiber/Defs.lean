@@ -193,6 +193,11 @@ noncomputable def algEquivBaseChange
     commutes' _ := by simp [← (cancelBaseChange R S S T p.ResidueField).eq_symm_apply]; rfl }
   e.trans ((algEquivTensor p T).trans (commRight R p.ResidueField T)).symm
 
+noncomputable def map (T : Type*) [CommRing T] [Algebra R T] (f : S →ₐ[R] T) :
+    p.Fiber S →ₐ[p.ResidueField] p.Fiber T :=
+  (algEquivTensor p T).symm.toAlgHom.comp <|
+    (Algebra.TensorProduct.map (AlgHom.id _ _) f).comp (algEquivTensor p S).toAlgHom
+
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
 noncomputable def algEquivQuotient :
@@ -240,7 +245,7 @@ theorem ker_algebraMap_localization' :
 instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
     (q.map (algebraMap S (p.Fiber S))).IsPrime := by
   rw [IsScalarTower.algebraMap_eq S (Localization (algebraMapSubmonoid S p.primeCompl)), ← map_map]
-  have : ((map (algebraMap S (Localization (algebraMapSubmonoid S p.primeCompl))) q)).IsPrime :=
+  have : (q.map (algebraMap S (Localization (algebraMapSubmonoid S p.primeCompl)))).IsPrime :=
     IsLocalization.AtPrime.isPrime_map_of_liesOver S p _ q
   apply Ideal.map_isPrime_of_surjective (algebraMap_localization_surjective p S)
   rw [ker_algebraMap_localization']
