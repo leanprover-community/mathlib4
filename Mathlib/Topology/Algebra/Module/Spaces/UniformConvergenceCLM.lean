@@ -483,3 +483,50 @@ alias postcomp_uniformConvergenceCLM := postcompUniformConvergenceCLM
 alias postcomp_uniformConvergenceCLM_apply := postcompUniformConvergenceCLM_apply
 
 end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+/-! ### Continuous linear equivalences -/
+section Semilinear
+variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
+  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [ContinuousConstSMul 𝕜₃ G]
+  [ContinuousConstSMul 𝕜₄ H] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
+  {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄} [RingHomInvPair σ₁₂ σ₂₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+  [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+  [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₁]
+
+/-- A pair of continuous (semi)linear equivalences generates a (semi)linear equivalence between the
+spaces of continuous (semi)linear maps. This version is for the type alias
+`UniformConvergenceCLM`. -/
+def uniformConvergenceCLMCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
+    (h : ∀ t, t ∈ 𝔗 ↔ e₁₂ ⁻¹' t ∈ 𝔖) :
+    (UniformConvergenceCLM σ₁₄ H 𝔖) ≃SL[σ₄₃] (UniformConvergenceCLM σ₂₃ G 𝔗) :=
+  haveI mapsto₁ : MapsTo (e₁₂ '' ·) 𝔖 𝔗 := fun s ↦ by simp [h, preimage_image_eq _ e₁₂.injective]
+  haveI mapsto₂ : MapsTo (e₁₂.symm '' ·) 𝔗 𝔖 := fun t ↦ by simp [h, e₁₂.image_symm_eq_preimage]
+  { e₁₂.arrowCongrEquivₛₗ e₄₃ with
+    -- given explicitly to help `simps`
+    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
+    -- given explicitly to help `simps`
+    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
+    continuous_toFun := ((postcompUniformConvergenceCLM _ e₄₃.toContinuousLinearMap).comp
+      (precompUniformConvergenceCLM H _ _ e₁₂.symm.toContinuousLinearMap mapsto₂)).continuous
+    continuous_invFun :=
+      ((precompUniformConvergenceCLM H _ _ e₁₂.toContinuousLinearMap mapsto₁).comp
+        (postcompUniformConvergenceCLM _ e₄₃.symm.toContinuousLinearMap)).continuous }
+
+/-- A pair of continuous linear equivalences generates a continuous linear equivalence between
+the spaces of continuous linear maps. This version is for the type alias
+`UniformConvergenceCLM`. -/
+def uniformConvergenceCLMCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
+    (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
+    (h : ∀ t, t ∈ 𝔗 ↔ e₁ ⁻¹' t ∈ 𝔖) :
+    (UniformConvergenceCLM (.id 𝕜) H 𝔖) ≃L[𝕜] (UniformConvergenceCLM (.id 𝕜) G 𝔗) :=
+  e₁.uniformConvergenceCLMCongrSL e₂ 𝔖 𝔗 h
+
+end ContinuousLinearEquiv
