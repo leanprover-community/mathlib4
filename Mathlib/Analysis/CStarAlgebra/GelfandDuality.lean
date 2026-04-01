@@ -196,34 +196,29 @@ noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A
 
 end Commutative
 
-section NonUnitalComm
+namespace CommCStarAlgebra
 
 variable {A : Type*} [NonUnitalCommCStarAlgebra A] {a b : A}
 
 open scoped CStarAlgebra in
 open Unitization in
-lemma CommCStarAlgebra.norm_add_eq_max (h : a * b = 0) :
-    ‖a + b‖ = max ‖a‖ ‖b‖ := by
+lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   let f := gelfandStarTransform A⁺¹ ∘ inrNonUnitalAlgHom ℂ A
   have hf : Isometry f := gelfandTransform_isometry _ |>.comp isometry_inr
   simp_rw [← hf.norm_map_of_map_zero (by simp [f]), show f (a + b) = f a + f b by simp [f]]
   exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
 
-lemma CommCStarAlgebra.nnnorm_add_eq_max (h : a * b = 0) :
-    ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  NNReal.eq <| CommCStarAlgebra.norm_add_eq_max h
+lemma nnnorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
 
-lemma CommCStarAlgebra.norm_sub_eq_max (h : a * b = 0) :
-    ‖a - b‖ = max ‖a‖ ‖b‖ := by
+lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
 
-lemma CommCStarAlgebra.nnnorm_sub_eq_max (h : a * b = 0) :
-    ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+lemma nnnorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
 open scoped Function in
-lemma CommCStarAlgebra.nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
-    (h0 : Pairwise ((· * · = 0) on f)) :
+lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction with
@@ -234,7 +229,7 @@ lemma CommCStarAlgebra.nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset
       simpa [← ih] using nnnorm_add_eq_max this
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
 
-end NonUnitalComm
+end CommCStarAlgebra
 
 section NonUnital
 
