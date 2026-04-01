@@ -335,7 +335,7 @@ lemma row_entry_to_column_entry
   conv at hrow =>
     ext
     rw [Function.bijective_iff_existsUnique]
-  rw [forall_swap] at hrow
+  rw [forall_comm] at hrow
   specialize hrow x
   rw [forall_existsUnique_iff] at hrow
   exact hrow
