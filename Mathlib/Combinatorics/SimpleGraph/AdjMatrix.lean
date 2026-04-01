@@ -278,7 +278,6 @@ theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableR
     (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α :=
   f.symm.toEmbedding.submatrix_adjMatrix α
 
-set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
     [One α] {H : SimpleGraph V} [DecidableRel H.Adj] (h : IsCompl G H) :
