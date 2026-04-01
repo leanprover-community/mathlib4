@@ -95,6 +95,15 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     · intro i j hij
       simpa [hij] using h i j
 
+@[simp]
+theorem Unique.orthonormal_iff [Unique ι] {v : ι → E} : Orthonormal 𝕜 v ↔ ‖v default‖ = 1 := by
+  suffices (‖v default‖ : 𝕜) ^ 2 = 1 ↔ ‖v default‖ = 1 by
+    simpa [orthonormal_iff_ite, Unique.eq_default, -sq_eq_one_iff]
+  rw [← RCLike.ofReal_pow]
+  norm_cast
+  conv_rhs => rw [← sq_eq_sq₀ (norm_nonneg _) (by norm_num)]
+  congrm _ = $(by simp)
+
 /-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
 equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :

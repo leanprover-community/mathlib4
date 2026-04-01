@@ -638,7 +638,7 @@ variable (ι 𝕜) in
 /-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
 `1 : 𝕜`. -/
 protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
-  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
+  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp)
 
 @[simp]
 theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
@@ -1316,3 +1316,20 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
   simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
+
+variable (ι 𝕜 E) in
+def FiniteDimensional.orthonormalBasisSingleton [Unique ι] (h : Module.finrank 𝕜 E = 1) (v : E)
+    (hv : ‖v‖ = 1) : OrthonormalBasis ι 𝕜 E :=
+  (basisSingleton ι h v (fun h ↦ by simp [h] at hv)).toOrthonormalBasis (by simpa using hv)
+
+@[simp]
+theorem FiniteDimensional.orthonormalBasisSingleton_apply [Unique ι] (h : Module.finrank 𝕜 E = 1)
+    {v : E} (hv : ‖v‖ = 1) (i : ι) :
+    FiniteDimensional.orthonormalBasisSingleton ι 𝕜 E h v hv i = v := by
+  simp [orthonormalBasisSingleton]
+
+@[simp]
+theorem FiniteDimensional.toBasis_orthonormalBasisSingleton [Unique ι] (h : Module.finrank 𝕜 E = 1)
+    {v : E} (hv : ‖v‖ = 1) : (orthonormalBasisSingleton ι 𝕜 E h v hv).toBasis =
+    basisSingleton ι h v (fun h ↦ by simp [h] at hv) := by
+  simp [orthonormalBasisSingleton]
