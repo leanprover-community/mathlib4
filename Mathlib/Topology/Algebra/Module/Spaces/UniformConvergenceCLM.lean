@@ -515,13 +515,4 @@ def _root_.UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
       exact (ContinuousLinearMap.proj i : (Π j, F j) →L[𝕜] F i).postcompUniformConvergenceCLM 𝔖
         |>.continuous}
 
-/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
-`Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`. -/
-@[simps]
-def piEquivL :
-    (Π i, E →L[𝕜] F i) ≃L[𝕜] (E →L[𝕜] Π i, F i) where
-  toFun F := ContinuousLinearMap.pi F
-  invFun f i := (ContinuousLinearMap.proj i).comp f
-  __ := UniformConvergenceCLM.piEquivL _ _ _
-
 end Pi
