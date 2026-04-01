@@ -696,12 +696,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-/-- A subgroup of a commutative group is commutative. -/
-@[to_additive /-- A subgroup of a commutative group is commutative. -/]
-instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H :=
-  CommMagma.to_isCommutative
-
 @[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a :=
