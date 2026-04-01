@@ -21,61 +21,30 @@ where `mulFiber x = {(a, b) | a * b = x}`. Additive monoids are also supported.
 ## Design
 
 Uses a bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, following
-`MeasureTheory.convolution`. For specializing to ring multiplication,
-use `ringConvolution` which is given by `convolution (LinearMap.mul ℕ R)`.
+`MeasureTheory.convolution`.
 
 The index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
-Coefficient ring only requires `[Semiring R]` (commutativity needed for `ringConvolution_comm`).
 
 `@[to_additive]` generates multiplicative and additive versions from a single definition.
 The `mul/add` distinction refers to the index monoid `M`: multiplicative sums over
 `mulFiber x = {(a,b) | a * b = x}`, additive sums over `addFiber x = {(a,b) | a + b = x}`.
 
-## Relation to `MeasureTheory.convolution`
+## Main Definitions
 
-Related to `MeasureTheory.convolution` with counting measure μ:
-- Discrete:      (f ⋆₊[L] g) x   = ∑' (a,b) : addFiber x, L (f a) (g b)
-- MeasureTheory: (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ
-
-Formally,
-```
-theorem addRingConvolution_eq_measureTheory_convolution [Countable M]
-    (f g : M → R) (hfg : ∀ x, Integrable (fun t => f t * g (x - t)) .count) :
-    (f ⋆ᵣ₊ g) = MeasureTheory.convolution f g (ContinuousLinearMap.mul ℝ R) .count
-```
-
-Parallel API:
-- `ConvolutionExistsAt`, `ConvolutionExists`, `convolution`,
-  `convolution_zero`, `zero_convolution`, `convolution_assoc`,
-  `distrib_add`, `add_distrib`, `smul_convolution`, `convolution_smul`.
-- Convolution associativity has the same bilinearity hypothesis:
-  `hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z)`.
-
-Differences (discrete ↔ MeasureTheory):
-- Domain: `Monoid M` ↔ `AddGroup G`, no subtraction needed for discrete
-- Bilinear map: `E →ₗ[S] E' →ₗ[S] F` ↔ `E →L[𝕜] E' →L[𝕜] F`, no continuity needed
-- Associativity: `Summable` ↔ `AEStronglyMeasurable` + norm convolution conditions
-- Commutativity: `convolution_comm` ↔ `convolution_flip` (needs `IsAddLeftInvariant`)
-- `@[to_additive]`: Discrete supports both mul/add versions; MeasureTheory is additive only
+* `mulFiber x`: the fiber of multiplication at `x`, all pairs `(a, b)` with `a * b = x`.
+* `convolution L f g`: the discrete convolution
+  `(f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1) (g ab.2)`.
+* `ConvolutionExistsAt L f g x`: the convolution sum is summable at `x`.
+* `ConvolutionExists L f g`: the convolution sum is summable at every point.
 
 ## Main Results
 
-- `ConvolutionExistsAt`, `ConvolutionExists`: summability conditions
-- `zero_convolution`, `convolution_zero`: zero laws
-- `convolution_indicator_one_left`, `convolution_indicator_one_right`: identity element
-  (the identity is `Set.indicator {1} (fun _ => e)` where `L e` is the identity map)
-- `distrib_add`, `add_distrib`: distributivity over addition
-- `smul_convolution`, `convolution_smul`: scalar multiplication
-- `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
-- Associativity (three API layers with increasing specialization):
-  - `convolution_assoc`: most general, arbitrary bilinear maps `L`, `L₂`, `L₃`, `L₄`
-  - `ringConvolution_assoc`: specializes to `LinearMap.mul ℕ R`
-  - `completeUniformRingConvolution_assoc`: derives fiber summabilities
-- HasMulAntidiagonal / HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
-  - `mulFiber_eq_mulAntidiagonal` / `addFiber_eq_antidiagonal`: fiber equals antidiagonal
-  - `convolution_eq_sum_mulAntidiagonal` / `addConvolution_eq_sum_antidiagonal`:
-    `tsum` reduces to `Finset.sum`
-  - `ringConvolution_single_one_left/right`: identity via `Pi.single`
+* `convolution_indicator_one_left`, `convolution_indicator_one_right`: identity element
+  (`Set.indicator {1} (fun _ => e)` where `L e` is the identity map)
+* `ConvolutionExists.distrib_add`, `ConvolutionExists.add_distrib`: distributivity over addition
+* `ConvolutionExistsAt.smul_convolution`, `ConvolutionExistsAt.convolution_smul`:
+  scalar multiplication
+* `convolution_comm`: commutativity for symmetric bilinear maps over commutative monoids
 
 ## Notation
 
@@ -83,14 +52,6 @@ Differences (discrete ↔ MeasureTheory):
 |--------------|-------------------------------------------------|
 | `f ⋆[L] g`   | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`   |
 | `f ⋆₊[L] g`  | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)`   |
-| `f ⋆ᵣ g`     | `∑' ab : mulFiber x, f ab.1.1 * g ab.1.2`       |
-| `f ⋆ᵣ₊ g`    | `∑' ab : addFiber x, f ab.1.1 * g ab.1.2`       |
-
-To use the simpler `⋆` notation, define a scoped notation in your file:
-```
-scoped notation:67 f:68 " ⋆ " g:67 => f ⋆ᵣ g   -- multiplicative
-scoped notation:67 f:68 " ⋆ " g:67 => f ⋆ᵣ₊ g  -- additive
-```
 
 Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` parses as
 `f ⋆ (g ⋆ h)`), matching function composition `∘` and `MeasureTheory.convolution`.
