@@ -119,9 +119,8 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
-  without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
-  problem in the new canonicalizer; a minimization would help. The original proof was:
-  `grind [compl, of]` -/
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. -/
   simp [compl]
   grind
 
@@ -139,9 +138,9 @@ theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
   ⟨fun h ↦ ext fun i j ↦ by
     #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
-    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
-    problem in the new canonicalizer; a minimization would help. The original proof was:
-    `grind [of, congr($h i j), compl, IsAdjMatrix]` -/
+    without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+    as we are relying on seeing through the definition of `Matrix`, and `of`.
+    The original proof was: `grind [of, congr($h i j), compl, IsAdjMatrix]` -/
     simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
 
 @[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
@@ -149,8 +148,8 @@ theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
   ext
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
-  without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
-  problem in the new canonicalizer; a minimization would help. The original proof was:
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. The original proof was:
   `grind [of, compl, IsAdjMatrix]` -/
   simp [compl]; grind [compl, IsAdjMatrix]
 
