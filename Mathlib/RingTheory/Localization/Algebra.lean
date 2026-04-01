@@ -184,15 +184,13 @@ end Algebra
 
 namespace Polynomial
 
+attribute [local instance] Polynomial.algebra in
 /-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
-    [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
-    IsLocalization (S.map C) A[X] :=
-  letI := (mapRingHom (algebraMap R A)).toAlgebra
-  have : IsScalarTower R R[X] A[X] := .of_algebraMap_eq fun _ ↦ (map_C _).symm
+    [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
 

@@ -70,6 +70,12 @@ theorem mem_Icc_of_mem_stdSimplex [IsOrderedAddMonoid 𝕜]
     f x ∈ Icc (0 : 𝕜) 1 :=
   ⟨hf.1 x, hf.2 ▸ Finset.single_le_sum (fun y _ => hf.1 y) (Finset.mem_univ x)⟩
 
+/-- `stdSimplex 𝕜 ι` is a subset of the unit cube -/
+theorem stdSimplex_subset_Icc [IsOrderedAddMonoid 𝕜] : stdSimplex 𝕜 ι ⊆ Icc 0 1 := by
+  intro f h
+  rw [← pi_univ_Icc, univ_pi_eq_iInter, mem_iInter]
+  simpa using fun i ↦ mem_Icc_of_mem_stdSimplex h i
+
 variable [DecidableEq ι] [ZeroLEOneClass 𝕜]
 
 theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
@@ -165,6 +171,29 @@ theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
 
 end Field
 
+section GeneralTopology
+variable (𝕜 ι : Type*) [Fintype ι]
+  [TopologicalSpace 𝕜] [Semiring 𝕜] [PartialOrder 𝕜] [OrderClosedTopology 𝕜] [ContinuousAdd 𝕜]
+
+/-- `stdSimplex 𝕜 ι` is closed. -/
+theorem isClosed_stdSimplex : IsClosed (stdSimplex 𝕜 ι) := by
+  rw [stdSimplex_eq_inter]
+  apply IsClosed.inter
+  · apply isClosed_iInter
+    exact fun i ↦ isClosed_le continuous_const (continuous_apply i)
+  · exact isClosed_eq (by fun_prop) continuous_const
+
+/-- `stdSimplex 𝕜 ι` is compact. -/
+theorem isCompact_stdSimplex [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
+    IsCompact (stdSimplex 𝕜 ι) :=
+  IsCompact.of_isClosed_subset isCompact_Icc (isClosed_stdSimplex 𝕜 ι) (stdSimplex_subset_Icc 𝕜)
+
+instance stdSimplex.instCompactSpace_coe [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
+    CompactSpace (stdSimplex 𝕜 ι) :=
+  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex 𝕜 _
+
+end GeneralTopology
+
 section Topology
 
 variable {ι : Type*} [Fintype ι]
@@ -181,19 +210,6 @@ variable (ι)
 /-- `stdSimplex ℝ ι` is bounded. -/
 theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
   (Metric.isBounded_iff_subset_closedBall 0).2 ⟨1, stdSimplex_subset_closedBall⟩
-
-/-- `stdSimplex ℝ ι` is closed. -/
-theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
-  (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
-
-/-- `stdSimplex ℝ ι` is compact. -/
-theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
-  Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
-
-instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
-  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
 /-- `stdSimplex ℝ ι` is path connected. -/
 theorem isPathConnected_stdSimplex [Nonempty ι] :
@@ -371,5 +387,31 @@ lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
   rfl
 
 end
+
+/-! ### Barycenter of a Standard Simplex -/
+
+section Barycenter
+
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Nonempty X]
+
+/-- The barycenter of a standard simplex is the center of mass of
+the set of vertices (equally weighted). -/
+def barycenter : stdSimplex 𝕜 X :=
+  ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
+
+/-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
+@[simp]
+theorem barycenter_apply (x : X) :
+    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
+
+/-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
+theorem barycenter_eq_centerMass [DecidableEq X] :
+    (barycenter : stdSimplex 𝕜 X).val =
+      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
+  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
+  ext x
+  simp [barycenter, Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
+
+end Barycenter
 
 end stdSimplex

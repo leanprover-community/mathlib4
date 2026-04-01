@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Coalgebra.Basic
 # Finite-dimensional inner product space with a (co)algebra structure
 
 This file proves that a finite-dimensional inner product space has a
-colagebra structure if it has an algebra structure, where
+coalgebra structure if it has an algebra structure, where
 the comultiplication and counit maps are given by taking adjoints of the
 multiplication and algebra linear maps, respectively.
 This is implemented by providing a linear equivalence between the inner product space
@@ -121,7 +121,8 @@ noncomputable abbrev ringOfCoalgebra :
     simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
       ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
+      lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
     dsimp [OfNat.ofNat]
@@ -164,13 +165,13 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
       ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
   smul_def' r x := by
     dsimp
     simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
       rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
 
 end algebraOfCoalgebra
 end InnerProductSpace

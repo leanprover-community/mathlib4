@@ -38,7 +38,7 @@ def EdgeLabeling (G : SimpleGraph V) (K : Type*) :=
   G.edgeSet → K
 
 instance [DecidableEq V] [Fintype G.edgeSet] [Fintype K] : Fintype (EdgeLabeling G K) :=
-  Pi.instFintype
+  inferInstanceAs <| Fintype (G.edgeSet → K)
 
 instance [Finite G.edgeSet] [Finite K] : Finite (EdgeLabeling G K) :=
   Pi.finite
@@ -47,7 +47,7 @@ instance [Nonempty K] : Nonempty (EdgeLabeling G K) :=
   Pi.instNonempty
 
 instance [Inhabited K] : Inhabited (EdgeLabeling G K) :=
-  Pi.instInhabited
+  inferInstanceAs <| Inhabited (G.edgeSet → K)
 
 instance [Subsingleton K] : Subsingleton (EdgeLabeling G K) :=
   Pi.instSubsingleton
@@ -56,7 +56,7 @@ instance [Nonempty G.edgeSet] [Nontrivial K] : Nontrivial (EdgeLabeling G K) :=
   Function.nontrivial
 
 instance [Unique K] : Unique (EdgeLabeling G K) :=
-  Pi.unique
+  inferInstanceAs <| Unique (G.edgeSet → K)
 
 /--
 An edge labeling of the complete graph on `V` with labels in type `K`.
@@ -123,7 +123,7 @@ def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
   | ⟨e, he⟩ => by
     revert he
-    refine Sym2.hrec (fun xy ↦ f xy.1 xy.2) (fun a b ↦ ?_) e
+    refine Sym2.hrec f (fun a b ↦ ?_) e
     apply Function.hfunext (by simp [adj_comm])
     grind
 

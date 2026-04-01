@@ -23,7 +23,7 @@ open Lean Parser.Tactic
 If the target of the main goal is a proposition `p`,
 `by_contra!` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
 `by_contra! h` can be used to name the hypothesis `h : ¬ p`.
-The hypothesis `¬ p` will be normalized using `push_neg`.
+The hypothesis `¬ p` will be normalized using `push Not`.
 For instance, `¬ a < b` will be changed to `b ≤ a`.
 `by_contra!` can be used with `rcases` patterns.
 For instance, `by_contra! rfl` on `⊢ s.Nonempty` will substitute the equality `s = ∅`,

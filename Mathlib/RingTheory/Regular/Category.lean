@@ -43,7 +43,7 @@ def smulShortComplex (r : R) :
 
 lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
   simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-    LinearMap.exact_smul_id_smul_top_mkQ]
+    LinearMap.exact_smul_id_smul_top_mkQ, -LinearMap.coe_smul]
 
 instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
   simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _

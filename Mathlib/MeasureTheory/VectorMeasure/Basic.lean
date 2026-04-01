@@ -213,7 +213,7 @@ lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : P
     · exact hd.subset (by simp)
     · grind
     · simp only [disjoint_iUnion_right]
-      exact fun i hi ↦  hd (by simp) (by simp [hi]) (by grind)
+      exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
     · apply hm _ (by simp)
     · apply Finset.measurableSet_biUnion _ (by grind)
 
@@ -985,7 +985,7 @@ theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ 0 < v j := by
   have hi₁ : MeasurableSet i := measurable_of_not_restrict_le_zero _ hi
   rw [restrict_le_restrict_iff _ _ hi₁] at hi
-  push_neg at hi
+  push Not at hi
   exact hi
 
 end

@@ -55,13 +55,14 @@ instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty 
 
 instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
 
-instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
+instance : LieRing (CommutatorRing L) := inferInstanceAs <| LieRing L
 
-instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_instance
+instance : LieAlgebra R (CommutatorRing L) := inferInstanceAs <| LieAlgebra R L
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
-instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) := ⟨smul_lie⟩
+instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :=
+  ⟨smul_lie⟩
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/

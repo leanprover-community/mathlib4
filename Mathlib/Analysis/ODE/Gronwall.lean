@@ -85,11 +85,11 @@ theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
 theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
   by_cases hK : K = 0
   · simp only [gronwallBound_K0, hK]
-    exact continuous_const.add (continuous_id.mul continuous_const)
+    fun_prop
   · simp only [gronwallBound_of_K_ne_0 hK]
-    exact continuous_const.add ((continuous_id.mul continuous_const).mul continuous_const)
+    fun_prop
 
-/-- The Gronwall bound is monotone with respect to the time variable `x`. -/
+/-- The Grönwall bound is monotone with respect to the time variable `x`. -/
 lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
     Monotone (gronwallBound δ K ε) := by
   intro x₁ x₂ hx
