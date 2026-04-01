@@ -321,7 +321,7 @@ theorem closure_finite_subsets (s : Set α) :
   exact fun K ⟨hK, _⟩ => ⟨⟨K, hK.isCompact⟩, rfl⟩
 
 theorem dense_setOf_finite : Dense {K : Compacts α | (K : Set α).Finite} := by
-  simpa [dense_iff_closure_eq] using closure_finite_subsets (α := α) Set.univ
+  simpa [dense_iff_closure_eq] using closure_finite_subsets univ
 
 /-- Given a basis `B` on a topological space `α`, the topology of `Compacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
