@@ -375,20 +375,6 @@ scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
 
 end
 
-/-- `X □ Y` lifts against `Z` if and only if `Y` lifts against `X ⋔ Z`. -/
-lemma hasLiftingProperty_iff [HasPushouts C] [HasPullbacks C]
-    [MonoidalCategory C] [MonoidalClosed C] {X Y Z : Arrow C} :
-    HasLiftingProperty (X □ Y).hom Z.hom ↔ HasLiftingProperty Y.hom ((.op X) ⋔ Z).hom :=
-  ParametrizedAdjunction.hasLiftingProperty_iff MonoidalClosed.internalHomAdjunction₂
-    (PushoutObjObj.ofHasPushout ..) (PullbackObjObj.ofHasPullback ..)
-
-/-- `X □ Y` lifts against `Z` if and only if `X` lifts against `Y ⋔ Z`. -/
-lemma hasLiftingProperty_iff' [HasPushouts C] [HasPullbacks C]
-    [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] {X Y Z : Arrow C} :
-    HasLiftingProperty (X □ Y).hom Z.hom ↔ HasLiftingProperty X.hom ((.op Y) ⋔ Z).hom := by
-  rw [← hasLiftingProperty_iff]
-  exact HasLiftingProperty.iff_of_arrow_iso_left (braiding X Y) Z.hom
-
 end PushoutProduct
 
 namespace PullbackHom
@@ -409,7 +395,7 @@ def _root_.CategoryTheory.terminalPow [MonoidalCategory C]
     apply t.hom_ext
 
 set_option backward.isDefEq.respectTransparency false in
-def _root_.CategoryTheory.Limits.pullback.isTerminalIhomMapIso
+def _root_.CategoryTheory.Limits.pullback.ihomMapIsTerminalIso
     [MonoidalCategory C] [MonoidalClosed C]
     {A B : C} (f : A ⟶ B) {T : C} (hT : IsTerminal T) {W : C} :
     pullback ((ihom A).map (hT.from W)) ((MonoidalClosed.pre f).app T) ≅ A ⟹ W where
@@ -420,7 +406,7 @@ def _root_.CategoryTheory.Limits.pullback.isTerminalIhomMapIso
   hom_inv_id := pullback.hom_ext (by simp) ((hT.ofIso (terminalPow hT).symm).hom_ext _ _)
 
 set_option backward.isDefEq.respectTransparency false in
-def _root_.CategoryTheory.Limits.pullback.isInitialPreIso
+def _root_.CategoryTheory.Limits.pullback.preIsInitialIso
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B : C} (f : A ⟶ B) {I : C} (hI : IsInitial I) {W : C} :
     pullback ((ihom I).map f) ((MonoidalClosed.pre (hI.to W)).app B) ≅ W ⟹ B where
@@ -434,24 +420,86 @@ def _root_.CategoryTheory.Limits.pullback.isInitialPreIso
     exact (hI.ofIso (mulZero hI).symm).hom_ext _ _) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
-def isTerminalIso_pre [MonoidalCategory C] [MonoidalClosed C]
+def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
     (X : Arrow C) {T : C} (hT : IsTerminal T) {W : C} :
     ((.op X) ⋔ Arrow.mk (hT.from W)) ≅
       Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
-  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isTerminalIhomMapIso X.hom hT)
-    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isTerminalIhomMapIso])
+  Arrow.isoMk' _ _ (Iso.refl _) (pullback.ihomMapIsTerminalIso X.hom hT)
+    (by simp [PullbackObjObj.ofHasPullback_π, pullback.ihomMapIsTerminalIso])
 
 set_option backward.isDefEq.respectTransparency false in
-def isInitialIso_ihom [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     (X : Arrow C) {I : C} (hI : IsInitial I) {W : C} :
     ((.op (Arrow.mk (hI.to W))) ⋔ X) ≅
       Arrow.mk ((ihom W).map X.hom) :=
-  Arrow.isoMk' _ _ (Iso.refl _) (pullback.isInitialPreIso X.hom hI)
-    (by simp [PullbackObjObj.ofHasPullback_π, pullback.isInitialPreIso])
+  Arrow.isoMk' _ _ (Iso.refl _) (pullback.preIsInitialIso X.hom hI)
+    (by simp [PullbackObjObj.ofHasPullback_π, pullback.preIsInitialIso])
 
 end Iso
 
 end PullbackHom
+
+/-
+/-- `X □ Y` lifts against `Z` if and only if `Y` lifts against `X ⋔ Z`. -/
+lemma pushoutProduct_hasLiftingProperty_iff [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C] {X Y Z : Arrow C} :
+    HasLiftingProperty (X □ Y).hom Z.hom ↔ HasLiftingProperty Y.hom ((.op X) ⋔ Z).hom :=
+  ParametrizedAdjunction.hasLiftingProperty_iff MonoidalClosed.internalHomAdjunction₂
+    (PushoutObjObj.ofHasPushout ..) (PullbackObjObj.ofHasPullback ..)
+-/
+
+/-- `f □ g` lifts against `h` if and only if `g` lifts against `f ⋔ h`. -/
+lemma pushoutProduct_hasLiftingProperty_iff [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C]
+    {A B K L X Y : C} {f : A ⟶ B} {g : K ⟶ L} {h : X ⟶ Y} :
+    HasLiftingProperty (f □ g).hom h ↔ HasLiftingProperty g ((.op f) ⋔ h).hom :=
+  ParametrizedAdjunction.hasLiftingProperty_iff MonoidalClosed.internalHomAdjunction₂
+    (PushoutObjObj.ofHasPushout ..) (PullbackObjObj.ofHasPullback ..)
+
+/-- `f □ g` lifts against `h` if and only if `f` lifts against `g ⋔ h`. -/
+lemma pushoutProduct_hasLiftingProperty_iff' [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B K L X Y : C} {f : A ⟶ B} {g : K ⟶ L} {h : X ⟶ Y} :
+    HasLiftingProperty (f □ g).hom h ↔ HasLiftingProperty f ((.op g) ⋔ h).hom := by
+  rw [← pushoutProduct_hasLiftingProperty_iff]
+  exact HasLiftingProperty.iff_of_arrow_iso_left (PushoutProduct.braiding _ _) h
+
+/-- `f □ g` lifts against `X ⟶ ⋆` if and only if `g` lifts against `(pre f).app X`. -/
+lemma hasLiftingProperty_pushoutProduct_isTerminal_iff [HasPushouts C] [HasPullbacks C]
+    [MonoidalCategory C] [MonoidalClosed C]
+    {A B K L X Y : C} {f : A ⟶ B} {g : K ⟶ L}
+    (t : IsTerminal Y) :
+    HasLiftingProperty (f □ g).hom (t.from X) ↔
+      HasLiftingProperty g ((MonoidalClosed.pre f).app X) := by
+  rw [pushoutProduct_hasLiftingProperty_iff]
+  exact HasLiftingProperty.iff_of_arrow_iso_right g (PullbackHom.isTerminalIso _ t)
+
+/-- `(∅ ⟶ B) □ g` lifts against `X ⟶ ⋆` if and only if `g` lifts against `(ihom B).obj X ⟶ ⋆`. -/
+lemma hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff [HasPushouts C] [HasPullbacks C]
+    [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B K L X Y : C} {g : K ⟶ L}
+    (i : IsInitial A) (t : IsTerminal Y) :
+    HasLiftingProperty (i.to B □ g).hom (t.from X) ↔
+      HasLiftingProperty g (t.from ((ihom B).obj X)) := by
+  have := HasLiftingProperty.iff_of_arrow_iso_left
+    (PushoutProduct.isInitialIsoWhiskerLeft g i (W := B)) (t.from X)
+  dsimp at this ⊢
+  rw [this]
+  have := Adjunction.hasLiftingProperty_iff (ihom.adjunction B) g (t.from X)
+  dsimp at this
+  rw [this]
+  exact HasLiftingProperty.iff_of_arrow_iso_right g
+    (Arrow.isoMk' _ _ (Iso.refl _) (terminalPow t) (by simp [terminalPow]))
+
+/-- `f □ (∅ ⟶ L)` lifts against `X ⟶ ⋆` if and only if `f` lifts against `(ihom L).obj X ⟶ ⋆`. -/
+lemma hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff' [HasPushouts C] [HasPullbacks C]
+    [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B K L X Y : C} {f : A ⟶ B}
+    (i : IsInitial K) (t : IsTerminal Y) :
+    HasLiftingProperty (f □ i.to L).hom (t.from X) ↔
+      HasLiftingProperty f (t.from ((ihom L).obj X)) := by
+  rw [← hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff i t]
+  exact HasLiftingProperty.iff_of_arrow_iso_left (PushoutProduct.braiding _ _) (t.from X)
 
 end MonoidalCategory.Arrow
 
