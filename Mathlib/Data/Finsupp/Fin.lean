@@ -96,33 +96,31 @@ lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
 
-lemma cons_right_injective {n : ℕ} {M : Type*} [Zero M] (y : M) :
-    Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+variable (y) in
+lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
   (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
 
-lemma cons_eq_single_zero_iff {n : ℕ} {M : Type*} [Zero M] {x y : M} {s : Fin n →₀ M} :
-    s.cons x = single 0 y ↔ s = 0 ∧ x = y := by
-  refine ⟨fun h ↦ ?_, fun ⟨h, h'⟩ ↦ ?_⟩
-  · rw [Finsupp.ext_iff] at h
-    exact ⟨by ext i; simpa using h i.succ, by simpa using h 0⟩
-  ext i; rw [single_apply]
-  split_ifs with hi
-  · simpa [← hi]
-  obtain ⟨i, rfl⟩ : ∃ j : Fin n, j.succ = i := by
-    rwa [Fin.exists_succ_eq, ne_comm]
-  simpa using Finsupp.ext_iff.mp h i
+@[simp]
+lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
+  ext j
+  cases j using Fin.cases <;> simp
 
-lemma cons_eq_single_succ_iff {n : ℕ} {M : Type*} [Zero M] {i : Fin n} {x y : M}
-    {s : Fin n →₀ M} : s.cons x = single i.succ y ↔ s = single i y ∧ x = 0 := by
-  refine ⟨fun h ↦ ?_, fun ⟨h, h'⟩ ↦ ?_⟩
-  · rw [Finsupp.ext_iff] at h
-    exact ⟨by ext i; simpa [single_apply] using h i.succ, by simpa using h 0⟩
-  ext j; rw [single_apply]
-  split_ifs with hj
-  · simpa [← hj] using Finsupp.ext_iff.mp h i
-  by_cases hj' : j = 0
-  · simpa [hj']
-  obtain ⟨j, rfl⟩ := Fin.exists_succ_eq.mpr hj'
-  rw [cons_succ, h, single_apply, if_neg (by aesop)]
+@[simp]
+lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
+  ext j
+  cases j using Fin.cases <;> simp [single_apply]
+
+/-- As a binary function, `Finsupp.cons` is injective. -/
+theorem cons_injective2 : Function.Injective2 (fun (y : M) s => cons (n := n) y s) := by
+  refine fun x₀ y₀ x y h ↦ ?_
+  have : (fun y s ↦ cons y s) x₀ x 0 = (fun y s ↦ cons y s) y₀ y 0 := by simp [h]
+  simp only [cons_zero] at this
+  exact ⟨this, cons_right_injective y₀ (this ▸ h)⟩
+
+lemma cons_eq_single_zero_iff {x : M} : s.cons x = single 0 y ↔ s = 0 ∧ x = y := by
+  rw [← cons_zero_eq_single_zero, cons_injective2.eq_iff, and_comm]
+
+lemma cons_eq_single_succ_iff {x : M} : s.cons x = single i.succ y ↔ s = single i y ∧ x = 0 := by
+  rw [← cons_zero_single_eq_single_succ, cons_injective2.eq_iff, and_comm]
 
 end Finsupp
