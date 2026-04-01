@@ -194,7 +194,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
   intro h b
-  push_neg at h
+  push Not at h
   apply IsWellFounded.induction s b
   intro x IH
   obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
@@ -339,7 +339,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
-    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
+    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_comm, ← exists_and_left]⟩
 
 @[simp]
 theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=
@@ -511,7 +511,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
   (RelEmbedding.isWellFounded f).fix _ fun a IH =>
     have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
-    ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
+    ⟨_, IsWellFounded.wf.not_lt_min _ H⟩
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
@@ -524,7 +524,7 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
-  exact WellFounded.not_lt_min _ _ _ h
+  exact WellFounded.not_lt_min _ {b | ∀ a', r a' a → s (collapseF f a') b} h
 
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.

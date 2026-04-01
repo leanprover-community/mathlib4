@@ -113,10 +113,10 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit and counit with the identity `F ⟶ FGF ⟶ F = 𝟙` -/
   left_triangle_components (X : C) :
-      F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
+    dsimp% F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
   /-- Equality of the composition of the unit and counit with the identity `G ⟶ GFG ⟶ G = 𝟙` -/
   right_triangle_components (Y : D) :
-      unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
+    dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
@@ -699,6 +699,24 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma map_comp_bijective_iff (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) (Z : D) :
+    Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
+      Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  ext g
+  simp
+
+lemma comp_map_bijective_iff (adj : F ⊣ G) {X Y : D} (g : X ⟶ Y) (Z : C) :
+    Function.Bijective (fun (f : Z ⟶ G.obj X) ↦ f ≫ G.map g) ↔
+      Function.Bijective (fun (f : F.obj Z ⟶ X) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  simp
+
 end Adjunction
 
 open Adjunction
@@ -716,7 +734,6 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]

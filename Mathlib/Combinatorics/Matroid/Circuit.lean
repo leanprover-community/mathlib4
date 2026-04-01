@@ -497,7 +497,7 @@ section Finitary
 
 lemma IsCircuit.finite [Finitary M] (hC : M.IsCircuit C) : C.Finite := by
   have hi := hC.dep.not_indep
-  rw [indep_iff_forall_finite_subset_indep] at hi; push_neg at hi
+  rw [indep_iff_forall_finite_subset_indep] at hi; push Not at hi
   obtain ⟨J, hJC, hJfin, hJ⟩ := hi
   rwa [← hC.eq_of_not_indep_subset hJ hJC]
 
@@ -581,9 +581,9 @@ lemma isCocircuit_iff_minimal :
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
   convert isCocircuit_iff_minimal with K
-  simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
-    not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-    inter_comm K]
+  rw [spanning_iff_exists_isBase_subset]
+  simp_rw [not_exists, subset_diff, not_and, not_disjoint_iff_nonempty_inter, ← and_imp,
+    and_iff_left_of_imp IsBase.subset_ground, inter_comm K]
 
 /-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :

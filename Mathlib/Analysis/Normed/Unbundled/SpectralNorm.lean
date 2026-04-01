@@ -399,7 +399,6 @@ theorem spectralNorm.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E 
 
 variable (E : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `L/E/K` is a tower of fields, then the spectral norm of `x : E` when regarded as an element
   of the normal closure of `E` equals its spectral norm when regarding `x` as an element of `L`. -/
 theorem spectralNorm.eq_of_normalClosure' (x : E) :
@@ -413,7 +412,6 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
       x, ← minpoly.algebraMap_eq (algebraMap (↥E) L).injective x]
   simp_rw [h_min]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm
   of `x : L`. -/
@@ -593,7 +591,6 @@ theorem spectralNorm_one : spectralNorm K L 1 = 1 := by
 
 variable [IsUltrametricDist K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `spectralNorm K L (-y) = spectralNorm K L y` . -/
 theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
     spectralNorm K L (-y) = spectralNorm K L y := by
@@ -607,7 +604,6 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
     ← spectralAlgNorm_of_finiteDimensional_normal_def]
   exact map_neg_eq_map _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The spectral norm is compatible with the action of `K`. -/
 theorem spectralNorm_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
     spectralNorm K L (k • y) = ‖k‖₊ * spectralNorm K L y := by
@@ -624,7 +620,6 @@ theorem spectralNorm_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
   rw [← spectralAlgNorm_of_finiteDimensional_normal_def]
   apply map_smul_eq_mul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The spectral norm is submultiplicative. -/
 theorem spectralNorm_mul {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
     spectralNorm K L (x * y) ≤ spectralNorm K L x * spectralNorm K L y := by
@@ -644,7 +639,6 @@ section IsAlgebraic
 
 variable [h_alg : Algebra.IsAlgebraic K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The spectral norm is power-multiplicative. -/
 theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   intro x n hn
@@ -658,7 +652,6 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   exact isPowMul_spectralNorm_of_finiteDimensional_normal _ _
     ((algebraMap ↥K⟮x⟯ ↥(normalClosure K (↥K⟮x⟯) (AlgebraicClosure ↥K⟮x⟯))) g) hn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The spectral norm is nonarchimedean. -/
 theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := by
   intro x y
@@ -709,7 +702,7 @@ universe u v
 variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.inferInstanceAs.wrap.data false in
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
