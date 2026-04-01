@@ -326,7 +326,7 @@ def Mathlib.TacticAnalysis.unsqueeze : TacticAnalysis.Config where
           if goals.isEmpty then
             logWarningAt i.tacI.stx m!"'{i.tacI.stx}' can be replaced with '{unsqueeze}'"
 
-          if oldHeartbeats * 2 < newHeartbeats then
+          if goals.isEmpty && oldHeartbeats * 2 < newHeartbeats then
             logWarningAt i.tacI.stx m!"replacement is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
 
           break
