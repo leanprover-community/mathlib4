@@ -599,8 +599,8 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
   have hd' := Sieve.ofArrows.fac hd
   dsimp at hc hd hc' hd' ⊢
   rw [assoc, ← op_comp, restriction_map (i := Sieve.ofArrows.i hd)
-    (p := F.map c ≫ Sieve.ofArrows.h hd) (fac := by grind),
-    restriction_map (i := Sieve.ofArrows.i hc) (p := Sieve.ofArrows.h hc) (fac := by grind),
+    (p := F.map c ≫ Sieve.ofArrows.h hd) (fac := by simp; grind),
+    restriction_map (i := Sieve.ofArrows.i hc) (p := Sieve.ofArrows.h hc) (fac := by simp; grind),
     presheafMap_π_assoc]
   dsimp
   have := J₀.intersection_covering (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hc))
@@ -611,7 +611,7 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
   rw [assoc, assoc,
     IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₂ (by simpa using fac₂.symm),
     IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₁ fac₁.symm,
-    restriction_map data G₀ _ _ (F.map x₁) (by grind), IsDenseSubsite.mapPreimage_map]
+    restriction_map data G₀ _ _ (F.map x₁) (by simp_all), IsDenseSubsite.mapPreimage_map]
 
 lemma presheafMap_id (X : C) :
     presheafMap data G₀ (𝟙 X) = 𝟙 _ := by

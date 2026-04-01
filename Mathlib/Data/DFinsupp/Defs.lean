@@ -836,7 +836,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     rintro ⟨f, rfl⟩
     ext i
     simpa using Eq.symm
-  right_inv f := by grind
+  right_inv f := by simp
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/

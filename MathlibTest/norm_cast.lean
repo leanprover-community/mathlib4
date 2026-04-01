@@ -125,7 +125,6 @@ example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
 
 -- example {x : ℚ} : ((x + 42 : ℚ) : ℝ) = x + 42 := by push_cast
 
-set_option backward.isDefEq.respectTransparency false in
 namespace ENNReal
 lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a := by
   lift a to NNReal using ht

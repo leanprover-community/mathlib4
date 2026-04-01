@@ -262,7 +262,8 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     exists w
     #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
     The new canonicalizer using `isDefEq` less,
-    and so does not unify as many of the conditions that `grind` wants to case split on. -/
+    and so does not unify as many of the conditions that `grind` wants to case split on.
+    Alternatively `simp; grind` also works here. -/
     grind (splits := 12)
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form

@@ -183,7 +183,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
     obtain ⟨w, hw⟩ := Ideal.mem_span_singleton.mp
       (hp.ge (Ideal.mem_map_of_mem _ (x := minpoly R x) (by simp [I])))
     refine ⟨1 + w * (minpoly R x).map (algebraMap R P.ResidueField) ^ (p.natDegree + 1), ?_, ?_⟩
-    · simp_all [q]; grind
+    · simp_all [q]; ring
     · rw [dvd_add_left (dvd_mul_of_dvd_right (dvd_pow (by simp [m, minpoly.dvd_iff]) (by simp)) _),
         ← isUnit_iff_dvd_one]
       exact hm.not_unit

@@ -101,7 +101,7 @@ private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] 
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] := by
       refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_of_hereditarilyLindelofSpace
         (s := Y.subtypeL ⁻¹' s) hm ?_ ?_ ?_ hfY_int (Integrable.congr hφ_int lem3)
-      · exact hφ_cont.comp (by fun_prop) fun x => by grind
+      · exact hφ_cont.comp (by fun_prop) fun x => by simp
       · filter_upwards [lem0, hf] with a ha hb
         simp_all [fY]
       · exact hs.preimage Y.subtypeL.continuous
