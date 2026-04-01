@@ -360,7 +360,8 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
-theorem comp_comap_ofLE (f : H →g G) : f = .comp (.comap f G) (.ofLE f.le_comap) :=
+@[simp]
+theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
   rfl
 
 end Hom
