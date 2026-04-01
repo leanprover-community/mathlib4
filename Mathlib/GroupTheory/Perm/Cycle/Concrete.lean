@@ -204,6 +204,11 @@ theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.suppor
 @[simp]
 theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by simp [toList]
 
+/-- `toList` expressed as a map of powers: `toList p x = [x, p x, p² x, …]`. -/
+theorem toList_eq_range_map_pow :
+    toList p x = (List.range (cycleOf p x).support.card).map fun i => (p ^ i) x := by
+  simp [toList, ← List.range_map_iterate, iterate_eq_pow]
+
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
   simpa [card_support_ne_one] using congr_arg length H
