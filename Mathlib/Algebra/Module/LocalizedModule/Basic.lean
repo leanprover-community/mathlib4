@@ -704,15 +704,15 @@ lemma IsLocalizedModule.restrictScalars (S : Submonoid R) [Module A M]
     [IsScalarTower R A M] [IsScalarTower R A N]
     (f : M →ₗ[A] N) [h : IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f] :
     IsLocalizedModule S (f.restrictScalars R) where
-      map_units s := by
-        simpa [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] using
-          h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
-      surj y := by
-        obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
-        exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
-      exists_of_eq {x₁ x₂} e := by
-        obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
-        exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
+  map_units s := by
+    simpa [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] using
+      h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
+  surj y := by
+    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
+    exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
+    exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
 
 lemma IsLocalizedModule.restrictScalars_powers [Module A M]
     {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
