@@ -421,18 +421,18 @@ If infinitely many of the `Rᵢ` are nontrivial, then there exists an ideal of `
 is not of the form `Πᵢ Iᵢ`, namely the ideal of finitely supported elements of `Πᵢ Rᵢ`
 (it is also not a principal ideal).) -/
 @[simps!] def piOrderIso [Finite ι] : Ideal (Π i, R i) ≃o Π i, Ideal (R i) := .symm
-{ toFun := pi
-  invFun I i := I.map (Pi.evalRingHom R i)
-  left_inv _ := funext map_evalRingHom_pi
-  right_inv I := by
-    ext r
-    simp_rw [mem_pi, mem_map_iff_of_surjective (Pi.evalRingHom R _) (Function.surjective_eval _)]
-    refine ⟨(fun ⟨r', hr'⟩ ↦ ?_) ∘ Classical.skolem.mp, fun hr i ↦ ⟨r, hr, rfl⟩⟩
-    have := Fintype.ofFinite ι
-    classical rw [show r = ∑ i, Pi.single i 1 * r' i from funext fun i ↦ by
-      rw [← (hr' _).2, Finset.sum_apply, Fintype.sum_eq_single i fun j ne ↦ by simp [ne]]; simp]
-    exact sum_mem fun i _ ↦ I.mul_mem_left _ (hr' i).1
-  map_rel_iff' := pi_le_pi_iff }
+  { toFun := pi
+    invFun I i := I.map (Pi.evalRingHom R i)
+    left_inv _ := funext map_evalRingHom_pi
+    right_inv I := by
+      ext r
+      simp_rw [mem_pi, mem_map_iff_of_surjective (Pi.evalRingHom R _) (Function.surjective_eval _)]
+      refine ⟨(fun ⟨r', hr'⟩ ↦ ?_) ∘ Classical.skolem.mp, fun hr i ↦ ⟨r, hr, rfl⟩⟩
+      have := Fintype.ofFinite ι
+      classical rw [show r = ∑ i, Pi.single i 1 * r' i from funext fun i ↦ by
+        rw [← (hr' _).2, Finset.sum_apply, Fintype.sum_eq_single i fun j ne ↦ by simp [ne]]; simp]
+      exact sum_mem fun i _ ↦ I.mul_mem_left _ (hr' i).1
+    map_rel_iff' := pi_le_pi_iff }
 
 instance [Finite ι] [∀ i, IsPrincipalIdealRing (R i)] : IsPrincipalIdealRing (Π i, R i) where
   principal I := by

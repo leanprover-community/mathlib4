@@ -296,7 +296,7 @@ functions `f : M → N` is `C^n` whenever the denominator is non-zero.
 section Div
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
-{H : Type*} [TopologicalSpace H] {E : Type*}
+  {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [ContMDiffInv₀ I n G]
   [ContMDiffMul I n G]
