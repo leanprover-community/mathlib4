@@ -13,7 +13,11 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 # Definition of Regular Ring
 
 In this file, we define regular ring as ring with localization at every prime is regular local ring.
-(Regular local ring is not natrually regular ring in this definition).
+(Note that regular local ring is not natrually regular ring in this definition).
+
+## TODO
+Show that regular local rings are regular under this definition.
+This follows from localization of regular local rings are still regular (@Thmoas-Guan).
 
 -/
 
@@ -42,7 +46,6 @@ lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
   exact IsRegularLocalRing.of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
   by_cases eqbot : p = ⊥
