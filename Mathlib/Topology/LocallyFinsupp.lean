@@ -165,7 +165,13 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
 /--
-Simplifier lemma: coercion of `singly x y` to a function.
+Simplifier lemma: `single x 0` is zero.
+-/
+@[simp] lemma single_zero [DecidableEq X] [Zero Y] {x : X} :
+    single x (0 : Y) = 0 := by aesop
+
+/--
+Simplifier lemma: coercion of `single x y` to a function.
 -/
 @[simp] lemma coe_single [DecidableEq X] [Zero Y] {x : X} {y : Y} :
     (single x y : X → Y) = Pi.single x y := by
@@ -588,6 +594,15 @@ lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h
   intro _ hx
   simp_all
 
+/--
+Restriction of the zero function is the zero function.
+-/
+@[simp] lemma restrict_zero [Zero Y] {U V : Set X} (hV : V ⊆ U) :
+    restrict (0 : Function.locallyFinsuppWithin U Y) hV = 0 := by
+  ext
+  rw [restrict_apply]
+  aesop
+
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
@@ -612,13 +627,9 @@ Present a function with with finite support as a finsum of singleton indicator f
     {F : Function.locallyFinsuppWithin U Y} (h : F.support.Finite) :
     ∑ᶠ x, ((single x (F x)).restrict (subset_univ U)) = F := by
   have : (fun x ↦ (single x (F x)).restrict (subset_univ U)).support ⊆ h.toFinset := by
-    have h1 {x : X} : single x (0 : Y) = 0 := by ext; simp
-    have h2 {U V : Set X} (hV : V ⊆ U) :
-        restrict (0 : Function.locallyFinsuppWithin U Y) hV = 0 := by
-      ext; simp [restrict_apply]
     intro
     contrapose
-    simp +contextual [h1, h2]
+    aesop
   rw [finsum_eq_sum_of_support_subset _ this]
   ext z
   by_cases hz : z ∉ U
