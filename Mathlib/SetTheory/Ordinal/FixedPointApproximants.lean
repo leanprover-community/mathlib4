@@ -116,7 +116,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
 
 theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
-  refine le_antisymm ?_ (iSup_le fun b => lfpApprox_monotone f x b.2.le)
+  apply (iSup_le fun b => lfpApprox_monotone f x b.2.le).antisymm'
   rw [lfpApprox]
   simp only [exists_prop, Set.union_singleton, sSup_insert, sup_le_iff, sSup_le_iff,
     Set.mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
