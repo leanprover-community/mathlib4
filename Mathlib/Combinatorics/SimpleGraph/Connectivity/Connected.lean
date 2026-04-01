@@ -740,7 +740,7 @@ theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
-  induction e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
+  cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
