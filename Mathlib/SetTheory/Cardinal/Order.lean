@@ -432,13 +432,16 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
   not_isSuccLimit_bot
 
-/-- A cardinal is a strong pre-limit if it's closed under powersets. See `IsStrongLimit` for a
-version excluding `0`. -/
+/-- A cardinal is a strong pre-limit if it's closed under powersets.
+
+See `IsStrongLimit` for a version excluding `0`. -/
 def IsStrongPrelimit (c : Cardinal) : Prop :=
   ∀ ⦃x⦄, x < c → 2 ^ x < c
 
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
-Note that `ℵ₀` is a strong limit by this definition. -/
+Note that `ℵ₀` is a strong limit by this definition.
+
+See `IsStrongPrelimit` for a version including `0`. -/
 @[mk_iff]
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
