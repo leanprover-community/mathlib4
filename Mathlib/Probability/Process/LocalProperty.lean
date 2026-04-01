@@ -106,11 +106,11 @@ def localSeq [Zero E] (hX : Locally p 𝓕 X P) :
     ℕ → Ω → WithTop ι :=
   hX.choose
 
-lemma IsLocalizingSequence [Zero E] (hX : Locally p 𝓕 X P) :
+lemma isLocalizingSequence_localSeq [Zero E] (hX : Locally p 𝓕 X P) :
     IsLocalizingSequence 𝓕 hX.localSeq P :=
   hX.choose_spec.1
 
-lemma stoppedProcess [Zero E] (hX : Locally p 𝓕 X P) (n : ℕ) :
+lemma stoppedProcess_localSeq [Zero E] (hX : Locally p 𝓕 X P) (n : ℕ) :
     p (stoppedProcess (fun i ↦ {ω | ⊥ < hX.localSeq n ω}.indicator (X i)) (hX.localSeq n)) :=
   hX.choose_spec.2 n
 
@@ -119,7 +119,7 @@ lemma of_prop [Zero E] (hp : p X) : Locally p 𝓕 X P :=
 
 lemma mono [Zero E] (hpq : ∀ X, p X → q X) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
-  ⟨hpX.localSeq, hpX.IsLocalizingSequence, fun n ↦ hpq _ <| hpX.stoppedProcess n⟩
+  ⟨hpX.localSeq, hpX.isLocalizingSequence_localSeq, fun n ↦ hpq _ <| hpX.stoppedProcess_localSeq n⟩
 
 lemma of_and [Zero E] (hX : Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P) :
     Locally p 𝓕 X P ∧ Locally q 𝓕 X P :=
@@ -152,16 +152,16 @@ variable [TopologicalSpace ι] [OrderTopology ι]
 
 lemma IsStable.locally (hp : IsStable 𝓕 p) :
     IsStable 𝓕 (fun Y ↦ Locally p 𝓕 Y P) := by
-  refine fun X hX τ hτ ↦ ⟨hX.localSeq, hX.IsLocalizingSequence, fun n ↦ ?_⟩
+  refine fun X hX τ hτ ↦ ⟨hX.localSeq, hX.isLocalizingSequence_localSeq, fun n ↦ ?_⟩
   simp_rw [← stoppedProcess_indicator_comm', Set.indicator_indicator, Set.inter_comm,
     ← Set.indicator_indicator, stoppedProcess_stoppedProcess, inf_comm,
     stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess]
-  exact hp _ (hX.stoppedProcess n) τ hτ
+  exact hp _ (hX.stoppedProcess_localSeq n) τ hτ
 
 lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P ↔ Locally p 𝓕 X P ∧ Locally q 𝓕 X P := by
   refine ⟨Locally.of_and, fun ⟨hpX, hqX⟩ ↦
-    ⟨_, hpX.IsLocalizingSequence.min hqX.IsLocalizingSequence, fun n ↦ ?_⟩⟩
+    ⟨_, hpX.isLocalizingSequence_localSeq.min hqX.isLocalizingSequence_localSeq, fun n ↦ ?_⟩⟩
   suffices ∀ (p q : (ι → Ω → E) → Prop) (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q)
       (hpX : Locally p 𝓕 X P) (hqX : Locally q 𝓕 X P),
       p (stoppedProcess (fun i ↦ {ω | ⊥ < (hpX.localSeq ⊓ hqX.localSeq) n ω}.indicator (X i))
@@ -170,7 +170,8 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     simp_rw [inf_comm hpX.localSeq]
     exact this q p hq hp hqX hpX
   intro p q hp hq hpX hqX
-  convert hp _ (hpX.stoppedProcess n) _ <| hqX.IsLocalizingSequence.isStoppingTime n using 1
+  convert hp _ (hpX.stoppedProcess_localSeq n) _ <|
+    hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
   ext i ω
   simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
   rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.setOf_and,
@@ -303,10 +304,10 @@ variable [DenselyOrdered ι] [NoMaxOrder ι] [Zero E]
 @[simp]
 lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 p) :
     Locally (fun Y ↦ Locally p 𝓕 Y P) 𝓕 X P ↔ Locally p 𝓕 X P := by
-  refine ⟨fun hL ↦ ?_, fun hL ↦ ⟨hL.localSeq, hL.IsLocalizingSequence,
-    fun n ↦ .of_prop <| hL.stoppedProcess n⟩⟩
-  choose τ hτ₁ hτ₂ using hL.stoppedProcess
-  obtain ⟨nk, hnk, hpre⟩ := hL.IsLocalizingSequence.isPrelocalizingSequence_inf_extraction hτ₁
+  refine ⟨fun hL ↦ ?_, fun hL ↦ ⟨hL.localSeq, hL.isLocalizingSequence_localSeq,
+    fun n ↦ .of_prop <| hL.stoppedProcess_localSeq n⟩⟩
+  choose τ hτ₁ hτ₂ using hL.stoppedProcess_localSeq
+  obtain ⟨nk, hnk, hpre⟩ := hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
   refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
   convert hτ₂ n (nk n) using 1 with
   ext i ω
