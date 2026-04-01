@@ -396,6 +396,7 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V),
     ← add_assoc, add_tsub_cancel_right]
 
+@[simp]
 theorem ofSupport_support {u v : V} (p : G.Walk u v) :
     ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
   match p with
