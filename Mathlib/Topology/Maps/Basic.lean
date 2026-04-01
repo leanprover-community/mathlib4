@@ -281,12 +281,12 @@ protected lemma id : IsCoinducing (id (α := X)) where
 protected lemma comp (hg : IsCoinducing g) (hf : IsCoinducing f) : IsCoinducing (g.comp f) where
   eq_coinduced := by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]
 
-protected lemma of_comp (hf : IsCoinducing f) (hgf : IsCoinducing (g ∘ f)) :
-    IsCoinducing g := by
-  refine .of_isOpen_preimage_iff_isOpen fun s ↦ ?_
+protected lemma of_comp_iff (hf : IsCoinducing f) :
+    IsCoinducing (g ∘ f)) ↔ IsCoinducing g := by
+  refine ⟨fun hgf ↦ .of_isOpen_preimage_iff_isOpen fun s ↦ ?_, fun hg ↦ hg.comp hf⟩
   rw [← hgf.isOpen_preimage, Set.preimage_comp, hf.isOpen_preimage]
 
-protected lemma of_comp_of_continuous (hf : Continuous f) (hg : Continuous g)
+protected lemma of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsCoinducing (g ∘ f)) :
     IsCoinducing g :=
   ⟨le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
