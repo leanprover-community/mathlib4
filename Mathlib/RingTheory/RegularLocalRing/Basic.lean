@@ -238,16 +238,9 @@ instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
 set_option backward.isDefEq.respectTransparency false in
 lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
     (dim : ringKrullDim R = 1) : IsDiscreteValuationRing R := by
-  have nisf : ¬ IsField R := by
-    by_contra isf
-    simp [ringKrullDim_eq_zero_of_isField isf] at dim
-  apply ((IsDiscreteValuationRing.TFAE R nisf).out 0 4).mpr
-  have := (isRegularLocalRing_iff R).mp ‹_›
-  simp only [dim, Nat.cast_eq_one, Set.ncard_eq_one,
-    ← (IsNoetherian.noetherian _).generators_ncard] at this
-  rcases this with ⟨a, ha⟩
-  use a
-  simpa [← ha] using (maximalIdeal R).span_generators.symm
+  have nisf : ¬ IsField R := (mt ringKrullDim_eq_zero_of_isField (by simp [dim]))
+  apply ((IsDiscreteValuationRing.TFAE R nisf).out 0 4).mpr ((Submodule.spanFinrank_eq_one_iff _).mp
+    (Nat.cast_inj.mp (((isRegularLocalRing_iff R).mp ‹_›).trans dim))).1
 
 set_option backward.isDefEq.respectTransparency false in
 open RingTheory.Sequence in
