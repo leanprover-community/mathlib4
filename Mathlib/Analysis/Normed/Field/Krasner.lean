@@ -109,7 +109,6 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
         _ = ‖z - z'‖ := by congr 1; ring
     simp [lt_self_iff_false] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a complete nontrivially normed field and `L` is an algebraic extension of `K`
 such that the norm of `L` extends the norm on `K`, then `IsKrasner K L` holds.
