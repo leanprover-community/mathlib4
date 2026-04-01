@@ -6,9 +6,8 @@ Authors: Thomas Browning, Jingting Wang, Junyan Xu, Andrew Yang
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.TensorProduct.Quotient
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # The fiber at a prime ideal

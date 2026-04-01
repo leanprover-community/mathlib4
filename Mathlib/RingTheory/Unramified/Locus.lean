@@ -67,6 +67,7 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsU
   .of_restrictScalars R _ _
 
 open _root_.TensorProduct in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `A` is an `R`-algebra unramified at `Q`, `P` is the prime of `R` lying under `Q`,
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/
 theorem IsUnramifiedAt.residueField
@@ -75,17 +76,21 @@ theorem IsUnramifiedAt.residueField
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
     (hQ' : Q = Q'.comap (algebraMap A (P.Fiber A))) :
     IsUnramifiedAt P.ResidueField Q' := by
-  sorry
-  -- have : algebraMap A (P.Fiber A) = IsScalarTower.toAlgHom R A (P.Fiber A) := rfl
-  -- rw [this] at hQ'
-  -- let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
-  --   Localization.localAlgHom Q Q' _ hQ'
-  -- have hf₀ : Function.Surjective f₀ := by
-  --   subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
-  -- let f : P.Fiber (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
-  --   Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
-  -- have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
-  -- exact .of_surjective _ hf
+  let e := Ideal.Fiber.algEquivTensor P A
+  replace hQ' : Q = (Q'.comap e.symm).comap (algebraMap A (P.ResidueField ⊗[R] A)) := hQ'
+  suffices IsUnramifiedAt P.ResidueField (Q'.comap e.symm) from .of_equiv
+    (IsLocalization.algEquivOfAlgEquiv (Localization.AtPrime (Q'.comap e.symm))
+      (Localization.AtPrime Q') (M := (Q'.comap e.symm).primeCompl) (T := Q'.primeCompl)
+      e.symm (by simp [Submonoid.ext_iff, e.symm_apply_eq]))
+  set Q' := Q'.comap e.symm
+  let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
+    Localization.localAlgHom Q Q' _ hQ'
+  have hf₀ : Function.Surjective f₀ := by
+    subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
+  let f : P.ResidueField ⊗[R] (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
+    Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
+  have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
+  exact .of_surjective _ hf
 
 end
 
