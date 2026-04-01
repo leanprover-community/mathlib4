@@ -47,21 +47,21 @@ open Fintype
 variable {V V' α β : Type*} {G H : SimpleGraph V} {G' : SimpleGraph V'} {n m : ℕ}
 
 variable (G) in
-/-- An `α`-edge-coloring of a simple graph `G` is a coloring of `G.lineGraph` -/
+/-- An `α`-edge-coloring of a simple graph `G` is a coloring of `G.lineGraph`. -/
 abbrev EdgeColoring (α : Type*) :=
   G.lineGraph.Coloring α
 
-/-- `α`-edge-coloring is a special case of `α`-edge-labeling -/
+/-- `α`-edge-coloring is a special case of `α`-edge-labeling. -/
 instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) :=
   ⟨RelHom.toFun⟩
 
 variable (G) in
-/-- Whether a graph can be edge-colored using colors from `α` -/
+/-- Whether a graph can be edge-colored using colors from `α`. -/
 def EdgeColorableWith (α : Type*) : Prop :=
   Nonempty <| G.EdgeColoring α
 
 variable (G n) in
-/-- Whether a graph can be edge-colored by at most `n` colors -/
+/-- Whether a graph can be edge-colored by at most `n` colors. -/
 def EdgeColorable : Prop :=
   G.EdgeColorableWith <| Fin n
 
@@ -73,7 +73,7 @@ noncomputable def chromaticIndex : ℕ∞ :=
   ⨅ n ∈ setOf G.EdgeColorable, (n : ℕ∞)
 
 variable (α) in
-/-- The unique coloring of the empty graph -/
+/-- The unique coloring of the empty graph. -/
 def EdgeColoring.ofBot : (⊥ : SimpleGraph V).EdgeColoring α :=
   .mk (fun ⟨_, h⟩ ↦ edgeSet_bot ▸ h |>.elim) (lineGraph_bot ▸ · |>.elim)
 
@@ -104,11 +104,11 @@ theorem chromaticIndex_bot : (⊥ : SimpleGraph V).chromaticIndex = 0 :=
 theorem eq_bot_of_chromaticIndex_eq_zero (h : G.chromaticIndex = 0) : G = ⊥ := by
   simpa using isEmpty_of_chromaticNumber_eq_zero h
 
-/-- Lift an embedding of colors to an embedding of edge colorings -/
+/-- Lift an embedding of colors to an embedding of edge colorings. -/
 def EdgeColoring.ofColorEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
   recolorOfEmbedding _ f
 
-/-- Lift an isomorphism of colors to an isomorphism of edge colorings -/
+/-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
 def EdgeColoring.ofColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
   recolorOfEquiv _ f
 
@@ -120,7 +120,7 @@ theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.
 theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColorable m :=
   Colorable.mono hle h
 
-/-- Edge coloring using the edges themselves as colors, coloring with the identity function -/
+/-- Edge coloring using the edges themselves as colors, coloring with the identity function. -/
 def EdgeColoring.id : G.EdgeColoring G.edgeSet :=
   selfColoring _
 
@@ -131,17 +131,17 @@ variable (G) in
 theorem EdgeColorable.of_fintype [Fintype G.edgeSet] : G.EdgeColorable <| card G.edgeSet :=
   colorable_of_fintype _
 
-/-- Pre-compose an edge coloring with a line-graph homomorphism -/
+/-- Pre-compose an edge coloring with a line-graph homomorphism. -/
 def EdgeColoring.ofLineGraphHom (f : G.lineGraph →g G'.lineGraph) (C : G'.EdgeColoring α) :
     G.EdgeColoring α :=
   C.comp f
 
-/-- Pre-compose an edge-coloring with a line-graph homomorphism induced by a copy -/
+/-- Pre-compose an edge-coloring with a line-graph homomorphism induced by a copy. -/
 def EdgeColoring.ofCopy (f : Copy G G') (C : G'.EdgeColoring α) : G.EdgeColoring α :=
   C.ofLineGraphHom f.lineGraph.toHom
 
 variable (α) in
-/-- Edge-colorings of graphs with isomorphic line-graphs are equivalent -/
+/-- Edge-colorings of graphs with isomorphic line-graphs are equivalent. -/
 def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
     G.EdgeColoring α ≃ G'.EdgeColoring α where
   toFun C := .ofLineGraphHom f.symm.toHom C
@@ -150,7 +150,7 @@ def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
   right_inv _ := RelHom.ext (congrArg _ <| RelIso.apply_symm_apply f ·)
 
 variable (α) in
-/-- Edge-colorings of isomorphic graphs are equivalent -/
+/-- Edge-colorings of isomorphic graphs are equivalent. -/
 def EdgeColoring.ofIso (f : G ≃g G') : G.EdgeColoring α ≃ G'.EdgeColoring α :=
   EdgeColoring.ofLineGraphIso α f.lineGraph
 
@@ -201,7 +201,7 @@ theorem chromaticIndex_eq_of_lineGraph_iso (f : G.lineGraph ≃g G'.lineGraph) :
 theorem Iso.chromaticIndex_eq (f : G ≃g G') : G.chromaticIndex = G'.chromaticIndex :=
   chromaticIndex_eq_of_lineGraph_iso f.lineGraph
 
-/-- Induce an edge-coloring of a subgraph from an edge-coloring of a graph -/
+/-- Induce an edge-coloring of a subgraph from an edge-coloring of a graph. -/
 def EdgeColoring.ofIsSubgraph (hle : G ≤ H) (C : H.EdgeColoring α) : G.EdgeColoring α :=
   C.ofCopy <| .ofLE _ _ hle
 
@@ -263,7 +263,7 @@ theorem two_le_chromaticIndex_of_adj {u v w : V} (huv : G.Adj u v) (huw : G.Adj 
     2 ≤ G.chromaticIndex :=
   @two_le_chromaticNumber_of_adj _ _ ⟨s(u, v), huv⟩ ⟨s(u, w), huw⟩ ⟨by grind, u, by simp⟩
 
-/-- The subgraph containing all the edges colored with the given color, and all their vertices -/
+/-- The subgraph containing all the edges colored with the given color, and all their vertices. -/
 def EdgeColoring.colorClassSubgraph (C : G.EdgeColoring α) (a : α) : G.Subgraph where
   verts := {u | ∃ (v : V) (hadj : G.Adj u v), C ⟨s(u, v), hadj⟩ = a}
   Adj u v := ∃ (hadj : G.Adj u v), C ⟨s(u, v), hadj⟩ = a
