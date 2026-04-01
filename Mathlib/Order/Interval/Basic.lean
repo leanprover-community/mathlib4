@@ -383,6 +383,10 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
   · rfl
   · exact WithBot.map_comm rfl _
 
+@[simp, norm_cast]
+lemma coe_le_coe {s t : NonemptyInterval α} : (s : Interval α) ≤ t ↔ s ≤ t :=
+  WithBot.coe_le_coe
+
 variable [BoundedOrder α]
 
 instance boundedOrder : BoundedOrder (Interval α) :=
@@ -467,10 +471,6 @@ variable [Lattice α]
 
 instance semilatticeSup : SemilatticeSup (Interval α) :=
   inferInstanceAs <| SemilatticeSup (WithBot _)
-
-@[simp, norm_cast]
-lemma coe_le_coe {s t : NonemptyInterval α} : (s : Interval α) ≤ t ↔ s ≤ t :=
-  WithBot.coe_le_coe
 
 section Decidable
 
@@ -580,8 +580,6 @@ theorem coe_eq_pure : (s : Interval α) = Interval.pure a ↔ s = pure a := by
 @[simp, norm_cast]
 theorem coe_top_interval [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Interval α) = ⊤ :=
   rfl
-
-theorem coe_inj : (s : Interval α) = t ↔ s = t := WithBot.coe_inj
 
 end Preorder
 

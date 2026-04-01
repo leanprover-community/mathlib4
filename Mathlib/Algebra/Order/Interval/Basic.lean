@@ -525,7 +525,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   cases t
   · simp
   · simp_rw [← NonemptyInterval.coe_mul_interval, ← NonemptyInterval.coe_one_interval,
-      NonemptyInterval.coe_inj, NonemptyInterval.coe_eq_pure]
+      Interval.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
 
 instance subtractionCommMonoid {α : Type u}
