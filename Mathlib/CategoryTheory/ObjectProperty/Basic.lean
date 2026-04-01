@@ -60,7 +60,8 @@ lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
 
 /-- `Nonempty P` is a typeclass saying there exists an object `X : C` that satisfies `P`. -/
-class Nonempty (P : ObjectProperty C) : Prop where
+@[mk_iff]
+protected class Nonempty (P : ObjectProperty C) : Prop where
   exists_prop : ∃ X, P X
 
 lemma exists_prop_of_nonempty (P : ObjectProperty C) [P.Nonempty] : ∃ X, P X :=
