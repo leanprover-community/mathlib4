@@ -216,11 +216,11 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 (etaExpand_eq _).symm
 ```
 -/
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-(replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-canonicalizer; a minimization would help. The original proof was: `grind` -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
   rfl
 
