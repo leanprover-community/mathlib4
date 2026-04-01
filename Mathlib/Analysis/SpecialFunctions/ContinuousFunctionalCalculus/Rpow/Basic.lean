@@ -438,6 +438,7 @@ lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
 lemma rpow_zero (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (0 : ℝ) = 1 := by
   simp [rpow_def, cfc_const_one ℝ≥0 a]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, NNReal.zero_rpow hx]
 
 lemma rpow_natCast (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) : a ^ (n : ℝ) = a ^ n := by
@@ -543,6 +544,7 @@ lemma spectrum_rpow (a : A) (x : ℝ)
     spectrum ℝ≥0 (a ^ x) = (· ^ x) '' spectrum ℝ≥0 a :=
   cfc_map_spectrum (· ^ x : ℝ≥0 → ℝ≥0) a ha h
 
+set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
@@ -628,6 +630,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
   rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
   rw [this, ← nnrpow_eq_rpow (by simp), sqrt_eq_nnrpow a]
@@ -665,6 +668,7 @@ lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
   rw [sqrt, cfcₙ] at h
   cfc_tac
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
     (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
@@ -682,6 +686,7 @@ lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
       rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
@@ -703,6 +708,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
+set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by

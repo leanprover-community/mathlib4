@@ -612,6 +612,7 @@ open NNReal
 
 variable [hp : Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP O p} (hx : x ^ p ≠ 0) (hy : y ^ p ≠ 0) :
     x * y ≠ 0 := by
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
@@ -723,6 +724,7 @@ theorem valAux_zero : valAux K v O p 0 = 0 :=
 
 include hv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
     valAux K v O p f = ModP.preVal K v O p (coeff n f) ^ p ^ n := by
   have h : ∃ n, coeff n f ≠ 0 := ⟨n, hfn⟩
@@ -747,6 +749,7 @@ theorem valAux_one : valAux K v O p 1 = 1 :=
     change (1 : ModP O p) ≠ 0
     exact one_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valAux_mul (f g : PreTilt O p) :
     valAux K v O p (f * g) = valAux K v O p f * valAux K v O p g := by
   by_cases hf : f = 0
@@ -802,6 +805,7 @@ noncomputable def val : Valuation (PreTilt O p) ℝ≥0 where
 
 variable {K v O p}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_eq_zero {f : PreTilt O p} : val K v O hv p f = 0 ↔ f = 0 := by
   by_cases hf0 : f = 0
   · rw [hf0]; exact iff_of_true (Valuation.map_zero _) rfl

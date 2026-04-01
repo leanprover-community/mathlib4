@@ -138,6 +138,7 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   connected := c.connected_toSimpleGraph
   isAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
   intro v p hp
   have := hp.three_le_length
@@ -162,7 +163,8 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
   have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
-  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
+  simp_all
+  grind [IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -643,7 +645,9 @@ lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : �
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
-  have := @h {s(u, w)} (by simp)
+  #adaptation_note /-- Prior to `nightly-testing-2026-03-26`,
+  this was just `have := @h {s(u, w)} (by simp)`. -/
+  have := @h {s(u, w)} (by simp only [Set.encard_singleton, Nat.cast_ofNat]; decide)
   obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
   exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
 

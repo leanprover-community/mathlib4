@@ -198,6 +198,7 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     a ≤ iInf g * iInf h :=
   le_iInf_mul fun i => le_mul_iInf <| H i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
     ⨆ i, f i = (⨆ i, f i : NNReal) := by
   by_cases h : BddAbove (Set.range f)
@@ -205,6 +206,7 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
   · simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
     ⨅ i, f i = (⨅ i, f i : NNReal) := by
   obtain hι | hι := isEmpty_or_nonempty ι

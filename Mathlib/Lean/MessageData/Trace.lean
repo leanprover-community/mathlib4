@@ -27,24 +27,6 @@ public section
 
 namespace Lean.MessageData
 
-set_option linter.deprecated false in
-/-- The success/failure status of a trace node, as encoded by `withTraceNodeBefore`
-via emoji prefix on the rendered header.
-
-Intended to match `TraceResult` from [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
-Once that PR is available, callers should prefer `td.result?` over parsing the header string with
-`traceResultOf`. -/
-@[deprecated Lean.TraceResult (since := "2026-03-23")]
-inductive TraceResult where
-  /-- Header starts with ✅️ (checkEmoji) -/
-  | success
-  /-- Header starts with ❌️ (crossEmoji) -/
-  | failure
-  /-- Header starts with 💥️ (bombEmoji) — an exception was thrown -/
-  | error
-  deriving DecidableEq, Repr
-
-set_option linter.deprecated false in
 /-- Determine the status of a trace node from its rendered header string.
 
 `withTraceNode` prepends `checkEmoji`/`crossEmoji`/`bombEmoji`

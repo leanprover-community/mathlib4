@@ -437,6 +437,7 @@ theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal 
   · simp only [← coe_sub, NNReal.sub_def, Real.coe_toNNReal', coe_toReal]
     exact le_max_left _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
   lift b to ℝ≥0 using hb; induction a <;> simp [← coe_sub]

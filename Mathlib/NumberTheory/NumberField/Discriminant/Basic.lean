@@ -85,6 +85,7 @@ theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
 
 end rootDiscr
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =

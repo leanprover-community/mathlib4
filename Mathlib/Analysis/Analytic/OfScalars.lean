@@ -228,6 +228,7 @@ theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
 @[deprecated (since := "2025-11-21")]
 alias ofScalars_radius_ge_inv_of_tendsto := inv_le_ofScalars_radius_of_tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
 theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : r ≠ 0)

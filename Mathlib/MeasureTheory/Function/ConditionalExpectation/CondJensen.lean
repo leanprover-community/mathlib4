@@ -101,7 +101,12 @@ private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] 
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] := by
       refine (hφ_cvx.comp_linearMap Y.subtype).map_condExp_le_of_hereditarilyLindelofSpace
         (s := Y.subtypeL ⁻¹' s) hm ?_ ?_ ?_ hfY_int (Integrable.congr hφ_int lem3)
-      · exact hφ_cont.comp (by fun_prop) fun x => by grind
+      · exact hφ_cont.comp (by fun_prop) fun x => by
+          #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+          (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+          goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem
+          in the new canonicalizer; a minimization would help. The original proof was: `grind` -/
+          simp
       · filter_upwards [lem0, hf] with a ha hb
         simp_all [fY]
       · exact hs.preimage Y.subtypeL.continuous
