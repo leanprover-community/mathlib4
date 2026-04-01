@@ -81,6 +81,8 @@ variable {X : Scheme.{u}} (F : X.Modules)
 
 section
 
+open Limits
+
 variable (X) in
 @[simps!]
 noncomputable def toSheaf : X.Modules ⥤ TopCat.Sheaf AddCommGrpCat X :=
@@ -88,22 +90,20 @@ noncomputable def toSheaf : X.Modules ⥤ TopCat.Sheaf AddCommGrpCat X :=
 
 instance : (toSheaf X).Additive := inferInstanceAs (SheafOfModules.toSheaf X.ringCatSheaf).Additive
 
-instance : Limits.PreservesFiniteLimits (toSheaf X) :=
-  inferInstanceAs (Limits.PreservesFiniteLimits (SheafOfModules.toSheaf X.ringCatSheaf))
+instance : PreservesFiniteLimits (toSheaf X) :=
+  inferInstanceAs (PreservesFiniteLimits (SheafOfModules.toSheaf X.ringCatSheaf))
 
-universe u₁ v₁
+instance : (toSheaf X).Faithful := inferInstanceAs (SheafOfModules.toSheaf X.ringCatSheaf).Faithful
 
-open Limits
-
-noncomputable instance : CategoryTheory.Reflective (SheafOfModules.forget X.ringCatSheaf) where
+noncomputable instance : CategoryTheory.Reflective (toPresheafOfModules X) where
   L := PresheafOfModules.sheafification (𝟙 X.ringCatSheaf.obj)
   adj := PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)
 
 instance : PreservesColimitsOfSize.{v, u} (toSheaf X) :=
-  haveI : PreservesColimitsOfSize.{v, u} (reflector (SheafOfModules.forget X.ringCatSheaf) ⋙
+  haveI : PreservesColimitsOfSize.{v, u} (reflector (toPresheafOfModules X) ⋙
     toSheaf X) := comp_preservesColimits (PresheafOfModules.toPresheaf X.ringCatSheaf.obj)
       (presheafToSheaf (Opens.grothendieckTopology X) AddCommGrpCat)
-  preservesColimitsOfSize_of_reflector_comp (SheafOfModules.forget X.ringCatSheaf) _
+  preservesColimitsOfSize_of_reflector_comp (toPresheafOfModules X) _
 
 instance : PreservesColimits (toSheaf X) where
 
