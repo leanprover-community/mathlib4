@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Completion of topological rings:
@@ -225,6 +226,38 @@ instance algebra' : Algebra R (Completion R) := by infer_instance
 end CommRing
 
 end UniformSpace.Completion
+
+namespace UniformSpace
+
+variable {α : Type*}
+
+-- TODO: move (some of) these results to the file about topological rings
+theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
+    inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
+  Setoid.ext fun x y =>
+    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
+
+/-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
+continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
+corresponding to the closure of zero. -/
+def sepQuotHomeomorphRingQuot (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
+    SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
+  toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
+  continuous_toFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
+  continuous_invFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
+
+/-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
+continuous, get an equivalence between the separated quotient of `α` and the quotient ring
+corresponding to the closure of zero. -/
+def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure where
+  __ := sepQuotHomeomorphRingQuot α
+  map_mul' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
+  map_add' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
+
+end UniformSpace
 
 section UniformExtension
 
