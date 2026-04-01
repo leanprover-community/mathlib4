@@ -265,6 +265,9 @@ instance instNonUnitalnonAssocSemiring [NonUnitalNonAssocSemiring R]
     [IsTopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalNonAssocSemiring mk mk_zero mk_add mk_mul mk_smul
 
+instance instIsTopologicalSemiring [NonUnitalNonAssocSemiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (SeparationQuotient R) where
+
 instance instNonUnitalSemiring [NonUnitalSemiring R] [IsTopologicalSemiring R] :
     NonUnitalSemiring (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalSemiring mk mk_zero mk_add mk_mul mk_smul
@@ -294,6 +297,9 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [IsTopologicalRing 
     NonUnitalNonAssocRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalNonAssocRing mk mk_zero mk_add mk_mul mk_neg mk_sub
     mk_smul mk_smul
+
+instance instIsTopologicalRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
+    IsTopologicalRing (SeparationQuotient R) where
 
 instance instNonUnitalRing [NonUnitalRing R] [IsTopologicalRing R] :
     NonUnitalRing (SeparationQuotient R) :=
@@ -427,50 +433,3 @@ theorem mk_algebraMap (r : R) : mk (algebraMap R A r) = algebraMap R (Separation
 end Algebra
 
 end SeparationQuotient
-
-/-
-
-namespace UniformSpace
-
-variable {α : Type*}
-
--- TODO: move (some of) these results to the file about topological rings
-theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
-    inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
-  Setoid.ext fun x y =>
-    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
-
-/-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
-corresponding to the closure of zero. -/
-def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
-  toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
-  continuous_toFun := continuous_id.quotient_map' <| by
-    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
-  continuous_invFun := continuous_id.quotient_map' <| by
-    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
-
-instance commRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    CommRing (SeparationQuotient α) :=
-  (sepQuotHomeomorphRingQuot _).commRing
-
-/-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an equivalence between the separated quotient of `α` and the quotient ring
-corresponding to the closure of zero. -/
-def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure :=
-  (sepQuotHomeomorphRingQuot _).ringEquiv
-
-instance topologicalRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    IsTopologicalRing (SeparationQuotient α) where
-  toContinuousAdd :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
-  toContinuousMul :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
-  toContinuousNeg :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
-      map_neg (sepQuotRingEquivRingQuot α)
-
-end UniformSpace
--/
