@@ -256,7 +256,7 @@ theorem spanningCoe_induce_eq_iff (s : Set V) : (G.induce s).spanningCoe = G ↔
   · rw [← h, support_spanningCoe] at hv
     have ⟨u, _, hvu⟩ := hv
     exact hvu ▸ u.prop
-  · exact ⟨⟨u, h hadj.left_mem_support⟩, ⟨v, h hadj.right_mem_support⟩, hadj, rfl, rfl⟩
+  · exact ⟨hadj.ne, ⟨u, h hadj.left_mem_support⟩, ⟨v, h hadj.right_mem_support⟩, hadj, rfl, rfl⟩
 
 @[simp]
 theorem spanningCoe_induce_support : (G.induce G.support).spanningCoe = G :=
