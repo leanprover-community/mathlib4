@@ -33,7 +33,7 @@ lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
       ⟨RingHom.injective _, AlgHom.rangeRestrict_surjective _⟩).transfer_galois
         (E' := (IsScalarTower.toAlgHom K L M).fieldRange)).mpr
       ((InfiniteGalois.normal_iff_isGalois _).mp inferInstance)
-  { is_comm.comm x y := by
+  { comm x y := by
       obtain ⟨x, rfl⟩ := AlgEquiv.restrictNormalHom_surjective M x
       obtain ⟨y, rfl⟩ := AlgEquiv.restrictNormalHom_surjective M y
       rw [← map_mul, ← map_mul, mul_comm] }
@@ -42,7 +42,7 @@ open scoped IsMulCommutative in
 lemma IsAbelianGalois.tower_top [IsAbelianGalois K M] :
     IsAbelianGalois L M :=
   have : IsGalois L M := .tower_top_of_isGalois K L M
-  { is_comm.comm x y := AlgEquiv.restrictScalars_injective K
+  { comm x y := AlgEquiv.restrictScalars_injective K
       (mul_comm (x.restrictScalars K) (y.restrictScalars K)) }
 
 variable {K L M} in
@@ -61,11 +61,9 @@ instance (K L : Type*) [Field K] [Field L] [Algebra K L] [IsAbelianGalois K L]
   .tower_top K _ L
 
 instance : IsAbelianGalois K K where
-  is_comm.comm _ _ := Subsingleton.elim _ _
+  comm _ _ := Subsingleton.elim _ _
 
 instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
   .of_algHom (IntermediateField.botEquiv K L).toAlgHom
 
-lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
-    IsAbelianGalois K L where
-  is_comm := letI := IsCyclic.commGroup (α := L ≃ₐ[K] L); inferInstance
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where
