@@ -326,9 +326,9 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
 public instance (f : K[X]) : Nontrivial (SplittingField f) :=
   (algEquivSplittingFieldAux f).surjective.nontrivial
 
-/-- The encapsulated inverse for `SplittingField f`. Use `x - y` instead. -/
-public protected def inv (a : SplittingField f) :=
-  (algEquivSplittingFieldAux f).symm (algEquivSplittingFieldAux f a)⁻¹
+/-- The encapsulated inverse for `SplittingField f`. Use `x⁻¹` instead. -/
+public protected def inv (x : SplittingField f) :=
+  (algEquivSplittingFieldAux f).symm (algEquivSplittingFieldAux f x)⁻¹
 
 public instance instGroupWithZero (f : K[X]) : GroupWithZero (SplittingField f) where
   inv := SplittingField.inv
