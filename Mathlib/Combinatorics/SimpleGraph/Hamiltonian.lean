@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Iterate
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
@@ -28,6 +30,38 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 open Finset Function
 
 namespace SimpleGraph
+
+section Perm
+
+open Equiv Equiv.Perm
+
+variable {α : Type*} [Fintype α]
+
+/-- For a cycle on `Finset.univ` with `Fintype.card α ≥ 3`, the edge `s((σ^k) x, (σ^(k+1)) x)`
+is distinct from `s(x, σ x)` when `1 ≤ k < Fintype.card α`. -/
+theorem edge_ne_of_isCycleOn {σ : Perm α} {x : α}
+    (hcycOn : σ.IsCycleOn (Finset.univ : Finset α))
+    {k : ℕ} (hk1 : 1 ≤ k) (hk2 : k < Fintype.card α)
+    (hn3 : 3 ≤ Fintype.card α) :
+    s((σ ^ k) x, (σ ^ (k + 1)) x) ≠ s(x, σ x) := by
+  have hinj := hcycOn.injOn_pow_apply (Finset.mem_univ x)
+  rw [Finset.card_univ] at hinj
+  intro heq
+  rw [Sym2.eq_iff] at heq
+  rcases heq with ⟨h1, h2⟩ | ⟨h1, h2⟩
+  · -- Injectivity: `(σ^k) x = (σ^0) x` gives `k = 0`, contradicts `1 ≤ k`
+    have : k = 0 := hinj (Finset.mem_range.mpr hk2)
+      (Finset.mem_range.mpr (by lia)) (by simpa using h1)
+    lia
+  · -- Injectivity: `(σ^k) x = (σ^1) x` gives `k = 1`,
+    -- then `(σ^2) x = (σ^0) x` gives `2 = 0`
+    have hk1eq : k = 1 := hinj (Finset.mem_range.mpr hk2)
+      (Finset.mem_range.mpr (by lia)) (by simpa using h1)
+    have : 2 = 0 := hinj (Finset.mem_range.mpr (by lia))
+      (Finset.mem_range.mpr (by lia)) (by subst hk1eq; simpa using h2)
+    lia
+
+end Perm
 
 variable {α : Type*} [DecidableEq α] {G : SimpleGraph α}
 variable {β : Type*} [DecidableEq β] {H : SimpleGraph β}
@@ -280,5 +314,55 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
     (fun huv ↦ he.2 <| .trans ?_ huv) he.2 (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
+
+section Perm
+
+open Equiv Equiv.Perm
+
+variable {α : Type*} [Fintype α] [DecidableEq α] {G : SimpleGraph α}
+
+/-- If `σ` is a cycle with full support on at least 3 elements and every step is
+a graph edge, then `G` is Hamiltonian. -/
+theorem IsHamiltonian.ofPerm {σ : Perm α}
+    (hcycle : σ.IsCycle) (hsupport : σ.support = Finset.univ)
+    (hadj : ∀ x, G.Adj x (σ x))
+    (hcard3 : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
+  intro _
+  obtain ⟨x, hx_mem⟩ := hcycle.nonempty_support
+  have hx : σ x ≠ x := σ.mem_support.mp hx_mem
+  set n := Fintype.card α with hn_def
+  have hcycOn : σ.IsCycleOn (Finset.univ : Finset α) :=
+    hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
+  set p := (Walk.iterate (↑σ) hadj (σ x) (n - 1)).copy rfl (by
+    change (↑σ)^[n - 1 + 1] x = x
+    rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
+      hn_def, ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
+  set w := Walk.cons (hadj x) p
+  refine ⟨x, w, ?_⟩
+  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq]
+  constructor
+  · rw [Walk.cons_isCycle_iff]
+    constructor
+    · -- `p` is a path
+      rw [Walk.isPath_def]
+      simp only [p, Walk.support_copy, Walk.support_iterate,
+        show n - 1 + 1 = n by lia]
+      have hsx : σ (σ x) ≠ σ x := fun h => hx (σ.injective h)
+      have hcard : n = (σ.cycleOf (σ x)).support.card := by
+        rw [hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
+      rw [hcard, ← List.range_map_iterate]
+      simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
+      exact σ.nodup_toList (σ x)
+    · -- `s(x, σ x) ∉ p.edges`
+      simp only [p, Walk.edges_copy, Walk.edges_iterate]
+      rw [List.mem_map]
+      rintro ⟨i, hi, heq⟩
+      rw [List.mem_range] at hi
+      simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
+      exact edge_ne_of_isCycleOn hcycOn (by lia) (by lia) hcard3 heq
+  · simp only [w, Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
+    lia
+
+end Perm
 
 end SimpleGraph
