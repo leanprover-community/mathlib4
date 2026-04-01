@@ -87,7 +87,8 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
 
 @[to_additive]
 lemma closure_pow_anti {m n : ℕ} (hmn : m ∣ n) : closure (s ^ n) ≤ closure (s ^ m) := by
-  obtain ⟨k, rfl⟩ := hmn; simp [pow_mul]
+  obtain ⟨k, rfl⟩ := hmn
+  simp [pow_mul]
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
