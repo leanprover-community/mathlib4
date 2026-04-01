@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 
@@ -26,8 +25,6 @@ this restriction of scalars for submodules.
 @[expose] public section
 
 namespace Submodule
-
-section Semiring
 
 variable (S : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
   [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
@@ -170,7 +167,5 @@ lemma restrictScalars_sup (s t : Submodule R M) :
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
-
-end Semiring
 
 end Submodule
