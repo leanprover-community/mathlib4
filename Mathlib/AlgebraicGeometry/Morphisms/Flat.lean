@@ -115,7 +115,8 @@ instance (priority := low) [Subsingleton Y] [IsIntegral Y] : Flat f := by
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
     [Surjective f] : Topology.IsQuotientMap f := by
   rw [Topology.isQuotientMap_iff]
-  refine ⟨f.surjective, fun s ↦ ⟨fun hs ↦ hs.preimage f.continuous, fun hs ↦ ?_⟩⟩
+  refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦
+    ⟨fun hs ↦ ?_, fun hs ↦ hs.preimage f.continuous⟩, f.surjective⟩
   wlog hY : ∃ R, Y = Spec R
   · let 𝒰 := Y.affineCover
     rw [𝒰.isOpenCover_opensRange.isOpen_iff_inter]

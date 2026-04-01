@@ -231,9 +231,8 @@ theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
     apply not_le.mpr (zero_lt_one' (WithBot ℕ))
     simp [← hp, ← h, degree_C_le]
   isUnit_or_isUnit f g h := by
-    wlog H : f.degree ≤ g.degree generalizing f g
-    · push_neg at H
-      rw [mul_comm] at h
+    wlog! H : f.degree ≤ g.degree generalizing f g
+    · rw [mul_comm] at h
       exact (this g f h H.le).symm
     left
     rw [h, degree_mul, Nat.WithBot.add_eq_one_iff] at hp
