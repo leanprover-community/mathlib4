@@ -285,6 +285,9 @@ public instance (f : K[X]) : CommRing (SplittingField f) where
   intCast_negSucc := by exact (instCommRingAux f).intCast_negSucc
   mul_comm := by exact (instCommRingAux f).mul_comm
 
+public instance (f : K[X]) : Inhabited (SplittingField f) where
+  default := 0
+
 @[implicit_reducible]
 def instAlgebraAux (R : Type*) (f : K[X]) [CommSemiring R] [Algebra R K] :
     Algebra R (SplittingField f) :=
