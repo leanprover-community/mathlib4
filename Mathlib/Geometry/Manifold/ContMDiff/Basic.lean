@@ -402,6 +402,7 @@ lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M →
     ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
   rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
 
+@[simp]
 lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) :
     ContMDiff I I' ∞ (Subtype.val ∘ f) ↔ ContMDiff I I' ∞ f := by
   simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
