@@ -106,7 +106,7 @@ def localSeq [Zero E] (hX : Locally p 𝓕 X P) :
   hX.choose
 
 lemma IsLocalizingSequence [Zero E] (hX : Locally p 𝓕 X P) :
-    IsLocalizingSequence 𝓕 (hX.localSeq) P :=
+    IsLocalizingSequence 𝓕 hX.localSeq P :=
   hX.choose_spec.1
 
 lemma stoppedProcess [Zero E] (hX : Locally p 𝓕 X P) (n : ℕ) :
@@ -140,8 +140,8 @@ variable [Zero E]
 the stopped process by a stopping time. -/
 def IsStable
     (𝓕 : Filtration ι mΩ) (p : (ι → Ω → E) → Prop) : Prop :=
-    ∀ X : ι → Ω → E, p X → ∀ τ : Ω → WithTop ι, IsStoppingTime 𝓕 τ →
-      p (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ)
+  ∀ X : ι → Ω → E, p X → ∀ τ : Ω → WithTop ι, IsStoppingTime 𝓕 τ →
+    p (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ)
 
 lemma IsStable.and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     IsStable 𝓕 (fun X ↦ p X ∧ q X) :=
@@ -149,10 +149,9 @@ lemma IsStable.and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
 
 variable [TopologicalSpace ι] [OrderTopology ι]
 
-lemma IsStable.isStable_locally (hp : IsStable 𝓕 p) :
+lemma IsStable.locally (hp : IsStable 𝓕 p) :
     IsStable 𝓕 (fun Y ↦ Locally p 𝓕 Y P) := by
-  intro X hX τ hτ
-  refine ⟨hX.localSeq, hX.IsLocalizingSequence, fun n ↦ ?_⟩
+  refine fun X hX τ hτ ↦ ⟨hX.localSeq, hX.IsLocalizingSequence, fun n ↦ ?_⟩
   simp_rw [← stoppedProcess_indicator_comm', Set.indicator_indicator, Set.inter_comm,
     ← Set.indicator_indicator, stoppedProcess_stoppedProcess, inf_comm,
     stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess]
@@ -172,14 +171,11 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
   intro p q hp hq hpX hqX
   convert hp _ (hpX.stoppedProcess n) _ <| hqX.IsLocalizingSequence.isStoppingTime n using 1
   ext i ω
-  rw [stoppedProcess_indicator_comm]
-  simp_rw [Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
-  rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm,
-    (_ : {ω | ⊥ < hpX.localSeq n ω ∧ ⊥ < hqX.localSeq n ω}
-      = {ω | ⊥ < hpX.localSeq n ω} ∩ {ω | ⊥ < hqX.localSeq n ω}), Set.inter_comm]
-  · simp_rw [← Set.indicator_indicator]
-    rfl
-  · rfl
+  simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
+  rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.setOf_and,
+    Set.inter_comm]
+  simp_rw [← Set.indicator_indicator]
+  rfl
 
 end LinearOrder
 
@@ -192,7 +188,7 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {τ : ℕ → Ω → WithTop ι} [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P) :
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
-  isStoppingTime (n : ℕ) := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
+  isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
   mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
   tendsto_top := by
@@ -200,8 +196,7 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     replace hω := hω.liminf_eq
     rw [liminf_eq_iSup_iInf_of_nat] at hω
     rw [← hω]
-    refine tendsto_atTop_iSup ?_
-    intro n m hnm
+    refine tendsto_atTop_iSup fun n m hnm ↦ ?_
     simp [iInf_le_iff]
     grind
 
