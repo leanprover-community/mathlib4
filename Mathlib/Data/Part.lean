@@ -431,6 +431,12 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
     | _, ⟨⟨_, _⟩, rfl⟩ => ⟨_, ⟨_, rfl⟩, ⟨_, rfl⟩⟩,
     fun ⟨_, h₁, h₂⟩ => mem_bind h₁ h₂⟩
 
+/-- `Part.bind` produces `some b` iff the input is `some a` and the continuation maps `a` to
+`some b`. This is the `Part` analogue of `Option.bind_eq_some_iff`. -/
+theorem bind_eq_some_iff {f : Part α} {g : α → Part β} {b : β} :
+    f.bind g = some b ↔ ∃ a, f = some a ∧ g a = some b := by
+  simp only [eq_some_iff, mem_bind_iff]
+
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff]
