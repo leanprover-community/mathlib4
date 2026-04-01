@@ -131,6 +131,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
         (IsColimit.coconePointUniqueUpToIso
           (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limit.post K A := by
   -- We will have to use `ι_colimitLimitIso_limit_π` eventually, so let's start by
   -- transforming the goal into something from a colimit to a limit so that we can apply

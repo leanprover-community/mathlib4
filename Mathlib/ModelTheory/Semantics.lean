@@ -168,6 +168,7 @@ theorem realize_restrictVarLeft' [DecidableEq α] {γ : Type*} {t : L.Term (α �
       t.realize (Sum.elim v xs) :=
   realize_restrictVarLeft _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L[[α]].Term β} {v : β → M} :
@@ -188,6 +189,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
         rw [withConstants_funMap_sumInl]
       · exact isEmptyElim f
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L.Term (α ⊕ β)} {v : β → M} :
@@ -466,6 +468,7 @@ theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormu
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
   realize_restrictFreeVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
@@ -958,8 +961,8 @@ theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => RelMa
   forall_congr' fun _ => realize_rel₂
 
 @[simp]
-theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Irreflexive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => not_congr realize_rel₂
+theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] :=
+  (forall_congr' fun _ ↦ not_congr realize_rel₂).trans ⟨(⟨·⟩), (·.irrefl)⟩
 
 @[simp]
 theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
@@ -972,15 +975,14 @@ theorem realize_antisymmetric :
   exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
-theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ =>
-      forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
+theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap r ![x, y] := by
+  rw [isTrans_def]
+  exact forall₃_congr fun _ _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
-theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
+  refine .trans ?_ ⟨Std.Total.mk, (·.total)⟩
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
 
 end Relations
 
@@ -1015,7 +1017,7 @@ instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
   simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
-    Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
+    Sentence.realize_cardGe, Nat.cast_one, Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
 
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
   L.model_nonemptyTheory_iff.2 h

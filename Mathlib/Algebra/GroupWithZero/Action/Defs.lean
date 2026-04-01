@@ -159,6 +159,7 @@ protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surje
 variable (A)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
@@ -237,6 +238,7 @@ protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : 
 variable (A)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
   mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
@@ -344,6 +346,8 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
 
 section
 

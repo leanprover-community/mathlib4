@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Connected.Basic
 
 /-!
@@ -81,6 +82,14 @@ lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid 
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
   ⟨(continuous_smul (M := M)).comp₂ (continuous_uliftDown.comp continuous_fst) continuous_snd⟩
+
+@[to_additive]
+instance OrderDual.instContinuousSMul_right : ContinuousSMul M Xᵒᵈ where
+  continuous_smul := continuous_smul (M := M) (X := X)
+
+@[to_additive]
+instance OrderDual.instContinuousSMul_left : ContinuousSMul Mᵒᵈ X where
+  continuous_smul := continuous_smul (M := M) (X := X)
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
@@ -231,6 +240,30 @@ lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabili
 
 end Group
 
+section IsTopologicalGroup
+
+variable [Group M] [IsTopologicalGroup M] [MulAction M X]
+
+/-- A group action of a topological group on a discrete space is continuous if and only if
+each stabilizer is an open subgroup. -/
+theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
+    ContinuousSMul M X ↔ ∀ x : X, IsOpen (MulAction.stabilizer M x : Set M) := by
+  refine ⟨fun _ _ ↦ stabilizer_isOpen .., fun h ↦ ⟨?_⟩⟩
+  rw [continuous_prod_of_discrete_right]
+  intro y
+  rw [continuous_discrete_rng]
+  intro x
+  let U := {m' : M | m' • y = x}
+  have hU : IsOpen U := by
+    by_cases hU' : U ≠ ∅
+    · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
+      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+      ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
+    simp_all
+  simpa using hU
+
+end IsTopologicalGroup
+
 section GroupWithZero
 
 variable {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
@@ -266,6 +299,13 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|
         continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
+
+@[to_additive]
+instance {ι : Type*} {γ : ι → Type*} [Π i, TopologicalSpace (γ i)]
+    {N : ι → Type*} [Π i, TopologicalSpace (N i)] [Π i, SMul (N i) (γ i)]
+    [∀ i, ContinuousSMul (N i) (γ i)] : ContinuousSMul (Π i, N i) (Π i, γ i) :=
+  ⟨continuous_pi fun i ↦ ((continuous_apply i).comp continuous_id'.fst).smul
+    ((continuous_apply i).comp continuous_id'.snd)⟩
 
 end Main
 

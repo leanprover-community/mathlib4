@@ -336,11 +336,6 @@ theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Fin
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
-@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
-  finite_of_det_ne_one hf
-
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
     ⊥ < ker f := by
