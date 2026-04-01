@@ -66,7 +66,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     by_cases hy : y = 0
     · simp [hy, two_mul]
     simp only [mul_eq_zero, hr.ne', hy, or_self, ↓reduceIte, ofReal_inv]
-    have h := intervalIntegral.integral_comp_smul_deriv (E := ℂ) (a := -r) (b := r)
+    have h := intervalIntegral.integral_deriv_smul_comp (E := ℂ) (a := -r) (b := r)
       (f := fun x ↦ y * x) (f' := fun _ ↦ y) (g := fun x ↦ cexp (x * I)) ?_ (by fun_prop)
       (by fun_prop)
     swap

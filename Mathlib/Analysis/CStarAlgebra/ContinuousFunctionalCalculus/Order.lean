@@ -155,7 +155,8 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨r, hr, hr_le⟩
     exact (hr.trans_le <| hr_le · ·)
-  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn (spectrum_nonempty ℝ a ha) continuousOn_id
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn
+      (ContinuousFunctionalCalculus.spectrum_nonempty a ha) continuousOn_id
     exact ⟨r, h _ hr, hr_min⟩
 
 section CStar_unital
@@ -303,7 +304,6 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
@@ -333,7 +333,7 @@ lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
 lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
-    CFC.rpow_rpow (b : A) _ _ (by simp) (by simp),
+    CFC.rpow_rpow (b : A) _ _ (by simp),
     le_iff_norm_sqrt_mul_rpow a (hb := b.isUnit.isStrictlyPositive hb)]
   simp
 
@@ -411,6 +411,17 @@ lemma _root_.isStrictlyPositive_add {a b : A}
     IsStrictlyPositive (a + b) := by
   grind [IsStrictlyPositive.add_nonneg, IsStrictlyPositive.nonneg_add]
 
+lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositive a} := by
+  intro a (apos : IsStrictlyPositive a) b (bpos : IsStrictlyPositive b) hab
+  rw [Ring.inverse_of_isUnit (by grind), Ring.inverse_of_isUnit (by grind)]
+  exact CStarAlgebra.inv_le_inv (Units.isStrictlyPositive_iff.mp apos) hab
+
+open Ring in
+@[gcongr]
+lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
+    b⁻¹ʳ ≤ a⁻¹ʳ :=
+  antitoneOn_ringInverse ha (IsStrictlyPositive.of_le ha hab) hab
+
 end CStarAlgebra
 
 end Inv
@@ -423,14 +434,12 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 namespace CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
@@ -500,7 +509,6 @@ section Icc
 
 open Unitization Set Metric
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
@@ -520,7 +528,6 @@ end Icc
 
 end CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization CFC in
 lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
     (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
