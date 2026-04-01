@@ -144,7 +144,7 @@ def IsStable
   ∀ X : ι → Ω → E, p X → ∀ τ : Ω → WithTop ι, IsStoppingTime 𝓕 τ →
     p (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ)
 
-lemma IsStable.and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
+protected lemma IsStable.and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     IsStable 𝓕 (fun X ↦ p X ∧ q X) :=
   fun _ hX τ hτ ↦ ⟨hp _ hX.left τ hτ, hq _ hX.right τ hτ⟩
 
