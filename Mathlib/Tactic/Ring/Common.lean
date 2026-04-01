@@ -899,8 +899,7 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
-theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ d : R}
-    (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂)
+theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ d : R} (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂)
     (_ : (xa₁ ^ c₁ * (nat_lit 1).rawCast) * c₂ = d) :
     (xa₁ ^ ea₁ * a₂ : R) ^ b = d := by
   subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
