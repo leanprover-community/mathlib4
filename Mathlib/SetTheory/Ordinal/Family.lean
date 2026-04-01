@@ -634,7 +634,7 @@ theorem iSup_typein_succ {o : Ordinal} :
     iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
   rw [← csSup_Iic (a := o), iSup, PrincipalSeg.range_eq]
   congr
-  simp 
+  simp
 
 #exit
 @[deprecated (since := "2025-10-01")] alias sup_eq_lsub := iSup_eq_lsub
