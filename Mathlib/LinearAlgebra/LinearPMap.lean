@@ -121,6 +121,9 @@ theorem map_sub (f : E →ₛₗ.[σ] F) (x y : f.domain) : f (x - y) = f x - f 
 theorem map_smul (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) = σ c • f x :=
   f.toFun.map_smulₛₗ c x
 
+theorem map_smul' [Module R F] (f : E →ₗ.[R] F) (c : R) (x : f.domain) : f (c • x) = c • f x :=
+  f.toFun.map_smulₛₗ c x
+
 @[simp]
 theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x := rfl
 
@@ -269,8 +272,9 @@ theorem le_of_eqLocus_ge {f g : E →ₛₗ.[σ] F} (H : f.domain ≤ f.eqLocus 
   suffices f ≤ f ⊓ g from le_trans this inf_le_right
   ⟨H, fun _x _y hxy => ((inf_le_left : f ⊓ g ≤ f).2 hxy.symm).symm⟩
 
-theorem domain_mono : StrictMono (@domain R S _ _ σ E _ _ F _ _) := fun _f _g hlt =>
-  lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
+theorem domain_mono : StrictMono (domain (σ := σ) (E := E) (F := F)) :=
+  fun _f _g hlt =>
+    lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
 
 set_option backward.privateInPublic true in
 private theorem sup_aux (f g : E →ₛₗ.[σ] F)
@@ -659,13 +663,15 @@ theorem toPMap_domain (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p)
   rfl
 
 /-- Compose a linear map with a `LinearPMap` -/
-def compPMap (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) : E →ₛₗ.[τ.comp σ] G :=
-  letI : RingHomCompTriple σ τ (τ.comp σ) := RingHomCompTriple.mk (by rfl)
-  { domain := f.domain
-    toFun := g.comp f.toFun }
+def compPMap {ρ : R →+* T} [RingHomCompTriple σ τ ρ] (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) :
+    E →ₛₗ.[ρ] G where
+  domain := f.domain
+  toFun := g.comp f.toFun
 
 @[simp]
-theorem compPMap_apply (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) (x) : g.compPMap f x = g (f x) :=
+theorem compPMap_apply (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) (x) :
+    letI : RingHomCompTriple σ τ (τ.comp σ) := { comp_eq := rfl }
+    g.compPMap (ρ := τ.comp σ) f x = g (f x) :=
   rfl
 
 end LinearMap
@@ -678,8 +684,8 @@ def codRestrict (f : E →ₛₗ.[σ] F) (p : Submodule S F) (H : ∀ x, f x ∈
   toFun := f.toFun.codRestrict p H
 
 /-- Compose two `LinearPMap`s -/
-def comp (g : F →ₛₗ.[τ] G) (f : E →ₛₗ.[σ] F) (H : ∀ x : f.domain, f x ∈ g.domain) :
-    E →ₛₗ.[τ.comp σ] G :=
+def comp {ρ : R →+* T} [RingHomCompTriple σ τ ρ] (g : F →ₛₗ.[τ] G) (f : E →ₛₗ.[σ] F)
+    (H : ∀ x : f.domain, f x ∈ g.domain) : E →ₛₗ.[ρ] G :=
   g.toFun.compPMap <| f.codRestrict _ H
 
 /-- `f.coprod g` is the partially defined linear map defined on `f.domain × g.domain`,
