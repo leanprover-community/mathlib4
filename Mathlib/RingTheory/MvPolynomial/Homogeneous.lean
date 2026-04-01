@@ -26,6 +26,13 @@ if all monomials occurring in `φ` have degree `n`.
   their summand that is homogeneous of degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
+## Library notes
+
+* The `MvPolynomial.weightedGradedAlgebra` instance provides a `GradedAlgebra` structure, yielding
+  the isomorphism `MvPolynomial σ R ≃ₐ[R] ⨁ m, weightedHomogeneousSubmodule R w m` for a weight
+  function `w`.
+* The special case with `w = 1` of the above yields the algebra isomorphism
+  `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
 
 @[expose] public section
@@ -34,11 +41,6 @@ if all monomials occurring in `φ` have degree `n`.
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
-
-/-
-TODO
-* show that `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`
--/
 
 open Finsupp
 
@@ -49,11 +51,30 @@ def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
 
 variable [CommSemiring R]
 
+/-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
+  the weights are singletons containing each variable. -/
+@[simp]
+theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun i => {i}) p = degrees p := by
+  rw [degrees_def]; rfl
+
+/-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
+  where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, smul_eq_mul, mul_one]
+
+/-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
+  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+@[simp]
+theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
+    weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by
+  simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
+    Multiset.count_finset_sup]
+  congr; ext d
+  simp +contextual
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
@@ -108,6 +129,7 @@ theorem homogeneousSubmodule_mul (m n : ℕ) :
     homogeneousSubmodule σ R m * homogeneousSubmodule σ R n ≤ homogeneousSubmodule σ R (m + n) :=
   weightedHomogeneousSubmodule_mul 1 m n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homogeneousSubmodule_one_eq_span_X :
     MvPolynomial.homogeneousSubmodule σ R 1 = .span R (.range X) := by
   rw [MvPolynomial.homogeneousSubmodule_eq_finsupp_supported, Finsupp.supported_eq_span_single]
@@ -305,6 +327,10 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
+
+lemma degree_eq_sum_deg_support (hφ : φ.IsHomogeneous n) {s : σ →₀ ℕ} (hs : s ∈ φ.support) :
+    n = ∑ i ∈ s.support, s i := by
+  simp [← hφ <| mem_support_iff.mp hs, ← degree_apply, degree_eq_weight_one, Pi.one_def]
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by

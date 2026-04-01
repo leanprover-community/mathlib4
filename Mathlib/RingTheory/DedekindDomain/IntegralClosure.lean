@@ -141,7 +141,6 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · rintro ⟨x', hx'⟩
     simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
       true_and] at his'
-    simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩
 
 variable [Algebra.IsSeparable K L]

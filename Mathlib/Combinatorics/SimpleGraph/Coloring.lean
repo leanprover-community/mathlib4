@@ -120,8 +120,12 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
     (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
 
+theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c :=
+  fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
+
+@[deprecated isIndepSet_colorClass (since := "2026-02-07")]
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
+  C.isIndepSet_colorClass c
 
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
@@ -132,6 +136,26 @@ noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
 instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
+
+instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  have ⟨c, hc⟩ := nontrivial_iff_exists_ne (C v) |>.mp inferInstance
+  refine ⟨(Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C, C, fun h ↦ hc ?_⟩
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [Iso.completeGraph] at this
+  grind
+
+instance [Nonempty <| G.Coloring α] [Infinite α] [Nonempty V] : Infinite <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  let f c := (Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C
+  refine Infinite.of_injective f fun a b h ↦ ?_
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [f, Iso.completeGraph] at this
+  grind
 
 variable (G) in
 /-- Whether a graph can be colored by at most `n` colors. -/
@@ -160,7 +184,7 @@ graph. -/
 theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
-  intro a b ⟨_, _, hadj, ha, hb⟩
+  intro a b ⟨_, _, _, hadj, ha, hb⟩
   rw [← ha, f.injective.extend_apply, ← hb, f.injective.extend_apply]
   exact C.valid hadj
 
@@ -207,14 +231,7 @@ variable (G) in
 /-- Given an embedding, there is an induced embedding of colorings. -/
 def recolorOfEmbedding {α β : Type*} (f : α ↪ β) : G.Coloring α ↪ G.Coloring β where
   toFun C := (Embedding.completeGraph f).toHom.comp C
-  inj' := by -- this was strangely painful; seems like missing lemmas about embeddings
-    intro C C' h
-    dsimp only at h
-    ext v
-    apply (Embedding.completeGraph f).inj'
-    change ((Embedding.completeGraph f).toHom.comp C) v = _
-    rw [h]
-    rfl
+  inj' C C' h := RelHom.mk.injEq C _ C' _ |>.mpr <| f.injective.comp_left <| RelHom.mk.inj h
 
 variable (G) in
 @[simp] lemma coe_recolorOfEmbedding (f : α ↪ β) :
@@ -267,11 +284,6 @@ theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n :
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
 
-@[deprecated SimpleGraph.Colorable.of_hom (since := "2025-09-01")]
-theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
-    (h : G'.Colorable n) : G.Colorable n :=
-  Colorable.of_hom f h
-
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
@@ -308,11 +320,9 @@ theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromati
 
 theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n, G.Colorable n := by
   rw [chromaticNumber]
-  convert_to ⨅ n : {m | G.Colorable m}, (n : ℕ∞) ≠ ⊤ ↔ _
-  · rw [iInf_subtype]
-  rw [← lt_top_iff_ne_top, ENat.iInf_coe_lt_top]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
   refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
   have : G.chromaticNumber ≠ ⊤ := (trans h (WithTop.coe_lt_top n)).ne
@@ -369,9 +379,6 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]; exact .of_isEmpty _
 
-@[deprecated (since := "2025-09-15")]
-alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
-
 theorem isEmpty_of_chromaticNumber_eq_zero (h : G.chromaticNumber = 0) : IsEmpty V := by
   have := colorable_of_chromaticNumber_ne_top (h ▸ ENat.zero_ne_top)
   rw [h] at this
@@ -398,11 +405,6 @@ theorem chromaticNumber_mono (G' : SimpleGraph V)
 theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'}
     (f : G →g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.of_hom f
-
-@[deprecated SimpleGraph.chromaticNumber_mono_of_hom (since := "2025-09-01")]
-theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
-    (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_mono_of_hom f
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -442,10 +444,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
   rw [chromaticNumber_eq_card_iff_forall_surjective (selfColoring _).colorable]
   intro C
   rw [← Finite.injective_iff_surjective]
-  intro v w
-  contrapose
-  intro h
-  exact C.valid h
+  exact Hom.injective_of_top_hom C
 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
@@ -559,8 +558,8 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   simpa using hc
 
 /--
-Given a colouring `α` of `G`, and a clique of size at least the number of colours, the clique
-contains a vertex of each colour.
+Given a coloring `α` of `G`, and a clique of size at least the number of colors, the clique
+contains a vertex of each color.
 -/
 lemma Coloring.surjOn_of_card_le_isClique [Fintype α] {s : Finset V} (h : G.IsClique s)
     (hc : Fintype.card α ≤ s.card) (C : G.Coloring α) : Set.SurjOn C s Set.univ := by

@@ -36,7 +36,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * n.choose m
   change (x + y) ^ n = ∑ m ∈ range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul, tsub_zero]
+    simp only [t, choose_zero_right, pow_zero, cast_one, mul_one, one_mul, Nat.sub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
     simp only [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :

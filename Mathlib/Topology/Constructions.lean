@@ -196,6 +196,7 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
+set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -484,6 +485,7 @@ theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_nhds_subtype_coe_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
     map ((↑) : Subtype p → X) (𝓝 ⟨x, hx⟩) = 𝓝 x :=
   map_nhds_induced_of_mem <| by rw [Subtype.range_val]; exact h
@@ -608,14 +610,20 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
 
-/-- If `f : X → Y` is a quotient map,
-then its restriction to the preimage of an open set is a quotient map too. -/
-theorem Topology.IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
-    {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) := by
-  refine isQuotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+lemma Topology.IsCoinducing.restrictPreimage_of_isOpen {f : X → Y} (hf : IsCoinducing f)
+    {s : Set Y} (hs : IsOpen s) :
+    IsCoinducing (s.restrictPreimage f) := by
+  refine .of_isOpen_preimage_iff_isOpen fun _ ↦ ?_
   rw [hs.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen, ← hf.isOpen_preimage,
     (hs.preimage hf.continuous).isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
     image_val_preimage_restrictPreimage]
+
+/-- If `f : X → Y` is a quotient map,
+then its restriction to the preimage of an open set is a quotient map too. -/
+theorem Topology.IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) :=
+  (isQuotientMap_iff _).2
+    ⟨.restrictPreimage_of_isOpen hf.isCoinducing hs, hf.surjective.restrictPreimage _⟩
 
 open scoped Set.Notation in
 lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
@@ -676,7 +684,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y]
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem isQuotientMap_quot_mk : IsQuotientMap (@Quot.mk X r) :=
-  ⟨Quot.exists_rep, rfl⟩
+  ⟨⟨rfl⟩, Quot.exists_rep⟩
 
 @[continuity, fun_prop]
 theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
@@ -1099,7 +1107,7 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp only [generateFrom_setOf_isOpen]
+    simp +instances only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
@@ -1281,6 +1289,7 @@ end Sigma
 
 section ULift
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ULift.isOpen_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
   rw [ULift.topologicalSpace, ← Equiv.ulift_apply, ← Equiv.ulift.coinduced_symm, ← isOpen_coinduced]
@@ -1315,6 +1324,14 @@ lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology
+
+/-- Continuous maps between `ULift X` and `ULift Y` are equivalent to continuous maps between `X`
+and `Y`. -/
+@[simps]
+def ContinuousMap.uliftEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] :
+    C(ULift.{v} X, ULift.{u} Y) ≃ C(X, Y) where
+  toFun f := ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
+  invFun f := ⟨ULift.up ∘ f ∘ ULift.down, by fun_prop⟩
 
 end ULift
 

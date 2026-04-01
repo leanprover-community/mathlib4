@@ -52,7 +52,7 @@ namespace ProperCone
 /-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
 `x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
 @[simps! toSubmodule]
-def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
+noncomputable def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
 
 @[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
 
@@ -84,10 +84,10 @@ lemma innerDual_insert (x : E) (s : Set E) :
 
 lemma innerDual_iUnion {ι : Sort*} (f : ι → Set E) :
     innerDual (⋃ i, f i) = ⨅ i, innerDual (f i) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 /-! ### Farkas' lemma and double dual of a cone in a Hilbert space -/
 
@@ -98,6 +98,10 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
   obtain ⟨f, hf, hf₀⟩ := C.hyperplane_separation_point hx₀
   refine ⟨(InnerProductSpace.toDual ℝ E).symm f, ?_⟩
   simpa [← real_inner_comm _ ((InnerProductSpace.toDual ℝ E).symm f), *]
+
+@[deprecated (since := "2026-03-23")] alias
+  _root_.ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem :=
+  hyperplane_separation'
 
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
@@ -140,52 +144,3 @@ theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] 
   contrapose! disj; rwa [K.relative_hyperplane_separation]
 
 end ProperCone
-
-section Dual
-
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
-
-open RealInnerProductSpace
-
-section CompleteSpace
-
-variable [CompleteSpace H]
-
-open scoped InnerProductSpace in
-/-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
-is also the geometric interpretation of Farkas' lemma. -/
-theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : ConvexCone ℝ H)
-    (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
-    ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
-  -- let `z` be the point in `K` closest to `b`
-  obtain ⟨z, hzK, infi⟩ := exists_norm_eq_iInf_of_complete_convex ne hc.isComplete K.convex b
-  -- for any `w` in `K`, we have `⟪b - z, w - z⟫_ℝ ≤ 0`
-  have hinner := (norm_eq_iInf_iff_real_inner_le_zero K.convex hzK).1 infi
-  -- set `y := z - b`
-  use z - b
-  constructor
-  · -- the rest of the proof is a straightforward calculation
-    rintro x hxK
-    specialize hinner _ (K.add_mem hxK hzK)
-    rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
-      ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
-  · -- as `K` is closed and non-empty, it is pointed
-    have hinner₀ := hinner 0 (ConvexCone.Pointed.of_nonempty_of_isClosed (C := K) ne hc)
-    -- the rest of the proof is a straightforward calculation
-    rw [zero_sub, inner_neg_right, Right.neg_nonpos_iff] at hinner₀
-    have hbz : b - z ≠ 0 := by
-      rw [sub_ne_zero]
-      contrapose! hzK
-      rwa [← hzK]
-    rw [← neg_zero, lt_neg, ← neg_one_mul, ← real_inner_smul_left, smul_sub, neg_smul, one_smul,
-      neg_smul, neg_sub_neg, one_smul]
-    calc
-      0 < ⟪b - z, b - z⟫_ℝ := lt_of_not_ge ((Iff.not real_inner_self_nonpos).2 hbz)
-      _ = ⟪b - z, b - z⟫_ℝ + 0 := (add_zero _).symm
-      _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := add_le_add rfl.ge hinner₀
-      _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
-      _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
-
-end CompleteSpace
-
-end Dual

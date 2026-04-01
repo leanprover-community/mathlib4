@@ -51,6 +51,7 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
+@[instance_reducible]
 def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
@@ -63,6 +64,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `Finsupp.comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (α →₀ M) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
@@ -71,6 +73,7 @@ def comapMulAction : MulAction G (α →₀ M) where
 attribute [local instance] comapMulAction
 
 /-- `Finsupp.comapSMul` is distributive -/
+@[instance_reducible]
 def comapDistribMulAction : DistribMulAction G (α →₀ M) where
   smul_zero g := by
     ext a

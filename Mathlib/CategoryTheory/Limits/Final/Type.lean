@@ -42,6 +42,7 @@ def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ Type w} (x : P.sections) :
   val _ := x.val _
   property _ := x.property _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
     Function.Bijective (F.sectionsPrecomp (P := P)) := by
   refine ⟨fun s₁ s₂ h ↦ ?_, fun t ↦ ?_⟩
@@ -78,6 +79,7 @@ lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ Type w}
     colimitTypePrecomp F P ((F ⋙ P).ιColimitType i x) = P.ιColimitType (F.obj i) x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
     Function.Bijective (F.colimitTypePrecomp (P := P)) := by
   refine ⟨?_, fun x ↦ ?_⟩

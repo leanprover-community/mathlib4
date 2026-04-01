@@ -42,7 +42,7 @@ def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
 attribute [simp] nerve_obj
 
 instance {C : Type*} [Category* C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
-  (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
+  inferInstanceAs <| Category (ComposableArrows C (Δ.unop.len))
 
 section
 
@@ -108,12 +108,15 @@ section
 
 variable {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₂_mk₂_eq : (nerve C).δ 2 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₀_mk₂_eq : (nerve C).δ 0 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_mk₂_eq : (nerve C).δ 1 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ (f ≫ g) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
@@ -139,10 +142,12 @@ lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
   simp only [← e.tgt_eq]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ₂_two (x : ComposableArrows C 2) :
     (nerve C).δ 2 x = .mk₁ (x.map' 0 1) :=
   ComposableArrows.ext₁ rfl rfl (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ₂_zero (x : ComposableArrows C 2) :
     (nerve C).δ 0 x = .mk₁ (x.map' 1 2) :=
   ComposableArrows.ext₁ rfl rfl (by cat_disch)
@@ -171,9 +176,11 @@ def edgeMk {x y : C} (f : x ⟶ y) : (nerve C).Edge (nerveEquiv.symm x) (nerveEq
 @[simp]
 lemma edgeMk_edge {x y : C} (f : x ⟶ y) : (edgeMk f).edge = ComposableArrows.mk₁ f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edgeMk_id (x : C) : edgeMk (𝟙 x) = .id _ := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma edgeMk_surjective {x y : C} :
     Function.Surjective (edgeMk : (x ⟶ y) → _) :=
   fun e ↦ ⟨eqToHom (by simp) ≫ homEquiv e ≫ eqToHom (by simp), by cat_disch⟩
@@ -183,12 +190,14 @@ lemma homEquiv_edgeMk {x y : C} (f : x ⟶ y) :
     homEquiv (edgeMk f) = f :=
   homEquiv.symm.injective (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homEquiv_id (x : ComposableArrows C 0) :
     homEquiv (Edge.id x) = 𝟙 _ := by
   obtain ⟨x, rfl⟩ := nerveEquiv.symm.surjective x
   dsimp [homEquiv]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
     (f₀₁ : x₀ ⟶ x₁) (f₁₂ : x₁ ⟶ x₂) (f₀₂ : x₀ ⟶ x₂) :
     Nonempty (Edge.CompStruct (edgeMk f₀₁) (edgeMk f₁₂) (edgeMk f₀₂)) ↔
@@ -226,10 +235,12 @@ lemma homEquiv_comp {x₀ x₁ x₂ : ComposableArrows C 0}
   obtain ⟨f₀₂, rfl⟩ := edgeMk_surjective e₀₂
   convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
 
+set_option backward.isDefEq.respectTransparency false in
 lemma σ_zero_nerveEquiv_symm (x : C) :
     (nerve C).σ 0 (nerveEquiv.symm x) = ComposableArrows.mk₁ (𝟙 x) := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
     (f : x ⟶ y) (F : C ⥤ D) :

@@ -26,23 +26,6 @@ open scoped MatrixGroups ComplexConjugate
 
 namespace UpperHalfPlane
 
-/-- The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a 2 × 2
-matrix.
-
-This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
-
-instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ => Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
-
-/-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
-similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
-which can be useful to help Lean elaborate correctly.
-
-This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
-
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 
@@ -105,8 +88,8 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
-  if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
+noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ ≃A[ℝ] ℂ :=
+  if 0 < g.det.val then .refl ℝ ℂ else Complex.conjCAE
 
 lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
   simp only [σ]
@@ -161,7 +144,7 @@ lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   simp only [smulAux', σ]
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
-  simpa only [starRingAut_apply, Complex.star_def, Complex.conj_im,
+  simpa only [Complex.conjCAE_apply, Complex.star_def, Complex.conj_im,
     neg_mul, neg_div, neg_inj] using moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
@@ -214,7 +197,7 @@ lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
 lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
   change smulAux' g z = _
-  rw [smulAux', σ, if_pos hg, RingHom.id_apply, num, denom]
+  rw [smulAux', σ, if_pos hg, ContinuousAlgEquiv.refl_apply, num, denom]
 
 lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
     denom (g * h) z = σ h (denom g ↑(h • z)) * denom h z :=
@@ -232,8 +215,8 @@ theorem re_smul : (g • z).re = (num g z / denom g z).re := by
 
 theorem im_smul : (g • z).im = |(num g z / denom g z).im| := by
   change (smulAux' g z).im = _
-  simp only [smulAux', σ, DFunLike.ite_apply, RingHom.id_apply, apply_ite, moebius_im,
-    Complex.conj_im, ← neg_div, ← neg_mul, abs_div, abs_mul,
+  simp only [smulAux', σ, DFunLike.ite_apply, ContinuousAlgEquiv.refl_apply, apply_ite, moebius_im,
+    Complex.conjCAE_apply, Complex.conj_im, ← neg_div, ← neg_mul, abs_div, abs_mul,
     abs_of_pos (show 0 < (z : ℂ).im from z.coe_im ▸ z.im_pos),
     abs_of_nonneg <| Complex.normSq_nonneg _]
   split_ifs with h <;> [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]]
@@ -316,6 +299,63 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
   grind
 
 end SLAction
+
+section toSL2R
+
+/-- Map from `ℍ` to `SL(2, ℝ)`, giving a continuous section of the map `g ↦ g • I`. -/
+noncomputable def toSL2R (z : ℍ) : SL(2, ℝ) :=
+  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
+    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩
+
+lemma toSL2R_apply (z : ℍ) : z.toSL2R =
+  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
+    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩ := (rfl)
+
+@[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := (rfl)
+
+@[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • I = z := by
+  have : √z.im ≠ (0 : ℂ) := by simpa [Real.sqrt_ne_zero'] using z.im_pos
+  ext
+  suffices z.re / √z.im + √z.im * Complex.I = z * (↑√z.im)⁻¹ by
+    rw [coe_specialLinearGroup_apply, div_eq_iff (mod_cast denom_ne_zero z.toSL2R I)]
+    simpa [add_comm]
+  rw [div_add' (hc := this), mul_right_comm, ← Complex.ofReal_mul, ← Real.sqrt_mul z.im_pos.le,
+    Real.sqrt_mul_self z.im_pos.le, re_add_im, div_eq_mul_inv]
+
+/-- `SL(2, ℝ)` acts transitively on the upper half-plane. -/
+instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
+  .of_orbit fun z ↦ ⟨_, toSL2R_smul_I z⟩
+
+/-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
+instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
+  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MulAction.compHom_smul_def _ g z).symm
+
+end toSL2R
+
+section J
+
+/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
+`τ ↦ -conj τ`. -/
+def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
+
+lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
+
+@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
+
+@[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
+
+@[simp] lemma det_J : J.det = -1 := by ext; simp [J]
+
+@[simp] lemma sigma_J : σ J = Complex.conjCAE := by simp [σ, J]
+
+@[simp] lemma denom_J (τ : ℂ) : denom J τ = 1 := by simp [J, denom]
+
+@[simp]
+lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
+  simp [denom, vecMul, vecHead, vecTail]
+
+end J
 
 end UpperHalfPlane
 

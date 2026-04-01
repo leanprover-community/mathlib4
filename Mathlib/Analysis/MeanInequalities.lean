@@ -501,15 +501,12 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderCon
   · simp_rw [g', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.symm.ne_zero,
       rpow_one, div_self hg.ne']
 
-/-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of two functions is bounded by the
-product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r` form a
-`Real.HolderTriple`. -/
+/-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of the product of two functions is
+bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r`
+form a `Real.HolderTriple`. -/
 theorem Lr_rpow_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTriple q r) :
     ∑ i ∈ s, (f i * g i) ^ r ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
   have := hpqr.holderConjugate_div_div
-  have hp := hpqr.pos
-  have hq := hpqr.symm.pos
-  have hr := hpqr.pos'
   calc ∑ i ∈ s, (f i * g i) ^ r
     _ = ∑ i ∈ s, (f i) ^ r * (g i) ^ r := s.sum_congr rfl fun i hi ↦ mul_rpow ..
     _ ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
@@ -517,9 +514,9 @@ theorem Lr_rpow_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.Hold
       congr! 2
       all_goals try simp only [fieldEq]
       all_goals
-        refine s.sum_congr rfl fun i hi ↦ by simp [← rpow_mul, ← mul_div_assoc, hr.ne']
+        refine s.sum_congr rfl fun i hi ↦ by simp [← rpow_mul, ← mul_div_assoc, hpqr.pos'.ne']
 
-/-- **Hölder inequality**: The `L^r` norm of two functions is bounded by the
+/-- **Hölder inequality**: The `L^r` norm of the product of two functions is bounded by the
 product of their `L^p` and `L^q` norms when `p`, `q`, and `r` form a `Real.HolderTriple`. -/
 theorem Lr_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTriple q r) :
     (∑ i ∈ s, (f i * g i) ^ r) ^ (1 / r) ≤
@@ -548,9 +545,9 @@ lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι 
     have hp₁ : 1 - p⁻¹ ≠ 0 := by simp [sub_eq_zero, hp.ne']
     simp [mul_rpow, div_inv_eq_mul, one_mul, one_div, hp₀, hp₁]
 
-/-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of two functions is bounded by the
-product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r` form a
-`Real.HolderTriple`. A version for `NNReal`-valued functions. For an alternative version,
+/-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of the product of two functions is
+bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r`
+form a `Real.HolderTriple`. A version for `NNReal`-valued functions. For an alternative version,
 convenient if the infinite sums are already expressed as powers, see `inner_le_Lp_mul_Lq_hasSum`. -/
 theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : ℝ}
     (hpqr : p.HolderTriple q r) (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
@@ -874,10 +871,10 @@ theorem Lr_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple q r) (hf : ∀ i, 
   -- It's really inconvenient that `positivity` can't use `∀` hypotheses.
   have hf' : 0 ≤ ∑' i, f i ^ p := tsum_nonneg fun i ↦ rpow_nonneg (hf i) p
   have hg' : 0 ≤ ∑' i, g i ^ q := tsum_nonneg fun i ↦ rpow_nonneg (hg i) q
-  obtain ⟨hp, hq, hr⟩ := hpqr.all_pos
+  have hr := hpqr.pos'
   convert rpow_le_rpow_iff (tsum_nonneg fun i ↦ rpow_nonneg (mul_nonneg (hf i) (hg i)) r)
     (by apply mul_nonneg; all_goals apply rpow_nonneg; assumption)
-    (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos') |>.mpr <|
+    (inv_eq_one_div r ▸ inv_pos.mpr hr) |>.mpr <|
     Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum using 1
   rw [mul_rpow (rpow_nonneg hf' _) (rpow_nonneg hg' _), ← Real.rpow_mul hg', ← Real.rpow_mul hf']
   field_simp
@@ -1069,9 +1066,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (@NNReal.Lp_add_le _ s (fun i => ENNReal.toNNReal (f i)) (fun i => ENNReal.toNNReal (g i)) _
         hp)
   push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
-  convert this using 2 <;> [skip; congr 1; congr 1] <;>
-    · refine Finset.sum_congr rfl fun i hi => ?_
-      simp [H'.1 i hi, H'.2 i hi]
+  simp_all
 
 end ENNReal
 

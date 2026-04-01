@@ -202,6 +202,7 @@ variable (M) in
 @[to_additive (attr := simp)]
 theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (mk_surjective M)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
   unfold mk toAntisymmetrization
@@ -260,10 +261,10 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 
 @[to_additive]
 noncomputable
-instance : LinearOrder (MulArchimedeanClass M) := by
-  classical
-  unfold MulArchimedeanClass
-  infer_instance
+instance : LinearOrder (MulArchimedeanClass M) :=
+  open Classical in
+  -- TODO: why does `inferInstanceAs` not work here?
+  fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
 @[to_additive]
 theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
@@ -282,7 +283,7 @@ theorem mk_le_mk_iff_lt (ha : a ≠ 1) : mk a ≤ mk b ↔ ∃ n, |b|ₘ < |a|�
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/]
-instance : OrderTop (MulArchimedeanClass M) where
+noncomputable instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
   le_top A := by
     induction A using ind with | mk a
@@ -290,7 +291,7 @@ instance : OrderTop (MulArchimedeanClass M) where
     exact ⟨1, by simp⟩
 
 @[to_additive]
-instance : Inhabited (MulArchimedeanClass M) := ⟨⊤⟩
+noncomputable instance : Inhabited (MulArchimedeanClass M) := ⟨⊤⟩
 
 @[to_additive (attr := simp)]
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
@@ -476,13 +477,13 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
 
 @[to_additive]
 theorem lt_of_mk_lt_mk_of_one_le (h : mk a < mk b) (hpos : 1 ≤ a) : b < a := by
-  obtain h := (mk_lt_mk).mp h 1
+  obtain h := mk_lt_mk.mp h 1
   rw [pow_one, mabs_lt, mabs_eq_self.mpr hpos] at h
   exact h.2
 
 @[to_additive]
 theorem lt_of_mk_lt_mk_of_le_one (h : mk a < mk b) (hneg : a ≤ 1) : a < b := by
-  obtain h := (mk_lt_mk).mp h 1
+  obtain h := mk_lt_mk.mp h 1
   rw [pow_one, mabs_lt, mabs_eq_inv_self.mpr hneg, inv_inv] at h
   exact h.1
 
@@ -503,7 +504,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = m
     · use 0
       simpa using hx
     · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
-      obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
+      obtain ⟨_, ⟨m, hm⟩⟩ := mk_eq_mk.mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
@@ -840,7 +841,7 @@ theorem congrOrderIso_symm (e : MulArchimedeanClass M ≃o MulArchimedeanClass N
 `FiniteMulArchimedeanClass M` plus `⊤`. -/
 @[to_additive /-- The upper set in `ArchimedeanClass M` consisting of an upper set in
 `FiniteArchimedeanClass M` plus `⊤`. -/]
-def toUpperSetMulArchimedeanClass :
+noncomputable def toUpperSetMulArchimedeanClass :
     UpperSet (FiniteMulArchimedeanClass M) ↪o UpperSet (MulArchimedeanClass M) :=
   .ofStrictMono (fun s ↦
     { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
@@ -853,7 +854,7 @@ def toUpperSetMulArchimedeanClass :
 `FiniteMulArchimedeanClass M` is a subgroup. -/
 @[to_additive /-- The `ArchimedeanClass.subsemigroup` associated to an upper set in
 `FiniteArchimedeanClass M` is a subgroup. -/]
-def subgroup (s : UpperSet (FiniteMulArchimedeanClass M)) : Subgroup M where
+noncomputable def subgroup (s : UpperSet (FiniteMulArchimedeanClass M)) : Subgroup M where
   __ := MulArchimedeanClass.subsemigroup (toUpperSetMulArchimedeanClass s)
   one_mem' h := (h rfl).elim
   inv_mem' := by simp [MulArchimedeanClass.subsemigroup]
@@ -880,12 +881,13 @@ theorem mem_subgroup_iff : a ∈ subgroup s ↔ ∀ h : a ≠ 1, mk a h ∈ s :=
 /-- An open ball defined by `FiniteMulArchimedeanClass.subgroup` of `UpperSet.Ioi c`. -/
 @[to_additive
 /--An open ball defined by `FiniteArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`. -/]
-abbrev ballSubgroup (c : FiniteMulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
+noncomputable abbrev ballSubgroup (c : FiniteMulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
 
 /-- A closed ball defined by `FiniteMulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
 @[to_additive
 /-- A closed ball defined by `FiniteArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
-abbrev closedBallSubgroup (c : FiniteMulArchimedeanClass M) := subgroup (UpperSet.Ici c)
+noncomputable abbrev closedBallSubgroup (c : FiniteMulArchimedeanClass M) :=
+  subgroup (UpperSet.Ici c)
 
 @[to_additive]
 theorem mem_ballSubgroup_iff {a : M} {c : FiniteMulArchimedeanClass M} :
