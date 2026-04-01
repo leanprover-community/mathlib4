@@ -317,8 +317,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
     · simp [substInvFun, HasSubst]
-  · simp only [map_sub]
-    rw [coeff_subst']
+  · rw [map_sub, coeff_subst']
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
       · rintro (_|_|_) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
@@ -364,7 +363,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     · simp [HasSubst, X, show MvPowerSeries.constantCoeff Unit R B = 0 from hB']
 
 include hP in
-lemma subst_substInv :
+lemma subst_substInv_right :
     P.subst (substInv P) = X := by
   ext n
   have := coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X P hP n
@@ -394,7 +393,7 @@ lemma coeff_one_substInv : coeff R 1 P.substInv = ⅟ (coeff R 1 P) := by
   simp [substInv, substInvFun]
 
 include hP in
-lemma substInv_subst : P.substInv.subst P = X := by
+lemma subst_substInv_left : P.substInv.subst P = X := by
   have hP' : HasSubst P := by simp [HasSubst, ← constantCoeff.eq_def, hP]
   let Q : PowerSeries R := P.substInv.subst P
   have : Invertible ((coeff R 1) Q) := by
@@ -412,14 +411,14 @@ lemma substInv_subst : P.substInv.subst P = X := by
   have hQ' : HasSubst Q := by simp [HasSubst, ← constantCoeff.eq_def, hQ]
   have : Q.subst Q = Q := by
     rw [subst_comp_subst_apply (ha := hP') (hb := hQ'), ← subst_comp_subst_apply
-      (ha := hasSubst_substInv _) (hb := hP'), PowerSeries.subst_substInv _ hP, subst_X hP']
+      (ha := hasSubst_substInv _) (hb := hP'), PowerSeries.subst_substInv_right _ hP, subst_X hP']
   convert congr(PowerSeries.subst Q.substInv $this) using 1
   · rw [PowerSeries.subst_comp_subst_apply (ha := hQ') (hb := hasSubst_substInv _)]
     refine (PowerSeries.map_algebraMap_eq_subst_X (S := R) Q).trans ?_
     simp only [PowerSeries.subst]
     congr! with ⟨⟩
-    exact (PowerSeries.subst_substInv Q hQ).symm
-  · exact (PowerSeries.subst_substInv Q hQ).symm
+    exact (PowerSeries.subst_substInv_right Q hQ).symm
+  · exact (PowerSeries.subst_substInv_right Q hQ).symm
 
 end substInv
 
