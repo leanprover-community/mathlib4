@@ -86,9 +86,9 @@ private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m
 lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
-  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
-    (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
-  · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
+  apply (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
+  <;> intro t ⟨n, hn⟩ <;> rw [← hn]
+  · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
     ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
