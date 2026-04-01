@@ -87,7 +87,7 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
 
 theorem lfpApprox_zero : lfpApprox f x 0 = x := by
   rw [lfpApprox]
-  aesop
+  simp
 
 theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   rw [lfpApprox]
