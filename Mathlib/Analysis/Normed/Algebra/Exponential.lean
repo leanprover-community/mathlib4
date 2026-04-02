@@ -542,6 +542,18 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
+lemma _root_.SemiconjBy.exp_right {x a b : 𝔸} (h : SemiconjBy x a b) :
+    SemiconjBy x (exp a) (exp b) := by
+  rw [exp_eq_tsum ℚ]
+  apply SemiconjBy.tsum_right x (expSeries_summable' _) (expSeries_summable' _)
+  exact fun _ ↦ h.pow_right _ |>.smul_right _
+
+lemma _root_.SemiconjBy.exp_neg_mul_mul_exp_eq_self {x a b : 𝔸} (h : SemiconjBy x a b) :
+    exp (-b) * x * exp a = x := by
+  apply (isUnit_exp b).mul_left_cancel
+  let hb := invertibleExp b
+  simp [← invOf_exp, ← mul_assoc, h.exp_right.eq]
+
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
