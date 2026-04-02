@@ -536,16 +536,16 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
-  [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
+  [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-    [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
-      [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
-        [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
-      [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+    [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
+      [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
+        [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
+      [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
         [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-        [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+        [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
@@ -671,3 +671,26 @@ example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
     goal.assign <| ← mkAuxTheorem ty (← instantiateMVars mvar))
 
 end StateReversionBug
+
+section MVarBug
+
+opaque Lin' (f : α → β) : Prop
+
+theorem Lin'.lin {f : α → β} (h : Lin' f) : Lin f := silentSorry
+
+variable {Ω ι R : Type*} {X : ι → Ω → R}
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  fail_if_success fun_prop -- fails, ok
+  exact silentSorry
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have : ∀ i, Lin (X i) := fun i ↦ (hX i).lin
+  fun_prop -- succeeds, ok
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have := fun i ↦ (hX i).lin
+  fun_prop -- now succeeds
+  -- failed in https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Weird.20behavior.20of.20fun_prop
+
+end MVarBug
