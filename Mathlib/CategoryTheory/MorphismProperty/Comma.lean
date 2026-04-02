@@ -587,7 +587,7 @@ protected abbrev Over : Type _ :=
 protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
   Comma.forget (Functor.id T) (Functor.fromPUnit.{0} X) P Q ⊤
 
-instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Over.forget P Q X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
@@ -673,7 +673,7 @@ protected abbrev Under : Type _ :=
 protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
   Comma.forget (Functor.fromPUnit.{0} X) (Functor.id T) P ⊤ Q
 
-instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Under.forget P Q X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
