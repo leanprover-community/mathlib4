@@ -98,7 +98,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
           mul_inv_cancel₀ hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
       replace := le_c (r⁻¹ • ⟨x, hx⟩) this
       rwa [← mul_le_mul_iff_right₀ (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, RingHom.id_apply, mul_inv_cancel₀ hr.ne, one_mul] at this
+        smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
       rw [RingHom.id_apply, zero_smul]
@@ -107,8 +107,8 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     · have : r⁻¹ • x + y ∈ s := by
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel₀ hr.ne', one_smul]
       replace := c_le (r⁻¹ • ⟨x, hx⟩) this
-      rwa [← mul_le_mul_iff_right₀ hr, f.map_smul, smul_eq_mul, ← mul_assoc, RingHom.id_apply,
-        mul_inv_cancel₀ hr.ne', one_mul] at this
+      rwa [← mul_le_mul_iff_right₀ hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
+        one_mul] at this
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
