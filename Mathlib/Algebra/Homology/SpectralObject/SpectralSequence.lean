@@ -617,12 +617,8 @@ lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1
   obtain rfl : n₂ = n₁ + 1 := by lia
   subst hpq hpq' hn₁' hi₀ hi₁ hi₂ hi₃ hi₀' hi₃'
   ext
-  dsimp [spectralSequencePageXIso, spectralSequence,
-    spectralSequenceHomologyData, SpectralSequence.pageX, SpectralSequence.pageXIso,
+  simp [spectralSequencePageXIso, spectralSequence, spectralSequenceHomologyData,
     SpectralSequence.homologyIso, SpectralSequence.homologyIso']
-  rw [Category.comp_id]
-  convert (Category.id_comp _).symm
-  apply ShortComplex.homologyMap_id
 
 end
 
