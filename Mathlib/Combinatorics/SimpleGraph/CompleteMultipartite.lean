@@ -125,7 +125,7 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
 
 theorem IsCompleteMultipartiteWith.isCompleteMultipartite
     {f : α → ι} (h : G.IsCompleteMultipartiteWith f) :
-    G.IsCompleteMultipartite := fun _ ↦ by grind [= IsCompleteMultipartiteWith]
+    G.IsCompleteMultipartite := isTrans_def.mpr <| by grind [= IsCompleteMultipartiteWith]
 
 theorem isCompleteMultipartiteWith_of_isCompleteMultipartite (h : G.IsCompleteMultipartite) :
     G.IsCompleteMultipartiteWith (Quotient.mk h.setoid) := fun _ _ ↦ by
