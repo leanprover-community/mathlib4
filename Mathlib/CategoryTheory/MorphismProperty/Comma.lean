@@ -479,6 +479,101 @@ end Comma
 
 end Comma
 
+section Arrow
+
+variable {T : Type*} [Category* T]
+    (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
+
+/-- Given a morphism property `P` on a category `T`, this is the
+subcategory of `Arrow T` defined by `P` where morphisms satisfy `Q` and `W` on the left and right,
+respectively. -/
+protected abbrev Arrow : Type _ := P.Comma (𝟭 T) (𝟭 T) Q W
+
+/-- The forgetful functor from the full subcategory of `Arrow T` defined by `P` to `Arrow T`. -/
+protected abbrev Arrow.forget : P.Arrow Q W ⥤ Arrow T := Comma.forget (𝟭 T) (𝟭 T) P Q W
+
+instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Over.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+    (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.leftFunc).map f = f.left := rfl
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Over.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+    (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.rightFunc).map f = f.right := rfl
+
+variable {P Q W}
+
+/-- Construct a morphism in `P.Arrow Q W` from a morphism in `Arrow T`. -/
+@[simps hom]
+def Arrow.Hom.mk {A B : P.Arrow Q W} (f : A.toComma ⟶ B.toComma)
+    (hfl : Q f.left) (hfr : W f.right) : A ⟶ B where
+  __ := f
+  prop_hom_left := hfl
+  prop_hom_right := hfr
+
+variable (Q) in
+/-- Make an object of `P.Arrow Q X` from a morphism `f : A ⟶ B` and a proof of `P f`. -/
+@[simps hom left]
+protected def Arrow.mk {A B : T} (f : A ⟶ B) (hf : P f) : P.Arrow Q W where
+  left := A
+  right := B
+  hom := f
+  prop := hf
+
+/-- Make a morphism in `P.Arrow Q X` from morphisms in `T` with compatibilities. -/
+@[simps hom]
+protected def Arrow.homMk {A B : P.Arrow Q W} (f : A.left ⟶ B.left) (g : A.right ⟶ B.right)
+    (w : f ≫ B.hom = A.hom ≫ g := by cat_disch)
+    (hf : Q f := by trivial) (hg : W g := by trivial) : A ⟶ B where
+  __ := CategoryTheory.Arrow.homMk f g w
+  prop_hom_left := hf
+  prop_hom_right := hg
+
+/-- Make an isomorphism in `P.Arrow Q X` from isomorphisms in `T` with compatibilities. -/
+@[simps! hom_left inv_left]
+protected def Arrow.isoMk [Q.RespectsIso] [W.RespectsIso] {A B : P.Arrow Q W}
+    (f : A.left ≅ B.left) (g : A.right ≅ B.right)
+    (w : f.hom ≫ B.hom = A.hom ≫ g.hom := by cat_disch) : A ≅ B :=
+  Comma.isoMk f g
+
+@[ext]
+lemma Arrow.Hom.ext {A B : P.Arrow Q W} {f g : A ⟶ B}
+    (hl : f.left = g.left) (hr : f.right = g.right) : f = g := by
+  ext
+  · exact hl
+  · exact hr
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma Arrow.w {A B : P.Arrow Q W} (f : A ⟶ B) :
+    f.left ≫ B.hom = A.hom ≫ f.right := by
+  simp
+
+section
+
+variable {P' Q' W' : MorphismProperty T} [Q'.IsMultiplicative] [W'.IsMultiplicative]
+    (hPP' : P ≤ P') (hQQ' : Q ≤ Q')
+
+/-- The natural inclusion induced by implications of morphism properties. -/
+abbrev Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
+    P.Arrow Q W ⥤ P'.Arrow Q' W' :=
+  Comma.changeProp _ _ hPP' hQQ' hWW'
+
+@[simp]
+lemma Arrow.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
+    ((changeProp hPP' hQQ' hWW').obj Y).left = Y.left := rfl
+
+@[simp]
+lemma Arrow.changeProp_obj_hom (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
+    ((changeProp hPP' hQQ' hWW').obj Y).hom = Y.hom := rfl
+
+end
+
+end Arrow
+
 section Over
 
 variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
