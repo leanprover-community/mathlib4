@@ -128,6 +128,8 @@ end FG
 
 section AdjoinSimple
 
+open Algebra
+
 variable (α : E)
 
 @[simp]
@@ -146,12 +148,12 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_toSubalgebra_of_isAlgebraic
 
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
 
 @[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
@@ -168,7 +170,7 @@ theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebr
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ F[x] = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ :=
   adjoin_simple_eq_top_iff_of_isAlgebraic
@@ -198,15 +200,15 @@ variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
 
 /-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
 noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
-    Algebra.adjoin A {b} →+* A⟮((algebraMap B C) b)⟯ :=
+    A[b] →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.comp (Subalgebra.inclusion <|
     algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
     (Algebra.RingHom.adjoinAlgebraMap b)
 
-noncomputable instance : Algebra (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ :=
+noncomputable instance : Algebra (A[b]) A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
 
-instance : IsScalarTower (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ C :=
+instance : IsScalarTower (A[b]) A⟮(algebraMap B C) b⟯ C :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 end RingHom
