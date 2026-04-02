@@ -405,7 +405,7 @@ variable [TopologicalSpace β] {f : α → β}
 and a subset is closed iff the preimage is. -/
 theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
     (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
-    (hcl : Topology.IsCoinducing f) {t : Set β} (ht : IsClosed t) (ht' : IsConnected t) :
+    (hcl : IsCoinducing f) {t : Set β} (ht : IsClosed t) (ht' : IsConnected t) :
     IsConnected (f ⁻¹' t) := by
   -- The following proof is essentially https://stacks.math.columbia.edu/tag/0377
   -- although the statement is slightly different
