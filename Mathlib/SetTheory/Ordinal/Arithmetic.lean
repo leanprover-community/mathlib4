@@ -124,8 +124,8 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### Limit ordinals -/
 
-theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
-  simp [IsSuccLimit]
+theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
@@ -628,9 +628,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
-    obtain ⟨b, a⟩ := enum _ ⟨_, l⟩
-    exact irrefl _ (this _ _)
+  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) from irrefl _ (this _ _)
   intro a b
   rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
   have := H _ (h.succ_lt (typein_lt_type s b))
