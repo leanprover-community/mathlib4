@@ -24,6 +24,7 @@ of them.
 
 @[expose] public section
 
+open Set
 variable {α : Type*} [t : TopologicalSpace α]
 
 namespace TopologicalSpace
