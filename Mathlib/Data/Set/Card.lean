@@ -942,7 +942,7 @@ theorem ncard_coe {α : Type*} (s : Set α) :
 
 /-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` is
 `s.ncard.choose n`. See also `Finset.card_powersetCard`. -/
-lemma ncard_powersetNCard (hs : s.Finite) (n : ℕ) :
+lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
     {t : Set α | t.ncard = n ∧ t ⊆ s}.ncard = s.ncard.choose n := by
   have : {t : Set α | t.ncard = n ∧ t ⊆ s}.Finite := hs.finite_subsets.subset (by grind)
   rw [Set.ncard_eq_toFinset_card _ this]
