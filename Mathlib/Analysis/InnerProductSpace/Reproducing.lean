@@ -130,17 +130,17 @@ lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
   simp [← adjoint_inner_left, kernel]
 
-lemma kerFun_norm_sq_eq_kernel_norm {x} : ‖kerFun H x‖^2 = ‖kernel H x x‖ := by
-  rw [sq, <-ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
+lemma norm_kerFun_sq_eq_norm_kernel {x} : ‖kerFun H x‖ ^ 2 = ‖kernel H x x‖ := by
+  rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
 
-lemma kerFun_norm_eq_sqrt_kernel_norm {x} : ‖kerFun H x‖ = √‖kernel H x x‖ := by
+lemma norm_kerFun_eq_sqrt_norm_kernel {x} : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [← kerFun_norm_sq_eq_kernel_norm, Real.sqrt_sq (norm_nonneg _)]
 
 lemma norm_le_sq_norm_mul_diag {x y} : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ :=
   (opNorm_comp_le _ _).trans_eq <| by simp_rw [LinearIsometryEquiv.norm_map,
     kerFun_norm_eq_sqrt_kernel_norm]
 
-lemma norm_sq_le_norm_mul_diag {x y} : ‖kernel H x y‖^2 ≤ ‖kernel H x x‖*‖kernel H y y‖ := by
+lemma norm_sq_le_norm_mul_diag {x y} : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   rw [← Real.le_sqrt (norm_nonneg _) (mul_nonneg (norm_nonneg _) (norm_nonneg _)),
     Real.sqrt_mul (norm_nonneg _)]
   exact norm_le_sq_norm_mul_diag
