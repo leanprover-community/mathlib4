@@ -30,6 +30,7 @@ namespace Subgroup
 section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals
+open scoped IsMulCommutative
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
