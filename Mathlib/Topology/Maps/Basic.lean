@@ -428,8 +428,6 @@ theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s �
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
 
-@[deprecated (since := "2025-08-30")] alias isOpenMap_iff_interior := isOpenMap_iff_image_interior
-
 /-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed. -/
 lemma isOpenMap_iff_closure_kernImage :
     IsOpenMap f ↔ ∀ {s : Set X}, closure (kernImage f s) ⊆ kernImage f (closure s) := by

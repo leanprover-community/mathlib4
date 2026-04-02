@@ -532,24 +532,21 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
 /--
 The forward functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).functor.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).functor.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
 /--
 The inverse functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).inverse.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
-set_option backward.isDefEq.respectTransparency false in
+
 /--
 The identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).CommShift A := by
-  dsimp [Equivalence.CommShift, refl_toAdjunction]
-  infer_instance
+instance : (Equivalence.refl (C := C)).CommShift A :=
+  inferInstanceAs <| Adjunction.id.CommShift A
 
 /--
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
