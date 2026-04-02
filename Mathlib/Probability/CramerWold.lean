@@ -214,6 +214,3 @@ theorem cramerWold (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
   (Tendsto (fun n : ℕ => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable))) := by
   intro h
   exact (rv_tendsto_if_charFun_tendsto hX hXn) ((charFun_tendsto_if_inner_tendsto hX hXn) (h))
-
-#min_imports
---#lint unusedHavesSuffices
