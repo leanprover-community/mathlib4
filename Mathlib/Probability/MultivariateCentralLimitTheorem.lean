@@ -452,5 +452,3 @@ theorem tendstoInDistribution_sqrt_inv_mul_sum {Y : Ω → (EuclideanSpace ℝ (
       apply Subtype.ext
       exact hmapY_eq
     simpa [hY'] using hclt
-
-#min_imports
