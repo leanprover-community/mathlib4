@@ -745,36 +745,41 @@ lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.le
 def toPath (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
 
-theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support := by
+open List in
+theorem support_bypass_sublist (p : G.Walk u v) : p.bypass.support <+ p.support := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
-    simp! only
+    dsimp! only
     split_ifs
-    · apply List.Subset.trans (support_dropUntil_subset _ _)
-      apply List.subset_cons_of_subset
-      assumption
-    · rw [support_cons]
-      apply List.cons_subset_cons
-      assumption
+    · exact support_dropUntil_suffix .. |>.sublist.trans ih |>.cons _
+    · simpa
 
-theorem support_toPath_subset (p : G.Walk u v) :
-    (p.toPath : G.Walk u v).support ⊆ p.support :=
+theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support :=
+  p.support_bypass_sublist.subset
+
+theorem support_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).support ⊆ p.support :=
   support_bypass_subset _
 
-theorem darts_bypass_subset (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
+open List in
+theorem darts_bypass_sublist (p : G.Walk u v) : p.bypass.darts <+ p.darts := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
-    simp! only
+    dsimp! only
     split_ifs
-    · apply List.Subset.trans (darts_dropUntil_subset _ _)
-      apply List.subset_cons_of_subset _ ih
-    · rw [darts_cons]
-      exact List.cons_subset_cons _ ih
+    · exact darts_dropUntil_suffix .. |>.sublist.trans ih |>.cons _
+    · simpa
+
+theorem darts_bypass_subset (p : G.Walk u v) : p.bypass.darts ⊆ p.darts :=
+  p.darts_bypass_sublist.subset
+
+open List in
+theorem edges_bypass_sublist (p : G.Walk u v) : p.bypass.edges <+ p.edges :=
+  p.darts_bypass_sublist.map _
 
 theorem edges_bypass_subset (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
-  List.map_subset _ p.darts_bypass_subset
+  p.edges_bypass_sublist.subset
 
 theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   darts_bypass_subset _
