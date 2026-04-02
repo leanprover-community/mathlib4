@@ -586,10 +586,10 @@ section
 
 /-- If `f : X → Y` is coinducing and has connected fibers, it induces a homeomorphism on `π₀`. -/
 noncomputable def Topology.IsCoinducing.connectedComponentsEquiv {f : X → Y}
-    (hf : Topology.IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
     ConnectedComponents X ≃ₜ ConnectedComponents Y :=
   IsHomeomorph.homeomorph hf.continuous.connectedComponentsMap <| by
-    have hbij : Function.Bijective hf.continuous.connectedComponentsMap := by
+    have hbij : Bijective hf.continuous.connectedComponentsMap := by
       refine ⟨fun x y h ↦ ?_,
         Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
       obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x

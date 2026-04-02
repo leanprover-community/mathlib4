@@ -311,8 +311,8 @@ lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpac
 
 @[simp]
 lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
-    (hf : Continuous f) (h : Function.Surjective f) :
-    Function.Surjective hf.connectedComponentsMap :=
+    (hf : Continuous f) (h : Surjective f) :
+    Surjective hf.connectedComponentsMap :=
   Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
 
 /-- A preconnected set `s` has the property that every map to a
