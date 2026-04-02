@@ -210,7 +210,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       frontier_Ioo (neg_lt_self hR₀)] at hw
     by_cases him : w.im = a - b ∨ w.im = a + b
     · rw [norm_smul, ← one_mul C]
-      exact mul_le_mul (hg₁ _ him) (him.by_cases (hle_a _) (hle_b _)) (norm_nonneg _) zero_le_one
+      gcongr
+      exacts [hg₁ _ him, him.by_cases (hle_a _) (hle_b _)]
     · replace hw : w ∈ {-R, R} ×ℂ Icc (a - b) (a + b) := hw.resolve_left fun h ↦ him h.2
       have hw' := eq_endpoints_or_mem_Ioo_of_mem_Icc hw.2; rw [← or_assoc] at hw'
       exact hR _ ((abs_eq hR₀.le).2 hw.1.symm) (hw'.resolve_left him)
