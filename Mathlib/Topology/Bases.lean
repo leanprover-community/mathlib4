@@ -711,7 +711,7 @@ variable [FirstCountableTopology α] {x : α}
 /-- In a first-countable space, a cluster point `x` of a countably generated filter is the limit of
 some sequence. -/
 theorem ClusterPt.exists_seq_tendsto {f : Filter α} [IsCountablyGenerated f] (hx : ClusterPt x f) :
-    ∃ ψ : ℕ → α, Tendsto ψ atTop f ∧ Tendsto ψ atTop (𝓝 x) := by
+    ∃ ψ : ℕ → α, Tendsto ψ atTop (𝓝 x) ∧ Tendsto ψ atTop f := by
   unfold ClusterPt at hx
   obtain ⟨g, hg⟩ := Filter.exists_seq_tendsto (𝓝 x ⊓ f)
   exact ⟨g, (tendsto_inf.1 hg).2, (tendsto_inf.1 hg).1⟩
