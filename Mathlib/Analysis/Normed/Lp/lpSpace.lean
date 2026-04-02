@@ -115,7 +115,7 @@ theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i �
   use ⨆ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal
   apply hasSum_of_isLUB_of_nonneg
   · intro b
-    exact Real.rpow_nonneg (norm_nonneg _) _
+    positivity
   apply isLUB_ciSup
   use C
   rintro - ⟨s, rfl⟩
@@ -239,7 +239,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · change ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
-      have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg (norm_nonneg _) p.toReal
+      have : 0 ≤ ‖f i‖ ^ p.toReal := by positivity
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
       exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
@@ -472,8 +472,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]
-    refine Real.rpow_nonneg (tsum_nonneg ?_) _
-    exact fun i => Real.rpow_nonneg (norm_nonneg _) _
+    exact Real.rpow_nonneg (tsum_nonneg fun i ↦ by positivity) _
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
