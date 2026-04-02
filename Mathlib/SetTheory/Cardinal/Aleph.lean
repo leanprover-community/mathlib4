@@ -527,7 +527,6 @@ theorem preAleph_eq_aleph {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ 
   apply left_lt_opow one_lt_omega0
   simp
 
-@[simp]
 @[deprecated aleph0_lt_lift (since := "2026-03-23")]
 theorem aleph_one_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
   simp
