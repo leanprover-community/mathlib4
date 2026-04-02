@@ -308,6 +308,20 @@ theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 
+variable {f : Filter ι} {u : ι → α} {a : α}
+
+lemma le_limsup_of_frequently_le (hu : ∃ᶠ i in f, a ≤ u i)
+    (hu_le : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) : a ≤ limsup u f := by
+  refine le_limsup_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, han, hnb⟩ := (hu.and_eventually hb).exists
+  exact han.trans hnb
+
+lemma liminf_le_of_frequently_le (hu : ∃ᶠ i in f, u i ≤ a)
+    (hu_le : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : liminf u f ≤ a := by
+  refine liminf_le_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, hna, hbn⟩ := (hu.and_eventually hb).exists
+  exact hbn.trans hna
+
 end ConditionallyCompleteLattice
 
 section CompleteLattice
@@ -342,13 +356,13 @@ theorem blimsup_false {f : Filter β} {u : β → α} : (blimsup u f fun _ => Fa
 theorem bliminf_false {f : Filter β} {u : β → α} : (bliminf u f fun _ => False) = ⊤ := by
   simp [bliminf_eq]
 
-/-- Same as limsup_const applied to `⊥` but without the `NeBot f` assumption -/
+/-- Same as `limsup_const` applied to `⊥` but without the `NeBot f` assumption -/
 @[simp]
 theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f = (⊥ : α) := by
   rw [limsup_eq, eq_bot_iff]
   exact sInf_le (Eventually.of_forall fun _ => le_rfl)
 
-/-- Same as limsup_const applied to `⊤` but without the `NeBot f` assumption -/
+/-- Same as `limsup_const` applied to `⊤` but without the `NeBot f` assumption -/
 @[simp]
 theorem liminf_const_top {f : Filter β} : liminf (fun _ : β => (⊤ : α)) f = (⊤ : α) :=
   limsup_const_bot (α := αᵒᵈ)
@@ -814,17 +828,6 @@ end ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
 
-theorem le_limsup_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
-    (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
-    b ≤ limsup u f := by
-  contrapose! hu_le with h
-  exact eventually_lt_of_limsup_lt h hu
-
-theorem liminf_le_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, u x ≤ b)
-    (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
-    liminf u f ≤ b :=
-  le_limsup_of_frequently_le (β := βᵒᵈ) hu_le hu
-
 theorem frequently_lt_of_lt_limsup {b : β}
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h : b < limsup u f) : ∃ᶠ x in f, b < u x := by
@@ -850,7 +853,7 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     rcases h' y x_y with ⟨z, x_z, z_y⟩
     exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, x_z, hz⟩
     exact (h z x_z).mono <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
@@ -878,7 +881,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     obtain ⟨z, y_z, z_x⟩ := h' y y_x
     exact y_z.trans_le (le_limsup_of_frequently_le ((h z z_x).mono (fun _ ↦ le_of_lt)) h₂)
   · apply le_limsup_of_frequently_le _ h₂
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, z_x, hz⟩
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
@@ -1026,9 +1029,9 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
     simp_rw [if_pos H', hv.liminf_eq_sSup_iUnion_iInter, A, iUnion_empty]
   rw [if_neg H']
   apply hv.liminf_eq_ciSup_ciInf
-  · push_neg at H
+  · push Not at H
     simpa only [nonempty_iff_ne_empty] using H
-  · push_neg at H'
+  · push Not at H'
     exact H'
 
 /-- Given an indexed family of sets `s j` and a function `f`, then `limsup_reparam j` is equal

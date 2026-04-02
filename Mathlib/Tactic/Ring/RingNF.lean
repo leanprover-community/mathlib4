@@ -5,14 +5,10 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Tactic.Conv
-public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `ring_nf` tactic
@@ -27,8 +23,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 public meta section
 
 namespace Mathlib.Tactic
-open Lean
-open Qq Meta
+open Lean Meta Qq
 
 namespace Ring
 
@@ -119,10 +114,11 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   | .raw => pure r
   | .SOP => do
     let thms : SimpTheorems := {}
-    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
-      ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
+    let thms ← [``add_zero, ``_root_.mul_one, ``_root_.pow_one, ``mul_neg, ``add_neg
+      ].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
+      ``nnrat_rawCast, ``rat_rawCast_neg, ``add_assoc_rev, ``mul_assoc_rev
+      ].foldlM (·.addConst · (post := false)) thms
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])
       (congrTheorems := ← getSimpCongrTheorems)
@@ -163,7 +159,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "`ring_nf`" loc cfg.failIfUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)

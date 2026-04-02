@@ -62,6 +62,10 @@ lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
   FormallyUnramified.of_restrictScalars R _ _
 
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsUnramifiedAt R q] :
+    FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q) :=
+  .of_restrictScalars R _ _
+
 open _root_.TensorProduct in
 /-- If `A` is an `R`-algebra unramified at `Q`, `P` is the prime of `R` lying under `Q`,
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/

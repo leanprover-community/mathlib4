@@ -30,9 +30,10 @@ The following are notations in the `OrderType` namespace:
 ## References
 
 * <https://en.wikipedia.org/wiki/Order_type>
-* Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.
-* Enderton, Herbert B. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.][dauben_1990]
+* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.][enderton_1977]
 
 ## Tags
 
@@ -48,6 +49,7 @@ variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
+@[implicit_reducible]
 def OrderType.instSetoid : Setoid LinOrd where
   r := fun lin_ord₁ lin_ord₂ ↦ Nonempty (lin_ord₁ ≃o lin_ord₂)
   iseqv := ⟨fun _ ↦ ⟨.refl _⟩, fun ⟨e⟩ ↦ ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ ↦ ⟨e₁.trans e₂⟩⟩
@@ -166,7 +168,7 @@ def liftOn₂ (o₁ o₂ : OrderType) (f : ∀ (α) [LinearOrder α] (β) [Linea
     (c : ∀ (α₁) [LinearOrder α₁] (β₁) [LinearOrder β₁] (α₂) [LinearOrder α₂] (β₂) [LinearOrder β₂],
       type α₁ = type α₂ → type β₁ = type β₂ → f α₁ β₁ = f α₂ β₂) : δ :=
   Quotient.liftOn₂ o₁ o₂ (fun w v ↦ f w v)
-    fun w₁ w₂ v₁ v₂ hw hv ↦  c w₁ w₂ v₁ v₂ (Quotient.sound hw) (Quotient.sound hv)
+    fun w₁ w₂ v₁ v₂ hw hv ↦ c w₁ w₂ v₁ v₂ (Quotient.sound hw) (Quotient.sound hv)
 
 @[simp]
 theorem liftOn_type (f : ∀ (α) [LinearOrder α], δ)

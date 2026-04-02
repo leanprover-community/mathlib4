@@ -63,6 +63,7 @@ noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology α] [T2Space β]
     {f : α → β} {a : α} {y : β} (h : 𝓝[<] a ≠ ⊥) (h' : Tendsto f (𝓝[<] a) (𝓝 y)) :
     leftLim f a = y := by
@@ -77,6 +78,7 @@ theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space
     Function.rightLim f a = y :=
   leftLim_eq_of_tendsto (α := αᵒᵈ) h h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
@@ -86,6 +88,7 @@ theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α �
     (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
   leftLim_eq_of_eq_bot (α := αᵒᵈ) f h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftLim_eq_of_not_tendsto
     [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : ¬ ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) : leftLim f a = f a := by
@@ -120,6 +123,7 @@ theorem ContinuousWithinAt.rightLim_eq [TopologicalSpace α] [OrderTopology α] 
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Ici a) a) : rightLim f a = f a :=
   ContinuousWithinAt.leftLim_eq (α := αᵒᵈ) hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_leftLim_of_tendsto [TopologicalSpace α] [h'α : OrderTopology α]
     {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) :
     Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a)) := by
