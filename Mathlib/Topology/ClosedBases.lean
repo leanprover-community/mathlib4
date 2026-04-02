@@ -29,7 +29,7 @@ variable {α : Type*} [t : TopologicalSpace α]
 namespace TopologicalSpace
 
 /-- A closed basis is a collection of closed sets `s : Set (Set α)` such that every closed subset
-  of `α` can be written as an intersection of elements of `s`. -/
+of `α` can be written as an intersection of elements of `s`. -/
 structure IsClosedBasis (s : Set (Set α)) : Prop where
   exists_union_subset : ∀ t₁ ∈ s, ∀ t₂ ∈ s, ∀ x ∉ t₁ ∪ t₂, ∃ t₃ ∈ s, x ∉ t₃ ∧ t₁ ∪ t₂ ⊆ t₃
   sInter_eq : ⋂₀ s = ∅
