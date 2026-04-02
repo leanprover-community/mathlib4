@@ -115,6 +115,13 @@ theorem card_iSup_Iio_le {o : Ordinal} {c : Cardinal} {f : Iio o → Ordinal}
   rw [← Cardinal.lift_le] at hι
   simpa using card_iSup_Iio_le_lift hι hf
 
+theorem card_sSup_le {c : Cardinal} {s : Set Ordinal.{u}}
+    (hs : #s ≤ Cardinal.lift.{u + 1} c) (hs' : ∀ x ∈ s, x.card ≤ c) : (sSup s).card ≤ c := by
+  rw [sSup_eq_iSup']
+  apply card_iSup_le_lift
+  · rwa [Cardinal.lift_id'.{u, u + 1}]
+  · simpa
+
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
   refine limitRecOn b ?_ ?_ ?_
