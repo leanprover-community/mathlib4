@@ -655,6 +655,31 @@ theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
+lemma measurable_iSup_of_lowerSemicontinuous {β : Type*}
+    [TopologicalSpace β] [CompleteLinearOrder β] [OrderTopology β]
+    [SecondCountableTopology β] [MeasurableSpace β] [BorelSpace β]
+    {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
+    {f : ι → δ → β} (mf : ∀ t, Measurable (f t))
+    (cf : ∀ x, LowerSemicontinuous (f · x)) :
+    Measurable (⨆ i, f i) := by
+  refine measurable_of_Ioi fun c ↦ ?_
+  obtain ⟨J, cJ, dJ⟩ := TopologicalSpace.exists_countable_dense ι
+  suffices (⨆ i, f i) ⁻¹' Ioi c = ⋃ j ∈ J, {x | c < f j x} by
+    rw [this]
+    exact MeasurableSet.biUnion cJ fun j mj ↦ (measurableSet_lt measurable_const (mf j))
+  ext x
+  push _ ∈ _
+  simp_rw [iSup_apply, lt_iSup_iff]
+  constructor
+  · intro ⟨i, hi⟩
+    simp only [lowerSemicontinuous_iff] at cf
+    obtain ⟨v, hv⟩ := eventually_iff_exists_mem.1 (cf x i c hi)
+    have hj := dJ.inter_nhds_nonempty hv.1
+    exact ⟨hj.some, mem_of_mem_inter_left hj.some_mem,
+      hv.2 _ (mem_of_mem_inter_right hj.some_mem)⟩
+  · intro ⟨i, _, hi⟩
+    exact ⟨i, hi⟩
+
 theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
   measurable_of_Ioi fun y => (hf.isOpen_preimage y).measurableSet
