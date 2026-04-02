@@ -3893,6 +3893,7 @@ public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Enum
 public import Mathlib.Data.List.FinRange
 public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Fold
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.GetD
 public import Mathlib.Data.List.Indexes
