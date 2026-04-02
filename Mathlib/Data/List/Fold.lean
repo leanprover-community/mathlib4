@@ -71,11 +71,11 @@ theorem foldl_eq_foldr {f : α → α → α} [hf : Std.Commutative f] [Std.Asso
 
 /-- Second Bird–Wadler duality theorem. -/
 theorem foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f b := by
-  induction l generalizing b <;> simp [*, foldr_cons_eq_foldr_apply, flip, -foldr_cons]
+  induction l generalizing b <;> simp [*, flip, foldr_cons_eq_foldr_apply, -foldr_cons]
 
 /-- Second Bird–Wadler duality theorem. -/
 theorem foldr_flip_eq_foldl [RightCommutative v] : l.foldr (flip v) b = l.foldl v b := by
-  induction l generalizing b <;> simp [*, foldl_cons_eq_apply_foldl, flip, -foldl_cons]
+  induction l generalizing b <;> simp [*, flip, foldl_cons_eq_apply_foldl, -foldl_cons]
 
 @[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
 @[deprecated (since := "2026-02-24")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
