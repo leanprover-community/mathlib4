@@ -107,14 +107,14 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
 
+open Classical in
 /-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
 `{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known. -/
 noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
-    (e : { x | p x } ≃ { x | q x }) : { x | ¬p x } ≃ { x | ¬q x } := by
-  classical
+    (e : { x | p x } ≃ { x | q x }) : { x | ¬p x } ≃ { x | ¬q x } :=
   let sp : Set α := {x | p x}
   let sq : Set α := {x | q x}
   letI : Fintype sp := Fintype.ofFinite sp
@@ -124,7 +124,7 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   let eqc := (Equiv.setCongr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
-  exact epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
+  epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
 
