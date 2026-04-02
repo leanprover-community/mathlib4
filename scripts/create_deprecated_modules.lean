@@ -132,6 +132,9 @@ def processPrettyOneLine (log msg fname : String.Slice) : IO (String.Slice × Me
   return (hash, m!"{msg} in " ++
     .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
 
+-- uses deprecated `Strim.trim`;
+-- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
+set_option linter.deprecated false in
 /--
 `mkRenamesDict pct` takes as optional input a natural number.
 
@@ -183,13 +186,17 @@ def mkModName (fname : System.FilePath) : String :=
     match cpts.getLast? with
     | none => cpts
     | some last =>
-      cpts.dropLast ++ [if last.endsWith ".lean" then last.dropRight ".lean".length else last]
+      cpts.dropLast ++
+        [if last.endsWith ".lean" then last.dropEnd ".lean".length |>.toString else last]
   ".".intercalate cpts
 
 #guard mkModName ("Mathlib" / "Data" / "Nat" / "Basic.lean") == "Mathlib.Data.Nat.Basic"
 #guard mkModName "" == ""
 #guard mkModName ("" / "") == "."
 
+-- uses deprecated `Strim.trim`;
+-- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
+set_option linter.deprecated false in
 /--
 `deprecateFilePath fname rename comment` takes as input
 * the path `fname` of a file that was deleted;
