@@ -68,13 +68,13 @@ theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
     IsClosedBasis ((fun f => ⋃₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
   refine (isClosedSubbasis_iff_isTopologicalBasis_sInter_compl s).trans
     ((isClosedBasis_iff _).trans <| iff_of_eq <| Set.compl_image_set_of ▸ ?_).symm
-  · congr
-    ext t
-    refine ⟨fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_, fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_⟩
-    · exact ⟨compl '' f, ⟨hf.image compl, Set.image_mono hfs⟩,
-        (f.compl_sUnion ▸ eq_compl_comm.1 hft).symm⟩
-    · exact ⟨compl '' f, ⟨hf.image compl, s.compl_compl_image ▸ Set.image_mono hfs⟩,
-        eq_compl_comm.2 (Set.compl_sUnion _ ▸ f.compl_compl_image.symm ▸ hft.symm)⟩
+  congr
+  ext t
+  refine ⟨fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_, fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_⟩
+  · exact ⟨compl '' f, ⟨hf.image compl, image_mono hfs⟩,
+      (f.compl_sUnion ▸ eq_compl_comm.1 hft).symm⟩
+  · exact ⟨compl '' f, ⟨hf.image compl, s.compl_compl_image ▸ image_mono hfs⟩,
+      eq_compl_comm.2 (compl_sUnion _ ▸ f.compl_compl_image.symm ▸ hft.symm)⟩
 
 theorem isClosedBasis_of_isClosedSubbasis_of_union {s : Set (Set α)} (hs1 : IsClosedSubbasis s)
     (hs2 : ∀ u ∈ s, ∀ v ∈ s, u ∪ v ∈ s) : IsClosedBasis (insert ∅ s) :=
