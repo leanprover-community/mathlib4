@@ -755,34 +755,3 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
     fun a => ext fun b => by simpa [p] using fix_aux f _ _
 
 end Partrec
-
-namespace Computable
-
-variable {α : Type*} [Primcodable α]
-
-/--
-If `decide (P x n)` is computable, and if for every `x` there
-exists an `n` such that `P x n` holds, then the function mapping `x` to the
-minimal such `n` (using `Nat.find`) is computable.
-This formally bridges `Partrec.rfind` with total unbounded search.
--/
-lemma find {P : α → ℕ → Prop} [∀ x n, Decidable (P x n)]
-    (hP_comp : Computable (fun p : α × ℕ => decide (P p.1 p.2)))
-    (h_ex : ∀ x, ∃ n, P x n) :
-    Computable (fun x => Nat.find (h_ex x)) := by
-  have h_partrec : Partrec₂ fun x n => Part.some (decide (P x n)) := hP_comp.partrec
-  refine (Partrec.rfind h_partrec).of_eq fun x => ?_
-  refine Part.eq_some_iff.mpr <| Nat.mem_rfind.mpr ⟨?_, ?_⟩
-  · exact ⟨trivial, decide_eq_true (Nat.find_spec (h_ex x))⟩
-  · exact fun hm => ⟨trivial, decide_eq_false (Nat.find_min (h_ex x) hm)⟩
-
-/--
-If a function `f` is computable and surjective, its right inverse
-(the function mapping `y` to the minimal `x` such that `f x = y`) is computable.
--/
-lemma rightInverse_of_surjective {f : ℕ → ℕ} (hf : Computable f) (h_surj : ∀ y, ∃ x, f x = y) :
-    Computable (fun y => Nat.find (h_surj y)) := by
-  refine find ?_ h_surj
-  exact (Primrec.to_comp Primrec.beq).comp <| (hf.comp Computable.snd).pair Computable.fst
-
-end Computable
