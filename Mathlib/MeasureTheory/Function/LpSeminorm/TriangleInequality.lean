@@ -83,6 +83,42 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
 
+end MeasureTheory
+
+namespace ENNReal
+
+open MeasureTheory
+
+/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
+valid for all `0 ≤ p` (not just `1 ≤ p`). -/
+theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 0 ≤ p) :
+    (z₁ + z₂) ^ p ≤ LpAddConst (ENNReal.ofReal p)⁻¹ * (z₁ ^ p + z₂ ^ p) := by
+  unfold LpAddConst
+  split_ifs with h
+  · simp at h
+    simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
+    rw [ENNReal.toReal_ofReal hp]
+    exact ENNReal.rpow_add_le_mul_rpow_add_rpow _ _ h.le
+  · rw [one_mul]
+    exact ENNReal.rpow_add_le_add_rpow _ _ hp (by simpa using h)
+
+/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow'` with `p : ℝ≥0∞`. -/
+theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞} :
+    (z₁ + z₂) ^ p.toReal⁻¹ ≤
+      LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
+  by_cases p_zero : p = 0
+  · simp [p_zero, LpAddConst_zero]
+  convert rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
+  rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
+
+end ENNReal
+
+namespace MeasureTheory
+
+variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
+  [TopologicalSpace ε] [ESeminormedAddMonoid ε] [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε']
+  {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → ε}
+
 theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (p : ℝ≥0∞) : eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
