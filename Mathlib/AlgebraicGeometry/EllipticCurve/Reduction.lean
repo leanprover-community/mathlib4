@@ -355,19 +355,6 @@ theorem HasAdditiveReduction.not_hasMultiplicativeReduction (hW : W.HasAdditiveR
     ¬ W.HasMultiplicativeReduction R :=
   fun h ↦ hW.additiveReduction.ne h.multiplicativeReduction
 
-open Polynomial in
-/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
-the polynomial `c₄ X ^ 2 + a₁ c₄ X + (54 b₆ - 3 b₂ b₄ - a₂ c₄)` splits in the residue field.
-To see how this polynomial arises, note that node `(x₀, y₀)` has `x₀ = (18 b₆ - b₂ b₄) / c₄`, and
-the reduction is split if and only if the tangent cone `X ^ 2 + a₁ T = 3 x₀ + a₂` splits.
--/
-@[mk_iff]
-class IsSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
-    extends W.HasMultiplicativeReduction R where
-  splitMultiplicativeReduction : letI I := W.integralModel R
-    Splits <| .map (algebraMap R (ResidueField R)) <|
-      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X + C (54 * I.b₆ - 3 * I.b₂ * I.b₄ - I.a₂ * I.c₄)
-
 end Reduction
 
 end WeierstrassCurve
