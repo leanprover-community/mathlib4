@@ -51,7 +51,9 @@ theorem IsClosedBasis.isClosed {u : Set α} {s : Set (Set α)}
   simp_rw [← isOpen_compl_iff]
   exact isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-/-- `IsClosedSubbasis s` means that the topology on `α` equals `generateFrom { uᶜ | u ∈ s }`. -/
+/-- `IsClosedSubbasis s` means that the topology on `α` is the least topology such that each element
+of `s` is closed. More specifically, `IsClosedSubbasis s` holds if the topology on `α` equals
+`generateFrom { uᶜ | u ∈ s }`. -/
 def IsClosedSubbasis (s : Set (Set α)) := t = generateFrom (compl '' s)
 
 theorem IsClosedSubbasis.isClosed {u : Set α} {s : Set (Set α)}
