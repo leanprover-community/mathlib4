@@ -259,17 +259,14 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
     simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
   have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
     simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
-      fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
-  have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
-    have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
-    suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
-    refine (IsClosed.closure_subset_iff (hc fun l φ hφ => ?_)).2 ?_
-    · suffices (fun i => x (i + (k + 1))) ∘ φ = x ∘ (fun i => i + (k + 1)) ∘ φ from by
-        refine this.symm ▸ hx l _ (StrictMono.comp (strictMono_id.add_const _) hφ)
-      grind
-    · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
-      exact iUnion_mono fun i => subset_closure
-  grind
+      fun i hi => hk i (by grind)
+  apply this
+  have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
+  suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
+  refine (IsClosed.closure_subset_iff (hc fun l φ hφ => ?_)).2 ?_
+  · exact hx l _ ((strictMono_id.add_const _).comp hφ)
+  · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
+    exact iUnion_mono fun i => subset_closure
 
 /-- If `f : X → Y` is an embedding map, the image `f '' s` of a set `s` is sequentially compact
   if and only if `s` is sequentially compact. -/
