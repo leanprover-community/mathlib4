@@ -90,11 +90,11 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     (⋂ i ∈ s, F i).Nonempty := by
   classical
   obtain h_card | h_card := lt_or_ge #s (finrank 𝕜 E + 1)
-  · exact helly_theorem_corner (le_of_lt h_card) h_inter
+  · exact helly_theorem_corner  h_card.le h_inter
   generalize hn : #s = n
   rw [hn] at h_card
   induction n, h_card using Nat.le_induction generalizing ι with
-  | base => exact helly_theorem_corner (le_of_eq hn) h_inter
+  | base => exact helly_theorem_corner hn.le h_inter
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
   | succ k h_card hk =>

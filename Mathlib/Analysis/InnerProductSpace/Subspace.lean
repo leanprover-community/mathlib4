@@ -214,14 +214,14 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
         rw [← hV.norm_sq_diff_sum, sq_lt_sq, abs_of_nonneg (sqrt_nonneg _),
           abs_of_nonneg (norm_nonneg _)]
         exact H s₁ hs₁ s₂ hs₂
-      have hη := sq_sqrt (le_of_lt hε)
+      have hη := sq_sqrt hε.le
       linarith
     · intro hf ε hε
       have hε' : 0 < ε ^ 2 / 2 := half_pos (sq_pos_of_pos hε)
       obtain ⟨a, H⟩ := hf _ hε'
       use a
       intro s₁ hs₁ s₂ hs₂
-      refine (abs_lt_of_sq_lt_sq' ?_ (le_of_lt hε)).2
+      refine (abs_lt_of_sq_lt_sq' ?_ hε.le).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by

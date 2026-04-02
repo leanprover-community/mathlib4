@@ -188,7 +188,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
   rcases le_or_gt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
-  · exact antitone_lowerCentralSeries R L M (le_of_lt h)
+  · exact antitone_lowerCentralSeries R L M h.le
 
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h

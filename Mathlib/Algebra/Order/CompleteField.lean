@@ -175,7 +175,7 @@ theorem inducedMap_rat (q : ℚ) : inducedMap α β (q : α) = q := by
     (cutMap_nonempty β (q : α)) (fun x h => ?_) fun w h => ?_
   · rw [cutMap_coe] at h
     obtain ⟨r, h, rfl⟩ := h
-    exact le_of_lt h
+    exact h.le
   · obtain ⟨q', hwq, hq⟩ := exists_rat_btwn h
     rw [cutMap_coe]
     exact ⟨q', ⟨_, hq, rfl⟩, hwq⟩

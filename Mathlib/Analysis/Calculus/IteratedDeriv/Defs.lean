@@ -280,7 +280,7 @@ advantage of avoiding the discussion of continuity in the proof (and for `n = �
 -/
 theorem contDiff_of_differentiable_iteratedDeriv {n : ℕ∞}
     (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → Differentiable 𝕜 (iteratedDeriv m f)) : ContDiff 𝕜 n f :=
-  contDiff_iff_iteratedDeriv.2 ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
+  contDiff_iff_iteratedDeriv.2 ⟨fun m hm ↦ (h m hm).continuous, fun m hm ↦ h m hm.le⟩
 
 theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : m ≤ n) : Continuous (iteratedDeriv m f) :=

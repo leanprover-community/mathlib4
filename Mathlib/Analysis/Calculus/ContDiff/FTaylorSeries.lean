@@ -641,8 +641,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
-      (h.fderivWithin m A x hx).congr (fun y hy => (IH (le_of_lt A) hy).symm)
-        (IH (le_of_lt A) hx).symm
+      (h.fderivWithin m A x hx).congr (fun y hy ↦ (IH A.le hy).symm) (IH A.le hx).symm
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
 

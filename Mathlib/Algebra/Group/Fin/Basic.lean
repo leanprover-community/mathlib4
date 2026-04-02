@@ -70,7 +70,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
       rw [Fin.val_zero, Nat.sub_add_cancel, Nat.mod_self]
-      exact le_of_lt ha
+      exact ha.le
   sub := Fin.sub
   sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
     Fin.ext <| by simp [Fin.sub_def, Fin.neg_def, Fin.add_def, Nat.add_comm]

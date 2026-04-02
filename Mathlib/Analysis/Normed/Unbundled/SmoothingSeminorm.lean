@@ -143,7 +143,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     intro n hn
     specialize hN n hn
     rw [Real.dist_eq, abs_lt] at hN
-    exact le_of_lt hN.right
+    exact hN.right.le
   /- We now show that for all `n ≥ max m1 m2`, we have
     `dist (smoothingSeminormSeq μ x n) (smoothingFun μ x) < ε`. -/
   use max (m1 : ℕ) m2
@@ -180,7 +180,6 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     have h : μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ)) ≤
         (μ (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) := by
       gcongr
-
       rw [pow_mul]
       exact map_pow_le_pow μ (x ^ (m1 : ℕ))
         (pos_iff_ne_zero.mp (Nat.div_pos (le_trans (le_max_left (m1 : ℕ) m2) hn) (PNat.pos m1)))
@@ -202,7 +201,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
           (cast_pos.mpr hn0)
       rw [← rpow_natCast, ← rpow_add hL0', ← neg_div, ← add_div, Nat.cast_add,
         add_neg_cancel_right, Nat.cast_mul, ← rpow_mul (apply_nonneg μ _), mul_one_div,
-        mul_div_assoc, rpow_mul (le_of_lt hL0')]
+        mul_div_assoc, rpow_mul hL0'.le]
       gcongr
     /- We again use the submultiplicativity of `μ` to deduce
     `μ (x ^ (n % m1)) ^ (1 / n) ≤ (μ x ^ (n % m1)) ^ (1 / n)`. -/
@@ -341,8 +340,7 @@ private theorem μ_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {
   by_cases hμx : μ x < 1
   · use 1
     simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
-    exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
-      (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))⟩
+    exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) hμx.le (by positivity)⟩
   · use μ x
     simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
     use 0
@@ -363,8 +361,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
     by_cases hμx : μ x < 1
     · apply hc_bd (1 : ℝ) 0
       intro b _
-      exact rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
-          (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))
+      exact rpow_le_one (apply_nonneg _ _) hμx.le (by positivity)
     · have hμ_lim : Tendsto (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop (𝓝 1) := by
         nth_rw 1 [← rpow_zero (μ x)]
         convert Tendsto.rpow tendsto_const_nhds hψ_lim
@@ -377,7 +374,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
       have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
         simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, hε, and_self]
       obtain ⟨k, hk⟩ := hμ_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
-      exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
+      exact hc_bd (1 + ε) k fun b hb ↦ (Set.mem_Ioo.mp (hk b hb)).2.le
 
 private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R}
     {a : ℝ} (a_in : a ∈ Set.Icc (0 : ℝ) 1) {ψ : ℕ → ℕ} (hψ_mono : StrictMono ψ)
@@ -450,8 +447,8 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     simp only [EventuallyEq, Function.comp_apply, eventually_atTop, ge_iff_le]
     use 1
     intro m hm
-    have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_le_of_lt (_root_.zero_le _)
-      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))))
+    have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (lt_of_le_of_lt (_root_.zero_le _)
+      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))).ne'
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
   have b_in : b ∈ Set.Icc (0 : ℝ) 1 := Set.Icc.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
@@ -493,7 +490,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_left
-        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) (le_of_lt (not_le.mp h)) b_in.1)
+        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) (not_le.mp h).le b_in.1)
         (rpow_nonneg (smoothingFun_nonneg μ hμ1 _) _))
       rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ hμ1 _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]

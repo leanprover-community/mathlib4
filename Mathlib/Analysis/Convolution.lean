@@ -946,7 +946,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
   ext1 x
   rw [convolution, posConvolution, indicator]
   split_ifs with h
-  · rw [intervalIntegral.integral_of_le (le_of_lt h), integral_Ioc_eq_integral_Ioo, ←
+  · rw [intervalIntegral.integral_of_le h.le, integral_Ioc_eq_integral_Ioo, ←
       integral_indicator (measurableSet_Ioo : MeasurableSet (Ioo 0 x))]
     congr 1 with t : 1
     have : t ≤ 0 ∨ t ∈ Ioo 0 x ∨ x ≤ t := by

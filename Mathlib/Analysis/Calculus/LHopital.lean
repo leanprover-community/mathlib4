@@ -55,8 +55,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
     (hfa : Tendsto f (𝓝[>] a) (𝓝 0)) (hga : Tendsto g (𝓝[>] a) (𝓝 0))
     (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
-  have sub : ∀ x ∈ Ioo a b, Ioo a x ⊆ Ioo a b := fun x hx =>
-    Ioo_subset_Ioo (le_refl a) (le_of_lt hx.2)
+  have sub : ∀ x ∈ Ioo a b, Ioo a x ⊆ Ioo a b := fun x hx ↦ Ioo_subset_Ioo (le_refl a) hx.2.le
   have hg : ∀ x ∈ Ioo a b, g x ≠ 0 := by
     intro x hx h
     have : Tendsto g (𝓝[<] x) (𝓝 0) := by
@@ -337,7 +336,7 @@ theorem lhopital_zero_atTop (hff' : ∀ᶠ x in atTop, HasDerivAt f (f' x) x)
   have hs : s ∈ atTop := inter_mem (inter_mem hs₁ hs₂) hs₃
   rw [mem_atTop_sets] at hs
   rcases hs with ⟨l, hl⟩
-  have hl' : Ioi l ⊆ s := fun x hx => hl x (le_of_lt hx)
+  have hl' : Ioi l ⊆ s := fun x hx ↦ hl x hx.le
   refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx ↦ hg' x (hl' hx).2) hftop hgtop hdiv <;> grind
 
 /-- L'Hôpital's rule for approaching -∞, `HasDerivAt` version -/
@@ -353,7 +352,7 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
   have hs : s ∈ atBot := inter_mem (inter_mem hs₁ hs₂) hs₃
   rw [mem_atBot_sets] at hs
   rcases hs with ⟨l, hl⟩
-  have hl' : Iio l ⊆ s := fun x hx => hl x (le_of_lt hx)
+  have hl' : Iio l ⊆ s := fun x hx ↦ hl x hx.le
   refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx ↦ hg' x (hl' hx).2) hfbot hgbot hdiv <;> grind
 
 end HasDerivAt

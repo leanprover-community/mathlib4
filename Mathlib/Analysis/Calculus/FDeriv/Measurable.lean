@@ -134,7 +134,7 @@ theorem isOpen_A (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (A f L r ε) := by
   obtain ⟨s, s_gt, s_lt⟩ : ∃ s : ℝ, r / 2 < s ∧ s < r' := exists_between r'_mem.1
   have : s ∈ Ioc (r / 2) r := ⟨s_gt, le_of_lt (s_lt.trans_le r'_mem.2)⟩
   refine ⟨r' - s, by linarith, fun x' hx' => ⟨s, this, ?_⟩⟩
-  have B : ball x' s ⊆ ball x r' := ball_subset (le_of_lt hx')
+  have B : ball x' s ⊆ ball x r' := ball_subset hx'.le
   intro y hy z hz
   exact hr' y (B hy) z (B hz)
 
@@ -607,7 +607,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
-      _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
+      _ < 12 * (ε / 12) := by gcongr
       _ = ε := by ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=

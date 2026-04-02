@@ -124,7 +124,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
   gcongr
   · exact lt_of_le_of_lt hsumlesum
         (by rw [← sum_mul, mul_comm]; gcongr)
-  rw [sum_range_sub_sum_range (le_of_lt hNMK)]
+  rw [sum_range_sub_sum_range hNMK.le]
   calc
     (∑ i ∈ range K with max N M + 1 ≤ i,
           abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
@@ -135,7 +135,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         rw [two_mul, abv_neg abv]
         gcongr <;> exact le_of_lt (hQ _)
     _ < ε / (4 * Q) * (2 * Q) := by
-        rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)]
+        rw [← sum_mul, ← sum_range_sub_sum_range hNMK.le]
         have := lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)
         gcongr
         exact (le_abs_self _).trans_lt <|
