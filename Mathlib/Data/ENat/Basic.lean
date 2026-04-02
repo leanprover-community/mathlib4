@@ -629,7 +629,7 @@ lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := b
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
 
-lemma add_one_le_natCast_iff (n : WithBot ℕ∞) (m : ℕ) : n + 1 ≤ m ↔ n < m := by
+lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n < m := by
   induction n with
   | bot => simp
   | coe n =>
