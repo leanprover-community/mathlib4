@@ -55,7 +55,7 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is a nondegenerate as a bilinrat pairing.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinrat pairing.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
