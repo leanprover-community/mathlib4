@@ -135,6 +135,9 @@ lemma isBridge_iff_not_isEdgeConnected_two {u v : V} (huv : G.Adj u v) :
   · exact hx ▸ hr
   exact deleteEdges_adj.mpr ⟨huv, hx⟩ |>.reachable
 
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeConnected_two
+
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one]
 

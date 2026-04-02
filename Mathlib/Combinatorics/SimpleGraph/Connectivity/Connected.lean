@@ -773,6 +773,9 @@ theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff,reachable_deleteEdges_iff_exists_walk, not_exists_not]
 
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_adj_and_forall_walk_mem_edges := isBridge_iff_forall_walk_mem_edges
+
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     (hb : ∀ p : G.Walk v w, s(v, w) ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
     (he : s(v, w) ∈ c.edges)
@@ -831,9 +834,15 @@ theorem isBridge_iff_forall_cycle_notMem {e : Sym2 V} (he : e ∈ G.edgeSet) :
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp_all
 
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_adj_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
+
 lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
     (he : G.IsBridge e) (hp : p.IsCycle) : e ∉ p.edges :=
   fun hep ↦ (isBridge_iff_forall_cycle_notMem <| p.edges_subset_edgeSet hep).mp he _ hp hep
+
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_mem_and_forall_cycle_notMem := IsBridge.notMem_edges_of_isCycle
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}

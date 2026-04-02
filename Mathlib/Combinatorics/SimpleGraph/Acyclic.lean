@@ -173,6 +173,9 @@ theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edg
     obtain ⟨e, he⟩ := c.edges.exists_mem_of_ne_nil (by simp [hc.ne_nil, nil_iff_eq_nil])
     exact (hG <| c.edges_subset_edgeSet he).notMem_edges_of_isCycle hc he
 
+@[deprecated (since := "2026-04-02")]
+alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge
+
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
