@@ -15,7 +15,7 @@ public meta import Lean.PrettyPrinter.Delaborator.Builtins
 /-! # Conv widget
 
 This is a slightly improved version of one of the examples that used to be
-in the ProofWidget library. It defines a `conv?` tactic that displays a widget panel
+in the ProofWidgets library. It defines a `conv?` tactic that displays a widget panel
 allowing to generate a `conv` call zooming to the subexpression selected in the goal.
 -/
 

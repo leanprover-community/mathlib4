@@ -80,26 +80,24 @@ theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) :=
   ⟨0, by simp [mem_lowerBounds, projectiveSeminormAux_nonneg]⟩
 
--- This definition will be replaced by a `Norm` instance in a follow-up PR.
-/-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
-infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
-of `∑ j, Π i, ‖mⱼ i‖`. See `PiTensorProduct.projectiveSeminorm` for a version bundled as a
-`Seminorm`. -/
-noncomputable def projectiveSeminormFun : (⨂[𝕜] i, E i) → ℝ :=
-  fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val)
+noncomputable instance : Norm (⨂[𝕜] i, E i) :=
+  ⟨fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val)⟩
 
-theorem projectiveSeminorm_zero : projectiveSeminormFun (0 : ⨂[𝕜] i, E i) = 0 :=
+theorem norm_def (x : ⨂[𝕜] i, E i) :
+    ‖x‖ = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val) := rfl
+
+@[deprecated (since := "2026-03-13")] alias projectiveSeminormFun := norm
+
+theorem projectiveSeminorm_zero : ‖(0 : ⨂[𝕜] i, E i)‖ = 0 :=
   le_antisymm (ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨0, lifts_zero⟩)
     (le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.val))
 
-theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) :
-  projectiveSeminormFun (x+y) ≤ projectiveSeminormFun x + projectiveSeminormFun y :=
+theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) : ‖x+y‖ ≤ ‖x‖ + ‖y‖ :=
   le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
     ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
 
-theorem projectiveSeminorm_smul_le (a : 𝕜) (x : ⨂[𝕜] i, E i) :
-  projectiveSeminormFun (a • x) ≤ ‖a‖ * projectiveSeminormFun x := by
-  simp only [projectiveSeminormFun, Real.mul_iInf_of_nonneg (norm_nonneg _)]
+theorem projectiveSeminorm_smul_le (a : 𝕜) (x : ⨂[𝕜] i, E i) : ‖a • x‖ ≤ ‖a‖ * ‖x‖ := by
+  simp only [norm_def, Real.mul_iInf_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun p ↦ ?_
   simpa [projectiveSeminormAux_smul] using
     ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨_, lifts_smul p.2 a⟩ (le_refl _)
@@ -110,6 +108,7 @@ of `∑ j, Π i, ‖mⱼ i‖`. -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := .ofSMulLE
     _ projectiveSeminorm_zero projectiveSeminorm_add_le projectiveSeminorm_smul_le
 
+@[deprecated norm_def (since := "2026-03-06")]
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 
@@ -125,10 +124,10 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [SeminormedAddCommGroup G]
-    [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) :
-    ‖lift f.toMultilinearMap x‖ ≤ projectiveSeminorm x * ‖f‖ := by
-  rw [projectiveSeminorm_apply, Real.iInf_mul_of_nonneg (norm_nonneg _)]
+theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
+    [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) (x : ⨂[𝕜] i, E i) :
+    ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * ‖x‖ := by
+  rw [norm_def, mul_comm, Real.iInf_mul_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun ⟨p, hp⟩ ↦ ?_
   rw! [← ((mem_lifts_iff x p).mp hp), ← List.sum_map_hom, ← Multiset.sum_coe]
   grw [norm_multiset_sum_le]

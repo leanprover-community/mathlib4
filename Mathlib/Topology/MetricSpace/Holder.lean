@@ -185,6 +185,7 @@ lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
   simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
   grw [hf x hx y hy, hA x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder when `s ≤ r`. -/
 lemma of_le {C D s : ℝ≥0} {A : Set X}
     (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) (hsr : s ≤ r) :

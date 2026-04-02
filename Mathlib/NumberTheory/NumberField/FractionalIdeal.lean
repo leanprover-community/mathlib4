@@ -36,9 +36,6 @@ section Basis
 
 open Module
 
--- This is necessary to avoid several timeouts
-attribute [local instance 2000] Submodule.module
-
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den

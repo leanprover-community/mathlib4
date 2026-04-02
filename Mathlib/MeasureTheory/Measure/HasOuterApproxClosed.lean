@@ -184,6 +184,7 @@ lemma tendsto_apprSeq :
     Tendsto (fun n : ℕ ↦ (fun x ↦ hF.apprSeq n x)) atTop (𝓝 (indicator F fun _ ↦ (1 : ℝ≥0))) :=
   (Exists.choose_spec (HasOuterApproxClosed.exAppr F hF)).2.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma indicator_le_apprSeq (n : ℕ) :
     indicator F (fun _ ↦ 1) ≤ hF.apprSeq n := by
   intro x

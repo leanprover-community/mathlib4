@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 module
 
+public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
@@ -15,10 +16,8 @@ This file introduces the Scott topology on a preorder.
 
 ## Main definitions
 
-- `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
-  bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
-- `DirSupClosed` - a set `s` is said to be closed under directed joins if, whenever a directed set
-  `d` has a least upper bound `a` and is a subset of `s` then `a` also lies in `s`.
+- `Topology.scottHausdorff`: the Scott-Hausdorff topology is the topology whose closed sets are
+  `DirSupClosed`, i.e. closed under directed suprema.
 - `Topology.scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
@@ -66,76 +65,6 @@ Scott topology, preorder
 open Set
 
 variable {α β : Type*}
-
-/-! ### Prerequisite order properties -/
-
-section Preorder
-variable [Preorder α] {s t : Set α}
-
-/-- A set `s` is said to be inaccessible by directed joins on `D` if, when the least upper bound of
-a directed set `d` in `D` lies in `s` then `d` has non-empty intersection with `s`. -/
-def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
-
-/-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
-directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
-def DirSupInacc (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
-
-@[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
-  simp [DirSupInaccOn, DirSupInacc]
-
-@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
-    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
-
-lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
-    DirSupInaccOn D₁ s := fun ⦃_⦄ a ↦ hf (hD a)
-
-/--
-A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
-upper bound `a` and is a subset of `s` then `a` also lies in `s`.
--/
-def DirSupClosed (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
-
-@[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
-  simp [DirSupInacc, DirSupClosed, ← not_disjoint_iff_nonempty_inter, not_imp_not,
-    disjoint_compl_right_iff]
-
-@[simp] lemma dirSupClosed_compl : DirSupClosed sᶜ ↔ DirSupInacc s := by
-  rw [← dirSupInacc_compl, compl_compl]
-
-alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
-alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
-
-lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans inter_subset_left,
-    ht hd hd' ha <| hds.trans inter_subset_right⟩
-
-lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
-  rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
-
-lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  fun _d ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) <| hds hb
-
-lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := hs.compl.dirSupClosed.of_compl
-
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (isLUB_le_iff ha).2
-
-end Preorder
-
-section CompleteLattice
-variable [CompleteLattice α] {s : Set α}
-
-lemma dirSupInacc_iff_forall_sSup :
-    DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
-  simp [DirSupInacc, isLUB_iff_sSup_eq]
-
-lemma dirSupClosed_iff_forall_sSup :
-    DirSupClosed s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  simp [DirSupClosed, isLUB_iff_sSup_eq]
-
-end CompleteLattice
 
 namespace Topology
 
@@ -193,6 +122,28 @@ lemma dirSupClosed_of_isClosed [IsScottHausdorff α univ] (h : IsClosed s) : Dir
   apply DirSupInacc.of_compl
   rw [← dirSupInaccOn_univ]
   exact (dirSupInaccOn_of_isOpen h.isOpen_compl)
+
+theorem isOpen_iff_dirSupInacc [IsScottHausdorff α univ] : IsOpen s ↔ DirSupInacc s where
+  mp h := dirSupInaccOn_univ.1 <| Topology.IsScottHausdorff.dirSupInaccOn_of_isOpen h
+  mpr h := by
+    rw [IsScottHausdorff.isOpen_iff (D := .univ)]
+    intro t _ ht₀ ht₁ a ha has
+    by_contra! H
+    have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
+    choose f hf using H
+    have := ht₀.to_subtype
+    have hft : range f ⊆ t := by grind
+    apply (h (range_nonempty f) _ _ has).ne_empty
+    · aesop
+    · intro a ha b hb
+      obtain ⟨c, hc, _, _⟩ := ht₁ _ (hft ha) _ (hft hb)
+      have := hf ⟨c, hc⟩
+      grind
+    · exact ⟨upperBounds_mono_set hft ha.1,
+        fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
+
+theorem isClosed_iff_dirSupClosed [IsScottHausdorff α univ] : IsClosed s ↔ DirSupClosed s := by
+  rw [← isOpen_compl_iff, isOpen_iff_dirSupInacc, dirSupInacc_compl]
 
 end IsScottHausdorff
 end ScottHausdorff
@@ -411,7 +362,12 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α univ
+
+instance : TopologicalSpace (WithScott α) :=
+  -- fast_instance% scott α univ fails
+  letI : TopologicalSpace α := scott α univ
+  inferInstanceAs <| TopologicalSpace α
+
 instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :

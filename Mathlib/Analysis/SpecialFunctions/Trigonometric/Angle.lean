@@ -41,10 +41,9 @@ protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
 instance : Coe ℝ Angle := ⟨Angle.coe⟩
 
 instance : CircularOrder Real.Angle :=
-  QuotientAddGroup.circularOrder (hp' := ⟨by simp [pi_pos]⟩)
+  fast_instance% QuotientAddGroup.circularOrder (hp' := ⟨by simp [pi_pos]⟩)
 
-
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ → Angle) :=
   continuous_quotient_mk'
 

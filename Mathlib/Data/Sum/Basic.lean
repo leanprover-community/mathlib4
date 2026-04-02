@@ -244,6 +244,11 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
   mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
 
 @[simp]
+theorem elim_injective' {γ : Sort*} {f : α → γ} :
+    Injective (Sum.elim f : (β → γ) → (α ⊕ β → γ)) :=
+  fun g₁ g₂ hg ↦  funext fun b ↦ by simpa using congr_fun hg (Sum.inr b)
+
+@[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
   mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩

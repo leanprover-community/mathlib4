@@ -79,10 +79,8 @@ section End
 
 variable {R : Type w}
 
-set_option backward.isDefEq.respectTransparency false in
-instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
-  dsimp [End]
-  infer_instance
+instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
+  inferInstanceAs <| Module R (X ⟶ X)
 
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
   Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _

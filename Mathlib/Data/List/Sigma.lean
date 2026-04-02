@@ -227,16 +227,31 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
-omit [DecidableEq α] [DecidableEq α'] in
-theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
-    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
-  classical
+#adaptation_note /-- Before leanprover/lean4#13166
+the grind proof here worked, but after changes to the canonicalizer it now times out.
+Changes to grind attributes in Batteries in
+https://github.com/leanprover-community/batteries/pull/1744
+may allow restoring the original proof:
+```
   induction l with
   | nil => grind [nodupKeys_nil]
   | cons hd tl =>
     have := dlookup_map₁ tl hf hd.fst
     grind [dlookup_isSome, → notMem_keys_of_nodupKeys_cons, nodupKeys_of_nodupKeys_cons,
       nodupKeys_cons]
+```
+-/
+omit [DecidableEq α] [DecidableEq α'] in
+theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
+    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  induction l with
+  | nil => exact nodupKeys_nil
+  | cons hd tl ih =>
+    simp only [map_cons, nodupKeys_cons] at nd ⊢
+    exact ⟨mt (fun h => by
+      simp only [keys, map_map] at h ⊢
+      obtain ⟨x, hm, he⟩ := mem_map.mp h
+      exact mem_map.mpr ⟨x, hm, hf he⟩) nd.1, ih nd.2⟩
 
 omit [DecidableEq α] in
 theorem map₂_keys {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a)) :

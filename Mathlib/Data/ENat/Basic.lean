@@ -43,34 +43,12 @@ open Function
 assert_not_exists Field
 
 deriving instance Nontrivial,
-  LinearOrder, Bot, Sub,
-  IsOrderedRing, CanonicallyOrderedAdd,
-  OrderBot, OrderTop, OrderedSub,
-  WellFoundedLT,
-  CharZero,
-  NoZeroDivisors,
-  ZeroLEOneClass
+  Add, Sub, LE, LT, Bot,
+  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
+  AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
+  ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
+  CharZero, NoZeroDivisors
   for ENat
-
-set_option backward.inferInstanceAs.wrap false in
-deriving instance LinearOrderedAddCommMonoidWithTop for ENat
-
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance SuccOrder for ENat
-
-#adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
-than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
-expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
-(`ENat.instNatCast`) that is not reducibly defeq to `Lean.Grind.Semiring.natCast`.
-See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
--/
-instance : CommSemiring ENat := {
-  __ := (inferInstance : CommSemiring (WithTop ℕ))
-  toNatCast := inferInstance
-}
-
--- Moving this before `CommSemiring ENat` causes a failure later (where?).
-deriving instance CanonicallyOrderedAdd for ENat
 
 namespace ENat
 
@@ -82,14 +60,9 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
-@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := by
-  simp [SuccOrder.succ]
-  rfl
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
 
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
-
-@[simp] theorem top_add {x : ℕ∞} : ⊤ + x = ⊤ := WithTop.top_add x
-@[simp] theorem add_top {x : ℕ∞} : x + ⊤ = ⊤ := WithTop.add_top x
 
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp
@@ -261,7 +234,6 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
   cases n
@@ -289,11 +261,9 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rename_i a; cases a <;> simp
   · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
   lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
   simpa using h
@@ -349,10 +319,8 @@ protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
@@ -485,7 +453,6 @@ instance : Unique ℕ∞ˣ where
 
 section withTop_enat
 
-set_option backward.isDefEq.respectTransparency false in
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
   | ⊤ => exact le_top
@@ -511,7 +478,6 @@ lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
 lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
   le_trans (mod_cast le_top) hN
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natCast_lt_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
   lt_of_lt_of_le (mod_cast lt_add_one n) (natCast_le_of_coe_top_le_withTop hN (n + 1))
 
@@ -602,7 +568,6 @@ protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
     (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
   { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]

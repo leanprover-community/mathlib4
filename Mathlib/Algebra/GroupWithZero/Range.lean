@@ -102,13 +102,9 @@ lemma valueGroup_def : valueGroup f = Subgroup.closure (valueMonoid f) := rfl
 codomain containing the range of `f`. -/
 abbrev ValueMonoid₀ := WithZero (valueMonoid f)
 
-@[deprecated (since := "2025-09-03")] alias valueMonoid₀ := ValueMonoid₀
-
 /-- For a morphism of monoids with zero `f`, this is a smallest subgroup with zero of the
 codomain containing the range of `f`. -/
 abbrev ValueGroup₀ := WithZero (valueGroup f)
-
-@[deprecated (since := "2025-09-03")] alias valueGroup₀ := ValueGroup₀
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto
@@ -216,8 +212,6 @@ open Function
 
 lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
   fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
-
-open Function
 
 end GroupWithZero
 section CommGroupWithZero

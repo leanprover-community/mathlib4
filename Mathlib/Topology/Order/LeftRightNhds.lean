@@ -368,7 +368,6 @@ theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Ten
   refine tendsto_atTop_mul_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
 @[to_additive add_atBot /-- In a linearly ordered additive commutative group with the order

@@ -19,6 +19,7 @@ public import Mathlib.Data.Set.Constructions
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
 - A type `X : Type*`
 - A "structure" map `M X → X`.
+
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 

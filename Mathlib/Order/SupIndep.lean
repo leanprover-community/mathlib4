@@ -353,14 +353,6 @@ theorem iSupIndep_def'' :
 theorem iSupIndep_subsingleton [Subsingleton ι] (t : ι → α) : iSupIndep t :=
   fun i ↦ by simp [← Subsingleton.elim i]
 
-@[deprecated "use iSupIndep_subsingleton instead" (since := "2025-09-18")]
-theorem iSupIndep_empty (t : Empty → α) : iSupIndep t :=
-  nofun
-
-@[deprecated "use iSupIndep_subsingleton instead" (since := "2025-09-18")]
-theorem iSupIndep_pempty (t : PEmpty → α) : iSupIndep t :=
-  nofun
-
 include ht in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem iSupIndep.pairwiseDisjoint : Pairwise (Disjoint on t) := fun x y h =>

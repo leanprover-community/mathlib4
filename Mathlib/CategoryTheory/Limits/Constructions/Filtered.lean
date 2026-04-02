@@ -103,7 +103,7 @@ def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset 
       (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) :) (by
     intro S
     simp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
-      colimit.cocone_x, Functor.const_obj_obj, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
+      colimit.cocone_x, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
     ext j
     rw [← Category.assoc]
     convert IsColimit.comp_coconePointUniqueUpToIso_hom

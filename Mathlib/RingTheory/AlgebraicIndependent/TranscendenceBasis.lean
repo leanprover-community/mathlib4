@@ -170,7 +170,6 @@ lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
 
 variable (ι R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
     IsTranscendenceBasis R (X (R := R) (σ := ι)) := by
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩

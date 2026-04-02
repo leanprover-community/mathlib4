@@ -38,3 +38,5 @@ proof_wanted please_prove_this : True
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
 
 theorem test_type_star (α : Type*) : α = α := rfl
+
+lemma test_lemma : True := trivial

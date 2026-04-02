@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Order.Filter.AtTopBot.BigOperators
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -548,6 +551,14 @@ theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' 
 theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
     ∏' d, f (-d) = ∏' d, f d :=
   (Equiv.neg β).tprod_eq f
+
+@[to_additive]
+theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
+    (h_closed : IsClosed (s : Set α)) {f : ι → α} (h : ∀ i, f i ∈ s) :
+    ∏' i, f i ∈ s := by
+  by_cases hf : Multipliable f
+  · exact h_closed.mem_of_tendsto hf.hasProd <| .of_forall fun _ => prod_mem fun i _ => h i
+  · simp [tprod_eq_one_of_not_multipliable hf, one_mem]
 
 /-! ### `tprod` on subsets - part 1 -/
 

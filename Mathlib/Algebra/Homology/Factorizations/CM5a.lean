@@ -34,7 +34,7 @@ if `f` is a monomorphism which is a quasi-isomorphism in degrees `≤ n₀` and
 where `ι` is a monomorphism that is a quasi-isomorphism in degrees `≤ n₁`,
 and `π` is an isomorphism in degrees `≤ n₀` that is also a degreewise
 epimorphism with an injective kernel. The proof of `step` decomposes
-a two separate lemmas `step₁` and `step₂` (TODO): we first ensure that `ι`
+a two separate lemmas `step₁` and `step₂`: we first ensure that `ι`
 induces a monomorphism in homology in degree `n₁`, and we proceed further
 in `step₂`.
 
@@ -197,10 +197,8 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 
 end step₁
 
--- This lemma and a few definitions above are made public only in order to please CI.
--- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₁ in
-public lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
+lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) :=
@@ -210,13 +208,213 @@ public lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     fun i hi ↦ isIso_π_f K L n₁ i (by lia),
     inferInstance⟩
 
-proof_wanted step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
-    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
-    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F
+namespace step₂
 
-proof_wanted step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+/-!
+This section provides the material in order to prove the lemma `step₂` below.
+Given a monomorphism `f : K ⟶ L` that is a quasi-isomorphism in degrees `< n`
+and which induces a monomorphism in homology in degree `n`, we construct
+a factorisation of `f` as `ι f n ≫ π f n = f` where
+`ι f n : K ⟶ mid f n` is a monomorphism which is a quasi-isomorphism
+in degrees `≤ n`, `π f n` is a degreewise epimorphism with an injective kernel
+which also induces isomorphisms in degrees `≤ n`.
+ -/
+
+
+open HomComplex
+
+variable [EnoughInjectives C] (n : ℤ)
+
+/-- Given a morphism `f : K ⟶ L`, this is the single cochain complex in degree `n`
+which is given an injective object which contains `((cokernel f).truncGE n).X n`,
+i.e. the object in degree `n` of the canonical truncation `≥ n` of `cokernel f`. -/
+noncomputable abbrev S :=
+  (single C (.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
+
+/-- The morphism `(cokernel f).truncGE n ⟶ S f n` which in degree `n` is
+given by `Injective.ι _`. -/
+noncomputable def p : (cokernel f).truncGE n ⟶ S f n :=
+  mkHomToSingle (Injective.ι _) (fun i hi ↦ by
+    simp only [ComplexShape.up_Rel] at hi
+    exact (isZero_of_isStrictlyGE _ n _).eq_of_src _ _)
+
+instance : Mono ((p f n).f n) := by
+  simp only [p, mkHomToSingle_f, mono_comp_iff_of_mono]
+  infer_instance
+
+/-- The obvious morphism `L ⟶ S f n`. -/
+noncomputable def α : L ⟶ S f n := cokernel.π f ≫ (cokernel f).πTruncGE n ≫ p f n
+
+@[reassoc (attr := simp)]
+lemma comp_α : f ≫ α f n = 0 := by simp [α]
+
+@[reassoc (attr := simp)]
+lemma comp_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by simp [← comp_f]
+
+/-- The intermediate object in the factorisation. -/
+noncomputable abbrev mid := mappingCocone (α f n)
+
+/-- The first morphism of the factorisation. -/
+noncomputable abbrev ι : K ⟶ mid f n := mappingCocone.lift (α f n) f 0 (by simp)
+
+/-- The second morphism of the factorisation. -/
+noncomputable abbrev π : mid f n ⟶ L := mappingCocone.fst (α f n)
+
+@[reassoc]
+lemma ι_π : ι f n ≫ π f n = f := by simp
+
+instance [Mono f] : Mono (ι f n) := mono_of_mono_fac (ι_π f n)
+
+lemma degreewiseEpiWithInjectiveKernel_π :
+    degreewiseEpiWithInjectiveKernel (π f n) := by
+  intro i
+  rw [epiWithInjectiveKernel_iff]
+  exact ⟨_, inferInstance, (mappingCocone.inr (α f n)).1.v (i - 1) i (by lia), by simp,
+    ⟨{r := (mappingCocone.snd (α f n)).v _ _ (by lia)
+      s := (mappingCocone.inl (α f n)).v _ _ (by lia)
+      id := (add_comm _ _).trans (by simp [mappingCocone.id_X]) }⟩⟩
+
+lemma isIso_π_f (i : ℤ) (hi : i ≤ n) : IsIso ((π f n).f i) := by
+  refine ⟨(mappingCocone.inl (α f n)).v i i (add_zero i), ?_, by simp⟩
+  simp [← mappingCocone.id_X (α f n) i (i - 1) (by lia),
+    (isZero_single_obj_X _ _ _ _ (by lia)).eq_of_src
+      ((mappingCocone.inr (α f n)).1.v (i - 1) i (by lia)) 0]
+
+section
+
+attribute [local instance] HasDerivedCategory.standard
+
+lemma mono_homologyMap_π (q : ℤ) (hq : q ≤ n) : Mono (homologyMap (π f n) q) :=
+  (CochainComplex.homologyMap_exact₁_of_distTriang _
+    (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) (q - 1) q (by lia)).mono_g
+      ((ExactAt.isZero_homology (exactAt_single_obj _ _ _ _ (by lia))).eq_of_src _ _)
+
+lemma epi_homologyMap_π (q : ℤ) (hq : q < n) : Epi (homologyMap (π f n) q) :=
+  (CochainComplex.homologyMap_exact₂_of_distTriang _
+    (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) q).epi_f
+      ((ExactAt.isZero_homology (exactAt_single_obj _ _ _ _ (by lia))).eq_of_tgt _ _)
+
+end
+
+lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
+  have := mono_homologyMap_π f n q (by lia)
+  have := epi_homologyMap_π f n q hq
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  apply Balanced.isIso_of_mono_of_epi
+
+/-- The (exact) short complex `K.homology n ⟶ L.homology n ⟶ (S f n).homology n`. -/
+@[simps]
+noncomputable def homologyShortComplex : ShortComplex C :=
+  ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
+    rw [← homologyMap_comp, comp_α, homologyMap_zero])
+
+instance [Mono (homologyMap f n)] :
+    Mono (homologyShortComplex f n).f := by
+  assumption
+
+instance : Mono (homologyMap (p f n) n) := by
+  have := (S f n).isIso_homologyπ (n - 1) n (by simp) (by simp)
+  have : Mono ((truncGE (cokernel f) n).homologyπ n ≫ homologyMap (p f n) n) := by
+    rw [homologyπ_naturality (p f n) n]
+    infer_instance
+  have := (truncGE (cokernel f) n).isIso_homologyπ (n - 1) n (by simp)
+    ((isZero_of_isStrictlyGE _ n _ (by lia)).eq_of_src _ _)
+  rw [← IsIso.inv_hom_id_assoc ((truncGE (cokernel f) n).homologyπ n) (homologyMap (p f n) n)]
+  infer_instance
+
+omit [EnoughInjectives C] in
+lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
+  exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+lemma exact_homologyShortComplex [Mono f] :
+    (homologyShortComplex f n).Exact := by
+  let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
+    (by rw [← homologyMap_comp, cokernel.condition, homologyMap_zero])
+  let φ : T ⟶ homologyShortComplex f n :=
+    { τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := homologyMap ((cokernel f).πTruncGE n ≫ p f n) n
+      comm₂₃ := by
+        dsimp
+        rw [Category.id_comp, ← homologyMap_comp, α] }
+  obtain ⟨_, _, _⟩ : Mono φ.τ₃ ∧ IsIso φ.τ₂ ∧ Epi φ.τ₁ := by
+    dsimp [φ]
+    rw [homologyMap_comp]
+    exact ⟨inferInstance, inferInstance, inferInstance⟩
+  rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
+  exact (shortExact f).homology_exact₂ n
+
+variable (hf : ∀ i < n, QuasiIsoAt f i)
+
+include hf
+
+omit [EnoughInjectives C] in
+lemma isGE_cokernel [Mono f] [Mono (homologyMap f n)] : (cokernel f).IsGE n := by
+  rw [isGE_iff]
+  intro i hi
+  rw [exactAt_iff_isZero_homology]
+  refine ((shortExact f).homology_exact₃ i (i + 1) (by simp)).isZero_X₂ ?_ ?_
+  · have := hf i hi
+    rw [← ((shortExact f).homology_exact₂ i).epi_f_iff]
+    infer_instance
+  · rw [← ((shortExact f).homology_exact₁ i (i + 1) (by simp)).mono_g_iff]
+    by_cases hi' : i + 1 < n
+    · have := hf (i + 1) (by lia)
+      infer_instance
+    · obtain rfl : n = i + 1 := by lia
+      infer_instance
+
+omit [EnoughInjectives C] in
+lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
+    QuasiIso ((cokernel f).πTruncGE n) := by
+  rw [quasiIso_πTruncGE_iff]
+  exact isGE_cokernel f n hf
+
+attribute [local instance] HasDerivedCategory.standard in
+lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (ι f n) q := by
+  obtain hq | rfl := hq.lt_or_eq'
+  · have := quasiIsoAt_π f n q hq
+    rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
+    exact hf q hq
+  · have := mono_homologyMap_π f n n (by lia)
+    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) :=
+      by dsimp; infer_instance
+    have h₁ := (exact_homologyShortComplex f n).fIsKernel
+    have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
+      (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
+    have : homologyMap (ι f n) n = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
+      simp [← cancel_mono (homologyMap (π f n) n),
+        dsimp% IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero,
+        ← homologyMap_comp, mappingCocone.lift_fst]
+    rw [quasiIsoAt_iff_isIso_homologyMap, this]
+    infer_instance
+
+end step₂
+
+-- This lemma and a few definitions above are made public only in order to please CI.
+-- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
+open step₂ in
+lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
+    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F :=
+  ⟨.mk { mid := mid f n₁, ι := ι f n₁, π := π f n₁}
+    ⟨inferInstance, degreewiseEpiWithInjectiveKernel_π f n₁⟩,
+    fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
+    isIso_π_f f n₁⟩
+
+public lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
-    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
+  obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
+  obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ h₁
+  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι, π := F₂.obj.π ≫ F₁.obj.π }
+    ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
+    ⟨h₃, fun i hi ↦ ?_⟩⟩
+  have := h₂ i hi
+  have := h₄ i (by lia)
+  dsimp
+  infer_instance
 
 end cm5a_cof
 

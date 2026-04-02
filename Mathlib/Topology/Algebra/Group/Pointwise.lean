@@ -358,7 +358,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     f = 0 ∨ LocallyCompactSpace G := by
   refine or_iff_not_imp_left.mpr fun h => ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
     mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf

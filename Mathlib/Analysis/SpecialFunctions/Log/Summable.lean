@@ -100,6 +100,20 @@ protected lemma multipliable_one_add_of_summable (hf : Summable f) :
 
 end Real
 
+lemma summable_finset_prod_of_summable_nonneg {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
+    (hfs : Summable f) : Summable (fun s : Finset ι ↦ ∏ i ∈ s, f i) := by
+  classical
+  refine summable_of_sum_le (c := Real.exp (∑' i, f i))
+    (fun s ↦ Finset.prod_nonneg fun i _ ↦ hf i) fun T ↦ ?_
+  calc ∑ s ∈ T, ∏ i ∈ s, f i
+      ≤ ∑ s ∈ (T.biUnion id).powerset, ∏ i ∈ s, f i :=
+        Finset.sum_le_sum_of_subset_of_nonneg (fun s hs ↦ Finset.mem_powerset.mpr
+          (Finset.subset_biUnion_of_mem id hs)) (fun s _ _ ↦ Finset.prod_nonneg fun i _ ↦ hf i)
+    _ = ∏ i ∈ T.biUnion id, (1 + f i) := (Finset.prod_one_add _).symm
+    _ ≤ Real.exp (∑ i ∈ T.biUnion id, f i) := Real.prod_one_add_le_exp_sum _ hf
+    _ ≤ Real.exp (∑' i, f i) :=
+        Real.exp_le_exp.mpr (hfs.sum_le_tsum _ fun _ _ ↦ hf _)
+
 section NormedRing
 
 lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipliable v) :
@@ -175,6 +189,11 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
       simp [s, sdiff_union_distrib, disjoint_iff_inter_eq_empty]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
+
+lemma summable_finset_prod_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
+    Summable (fun s ↦ ∏ i ∈ s, f i) :=
+  (summable_finset_prod_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
+    fun _ ↦ Finset.norm_prod_le _ _
 
 lemma Summable.summable_log_norm_one_add (hu : Summable fun n ↦ ‖f n‖) :
     Summable fun i ↦ Real.log ‖1 + f i‖ := by

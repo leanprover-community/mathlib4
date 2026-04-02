@@ -291,7 +291,6 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
 lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :

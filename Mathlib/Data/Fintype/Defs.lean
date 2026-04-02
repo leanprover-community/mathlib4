@@ -240,18 +240,20 @@ instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
   fun f => decidable_of_iff ((Multiset.map f univ.val).Nodup) nodup_map_univ_iff_injective
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
+    DecidablePred (Surjective : (α → β) → Prop) :=
+  fun x ↦ inferInstanceAs <| Decidable (∀ b, ∃ a, x a = b)
 
 instance decidableBijectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
+    DecidablePred (Bijective : (α → β) → Prop) :=
+  fun x ↦ inferInstanceAs <| Decidable (Injective x ∧ Surjective x)
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
     Decidable (Function.RightInverse f g) :=
-  show Decidable (∀ x, g (f x) = x) by infer_instance
+  inferInstanceAs <| Decidable (∀ x, g (f x) = x)
 
 instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → β) (g : β → α) :
     Decidable (Function.LeftInverse f g) :=
-  show Decidable (∀ x, f (g x) = x) by infer_instance
+  inferInstanceAs <| Decidable (∀ x, f (g x) = x)
 
 instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩

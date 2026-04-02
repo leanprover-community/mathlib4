@@ -318,6 +318,13 @@ lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
 
+@[simp]
+lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
+    (B.preimage f).image f = B := by
+  apply le_antisymm (B.image_preimage_le f)
+  · intro n y hy
+    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← FunctorToTypes.comp]⟩
+
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism
 `(A.preimage p : SSet) ⟶ (A : SSet)`. -/

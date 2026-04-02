@@ -63,6 +63,7 @@ lemma similar_iff_exists_pairwise_edist_eq :
     · simp [hi]
     · exact h hi
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Congruent.similar {v₁ : ι → P₁} {v₂ : ι → P₂} (h : Congruent v₁ v₂) : Similar v₁ v₂ :=
   ⟨1, one_ne_zero, fun i₁ i₂ ↦ by simpa using h i₁ i₂⟩
 
@@ -83,9 +84,11 @@ alias ⟨exists_pairwise_edist_eq, _⟩ := similar_iff_exists_pairwise_edist_eq
 `similar_iff_exists_pairwise_edist_eq`. -/
 alias ⟨_, of_exists_pairwise_edist_eq⟩ := similar_iff_exists_pairwise_edist_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ∼ v₁ :=
   ⟨1, one_ne_zero, fun _ _ => by {norm_cast; rw [one_mul]}⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[symm] protected lemma symm (h : v₁ ∼ v₂) : v₂ ∼ v₁ := by
   rcases h with ⟨r, hr, h⟩
   refine ⟨r⁻¹, inv_ne_zero hr, fun _ _ => ?_⟩
@@ -238,6 +241,7 @@ lemma similar_iff_exists_pairwise_dist_eq :
   simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
   exact_mod_cast Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Similarity holds if and only if all distances are proportional with a positive real ratio. -/
 lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
     (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) := by
@@ -245,6 +249,7 @@ lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
   simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
 lemma similar_iff_exists_pos_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =

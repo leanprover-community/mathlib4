@@ -34,7 +34,6 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 @[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 

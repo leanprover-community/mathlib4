@@ -45,7 +45,7 @@ lemma map_cochainsFunctor_shortExact :
     ShortExact (X.map (cochainsFunctor k G)) :=
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
-      have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
+      have : LinearMap.range X.f.hom.toLinearMap = LinearMap.ker X.g.hom.toLinearMap :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
       simp [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft,
         LinearMap.ker_compLeft, this]

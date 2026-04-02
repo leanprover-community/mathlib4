@@ -108,7 +108,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x : α × α} {a : α}
 
 instance : Preorder (NonemptyInterval α) :=
-  Preorder.lift toDualProd
+  fast_instance% Preorder.lift toDualProd
 
 theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
 
@@ -208,7 +208,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {a b : α}
 
 instance : PartialOrder (NonemptyInterval α) :=
-  PartialOrder.lift _ toDualProd_injective
+  fast_instance% PartialOrder.lift _ toDualProd_injective
 
 instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
   fun _ _ => decidable_of_iff' _ le_def
@@ -264,7 +264,7 @@ instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
-  toDualProd_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
+  fast_instance% toDualProd_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
@@ -548,7 +548,6 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
 
 end Decidable
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical

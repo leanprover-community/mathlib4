@@ -271,7 +271,7 @@ lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
   refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
   intro h
   rw [Injective] at h
-  push_neg at h
+  push Not at h
   obtain ⟨a, b, heq, hne⟩ := h
   refine ⟨|a - b|, ?_, ?_⟩
   · rw [gt_iff_lt, abs_pos, sub_ne_zero]

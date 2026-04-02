@@ -68,7 +68,7 @@ section Cochains
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ A.V :=
+def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ ModuleCat.of k A.V :=
   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
@@ -91,17 +91,15 @@ end Cochains
 
 section Differentials
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `A → Fun(G, A)`. It sends `(a, g) ↦ ρ_A(g)(a) - a.` -/
 @[simps!]
-def d₀₁ : A.V ⟶ ModuleCat.of k (G → A) :=
+def d₀₁ : ModuleCat.of k A.V ⟶ ModuleCat.of k (G → A) :=
   ModuleCat.ofHom
   { toFun m g := A.ρ g m - m
     map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
     map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub] }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A.ρ := by
   ext x
   simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, funext_iff]
@@ -231,7 +229,6 @@ theorem eq_d₂₃_comp_inv :
       d₂₃ A ≫ (cochainsIso₃ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₃_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
   ext
@@ -324,7 +321,6 @@ theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     simp only [Function.comp_apply, ofMul_mul, map_add,
       isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
@@ -915,7 +911,8 @@ variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ A.V := H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
+    H0 A ≅ ModuleCat.of k A.V :=
+    H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
 @[simp]
 theorem H0IsoOfIsTrivial_hom :
@@ -945,7 +942,7 @@ def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1026,7 +1023,7 @@ def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 

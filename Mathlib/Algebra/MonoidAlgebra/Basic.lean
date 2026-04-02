@@ -308,7 +308,6 @@ lemma domCongr_support (e : M ≃* N) (f : A[M]) : (domCongr R A e f).support = 
 theorem domCongr_single (e : M ≃* N) (m : M) (a : A) :
     domCongr R A e (single m a) = single (e m) a := by simp [domCongr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma domCongr_comp_lsingle (e : M ≃* N) (m : M) :
     (domCongr R A e).toLinearMap ∘ₗ lsingle m = lsingle (e m) := by ext; simp

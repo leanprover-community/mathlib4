@@ -215,27 +215,25 @@ def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
   catch _ =>
     return .continue
 
-variable (ctx : Simp.Context) (useSimp := true) in
-mutual
-  /-- A discharger which calls `norm_num`. -/
-  partial def discharge (e : Expr) : SimpM (Option Expr) := do (← deriveSimp e).ofTrue
+/-- A `Methods` implementation which calls `norm_num`. -/
+def methods (useSimp := true) : Simp.Methods :=
+  if useSimp then {
+    pre := Simp.preDefault #[] >> tryNormNum
+    post := Simp.postDefault #[] >> tryNormNum (post := true)
+    discharge? := Simp.dischargeGround
+  } else {
+    pre := tryNormNum
+    post := tryNormNum (post := true)
+    discharge? := Simp.dischargeGround
+  }
 
-  /-- A `Methods` implementation which calls `norm_num`. -/
-  partial def methods : Simp.Methods :=
-    if useSimp then {
-      pre := Simp.preDefault #[] >> tryNormNum
-      post := Simp.postDefault #[] >> tryNormNum (post := true)
-      discharge? := discharge
-    } else {
-      pre := tryNormNum
-      post := tryNormNum (post := true)
-      discharge? := discharge
-    }
+/-- Traverses the given expression using simp and normalises any numbers it finds. -/
+def deriveSimp (ctx : Simp.Context) (useSimp := true) (e : Expr) : MetaM Simp.Result :=
+  (·.1) <$> Simp.main e ctx (methods := methods useSimp)
 
-  /-- Traverses the given expression using simp and normalises any numbers it finds. -/
-  partial def deriveSimp (e : Expr) : MetaM Simp.Result :=
-    (·.1) <$> Simp.main e ctx (methods := methods)
-end
+/-- A discharger which calls `norm_num`, for use in downstream tactics populating `Simp.Methods`. -/
+def discharge (useSimp := true) (e : Expr) : SimpM (Option Expr) := do
+  (← deriveSimp (← readThe Simp.Context) useSimp e).ofTrue
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/

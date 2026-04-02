@@ -53,6 +53,9 @@ instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P ⊓ Q) where
   of_iso e h := ⟨IsClosedUnderIsomorphisms.of_iso e h.1, IsClosedUnderIsomorphisms.of_iso e h.2⟩
 
+instance : IsClosedUnderIsomorphisms (⊥ : ObjectProperty C) where
+  of_iso _ h := h
+
 instance : IsClosedUnderIsomorphisms (⊤ : ObjectProperty C) where
   of_iso := by simp
 

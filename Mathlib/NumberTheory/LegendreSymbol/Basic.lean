@@ -74,8 +74,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
-  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 | hp_odd
-  · subst p; revert a ha; intro a; fin_cases a
+  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with rfl | hp_odd
+  · revert a ha; intro a; fin_cases a
     · tauto
     · simp
   rw [← mul_self_eq_one_iff, ← pow_add, ← two_mul, two_mul_odd_div_two hp_odd]

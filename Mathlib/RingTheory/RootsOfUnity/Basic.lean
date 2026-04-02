@@ -185,11 +185,21 @@ theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUn
 
 end CommMonoid
 
+section CommRing
+
+variable [CommRing R]
+
 open Set in
-theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   simp
+
+theorem mem_rootsOfUnity_iff_isRoot (k : ℕ) (ζ : Rˣ) :
+    ζ ∈ rootsOfUnity k R ↔ (X ^ k - 1 : R[X]).IsRoot ζ := by
+  simp [-mem_rootsOfUnity, mem_rootsOfUnity', sub_eq_zero]
+
+end CommRing
 
 section IsDomain
 

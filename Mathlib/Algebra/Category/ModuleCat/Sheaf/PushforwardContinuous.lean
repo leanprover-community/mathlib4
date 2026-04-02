@@ -230,6 +230,7 @@ def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
     ext U x
     change (X.val.presheaf.map (adj.counit.app (F.obj U.unop)).op ≫
       X.val.presheaf.map (F.map (adj.unit.app U.unop)).op) _ = _
+    dsimp only [id_obj]
     rw [← Functor.map_comp, ← op_comp, adj.left_triangle_components]
     simp
   right_triangle_components X := by

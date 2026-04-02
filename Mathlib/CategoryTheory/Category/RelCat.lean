@@ -35,11 +35,10 @@ universe u
 morphisms are binary relations. -/
 def RelCat :=
   Type u
+deriving Inhabited
 
 namespace RelCat
 variable {X Y Z : RelCat.{u}}
-
-instance inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 
 /-- The morphisms in the relation category are relations. -/
 structure Hom (X Y : RelCat.{u}) : Type u where

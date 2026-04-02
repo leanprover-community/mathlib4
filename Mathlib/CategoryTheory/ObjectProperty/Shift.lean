@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Properties of objects on categories equipped with shift
@@ -53,6 +55,15 @@ lemma shift_shift (a b c : A) (h : a + b = c) [P.IsClosedUnderIsomorphisms] :
   ext X
   exact P.prop_iff_of_iso ((shiftFunctorAdd' C a b c h).symm.app X)
 
+lemma shift_sup (a : A) : (P ⊔ Q).shift a = P.shift a ⊔ Q.shift a := by
+  ext
+  simp [prop_shift_iff]
+
+lemma shift_iSup {ι : Sort*} (P : ι → ObjectProperty C) (a : A) :
+    (⨆ (i : ι), P i).shift a = ⨆ (i : ι), (P i).shift a := by
+  ext
+  simp [prop_shift_iff]
+
 /-- `P : ObjectProperty C` is stable under the shift by `a : A` if
 `P X` implies `P X⟦a⟧`. -/
 class IsStableUnderShiftBy (a : A) : Prop where
@@ -60,6 +71,12 @@ class IsStableUnderShiftBy (a : A) : Prop where
 
 lemma le_shift (a : A) [P.IsStableUnderShiftBy a] :
     P ≤ P.shift a := IsStableUnderShiftBy.le_shift
+
+instance (a : A) : IsStableUnderShiftBy (⊥ : ObjectProperty C) a where
+  le_shift _ h := False.elim h
+
+instance (a : A) : IsStableUnderShiftBy (⊤ : ObjectProperty C) a where
+  le_shift _ _ := by trivial
 
 instance (a : A) [P.IsStableUnderShiftBy a] :
     P.isoClosure.IsStableUnderShiftBy a where
@@ -85,6 +102,10 @@ instance [P.IsStableUnderShift A] :
 
 instance [P.IsStableUnderShift A]
     [Q.IsStableUnderShift A] : (P ⊓ Q).IsStableUnderShift A where
+
+instance : IsStableUnderShift (⊥ : ObjectProperty C) A where
+
+instance : IsStableUnderShift (⊤ : ObjectProperty C) A where
 
 lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C G]
     [P.IsStableUnderShift G] [P.IsClosedUnderIsomorphisms] (X : C) (g : G) :
@@ -115,6 +136,12 @@ lemma shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] [P.IsStableUnderShift A
   rintro X ⟨Y, a, i, hY⟩
   exact P.prop_of_iso i.symm (P.le_shift a Y hY)
 
+@[simp]
+lemma shiftClosure_bot : shiftClosure (⊥ : ObjectProperty C) A = ⊥ := shiftClosure_eq_self _
+
+@[simp]
+lemma shiftClosure_top : shiftClosure (⊤ : ObjectProperty C) A = ⊤ := shiftClosure_eq_self _
+
 lemma shiftClosure_le_iff [IsClosedUnderIsomorphisms Q] [Q.IsStableUnderShift A] :
     shiftClosure P A ≤ Q ↔ P ≤ Q :=
   ⟨(le_shiftClosure P).trans,
@@ -137,6 +164,24 @@ lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] 
     IsStableUnderShift P A ↔ shiftClosure P A = P :=
   ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
 
+instance [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G]
+    [HasShift C G] : (⨆ (a : G), P.shift a).IsStableUnderShift G where
+  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
+    rw [shift_iSup]
+    intro X hX
+    rw [prop_iSup_iff] at hX ⊢
+    obtain ⟨b, hb⟩ := hX
+    exact ⟨-a + b, by rwa [P.shift_shift _ _ _ (add_neg_cancel_left a b)]⟩
+
+lemma shiftClosure_eq_iSup [P.IsClosedUnderIsomorphisms] (G : Type*) [AddGroup G] [HasShift C G] :
+    P.shiftClosure G = ⨆ (x : G), P.shift x := by
+  apply le_antisymm
+  · rw [shiftClosure_le_iff]
+    conv_lhs => rw [← P.shift_zero G]
+    exact le_iSup P.shift (0 : G)
+  · intro X hX
+    obtain ⟨a, ha⟩ := (prop_iSup_iff _ _).mp hX
+    exact ⟨X⟦a⟧, -a, (shiftShiftNeg X a).symm, ha⟩
 
 variable [P.IsStableUnderShift A]
 

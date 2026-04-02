@@ -114,14 +114,9 @@ section
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
 instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
-  | Sum.inl i => by
-    dsimp
-    infer_instance
-  | Sum.inr j => by
-    dsimp
-    infer_instance
+  | Sum.inl i => inferInstanceAs <| Category (C i)
+  | Sum.inr j => inferInstanceAs <| Category (D j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/

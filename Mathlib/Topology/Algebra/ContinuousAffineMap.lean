@@ -203,9 +203,6 @@ theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
     ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
   rfl
 
-@[deprecated (since := "2025-09-17")]
-alias coe_mk_const_linear_eq_linear := coe_mk_contLinear_eq_linear
-
 theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
     ((f : P →ᵃ[R] Q).linear : V → W) = (⇑f.contLinear : V → W) :=
   rfl
@@ -467,9 +464,6 @@ variable [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
 @[simp]
 theorem toContinuousAffineMap_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
   rfl
-
-@[deprecated (since := "2025-09-23")]
-alias _root_.ContinuousAffineMap.to_affine_map_contLinear := toContinuousAffineMap_contLinear
 
 theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
     (f : V → W) = f.contLinear + Function.const V (f 0) := by

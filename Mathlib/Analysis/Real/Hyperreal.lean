@@ -404,7 +404,7 @@ theorem st_eq (x : ℝ*) : st x = stdPart x := by
   split_ifs with h
   · exact (isSt_iff.1 (Classical.choose_spec h)).2.symm
   · simp_rw [isSt_iff] at h
-    push_neg at h
+    push Not at h
     rw [eq_comm, stdPart_eq_zero]
     apply ne_of_lt
     by_contra! hx

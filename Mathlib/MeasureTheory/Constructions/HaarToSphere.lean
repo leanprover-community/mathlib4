@@ -203,6 +203,7 @@ divided by the measure of the ball. -/
 noncomputable def toSphereBallBound (n : ℕ) (ε : ℝ) : ℝ≥0 :=
   if n ≠ 0 ∧ 0 < ε then n * ((min (Real.toNNReal ε) 2) / 4) ^ n else 1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε := by
   unfold toSphereBallBound
   split_ifs with h
@@ -210,7 +211,6 @@ theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε 
     positivity
   · positivity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A ball of radius `ε` on the unit sphere in a real normed space
 has measure at least `toSphereBallBound n ε * μ (ball 0 1)`,
 where `n` is the dimension of the space,

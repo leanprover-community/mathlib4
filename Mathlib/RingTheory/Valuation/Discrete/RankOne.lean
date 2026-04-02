@@ -104,6 +104,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
       inv_inv]
     simp [WithZero.exp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A discrete valuation has rank one. -/
 @[implicit_reducible]
 noncomputable def rankOne (v : Valuation K Γ) [hv : v.IsRankOneDiscrete]

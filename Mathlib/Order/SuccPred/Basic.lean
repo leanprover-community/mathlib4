@@ -1007,7 +1007,6 @@ section OrderIso
 
 variable {X Y : Type*} [Preorder X] [Preorder Y]
 
-set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
 protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
@@ -1019,7 +1018,6 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
-set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
 @[to_dual existing]

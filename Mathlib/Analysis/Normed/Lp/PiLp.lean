@@ -701,6 +701,7 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
   ext
   simp [NNReal.coe_iSup, norm_eq_ciSup]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
 
@@ -984,7 +985,6 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩

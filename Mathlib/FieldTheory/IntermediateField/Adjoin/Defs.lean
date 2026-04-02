@@ -12,7 +12,7 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
@@ -77,10 +77,10 @@ instance : CompleteLattice (IntermediateField F E) where
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
-  (inferInstance : Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
-  (inferInstance : Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 

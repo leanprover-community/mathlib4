@@ -308,6 +308,10 @@ theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
 
+lemma mapDomain_sub {α β M : Type*} [AddCommGroup M] {v₁ v₂ : α →₀ M} {f : α → β} :
+    mapDomain f (v₁ - v₂) = mapDomain f v₁ - mapDomain f v₂ := by
+  simp [mapDomain, sum_sub_index]
+
 @[simp]
 theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by

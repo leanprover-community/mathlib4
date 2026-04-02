@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 /-!
 # modular equivalence for submodule
@@ -161,6 +162,10 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
     f.eval x ≡ f.eval y [SMOD I] := by
   simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
   gcongr
+
+variable (S) in
+theorem restrictScalars [SMul S R] [IsScalarTower S R M] : x ≡ y [SMOD U.restrictScalars S] ↔
+    x ≡ y [SMOD U] := by simp [SModEq.sub_mem]
 
 theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
     x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl

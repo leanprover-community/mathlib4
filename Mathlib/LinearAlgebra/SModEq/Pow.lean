@@ -28,7 +28,6 @@ theorem pow_mul_of_le {x y : R} (h : x ≡ y [SMOD J]) (hJI : J ≤ I) :
   simp only [← Ideal.Quotient.eq_zero_iff_mem, map_sum, map_mul, map_pow, h₁, ← pow_add]
   trans ∑ x ∈ Finset.range p, Ideal.Quotient.mk I y ^ (p - 1)
   · exact Finset.sum_congr rfl fun _ _ ↦ by grind
-  set_option backward.isDefEq.respectTransparency false in
   simp [h₂]
 
 theorem pow_add_one {x y : R} {m : ℕ} (hm : m ≠ 0) (h : x ≡ y [SMOD I ^ m]) :

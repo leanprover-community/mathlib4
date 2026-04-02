@@ -96,10 +96,7 @@ open Localization.Construction
 in `W : MorphismProperty C` -/
 def Localization :=
   CategoryTheory.Quotient (Localization.Construction.relations W)
-
-instance : Category (Localization W) := by
-  dsimp only [Localization]
-  infer_instance
+deriving Category
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where

@@ -172,6 +172,14 @@ theorem IsTopologicalBasis.exists_subset_of_mem_open {b : Set (Set α)} (hb : Is
     {a : α} {u : Set α} (au : a ∈ u) (ou : IsOpen u) : ∃ v ∈ b, a ∈ v ∧ v ⊆ u :=
   hb.mem_nhds_iff.1 <| IsOpen.mem_nhds ou au
 
+theorem IsTopologicalBasis.isTopologicalBasis_of_exists_subset {B B' : Set (Set α)}
+    (hB : IsTopologicalBasis B) (h_open : ∀ u ∈ B', IsOpen u)
+    (h : ∀ u ∈ B, ∀ x ∈ u, ∃ v ∈ B', x ∈ v ∧ v ⊆ u) : IsTopologicalBasis B' := by
+  refine isTopologicalBasis_of_isOpen_of_nhds h_open fun x u hx hu => ?_
+  obtain ⟨w, hwB, hxw, hwu⟩ := hB.exists_subset_of_mem_open hx hu
+  obtain ⟨v, hvB', hxv, hvw⟩ := h w hwB x hxw
+  exact ⟨v, hvB', hxv, hvw.trans hwu⟩
+
 /-- Any open set is the union of the basis sets contained in it. -/
 theorem IsTopologicalBasis.open_eq_sUnion' {B : Set (Set α)} (hB : IsTopologicalBasis B) {u : Set α}
     (ou : IsOpen u) : u = ⋃₀ { s ∈ B | s ⊆ u } :=

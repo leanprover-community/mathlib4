@@ -39,8 +39,8 @@ variable {k G : Type u} [CommRing k] [Group G]
 
 section definitions
 
-instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal := by
-  change (Action.forget _ _).Monoidal; infer_instance
+instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal :=
+  inferInstanceAs <| (Action.forget _ _).Monoidal
 
 variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/
@@ -50,7 +50,6 @@ def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
 @[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
@@ -119,7 +118,6 @@ lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := b
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   hom := InducedCategory.homMk (ofHom (LinearMap.mul' k (G → k)))

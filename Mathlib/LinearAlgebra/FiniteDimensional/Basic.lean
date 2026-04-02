@@ -240,8 +240,6 @@ end Submodule
 
 namespace Subalgebra
 
-set_option backward.isDefEq.respectTransparency false
-
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
   [hfin : FiniteDimensional K E]
 

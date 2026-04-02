@@ -103,7 +103,6 @@ lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
     a < ∑ p ∈ P.parts, f p := by
   simp_all [preVariationFun, lt_iSup_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ⊤) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
@@ -154,6 +153,7 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
     _ ≤ ∑ p ∈ R.parts, f p := Finset.sum_le_sum_of_subset (Q.parts_subset_extendOfLE hQ_le)
     _ ≤ preVariationFun f (⋃ i, s i) := sum_le f (MeasurableSet.iUnion hs) R
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sum_le_preVariationFun_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     ∑' i, preVariationFun f (s i) ≤ preVariationFun f (⋃ i, s i) := by

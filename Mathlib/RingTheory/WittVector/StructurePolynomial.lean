@@ -222,7 +222,6 @@ theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : �
   rw [wittPolynomial_vars, Finset.mem_range] at hi
   simp only [IH i hi]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx ℤ) (n : ℕ)
     (IH :
       ∀ m : ℕ,

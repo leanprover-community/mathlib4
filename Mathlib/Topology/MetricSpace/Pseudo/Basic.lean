@@ -235,6 +235,7 @@ section SecondCountable
 
 open TopologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/
 theorem secondCountable_of_almost_dense_set

@@ -355,10 +355,8 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl

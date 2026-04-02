@@ -15,6 +15,9 @@ Given two simplicial sets `X` and `Y`, and subcomplexes `A` of `X`, and `B` of `
 we introduce a type `RelativeMorphism A B φ` of morphisms `X ⟶ Y` which induce
 a given morphism of simplicial sets `A ⟶ B`. We define homotopies between
 these relative morphisms and introduce the quotient type of homotopy classes.
+This is used in the file `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`
+in order to define homotopies (`SSet.Homotopy`) between morphisms in the
+category of simplicial sets.
 
 -/
 
@@ -77,7 +80,8 @@ lemma le_preimage : A ≤ B.preimage f.map := by
   simpa only [← Subcomplex.image_le_iff] using f.image_le
 
 /-- The type of homotopies between morphisms of simplicial sets relatively to
-given subcomplexes. -/
+given subcomplexes. (See also `SSet.Homotopy` in the file
+`Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean` for the non-relative version.) -/
 @[ext]
 structure Homotopy where
   /-- The homotopy. -/

@@ -52,7 +52,6 @@ theorem chainHeight_ne_top_of_finite (h : s.Finite) : s.chainHeight r ≠ ⊤ :=
   LT.lt.ne_top <| lt_of_le_of_lt (chainHeight_le_encard s r) <| lt_top_iff_ne_top.mpr <|
     encard_ne_top_iff.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s.chainHeight r) :
     ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   by_cases h' : n = 0

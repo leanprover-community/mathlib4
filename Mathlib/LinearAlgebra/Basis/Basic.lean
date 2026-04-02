@@ -196,6 +196,12 @@ protected theorem span_repr_eq_single (i : ι)
   rw [← LinearEquiv.eq_symm_apply]
   simp [Basis.span]
 
+lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {v : ι → M} (hli : LinearIndependent R v)
+    (h : span R (range v) = span R (range (-v)) := by simp [← neg_range']) :
+    Basis.span hli.neg = ((Basis.span hli).map <| (LinearEquiv.neg _).trans (.ofEq _ _ h)) := by
+  ext; simp
+
 end Span
 
 /-- Any basis is a maximal linear independent set.

@@ -33,6 +33,7 @@ variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure 
 
 namespace MeasureTheory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `eLpNorm` of the indicator of a set is uniformly small if the set itself has small measure,
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/

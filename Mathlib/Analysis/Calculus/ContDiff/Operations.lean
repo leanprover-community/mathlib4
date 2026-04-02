@@ -681,7 +681,6 @@ theorem iteratedFDeriv_smul_const_apply {f : E → A} (hf : ContDiffAt 𝕜 i f 
         (iteratedFDeriv 𝕜 i f x) :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDeriv_comp_left hf le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
     iteratedFDeriv 𝕜 i (fun z ↦ f (a • z)) = fun x ↦ a ^ i • iteratedFDeriv 𝕜 i f (a • x) := by
   induction i with
@@ -883,7 +882,6 @@ section FunctionInverse
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a local homeomorphism and the point `a` is in its target,
 and if `f` is `n` times continuously differentiable at `f.symm a`,
 and if the derivative at `f.symm a` is a continuous linear equivalence,

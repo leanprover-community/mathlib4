@@ -51,7 +51,6 @@ lemma holdsForLocalization : HoldsForLocalization EssFiniteType := by
   rw [essFiniteType_algebraMap]
   exact .of_isLocalization _ M
 
-set_option backward.isDefEq.respectTransparency false in
 lemma residueFieldMap {f : R →+* S} [IsLocalRing R] [IsLocalRing S] [IsLocalHom f]
     (hf : f.EssFiniteType) :
     (IsLocalRing.ResidueField.map f).EssFiniteType := by

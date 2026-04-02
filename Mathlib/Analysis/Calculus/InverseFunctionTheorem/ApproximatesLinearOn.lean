@@ -158,7 +158,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     to the desired point `x`. Instead of appealing to general results, we check this by hand.
 
     The main point is that `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
@@ -210,7 +210,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
@@ -398,17 +398,11 @@ def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s
   continuousOn_toFun := hf.continuousOn
   continuousOn_invFun := hf.inverse_continuousOn hc
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
-
 @[simp]
 theorem toOpenPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs : E → F) = f :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
 
 @[simp]
 theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -416,17 +410,11 @@ theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L
     (hf.toOpenPartialHomeomorph f s hc hs).source = s :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_source := toOpenPartialHomeomorph_source
-
 @[simp]
 theorem toOpenPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs).target = f '' s :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_target := toOpenPartialHomeomorph_target
 
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)

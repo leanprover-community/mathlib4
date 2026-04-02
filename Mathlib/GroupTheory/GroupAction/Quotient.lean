@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
+open scoped commutatorElement
+
 namespace MulAction
 
 variable [Group α]

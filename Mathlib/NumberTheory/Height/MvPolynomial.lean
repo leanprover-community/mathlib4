@@ -602,6 +602,8 @@ lemma logHeight_sym2_ge :
   pull (disch := positivity) log
   exact log_le_log (by positivity) (hC hab hcd)
 
+-- see below comment regarding performance
+set_option linter.tacticAnalysis.mergeWithGrind false in
 lemma abs_logHeight_sym2_sub_le :
     ∃ C, ∀ {a b c d : K}, ![a, b] ≠ 0 → ![c, d] ≠ 0 →
       |logHeight ![a * c, a * d + b * c, b * d] - (logHeight ![a, b] + logHeight ![c, d])| ≤ C := by

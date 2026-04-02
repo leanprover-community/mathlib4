@@ -80,8 +80,4 @@ instance isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair [HasEqualize
       (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
         (fun i => isIndObject_limit_comp_yoneda _)))
 
-@[deprecated (since := "2025-09-22")]
-alias closedUnderLimitsOfShape_walkingParallelPair_isIndObject :=
-  isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair
-
 end CategoryTheory.Limits

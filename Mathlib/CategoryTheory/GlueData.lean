@@ -183,10 +183,7 @@ variable [HasColimits C]
 def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 
-set_option backward.isDefEq.respectTransparency false in
-instance π_epi : Epi D.π := by
-  unfold π
-  infer_instance
+instance π_epi : Epi D.π := inferInstanceAs <| Epi (Multicoequalizer.sigmaπ D.diagram)
 
 end
 

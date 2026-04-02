@@ -35,7 +35,7 @@ open scoped BigOperators
 
 namespace NNReal
 
-noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
+noncomputable instance : FloorSemiring ℝ≥0 := inferInstanceAs <| FloorSemiring (Subtype _)
 
 @[simp, norm_cast]
 theorem coe_mulIndicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
@@ -110,7 +110,6 @@ theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
     s.sup f * r = s.sup fun a => f a * r :=
   Finset.comp_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
     s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 

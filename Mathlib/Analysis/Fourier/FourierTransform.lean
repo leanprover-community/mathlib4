@@ -132,7 +132,6 @@ allowing it would complicate matters in the most important use cases.
 variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourierIntegral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (w : W) :
@@ -182,7 +181,6 @@ variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [
 
 variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Fubini's theorem for the Fourier integral.
 
 This is the main technical step in proving both Parseval's identity and self-adjointness of the
@@ -305,7 +303,6 @@ variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w a =
@@ -315,7 +312,6 @@ theorem fourierIntegral_continuousLinearMap_apply
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousMultilinearMap_apply
     {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
     (hf : Integrable f μ) :

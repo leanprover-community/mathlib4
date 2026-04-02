@@ -47,12 +47,8 @@ abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 @[simps X]
 def toCommMon (A : CommGrp C) : CommMon C := ⟨A.X⟩
 
-@[deprecated (since := "2025-09-15")] alias toCommMon_ := toCommMon
-
 /-- A commutative group object is a monoid object. -/
 abbrev toMon (A : CommGrp C) : Mon C := (toCommMon A).toMon
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -118,8 +114,6 @@ theorem forget₂Grp_map_hom {A B : CommGrp C} (f : A ⟶ B) :
 def forget₂CommMon : CommGrp C ⥤ CommMon C where
   obj G := CommMon.mk G.X
   map f := CommMon.homMk f.hom.hom
-
-@[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/

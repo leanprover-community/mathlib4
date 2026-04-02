@@ -153,7 +153,11 @@ lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     Cochain.comp_v (n₁ := 1) _ _ _ (p + -1) p _ (by lia) hpq,
     Cochain.comp_v (n₂ := m + 2) _ _ _ p (p + -1) q rfl (by lia),
     smul_smul, Int.negOnePow_add, Int.negOnePow_even 2 ⟨1, rfl⟩]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  abel
 
 end
 
@@ -245,7 +249,11 @@ lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
     Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)),
     Cochain.comp_v _ _ _ p q _ hpq rfl,
     Cochain.comp_v (n₁ := n) (n₂ := 1) _ _ _ p (q + -1) q (by lia) (by lia)]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  abel
 
 end
 

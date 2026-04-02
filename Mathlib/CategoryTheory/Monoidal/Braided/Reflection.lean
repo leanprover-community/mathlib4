@@ -172,8 +172,8 @@ theorem isIso_tfae : List.TFAE
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
     -- bring the quantifiers out of the `↔`:
-    rw [forall_swap]; apply forall_congr'; intro d
-    rw [forall_swap]; apply forall₂_congr; intro d' c
+    rw [forall_comm]; apply forall_congr'; intro d
+    rw [forall_comm]; apply forall₂_congr; intro d' c
     -- `w₁, w₂,` are the two stacked commutative squares in the proof on nLab:
     have w₁ : ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) =
         (adj.homEquiv _ _).symm ∘

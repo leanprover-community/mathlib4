@@ -328,6 +328,8 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
+/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
@@ -388,17 +390,16 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
       abel
     rw [hx, hy, add_zero]
 
-instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
-  { TensorProduct.addCommMonoid with
-    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
-    zsmul := (· • ·)
-    zsmul_zero' := by simp
-    zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
-    zsmul_neg' := fun n x => by
-      change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
-      rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
-        ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
-      rfl }
+instance addCommGroup : AddCommGroup (M ⊗[R] N) where
+  neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+  zsmul := (· • ·)
+  zsmul_zero' := by simp
+  zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
+  zsmul_neg' := fun n x => by
+    change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
+    rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
+      ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
+    rfl
 
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl

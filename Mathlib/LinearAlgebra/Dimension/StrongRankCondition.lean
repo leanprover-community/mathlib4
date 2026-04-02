@@ -575,7 +575,7 @@ omit [StrongRankCondition R]
 theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
     StrongRankCondition R ↔ ∀ n : ℕ, Module.rank R (Fin n → R) < ℵ₀ :=
   (strongRankCondition_iff_succ R).trans <| not_iff_not.mp <| by
-    push_neg
+    push Not
     refine ⟨fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩, fun ⟨n, le⟩ ↦
       ⟨n, le_rank_iff_exists_linearMap.mp (natCast_le_aleph0.trans le)⟩⟩
     have ⟨g, hg⟩ := f.exists_finsupp_nat_of_fin_fun_injective inj
@@ -585,12 +585,12 @@ theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
 theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
     StrongRankCondition R ↔ ∀ n > 0, 0 < finrank R (Fin n → R) := by
   rw [strongRankCondition_iff_forall_rank_lt_aleph0, ← not_iff_not]
-  push_neg
+  push Not
   simp_rw [finrank, Nat.le_zero, toNat_eq_zero]
   refine ⟨fun ⟨n, le⟩ ↦ ⟨n + 1, n.succ_pos, ?_⟩, fun ⟨n, pos, eq⟩ ↦ ⟨n, ?_⟩⟩
   · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
       (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
-  · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
+  · rw [or_iff_not_imp_left, ← Ne, ← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at eq
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 

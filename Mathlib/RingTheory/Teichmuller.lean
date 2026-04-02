@@ -188,7 +188,6 @@ theorem mk_comp_teichmuller' :
     Ideal.Quotient.mk I ∘ (teichmuller p I) = coeff (R ⧸ I) p 0 :=
   funext mk_teichmuller
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is `I`-adically complete and `R ⧸ I` has characteristic `p`, then
 `Perfection R p` and `Perfection (R ⧸ I) p` are isomorphic as monoids.
 
@@ -205,7 +204,6 @@ noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
 @[simp] theorem coeff_quotientMulEquiv (x : Perfection R p) (n : ℕ) :
     coeff (R ⧸ I) p n (quotientMulEquiv p I x) = Ideal.Quotient.mk I (coeffMonoidHom R p n x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem coeff_zero_symm_quotientMulEquiv (x : Perfection (R ⧸ I) p) :
     coeffMonoidHom R p 0 (quotientMulEquiv p I |>.symm x) = teichmuller₀ p I x := by
   simp [quotientMulEquiv]

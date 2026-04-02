@@ -107,6 +107,14 @@ noncomputable def Extension.frob :
     frob k p n x = x ^ Nat.card k := by
   simp [frob, ← Nat.card_eq_fintype_card]
 
+@[simp]
+theorem Extension.frob_iterate_apply (i : ℕ) {x : Extension k p n} :
+    (frob k p n ^ i) x = x ^ (Nat.card k ^ i) := by
+  induction i generalizing x with
+  | zero => simp
+  | succ i ih =>
+      rw [pow_add, pow_one, AlgEquiv.mul_apply, ih, frob_apply, ← pow_mul, ← Nat.pow_add_one']
+
 theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
   let := Fintype.ofFinite k
@@ -128,6 +136,17 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
     exact FiniteField.isSplittingField_sub l k
   refine ⟨(IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).trans ?_⟩
   exact (IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).symm
+
+include p in
+theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l] (g : Gal(l/k)) :
+    ∃ i, ∀ x, g x = x ^ (Nat.card k ^ i) := by
+  let n := Module.finrank k l
+  have : NeZero n := NeZero.of_pos Module.finrank_pos
+  obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n <|
+    (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
+  refine ⟨i, fun x ↦ ?_⟩
+  simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|
+    AlgEquiv.congr_fun hi (algEquivExtension k p n l rfl x)).symm
 
 end FiniteField
 

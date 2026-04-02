@@ -321,6 +321,49 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
+lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
+    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
+    s * g * s⁻¹ ∈ H ⊔ K := by
+  simp only [mem_inf, mem_normalizer_iff] at hs
+  rw [sup_eq_closure] at hg
+  refine closure_induction ?_ ?_ ?_ ?_ hg
+  · intro x hx
+    obtain hl | hr := (mem_union x _ _).mpr hx
+    · exact mem_sup_left (by rwa [← hs.1])
+    · exact mem_sup_right (by rwa [← hs.2])
+  · simp
+  · intros x y hx hy hsx hsy
+    rw [show s * (x * y) * s⁻¹ = (s * x * s⁻¹) * (s * y * s⁻¹) by simp]
+    exact mul_mem hsx hsy
+  · intros x hx hsx
+    exact inv_mem_iff.mp (by simpa [← mul_assoc])
+
+@[to_additive]
+lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
+  intro s hs g
+  refine ⟨conj_mem_sup_of_mem_inf_normalizer_of_mem_inf hs g, ?_⟩
+  simpa [← mul_assoc] using conj_mem_sup_of_mem_inf_normalizer_of_mem_inf (inv_mem hs) (s * g * s⁻¹)
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_of_normalizer_le_left
+    {H K : Subgroup G} (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
+  (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
+    (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((K ⊔ H : Subgroup G) : Set G) := by
+  rw [sup_comm]
+  exact normalizer_le_normalizer_sup_of_normalizer_le_left hHnK
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_normal {H K : Subgroup G} [hK : K.Normal] :
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
+  normalizer_le_normalizer_sup_of_normalizer_le_left le_normalizer_of_normal
+
+@[to_additive]
 instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢

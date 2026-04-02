@@ -6,7 +6,7 @@ Authors: Patrick Massot, Michael Rothgang
 module
 
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields

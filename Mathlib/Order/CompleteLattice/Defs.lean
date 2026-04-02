@@ -49,8 +49,8 @@ open Function OrderDual Set
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[to_dual]
-instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
-  ⟨(sInf : Set α → α)⟩
+instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
+  ⟨fun s ↦ h.sInf s⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -256,7 +256,6 @@ instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : Linear
 namespace OrderDual
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ where
-  __ := instBoundedOrder α
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice

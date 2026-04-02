@@ -272,16 +272,16 @@ instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 
 open IsIso
 
-/-- Reinterpret a morphism `f` with an `IsIso f` instance as an `Iso`. -/
-@[to_dual none]
+/-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `X ≅ Y`. -/
+@[to_dual asIso' /-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `Y ≅ X`. -/]
 noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
-@[simp, to_dual none]
+@[to_dual (attr := simp) asIso'_hom]
 theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
   rfl
 
-@[simp, to_dual none]
+@[to_dual (attr := simp) asIso'_inv]
 theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
   rfl
 

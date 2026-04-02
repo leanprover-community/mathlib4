@@ -99,7 +99,7 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
-  QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
+  inferInstanceAs <| AddCommGroup (M ⧸ p.toAddSubgroup)
 
 @[simp]
 theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=

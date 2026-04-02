@@ -122,7 +122,7 @@ theorem generateMeasurableRec_omega_one (s : Set (Set α)) :
     choose I hI using fun n => (H n).1
     simp_rw [exists_prop] at hI
     refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
-      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
+      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_iSup_add_one I n, (hI n).2⟩⟩
     rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 

@@ -167,7 +167,7 @@ variable {β : Type*} {f : β → M} {g : α → β}
 lemma HasFiniteMulSupport.comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
     (f ∘ g).HasFiniteMulSupport := by
   refine Set.Finite.of_injOn ?_ (Set.injOn_of_injective hg) hf
-  grind [Set.mapsTo_iff_subset_preimage]
+  grind [Set.mapsTo_iff_subset_preimage, Function.mulSupport]
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :

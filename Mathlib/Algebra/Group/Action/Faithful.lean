@@ -92,10 +92,6 @@ lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α
 lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   inferInstance
 
-@[deprecated (since := "2025-09-15")]
-alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
-
-
 @[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
     [MulOneClass A] [SMul R A] [IsScalarTower R A A] :

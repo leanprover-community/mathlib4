@@ -205,13 +205,11 @@ theorem iff_isSplitEpi_eq_zero {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsZero Y
     simp [h]
 
 theorem of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (i : IsZero Y) : IsZero X := by
-  have hf := i.eq_zero_of_tgt f
-  subst hf
+  obtain rfl := i.eq_zero_of_tgt f
   exact IsZero.of_mono_zero X Y
 
 theorem of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (i : IsZero X) : IsZero Y := by
-  have hf := i.eq_zero_of_src f
-  subst hf
+  obtain rfl := i.eq_zero_of_src f
   exact IsZero.of_epi_zero X Y
 
 end IsZero

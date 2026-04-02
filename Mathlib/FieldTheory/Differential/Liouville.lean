@@ -192,7 +192,6 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 We lift `isLiouville_of_finiteDimensional_galois` to non-Galois field extensions by using it for the
 normal closure then obtaining it for `F`.

@@ -173,7 +173,8 @@ end List
 
 namespace List.Vector
 
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
+instance (n : ℕ) : TopologicalSpace (Vector α n) :=
+  inferInstanceAs <| TopologicalSpace (Subtype _)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :

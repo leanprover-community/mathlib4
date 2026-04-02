@@ -102,10 +102,6 @@ theorem destutter'_of_isChain_cons (h : (a :: l).IsChain R) : l.destutter' R a =
     obtain ⟨h, hc⟩ := isChain_cons_cons.mp h
     rw [l.destutter'_cons_pos h, hb hc]
 
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain := isChain_cons_destutter'_of_rel
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain' := isChain_destutter'
-@[deprecated (since := "2025-09-24")] alias destutter'_of_chain := destutter'_of_isChain_cons
-
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsChain R :=
   ⟨fun h => by
@@ -147,9 +143,6 @@ theorem isChain_destutter : ∀ l : List α, (l.destutter R).IsChain R
 theorem destutter_of_isChain : ∀ l : List α, l.IsChain R → l.destutter R = l
   | [], _ => rfl
   | _ :: l, h => l.destutter'_of_isChain_cons _ h
-
-@[deprecated (since := "2025-09-24")] alias destutter_is_chain' := isChain_destutter
-@[deprecated (since := "2025-09-24")] alias destutter_of_chain' := destutter_of_isChain
 
 @[simp]
 theorem destutter_eq_self_iff : ∀ l : List α, l.destutter R = l ↔ l.IsChain R

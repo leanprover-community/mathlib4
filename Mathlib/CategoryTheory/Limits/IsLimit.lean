@@ -316,12 +316,12 @@ def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
     IsLimit (s.extend i) :=
-  IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso i)).symm
+  IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i))
 
 /-- A cone is a limit cone if its extension by an isomorphism is. -/
 def ofExtendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit (s.extend i)) :
     IsLimit s :=
-  IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso i))
+  IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i)).symm
 
 /-- A cone is a limit cone iff its extension by an isomorphism is. -/
 def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
@@ -722,19 +722,19 @@ theorem ofCoconeEquiv_symm_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K
       (h.functor.map (P.descCoconeMorphism (h.inverse.obj s))).hom ≫ (h.counit.app s).hom :=
   rfl
 
-/-- A cocone precomposed with a natural isomorphism is a colimit cocone
-if and only if the original cocone is.
--/
-def precomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone G) :
-    IsColimit ((Cocone.precompose α.hom).obj c) ≃ IsColimit c :=
-  ofCoconeEquiv (Cocone.precomposeEquivalence α)
-
 /-- A cocone precomposed with the inverse of a natural isomorphism is a colimit cocone
 if and only if the original cocone is.
 -/
 def precomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone F) :
     IsColimit ((Cocone.precompose α.inv).obj c) ≃ IsColimit c :=
-  precomposeHomEquiv α.symm c
+  ofCoconeEquiv (Cocone.precomposeEquivalence α)
+
+/-- A cocone precomposed with a natural isomorphism is a colimit cocone
+if and only if the original cocone is.
+-/
+def precomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone G) :
+    IsColimit ((Cocone.precompose α.hom).obj c) ≃ IsColimit c :=
+  precomposeInvEquiv α.symm c
 
 /-- Constructing an equivalence `is_colimit c ≃ is_colimit d` from a natural isomorphism
 between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
