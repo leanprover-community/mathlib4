@@ -601,7 +601,7 @@ theorem card_support_swap {x y : α} (hxy : x ≠ y) : #(swap x y).support = 2 :
 @[simp]
 theorem card_support_eq_two {f : Perm α} : #f.support = 2 ↔ IsSwap f := by
   constructor <;> intro h
-  · obtain ⟨x, t, hmem, hins, ht⟩ := card_eq_succ.1 h
+  · obtain ⟨x, t, hmem, hins, ht⟩ := card_eq_add_one.1 h
     obtain ⟨y, rfl⟩ := card_eq_one.1 ht
     rw [mem_singleton] at hmem
     refine ⟨x, y, hmem, ?_⟩

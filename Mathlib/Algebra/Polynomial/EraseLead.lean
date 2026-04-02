@@ -81,7 +81,7 @@ theorem eraseLead_ne_zero (f0 : 2 ≤ #f.support) : eraseLead f ≠ 0 := by
   rw [Ne, ← card_support_eq_zero, eraseLead_support]
   exact
     (zero_lt_one.trans_le <|
-      (tsub_le_tsub_right f0 1).trans Finset.sub_one_card_le_card_erase).ne.symm
+      (tsub_le_tsub_right f0 1).trans Finset.card_sub_one_le_card_erase).ne.symm
 
 theorem lt_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f).support) :
     a < f.natDegree := by

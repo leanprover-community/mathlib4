@@ -153,9 +153,10 @@ theorem card_erase_lt_of_mem : a ∈ s → #(s.erase a) < #s :=
 theorem card_erase_le : #(s.erase a) ≤ #s :=
   Multiset.card_erase_le
 
-theorem sub_one_card_le_card_erase : #s - 1 ≤ #(s.erase a) := by grind
+theorem card_sub_one_le_card_erase : #s - 1 ≤ #(s.erase a) := by grind
 
-@[deprecated (since := "2026-03-18")] alias pred_card_le_card_erase := sub_one_card_le_card_erase
+@[deprecated (since := "2026-04-01")] alias pred_card_le_card_erase := card_sub_one_le_card_erase
+@[deprecated (since := "2026-04-01")] alias sub_one_card_le_card_erase := card_sub_one_le_card_erase
 
 /-- If `a ∈ s` is known, see also `Finset.card_erase_of_mem` and `Finset.erase_eq_of_notMem`. -/
 theorem card_erase_eq_ite : #(s.erase a) = if a ∈ s then #s - 1 else #s :=
@@ -740,7 +741,7 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
-theorem card_eq_succ_iff_cons :
+theorem card_eq_add_one_iff_cons :
     #s = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ #t = n :=
   ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
    fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
@@ -748,29 +749,32 @@ theorem card_eq_succ_iff_cons :
 section DecidableEq
 variable [DecidableEq α]
 
-theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t = n :=
+theorem card_eq_add_one : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t = n :=
   ⟨fun h =>
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
     ⟨a, s.erase a, s.notMem_erase a, insert_erase has, by
       simp only [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
     fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_notMem hat⟩
 
+@[deprecated (since := "2026-04-01")] alias card_eq_succ_iff_cons := card_eq_add_one_iff_cons
+@[deprecated (since := "2026-04-01")] alias card_eq_succ := card_eq_add_one
+
 theorem card_eq_two : #s = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   constructor
-  · rw [card_eq_succ]
+  · rw [card_eq_add_one]
     grind [card_eq_one]
   · grind
 
 theorem card_eq_three : #s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   constructor
-  · rw [card_eq_succ]
+  · rw [card_eq_add_one]
     grind [card_eq_two]
   · grind
 
 theorem card_eq_four : #s = 4 ↔
     ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   constructor
-  · rw [card_eq_succ]
+  · rw [card_eq_add_one]
     grind [card_eq_three]
   · grind
 
