@@ -98,6 +98,10 @@ class IsFiniteType (σ : M.GeneratingSections) : Prop where
 
 attribute [instance] IsFiniteType.finite
 
+instance (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] [σ.IsFiniteType] :
+    (σ.ofEpi p).IsFiniteType where
+  finite := inferInstanceAs (Finite σ.I)
+
 end GeneratingSections
 
 variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrpCat.{u}]

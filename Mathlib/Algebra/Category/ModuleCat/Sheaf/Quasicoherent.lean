@@ -51,10 +51,10 @@ structure Presentation (M : SheafOfModules.{u} R) where
 of generators and relations are finite. -/
 class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Prop where
   isFiniteType_generators : p.generators.IsFiniteType := by infer_instance
-  finite_relations : Finite p.relations.I := by infer_instance
+  isFiniteType_relations : p.relations.IsFiniteType := by infer_instance
 
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
-  Presentation.IsFinite.finite_relations
+  Presentation.IsFinite.isFiniteType_relations
 
 end
 
@@ -129,6 +129,11 @@ noncomputable def Presentation.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ 
     (σ : M.Presentation) : N.Presentation where
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
+
+instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+    (σ : M.Presentation) [σ.IsFinite] : (σ.of_isIso f).IsFinite where
+  isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
+  isFiniteType_relations := inferInstanceAs (σ.relations.ofEpi _).IsFiniteType
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
@@ -307,7 +312,34 @@ theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentatio
     IsQuasicoherent M where
   nonempty_quasicoherentData := Nonempty.intro (Presentation.quasicoherentData P)
 
+/-- Mapping quasicoherent data under an isomorphism. -/
+@[simps]
+noncomputable def QuasicoherentData.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+    (σ : M.QuasicoherentData) : N.QuasicoherentData where
+  I := σ.I
+  X := σ.X
+  coversTop := σ.coversTop
+  presentation i :=
+    Presentation.of_isIso ((pushforward (F := Over.forget (σ.X i)) (𝟙 _)).map f) (σ.presentation i)
+
+instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
+  of_iso e := by
+    intro ⟨⟨q⟩⟩
+    exact ⟨⟨q.of_isIso e.hom⟩⟩
+
+instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
+    [h : σ.IsFinitePresentation] : (σ.of_isIso f).IsFinitePresentation where
+  isFinite_presentation i := by
+    dsimp
+    exact inferInstanceAs ((σ.presentation i).of_isIso _).IsFinite
+
+instance : (isFinitePresentation R).IsClosedUnderIsomorphisms where
+  of_iso e := by
+    intro ⟨σ, hσ⟩
+    exact ⟨σ.of_isIso e.hom, inferInstance⟩
+
 end
+
 section bind
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
