@@ -282,6 +282,103 @@ lemma nonempty_setOf_compactElement (x : PT (Opens D))
   use h_bot
   rw [← top_eq_bot_toOpen]
   exact h_top
+
+/-- `localePointOfSpacePoint D` is surjective when the underlying topological space `(D, Σ D)`,
+is generated as the Scott Topology given an Algebraic DCPO structure on `D`.
+Proof from Prop 3.5.3 in [renata2024]. -/
+lemma surjective_localePointOfSpacePoint : Function.Surjective (localePointOfSpacePoint D) := by
+  intro x
+  dsimp [pt, PT] at x
+  let K := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
+  use sSup K
+  apply FrameHom.ext
+  intro u
+  simp only [eq_iff_iff]
+  change sSup K ∈ u ↔ x u
+  calc
+    _ ↔ sSup K ∈ u.carrier := by rfl
+    _ ↔ sSup K ∈ ⋃₀ (Ici '' { e : D | IsCompactElement e ∧ Ici e ⊆ u}) := by
+      rw [IsTopologicalBasis.open_eq_sUnion'
+        isTopologicalBasis_Ici_image_compactSet u.isOpen (u:= u.carrier)]
+      simp_all only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq,
+        Opens.coe_mk, true_and, exists_prop, Opens.carrier_eq_coe, mem_sUnion, mem_setOf_eq,
+        and_true, mem_Ici, sUnion_image, mem_iUnion]
+    _ ↔ ∃ e : D, IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ sSup K := by
+      constructor
+      · rintro ⟨e', he'₀, he'₁⟩
+        simp only [Set.mem_image, Set.mem_setOf_eq] at he'₀
+        choose e he₁ he₂ using he'₀
+        use e
+        simp only [← he₂, Ici, Set.mem_setOf_eq] at he'₁
+        exact ⟨he₁.1, he₁.2, he'₁⟩
+      · rintro ⟨e, he₀, he₁, he₂⟩
+        have he'₀ : Ici e ∈ (Ici '' {c | IsCompactElement c ∧ Ici c ⊆ u}) := by
+          simp only [Set.mem_image, Set.mem_setOf_eq]
+          use e
+        apply Set.subset_sUnion_of_mem at he'₀
+        have he₂ : sSup K ∈ Ici e := by aesop
+        exact Set.mem_of_mem_of_subset he₂ he'₀
+    _ ↔ ∃ (e c : D), c ∈ K ∧ IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ c := by
+        constructor
+        · rintro ⟨e, he₀, he'₀, he₁⟩
+          use e
+          have he₀' := (isCompactElement_iff_le_of_directed_sSup_le e).1 he₀
+          choose c hc₁ hc₂ using
+            he₀' K (nonempty_setOf_compactElement x) (directed_setOf_compactElement x) he₁
+          use c
+        · rintro ⟨e, c, hc₀, he₀, he'₀, e_le_c⟩
+          use e
+          have he₁ : e ≤ sSup K := by
+            trans c
+            · assumption
+            · have sSup_is_LUB :=
+                CompletePartialOrder.lubOfDirected K (directed_setOf_compactElement x)
+              exact sSup_is_LUB.1 hc₀
+          exact ⟨he₀, he'₀, he₁⟩
+    _ ↔ ∃ (e c : D) (hc: IsCompactElement c),
+        IsCompactElement e ∧ Ici e ⊆ u ∧ Ici c ⊆ Ici e ∧ x hc.toOpen := by
+      constructor
+      · rintro ⟨e, c, ⟨hc₀, hc₁⟩, he₀, he₁, e_le_c⟩
+        use e; use c; use hc₀
+        exact ⟨he₀, he₁, Ici_subset_Ici.2 e_le_c, hc₁⟩
+      · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
+        use e; use c;
+        exact ⟨⟨hc₀, hc'₀⟩, he₀, he'₀, Ici_subset_Ici.1 c'_le_e'⟩
+    _ ↔ ∃ (e: D) (he: IsCompactElement e), Ici e ⊆ u ∧ x he.toOpen := by
+      constructor
+      · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
+        use e; use he₀; use he'₀
+        have c'_inf_e'_eq_c' : hc₀.toOpen ⊓ he₀.toOpen = hc₀.toOpen :=
+          by simp [IsCompactElement.toOpen, Ici_subset_Ici.1 c'_le_e']
+        have lifted : x (hc₀.toOpen ⊓ he₀.toOpen) = x hc₀.toOpen :=
+          congrArg (⇑x) c'_inf_e'_eq_c'
+        simp only [map_inf, inf_Prop_eq, eq_iff_iff, and_iff_left_iff_imp] at lifted
+        exact lifted hc'₀
+      · -- this direction is trivial as the requirements for c are all satisfied by e itself
+        intro ⟨e, he₀, he'₀, he'₁⟩
+        use e; use e; use he₀;
+    _ ↔ x u := by
+      constructor
+      · rintro ⟨e, he₀, he'₀, he'₁⟩
+        rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet u]
+        rw [map_sSup, sSup_Prop_eq] -- completely prime property of frame hom
+        use True
+        simp only [image_univ, mem_range, Subtype.exists, mem_image, mem_setOf_eq, eq_iff_iff,
+          iff_true, ↓existsAndEq, true_and, and_true]
+        use e, he₀
+        constructor
+        · apply he'₀
+        · apply he'₁
+      · intro hu
+        rw [IsBasis.open_eq_sSup isTopologicalBasis_Ici_image_compactSet u] at hu
+        rw [map_sSup, sSup_Prop_eq] at hu -- completely prime property of frame hom
+        obtain ⟨P, ⟨e', ⟨⟨e, he₁, he₂⟩, he'⟩, e'_in_x⟩, hP⟩ := hu
+        subst e'_in_x he₂
+        use e, e.prop
+        constructor
+        · apply he'
+        · exact hP
+
 end Sober
 end IsScott
 end Topology
