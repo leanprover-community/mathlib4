@@ -173,7 +173,7 @@ instance [Semigroup α] : Semigroup (SetSemiring α) :=
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
-instance [Monoid α] : CompleteBooleanAlgebra (SetSemiring α) :=
+instance : CompleteBooleanAlgebra (SetSemiring α) :=
   inferInstanceAs <| CompleteBooleanAlgebra (Set α)
 
 noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
