@@ -225,9 +225,8 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       · exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm <| hn.symm.trans <|
           ringKrullDim_eq_zero_of_isField ((iff_not_comm.mp
             (maximalIdeal_sq_lt_maximalIdeal R)).mpr (not_lt_of_ge (le_of_le_of_eq sub eq)))
-      · rw [← (maximalIdeal.isMaximal R).eq_of_le min.1.1.ne_top sub,
-          ← Ideal.primeHeight_eq_zero_iff, ← Ideal.height_eq_primeHeight, ← WithBot.coe_inj,
-          maximalIdeal_height_eq_ringKrullDim, hn] at min
+      · rw [← (maximalIdeal.isMaximal R).eq_of_le min.1.1.ne_top sub, ← Ideal.height_eq_zero_iff,
+          ← WithBot.coe_inj, maximalIdeal_height_eq_ringKrullDim, hn] at min
         exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm min
     replace xnmem : x ∉ maximalIdeal R ^ 2 ∧ ∀ p ∈ minimalPrimes R, x ∉ p := by simpa using xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
