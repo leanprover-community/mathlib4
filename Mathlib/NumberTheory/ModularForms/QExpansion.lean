@@ -567,7 +567,6 @@ protected lemma ModularFormClass.qExpansion_smul (hh : 0 < h) (hΓ : h ∈ Γ.st
     (f : F) [ModularFormClass F Γ k] : qExpansion h (a • f) = a • qExpansion h f :=
   qExpansion_smul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ) a
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_neg {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) :
     qExpansion h (-f) = -qExpansion h f := by
   simpa using qExpansion_smul hf (-1)
