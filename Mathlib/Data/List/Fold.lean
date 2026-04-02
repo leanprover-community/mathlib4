@@ -13,99 +13,49 @@ public import Mathlib.Logic.OpClass
 
 In their 1988 book _Introduction to Functional Programming_ [birdwadler],
 Richard Bird and Philip Wadler stated three duality theorems between `foldl` and `foldr`.
-Denoting the combining function as `f : α → β → β`, the theorems are:
+Denoting the combining function as `f`, the theorems are:
 
 1. If `α = β` and `f` is commutative and associative, `l.foldl = l.foldr`
 2. If `f` is left-commutative, `l.foldl = l.foldr`
 3. `l.reverse.foldl = l.foldr` and `l.reverse.foldr = l.foldl`
 
-However, formalising these theorems in Lean (or Haskell or Scheme but not Rocq) presents a problem:
-`f`'s type in `foldl` is `β → α → β`. The history behind this difference is explored in an
-appendix to a paper by Olivier Danvy [danvy] about transforming functional programs
-between direct and continuation-passing styles. That paper uses a version of `foldl` whose `f` has
-type `α → β → β`, which not only removes the need for `flip` in the duality theorems' statements
-but also allows slightly generalising the first theorem to
+Note that `f`'s type differs between Lean's `foldl` (`β → α → β`) and `foldr` (`α → β → β`),
+so `flip`s need to be inserted judiciously. For the history behind this type difference
+see the appendix to [danvy], which uses a version of `foldl` where `f : α → β → β` to derive
+among other things a slight generalisation of the first theorem:
 
 1. If `α = β`, `f` is associative and `a` commutes with all `x : α`, `l.foldl f a = l.foldr f a`
 
-This file defines the modified version of `foldl` as `foldf`, using it to state the duality theorems
-in their simplest and most general forms. Versions of the second theorem using `foldl` and `flip`
-are derived as corollaries.
-
 ## Main declarations
 
-* `List.foldf`: `List.foldl` with a type signature matching `List.foldr`.
 * `List.foldl_eq_foldr_of_commute`, `List.foldl_eq_foldr`: first duality theorem.
-* `List.foldf_eq_foldr`: second duality theorem.
-* `List.foldf_reverse_eq_foldr`, `List.foldr_reverse_eq_foldf`: third duality theorem.
+* `List.foldl_flip_eq_foldr`, `List.foldr_flip_eq_foldl`: second duality theorem.
+
+The third duality theorem is in the standard library under the names
+`List.foldl_reverse`, `List.foldr_eq_foldl_reverse`,
+`List.foldr_reverse` and `List.foldl_eq_foldr_reverse`.
 -/
 
 @[expose] public section
 
-universe u v
-
 namespace List
 
-variable {α : Type u} {β : Type v} {l : List α} {f : α → β → β} {v : β → α → β} {a : α} {b : β}
+variable {α β : Type*} {l : List α} {f : α → β → β} {v : β → α → β} {a : α} {b : β}
 
-/--
-Folds a function over a list from the left, accumulating a value starting with `init`.
-The accumulated value is combined with the each element of the list in order, using `f`.
+lemma foldl_cons_nil : l.foldl (flip cons) [] = l.reverse := by
+  induction l <;> simp [flip, foldl_eq_foldr_reverse, -foldr_reverse]
 
-This function differs from `List.foldl` in that its type signature matches `List.foldr`:
-`f` has type `α → β → β` instead of `β → α → β`.
-
-Examples:
- * `[a, b, c].foldf f init = f c (f b (f a init))`
- * `[1, 2, 3].foldf (toString · ++ ·) "" = "321"`
- * `[1, 2, 3].foldf (s!"({·} {·})") "!" = "(3 (2 (1 !)))"`
--/
-def foldf (f : α → β → β) (init : β) : List α → β
-  | []     => init
-  | a :: l => l.foldf f (f a init)
-
-@[simp, grind =] theorem foldf_nil : [].foldf f b = b := rfl
-@[simp, grind =] theorem foldf_cons : (a :: l).foldf f b = l.foldf f (f a b) := rfl
-
-@[simp]
-theorem foldl_flip_eq_foldf : l.foldl (flip f) b = l.foldf f b := by
-  induction l generalizing b <;> simp [flip, *]
-
-@[simp]
-theorem foldf_flip_eq_foldl : l.foldf (flip v) b = l.foldl v b := by
-  induction l generalizing b <;> simp [flip, *]
-
-@[simp]
-theorem foldf_cons_eq_append {f : α → β} {l' : List β} :
-    l.foldf (f · :: ·) l' = (l.map f).reverse ++ l' := by
-  induction l generalizing l' <;> simp [*]
-
-@[simp, grind =]
-theorem foldf_cons_eq_append' {l' : List α} : l.foldf cons l' = l.reverse ++ l' := by
-  induction l generalizing l' <;> simp [*]
-
-theorem foldf_cons_nil : l.foldf cons [] = l.reverse := by simp
-
-@[simp, grind _=_]
-theorem foldf_append {l' : List α} : (l ++ l').foldf f b = l'.foldf f (l.foldf f b) := by
-  induction l generalizing b <;> simp [*]
-
-theorem foldl_cons_eq_apply_foldl [hv : RightCommutative v] :
+lemma foldl_cons_eq_apply_foldl [hv : RightCommutative v] :
     (a :: l).foldl v b = v (l.foldl v b) a := by
   rw [foldl_cons]
   induction l generalizing a b <;> simp [*, hv.right_comm]
 
-theorem foldf_cons_eq_apply_foldf [hf : LeftCommutative f] :
-    (a :: l).foldf f b = f a (l.foldf f b) := by
-  rw [foldf_cons]
-  induction l generalizing b <;> simp [*, hf.left_comm]
-
-theorem foldr_cons_eq_foldr_apply [hf : LeftCommutative f] :
+lemma foldr_cons_eq_foldr_apply [hf : LeftCommutative f] :
     (a :: l).foldr f b = l.foldr f (f a b) := by
   rw [foldr_cons]
   induction l generalizing a b <;> simp [*, hf.left_comm]
 
-theorem foldl1_eq_foldr1 {f : α → α → α} [ha : Std.Associative f] {a b : α} :
+lemma foldl1_eq_foldr1 {f : α → α → α} [ha : Std.Associative f] {a b : α} :
     f (l.foldl f a) b = f a (l.foldr f b) := by
   induction l generalizing a <;> simp [*, ha.assoc]
 
@@ -120,26 +70,12 @@ theorem foldl_eq_foldr {f : α → α → α} [hf : Std.Commutative f] [Std.Asso
   foldl_eq_foldr_of_commute (hf.comm a)
 
 /-- Second Bird–Wadler duality theorem. -/
-theorem foldf_eq_foldr [LeftCommutative f] : l.foldf f b = l.foldr f b := by
-  induction l <;> simp [*, foldf_cons_eq_apply_foldf, -foldf_cons]
-
 theorem foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f b := by
-  rw [foldl_flip_eq_foldf, foldf_eq_foldr]
+  induction l generalizing b <;> simp [*, foldr_cons_eq_foldr_apply, flip, -foldr_cons]
 
+/-- Second Bird–Wadler duality theorem. -/
 theorem foldr_flip_eq_foldl [RightCommutative v] : l.foldr (flip v) b = l.foldl v b := by
-  unfold flip
-  rw [← foldf_eq_foldr, ← foldf_flip_eq_foldl]
-  rfl
-
-/-- Third Bird–Wadler duality theorem.
-Corresponds to `foldl_reverse` and `foldr_eq_foldl_reverse` in the standard library. -/
-theorem foldf_reverse_eq_foldr : l.reverse.foldf f b = l.foldr f b := by
-  induction l <;> simp [*]
-
-/-- Third Bird–Wadler duality theorem.
-Corresponds to `foldr_reverse` and `foldl_eq_foldr_reverse` in the standard library. -/
-theorem foldr_reverse_eq_foldf : l.reverse.foldr f b = l.foldf f b := by
-  induction l generalizing b <;> simp [*]
+  induction l generalizing b <;> simp [*, foldl_cons_eq_apply_foldl, flip, -foldl_cons]
 
 @[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
 @[deprecated (since := "2026-02-24")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
