@@ -108,10 +108,8 @@ section PoissonPMF
 noncomputable
 def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / (n)!
 
-set_option linter.deprecated false in
 @[deprecated hasSum_one_poissonMeasure (since := "2026-03-08")]
-lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 :=
-  hasSum_one_poissonMeasure _
+  alias poissonPMFRealSum := hasSum_one_poissonMeasure
 
 set_option linter.deprecated false in
 @[deprecated poissonMeasure_real_singleton_pos (since := "2026-03-08")]

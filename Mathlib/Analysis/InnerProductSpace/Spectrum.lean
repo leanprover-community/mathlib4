@@ -450,7 +450,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
   have hS_symm : S.IsSymmetric :=
     hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
   have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ :=
-    LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces hT' _
+    hT'.orthogonalComplement_iSup_eigenspaces _
   have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
     simp_all [hasEigenvalue_iff]
   rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h
