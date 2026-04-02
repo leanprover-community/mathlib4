@@ -264,7 +264,7 @@ theorem ciSup_subtype {p : ι → Prop} {f : Subtype p → α}
     iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ := by
   cases isEmpty_or_nonempty (Subtype p)
   · rw [iSup_of_empty', cbiSup_eq_of_forall_not fun i h ↦ isEmptyElim (⟨i, h⟩ : Subtype p)]
-  have : Nonempty ι := (nonempty_subtype.mp (inferInstance : Nonempty (Subtype p))).nonempty
+  have : Nonempty ι := (nonempty_subtype.mp ‹_›).nonempty
   classical
   refine le_antisymm (ciSup_le ?_) ?_
   · intro ⟨i, h⟩
