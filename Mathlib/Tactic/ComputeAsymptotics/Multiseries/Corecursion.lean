@@ -320,25 +320,9 @@ lemma dist_const_tail_cons_tail_le
     {op : Seq α → Seq α} {hd : α} {x y : Stream'.Seq α}
     (h : dist (op (cons hd x)) (op (cons hd y)) ≤ dist (cons hd x) (cons hd y)) :
     dist (op (cons hd x)).tail (op (cons hd y)).tail ≤ dist x y := by
-  rw [dist_cons_cons] at h
-  cases hx : op (.cons hd x) with
-  | nil =>
-    cases hy : op (.cons hd y) with
-    | nil => simp
-    | cons y_hd y_tl =>
-      grw [hx, hy, dist_le_one x y] at h
-      norm_num at h
-  | cons x_hd x_tl =>
-    cases hy : op (.cons hd y) with
-    | nil =>
-      grw [hx, hy, dist_le_one x y] at h
-      norm_num at h
-    | cons y_hd y_tl =>
-      suffices h_hd : x_hd = y_hd by
-        simpa [hx, hy, h_hd] using h
-      contrapose! h with h_hd
-      grw [hx, hy, dist_cons_cons_eq_one h_hd, dist_le_one]
-      norm_num
+  rwa [dist_cons_cons, dist_eq_half_of_head, mul_le_mul_iff_right₀ (by norm_num)] at h
+  grw [dist_le_one x y, mul_one] at h
+  obtain (⟨hx, hy⟩ | ⟨_, _, _, hx, hy⟩) := dist_le_half_iff.mp h <;> simp [hx, hy]
 
 /-- The operation `(op (.cons hd ·)).tail` is friendly if `op` is friendly. -/
 theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendlyOperation op) :
