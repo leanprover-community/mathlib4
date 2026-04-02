@@ -25,6 +25,7 @@ of them.
 @[expose] public section
 
 open Set
+
 variable {α : Type*} [t : TopologicalSpace α]
 
 namespace TopologicalSpace
@@ -40,23 +41,22 @@ theorem isClosedBasis_iff (s : Set (Set α)) :
     IsClosedBasis s ↔ IsTopologicalBasis (compl '' s) := by
   refine ⟨fun ⟨hs1, hs2, hts⟩ => ⟨?_, ?_, hts⟩, fun ⟨hs1, hs2, hts⟩ => ⟨?_, ?_, hts⟩⟩
   · simpa using hs1
-  · exact (s.compl_sInter ▸ eq_compl_comm.1 (Set.compl_univ ▸ hs2)).symm
+  · exact (s.compl_sInter ▸ eq_compl_comm.1 (compl_univ ▸ hs2)).symm
   · simpa using hs1
-  · exact Set.compl_univ ▸ eq_compl_comm.2 (s.compl_sInter ▸ hs2.symm)
+  · exact compl_univ ▸ eq_compl_comm.2 (s.compl_sInter ▸ hs2.symm)
 
 theorem IsClosedBasis.isClosed {u : Set α} {s : Set (Set α)}
     (hs : IsClosedBasis s) (hus : u ∈ s) : IsClosed u := by
   rw [hs.eq_generateFrom]
-  letI := generateFrom (compl '' s)
-  exact ⟨isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩⟩
+  simp_rw [← isOpen_compl_iff]
+  exact isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
 /-- `IsClosedSubbasis s` means that the topology on `α` equals `generateFrom { uᶜ | u ∈ s }`. -/
 def IsClosedSubbasis (s : Set (Set α)) := t = generateFrom (compl '' s)
 
 theorem IsClosedSubbasis.isClosed {u : Set α} {s : Set (Set α)}
-    (hs : IsClosedSubbasis s) (hus : u ∈ s) : IsClosed u := by
-  letI := generateFrom (compl '' s)
-  exact hs ▸ ⟨isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩⟩
+    (hs : IsClosedSubbasis s) (hus : u ∈ s) : IsClosed u :=
+  isOpen_compl_iff.1 <| hs ▸ isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
 theorem isClosedSubbasis_iff_isTopologicalBasis_sInter_compl (s : Set (Set α)) :
     IsClosedSubbasis s ↔
@@ -67,7 +67,7 @@ theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
     IsClosedSubbasis s ↔
       IsClosedBasis ((fun f => ⋃₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
   refine (isClosedSubbasis_iff_isTopologicalBasis_sInter_compl s).trans
-    ((isClosedBasis_iff _).trans <| iff_of_eq <| Set.compl_image_set_of ▸ ?_).symm
+    ((isClosedBasis_iff _).trans <| iff_of_eq <| compl_image_set_of ▸ ?_).symm
   congr
   ext t
   refine ⟨fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_, fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_⟩
@@ -79,7 +79,7 @@ theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
 theorem isClosedBasis_of_isClosedSubbasis_of_union {s : Set (Set α)} (hs1 : IsClosedSubbasis s)
     (hs2 : ∀ u ∈ s, ∀ v ∈ s, u ∪ v ∈ s) : IsClosedBasis (insert ∅ s) :=
   (isClosedBasis_iff (insert ∅ s)).2 <| s.image_insert_eq ▸
-    Set.compl_empty ▸ isTopologicalBasis_of_subbasis_of_inter hs1
+    compl_empty ▸ isTopologicalBasis_of_subbasis_of_inter hs1
       fun _ ⟨u, hus, hu⟩ _ ⟨v, hvs, hv⟩ => hu ▸ hv ▸ ⟨u ∪ v, hs2 u hus v hvs, u.compl_union v⟩
 
 theorem IsClosedBasis.closed_iff_eq_sInter {s : Set (Set α)} (hs : IsClosedBasis s)
@@ -87,9 +87,9 @@ theorem IsClosedBasis.closed_iff_eq_sInter {s : Set (Set α)} (hs : IsClosedBasi
   refine isOpen_compl_iff.symm.trans <| ((isClosedBasis_iff s).1 hs).open_iff_eq_sUnion.trans
     ⟨fun ⟨s', hs's, hus'⟩ => ?_, fun ⟨s', hs's, hus'⟩ => ?_⟩
   · exact ⟨compl '' s', s.compl_compl_image ▸ s'.image_mono hs's,
-      (Set.compl_sUnion _ ▸ compl_eq_comm.1 hus').symm⟩
+      (compl_sUnion _ ▸ compl_eq_comm.1 hus').symm⟩
   · exact ⟨compl '' s', s'.image_mono hs's,
-      compl_eq_comm.1 <| Set.compl_sUnion _ ▸ s'.compl_compl_image.symm ▸ hus'.symm⟩
+      compl_eq_comm.1 <| compl_sUnion _ ▸ s'.compl_compl_image.symm ▸ hus'.symm⟩
 
 theorem isClosedBasis_iff_and (s : Set (Set α)) :
     IsClosedBasis s ↔
@@ -100,12 +100,12 @@ theorem isClosedBasis_iff_and (s : Set (Set α)) :
     obtain ⟨t₃, ht₃s', hxt₃⟩ : ∃ t₃ ∈ s', x ∉ t₃ := by simpa using (hts' ▸ hxt : x ∉ ⋂₀ s')
     exact ⟨t₃,  hs's ht₃s', hxt₃, hts' ▸ s'.sInter_subset_of_mem ht₃s'⟩
   · obtain ⟨s', hs's, hs'⟩ := hs2 ∅ isClosed_empty
-    exact Set.subset_eq_empty (hs' ▸ Set.sInter_subset_sInter hs's) rfl
+    exact subset_eq_empty (hs' ▸ sInter_subset_sInter hs's) rfl
   · refine eq_of_le_of_ge (le_generateFrom fun u ⟨v, hvs, hvu⟩ => hvu ▸ (hs1 v hvs).isOpen_compl)
       (fun u hu => ?_)
-    · obtain ⟨s', hs's, hus'⟩ := hs2 uᶜ (isClosed_compl_iff.2 hu)
-      letI := generateFrom (compl '' s)
-      exact compl_eq_comm.1 hus' ▸ s'.compl_sInter ▸ isOpen_sUnion fun v hvs' =>
+    obtain ⟨s', hs's, hus'⟩ := hs2 uᶜ (isClosed_compl_iff.2 hu)
+    exact compl_eq_comm.1 hus' ▸ s'.compl_sInter ▸
+      @isOpen_sUnion _ (generateFrom (compl '' s)) _ fun v hvs' =>
         isOpen_generateFrom_of_mem <| s'.image_mono hs's hvs'
 
 end TopologicalSpace
