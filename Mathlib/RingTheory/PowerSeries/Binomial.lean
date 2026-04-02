@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series
@@ -31,7 +32,7 @@ commutative binomial ring `R`.
 
 @[expose] public section
 
-open Finset BigOperators
+open Finset
 
 suppress_compilation
 

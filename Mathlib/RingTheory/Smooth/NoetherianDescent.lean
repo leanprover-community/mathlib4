@@ -59,11 +59,16 @@ def subalgebra (D : DescentAux A B) : Subalgebra R A :=
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
 instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
+
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
 lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
@@ -108,6 +113,7 @@ lemma coeffs_q_subset (i) :
   grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
     Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
         MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
@@ -155,6 +161,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and a smooth `A₀`-algebra `B₀` such that
@@ -200,6 +207,13 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
+
+@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
+public theorem exists_subalgebra_finiteType [Smooth A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
+  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an

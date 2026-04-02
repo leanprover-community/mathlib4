@@ -54,6 +54,12 @@ theorem isDiscrete_iff_nhdsNE {S : Set Y} :
     IsDiscrete S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff]
 
+/-- If a subset of a topological space has no accumulation points,
+then it carries the discrete topology. -/
+lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
+    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
+  simpa [discreteTopology_subtype_iff, AccPt] using h
+
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
@@ -103,14 +109,15 @@ lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
 
-lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsEmbedding f) : IsDiscrete (f '' s) := by
-  refine .of_nhdsWithin ?_
-  rintro _ ⟨x, hx, rfl⟩
-  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '' s) := by
+  simp_all [isDiscrete_iff_nhdsWithin, ← hf.map_nhdsWithin_eq s]
 
-lemma IsEmbedding.isDiscrete_range [DiscreteTopology X] (hf : IsEmbedding f) :
+lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image hf
+
+@[deprecated (since := "2026-03-30")] alias
+IsEmbedding.isDiscrete_range := IsInducing.isDiscrete_range
 
 lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
     (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :

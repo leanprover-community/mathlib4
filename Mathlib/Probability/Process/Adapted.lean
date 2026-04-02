@@ -52,7 +52,9 @@ section Adapted
 variable {β : ι → Type*} [∀ i, MeasurableSpace (β i)] {u v : (i : ι) → Ω → β i}
 
 /-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
-`u i` is `f i`-measurable. -/
+`u i` is `f i`-measurable.
+
+The definition known as `Adapted` before 2026-01-13 is now `StronglyAdapted`. -/
 def Adapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
   ∀ i : ι, Measurable[f i] (u i)
 
@@ -108,10 +110,10 @@ protected theorem mul [∀ i, Mul (β i)] [∀ i, ContinuousMul (β i)]
     (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
     StronglyAdapted f (u * v) := fun i => (hu i).mul (hv i)
 
-@[to_additive]
-protected theorem div [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
+@[to_additive sub]
+protected theorem div' [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
     (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
-    StronglyAdapted f (u / v) := fun i => (hu i).div (hv i)
+    StronglyAdapted f (u / v) := fun i => (hu i).div' (hv i)
 
 @[to_additive]
 protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : StronglyAdapted f u) :
@@ -120,6 +122,11 @@ protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : 
 protected theorem smul [∀ i, SMul ℝ (β i)] [∀ i, ContinuousConstSMul ℝ (β i)]
     (c : ℝ) (hu : StronglyAdapted f u) :
     StronglyAdapted f (c • u) := fun i => (hu i).const_smul c
+
+/-- The norm of a strongly adapted process is strongly adapted. -/
+protected lemma norm {β : ι → Type*} {u : (i : ι) → Ω → β i} [∀ i, SeminormedAddCommGroup (β i)]
+    (hu : StronglyAdapted f u) :
+    StronglyAdapted f (fun t ω ↦ ‖u t ω‖) := fun t ↦ (hu t).norm
 
 protected theorem stronglyMeasurable {i : ι} (hf : StronglyAdapted f u) :
     StronglyMeasurable[m] (u i) := (hf i).mono (f.le i)
@@ -230,10 +237,15 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 protected theorem inv [Group β] [ContinuousInv β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 
-@[to_additive]
-protected theorem div [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
+@[to_additive sub]
+protected theorem div' [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
-  (hu i).div (hv i)
+  (hu i).div' (hv i)
+
+/-- The norm of a progressively measurable process is progressively measurable. -/
+protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup β]
+    (hu : ProgMeasurable f u) :
+    ProgMeasurable f fun t ω ↦ ‖u t ω‖ := fun t ↦ (hu t).norm
 
 end Arithmetic
 
@@ -246,10 +258,7 @@ theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSp
   apply @stronglyMeasurable_of_tendsto (Set.Iic i × Ω) β γ
     (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l => h l i
   rw [tendsto_pi_nhds] at h_tendsto ⊢
-  intro x
-  specialize h_tendsto x.fst
-  rw [tendsto_nhds] at h_tendsto ⊢
-  exact fun s hs h_mem => h_tendsto {g | g x.snd ∈ s} (hs.preimage (continuous_apply x.snd)) h_mem
+  exact fun _ ↦ Tendsto.apply_nhds (h_tendsto _) _
 
 theorem progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β] {U : ℕ → ι → Ω → β}
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U atTop (𝓝 u)) : ProgMeasurable f u :=

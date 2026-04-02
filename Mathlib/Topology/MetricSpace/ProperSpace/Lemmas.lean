@@ -38,7 +38,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
   have : IsCompact s :=
     (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
   obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
-    this.exists_isMaxOn (β := α) (α := ℝ) hne (continuous_id.dist continuous_const).continuousOn
+    this.exists_isMaxOn (β := α) (α := ℝ) hne (by fun_prop)
   have hyr : dist y x < r := h hys
   rcases exists_between hyr with ⟨r', hyr', hrr'⟩
   exact ⟨r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩, hy.trans <| closedBall_subset_ball hyr'⟩

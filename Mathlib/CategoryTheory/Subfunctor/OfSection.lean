@@ -98,6 +98,7 @@ lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
   · rintro ⟨f, rfl⟩
     exact ⟨f.op, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_ofSection' {X : C} (f : yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) :
     range f = ofSection (uliftYonedaEquiv f) := by
   rw [ofSection_eq_range', Equiv.symm_apply_apply]

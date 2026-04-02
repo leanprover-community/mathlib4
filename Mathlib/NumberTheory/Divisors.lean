@@ -551,7 +551,6 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = {p ∈ divisors n | p.Prime} := by
-  ext
   grind
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
@@ -630,7 +629,7 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
 @[simp]
 lemma mem_divisorsAntidiag :

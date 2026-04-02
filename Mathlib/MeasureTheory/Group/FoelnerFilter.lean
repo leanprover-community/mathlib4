@@ -215,7 +215,7 @@ variable (G μ) in
 /-- The maximal Følner filter with respect to some additive group `G` acting
     on a measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g +ᵥ s) / μ s`
     on measurable sets of finite non-zero measure. -/]
-def maxFoelner : Filter (Set X) :=
+noncomputable def maxFoelner : Filter (Set X) :=
   𝓟 {s : Set X | MeasurableSet s ∧ μ s ≠ 0 ∧ μ s ≠ ∞} ⊓
   ⨅ (g : G), comap (fun s ↦ μ ((g • s) ∆ s) / μ s) (𝓝 0)
 

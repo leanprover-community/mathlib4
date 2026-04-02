@@ -532,8 +532,6 @@ variable (R)
 theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
 
-@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
-
 theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
@@ -591,6 +589,9 @@ instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
+theorem mem_minimalPrimes {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : p ∈ I.minimalPrimes :=
+  ⟨⟨hp, hIp⟩, fun q ⟨_, _⟩ hqp ↦ ((isMaximal_of_isPrime q).eq_of_le hp.ne_top hqp).ge⟩
+
 /-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]
 def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
@@ -620,7 +621,7 @@ instance : Finite (PrimeSpectrum R) :=
   .of_equiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
-@[local instance] noncomputable def fieldOfSubtypeIsMaximal
+@[instance_reducible, local instance] noncomputable def fieldOfSubtypeIsMaximal
     (I : MaximalSpectrum R) : Field (R ⧸ I.asIdeal) :=
   Ideal.Quotient.field I.asIdeal
 
@@ -638,10 +639,12 @@ noncomputable def quotNilradicalEquivPi :
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
-  .trans (.symm <| .quotientBot R) <| .trans
+noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal where
+  __ := RingEquiv.trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
+  commutes' _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 
