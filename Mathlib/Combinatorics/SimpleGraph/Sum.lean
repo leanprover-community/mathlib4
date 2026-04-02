@@ -72,21 +72,21 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   map_rel_iff' := by simp
 
 /-- Given homomorphisms `f : G →g G'` and `g : H →g H'`, returns a homomorphism from `G ⊕g H` to
-  `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
 def Hom.sum (f : G →g G') (g : H →g H') : G ⊕g H →g G' ⊕g H' where
   toFun := Sum.map f g
   map_rel' {u v} := by cases u <;> cases v <;> simp_all [f.map_rel, g.map_rel]
 
 /-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
-  `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
-def Enbedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' where
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' where
   toFun := Sum.map f g
   inj' u v := by cases u <;> cases v <;> simp
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp
 
 /-- Given isomorphisms `f : G ≃g G'` and `g : H ≃g H'`, returns an isomorphism from `G ⊕g H` to
-  `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
-def Iso.sum (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' where
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+def Iso.sumCongr (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' where
   toEquiv := Equiv.sumCongr f.toEquiv g.toEquiv
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp [f.map_rel_iff, g.map_rel_iff]
 
