@@ -578,7 +578,7 @@ section Over
 
 variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
-/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+/-- Given a morphism property `P` on a category `T` and an object `X : T`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
 protected abbrev Over : Type _ :=
   P.Comma (Functor.id T) (Functor.fromPUnit.{0} X) Q ⊤
@@ -596,7 +596,7 @@ lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
 
 variable {P Q X}
 
-/-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
+/-- Construct a morphism in `P.Over Q X` from a morphism in `Over X`. -/
 @[simps hom]
 def Over.Hom.mk {A B : P.Over Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.left) : A ⟶ B where
   __ := f
@@ -664,7 +664,7 @@ section Under
 
 variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
-/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+/-- Given a morphism property `P` on a category `T` and an object `X : T`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
 protected abbrev Under : Type _ :=
   P.Comma (Functor.fromPUnit.{0} X) (Functor.id T) ⊤ Q
@@ -682,7 +682,7 @@ lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :
 
 variable {P Q X}
 
-/-- Construct a morphism in `P.Under Q X` from a morphism in `Under.X`. -/
+/-- Construct a morphism in `P.Under Q X` from a morphism in `Under X`. -/
 @[simps hom]
 def Under.Hom.mk {A B : P.Under Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.right) : A ⟶ B where
   __ := f
