@@ -120,9 +120,9 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       refine max_le (le_max_left _ _) ?_
       grw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, natCast_lt_aleph0]
-    · rw [← one_le_iff_ne_zero]
+    · rw [← Cardinal.one_le_iff_ne_zero]
       refine _root_.trans ?_ (le_ciSup (bddAbove_range _) 1)
-      rw [one_le_iff_ne_zero, mk_ne_zero_iff]
+      rw [Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
     refine ⟨Infinite.of_injective
