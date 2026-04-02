@@ -344,6 +344,12 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
   toFun := f
   map_rel' := by simp
 
+theorem le_comap (f : H →g G) : H ≤ G.comap f :=
+  fun _ _ ↦ f.map_adj
+
+theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
+
 variable {G'' : SimpleGraph X}
 
 /-- Composition of graph homomorphisms. -/
@@ -352,6 +358,10 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
+  rfl
+
+@[simp]
+theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
   rfl
 
 end Hom
@@ -404,6 +414,10 @@ protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Embedding.comap f G v = f v := rfl
+
+theorem comap_eq (f : H ↪g G) : G.comap f = H := by
+  ext
+  exact f.map_adj_iff
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
 -- Porting note: @[simps] does not work here since `f` is not a constructor application.

@@ -39,7 +39,6 @@ inductive kernels : ObjectProperty C
   | of_isLimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : KernelFork f) (hk : IsLimit k)
     (hf : W f) : kernels k.pt
 
-set_option backward.isDefEq.respectTransparency false in
 instance : W.kernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -51,7 +50,6 @@ inductive cokernels : ObjectProperty C
   | of_isColimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : CokernelCofork f) (hk : IsColimit k)
     (hf : W f) : cokernels k.pt
 
-set_option backward.isDefEq.respectTransparency false in
 instance : W.cokernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -78,7 +76,6 @@ lemma prop_kernel [P.IsClosedUnderKernels] {X Y : C} (f : X ⟶ Y) [HasKernel f]
     (hY : P Y) : P (kernel f) :=
   (P.prop_of_isLimit_kernelFork (kernelIsKernel f) hX hY :)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
   kernels_le := by
     intro _ ⟨_, k, hk, hf⟩
@@ -126,7 +123,6 @@ lemma prop_cokernel [P.IsClosedUnderCokernels] {X Y : C} (f : X ⟶ Y) [HasCoker
     (hY : P Y) : P (cokernel f) :=
   (P.prop_of_isColimit_cokernelCofork (cokernelIsCokernel f) hX hY :)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
   cokernels_le := by
     intro _ ⟨_, k, hk, hf⟩
