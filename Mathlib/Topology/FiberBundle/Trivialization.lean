@@ -122,10 +122,12 @@ theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
 
 protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
 
-@[simp]
+@[grind →, simp]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+-- has the same conclusion as the unprimed version, so perhaps not?
 @[simp]
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
@@ -137,6 +139,7 @@ def setSymm : e.target → Z :=
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
 
+@[grind →] -- xxx good grind lemma? simp cannot do this (proj is a free variable); can grind?
 theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toPartialEquiv.symm x) = x.1 := by
   have := (e.coe_fst (e.map_target hx)).symm
   rwa [← e.coe_coe, e.right_inv hx] at this
@@ -150,7 +153,7 @@ theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialEquiv.symm x) = x :=
   e.toPartialEquiv.right_inv hx
 
@@ -159,10 +162,11 @@ theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toPartialEquiv.symm (b, x)) = (b, x) :=
   e.apply_symm_apply (e.mem_target.2 hx)
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toPartialEquiv.symm (e x) = x :=
   e.toPartialEquiv.left_inv hx
 
+@[grind →] -- same question: can grind help here if simp cannot?
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toPartialEquiv.symm (proj x, (e x).2) = x := by
   rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
@@ -187,6 +191,7 @@ theorem target_inter_preimage_symm_source_eq (e f : Pretrivialization F proj) :
     f.target ∩ f.toPartialEquiv.symm ⁻¹' e.source = (e.baseSet ∩ f.baseSet) ×ˢ univ := by
   rw [inter_comm, f.target_eq, e.source_eq, f.preimage_symm_proj_inter]
 
+@[grind =]
 theorem trans_source (e f : Pretrivialization F proj) :
     (f.toPartialEquiv.symm.trans e.toPartialEquiv).source = (e.baseSet ∩ f.baseSet) ×ˢ univ := by
   rw [PartialEquiv.trans_source, PartialEquiv.symm_source, e.target_inter_preimage_symm_source_eq]
@@ -196,29 +201,31 @@ theorem symm_trans_symm (e e' : Pretrivialization F proj) :
       = e'.toPartialEquiv.symm.trans e.toPartialEquiv := by
   rw [PartialEquiv.trans_symm_eq_symm_trans_symm, PartialEquiv.symm_symm]
 
+@[grind =]
 theorem symm_trans_source_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).source = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
   rw [PartialEquiv.trans_source, e'.source_eq, PartialEquiv.symm_source, e.target_eq, inter_comm,
     e.preimage_symm_proj_inter, inter_comm]
 
+@[grind =]
 theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
   rw [← PartialEquiv.symm_source, symm_trans_symm, symm_trans_source_eq, inter_comm]
 
 variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 
-@[simp]
+@[grind =, simp]
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[mfld_simps]
+@[grind =, mfld_simps] -- grind → fails; good grind lemma?
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
   simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
@@ -251,17 +258,17 @@ theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
   simp only [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
 theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
 theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
@@ -415,11 +422,11 @@ theorem toPretrivialization_injective :
   exacts [OpenPartialHomeomorph.toPartialEquiv_injective
     (congr_arg Pretrivialization.toPartialEquiv h), congr_arg Pretrivialization.baseSet h]
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps]
 theorem coe_coe : ⇑e.toOpenPartialHomeomorph = e :=
   rfl
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps]
 theorem coe_fst (ex : x ∈ e.source) : (e x).1 = proj x :=
   e.proj_toFun x ex
 
@@ -427,13 +434,16 @@ protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.c
 
 theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps] -- duplicate with coe_fst?
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
 
+@[grind →]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+-- has the same conclusion as the unprimed version, so perhaps not?
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
 
@@ -441,7 +451,7 @@ theorem source_inter_preimage_target_inter (s : Set (B × F)) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
   e.toOpenPartialHomeomorph.source_inter_preimage_target_inter s
 
-@[simp, mfld_simps]
+@[grind =, simp, mfld_simps]
 theorem coe_mk (e : OpenPartialHomeomorph Z (B × F)) (i j k l m) (x : Z) :
     (Trivialization.mk e i j k l m : Trivialization F proj) x = e x :=
   rfl
@@ -452,6 +462,7 @@ theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet :=
 theorem map_target {x : B × F} (hx : x ∈ e.target) : e.toOpenPartialHomeomorph.symm x ∈ e.source :=
   e.toOpenPartialHomeomorph.map_target hx
 
+@[grind →] -- grind = fails; this cannot be simp; is it a good grind lemma?
 theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) :
     proj (e.toOpenPartialHomeomorph.symm x) = x.1 :=
   e.toPretrivialization.proj_symm_apply hx
@@ -463,17 +474,19 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
 theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   e.toPretrivialization.proj_surjOn_baseSet
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) :
     e (e.toOpenPartialHomeomorph.symm x) = x :=
   e.toOpenPartialHomeomorph.right_inv hx
 
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+-- has the same conclusion as the unprimed version, so perhaps not?
 @[simp, mfld_simps]
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toOpenPartialHomeomorph.symm (b, x)) = (b, x) :=
   e.toPretrivialization.apply_symm_apply' hx
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem symm_apply_mk_proj (ex : x ∈ e.source) :
     e.toOpenPartialHomeomorph.symm (proj x, (e x).2) = x :=
   e.toPretrivialization.symm_apply_mk_proj ex
@@ -492,6 +505,7 @@ theorem coe_fst_eventuallyEq_proj (ex : x ∈ e.source) : Prod.fst ∘ e =ᶠ[�
 theorem coe_fst_eventuallyEq_proj' (ex : proj x ∈ e.baseSet) : Prod.fst ∘ e =ᶠ[𝓝 x] proj :=
   e.coe_fst_eventuallyEq_proj (e.mem_source.2 ex)
 
+@[grind →]
 theorem map_proj_nhds (ex : x ∈ e.source) : map proj (𝓝 x) = 𝓝 (proj x) := by
   rw [← e.coe_fst ex, ← map_congr (e.coe_fst_eventuallyEq_proj ex), ← map_map, ← e.coe_coe,
     e.map_nhds_eq ex, map_fst_nhds]
@@ -574,12 +588,14 @@ def preimageSingletonHomeomorph {b : B} (hb : b ∈ e.baseSet) : proj ⁻¹' {b}
     .trans (.prodCongr (Homeomorph.homeomorphOfUnique ({b} : Set B) PUnit.{1}) (Homeomorph.refl F))
       (Homeomorph.punitProd F)
 
-@[simp]
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =, simp]
 theorem preimageSingletonHomeomorph_apply {b : B} (hb : b ∈ e.baseSet) (p : proj ⁻¹' {b}) :
     e.preimageSingletonHomeomorph hb p = (e p).2 :=
   rfl
 
-@[simp]
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =, simp]
 theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p : F) :
     (e.preimageSingletonHomeomorph hb).symm p =
       ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton_iff]⟩ :=
@@ -643,18 +659,20 @@ protected theorem continuousOn : ContinuousOn e' e'.source :=
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
+@[grind =] -- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
   e'.coe_fst (e'.mem_source.2 hb)
 
 theorem mk_mem_target {y : F} : (b, y) ∈ e'.target ↔ b ∈ e'.baseSet :=
   e'.toPretrivialization.mem_target
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
     e'.toOpenPartialHomeomorph.symm (e' x) = x :=
   e'.toPartialEquiv.left_inv hx
 
-@[simp, mfld_simps]
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =, simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈ e.baseSet) :
     (e.toOpenPartialHomeomorph.symm (x, y)).1 = x :=
   e.proj_symm_apply' h
@@ -681,17 +699,19 @@ theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=
   e.toPretrivialization.mk_symm hb y
 
-@[simp, mfld_simps]
+@[grind →, simp, mfld_simps]
 theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
   e.toPretrivialization.symm_proj_apply z hz
 
-@[simp, mfld_simps]
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =, simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : E b) :
     e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
-@[simp, mfld_simps]
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =, simp, mfld_simps]
 theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) :=
   e.toPretrivialization.apply_mk_symm hb y
@@ -721,7 +741,7 @@ def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization 
   target_eq := by simp [target_eq, prod_univ, preimage_preimage]
   proj_toFun := e.proj_toFun
 
-@[simp]
+@[grind =, simp]
 theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
     (h : F ≃ₜ F') (x : Z) : e.transFiberHomeomorph h x = ((e x).1, h (e x).2) :=
   rfl
@@ -739,6 +759,8 @@ theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
 
+-- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
+@[grind =]
 theorem coordChange_apply_snd (e₁ e₂ : Trivialization F proj) {p : Z} (h : proj p ∈ e₁.baseSet) :
     e₁.coordChange e₂ (proj p) (e₁ p).snd = (e₂ p).snd := by
   rw [coordChange, e₁.symm_apply_mk_proj (e₁.mem_source.2 h)]
@@ -777,7 +799,7 @@ protected def coordChangeHomeomorph (e₁ e₂ : Trivialization F proj) {b : B} 
   continuous_toFun := e₁.continuous_coordChange e₂ h₁ h₂
   continuous_invFun := e₂.continuous_coordChange e₁ h₂ h₁
 
-@[simp]
+@[grind =, simp]
 theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : ⇑(e₁.coordChangeHomeomorph e₂ h₁ h₂) = e₁.coordChange e₂ b :=
   rfl
