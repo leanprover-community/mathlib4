@@ -37,7 +37,7 @@ structure IsClosedBasis (s : Set (Set α)) : Prop where
   sInter_eq : ⋂₀ s = ∅
   eq_generateFrom : t = generateFrom (compl '' s)
 
-theorem isClosedBasis_iff (s : Set (Set α)) :
+theorem isClosedBasis_iff {s : Set (Set α)} :
     IsClosedBasis s ↔ IsTopologicalBasis (compl '' s) := by
   refine ⟨fun ⟨hs1, hs2, hts⟩ => ⟨?_, ?_, hts⟩, fun ⟨hs1, hs2, hts⟩ => ⟨?_, ?_, hts⟩⟩
   · simpa using hs1
@@ -60,16 +60,16 @@ theorem IsClosedSubbasis.isClosed {u : Set α} {s : Set (Set α)}
     (hs : IsClosedSubbasis s) (hus : u ∈ s) : IsClosed u :=
   isOpen_compl_iff.1 <| hs ▸ isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-theorem isClosedSubbasis_iff_isTopologicalBasis_sInter_compl (s : Set (Set α)) :
+theorem isClosedSubbasis_iff_isTopologicalBasis_sInter_compl {s : Set (Set α)} :
     IsClosedSubbasis s ↔
       IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ compl '' s }) :=
   subbasis_iff_isTopologicalBasis_sInter (compl '' s)
 
-theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
+theorem isClosedSubbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
     IsClosedSubbasis s ↔
       IsClosedBasis ((fun f => ⋃₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
-  refine (isClosedSubbasis_iff_isTopologicalBasis_sInter_compl s).trans
-    ((isClosedBasis_iff _).trans <| iff_of_eq <| compl_image_set_of ▸ ?_).symm
+  refine isClosedSubbasis_iff_isTopologicalBasis_sInter_compl.trans
+    (isClosedBasis_iff.trans <| iff_of_eq <| compl_image_set_of ▸ ?_).symm
   congr
   ext t
   refine ⟨fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_, fun ⟨f, ⟨hf, hfs⟩, hft⟩ => ?_⟩
@@ -80,20 +80,20 @@ theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
 
 theorem isClosedBasis_of_isClosedSubbasis_of_union {s : Set (Set α)} (hs1 : IsClosedSubbasis s)
     (hs2 : ∀ u ∈ s, ∀ v ∈ s, u ∪ v ∈ s) : IsClosedBasis (insert ∅ s) :=
-  (isClosedBasis_iff (insert ∅ s)).2 <| s.image_insert_eq ▸
+  isClosedBasis_iff.2 <| s.image_insert_eq ▸
     compl_empty ▸ isTopologicalBasis_of_subbasis_of_inter hs1
       fun _ ⟨u, hus, hu⟩ _ ⟨v, hvs, hv⟩ => hu ▸ hv ▸ ⟨u ∪ v, hs2 u hus v hvs, u.compl_union v⟩
 
 theorem IsClosedBasis.closed_iff_eq_sInter {s : Set (Set α)} (hs : IsClosedBasis s)
     (u : Set α) : IsClosed u ↔ ∃ s' ⊆ s, u = ⋂₀ s' := by
-  refine isOpen_compl_iff.symm.trans <| ((isClosedBasis_iff s).1 hs).open_iff_eq_sUnion.trans
+  refine isOpen_compl_iff.symm.trans <| (isClosedBasis_iff.1 hs).open_iff_eq_sUnion.trans
     ⟨fun ⟨s', hs's, hus'⟩ => ?_, fun ⟨s', hs's, hus'⟩ => ?_⟩
   · exact ⟨compl '' s', s.compl_compl_image ▸ s'.image_mono hs's,
       (compl_sUnion _ ▸ compl_eq_comm.1 hus').symm⟩
   · exact ⟨compl '' s', s'.image_mono hs's,
       compl_eq_comm.1 <| compl_sUnion _ ▸ s'.compl_compl_image.symm ▸ hus'.symm⟩
 
-theorem isClosedBasis_iff_and (s : Set (Set α)) :
+theorem isClosedBasis_iff_and {s : Set (Set α)} :
     IsClosedBasis s ↔
       (∀ u ∈ s, IsClosed u) ∧ (∀ u : Set α, IsClosed u → ∃ s' ⊆ s, u = ⋂₀ s') := by
   refine ⟨fun hs => ⟨fun u hus => hs.isClosed hus, fun u hu => (hs.closed_iff_eq_sInter u).1 hu⟩,
