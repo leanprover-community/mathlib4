@@ -1159,7 +1159,8 @@ theorem integral_Ici_sub_Ici (hf : IntegrableOn f (Ici a) μ) (hab : a ≤ b) :
   rw [sub_eq_iff_eq_add', ← setIntegral_union (by grind) measurableSet_Ico ha h, union_comm,
       Ico_union_Ici_eq_Ici hab]
 
-theorem integral_Ici_sub_Ici' [NoAtoms μ] (hf : IntegrableOn f (Ici a) μ) (hab : a ≤ b) :
+theorem integral_Ici_sub_Ici' [NoAtoms μ] (hf : IntegrableOn f (Ici a) μ)
+    (hg : IntegrableOn f (Ici b) μ) :
     ∫ x in Ici a, f x ∂μ - ∫ x in Ici b, f x ∂μ = ∫ x in a..b, f x ∂μ := by
   wlog! hab : a ≤ b generalizing a b
   · rw [integral_symm, ← this hg hf hab.le, neg_sub]
