@@ -260,11 +260,19 @@ theorem le_one_iff [CanonicallyOrderedAdd α] : x ≤ 1 ↔ x = 0 ∨ x = 1 := b
   rw [le_iff_lt_or_eq, lt_one_iff]
 
 @[simp]
+theorem Iio_one_eq [CanonicallyOrderedAdd α] : Iio (1 : α) = {0} := by
+  ext; simp
+
+@[simp]
 theorem lt_two_iff : x < 2 ↔ x ≤ 1 := by
   rw [← one_add_one_eq_two, lt_add_one_iff]
 
 theorem le_two_iff [CanonicallyOrderedAdd α] : x ≤ 2 ↔ x = 0 ∨ x = 1 ∨ x = 2 := by
   rw [le_iff_lt_or_eq, lt_two_iff, le_one_iff, or_assoc]
+
+@[simp]
+theorem Iio_two_eq [CanonicallyOrderedAdd α] : Iio (2 : α) = {0} := by
+  ext; simp
 
 end AddMonoidWithOne
 
