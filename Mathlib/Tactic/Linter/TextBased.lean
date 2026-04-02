@@ -564,6 +564,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
     `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpHolder,
     `Mathlib.Analysis.Normed.Lp.lpSpace
   ]
   -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
