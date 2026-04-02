@@ -218,16 +218,13 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
     obtain ⟨x, xmem, xnmem⟩ :
         ∃ x ∈ maximalIdeal R, x ∉ ⋃ I ∈ (insert ((maximalIdeal R) ^ 2) (minimalPrimes R)), I := by
       by_contra! h
+      have : ringKrullDim R ≠ 0 := hn.trans_ne (Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm)
+      have lt := (maximalIdeal_sq_lt_maximalIdeal R).mpr (mt ringKrullDim_eq_zero_of_isField this)
       have fin := (minimalPrimes.finite_of_isNoetherianRing R).insert ((maximalIdeal R) ^ 2)
-      rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
-        (fun I hI ne _ ↦ (Set.mem_of_mem_insert_of_ne hI ne).1.1)).mp h with ⟨I, hI, sub⟩
-      rcases hI with eq|min
-      · exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm <| hn.symm.trans <|
-          ringKrullDim_eq_zero_of_isField ((iff_not_comm.mp
-            (maximalIdeal_sq_lt_maximalIdeal R)).mpr (not_lt_of_ge (le_of_le_of_eq sub eq)))
-      · rw [← (maximalIdeal.isMaximal R).eq_of_le min.1.1.ne_top sub, ← Ideal.height_eq_zero_iff,
-          ← WithBot.coe_inj, maximalIdeal_height_eq_ringKrullDim, hn] at min
-        exact Nat.cast_inj.not.mpr (Nat.zero_ne_add_one n).symm min
+      absurd (Ideal.subset_iUnion_iff_mem_of_isMaximal_of_finite fin _ _
+        (fun I hI ne _ ↦ (Set.mem_of_mem_insert_of_ne hI ne).1.1) lt.ne_top lt.ne_top).mp h
+      simp only [Set.mem_insert_iff, lt.ne.symm, ← Ideal.height_eq_zero_iff, false_or]
+      rwa [← WithBot.coe_inj, maximalIdeal_height_eq_ringKrullDim]
     replace xnmem : x ∉ maximalIdeal R ^ 2 ∧ ∀ p ∈ minimalPrimes R, x ∉ p := by simpa using xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
