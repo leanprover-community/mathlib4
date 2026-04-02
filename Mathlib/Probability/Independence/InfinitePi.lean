@@ -21,6 +21,7 @@ There are several possible measurability assumptions:
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is almost everywhere measurable.
+
 Although the first two options are equivalent, the last two are not if the index set is not
 countable.
 -/
