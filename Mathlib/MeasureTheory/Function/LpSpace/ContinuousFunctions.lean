@@ -207,4 +207,10 @@ theorem toLp_norm_le :
   rw [toLp_norm_eq_toLp_norm_coe]
   exact BoundedContinuousFunction.toLp_norm_le μ
 
+lemma memLp (𝕜' : Type*) [NormedField 𝕜'] [NormedSpace 𝕜' E] (f : C(α, E)) :
+    MemLp f p μ := by
+  have := Lp.mem_Lp_iff_memLp.mp (Subtype.val_prop (ContinuousMap.toLp p μ 𝕜' f))
+  rw [ContinuousMap.coe_toLp, memLp_congr_ae (ContinuousMap.coeFn_toAEEqFun _ _)] at this
+  exact this
+
 end ContinuousMap
