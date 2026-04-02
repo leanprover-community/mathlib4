@@ -273,6 +273,9 @@ elab_rules : command
             else ""}
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
+-- uses deprecated `Strim.trim`;
+-- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
+set_option linter.deprecated false in
 /--
 `#find_deleted_files (nc)? (pct%)?` takes an optional natural number input `nc` and an optional
 percentage `pct%`.
@@ -319,12 +322,14 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
     return .ofList <| files.splitOn "\n"
-  -- should `let (currentHash, currentPRdescr) ← getHashAndMessage 1` work?
+  -- adaptation note: the next three lines were just
+  -- `let (currentHash, currentPRdescr) ← getHashAndMessage 1`
   let a ← getHashAndMessage 1
   let currentHash := a.1; let currentPRdescr := a.2
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
-  -- should `let (pastHash, pastPRdescr) ← getHashAndMessage n` work?
+  -- adaptation note: the next three lines were just
+  -- `let (pastHash, pastPRdescr) ← getHashAndMessage n`
   let b ← getHashAndMessage n
   let pastHash := b.1; let pastPRdescr := b.2
   let pastFiles ← getFilesAtHash pastHash
