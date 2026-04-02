@@ -212,7 +212,7 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
 lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
-    (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
+    (hf : IsQuotientMap f) : SequentialSpace Y := hf.isCoinducing.eq_coinduced.symm ▸ .coinduced f
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
