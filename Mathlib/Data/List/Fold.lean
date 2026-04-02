@@ -59,29 +59,29 @@ lemma foldl1_eq_foldr1 {f : α → α → α} [ha : Std.Associative f] {a b : α
     f (l.foldl f a) b = f a (l.foldr f b) := by
   induction l generalizing a <;> simp [*, ha.assoc]
 
-/-- First Bird–Wadler duality theorem. -/
+/-- **First Bird–Wadler duality theorem**. -/
 theorem foldl_eq_foldr_of_commute {f : α → α → α} [Std.Associative f] (ha : ∀ x, f a x = f x a) :
     l.foldl f a = l.foldr f a := by
   induction l <;> simp [*, foldl_assoc]
 
-/-- First Bird–Wadler duality theorem for commutative functions. -/
+/-- **First Bird–Wadler duality theorem** for commutative functions. -/
 theorem foldl_eq_foldr {f : α → α → α} [hf : Std.Commutative f] [Std.Associative f] :
     l.foldl f a = l.foldr f a :=
   foldl_eq_foldr_of_commute (hf.comm a)
 
-/-- Second Bird–Wadler duality theorem. -/
+/-- **Second Bird–Wadler duality theorem**. -/
 theorem foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f b := by
   induction l generalizing b <;> simp [*, flip, foldr_cons_eq_foldr_apply, -foldr_cons]
 
-/-- Second Bird–Wadler duality theorem. -/
+/-- **Second Bird–Wadler duality theorem**. -/
 theorem foldr_flip_eq_foldl [RightCommutative v] : l.foldr (flip v) b = l.foldl v b := by
   induction l generalizing b <;> simp [*, flip, foldl_cons_eq_apply_foldl, -foldl_cons]
 
-@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
-@[deprecated (since := "2026-02-24")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
-@[deprecated (since := "2026-02-24")] alias foldl_eq_foldr' := foldr_flip_eq_foldl
-@[deprecated (since := "2026-02-24")] alias foldl_eq_of_comm_of_assoc := foldl_cons_eq_apply_foldl
-@[deprecated (since := "2026-02-24")] alias foldl_op_eq_op_foldr_assoc := foldl1_eq_foldr1
-@[deprecated (since := "2026-02-24")] alias foldl_assoc_comm_cons := foldl_cons_eq_apply_foldl
+@[deprecated (since := "2026-04-02")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
+@[deprecated (since := "2026-04-02")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
+@[deprecated (since := "2026-04-02")] alias foldl_eq_foldr' := foldr_flip_eq_foldl
+@[deprecated (since := "2026-04-02")] alias foldl_eq_of_comm_of_assoc := foldl_cons_eq_apply_foldl
+@[deprecated (since := "2026-04-02")] alias foldl_op_eq_op_foldr_assoc := foldl1_eq_foldr1
+@[deprecated (since := "2026-04-02")] alias foldl_assoc_comm_cons := foldl_cons_eq_apply_foldl
 
 end List
