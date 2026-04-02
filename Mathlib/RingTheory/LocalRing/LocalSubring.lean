@@ -130,9 +130,9 @@ instance isLocalRing_eqLocus {R S : Type*} [Ring R] [Semiring S] [IsLocalRing R]
     IsLocalRing (f.eqLocus g) :=
   Subring.isLocalRing_of_unit _ fun _ h ↦ (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
 
-instance isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semiring T]
+theorem isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semiring T]
     [IsLocalRing R] [FunLike F R T] [RingHomClass F R T] [FunLike G S T] [RingHomClass G S T]
-    (f : F) (g : G) [IsLocalHom g] :
+    (f : F) (g : G) (hg : IsLocalHom g) :
     IsLocalRing (RingHom.pullback (f : R →+* T) (g : S →+* T)) where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
@@ -148,7 +148,7 @@ instance isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semi
     apply IsLocalHom.map_nonunit at this; right
     simpa [RingHom.isUnit_pullback_mk_iff] using ⟨hs, this⟩
 
-instance isLocalRing_algHomPullback {R S T A : Type*} [CommSemiring R] [Ring S] [Algebra R S]
+theorem isLocalRing_algHomPullback {R S T A : Type*} [CommSemiring R] [Ring S] [Algebra R S]
     [IsLocalRing S] [Ring T] [Algebra R T] [Semiring A] [Algebra R A] (f : S →ₐ[R] A)
-    (g : T →ₐ[R] A) [IsLocalHom g] : IsLocalRing (AlgHom.pullback f g) :=
-  inferInstanceAs <| IsLocalRing (RingHom.pullback (f : S →+* A) (g : T →+* A))
+    (g : T →ₐ[R] A) (hg :IsLocalHom g) : IsLocalRing (AlgHom.pullback f g) :=
+  isLocalRing_ringHomPullback (f : S →+* A) (g : T →+* A) ⟨hg.map_nonunit⟩
