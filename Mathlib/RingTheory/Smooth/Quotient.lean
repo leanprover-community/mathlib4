@@ -87,46 +87,40 @@ lemma eq_map_of_comap_eq_ker_sup {A B : Type*} [CommRing A] [CommRing B] (f : A 
   rcases exists_of_comap_eq_ker_sup _ surj eq hx with ⟨y, mem, hy⟩
   simpa [← hy] using Ideal.mem_map_of_mem _ mem
 
-lemma mapCotangent_ker_surjective (surjR : Function.Surjective (algebraMap R R'))
-    (surjRS : Function.Surjective (algebraMap R S))
-    (eqmap : RingHom.ker (algebraMap S S') = (RingHom.ker (algebraMap R R')).map (algebraMap R S)) :
-    Function.Surjective (Ideal.mapCotangent (RingHom.ker (algebraMap R S))
-      (RingHom.ker (algebraMap R' S')) (Algebra.ofId R R')
-        (le_of_le_of_eq le_sup_right (comap_ker_eq_sup_of_ker_eq_map surjRS eqmap).symm)) := by
+lemma mapCotangent_surjective_of_comap_eq {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    (surj : Function.Surjective (algebraMap A B)) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
+    Function.Surjective (Ideal.mapCotangent J I (Algebra.ofId A B)
+      (le_of_le_of_eq le_sup_right eq.symm)) := by
   intro x
-  rcases (RingHom.ker (algebraMap R' S')).toCotangent_surjective x with ⟨x', rfl⟩
-  rcases exists_of_comap_eq_ker_sup _ surjR (comap_ker_eq_sup_of_ker_eq_map surjRS eqmap) x'.2 with
+  rcases I.toCotangent_surjective x with ⟨x', rfl⟩
+  rcases exists_of_comap_eq_ker_sup _ surj eq x'.2 with
     ⟨y', mem, hy'⟩
-  use (RingHom.ker (algebraMap R S)).toCotangent ⟨y', mem⟩
-  simpa using (RingHom.ker (algebraMap R' S')).toCotangent.congr_arg (SetCoe.ext hy')
+  use J.toCotangent ⟨y', mem⟩
+  simpa using I.toCotangent.congr_arg (SetCoe.ext hy')
 
-lemma ker_mapCotangent_ker_surjective (surjR : Function.Surjective (algebraMap R R'))
-    (surjRS : Function.Surjective (algebraMap R S))
-    (eqmap : RingHom.ker (algebraMap S S') = (RingHom.ker (algebraMap R R')).map (algebraMap R S)) :
-    (Ideal.mapCotangent (RingHom.ker (algebraMap R S)) (RingHom.ker (algebraMap R' S'))
-      (Algebra.ofId R R') (le_of_le_of_eq le_sup_right (comap_ker_eq_sup_of_ker_eq_map surjRS
-        eqmap).symm)).ker = (Submodule.comap (RingHom.ker (algebraMap R S)).subtype
-          ((RingHom.ker (algebraMap R R')) ⊓ (RingHom.ker (algebraMap R S)))).map
-            (RingHom.ker (algebraMap R S)).toCotangent  := by
-  have h := comap_ker_eq_sup_of_ker_eq_map surjRS eqmap
+lemma ker_mapCotangent_ker_surjective {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    (surj : Function.Surjective (algebraMap A B)) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
+    (Ideal.mapCotangent J I (Algebra.ofId A B) (le_of_le_of_eq le_sup_right eq.symm)).ker =
+      (Submodule.comap J.subtype ((RingHom.ker (algebraMap A B)) ⊓ J)).map J.toCotangent  := by
+  have eqmap :=  eq_map_of_comap_eq_ker_sup _ surj eq
   refine le_antisymm (fun x hx ↦ ?_) ?_
-  · rcases (RingHom.ker (algebraMap R S)).toCotangent_surjective x with ⟨x', hx'⟩
-    have : Function.Surjective (Algebra.ofId R R') := surjR
+  · rcases J.toCotangent_surjective x with ⟨x', hx'⟩
+    have : Function.Surjective (Algebra.ofId A B) := surj
     simp only [← hx', LinearMap.mem_ker, Ideal.mapCotangent_toCotangent,
-      Ideal.toCotangent_eq_zero, eq_map_of_comap_eq_ker_sup _ surjR h, Algebra.ofId_apply] at hx
-    rw [← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ surjR] at hx
+      Ideal.toCotangent_eq_zero, eqmap, Algebra.ofId_apply] at hx
+    rw [← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ surj] at hx
     rcases Submodule.mem_sup.mp hx with ⟨y, hy, z, hz, hyz⟩
-    have : y + z ∈ RingHom.ker (algebraMap R S) := by simp [hyz]
-    have zmemJ := (Ideal.add_mem_iff_right (RingHom.ker (algebraMap R S))
-      (Ideal.pow_le_self (by omega) hy)).mp this
-    have xeq : x = ((RingHom.ker (algebraMap R S))).toCotangent ⟨z, zmemJ⟩ := by
-      simpa [← hx', (RingHom.ker (algebraMap R S)).toCotangent_eq, ← hyz] using hy
+    have : y + z ∈ J := by simp [hyz]
+    have zmemJ := (Ideal.add_mem_iff_right J (Ideal.pow_le_self (by omega) hy)).mp this
+    have xeq : x = J.toCotangent ⟨z, zmemJ⟩ := by simpa [← hx', J.toCotangent_eq, ← hyz] using hy
     rw [xeq]
     exact Submodule.mem_map_of_mem (Submodule.mem_comap.mpr (Ideal.mem_inf.mpr ⟨hz, zmemJ⟩))
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert map_zero (RingHom.ker (algebraMap R' S')).toCotangent
+    convert map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1
 
 lemma mul_le_ker_of_range_le_mul_of_sq_zero {A : Type*} [CommRing A] {J I : Ideal A}
@@ -208,10 +202,9 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     comap_ker_eq_sup_of_ker_eq_map surjP (by simp [kerP, ← ISeq, eqmap, IS, I])
   have Jle : J ≤ J'.comap (algebraMap P.Ring P'.Ring) := le_of_le_of_eq le_sup_right h.symm
   let mapcot := Ideal.mapCotangent J J' (Algebra.ofId P.Ring P'.Ring) Jle
-  have cotsurj : Function.Surjective mapcot :=
-    mapCotangent_ker_surjective surjPP' surjP (by simp [kerP, ← ISeq, eqmap, IS, I])
+  have cotsurj : Function.Surjective mapcot := mapCotangent_surjective_of_comap_eq surjPP' h
   have cotker : LinearMap.ker mapcot = (Submodule.comap J.subtype (_ ⊓ J)).map J.toCotangent :=
-    ker_mapCotangent_ker_surjective surjPP' surjP (by simp [kerP, ← ISeq, eqmap, IS, I])
+    ker_mapCotangent_ker_surjective surjPP' h
   rw [kerP, infeq] at cotker
   let cottoTen := KaehlerDifferential.kerCotangentToTensor R P.Ring S
   let cottoTen' := KaehlerDifferential.kerCotangentToTensor R' P'.Ring S'
