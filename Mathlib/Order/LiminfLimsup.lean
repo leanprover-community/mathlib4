@@ -466,6 +466,14 @@ theorem bliminf_eq_iSup_biInf_of_nat {p : ℕ → Prop} {u : ℕ → α} :
     bliminf u atTop p = ⨆ i, ⨅ (j) (_ : p j ∧ i ≤ j), u j :=
   @blimsup_eq_iInf_biSup_of_nat αᵒᵈ _ p u
 
+theorem iSup_liminf_le_liminf_iSup {f : Filter β} {u : ι → β → α} :
+    ⨆ i, liminf (u i) f ≤ liminf (fun b ↦ ⨆ i, u i b) f := by
+  simp only [iSup_le_iff]
+  intro i
+  rw [liminf_eq_iSup_iInf, liminf_eq_iSup_iInf]
+  gcongr with s hs b hb
+  exact le_iSup (fun i ↦ u i b) i
+
 theorem limsup_eq_sInf_sSup {ι R : Type*} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
     limsup a F = sInf ((fun I => sSup (a '' I)) '' F.sets) := by
   apply le_antisymm
