@@ -155,10 +155,16 @@ example (P : ObjectProperty C) [P.IsClosedUnderQuotients] {X Y : C} (hX : P X) (
     P (image f) :=
   ObjectProperty.IsClosedUnderQuotients.prop_of_epi (factorThruImage f) hX
 
-lemma prop_sSup_subobjectOf (P : ObjectProperty C)
+noncomputable
+abbrev sSupOfP (P : ObjectProperty C) (X : C)
+    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
+    Subobject X :=
+  CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
+
+lemma prop_sSupOfP (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    (X : C) : P (Subobject.sSup {A : Subobject X | P (A : C)}) :=
+    (X : C) : P (sSupOfP P X) :=
   P.prop_of_iso (Subobject.underlyingIso
     (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
       (P.prop_of_epi (factorThruImage _)
@@ -166,6 +172,39 @@ lemma prop_sSup_subobjectOf (P : ObjectProperty C)
           dsimp
           obtain ⟨S, hS, hj⟩ := j.2
           simpa [← hj] using hS))))
+
+/-- In an abelian category, given a kernel `k` of `q` and a mono `m : B ⟶ Q`,
+the short complex `K ⟶ pullback q m ⟶ B` (where the left leg is `pullback.lift k 0`
+and the right leg is `pullback.snd`) is short exact.
+
+This captures the general fact that pulling back an extension along a monomorphism
+yields an extension. -/
+lemma shortExact_pullback_snd_of_isKernel
+    {K X Q B : C} {k : K ⟶ X} {q : X ⟶ Q} {m : B ⟶ Q} [Mono m] [Epi q]
+    (w : k ≫ q = 0) (hk : IsLimit (KernelFork.ofι k w)) [HasPullback q m] :
+    (ShortComplex.mk (pullback.lift k 0 (by simp [w]))
+      (pullback.snd q m) (pullback.lift_snd k 0 (by simp [w]))).ShortExact := by
+  have w' : k ≫ q = 0 ≫ m := by simp [w]
+  have hg_fst : pullback.lift k 0 (by simp [w]) ≫ pullback.fst q m = k :=
+    pullback.lift_fst k 0 w'
+  haveI : Mono (pullback.lift k 0 w') :=
+    (mono_comp_iff_of_mono _ (pullback.fst q m)).mp
+      (by simpa [hg_fst] using mono_of_isLimit_fork hk)
+  exact {
+    exact := by
+      refine ShortComplex.exact_of_f_is_kernel _ ?_
+      refine KernelFork.IsLimit.ofι' _ (pullback.lift_snd k 0 w') ?_
+      intro A a ha
+      have : (a ≫ pullback.fst q m) ≫ q = 0 := by
+        simpa [Category.assoc' m (pullback.snd q m) a, ha, zero_comp] using
+          congrArg (a ≫ ·) pullback.condition
+      exact ⟨hk.lift (KernelFork.ofι (a ≫ pullback.fst q m) this), by
+        apply (cancel_mono (pullback.fst q m)).mp
+        simpa [Category.assoc, hg_fst] using
+          hk.fac (KernelFork.ofι _ this) WalkingParallelPair.zero⟩
+    mono_f := by infer_instance
+    epi_g := by infer_instance
+  }
 
 /-
 These should be all the ingredients for the converse of `isTorsion_iff`, but currently in an
@@ -203,8 +242,8 @@ example (P : ObjectProperty C)
     P = P.rightOrthogonal.leftOrthogonal := by
   refine le_antisymm (le_rightOrthogonal_leftOrthogonal P) ?_
   intro X hX
-  let Y := CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
-  have hPY : P (Y : C) := prop_sSup_subobjectOf P X
+  let Y := sSupOfP P X
+  have hPY : P (Y : C) := prop_sSupOfP P X
   let ses := ShortComplex.mk Y.arrow (cokernel.π Y.arrow) (cokernel.condition Y.arrow)
   have hses : ses.ShortExact := {
     exact := by
@@ -229,35 +268,10 @@ example (P : ObjectProperty C)
       apply (mono_comp_iff_of_mono g i).mp
       rw [pullback.lift_fst Y.arrow 0 w₁]
       infer_instance
-    let shortComplex : ShortComplex C :=
-      ShortComplex.mk g p (pullback.lift_snd Y.arrow 0 w₁)
-    have hshortComplex : shortComplex.ShortExact := {
-      exact := by
-        refine ShortComplex.exact_of_f_is_kernel shortComplex ?_
-        refine KernelFork.IsLimit.ofι' g (pullback.lift_snd Y.arrow 0 w₁) ?_
-        intro A k hk
-        have : i ≫ cokernel.π Y.arrow = p ≫ Abelian.image.ι f := by
-          simpa [i, p] using pullback.condition
-        have : (k ≫ i) ≫ cokernel.π Y.arrow = 0 := calc
-          _ = k ≫ i ≫ cokernel.π Y.arrow := by rw [← Category.assoc]
-          _ = k ≫ p ≫ Abelian.image.ι f := by
-            rw [this]
-          _ = (k ≫ p) ≫ Abelian.image.ι f := by
-            rw [Category.assoc]
-          _ = 0 := by simp [p, hk]
-        let kernelFork : KernelFork (cokernel.π Y.arrow) := (KernelFork.ofι (k ≫ i) this)
-        let l : A ⟶ Y := hses.fIsKernel.lift kernelFork
-        have hfac : l ≫ Y.arrow = k ≫ i :=
-          hses.fIsKernel.fac kernelFork WalkingParallelPair.zero
-        refine ⟨l ,?_⟩
-        apply (cancel_mono i).mp
-        calc
-          _ = l ≫ g ≫ i := by rw [Category.assoc]
-          _ = l ≫ Y.arrow := by rw [pullback.lift_fst Y.arrow 0 w₁]
-          _ =  k ≫ i := hfac
-      mono_f := by infer_instance
-      epi_g := by infer_instance
-    }
+    have hshortComplex : (ShortComplex.mk
+        (pullback.lift Y.arrow 0 (by simp) : (Y : C) ⟶ A) p
+        (pullback.lift_snd Y.arrow 0 (by simp))).ShortExact :=
+      shortExact_pullback_snd_of_isKernel (cokernel.condition Y.arrow) hses.fIsKernel
     have hPA: P A :=
       ObjectProperty.prop_X₂_of_shortExact P hshortComplex hPY hPimf
     have hPimagefst : P (Abelian.image i) :=
