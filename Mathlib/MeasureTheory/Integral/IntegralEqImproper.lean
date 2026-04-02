@@ -679,7 +679,7 @@ theorem integral_Ico_tendsto_integral_Ici (b : ℝ) (hfi : IntegrableOn f (Ici b
     Tendsto (fun i => ∫ x in Ico b (a i), f x ∂μ) l (𝓝 <| ∫ x in Ici b, f x ∂μ) :=
   ((aecover_Ici_of_Ico ha).integral_tendsto_of_countably_generated hfi).congr' (by simp)
 
-theorem integral_Ici_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
+theorem tendsto_integral_Ici_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     (ha : Tendsto a l atTop) :
     Tendsto (fun i => ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ =
