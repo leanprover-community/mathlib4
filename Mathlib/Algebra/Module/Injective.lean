@@ -356,7 +356,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
         rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, map_smul,
-          LinearPMap.map_smul, RingHom.id_apply, ← smul_add]
+          LinearPMap.map_smul, ← smul_add]
         congr }
   is_extension m := by
     dsimp
