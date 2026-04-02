@@ -449,7 +449,6 @@ set_option linter.deprecated false in
 /-- The empty convex cone is generating iff the module is a subsingleton. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem isGenerating_bot_iff : (⊥ : ConvexCone R M).IsGenerating ↔ Subsingleton M := by
-  simp only [IsGenerating, coe_bot]
   simpa only [IsGenerating, coe_bot, Submodule.span_empty, ← Submodule.subsingleton_iff R] using
     subsingleton_iff_bot_eq_top
 
@@ -518,7 +517,7 @@ alias IsGenerating.isReproducing := IsReproducing.of_span_eq_top
 
 theorem span_eq_top_iff_isReproducing {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
     [AddLeftStrictMono R] [AddCommGroup M] [Nontrivial M] [Module R M] {C : ConvexCone R M} :
-    Submodule.span R (C : Set M) = ⊤  ↔ C.IsReproducing :=
+    Submodule.span R (C : Set M) = ⊤ ↔ C.IsReproducing :=
   ⟨.of_span_eq_top, IsReproducing.span_eq_top⟩
 
 @[deprecated (since := "2026-03-30")]
