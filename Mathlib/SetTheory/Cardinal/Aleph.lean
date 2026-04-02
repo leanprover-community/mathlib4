@@ -272,7 +272,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
 
-theorem preOmega_eq_omega {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
+theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
   rw [← opow_natCast] at ho
   rw [omega_eq_preOmega, add_absorp _ ho]
   apply left_lt_opow one_lt_omega0
@@ -521,7 +521,7 @@ theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
-theorem preAleph_eq_aleph {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
+theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   rw [← opow_natCast] at ho
   rw [aleph_eq_preAleph, add_absorp _ ho]
   apply left_lt_opow one_lt_omega0
@@ -773,7 +773,7 @@ theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrel
 theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
   rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
 
-theorem preBeth_eq_beth {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = ℶ_ o := by
+theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = ℶ_ o := by
   rw [← opow_natCast] at ho
   rw [beth, add_absorp _ ho]
   apply left_lt_opow one_lt_omega0

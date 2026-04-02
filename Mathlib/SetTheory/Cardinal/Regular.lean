@@ -319,7 +319,7 @@ theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c :
     exact hc.isStrongLimit.two_power_lt <| IH _ hb (hb.trans ha)
 
 theorem IsInaccessible.beth_ord (hc : IsInaccessible c) : ℶ_ c.ord = c := by
-  rw [← preBeth_eq_beth (le_of_lt _), hc.preBeth_ord]
+  rw [← preBeth_of_omega0_sq_le (le_of_lt _), hc.preBeth_ord]
   rw [lt_ord, pow_two, card_mul, card_omega0, aleph0_mul_aleph0]
   exact hc.aleph0_lt
 
