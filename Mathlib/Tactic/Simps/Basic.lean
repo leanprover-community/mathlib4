@@ -266,6 +266,12 @@ syntax (name := simps) "simps" "!"? "?"? simpsArgsRest : attr
 
 end Attr
 
+/-- Warning when `@[simps]` generates a lemma where the LHS and RHS have types that are not
+definitionally equal at `withReducibleAndInstances` transparency. -/
+register_option simps.defeqWarn : Bool := {
+  defValue := true
+  descr := "Warning when `@[simps]` generates a lemma with mismatched LHS/RHS types" }
+
 /-- Linter to check that `simps!` is used when needed -/
 register_option linter.simpsNoConstructor : Bool := {
   defValue := true
@@ -991,6 +997,20 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if cfg.dsimpLhs then
     let ctx ← mkSimpContext
     (lhs, _) ← dsimp lhs ctx
+  -- Check that the inferred types of lhs and rhs agree at
+  -- `withReducibleAndInstances` transparency.
+  let lhsType ← inferType lhs
+  let rhsType ← inferType rhs
+  let typesMatch ← withReducibleAndInstances <| isDefEq lhsType rhsType
+  if simps.defeqWarn.get (← getOptions) then
+    unless typesMatch do
+      logWarning m!"`@[simps]` generated lemma `{declName}` where the type \
+        of the LHS{indentExpr lhsType}\nis not definitionally equal at \
+        `withReducibleAndInstances` transparency to the type of the \
+        RHS{indentExpr rhsType}"
+  else
+    if typesMatch then
+      logInfo m!"`set_option simps.defeqWarn false` is not needed here"
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
