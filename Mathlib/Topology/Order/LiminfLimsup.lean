@@ -246,7 +246,7 @@ theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
     MapClusterPt (limsup u f) f u :=
   ClusterPt.limsSup
 
-/-- The `limsup` of a function `u` along a filter `f` is the greateset cluster point of `u` along
+/-- The `limsup` of a function `u` along a filter `f` is the greatest cluster point of `u` along
 `f`. -/
 theorem isGreatest_mapClusterPt_limsup {u : β → α} {f : Filter β} [NeBot f]
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
