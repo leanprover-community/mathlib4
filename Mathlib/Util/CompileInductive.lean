@@ -288,5 +288,6 @@ run_cmd Command.liftTermElabM do
 -- were manually implemented as `noncomputable`
 compile_inductive% String
 compile_inductive% Lean.Name
+compile_def% Lean.Name.sizeOf._f
 compile_def% Lean.Name.sizeOf
 compile_def% Lean.instSizeOfName

@@ -59,7 +59,7 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (V ⧸ Coinvariants.ker ρ)
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
 variable {ρ}
 

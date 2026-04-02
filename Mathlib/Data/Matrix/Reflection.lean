@@ -207,6 +207,10 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 def etaExpand {m n} (A : Matrix (Fin m) (Fin n) α) : Matrix (Fin m) (Fin n) α :=
   Matrix.of (FinVec.etaExpand fun i => FinVec.etaExpand fun j => A i j)
 
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+(replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+canonicalizer; a minimization would help. The original proof was: `grind` -/
 /-- This can be used to prove
 ```lean
 example (A : Matrix (Fin 2) (Fin 2) α) :
@@ -217,7 +221,7 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
-  grind
+  rfl
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm
