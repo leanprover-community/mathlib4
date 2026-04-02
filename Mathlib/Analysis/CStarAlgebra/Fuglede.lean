@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Algebra.Algebra.Unitization
-public import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.Exponential
-import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Complex.Liouville
 
 
@@ -86,8 +83,6 @@ lemma SemiconjBy.star_right_of_unital (h : SemiconjBy x a b) :
   let _ := invertibleExp (z • star a)
   simpa [← mul_assoc, ← invOf_exp, expMulMulExp] using
     congr($(expMulMulExp_const h z) * exp (z • star a)).symm
-
-attribute [norm_cast] Unitization.inr_mul
 
 /-- **Fuglede–Putnam–Rosenblum**: If `a` and `b` are normal elements in a C⋆-algebra `A` which
 are interwined by `x`, then `star a` and `star b` are also intertwined by `x`. -/
