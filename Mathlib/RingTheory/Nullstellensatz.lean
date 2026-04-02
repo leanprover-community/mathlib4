@@ -147,7 +147,6 @@ theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ K)) :
 
 variable [IsAlgClosed K] [Finite σ]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (K) in
 theorem eq_vanishingIdeal_singleton_of_isMaximal {I : Ideal (MvPolynomial σ k)} (hI : I.IsMaximal) :
     ∃ x : σ → K, I = vanishingIdeal k {x} := by
