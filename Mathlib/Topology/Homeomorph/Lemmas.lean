@@ -594,8 +594,7 @@ noncomputable def Topology.IsCoinducing.connectedComponentsEquiv {f : X → Y}
         Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
       obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
-      simp at h
-      simp [h, ← hf.preimage_connectedComponent hf']
+      simp_all [← hf.preimage_connectedComponent hf']
     refine ⟨?_, ?_, hbij⟩
     · exact hf.continuous.connectedComponentsMap_continuous
     · exact hf.connectedComponentsMap.isOpenMap_of_injective hbij.injective
