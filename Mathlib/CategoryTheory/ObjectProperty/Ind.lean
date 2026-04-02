@@ -83,8 +83,8 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
     exact ⟨_, u, pres.ι.app j, hcomp, h j⟩
   · let incl : P.FullSubcategory ⥤ (isFinitelyPresentable.{w} C).FullSubcategory :=
       ObjectProperty.ιOfLE H
-    have H (d : CostructuredArrow (isFinitelyPresentable.{w} C).ι X) : ∃ c, Nonempty
-        (d ⟶ (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).obj c) := by
+    have H (d : CostructuredArrow (isFinitelyPresentable.{w} C).ι X) : ∃ c,
+        Nonempty (d ⟶ (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).obj c) := by
       obtain ⟨W, u, v, huv, hW⟩ := hfac d.hom
       exact ⟨CostructuredArrow.mk (Y := FullSubcategory.mk _ hW) v,
         ⟨CostructuredArrow.homMk ⟨u⟩ huv⟩⟩
