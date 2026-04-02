@@ -74,7 +74,7 @@ lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=
   cases j using Fin.cases <;> simp [single_apply]
 
 @[simp]
-theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp
+theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp [cons_zero_eq_single_zero]
 
 variable {s} {y}
 
