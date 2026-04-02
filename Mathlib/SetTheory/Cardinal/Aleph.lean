@@ -10,6 +10,8 @@ public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
 
+import Mathlib.SetTheory.Ordinal.Principal
+
 /-!
 # Omega, aleph, and beth functions
 
@@ -269,6 +271,12 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
 
+theorem preOmega_eq_omega {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
+  rw [← opow_natCast] at ho
+  rw [omega_eq_preOmega, add_absorp _ ho]
+  apply left_lt_opow one_lt_omega0
+  simp
+
 end Ordinal
 
 /-! ### Aleph cardinals -/
@@ -499,6 +507,12 @@ theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α :=
 
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
+
+theorem preAleph_eq_aleph {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
+  rw [← opow_natCast] at ho
+  rw [aleph_eq_preAleph, add_absorp _ ho]
+  apply left_lt_opow one_lt_omega0
+  simp
 
 @[simp]
 theorem aleph_one_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
@@ -748,5 +762,11 @@ theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrel
 @[simp]
 theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
   rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
+
+theorem preBeth_eq_beth {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = ℶ_ o := by
+  rw [← opow_natCast] at ho
+  rw [beth, add_absorp _ ho]
+  apply left_lt_opow one_lt_omega0
+  simp
 
 end Cardinal
