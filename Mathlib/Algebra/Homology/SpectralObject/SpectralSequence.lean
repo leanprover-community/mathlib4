@@ -469,7 +469,9 @@ end SpectralSequence
 section
 
 variable [X.HasSpectralSequence data] in
-/-- The spectral sequence attached to a spectral object in an abelian category. -/
+/-- The spectral sequence attached to a spectral object in an abelian category.
+(Do not unfold the `page` or `iso` fields of this structure. Use the isomorphism
+`spectralSequencePageXIso` instead.) -/
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page := SpectralSequence.page X data
   iso r r' pq hrr' hr := SpectralSequence.homologyIso X data r r' hrr' hr pq
