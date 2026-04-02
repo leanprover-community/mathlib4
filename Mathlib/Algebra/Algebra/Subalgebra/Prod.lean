@@ -91,11 +91,11 @@ theorem isUnit_pullback_mk_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {a : A ×
       IsUnit a.1 ∧ IsUnit a.2 :=
   RingHom.isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) a_in
 
-instance isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom g] :
-    IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g).map_nonunit⟩
+theorem isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
+    IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g hg).map_nonunit⟩
 
-instance isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom f] :
-    IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g).map_nonunit⟩
+theorem isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hf : IsLocalHom f) :
+    IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g hf).map_nonunit⟩
 
 theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=
