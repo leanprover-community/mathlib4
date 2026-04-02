@@ -54,6 +54,9 @@ variable {I J}
 theorem Ideal.minimalPrimes_isPrime {p : Ideal R} (h : p ∈ I.minimalPrimes) : p.IsPrime :=
   h.1.1
 
+theorem Ideal.le_minimalPrimes {p : Ideal R} (h : p ∈ I.minimalPrimes) : I ≤ p :=
+  h.1.2
+
 theorem minimalPrimes_isPrime {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
