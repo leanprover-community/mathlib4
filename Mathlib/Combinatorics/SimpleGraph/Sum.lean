@@ -28,7 +28,7 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 @[expose] public section
 
 namespace SimpleGraph
-variable {V W U V' W' γ : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
+variable {U V V' W W' γ : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
   {G' : SimpleGraph V'} {H' : SimpleGraph W'} {v v' : V} {w w' : W}
 
 /-- Disjoint sum of `G` and `H`. -/
@@ -73,22 +73,33 @@ def Embedding.sumInr : H ↪g G ⊕g H where
 
 /-- Given homomorphisms `f : G →g G'` and `g : H →g H'`, returns a homomorphism from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps]
 def Hom.sum (f : G →g G') (g : H →g H') : G ⊕g H →g G' ⊕g H' where
   toFun := Sum.map f g
   map_rel' {u v} := by cases u <;> cases v <;> simp_all [f.map_rel, g.map_rel]
 
 /-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps]
 def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' where
   toFun := Sum.map f g
   inj' u v := by cases u <;> cases v <;> simp
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp
 
+lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
+  (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
+
 /-- Given isomorphisms `f : G ≃g G'` and `g : H ≃g H'`, returns an isomorphism from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
 def Iso.sumCongr (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' where
-  toEquiv := Equiv.sumCongr f.toEquiv g.toEquiv
+  toEquiv := f.toEquiv.sumCongr g.toEquiv
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp [f.map_rel_iff, g.map_rel_iff]
+
+lemma Iso.toHom_sumCongr (f : G ≃g G') (g : H ≃g H') :
+  (Iso.sumCongr f g).toHom = Hom.sum f.toHom g.toHom := rfl
+
+lemma Iso.toEmbedding_sumCongr (f : G ≃g G') (g : H ≃g H') :
+  (Iso.sumCongr f g).toEmbedding = Embedding.sum f.toEmbedding g.toEmbedding := rfl
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
