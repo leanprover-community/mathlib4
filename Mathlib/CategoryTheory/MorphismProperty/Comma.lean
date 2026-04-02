@@ -561,10 +561,12 @@ abbrev Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
     P.Arrow Q W ⥤ P'.Arrow Q' W' :=
   Comma.changeProp _ _ hPP' hQQ' hWW'
 
+-- `simps` on `Arrow.changeProp` fails to create this lemma
 @[simp]
 lemma Arrow.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).left = Y.left := rfl
 
+-- `simps` on `Arrow.changeProp` fails to create this lemma
 @[simp]
 lemma Arrow.changeProp_obj_hom (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).hom = Y.hom := rfl
