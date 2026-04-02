@@ -100,12 +100,8 @@ theorem orthonormal_subsingleton_iff [Subsingleton ι] {v : ι → E} :
     Orthonormal 𝕜 v ↔ ∀ i, ‖v i‖ = 1 := by
   rw [orthonormal_iff_ite]
   refine ⟨fun h i ↦ ?_, fun h i j ↦ by simp [Subsingleton.elim i j, h j]⟩
-  specialize h i i
-  simp only [inner_self_eq_norm_sq_to_K, ↓reduceIte] at h
-  norm_cast at h
-  rw [← sq_eq_sq₀ (norm_nonneg _) (by norm_num)]
-  convert h
-  simp
+  rw [← sq_eq_sq₀ (norm_nonneg _) (by norm_num), ← ofReal_inj (K := 𝕜)]
+  simpa using h i i
 
 /-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
 equals Kronecker delta.) -/
