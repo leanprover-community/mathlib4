@@ -301,28 +301,17 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   -- (throwing an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
-    -- adaptation note: the next three lines were; errors now
-    -- let some last' := log.lines.toList.getLast? | throwError "Found no commits!"
-    let tmp := log.lines.toList.getLast?
-    if tmp.isNone then
-      throwError "Found no commits!"
-    let last := tmp.get! -- does not fail by the previous check
-    let commitHash := last.takeWhile (!·.isWhitespace)
-    let PRdescr := (last.dropWhile (!·.isWhitespace)).trimAscii
+    let some last := log.lines.toList.getLast? | throwError "Found no commits!"
+    let commitHash := last.takeWhile (fun c : Char ↦ !c.isWhitespace)
+    let PRdescr := (last.dropWhile (fun c : Char ↦ !c.isWhitespace)).trimAscii
     return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
     return .ofList <| files.splitOn "\n"
-  -- adaptation note: the next three lines were just
-  -- `let (currentHash, currentPRdescr) ← getHashAndMessage 1`
-  let a ← getHashAndMessage 1
-  let currentHash := a.1; let currentPRdescr := a.2
+  let (currentHash, currentPRdescr) ← getHashAndMessage 1
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
-  -- adaptation note: the next three lines were just
-  -- `let (pastHash, pastPRdescr) ← getHashAndMessage n`
-  let b ← getHashAndMessage n
-  let pastHash := b.1; let pastPRdescr := b.2
+  let (pastHash, pastPRdescr) ← getHashAndMessage n
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past commit {pastPRdescr}"
   let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
@@ -340,13 +329,11 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   let dict ← mkRenamesDict (pct.getD (Syntax.mkNumLit "100")).getNat
   for fname in onlyPastFiles do
     let fnameStx := Syntax.mkStrLit fname
-    let stx ←
-      -- adaptation note: was `let stx ← if let some newName := dict[fname]? then`
-      if h : dict[fname]?.isSome then
-        let newNameStx := Syntax.mkStrLit (dict[fname]?.get h)
-        `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
-      else
-        `(command|#create_deprecated_module $fnameStx)
+    let stx ← if let some newName := dict[fname]? then
+      let newNameStx := Syntax.mkStrLit newName
+      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
+    else
+      `(command|#create_deprecated_module $fnameStx)
     suggestions := suggestions.push {
       suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
