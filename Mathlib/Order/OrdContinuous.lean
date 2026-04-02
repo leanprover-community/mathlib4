@@ -34,16 +34,18 @@ open Function OrderDual Set
 -/
 
 
-/-- A function `f` between preorders is left order continuous if it preserves all suprema.  We
-define it using `IsLUB` instead of `sSup` so that the proof works both for complete lattices and
-conditionally complete lattices. -/
-@[to_dual
-/-- A function `f` between preorders is right order continuous if it preserves all infima.  We
-define it using `IsGLB` instead of `sInf` so that the proof works both for complete lattices and
-conditionally complete lattices. -/
-]
-def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
-  ∀ ⦃s : Set α⦄ ⦃x⦄, IsLUB s x → IsLUB (f '' s) (f x)
+/-- A function `f` between preorders is left order continuous if it preserves all suprema of
+nonempty sets. We define it using `IsLUB` instead of `sSup` so that the proof works both for
+complete lattices and conditionally complete lattices. -/
+structure LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) : Prop where
+  isLUB_image : ∀ ⦃s : Set α⦄ ⦃x⦄, s.Nonempty → IsLUB s x → IsLUB (f '' s) (f x)
+
+/-- A function `f` between preorders is right order continuous if it preserves all infima of
+nonempty sets.  We define it using `IsGLB` instead of `sInf` so that the proof works both for
+complete lattices and conditionally complete lattices. -/
+@[to_dual existing]
+structure RightOrdContinuous [Preorder α] [Preorder β] (f : α → β) : Prop where
+  isGLB_image : ∀ ⦃s : Set α⦄ ⦃x⦄, s.Nonempty → IsGLB s x → IsGLB (f '' s) (f x)
 
 namespace LeftOrdContinuous
 
@@ -52,20 +54,20 @@ section Preorder
 variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
 @[to_dual]
-protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
-  simpa only [image_id] using h
+protected theorem id : LeftOrdContinuous (id : α → α) where
+  isLUB_image s _ x h := by simpa only [image_id] using h
 
 variable {α}
 
 @[to_dual orderDual]
-protected theorem rightOrdContinuous_dual :
-    LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
-  id
+protected theorem rightOrdContinuous_dual (h : LeftOrdContinuous f) :
+    RightOrdContinuous (toDual ∘ f ∘ ofDual) where
+  isGLB_image := h.isLUB_image
 
 @[to_dual]
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
     IsGreatest (f '' s) (f x) :=
-  ⟨mem_image_of_mem f h.1, (hf h.isLUB).1⟩
+  ⟨mem_image_of_mem f h.1, (hf.isLUB_image ⟨x, h.1⟩ h.isLUB).1⟩
 
 @[to_dual]
 theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
@@ -73,8 +75,9 @@ theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
   (hf.map_isGreatest this).2 <| mem_image_of_mem _ (Or.inl rfl)
 
 @[to_dual]
-theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
-  fun s x h => by simpa only [image_image] using hg (hf h)
+theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) where
+  isLUB_image s x hs h := by
+    simpa only [image_image] using hg.isLUB_image (.image _ hs) (hf.isLUB_image hs h)
 
 @[to_dual]
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
@@ -91,7 +94,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
 
 @[to_dual]
 theorem map_sup (hf : LeftOrdContinuous f) (x y : α) : f (x ⊔ y) = f x ⊔ f y :=
-  (hf isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+  (hf.isLUB_image (insert_nonempty ..) isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
 
 @[to_dual]
 theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y := by
@@ -122,16 +125,19 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β] {f : α → β}
 
 @[to_dual]
-theorem map_sSup' (hf : LeftOrdContinuous f) (s : Set α) : f (sSup s) = sSup (f '' s) :=
-  (hf <| isLUB_sSup s).sSup_eq.symm
+theorem map_sSup' (hf : LeftOrdContinuous f) {s : Set α} (hs : s.Nonempty) :
+    f (sSup s) = sSup (f '' s) :=
+  (hf.isLUB_image hs <| isLUB_sSup s).sSup_eq.symm
 
 @[to_dual]
-theorem map_sSup (hf : LeftOrdContinuous f) (s : Set α) : f (sSup s) = ⨆ x ∈ s, f x := by
-  rw [hf.map_sSup', sSup_image]
+theorem map_sSup (hf : LeftOrdContinuous f) {s : Set α} (hs : s.Nonempty) :
+    f (sSup s) = ⨆ x ∈ s, f x := by
+  rw [hf.map_sSup' hs, sSup_image]
 
 @[to_dual]
-theorem map_iSup (hf : LeftOrdContinuous f) (g : ι → α) : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  simp only [iSup, hf.map_sSup', ← range_comp]
+theorem map_iSup (hf : LeftOrdContinuous f) [Nonempty ι] (g : ι → α) :
+    f (⨆ i, g i) = ⨆ i, f (g i) := by
+  simp only [iSup, hf.map_sSup' (range_nonempty g), ← range_comp]
   rfl
 
 end CompleteLattice
@@ -143,7 +149,7 @@ variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [No
 @[to_dual]
 theorem map_csSup (hf : LeftOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbdd : BddAbove s) :
     f (sSup s) = sSup (f '' s) :=
-  ((hf <| isLUB_csSup sne sbdd).csSup_eq <| sne.image f).symm
+  ((hf.isLUB_image sne <| isLUB_csSup sne sbdd).csSup_eq <| sne.image f).symm
 
 @[to_dual]
 theorem map_ciSup (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (range g)) :
@@ -159,12 +165,12 @@ namespace GaloisConnection
 variable [Preorder α] [Preorder β] {f : α → β} {g : β → α}
 
 /-- A left adjoint in a Galois connection is left-continuous in the order-theoretic sense. -/
-lemma leftOrdContinuous (gc : GaloisConnection f g) : LeftOrdContinuous f :=
-  fun _ _ ↦ gc.isLUB_l_image
+lemma leftOrdContinuous (gc : GaloisConnection f g) : LeftOrdContinuous f where
+  isLUB_image _ _ _ := gc.isLUB_l_image
 
 /-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/
-lemma rightOrdContinuous (gc : GaloisConnection f g) : RightOrdContinuous g :=
-  fun _ _ ↦ gc.isGLB_u_image
+lemma rightOrdContinuous (gc : GaloisConnection f g) : RightOrdContinuous g where
+  isGLB_image _ _ _ := gc.isGLB_u_image
 
 end GaloisConnection
 
