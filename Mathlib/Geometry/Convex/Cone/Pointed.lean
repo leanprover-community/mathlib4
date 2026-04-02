@@ -58,11 +58,11 @@ lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ 
   restrictScalars_inj ..
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ofSubmodule_le {S T : Submodule R E} : ofSubmodule S ≤ ofSubmodule T ↔ S ≤ T :=
+lemma ofSubmodule_le_ofSubmodule {S T : Submodule R E} : ofSubmodule S ≤ ofSubmodule T ↔ S ≤ T :=
   restrictScalars_le ..
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ofSubmodule_lt {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
+lemma ofSubmodule_lt_ofSubmodule {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
   restrictScalars_lt ..
 
 set_option backward.isDefEq.respectTransparency false in
