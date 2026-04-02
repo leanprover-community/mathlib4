@@ -293,7 +293,6 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `T` is `R`-flat, the canonical map

@@ -78,6 +78,7 @@ lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
   (measurable_gaussianPDFReal μ v).stronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     Integrable (gaussianPDFReal μ v) := by

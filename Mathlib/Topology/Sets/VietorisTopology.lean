@@ -329,6 +329,12 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
     rw [exists_mem_image]
     exists w
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind` -/
+    simp
     grind
 
 /-- The topology of `Compacts α` has a basis consisting of sets of the form

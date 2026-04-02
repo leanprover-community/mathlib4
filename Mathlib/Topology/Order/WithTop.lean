@@ -52,7 +52,12 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
     refine ⟨{s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a}, ?_, by rw [← H]⟩
     have d_count : d.Countable :=
       (((c_count.image _).union (c'_count.image _)).union (by simp)).union (by simp)
-    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by grind
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without `ext; simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `by grind` -/
+    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by ext; simp; grind
     rw [this]
     exact (d_count.image _).union (d_count.image _)
   -- We should check the easy direction that all the elements in our generating set are open.
