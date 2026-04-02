@@ -65,12 +65,10 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
   · rw [c_a, cons_zero]
   · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
 
-@[simp]
 lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
   ext j
   cases j using Fin.cases <;> simp
 
-@[simp]
 lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
   ext j
   cases j using Fin.cases <;> simp [single_apply]
