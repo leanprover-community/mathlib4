@@ -239,9 +239,9 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
         simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
         obtain ⟨c, hc⟩ := this
         obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
-        refine ⟨b, ?_, c + j, by grind, hb⟩
+        refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
         by_contra! hab
-        grind [hc (c + j) (by grind) b hab.le]
+        simp_all [hc (c + j) (c.le_add_right j) b hab.le]
       obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
       choose ψ hψ1 hψ2 using hφ.2
       have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
@@ -259,7 +259,7 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
     simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
   have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
     simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
-      fun i hi => hk i (by grind)
+      fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
   have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
     have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
     suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
