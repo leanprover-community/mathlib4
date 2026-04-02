@@ -674,6 +674,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGrou
 namespace Convex
 
 /-- The set of vectors proportional to those in a convex set forms a convex cone. -/
+@[deprecated "Use `ConvexCone.hull` and `ConvexCone.coe_hull_of_convex`" (since := "2026-03-30")]
 def toCone (s : Set M) (hs : Convex 𝕜 s) : ConvexCone 𝕜 M := by
   apply ConvexCone.mk (⋃ (c : 𝕜) (_ : 0 < c), c • s) <;> simp only [mem_iUnion, mem_smul_set]
   · rintro c c_pos _ ⟨c', c'_pos, x, hx, rfl⟩
@@ -685,9 +686,13 @@ def toCone (s : Set M) (hs : Convex 𝕜 s) : ConvexCone 𝕜 M := by
 
 variable {s : Set M} (hs : Convex 𝕜 s) {x : M}
 
+set_option linter.deprecated false in
+@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 
+set_option linter.deprecated false in
+@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine hs.mem_toCone.trans ⟨?_, ?_⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
@@ -695,26 +700,36 @@ theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ 
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
+set_option linter.deprecated false in
+@[deprecated ConvexCone.subset_hull (since := "2026-03-30")]
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 
+set_option linter.deprecated false in
 /-- `hs.toCone s` is the least cone that includes `s`. -/
+@[deprecated "`ConvexCone.gi.gc.isLeast_l`" (since := "2026-03-30")]
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } (hs.toCone s) := by
   refine ⟨hs.subset_toCone, fun t ht x hx => ?_⟩
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
   exact t.smul_mem hc (ht hy)
 
+set_option linter.deprecated false in
+@[deprecated "`ConvexCone.gi.gc.isLUB_u.sSup_eq`" (since := "2026-03-30")]
 theorem toCone_eq_sInf : hs.toCone s = sInf { t : ConvexCone 𝕜 M | s ⊆ t } :=
   hs.toCone_isLeast.isGLB.sInf_eq.symm
 
 end Convex
 
+set_option linter.deprecated false in
+@[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 
+set_option linter.deprecated false in
+@[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_eq_sInf (s : Set M) :
     (convex_convexHull 𝕜 s).toCone _ = sInf { t : ConvexCone 𝕜 M | s ⊆ t } :=
   Eq.symm <| IsGLB.sInf_eq <| IsLeast.isGLB <| convexHull_toCone_isLeast s
