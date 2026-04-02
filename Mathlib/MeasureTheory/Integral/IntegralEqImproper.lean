@@ -627,7 +627,7 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 
-theorem tendsto_integral_Iic_zero {b : ℝ} (hfi : IntegrableOn f (Iic b) μ)
+theorem tendsto_integral_Iic_zero (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
     (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
