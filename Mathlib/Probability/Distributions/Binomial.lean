@@ -34,7 +34,7 @@ and computes their expectation and variance.
 
 public section
 
-open MeasureTheory
+open MeasureTheory Set
 open scoped NNReal ProbabilityTheory unitInterval ENNReal
 
 namespace ProbabilityTheory
@@ -43,7 +43,7 @@ variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : Measurable
 
 /-- The binomial probability distribution with parameter `p`. -/
 @[expose]
-noncomputable def binomial (n : ℕ) (p : I) : Measure ℕ := setBer(Set.Iio n, p).map Set.ncard
+noncomputable def binomial (n : ℕ) (p : I) : Measure ℕ := setBer(Iio n, p).map ncard
 
 /-- The binomial probability distribution with parameter `p`. -/
 scoped notation3 "Bin(" n ", " p ")" => binomial n p
@@ -65,67 +65,47 @@ instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
 
 lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : ∀ᵐ ω ∂P, X ω ≤ n := by
   rw [hX.ae_iff (p := (· ≤ n)) <| by fun_prop, binomial,
-    ae_map_iff (by fun_prop) (Set.finite_Iic _).measurableSet]
+    ae_map_iff (by fun_prop) (finite_Iic _).measurableSet]
   filter_upwards [setBernoulli_ae_subset] with s hs
-  simpa using Set.ncard_le_ncard hs
-
-lemma test {α : Type*} {s : Set α} (hs : s.Finite) (n : ℕ) :
-    {t : Set α | t.ncard = n ∧ t ⊆ s}.ncard = s.ncard.choose n := by
-  have : {t : Set α | t.ncard = n ∧ t ⊆ s}.Finite := hs.finite_subsets.subset (by grind)
-  rw [Set.ncard_eq_toFinset_card _ this]
-  convert Finset.card_powersetCard n hs.toFinset
-  swap; · exact s.ncard_eq_toFinset_card hs
-  convert Finset.card_image_of_injOn Finset.coe_injective.injOn
-  ext t
-  simp only [Set.Finite.mem_toFinset, Set.mem_setOf_eq, Finset.mem_image, Finset.mem_powersetCard,
-    Set.Finite.subset_toFinset]
-  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨(hs.subset h2).toFinset, ⟨by simpa, ?_⟩, by simp⟩,
-    fun ⟨u, ⟨h1, h2⟩, h3⟩ ↦ ?_⟩
-  · rw [← t.ncard_eq_toFinset_card _, h1]
-  · rw [← h3, Set.ncard_coe_finset, h2]
-    exact ⟨rfl, h1⟩
-
-@[simp]
-lemma pairwiseDisjoint_singleton {α : Type*} (s : Set α) :
-    s.PairwiseDisjoint (singleton : α → Set α) := by intro; grind
+  simpa using ncard_le_ncard hs
 
 lemma binomial_nat_apply (s : Set ℕ) :
-    Bin(n, p) s = setBer(Set.Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Set.Iio n} := by
+    Bin(n, p) s = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [binomial, Measure.map_apply (by fun_prop) (by measurability),
     setBernoulli_apply_eq_apply_subsets]
   simp
 
 lemma binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p) (Nat.cast '' s) = setBer(Set.Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Set.Iio n} := by
+    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [Measure.map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
     binomial_nat_apply]
   simp
 
 lemma binomial_real_nat_apply (s : Set ℕ) :
-    Bin(n, p).real s = setBer(Set.Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Set.Iio n} := by
+    Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [measureReal_def, binomial_nat_apply, measureReal_def]
 
 lemma binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p).real (Nat.cast '' s) =
-      setBer(Set.Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Set.Iio n} := by
+      setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [measureReal_def, binomial_apply, measureReal_def]
 
 lemma binomial_real_nat_singleton (n k : ℕ) (p : I) :
     Bin(n, p).real {k} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   classical
-  have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ Set.Iio n}.Finite :=
-    (Set.finite_Iio n).finite_subsets.subset (by grind)
-  rw [binomial_real_nat_apply, ← Set.biUnion_of_singleton (setOf _)]
+  have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ Iio n}.Finite :=
+    (finite_Iio n).finite_subsets.subset (by grind)
+  rw [binomial_real_nat_apply, ← biUnion_of_singleton (setOf _)]
   simp_rw [← this.mem_toFinset]
   rw [measureReal_biUnion_finset (by simp) (by simp)]
   have h1 s (hs : s ∈ this.toFinset) :
-      setBer(Set.Iio n, p).real {s} = p ^ k * (1 - p) ^ (n - k) := by
-    simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
-    rw [setBernoulli_real_singleton _ _ hs.2 (Set.finite_Iio n),
-      Set.ncard_diff' hs.2 (Set.finite_Iio n), Set.ncard_Iio_nat, hs.1]
+      setBer(Iio n, p).real {s} = p ^ k * (1 - p) ^ (n - k) := by
+    simp only [mem_singleton_iff, Finite.mem_toFinset, mem_setOf_eq] at hs
+    rw [setBernoulli_real_singleton _ hs.2 (finite_Iio n),
+      ncard_diff' hs.2 (finite_Iio n), ncard_Iio_nat, hs.1]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
-    ← Set.ncard_eq_toFinset_card _ _]
-  simp [test]
+    ← ncard_eq_toFinset_card _ _]
+  simp [ncard_powerset_ncard]
 
 lemma binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
     Bin(R, n, p).real {(k : R)} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
