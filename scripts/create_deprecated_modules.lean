@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
-import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
@@ -373,8 +372,7 @@ the deprecations later on.
 
 #find_deleted_files 0
 /--
-info: import Mathlib.Tactic.Linter.DeprecatedModule
-import Std.Time.Zoned
+info: import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -/
 #guard_msgs in
@@ -384,8 +382,7 @@ run_cmd
   logInfo head
 
 /--
-info: import Mathlib.Tactic.Linter.DeprecatedModule
-import Std.Time.Zoned
+info: import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
 -/
