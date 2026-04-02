@@ -199,22 +199,23 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
   have h2 : ak (k + 1) ≤ b := by simp only [ak, hb]; grw [Nat.lt_iff_add_one_le.mp hk]
   have h3 : Icc (ak k) (ak (k + 1)) ⊆ Icc a b := Icc_subset_Icc h1 h2
   have h4 : ak k < ak (k + 1) := by rwa [← sub_pos, h0]
-  have h5 : EqOn (iteratedDerivWithin 2 f (Icc a b))
+  have h5 : EqOn (derivWithin f (Icc a b))
+      (derivWithin f (Icc (ak k) (ak (k + 1)))) (Icc (ak k) (ak (k + 1))) := by
+    intro x hx
+    rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))]
+  have h6 : EqOn (iteratedDerivWithin 2 f (Icc a b))
     (iteratedDerivWithin 2 f (Icc (ak k) (ak (k + 1)))) (Icc (ak k) (ak (k + 1))) := by
     intro x hx
     simp only [iteratedDerivWithin_succ', iteratedDerivWithin_zero]
     rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_ddf x (h3 hx))]
-    exact derivWithin_congr
-      (fun y hy ↦ by
-        rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 y hy) (h_df y (h3 hy))])
-      (by rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))])
-  have h6 (x : ℝ) : |iteratedDerivWithin 2 f (Set.Icc (ak k) (ak (k + 1))) x| ≤ ζ := by
+    exact derivWithin_congr h5 (h5 hx)
+  have h7 (x : ℝ) : |iteratedDerivWithin 2 f (Set.Icc (ak k) (ak (k + 1))) x| ≤ ζ := by
     by_cases hx : x ∈ Icc (ak k) (ak (k + 1))
-    · grw [← h5 hx, fpp_bound]
+    · grw [← h6 hx, fpp_bound]
     · rw [iteratedDerivWithin_succ, derivWithin_zero_of_notMem_closure
         (by rwa [closure_Icc]), abs_zero]
       exact (abs_nonneg _).trans (fpp_bound 0)
-  refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ h6).trans_eq ?_
+  refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ h7).trans_eq ?_
   · refine h_ddf.congr_mono (fun x hx ↦ ?_) h3
     exact derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))
   · rw [h0, mul_div_assoc, mul_comm]
@@ -250,7 +251,8 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_ne)
-  refine trapezoidal_error_le (ContDiffOn.differentiableOn h_f_c2 two_ne_zero) ?_ fpp_bound
-    N_nonzero
-  rw [← iteratedDerivWithin_one]
-  exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
+  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
+  have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
+    rw [← iteratedDerivWithin_one]
+    exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
+  exact trapezoidal_error_le h_df h_ddf fpp_bound N_nonzero
