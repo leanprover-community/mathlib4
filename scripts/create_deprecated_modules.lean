@@ -307,9 +307,12 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   -- (throwing an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
-    let log1 := log.trim.splitOn "\n"
-    let last := (log.trim.splitOn "\n").getLast!
-    -- TODO: make the previous line `some last` and add `| throwError "Found no commits!"`
+    -- adaptation note: the next three lines were; errors now
+    -- let some last' := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
+    let tmp := log.trim.splitOn "\n" |>.getLast?
+    if tmp.isNone then
+      throwError "Found no commits!"
+    let last := tmp.get! -- does not fail by the previous check
     let commitHash := last.takeWhile (!·.isWhitespace)
     let PRdescr := (last.dropWhile (·.isWhitespace)).trimAscii
     return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
