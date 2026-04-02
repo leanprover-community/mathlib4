@@ -94,7 +94,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 theorem subbasis_iff_isTopologicalBasis_sInter (s : Set (Set α)) :
     t = generateFrom s ↔
-    IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
+      IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
   refine ⟨isTopologicalBasis_of_subbasis, fun h => h.eq_generateFrom ▸ eq_of_le_of_ge ?_ ?_⟩
   · exact le_generateFrom fun t hts =>
       isOpen_generateFrom_of_mem
