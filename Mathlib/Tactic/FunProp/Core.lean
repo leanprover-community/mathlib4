@@ -631,7 +631,7 @@ mutual
       (fun _ => do pure s!"{← ppExpr e}") do
 
     -- check cache for successful goals
-    if let some { expr := _, proof? := some proof } := (← get).cache.find? e then
+    if let some { expr := _, proof? := some proof, .. } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
       return some { proof := proof }
     else if (← get).failureCache.contains e then
