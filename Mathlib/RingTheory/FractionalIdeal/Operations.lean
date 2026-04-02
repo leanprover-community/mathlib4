@@ -390,8 +390,6 @@ theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠
   I.isFractional.div_of_nonzero J.isFractional fun H =>
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 
-@[deprecated (since := "2025-09-14")] alias fractional_div_of_nonzero := isFractional_div_of_ne_zero
-
 open Classical in
 noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
   ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, isFractional_div_of_ne_zero h⟩⟩
@@ -406,8 +404,6 @@ theorem div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     I / J = ⟨I / J, isFractional_div_of_ne_zero h⟩ :=
   dif_neg h
 
-@[deprecated (since := "2025-09-14")] alias div_nonzero := div_of_ne_zero
-
 @[simp]
 theorem coe_div {I J : FractionalIdeal R₁⁰ K} (hJ : J ≠ 0) :
     (↑(I / J) : Submodule R₁ K) = ↑I / (↑J : Submodule R₁ K) :=
@@ -417,8 +413,6 @@ theorem mem_div_iff_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {
     x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I := by
   rw [div_of_ne_zero h]
   exact Submodule.mem_div_iff_forall_mul_mem
-
-@[deprecated (since := "2025-09-14")] alias mem_div_iff_of_nonzero := mem_div_iff_of_ne_zero
 
 theorem mul_one_div_le_one {I : FractionalIdeal R₁⁰ K} : I * (1 / I) ≤ 1 := by
   by_cases hI : I = 0
@@ -439,8 +433,6 @@ theorem le_div_iff_of_ne_zero {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠
     I ≤ J / J' ↔ ∀ x ∈ I, ∀ y ∈ J', x * y ∈ J :=
   ⟨fun h _ hx => (mem_div_iff_of_ne_zero hJ').mp (h hx), fun h x hx =>
     (mem_div_iff_of_ne_zero hJ').mpr (h x hx)⟩
-
-@[deprecated (since := "2025-09-14")] alias le_div_iff_of_nonzero := le_div_iff_of_ne_zero
 
 theorem le_div_iff_mul_le {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
     I ≤ J / J' ↔ I * J' ≤ J := by
@@ -513,7 +505,6 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
     rw [← div_mul_cancel₀ x y_ne, map_mul, ← Algebra.smul_def]
     exact smul_mem (M := L) I (x / y) y_mem
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁⁰ K) : I = 0 ∨ I = 1 :=
   letI : Field R₁ := hF.toField
   eq_zero_or_one I

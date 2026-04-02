@@ -88,7 +88,6 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
           have hx' : 0 ≤ x := by grind
           simp [hx']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
@@ -242,7 +241,6 @@ lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOr
     ‖z - y * z‖ ≤ c :=
   nnnorm_sub_mul_self_le z hx₀ hy h (c := ⟨c, hc⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- A variant of `norm_sub_mul_self_le` for non-unital algebras that passes to the unitization. -/
 lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x ≤ y) (hy₁ : ‖y‖ ≤ 1)

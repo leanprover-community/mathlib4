@@ -124,12 +124,9 @@ end Div
 
 section Pow
 
-@[to_additive]
-instance instSMul [∀ i, SMul α (M i)] : SMul α (∀ i, M i) where smul a f i := a • f i
-
 variable [∀ i, Pow (M i) α]
 
-@[to_additive existing instSMul]
+@[to_additive (attr := to_additive) instSMul]
 instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]

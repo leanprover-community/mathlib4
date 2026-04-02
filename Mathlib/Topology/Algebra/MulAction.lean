@@ -84,6 +84,14 @@ instance : ContinuousSMul (ULift M) X :=
   ⟨(continuous_smul (M := M)).comp₂ (continuous_uliftDown.comp continuous_fst) continuous_snd⟩
 
 @[to_additive]
+instance OrderDual.instContinuousSMul_right : ContinuousSMul M Xᵒᵈ where
+  continuous_smul := continuous_smul (M := M) (X := X)
+
+@[to_additive]
+instance OrderDual.instContinuousSMul_left : ContinuousSMul Mᵒᵈ X where
+  continuous_smul := continuous_smul (M := M) (X := X)
+
+@[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
 
@@ -291,6 +299,13 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|
         continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
+
+@[to_additive]
+instance {ι : Type*} {γ : ι → Type*} [Π i, TopologicalSpace (γ i)]
+    {N : ι → Type*} [Π i, TopologicalSpace (N i)] [Π i, SMul (N i) (γ i)]
+    [∀ i, ContinuousSMul (N i) (γ i)] : ContinuousSMul (Π i, N i) (Π i, γ i) :=
+  ⟨continuous_pi fun i ↦ ((continuous_apply i).comp continuous_id'.fst).smul
+    ((continuous_apply i).comp continuous_id'.snd)⟩
 
 end Main
 
