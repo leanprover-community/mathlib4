@@ -482,7 +482,7 @@ end Comma
 section Arrow
 
 variable {T : Type*} [Category* T]
-    (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
+  (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `T`, this is the
 subcategory of `Arrow T` defined by `P` where morphisms satisfy `Q` and `W` on the left and right,
@@ -494,7 +494,6 @@ protected abbrev Arrow.forget : P.Arrow Q W ⥤ Arrow T := Comma.forget (𝟭 T)
 
 instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
-
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
 lemma Over.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
