@@ -496,11 +496,11 @@ instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _
 instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
-lemma Over.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+lemma Arrow.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
     (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.leftFunc).map f = f.left := rfl
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
-lemma Over.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+lemma Arrow.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
     (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.rightFunc).map f = f.right := rfl
 
 variable {P Q W}
