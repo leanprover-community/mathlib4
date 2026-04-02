@@ -182,14 +182,14 @@ theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
 theorem IsCountablyCompact.image (hA : IsCountablyCompact A)
     {f : E → F} (hf : Continuous f) : IsCountablyCompact (f '' A) := by
   intro l hl_nebot hl_count hle
-  haveI : NeBot (l.comap f ⊓ 𝓟 A) :=
+  have : NeBot (l.comap f ⊓ 𝓟 A) :=
     comap_inf_principal_neBot_of_image_mem hl_nebot (le_principal_iff.mp hle)
   obtain ⟨x, hxA, hx⟩ := hA (f := l.comap f ⊓ 𝓟 A) inf_le_right
-  haveI := (hx.mono inf_le_left).neBot
-  exact ⟨f x, mem_image_of_mem f hxA, (hf.continuousAt.inf (@tendsto_comap _ _ f l)).neBot⟩
+  have := (hx.mono inf_le_left).neBot
+  exact ⟨f x, mem_image_of_mem f hxA, (hf.continuousAt.inf tendsto_comap).neBot⟩
 
-/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is countably compact
-  if and only if `s` is countably compact. -/
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is countably compact if and
+only if `s` is countably compact. -/
 theorem Topology.IsInducing.isCountablyCompact_iff {f : E → F} (hf : IsInducing f) :
     IsCountablyCompact A ↔ IsCountablyCompact (f '' A) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot Fc F_le => ?_⟩
@@ -197,10 +197,11 @@ theorem Topology.IsInducing.isCountablyCompact_iff {f : E → F} (hf : IsInducin
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
-/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is countably compact
-if and only if `s` is countably compact. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is countably compact if and
+only if `s` is countably compact. -/
 theorem Topology.IsEmbedding.isCountablyCompact_iff {f : E → F} (hf : IsEmbedding f) :
-    IsCountablyCompact A ↔ IsCountablyCompact (f '' A) := hf.isInducing.isCountablyCompact_iff
+    IsCountablyCompact A ↔ IsCountablyCompact (f '' A) :=
+  hf.isInducing.isCountablyCompact_iff
 
 theorem Subtype.isCountablyCompact_iff {p : E → Prop} {A : Set { x // p x }} :
     IsCountablyCompact A ↔ IsCountablyCompact ((↑) '' A : Set E) :=
@@ -217,8 +218,8 @@ theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
   isCountablyCompact_iff_isCountablyCompact_univ.trans isCountablyCompact_univ_iff
 
-/-- If a sequential space is countably compact, then it is sequentially compact. We follow the
-proof in [kremsater1972sequential]. -/
+/-- If a sequential space is countably compact, then it is sequentially compact. We follow the proof
+in [kremsater1972sequential]. -/
 instance [SequentialSpace E] [CountablyCompactSpace E] :
     SeqCompactSpace E := by
   by_contra!
