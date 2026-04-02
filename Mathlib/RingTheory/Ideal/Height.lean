@@ -134,7 +134,7 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     have : I < K := lt_of_lt_of_le h (Ideal.le_minimalPrimes hK)
     exact Ideal.primeHeight_add_one_le_of_lt this
 
-lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
+private lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
 
 lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
@@ -185,7 +185,7 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
     (e'.trans <| height_mono (Ideal.le_minimalPrimes h₁)))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
-lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
+private lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
     primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
   rw [Ideal.primeHeight, Order.height_eq_zero, minimalPrimes, Ideal.minimalPrimes]
   simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
@@ -211,7 +211,7 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
 lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
   rw [Subsingleton.elim I ⊤, Ideal.height_top]
 
-theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
+private theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
   have h : I ≠ ⊤ := Ideal.IsPrime.ne_top'
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
@@ -227,8 +227,7 @@ theorem Ideal.isMaximal_of_height_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
   exact Ideal.isMaximal_of_primeHeight_eq_ringKrullDim e
 
 /-- The prime height of the maximal ideal equals the Krull dimension in a local ring -/
-@[simp]
-theorem IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R] :
+private theorem IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R] :
     (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R := by
   rw [ringKrullDim, Ideal.primeHeight, ← Order.height_top_eq_krullDim]
   rfl
@@ -249,6 +248,7 @@ theorem Ideal.height_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] 
   · rintro rfl
     exact IsLocalRing.maximalIdeal_height_eq_ringKrullDim
 
+@[deprecated "Use `Ideal.height_eq_ringKrullDim_iff` instead." (since := "2026-04-02")]
 theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] {I : Ideal R}
     [I.IsPrime] : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
   rw [← Ideal.height_eq_primeHeight, Ideal.height_eq_ringKrullDim_iff]
@@ -319,8 +319,8 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   norm_cast
   exact Ideal.height_mono hle
 
-theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
-    [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
+private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
   rw [eq_comm, Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj,
     Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
@@ -346,10 +346,9 @@ theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] 
     [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
     ringKrullDim A = I.height := by
   have := IsLocalization.AtPrime.isLocalRing A I
-  rw [← IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim,
-      ← IsLocalization.primeHeight_comap I.primeCompl,
-      ← IsLocalization.AtPrime.comap_maximalIdeal A I,
-      Ideal.height_eq_primeHeight]
+  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim,
+      ← IsLocalization.height_comap I.primeCompl,
+      ← IsLocalization.AtPrime.comap_maximalIdeal A I]
 
 lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R)
     [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
@@ -363,6 +362,7 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
   exact WithBot.coe_eq_coe.mp this
 
+@[deprecated "Use `mem_minimalPrimes_of_height_eq` instead." (since := "2026-04-02")]
 lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
     (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
   rw [← J.height_eq_primeHeight] at e'
