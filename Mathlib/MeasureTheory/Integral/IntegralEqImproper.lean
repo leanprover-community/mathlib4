@@ -682,8 +682,8 @@ theorem integral_Ico_tendsto_integral_Ici (b : ℝ) (hfi : IntegrableOn f (Ici b
 theorem integral_Ici_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     (ha : Tendsto a l atTop) :
     Tendsto (fun i => ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
-  have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ
-    = ∫ x in Ici (a i), f x ∂μ := by
+  have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ =
+      ∫ x in Ici (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Ici_mem_atTop b)] with i hi
     rw [sub_eq_iff_comm, intervalIntegral.integral_Ici_sub_Ici hfi hi]
   rw [← sub_self (∫ x in Ici b, f x ∂μ)]
