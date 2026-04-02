@@ -47,6 +47,14 @@ theorem closure_Iio' (h : (Iio a).Nonempty) : closure (Iio a) = Iic a :=
 theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
   closure_Iio' nonempty_Iio
 
+theorem nonempty_nhds_inter_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : ¬IsMax x) :
+    (u ∩ Set.Ioi x).Nonempty :=
+  mem_closure_iff_nhds.mp (closure_Ioi' (not_isMax_iff.mp hx) ▸ self_mem_Ici) u hu
+
+theorem nonempty_nhds_inter_Iio {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : ¬IsMin x) :
+    (u ∩ Set.Iio x).Nonempty :=
+  nonempty_nhds_inter_Ioi (α := αᵒᵈ) hu hx
+
 /-- The closure of the open interval `(a, b)` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
