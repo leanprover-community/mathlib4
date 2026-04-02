@@ -813,6 +813,9 @@ lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.Is
     w.cycleBypass.IsCycle :=
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
+lemma length_cycleBypass_le {w : G.Walk v v} : w.cycleBypass.length ≤ w.length := by
+  cases w <;> simp [cycleBypass, length_bypass_le]
+
 end Walk
 
 /-! ### Mapping paths -/
