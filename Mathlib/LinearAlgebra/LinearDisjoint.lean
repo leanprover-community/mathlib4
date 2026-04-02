@@ -120,7 +120,7 @@ The following is the second equivalent characterization of linear disjointness:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags

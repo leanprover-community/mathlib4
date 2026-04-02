@@ -33,7 +33,6 @@ section BijectiveResidueField
 variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
     {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a prime of `R'` lying over `p`, a prime of `R`, such that `κ(q) = κ(p)`, then
 the fiber of `R' → R' ⊗[R] S` over `q` is in bijection with the fiber of `R → S` over `p`. -/
 noncomputable
@@ -46,7 +45,6 @@ def Ideal.fiberIsoOfBijectiveResidueField
   (PrimeSpectrum.primesOverOrderIsoFiber ..).trans <|
     (PrimeSpectrum.comapEquiv e.toRingEquiv).trans (PrimeSpectrum.primesOverOrderIsoFiber ..).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :

@@ -40,7 +40,6 @@ Normed field, algebraically closedness
 
 open Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
 of characteristic zero, then `L` is also algebraically closed. -/
 theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
