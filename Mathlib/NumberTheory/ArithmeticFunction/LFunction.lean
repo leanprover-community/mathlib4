@@ -314,11 +314,11 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
 
 theorem foo' {α β : Type*} {F : Filter α} [F.NeBot] {f : α → β} {b₁ b₂ : β}
     (h₁ : ∀ᶠ x in F, f x = b₁) (h₂ : ∀ᶠ x in F, f x = b₂) : b₁ = b₂ := by
-  rw [eventually_iff_exists_mem] at h₁ h₂
-  obtain ⟨u, huF, hu⟩ := h₁
-  obtain ⟨v, hvF, hv⟩ := h₂
-  obtain ⟨a, hau, hav⟩ := nonempty_of_mem (inter_mem huF hvF)
-  exact (hu a hau).symm.trans (hv a hav)
+  have := Filter.EventuallyEq.trans (Filter.EventuallyEq.symm h₁) h₂
+  rw [eventuallyEq_iff_exists_mem] at this
+  obtain ⟨s, hs, h⟩ := this
+  obtain ⟨x, hx⟩ := nonempty_of_mem hs
+  exact h hx
 
 theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
     (hf : ∀ i, IsMultiplicative (f i)) : IsMultiplicative (eulerProduct f) := by
