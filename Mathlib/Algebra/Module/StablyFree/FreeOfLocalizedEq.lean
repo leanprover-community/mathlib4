@@ -51,33 +51,31 @@ noncomputable def topExteriorLinearEquiv (b : Module.Basis (Fin n) R M) : ⋀[R]
     simp [Module.Basis.det_self]
   · refine exteriorPower.linearMap_ext <| Module.Basis.ext_alternating b (fun v hv ↦ ?_)
     let e : Equiv.Perm (Fin n) := Equiv.ofBijective v hv.bijective_of_finite
-    have hdet : b.det (b ∘ e) = (Equiv.Perm.sign e : R) := by
+    have hdet : b.det (fun i ↦ b (v i)) = Equiv.Perm.sign e := by
       simpa [Units.smul_def, Module.Basis.det_self] using AlternatingMap.map_perm b.det b e
-    simpa [show (fun i ↦ b (v i)) = (b ∘ e) from rfl, hdet] using
-      (AlternatingMap.map_perm (exteriorPower.ιMulti R n) b e).symm
+    simpa [hdet] using (AlternatingMap.map_perm (exteriorPower.ιMulti R n) b e).symm
 
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   If `Mₘ ≃ Rₘ` for any maximal ideal `m` of `R`, then `M` is free. -/
 theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.Finite R M]
-    (h : IsStablyFree R M) (hloc : ∀ (m : Ideal R) [m.IsMaximal],
+    (h : IsStablyFree R M) (hlo : ∀ (m : Ideal R) [m.IsMaximal],
       LocalizedModule.AtPrime m M ≃ₗ[Localization.AtPrime m] Localization.AtPrime m) :
     Module.Free R M := by
   have : Module.Projective R M := h.projective
   obtain ⟨N, _, _, _, _, _⟩ := h
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by
-    simpa [Module.rankAtStalk] using LinearEquiv.finrank_eq (hloc 𝔪)
+  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simpa using (hlo 𝔪).finrank_eq
   let n := Module.finrank R N
-  have hp : Module.finrank R (M × N) = n + 1 := (congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
-    Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)).trans <| by
-      simp [← h1, n, Nat.add_comm]
-  let bN : Module.Basis (Fin n) R N := Module.finBasisOfFinrankEq R N rfl
+  have hp : Module.finrank R (M × N) = n + 1 := by
+    simpa [← h1, n, Nat.add_comm] using congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
+      Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)
+  let bN : Module.Basis (Fin n) R N := Module.finBasis R N
   let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
-  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv b).symm.toLinearMap
+  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv b).symm
   have hfs : Function.Surjective f := fun x ↦
     ⟨topExteriorLinearEquiv b (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
-      by simpa [f] using cofactorToLeft_ιMulti_cons bN x⟩
+      by simp [f, cofactorToLeft_ιMulti_cons]⟩
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| bijective_of_localized_maximal f <| by
     intro m _
-    have := Module.Invertible.congr (hloc m).symm
+    have : Module.Invertible _ (LocalizedModule.AtPrime m M) := Module.Invertible.congr (hlo m).symm
     exact Invertible.bijective_of_surjective (LocalizedModule.map_surjective m.primeCompl f hfs)
