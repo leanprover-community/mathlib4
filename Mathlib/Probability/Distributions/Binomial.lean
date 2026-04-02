@@ -54,12 +54,11 @@ scoped notation3 "Bin(" R ", " n ", " p ")" => (binomial n p).map (Nat.cast : â„
 @[simp]
 lemma binomial_nat : Bin(â„•, n, p) = Bin(n, p) := Measure.map_id
 
+lemma binomial_nat_zero : Bin(0, p) = Measure.dirac 0 := by simp [binomial]
+
 @[simp]
 lemma binomial_zero : Bin(R, 0, p) = Measure.dirac 0 := by
   simp [binomial, Measure.map_dirac' .of_discrete]
-
-@[simp]
-lemma binomial_nat_zero : Bin(0, p) = Measure.dirac 0 := by simp [binomial]
 
 instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
   Measure.isProbabilityMeasure_map <| by fun_prop
