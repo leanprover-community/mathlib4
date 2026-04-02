@@ -597,7 +597,7 @@ noncomputable def Topology.IsCoinducing.connectedComponentsEquiv {f : X → Y}
       simp at h
       simp [h, ← hf.preimage_connectedComponent hf']
     refine ⟨?_, ?_, hbij⟩
-    · exact Continuous.connectedComponentsMap_continuous hf.continuous
+    · exact hf.continuous.connectedComponentsMap_continuous
     · exact hf.connectedComponentsMap.isOpenMap_of_injective hbij.injective
 
 variable {f : X → Y} (hf : Topology.IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y}))
