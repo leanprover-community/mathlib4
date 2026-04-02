@@ -93,7 +93,7 @@ theorem IsClosedBasis.closed_iff_eq_sInter {s : Set (Set α)} (hs : IsClosedBasi
 
 theorem isClosedBasis_iff_and (s : Set (Set α)) :
     IsClosedBasis s ↔
-    (∀ u ∈ s, IsClosed u) ∧ (∀ u : Set α, IsClosed u → ∃ s' ⊆ s, u = ⋂₀ s') := by
+      (∀ u ∈ s, IsClosed u) ∧ (∀ u : Set α, IsClosed u → ∃ s' ⊆ s, u = ⋂₀ s') := by
   refine ⟨fun hs => ⟨fun u hus => hs.isClosed hus, fun u hu => (hs.closed_iff_eq_sInter u).1 hu⟩,
     fun ⟨hs1, hs2⟩ => ⟨fun t₁ ht₁s t₂ ht₂s x hxt => ?_, ?_, ?_⟩⟩
   · obtain ⟨s', hs's, hts'⟩ := hs2 (t₁ ∪ t₂) <| (hs1 t₁ ht₁s).union (hs1 t₂ ht₂s)
