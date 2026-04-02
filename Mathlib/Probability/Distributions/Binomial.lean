@@ -52,7 +52,10 @@ scoped notation3 "Bin(" n ", " p ")" => binomial n p
 scoped notation3 "Bin(" R ", " n ", " p ")" => (binomial n p).map (Nat.cast : ℕ → R)
 
 @[simp]
-lemma binomial_zero : Bin(0, p) = .dirac 0 := by simp [binomial]
+lemma binomial_nat_zero : Bin(0, p) = Measure.dirac 0 := by simp [binomial]
+
+@[simp]
+lemma binomial_zero : Bin(R, 0, p) = Measure.dirac 0 := by simp [Measure.map_dirac' .of_discrete]
 
 instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
   Measure.isProbabilityMeasure_map <| by fun_prop
@@ -86,7 +89,7 @@ lemma pairwiseDisjoint_singleton {α : Type*} (s : Set α) :
 lemma binomial_nat_apply (s : Set ℕ) :
     Bin(n, p) s = setBer(Set.Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Set.Iio n} := by
   rw [binomial, Measure.map_apply (by fun_prop) (by measurability),
-    setBernoulli_apply_eq_inter_subset]
+    setBernoulli_apply_eq_apply_subsets]
   simp
 
 lemma binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
@@ -235,7 +238,8 @@ variable {X : Ω → ℝ}
 /-- **Expectation of a binomial random variable**.
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
+lemma integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
+  rw [hX.integral_eq, test']
 
 /-- **Variance of a binomial random variable**.
 
