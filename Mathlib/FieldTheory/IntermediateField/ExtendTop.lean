@@ -54,13 +54,15 @@ variable (R S : Type*) [CommRing R] [CommRing S] [Algebra S F]
 
 variable [Algebra S M] [IsScalarTower S F M]
 
+theorem algebraMap_mem (s : S) : (algebraMap S M) s ∈ F.extendTop M := by
+  rw [IsScalarTower.algebraMap_apply S F M, IsScalarTower.algebraMap_apply F L M]
+  exact ⟨algebraMap F L (algebraMap S F s), by simp, rfl⟩
+
 instance : SMul S (F.extendTop M) where
   smul s x := by
     refine ⟨s • x, ?_⟩
     rw [Algebra.smul_def]
-    refine (F.extendTop M).mul_mem ?_ x.prop
-    rw [IsScalarTower.algebraMap_apply S F M, IsScalarTower.algebraMap_apply F L M, mem_map]
-    exact ⟨algebraMap F L (algebraMap S F s), by simp, rfl⟩
+    exact (F.extendTop M).mul_mem (algebraMap_mem F M S s) x.prop
 
 @[simp]
 theorem coe_smul (s : S) (x : F.extendTop M) :
@@ -68,9 +70,7 @@ theorem coe_smul (s : S) (x : F.extendTop M) :
 
 -- The algebra instance is defined this way to avoid diamonds, see below
 noncomputable instance algebra : Algebra S (F.extendTop M) where
-  algebraMap := ((algebraMap S M).codRestrict (F.extendTop M) (fun x ↦ by
-      rw [IsScalarTower.algebraMap_apply S F M, IsScalarTower.algebraMap_apply F L M, mem_map]
-      exact ⟨algebraMap F L (algebraMap S F x), by simp, rfl⟩))
+  algebraMap := ((algebraMap S M).codRestrict (F.extendTop M) (fun x ↦ algebraMap_mem F M S x))
   commutes' _ _ := Subtype.ext <| by simp [Algebra.commutes]
   smul_def' s x := Subtype.ext <| by
     convert_to s • (x : M) = _
