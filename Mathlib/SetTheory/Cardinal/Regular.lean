@@ -308,7 +308,7 @@ theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
 
 theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c := by
-  apply ((preBeth_strictMono.comp ord_strictMono).le_apply).antisymm'
+  apply (preBeth_strictMono.comp ord_strictMono).le_apply.antisymm'
   apply (isNormal_preBeth.le_iff_forall_le (isSuccLimit_ord hc.aleph0_lt.le)).2
   refine fun a ha ↦ le_of_lt ?_
   induction a using WellFoundedLT.induction with | ind a IH
