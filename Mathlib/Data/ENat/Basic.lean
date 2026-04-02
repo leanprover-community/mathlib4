@@ -281,7 +281,7 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
 
 theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
   by_cases hm : m = ⊤
-  · simpa [hm]
+  · simp_all
   · exact add_one_le_iff hm
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
