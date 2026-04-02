@@ -8,18 +8,15 @@ module
 public import Mathlib.Topology.Bases
 
 /-!
-# Closed bases and closed subbases of topologies.
+# Closed bases of topologies.
 
-This file defines closed bases and closed subbases of topologies, and proves some basic properties
-of them.
+This file defines closed bases of topologies, and proves some basic properties of them.
 
 ## Main definitions
 
 * `TopologicalSpace.IsClosedBasis s`: A closed basis of a topological space `α` is a collection of
   closed sets `s : Set (Set α)` such that every closed subset of `α` can be written as an
   intersection of elements of `s`.
-* `TopologicalSpace.IsClosedSubbasis s`: Given a topological space `α`, `s : Set (Set α)` is a
-  closed subbasis if the topology on `α` equals `generateFrom { uᶜ | u ∈ s }`.
 -/
 
 @[expose] public section
@@ -51,24 +48,19 @@ theorem IsClosedBasis.isClosed {u : Set α} {s : Set (Set α)}
   simp_rw [← isOpen_compl_iff]
   exact isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-/-- `IsClosedSubbasis s` means that the topology on `α` is the least topology such that each element
-of `s` is closed. More specifically, `IsClosedSubbasis s` holds if the topology on `α` equals
-`generateFrom { uᶜ | u ∈ s }`. -/
-def IsClosedSubbasis (s : Set (Set α)) := t = generateFrom (compl '' s)
-
-theorem IsClosedSubbasis.isClosed {u : Set α} {s : Set (Set α)}
-    (hs : IsClosedSubbasis s) (hus : u ∈ s) : IsClosed u :=
+theorem isClosed_of_closed_subbasis_of_mem {u : Set α} {s : Set (Set α)}
+    (hs : t = generateFrom (compl '' s)) (hus : u ∈ s) : IsClosed u :=
   isOpen_compl_iff.1 <| hs ▸ isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-theorem isClosedSubbasis_iff_isTopologicalBasis_sInter_compl {s : Set (Set α)} :
-    IsClosedSubbasis s ↔
+theorem closed_subbasis_iff_isTopologicalBasis_sInter_compl {s : Set (Set α)} :
+    t = generateFrom (compl '' s) ↔
       IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ compl '' s }) :=
   subbasis_iff_isTopologicalBasis_sInter (compl '' s)
 
-theorem isClosedSubbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
-    IsClosedSubbasis s ↔
+theorem closed_subbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
+    t = generateFrom (compl '' s) ↔
       IsClosedBasis ((fun f => ⋃₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
-  refine isClosedSubbasis_iff_isTopologicalBasis_sInter_compl.trans
+  refine closed_subbasis_iff_isTopologicalBasis_sInter_compl.trans
     (isClosedBasis_iff.trans <| iff_of_eq <| compl_image_set_of ▸ ?_).symm
   congr
   ext t
@@ -78,7 +70,8 @@ theorem isClosedSubbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
   · exact ⟨compl '' f, ⟨hf.image compl, s.compl_compl_image ▸ image_mono hfs⟩,
       eq_compl_comm.2 (compl_sUnion _ ▸ f.compl_compl_image.symm ▸ hft.symm)⟩
 
-theorem isClosedBasis_of_isClosedSubbasis_of_union {s : Set (Set α)} (hs1 : IsClosedSubbasis s)
+theorem isClosedBasis_of_closed_subbasis_of_union
+    {s : Set (Set α)} (hs1 : t = generateFrom (compl '' s))
     (hs2 : ∀ u ∈ s, ∀ v ∈ s, u ∪ v ∈ s) : IsClosedBasis (insert ∅ s) :=
   isClosedBasis_iff.2 <| s.image_insert_eq ▸
     compl_empty ▸ isTopologicalBasis_of_subbasis_of_inter hs1
