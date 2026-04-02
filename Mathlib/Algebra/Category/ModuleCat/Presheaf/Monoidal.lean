@@ -147,7 +147,8 @@ instance symmetricCategory :
     isoMk (fun X ↦ braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X))
       (fun _ _ f ↦ ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl))
   braiding_naturality_right _ _ _ _ := by
-    ext : 1; exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
+    ext : 1
+    exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
   braiding_naturality_left _ _ := by
     ext : 1
     exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
