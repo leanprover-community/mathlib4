@@ -13,20 +13,24 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 # Meromorphicity of `Complex.tan` and `Complex.tanh`
 -/
 
-/-- The function `Complex.tanh` is meromorphic at `z` for all `z`. -/
-@[fun_prop]
-public theorem meromorphicAt_tanh (z : ℂ) :
-    MeromorphicAt Complex.tanh z := by fun_prop [Complex.tanh]
+public section
 
-/-- The function `Complex.tanh` is meromorphic. -/
-@[fun_prop]
-public theorem meromorphic_tanh : Meromorphic Complex.tanh := meromorphicAt_tanh
+namespace Complex
 
-/-- The function `Complex.tan` is meromorphic at `z` for all `z`. -/
+/-- The function `tanh` is meromorphic at any `z`. -/
 @[fun_prop]
-public theorem meromorphicAt_tan (z : ℂ) :
-    MeromorphicAt Complex.tan z := by fun_prop [Complex.tan]
+theorem meromorphicAt_tanh (z : ℂ) :
+    MeromorphicAt tanh z := by fun_prop [tanh]
 
-/-- The function `Complex.tan` is meromorphic. -/
+/-- The function `tanh` is meromorphic. -/
 @[fun_prop]
-public theorem meromorphic_tan : Meromorphic Complex.tan := meromorphicAt_tan
+theorem meromorphic_tanh : Meromorphic tanh := meromorphicAt_tanh
+
+/-- The function `tan` is meromorphic at any `z`. -/
+@[fun_prop]
+theorem meromorphicAt_tan (z : ℂ) :
+    MeromorphicAt tan z := by fun_prop [tan]
+
+/-- The function `tan` is meromorphic. -/
+@[fun_prop]
+theorem meromorphic_tan : Meromorphic tan := meromorphicAt_tan
