@@ -378,14 +378,19 @@ theorem degreeOf_mul_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
 
 theorem degreeOf_add_eq_of_degreeOf_lt {i : σ} (h : q.degreeOf i < p.degreeOf i) :
     (p + q).degreeOf i = p.degreeOf i := by
-  apply le_antisymm ((max_eq_left_of_lt h) ▸ degreeOf_add_le i p q)
-  nth_rewrite 2 [degreeOf_eq_sup]
+  apply le_antisymm
+  · rw [← max_eq_left_of_lt h]
+    exact degreeOf_add_le i p q
+  nth_rw 2 [degreeOf_eq_sup]
   apply (Finset.le_sup_iff <| Nat.zero_lt_of_lt h).mpr
-  have : p.support.Nonempty := by apply support_nonempty.mpr; contrapose! h; simp [h]
+  have : p.support.Nonempty := by aesop
   have ⟨s, hs1, hs2⟩ := Finset.exists_mem_eq_sup _ this (fun s ↦ s i)
-  rewrite [← degreeOf_eq_sup i p] at hs2
+  rw [← degreeOf_eq_sup i p] at hs2
   refine ⟨s, ?_, by rw [hs2]⟩
-  have : s ∉ q.support := by contrapose! h; exact hs2 ▸ le_degreeOf_of_mem_support i h
+  have : s ∉ q.support := by
+    contrapose! h
+    rw [hs2]
+    exact le_degreeOf_of_mem_support i h
   simp only [mem_support_iff, ne_eq, coeff_add, not_not] at hs1 ⊢ this
   rwa [this, add_zero]
 
@@ -394,8 +399,8 @@ theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degr
   contrapose! h
   apply le_trans (Nat.le_max_left _ (q.degreeOf i))
   rcases Nat.lt_or_lt_of_ne h with h | h
-  · simp only [add_comm p q, degreeOf_add_eq_of_degreeOf_lt h, max_eq_right_of_lt h, le_refl]
-  simp only [degreeOf_add_eq_of_degreeOf_lt h, max_eq_left_of_lt h, le_refl]
+  · simp [add_comm p q, degreeOf_add_eq_of_degreeOf_lt h, max_eq_right_of_lt h]
+  · simp [degreeOf_add_eq_of_degreeOf_lt h, max_eq_left_of_lt h]
 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
