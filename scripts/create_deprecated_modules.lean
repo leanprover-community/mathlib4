@@ -132,9 +132,6 @@ def processPrettyOneLine (log msg fname : String.Slice) : IO (String.Slice × Me
   return (hash, m!"{msg} in " ++
     .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
 
--- uses deprecated `Strim.trim`;
--- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
-set_option linter.deprecated false in
 /--
 `mkRenamesDict pct` takes as optional input a natural number.
 
@@ -149,7 +146,7 @@ If no input is provided, the default percentage is `100`.
 def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
   let mut dict := ∅
   let gitDiff ← runCmd s!"git diff --name-status origin/master...HEAD"
-  let lines := gitDiff.trim.splitOn "\n"
+  let lines := gitDiff.trimAscii.lines
   for git in lines do
     -- If `git` corresponds to a rename, it contains `3` segments, separated by a
     -- tab character (`\t`): `R%%`, `oldName`, `newName`.
@@ -194,9 +191,6 @@ def mkModName (fname : System.FilePath) : String :=
 #guard mkModName "" == ""
 #guard mkModName ("" / "") == "."
 
--- uses deprecated `Strim.trim`;
--- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
-set_option linter.deprecated false in
 /--
 `deprecateFilePath fname rename comment` takes as input
 * the path `fname` of a file that was deleted;
@@ -221,16 +215,16 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the last two commits that modified `fname`:
   -- the last one is the deletion, the previous one is the last file modification.
   let log ← runCmd s!"git log --pretty=oneline -2 -- {fname}"
-  let [deleted, lastModified] := log.trim.splitOn "\n" |
-    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
+  let [deleted, lastModified] := log.lines.toList |
+    throwError "Found {log.lines.length} commits, but expected 2! \
       Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
   msgs := msgs.append #[m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
-  let deletionDate := (log'.trim.splitOn "\n")[0]!
-  let deprecation ← mkDeprecationWithDate deletionDate comment
+  let deletionDate := (log'.lines.first?).get!
+  let deprecation ← mkDeprecationWithDate deletionDate.toString comment
   msgs := msgs.push ""
   -- Retrieve the final version of the file, before it was deleted.
   let file ← runCmd s!"git show {modifiedHash}:{fname}"
@@ -273,9 +267,6 @@ elab_rules : command
             else ""}
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
--- uses deprecated `Strim.trim`;
--- no straightforward replacement (as there is no `splitOn` on `String.Slice`s)
-set_option linter.deprecated false in
 /--
 `#find_deleted_files (nc)? (pct%)?` takes an optional natural number input `nc` and an optional
 percentage `pct%`.
@@ -311,8 +302,8 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
     -- adaptation note: the next three lines were; errors now
-    -- let some last' := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
-    let tmp := log.trim.splitOn "\n" |>.getLast?
+    -- let some last' := log.lines.toList.getLast? | throwError "Found no commits!"
+    let tmp := log.lines.toList.getLast?
     if tmp.isNone then
       throwError "Found no commits!"
     let last := tmp.get! -- does not fail by the previous check
