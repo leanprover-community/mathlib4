@@ -742,7 +742,7 @@ lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.le
       rw [ih h]
 
 lemma bypass_eq_self_iff_length_le (p : G.Walk u v) : p.bypass = p ↔ p.length ≤ p.bypass.length :=
-  ⟨fun hp ↦ Nat.le_of_eq (congrArg length hp.symm), p.bypass_eq_self_of_length_le⟩
+  ⟨fun hp ↦ (congrArg length hp.symm).le, p.bypass_eq_self_of_length_le⟩
 
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
 def toPath (p : G.Walk u v) : G.Path u v :=
@@ -798,7 +798,7 @@ theorem IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p :=
 theorem bypass_eq_self_iff_isPath (p : G.Walk u v) : p.bypass = p ↔ p.IsPath := by
   constructor
   · intro hp
-    rw [← bypass_eq_self_of_length_le p (Nat.le_of_eq (congrArg length hp.symm))]
+    rw [← bypass_eq_self_of_length_le p (congrArg length hp.symm).le]
     exact p.bypass_isPath
   · exact IsPath.bypass_eq_self
 
