@@ -238,7 +238,7 @@ theorem IsAcyclic.eq_penultimate_of_adj_end (h : G.IsAcyclic) {u v w : V} {p : G
     (hp : p.IsPath) (hadj : G.Adj v w) (hsupp : w ∈ p.support) : w = p.penultimate := by
   rw [← snd_reverse]
   apply h.eq_snd_of_adj_start hp.reverse hadj
-  grind [support_reverse]
+  simpa
 
 lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
     {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
