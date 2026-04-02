@@ -272,7 +272,6 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
       ((Finset.coe_subset.mpr sub).trans mem)).out 0 2).mp ?_)
     use rs.toFinset
     simpa [sub, card] using span
-  apply IsSMulRegular.of_right_eq_zero_of_smul (fun x hx ↦ ?_)
   have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by
     simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
     by_contra mem
@@ -291,14 +290,12 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
         simp only [Ideal.ofList_append, SetLike.mem_coe]
         rcases hx with l|eq|r
         · exact Ideal.mem_sup_left (Ideal.subset_span (Set.mem_setOf.mpr l))
-        · apply Ideal.mem_sup_left
-          simpa [eq] using mem
+        · exact Ideal.mem_sup_left (eq ▸ mem)
         · exact Ideal.mem_sup_right (Ideal.subset_span (Set.mem_setOf.mpr r))
-    have : Submodule.spanFinrank (maximalIdeal R) ≤ rs'.length := by
-      rw [← span']
+    have : Submodule.spanFinrank (Ideal.ofList rs') ≤ rs'.length := by
       apply (Submodule.spanFinrank_span_le_ncard_of_finite rs'.finite_toSet).trans
       apply le_of_eq_of_le _ (List.toFinset_card_le rs')
       simp [← (Set.ncard_coe_finset rs'.toFinset)]
-    simp only [← len, List.length_append, List.length_take, List.length_drop, rs'] at this
+    simp only [span', ← len, List.length_append, List.length_take, List.length_drop, rs'] at this
     omega
-  exact (mul_eq_zero_iff_left this).mp hx
+  exact (IsRegular.of_ne_zero this).isSMulRegular
