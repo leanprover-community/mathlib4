@@ -784,16 +784,10 @@ variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
 theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
-@[deprecated  (since := "2026-04-02")]
-alias dualPairing_separatingLeft := id_separatingLeft
-
 variable [Module.Projective K V]
 
 theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
   fun x => (forall_dual_apply_eq_zero_iff K x).mp
-
-@[deprecated  (since := "2026-04-02")]
-alias dualPairing_separatingRight := id_separatingRight
 
 theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
   ⟨id_separatingLeft, id_separatingRight⟩
