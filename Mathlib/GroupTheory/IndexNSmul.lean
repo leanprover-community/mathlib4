@@ -37,9 +37,8 @@ variable (M) in
 and finitely generated as a `ℤ`-module is `n ^ finrank ℤ M`. -/
 lemma index_nsmul [Free ℤ M] [Module.Finite ℤ M] (n : ℕ) :
     (nsmulAddMonoidHom (α := M) n).range.index = n ^ finrank ℤ M := by
-  let e := (Module.finBasis ℤ M).equivFun
-  suffices (nsmulAddMonoidHom (α := Fin (finrank ℤ M) → ℤ) n).range.index = n ^ finrank ℤ M by
-    rwa [← AddEquiv.map_range_nsmulAddMonoidHom e.toAddEquiv, index_map_equiv] at this
+  rw [← index_map_equiv _ (Module.finBasis ℤ M).equivFun.toAddEquiv,
+    AddEquiv.map_range_nsmulAddMonoidHom]
   simp [index_eq_card, Nat.card_congr (addEquivPiModRangeNSMulAddMonoidHom _ n).toEquiv,
     Nat.card_fun, Int.range_nsmulAddMonoidHom,
     Nat.card_congr (Int.quotientZMultiplesNatEquivZMod n).toEquiv]
@@ -56,33 +55,26 @@ lemma relIndex_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmodule
 /-- On an additive group that is torsion-free as a `ℤ`-module, the linear map given by
 multiplication by `n : ℕ` is injective (when `n ≠ 0`). -/
 lemma distribSMulToLinearMap_injective_of_isTorsionFree [IsTorsionFree ℤ M] {n : ℕ} (hn : n ≠ 0) :
-    Function.Injective (DistribSMul.toLinearMap ℤ M n) := by
-  refine LinearMap.ker_eq_bot.mp <| (Submodule.eq_bot_iff _).mpr fun x hx ↦ ?_
-  simp only [LinearMap.mem_ker, DistribSMul.toLinearMap_apply, ← natCast_zsmul] at hx
-  exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
+    Function.Injective (DistribSMul.toLinearMap ℤ M n) :=
+  LinearMap.ker_eq_bot.mp <| (Submodule.eq_bot_iff _).mpr fun x hx ↦ by simp_all
 
 /-- On an additive group that is torsion-free as a `ℤ`-module, the multiplication-by-`n` map
 is injective (when `n ≠ 0`). -/
 lemma nsmulAddMonoidHom_injective_of_isTorsionFree [IsTorsionFree ℤ M] {n : ℕ} (hn : n ≠ 0) :
-    Function.Injective (nsmulAddMonoidHom (α := M) n) := by
-  refine (AddMonoidHom.ker_eq_bot_iff _).mp <| (eq_bot_iff_forall _).mpr fun x hx ↦ ?_
-  simp only [AddMonoidHom.mem_ker, nsmulAddMonoidHom_apply, ← natCast_zsmul] at hx
-  exact (smul_eq_zero_iff_right <| mod_cast hn).mp hx
+    Function.Injective (nsmulAddMonoidHom (α := M) n) :=
+  (AddMonoidHom.ker_eq_bot_iff _).mp <| (eq_bot_iff_forall _).mpr fun x hx ↦ by simp_all
 
 /-- If `A` is a subgroup of finite index of an additive group `M` that is finitely generated
 and torsion-free as a `ℤ`-module, then `A` and `M` have the same rank. -/
 lemma finrank_eq_of_finiteIndex [Module.Finite ℤ M] [IsTorsionFree ℤ M] (A : AddSubgroup M)
     [A.FiniteIndex] :
     finrank ℤ A = finrank ℤ M := by
-  refine le_antisymm ?_ ?_
-  · rw [← finrank_top ℤ M]
-    exact Submodule.finrank_mono (s := A.toIntSubmodule) le_top
-  · set n := A.index
-    rw [← (DistribSMul.toLinearMap ℤ M n).finrank_range_of_inj <|
-      distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero]
-    refine Submodule.finrank_mono <| (OrderIso.symm_apply_le toIntSubmodule).mp fun m hm ↦ ?_
-    obtain ⟨x, rfl⟩ : ∃ x, n • x = m := by simpa using hm
-    exact A.nsmul_index_mem x
+  refine le_antisymm A.toIntSubmodule.finrank_le ?_
+  rw [← (DistribSMul.toLinearMap ℤ M A.index).finrank_range_of_inj <|
+    distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero]
+  refine Submodule.finrank_mono <| (OrderIso.symm_apply_le toIntSubmodule).mp fun m hm ↦ ?_
+  obtain ⟨x, rfl⟩ : ∃ x, A.index • x = m := by simpa using hm
+  exact A.nsmul_index_mem x
 
 /-- If `A ≤ B` are subgroups of an additive group `M` such that `A` has finite relative index
 in `B`, where `B` is finitely generated and torsion-free as a `ℤ`-module, then `A` and `B`
