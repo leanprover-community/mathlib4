@@ -134,22 +134,22 @@ lemma norm_kerFun_sq_eq_norm_kernel {x} : ‖kerFun H x‖ ^ 2 = ‖kernel H x x
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
 
 lemma norm_kerFun_eq_sqrt_norm_kernel {x} : ‖kerFun H x‖ = √‖kernel H x x‖ := by
-  rw [← kerFun_norm_sq_eq_kernel_norm, Real.sqrt_sq (norm_nonneg _)]
+  rw [← norm_kerFun_sq_eq_norm_kernel, Real.sqrt_sq (norm_nonneg _)]
 
-lemma norm_le_sq_norm_mul_diag {x y} : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ :=
+lemma norm_kernel_le {x y} : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ :=
   (opNorm_comp_le _ _).trans_eq <| by simp_rw [LinearIsometryEquiv.norm_map,
-    kerFun_norm_eq_sqrt_kernel_norm]
+    norm_kerFun_eq_sqrt_norm_kernel]
 
-lemma norm_sq_le_norm_mul_diag {x y} : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
+lemma norm_kernel_sq_le {x y} : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   rw [← Real.le_sqrt (norm_nonneg _) (mul_nonneg (norm_nonneg _) (norm_nonneg _)),
     Real.sqrt_mul (norm_nonneg _)]
-  exact norm_le_sq_norm_mul_diag
+  exact norm_kernel_le
 
-theorem zero_row_iff_zero_diag {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H x y‖ = 0 :=
-  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| norm_sq_le_norm_mul_diag.trans (by simp [h]), fun h ↦ h x⟩
+theorem norm_kernel_eq_zero_iff {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H x y‖ = 0 :=
+  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| norm_kernel_sq_le.trans (by simp [h]), fun h ↦ h x⟩
 
-theorem zero_col_iff_zero_diag {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H y x‖ = 0 :=
-  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| norm_sq_le_norm_mul_diag.trans (by simp [h]), fun h ↦ h x⟩
+theorem norm_kernel_eq_zero_iff' {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H y x‖ = 0 :=
+  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| norm_kernel_sq_le.trans (by simp [h]), fun h ↦ h x⟩
 
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
