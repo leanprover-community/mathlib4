@@ -19,6 +19,8 @@ public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.SurjectiveOnStalks
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.RingTheory.LocalProperties.Projective
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # Ramification index
@@ -803,13 +805,38 @@ theorem sum_ramification_inertia'
 set_option backward.isDefEq.respectTransparency false in
 theorem sum_ramification_inertia''
     {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
-    [MulSemiringAction G S] [FaithfulSMul G S] [SMulCommClass G R S] [Algebra.IsInvariant R S G]
-    -- [IsGaloisGroup G R S]
+    [MulSemiringAction G S] [IsGaloisGroup G R S] [Module.Flat R S] [FaithfulSMul R S] :
+    Module.Projective R S := by
+  have h1 : Algebra.IsIntegral R S := Algebra.IsInvariant.isIntegral R S G
+  have h2 : (algebraMap R S).IsIntegral := algebraMap_isIntegral_iff.mpr h1
+  have : Module.FaithfullyFlat R S := by
+    apply Module.FaithfullyFlat.of_comap_surjective
+    apply RingHom.IsIntegral.comap_surjective h2
+    exact FaithfulSMul.algebraMap_injective R S
+  -- finitely generated projective iff locally free
+  have : ∀ p : PrimeSpectrum R, Module.Flat (Localization.AtPrime p.1) (LocalizedModule p.1.primeCompl S) := by
+    intro m
+    exact Module.Flat.localizedModule m.asIdeal.primeCompl
+  have : ∀ p : PrimeSpectrum R, Module.Free (Localization.AtPrime p.1) (LocalizedModule p.1.primeCompl S) := by
+    intro m
+    apply Module.free_of_flat_of_isLocalRing
+    exact Module.Flat.localizedModule m.asIdeal.primeCompl
+  have : Module.FinitePresentation R S := by
+    sorry
+  apply Module.projective_of_localization_maximal
+
+
+set_option backward.isDefEq.respectTransparency false in
+theorem sum_ramification_inertia'''
+    {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
+    [MulSemiringAction G S] [FaithfulSMul G S] [Module.Flat R S] -- finite type will give quasifinite
+    [IsGaloisGroup G R S]
     (p : Ideal R) [p.IsPrime] :
     letI : Module.Finite R S := sorry
     Nat.card G =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
+
   have : Algebra.QuasiFinite R S := sorry
   have : Module.Flat R S := sorry
   rw [← sum_ramification_inertia]
