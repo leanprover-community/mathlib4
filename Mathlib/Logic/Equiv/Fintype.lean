@@ -91,6 +91,22 @@ namespace Equiv
 
 variable {α β : Type*}
 
+/-- If two sets have the same finite cardinality, their set differences are equivalent. -/
+noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
+    (h : Fintype.card s = Fintype.card t) : (s \ t : Set α) ≃ (t \ s : Set α) := by
+  classical
+  let fs : Finset α := Finset.univ.map (Function.Embedding.subtype (· ∈ s))
+  let ft : Finset α := Finset.univ.map (Function.Embedding.subtype (· ∈ t))
+  have hs (x : α) : x ∈ fs ↔ x ∈ s := by simp [fs]
+  have ht (x : α) : x ∈ ft ↔ x ∈ t := by simp [ft]
+  have hst (x : α) : x ∈ fs \ ft ↔ x ∈ s \ t := by simp [hs, ht]
+  have hts (x : α) : x ∈ ft \ fs ↔ x ∈ t \ s := by simp [hs, ht]
+  have hc : fs.card = ft.card := by
+    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert h
+  replace hc := Finset.card_sdiff_comm hc
+  rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
+  exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
+
 /-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
@@ -103,18 +119,7 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   let sq : Set α := {x | q x}
   letI : Fintype sp := Fintype.ofFinite sp
   letI : Fintype sq := Fintype.ofEquiv sp e
-  let fp : Finset α := (Finset.univ : Finset sp).map (Function.Embedding.subtype p)
-  let fq : Finset α := (Finset.univ : Finset sq).map (Function.Embedding.subtype q)
-  have hp (x : α) : x ∈ fp ↔ x ∈ sp := by simp [fp, sp]
-  have hq (x : α) : x ∈ fq ↔ x ∈ sq := by simp [fq, sq]
-  have hpq (x : α) : x ∈ fp \ fq ↔ x ∈ sp \ sq := by simp [hp, hq]
-  have hqp (x : α) : x ∈ fq \ fp ↔ x ∈ sq \ sp := by simp [hp, hq]
-  have h : fp.card = fq.card := by
-    rw [← Fintype.subtype_card fp hp, ← Fintype.subtype_card fq hq]
-    convert Fintype.card_congr e
-  replace h := Finset.card_sdiff_comm h
-  rw [← Fintype.subtype_card (fp \ fq) hpq, ← Fintype.subtype_card (fq \ fp) hqp] at h
-  replace h := ((Fintype.card_eq (_F := (_)) (_G := (_))).mp h).some
+  have h := setDiffEquiv (Fintype.card_congr e)
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   let epc := (Equiv.setCongr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
@@ -132,14 +137,11 @@ noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α
 
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
-  dsimp only [extendSubtype]
-  simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_symm_apply_of_pos hx, Sum.map_inl, sumCompl_apply_inl]
+  simp [extendSubtype, subtypeCongr, sumCompl_symm_apply_of_pos hx]
 
 theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
-    q (e.extendSubtype x) := by
-  convert (e ⟨x, hx⟩).2
-  rw [e.extendSubtype_apply_of_mem _ hx]
+    q (e.extendSubtype x) :=
+  (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).2
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
@@ -148,9 +150,8 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
   rfl
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
-    ¬q (e.extendSubtype x) := by
-  convert (e.toCompl ⟨x, hx⟩).2
-  rw [e.extendSubtype_apply_of_not_mem _ hx, Set.mem_setOf_eq]
+    ¬q (e.extendSubtype x) :=
+  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).2
 
 /-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
 there exists a permutation of `β` that maps `f` to `g`. -/
@@ -161,5 +162,29 @@ theorem Perm.exists_extending_pair [Finite α]
   have : Finite {x | x ∈ Set.range f} := .of_surjective _ (Set.codRestrict_range_surjective f)
   refine ⟨((Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)).extendSubtype, ?_⟩
   simp [Equiv.extendSubtype_apply_of_mem]
+
+/-- Any two same-cardinality finsets are related by a permutation. -/
+theorem Perm.exists_map_finset_eq
+    (s t : Finset β) (h : s.card = t.card) :
+    ∃ σ : Perm β, s.map σ.toEmbedding = t := by
+  classical
+  obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
+    (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
+    Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)
+  exact ⟨σ, Finset.ext fun b => by
+    simp only [Finset.mem_map_equiv]
+    constructor
+    · intro hb
+      have key := hσ ⟨σ.symm b, hb⟩
+      simp only [apply_symm_apply] at key
+      rw [key]
+      exact ((s.equivOfCardEq h) ⟨σ.symm b, hb⟩).2
+    · intro hb
+      obtain ⟨a, ha⟩ := (s.equivOfCardEq h).surjective ⟨b, hb⟩
+      have key := hσ a
+      rw [show σ.symm b = ↑a from by
+        rw [Equiv.symm_apply_eq, key]
+        exact (congr_arg Subtype.val ha).symm]
+      exact a.2⟩
 
 end Equiv
