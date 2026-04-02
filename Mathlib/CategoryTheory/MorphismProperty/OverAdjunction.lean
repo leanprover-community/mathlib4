@@ -181,7 +181,8 @@ instance (f : X ⟶ Y) [P.HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f
     (MorphismProperty.Over.map ⊤ hPf).IsLeftAdjoint :=
   (Over.mapPullbackAdj P ⊤ f hPf trivial).isLeftAdjoint
 
-instance (f : X ⟶ Y) [P.HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (hPf : P f) :
+lemma isRightAdjoint_pullback (f : X ⟶ Y) [P.HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f]
+    (hPf : P f) :
     (MorphismProperty.Over.pullback P ⊤ f).IsRightAdjoint :=
   (Over.mapPullbackAdj P ⊤ f hPf trivial).isRightAdjoint
 
@@ -223,7 +224,7 @@ def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := �
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
 /-- `Under.map` commutes with composition. -/
-@[simps! hom_app_left inv_app_left]
+@[simps! hom_app_left]
 def Under.mapComp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) [Q.RespectsIso]
     (fg : X ⟶ Z := f ≫ g) (hfg : fg = f ≫ g := by cat_disch) :
     map (f := fg) Q (by subst hfg; exact P.comp_mem f g hf hg) ≅ map Q hg ⋙ map Q hf :=
@@ -275,14 +276,6 @@ noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
     haveI : HasPushout X.hom fg := HasPushoutsAlong.hasPushout _ X.prop
     Under.isoMk (pushout.congrHom rfl hfg ≪≫ (pushoutLeftPushoutInrIso X.hom f g).symm) (by simp)
 
-@[reassoc (attr := simp)]
-lemma Under.inr_pushoutComp_right (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderCobaseChangeAlong f]
-    [P.IsStableUnderCobaseChangeAlong g] [P.HasPushoutsAlong f] [P.HasPushoutsAlong g]
-    [Q.RespectsIso] [Q.IsStableUnderCobaseChange] (A : P.Under Q X) :
-    pushout.inr _ _ ≫ ((Under.pushoutComp (P := P) (Q := Q) f g).hom.app A).right =
-      pushout.inr _ _ := by
-  simp [pushoutComp]
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f = g`, then cobase change along `f` is naturally isomorphic to cobase change along `g`. -/
 noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
@@ -331,7 +324,8 @@ instance (f : X ⟶ Y) [P.HasPushoutsAlong f] [P.IsStableUnderCobaseChangeAlong 
     (MorphismProperty.Under.map ⊤ hPf).IsRightAdjoint :=
   (Under.mapPushoutAdj P ⊤ f hPf trivial).isRightAdjoint
 
-instance (f : X ⟶ Y) [P.HasPushoutsAlong f] [P.IsStableUnderCobaseChangeAlong f] (hPf : P f) :
+lemma isLeftAdjoint_pushout (f : X ⟶ Y) [P.HasPushoutsAlong f] [P.IsStableUnderCobaseChangeAlong f]
+    (hPf : P f) :
     (MorphismProperty.Under.pushout P ⊤ f).IsLeftAdjoint :=
   (Under.mapPushoutAdj P ⊤ f hPf trivial).isLeftAdjoint
 
