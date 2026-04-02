@@ -391,8 +391,9 @@ If
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 A similar statement holds for the logarithmic height.
 
 Note that we only require the polynomial relations `∑ j, q (k, j) * p j = X k ^ (M + N)`
@@ -428,8 +429,9 @@ open AdmissibleAbsValues
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`. -/
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`. -/
 theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
@@ -458,8 +460,9 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by a positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 
 The difference to `mulHeight_eval_ge` is that the constant is not made explicit. -/
 theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -479,6 +482,7 @@ open Real in
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by an (explicit)
 constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
 theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -500,6 +504,7 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by a
 constant plus `N` times the logarithmic height of `x`.
 
