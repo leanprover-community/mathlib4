@@ -149,7 +149,8 @@ instance symmetricCategory :
   braiding_naturality_right _ _ _ _ := by
     ext : 1; exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
   braiding_naturality_left _ _ := by
-    ext : 1; exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
+    ext : 1
+    exact ModuleCat.MonoidalCategory.tensor_ext (fun _ _ ↦ rfl)
   hexagon_forward _ _ _ := by
     ext : 1
     apply hexagon_forward (C := ModuleCat (R.obj _))
