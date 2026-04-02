@@ -171,20 +171,8 @@ theorem Perm.exists_map_finset_eq
   obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
     (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)
-  exact ⟨σ, Finset.ext fun b => by
-    simp only [Finset.mem_map_equiv]
-    constructor
-    · intro hb
-      have key := hσ ⟨σ.symm b, hb⟩
-      simp only [apply_symm_apply] at key
-      rw [key]
-      exact ((s.equivOfCardEq h) ⟨σ.symm b, hb⟩).2
-    · intro hb
-      obtain ⟨a, ha⟩ := (s.equivOfCardEq h).surjective ⟨b, hb⟩
-      have key := hσ a
-      rw [show σ.symm b = ↑a from by
-        rw [Equiv.symm_apply_eq, key]
-        exact (congr_arg Subtype.val ha).symm]
-      exact a.2⟩
+  refine ⟨σ, Finset.eq_of_subset_of_card_le (fun b hb => ?_) (by simp [h])⟩
+  obtain ⟨a, ha, rfl⟩ := Finset.mem_map.mp hb
+  exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).2
 
 end Equiv
