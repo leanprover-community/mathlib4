@@ -150,5 +150,5 @@ theorem isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semir
 
 theorem isLocalRing_algHomPullback {R S T A : Type*} [CommSemiring R] [Ring S] [Algebra R S]
     [IsLocalRing S] [Ring T] [Algebra R T] [Semiring A] [Algebra R A] (f : S →ₐ[R] A)
-    (g : T →ₐ[R] A) (hg :IsLocalHom g) : IsLocalRing (AlgHom.pullback f g) :=
+    (g : T →ₐ[R] A) (hg : IsLocalHom g) : IsLocalRing (AlgHom.pullback f g) :=
   isLocalRing_ringHomPullback (f : S →+* A) (g : T →+* A) ⟨hg.map_nonunit⟩
