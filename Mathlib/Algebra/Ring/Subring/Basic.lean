@@ -1160,9 +1160,6 @@ theorem isUnit_eqLocus_mk_iff (f g : A →+* C) {r : A} (r_in : r ∈ f.eqLocus 
   rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← r_in, ← map_mul, hs.right,
     map_one, one_mul]
 
-instance isLocalHom_eqLocus_subtype (f g : A →+* C) : IsLocalHom (f.eqLocus g).subtype where
-  map_nonunit := by rintro ⟨_, h⟩; simpa using (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
-
 /-- The subring of pairs `(r, s) : A × B` such that `f r = g s`, i.e.,
   the pullback of f and g as a subring of R × S. -/
 abbrev pullback (f : A →+* C) (g : B →+* C) : Subring (A × B) :=
@@ -1200,29 +1197,27 @@ open Function in
 theorem surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) (h : Surjective f) :
     Surjective (f.pullbackSnd g) := fun s ↦ by simpa [eq_comm] using h (g s)
 
-instance isLocalHom_pullbackFst {F G : Type*} [FunLike F A C] [RingHomClass F A C] [FunLike G B C]
-    [RingHomClass G B C] (f : F) (g : G) [IsLocalHom g] :
-      IsLocalHom ((f : A →+* C).pullbackFst (g : B →+* C)) where
-  map_nonunit := by
-    rintro ⟨x, x_in⟩
-    simp only [coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply, isUnit_pullback_mk_iff,
-      imp_and, imp_self, true_and]
-    simp only [mem_eqLocus, coe_comp, coe_coe, coe_fst, Function.comp_apply, coe_snd] at x_in
-    intro ha
-    suffices IsUnit (g x.2) from IsLocalHom.map_nonunit x.2 this
-    rw [← x_in]; exact IsUnit.map f ha
+theorem isLocalHom_pullbackFst {F G : Type*} [FunLike F A C] [RingHomClass F A C] [FunLike G B C]
+    [RingHomClass G B C] (f : F) (g : G) (hg : IsLocalHom g) :
+    IsLocalHom ((f : A →+* C).pullbackFst (g : B →+* C)) := ⟨by
+  rintro ⟨x, x_in⟩
+  simp only [coe_comp, coe_fst, Subring.coe_subtype, Function.comp_apply, isUnit_pullback_mk_iff,
+    imp_and, imp_self, true_and]
+  simp only [mem_eqLocus, coe_comp, coe_coe, coe_fst, Function.comp_apply, coe_snd] at x_in
+  intro ha
+  suffices IsUnit (g x.2) from IsLocalHom.map_nonunit x.2 this
+  rw [← x_in]; exact IsUnit.map f ha⟩
 
-instance isLocalHom_pullbackSnd {F G : Type*} [FunLike F A C] [RingHomClass F A C] [FunLike G B C]
-    [RingHomClass G B C] (f : F) (g : G) [IsLocalHom f] :
-      IsLocalHom ((f : A →+* C).pullbackSnd (g : B →+* C)) where
-  map_nonunit := by
-    rintro ⟨x, x_in⟩
-    simp only [coe_comp, coe_snd, Subring.coe_subtype, Function.comp_apply, isUnit_pullback_mk_iff,
-      imp_and, imp_self, and_true]
-    simp only [mem_eqLocus, coe_comp, coe_coe, coe_fst, Function.comp_apply, coe_snd] at x_in
-    intro ha
-    suffices IsUnit (f x.1) from IsLocalHom.map_nonunit x.1 this
-    rw [x_in]; exact IsUnit.map g ha
+theorem isLocalHom_pullbackSnd {F G : Type*} [FunLike F A C] [RingHomClass F A C] [FunLike G B C]
+    [RingHomClass G B C] (f : F) (g : G) (hf : IsLocalHom f) :
+      IsLocalHom ((f : A →+* C).pullbackSnd (g : B →+* C)) := ⟨by
+  rintro ⟨x, x_in⟩
+  simp only [coe_comp, coe_snd, Subring.coe_subtype, Function.comp_apply, isUnit_pullback_mk_iff,
+    imp_and, imp_self, and_true]
+  simp only [mem_eqLocus, coe_comp, coe_coe, coe_fst, Function.comp_apply, coe_snd] at x_in
+  intro ha
+  suffices IsUnit (f x.1) from IsLocalHom.map_nonunit x.1 this
+  rw [x_in]; exact IsUnit.map g ha⟩
 
 end RingHom
 
