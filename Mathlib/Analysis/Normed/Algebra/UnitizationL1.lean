@@ -75,7 +75,6 @@ lemma unitization_nnnorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
 lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖x‖ := by
   simp [unitization_norm_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
   simp [unitization_nnnorm_def]
 

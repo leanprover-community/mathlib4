@@ -70,7 +70,6 @@ theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
 @[simp, norm_cast]
 theorem coe_inv' [NeZero r] : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := coe_inv (NeZero.ne r)
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
 
@@ -86,12 +85,10 @@ lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
 
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : DivInvOneMonoid ℝ≥0∞ :=
   { (inferInstance : DivInvMonoid ℝ≥0∞) with
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
   | _, 0 => by simp only [pow_zero, inv_one]
   | ⊤, n + 1 => by simp [top_pow]
@@ -102,7 +99,6 @@ protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻�
       norm_cast
       rw [inv_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 1 := by
   lift a to ℝ≥0 using ht
   norm_cast at h0; norm_cast
@@ -193,7 +189,6 @@ protected theorem mul_comm_div : a / b * c = a * (c / b) := by
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [-coe_inv, (coe_inv _).symm]
@@ -570,7 +565,6 @@ protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 :=
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
   ENNReal.inv_lt_one.2 <| one_lt_two
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
   rw [coe_ne_zero] at hz
@@ -665,7 +659,6 @@ theorem exists_nat_pos_inv_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) :
   rw [← ENNReal.div_eq_inv_mul]
   exact div_lt_of_lt_mul' hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_nnreal_pos_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) : ∃ n > 0, ↑(n : ℝ≥0) * a < b := by
   rcases exists_nat_pos_inv_mul_lt ha hb with ⟨n, npos : 0 < n, hn⟩
   use (n : ℝ≥0)⁻¹
@@ -951,7 +944,6 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
     ENNReal.ofReal (x / y) = ENNReal.ofReal x / ENNReal.ofReal y := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy.le), ofReal_inv_of_pos hy]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
   cases a with
   | top => simp

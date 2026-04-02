@@ -314,10 +314,8 @@ theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNR
 theorem toNNReal_mul {a b : ℝ≥0∞} : (a * b).toNNReal = a.toNNReal * b.toNNReal :=
   WithTop.untopD_zero_mul a b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_mul_top (a : ℝ≥0∞) : ENNReal.toNNReal (a * ∞) = 0 := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_top_mul (a : ℝ≥0∞) : ENNReal.toNNReal (∞ * a) = 0 := by simp
 
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/

@@ -468,7 +468,6 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
   rw [coe_nnreal_smul_apply]
   exact ENNReal.mul_le_of_le_div ha.le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The points with `v.limRatioMeas hρ x = ∞` have measure `0` for `μ`. -/
 theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   refine measure_null_of_locally_null _ fun x _ => ?_
@@ -515,7 +514,6 @@ theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
   apply ge_of_tendsto B
   filter_upwards [self_mem_nhdsWithin] using A
 
-set_option backward.isDefEq.respectTransparency false in
 /-- As an intermediate step to show that `μ.withDensity (v.limRatioMeas hρ) = ρ`, we show here
 that `μ.withDensity (v.limRatioMeas hρ) ≤ t^2 ρ` for any `t > 1`. -/
 theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht : 1 < t) :
@@ -586,7 +584,6 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     _ = ((t : ℝ≥0∞) ^ 2 • ρ :) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ((t : ℝ≥0∞) ^ 2 • ρ) f_meas hs ht).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- As an intermediate step to show that `μ.withDensity (v.limRatioMeas hρ) = ρ`, we show here
 that `ρ ≤ t μ.withDensity (v.limRatioMeas hρ)` for any `t > 1`. -/
 theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht : 1 < t) :

@@ -255,6 +255,10 @@ lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   ext
   exact_mod_cast NNReal.sqrt_eq_rpow _
 
+set_option backward.isDefEq.respectTransparency false in
+lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
+
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
@@ -429,6 +433,14 @@ lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
   simp only [NNReal.coe_rpow, Real.coe_toNNReal']
   grind
 
+lemma cfc_rpow [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ} {f : ℝ → ℝ}
+    (hf₁ : ∀ x ∈ spectrum ℝ a, 0 < f x) (hf₂ : ContinuousOn f (spectrum ℝ a) := by cfc_cont_tac)
+    (ha : IsSelfAdjoint a := by cfc_tac) : cfc f a ^ y = cfc (fun r => f r ^ y) a := by
+  have hg : ContinuousOn (fun r => r ^ y) (f '' spectrum ℝ a) :=
+    ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
+  rw [CFC.rpow_eq_cfc_real (by grind [cfc_nonneg]), ← cfc_comp _ _ a ha]
+  rfl
+
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 
@@ -438,7 +450,6 @@ lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
 lemma rpow_zero (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (0 : ℝ) = 1 := by
   simp [rpow_def, cfc_const_one ℝ≥0 a]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, NNReal.zero_rpow hx]
 
 lemma rpow_natCast (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) : a ^ (n : ℝ) = a ^ n := by
@@ -544,7 +555,6 @@ lemma spectrum_rpow (a : A) (x : ℝ)
     spectrum ℝ≥0 (a ^ x) = (· ^ x) '' spectrum ℝ≥0 a :=
   cfc_map_spectrum (· ^ x : ℝ≥0 → ℝ≥0) a ha h
 
-set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
@@ -621,6 +631,7 @@ end pi
 
 section unital_vs_nonunital
 
+open Ring
 variable [IsSemitopologicalRing A] [T2Space A]
 
 -- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`
@@ -630,7 +641,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
   rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
   rw [this, ← nnrpow_eq_rpow (by simp), sqrt_eq_nnrpow a]
@@ -668,7 +678,6 @@ lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
   rw [sqrt, cfcₙ] at h
   cfc_tac
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
     (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
@@ -686,7 +695,6 @@ lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
       rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
@@ -708,7 +716,6 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
-set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
@@ -721,15 +728,25 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
     (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
   (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
-@[grind =]
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by simp) ha
 
+@[grind =]
+lemma isUnit_sqrt_iff_isStrictlyPositive {a : A} : IsUnit (sqrt a) ↔ IsStrictlyPositive a := by
+  refine ⟨fun h => ?_, by grind [isUnit_sqrt_iff]⟩
+  rw [IsStrictlyPositive.iff_of_unital]
+  have ha : 0 ≤ a := by
+    nontriviality
+    by_contra H
+    rw [CFC.sqrt_of_not_nonneg H] at h
+    exact not_isUnit_zero h
+  refine ⟨ha, ?_⟩
+  rwa [isUnit_sqrt_iff _ ha] at h
+
 @[aesop safe apply]
-lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
-    IsUnit (sqrt a) :=
-  (isUnit_sqrt_iff a ha).mpr ha_unit
+lemma _root_.IsStrictlyPositive.isUnit_cfcSqrt (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
+    IsUnit (sqrt a) := by grind
 
 @[aesop safe apply]
 lemma _root_.IsStrictlyPositive.nnrpow (a : A) (y : ℝ≥0) (hy : y ≠ 0)
@@ -751,6 +768,49 @@ lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a :
     simp
   rw [← inverse_eq_rpow_neg_one (by grind)] at this
   rw [this]
+
+omit [IsSemitopologicalRing A] [T2Space A] in
+@[aesop safe apply]
+lemma _root_.IsStrictlyPositive.ringInverse {a : A} (ha : IsStrictlyPositive a) :
+    IsStrictlyPositive a⁻¹ʳ := by
+  rw [CFC.inverse_eq_rpow_neg_one]
+  cfc_tac
+
+omit [IsSemitopologicalRing A] [T2Space A] in
+@[grind =]
+lemma _root_.isStrictlyPositive_ringInverse_iff {a : A} :
+    IsStrictlyPositive a⁻¹ʳ ↔ IsStrictlyPositive a := by
+  nontriviality A
+  refine ⟨fun h => ?_, IsStrictlyPositive.ringInverse⟩
+  have ha : IsUnit a := by
+    by_contra H
+    rw [Ring.inverse_non_unit _ H, IsStrictlyPositive.iff_of_unital] at h
+    exact not_isUnit_zero h.2
+  rw [← Ring.inverse_inverse ha]
+  exact h.ringInverse
+
+omit [IsSemitopologicalRing A] [T2Space A] in
+open Ring in
+@[grind =]
+lemma ringInverse_nonneg_iff_nonneg_of_isUnit {a : A} (ha : IsUnit a) :
+    0 ≤ a⁻¹ʳ ↔ 0 ≤ a := by
+  grind [isStrictlyPositive_ringInverse_iff]
+
+open Ring in
+@[grind _=_]
+lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
+  by_cases ha : IsStrictlyPositive a
+  · rw [sqrt_eq_rpow, sqrt_eq_rpow, inverse_rpow _ _ (by grind),
+        inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
+    grind only
+  · have ha' : ¬IsUnit (sqrt a) := by rwa [CFC.isUnit_sqrt_iff_isStrictlyPositive]
+    obtain (H|H) : ¬0 ≤ a ∨ ¬IsUnit a := by grind
+    · rw [sqrt_of_not_nonneg H, inverse_zero]
+      by_cases hunit : IsUnit a
+      · have h₂ : ¬0 ≤ inverse a := by grind [CFC.ringInverse_nonneg_iff_nonneg_of_isUnit]
+        rw [sqrt_of_not_nonneg h₂]
+      · simp [inverse_non_unit _ hunit]
+    · simp [inverse_non_unit _ ha', inverse_non_unit _ H]
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
 1. `a` is strictly positive,

@@ -99,7 +99,6 @@ def toValued : Valued K ℝ≥0 :=
         · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
         · simpa [restrict_lt_iff_lt_embedding] using (mem_ball_zero_iff.mp hx) }
 
-set_option backward.isDefEq.respectTransparency false in
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
   hom' := ValueGroup₀.embedding

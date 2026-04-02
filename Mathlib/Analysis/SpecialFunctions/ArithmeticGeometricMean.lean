@@ -223,7 +223,6 @@ lemma agm_self : agm x x = x := by
   · nth_rw 1 [← min_self x]
     exact min_le_agm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma agm_zero_left : agm 0 y = 0 := by
   suffices ∀ n, (agmSequences 0 y n).1 = 0 by simp [agm_eq_ciSup, this]

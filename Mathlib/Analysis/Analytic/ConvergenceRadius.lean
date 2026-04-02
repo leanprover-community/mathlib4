@@ -179,7 +179,6 @@ theorem norm_mul_pow_le_mul_pow_of_lt_radius (h : ↑r < p.radius) :
   rcases this with ⟨a, ha, C, hC, H⟩
   exact ⟨a, ha, C, hC, fun n => (le_abs_self _).trans (H n)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `r ≠ 0` and `‖pₙ‖ rⁿ = O(aⁿ)` for some `-1 < a < 1`, then `r < p.radius`. -/
 theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ) 1)
     (hp : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] (a ^ ·)) : ↑r < p.radius := by
@@ -399,7 +398,6 @@ theorem radius_compNeg [Nontrivial E] (p : FormalMultilinearSeries 𝕜 E F) :
     (p.compContinuousLinearMap (-(.id _ _))).radius = p.radius :=
   radius_compContinuousLinearMap_linearIsometryEquiv_eq _ (.neg 𝕜)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]

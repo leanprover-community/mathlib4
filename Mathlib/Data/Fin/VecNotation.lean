@@ -413,8 +413,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
       simp only [Nat.mod_add_mod,
         Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by lia)]
       refine (Nat.mod_eq_of_lt ?_).symm
-      #adaptation_note /-- After leanprover/lean4#13166, the `grind` tactic was timing out here.
-      the `lia` tactic fails here. -/
+      #adaptation_note /-- After leanprover/lean4#13166, the `lia` tactic was timing out here. -/
       omega
 
 @[simp]
