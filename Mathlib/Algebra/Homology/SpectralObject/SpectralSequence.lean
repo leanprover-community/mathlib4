@@ -320,7 +320,6 @@ noncomputable def isLimitKf (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
   (kfSc_exact X data r r' hrr' hr pq' pq'' hpq'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁' hn₁ hn₂).fIsKernel
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (page X data r hr).d pq pq' ≫
       (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁').hom ≫
@@ -337,6 +336,7 @@ lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by li
       (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r pq pq' h; lia) (by simp) hn₁ hn₂,
       Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
       d_map_fourδ₄Toδ₃ .., comp_zero]
+    rfl
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
 
 /-- A (limit) cokernel cofork of the differential on the `r`th page whose point
@@ -472,12 +472,14 @@ variable [X.HasSpectralSequence data] in
 /-- The spectral sequence attached to a spectral object in an abelian category.
 (Do not unfold the `page` or `iso` fields of this structure. Use the isomorphism
 `spectralSequencePageXIso` instead.) -/
+@[irreducible]
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page := SpectralSequence.page X data
   iso r r' pq hrr' hr := SpectralSequence.homologyIso X data r r' hrr' hr pq
 
 variable [X.HasSpectralSequence data]
 
+unseal spectralSequence in
 /-- The objects on the pages of a spectral sequence attached to a spectral object `X`
 identifies an object `X.E`. -/
 noncomputable def spectralSequencePageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
@@ -491,6 +493,7 @@ noncomputable def spectralSequencePageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
         (homOfLE (data.le₂₃' r hr pq h₂ h₃)) n₀ n₁ n₂ :=
   SpectralSequence.pageXIso X data _ hr _ _ _ _ _ h₀ h₁ h₂ h₃ _ _ _ h
 
+unseal spectralSequence in
 lemma spectralSequence_page_d_eq (r : ℤ) (hr : r₀ ≤ r)
     (pq pq' : κ) (hpq : (c r).Rel pq pq')
     {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
@@ -535,6 +538,7 @@ lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ) (hr : r₀ ≤ r) (p
     IsZero (((X.spectralSequence data).page r).X pq) :=
   X.isZero_spectralSequence_page_X_of_isZero_H data r hr pq _ rfl _ _ rfl rfl h
 
+unseal spectralSequence in
 /-- The short complex of the `r`th page of the spectral sequence on position `pq'`
 identifies to the short complex given by the differentials of the spectral object.
 Then, the homology of this short complex can be computed using
@@ -570,6 +574,7 @@ variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq')
 
 
+unseal spectralSequence in
 /-- The homology data for the short complexes given by the differentials
 of a spectral sequence attached to a spectral object in an abelian category. -/
 @[simps! left_K left_H left_π right_Q right_H right_ι iso_hom iso_inv]
@@ -579,6 +584,7 @@ noncomputable def spectralSequenceHomologyData
   SpectralSequence.homologyData X data r r' hrr' hr
     pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁'
 
+unseal spectralSequence in
 @[simp]
 lemma spectralSequenceHomologyData_left_i
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -587,8 +593,10 @@ lemma spectralSequenceHomologyData_left_i
     X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃
       (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _  n₀ n₁ n₂ ≫
         (X.spectralSequencePageXIso data r hr pq'
-          i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').inv := rfl
+          i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').inv :=
+  rfl
 
+unseal spectralSequence in
 @[simp]
 lemma spectralSequenceHomologyData_right_p
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -608,6 +616,7 @@ lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
   ext1
   simp [ShortComplex.HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
 
+unseal spectralSequence in
 lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequence data).iso r r' pq' =
     ((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq' ≪≫
