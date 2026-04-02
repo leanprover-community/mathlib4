@@ -59,7 +59,7 @@ theorem IsClosedSubbasis.isClosed {u : Set α} {s : Set (Set α)}
 
 theorem isClosedSubbasis_iff_isTopologicalBasis_sInter_compl (s : Set (Set α)) :
     IsClosedSubbasis s ↔
-    IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ compl '' s }) :=
+      IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ compl '' s }) :=
   subbasis_iff_isTopologicalBasis_sInter (compl '' s)
 
 theorem isClosedSubbasis_iff_isClosedBasis_sUnion (s : Set (Set α)) :
