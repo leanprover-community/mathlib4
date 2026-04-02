@@ -91,7 +91,6 @@ theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
   rw [mapAlg_comp K L f, mapAlg_eq_map]
   apply IsSplittingField.splits
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) := by
   constructor
