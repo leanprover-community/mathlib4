@@ -646,8 +646,8 @@ theorem integral_Ico_tendsto_integral_Iio (b : ℝ) (hfi : IntegrableOn f (Iio b
 theorem integral_Iio_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
     (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in Iio (a i), f x ∂μ) l (𝓝 0) := by
-  have : ∀ᶠ i in l, ∫ x in Iio b, f x ∂μ - ∫ x in Ico (a i) b, f x ∂μ
-    = ∫ x in Iio (a i), f x ∂μ := by
+  have : ∀ᶠ i in l, ∫ x in Iio b, f x ∂μ - ∫ x in Ico (a i) b, f x ∂μ =
+      ∫ x in Iio (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
     rw [sub_eq_iff_comm, intervalIntegral.integral_Iio_sub_Iio hfi hi]
   rw [← sub_self (∫ x in Iio b, f x ∂μ)]
