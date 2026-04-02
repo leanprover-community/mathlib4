@@ -80,7 +80,7 @@ instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨continuousAt_id, ?_⟩
   convert continuousAt_const (y := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
+  simp [hom_trivializationAt_apply, inCoordinates]
 
 end Trivial
 
