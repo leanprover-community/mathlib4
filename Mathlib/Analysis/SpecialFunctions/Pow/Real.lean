@@ -229,8 +229,9 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
   · by_cases h : y + z = 0
     · simp only [H.symm, h, rpow_zero]
       calc
-        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 :=
-          mul_le_mul (zero_rpow_le_one y) (zero_rpow_le_one z) (zero_rpow_nonneg z) zero_le_one
+        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 := by
+          gcongr
+          exacts [zero_rpow_nonneg z, zero_rpow_le_one y, zero_rpow_le_one z]
         _ = 1 := by simp
     · simp [rpow_add', ← H, h]
   · simp [rpow_add pos]
@@ -608,7 +609,7 @@ theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z :
 @[gcongr]
 theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
-  rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
+  rw [exp_le_exp]; gcongr; exact log_nonneg hx
 
 @[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
   rpow_lt_rpow_of_neg

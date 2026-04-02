@@ -698,7 +698,8 @@ theorem summable_powerSeries_of_norm_lt {w z : α}
     (fun n ↦ ?_)
   rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
   conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff₀ (by positivity)]
-  exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
+  gcongr
+  exact hC n
 
 /-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/
 theorem summable_powerSeries_of_norm_lt_one {z : α}

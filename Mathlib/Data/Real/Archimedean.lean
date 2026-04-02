@@ -62,7 +62,8 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
     push_cast
-    exact mul_le_mul_of_nonneg_right ((hU yS).trans hk.le) d.cast_nonneg
+    gcongr
+    exact (hU yS).trans hk.le
   choose f hf using fun d : ℕ =>
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
   have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
