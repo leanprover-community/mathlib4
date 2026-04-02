@@ -339,13 +339,17 @@ instance : OrderBot Ordinal where
   bot := 0
   bot_le o := inductionOn o fun _ r _ ↦ (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
-@[simp] theorem bot_eq_zero : (⊥ : Ordinal) = 0 := rfl
-theorem Iio_zero : Set.Iio (0 : Ordinal) = ∅ := by simp
-instance : IsEmpty (Iio (0 : Ordinal)) := by simp
+@[simp]
+theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
+  rfl
+
+instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
+  simp [← bot_eq_zero]
 
 @[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
+
 
 @[deprecated not_neg (since := "2025-11-21")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
@@ -930,18 +934,6 @@ theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
 protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
   Order.le_one_iff
 
-@[simp]
-theorem Iio_one : Set.Iio (1 : Ordinal) = {0} := by
-  rw [← zero_add 1, ← Order.succ_eq_add_one, Order.Iio_succ]
-  exact Set.Iic_bot
-
-@[simp]
-theorem Iio_two : Set.Iio (2 : Ordinal) = {0, 1} := by
-  rw [← one_add_one_eq_two, ← Order.succ_eq_add_one, Order.Iio_succ]
-  ext
-  simp [le_one_iff]
-
--- TODO: deprecate
 @[deprecated card_add_one (since := "2026-02-27")]
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp
@@ -1527,5 +1519,3 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
           (List.head_le_of_lt hmltl))
 
 @[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
-
-set_option linter.style.longFile 1700
