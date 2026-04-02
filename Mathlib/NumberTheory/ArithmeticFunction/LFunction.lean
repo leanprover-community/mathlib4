@@ -312,37 +312,20 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
       ((Nat.divisor_le (Nat.snd_mem_divisors_of_mem_antidiagonal hj)).trans hk)
     rw [h1, h2]
 
-theorem foo' {α β : Type*} {F : Filter α} [F.NeBot] {f : α → β} {b₁ b₂ : β}
-    (h₁ : ∀ᶠ x in F, f x = b₁) (h₂ : ∀ᶠ x in F, f x = b₂) : b₁ = b₂ := by
-  have := Filter.EventuallyEq.trans (Filter.EventuallyEq.symm h₁) h₂
-  rw [eventuallyEq_iff_exists_mem] at this
-  obtain ⟨s, hs, h⟩ := this
-  obtain ⟨x, hx⟩ := nonempty_of_mem hs
-  exact h hx
-
 theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
     (hf : ∀ i, IsMultiplicative (f i)) : IsMultiplicative (eulerProduct f) := by
   by_cases hf' : Multipliable f
-  · have key (s : Finset ι) : (∏ b ∈ s, f b).IsMultiplicative :=
+  · have h (s : Finset ι) : (∏ b ∈ s, f b).IsMultiplicative :=
       isMultiplicative_finsetProd f s fun i a ↦ hf i
-    simp_rw [IsMultiplicative, forall_and] at key
-    obtain ⟨key1, key2⟩ := key
-    have key3 : ∀ n, ∀ᶠ s in atTop, (∏ i ∈ s, f i) n = eulerProduct f n :=
-      tendsto_iff.mp hf'.hasProd
-    constructor
-    · specialize key3 1
-      simp_rw [key1] at key3
-      rwa [eventually_const, eq_comm] at key3
-    · intro m n hmn
-      have h2 := key3 (m * n)
-      simp_rw [forall_comm.mp (forall_comm.mp (forall_comm.mp key2 m) n) hmn] at h2
-      apply foo' h2
-      have ha := key3 m
-      have hb := key3 n
-      rw [← tendsto_pure] at ha hb ⊢
-      have h1 := ha.prodMk hb
-      rw [prod_pure_pure] at h1
-      exact ((tendsto_pure_pure (fun x ↦ x.1 * x.2) (eulerProduct f m, eulerProduct f n)).comp h1)
+    have key := tendsto_iff.mp hf'.hasProd
+    refine (forall_and.mp h).imp (fun h ↦ ?_) fun h m n hmn ↦ ?_
+    · specialize key 1
+      simp_rw [h] at key
+      rwa [eventually_const, eq_comm] at key
+    · replace h s : (∏ b ∈ s, f b) (m * n) = (∏ b ∈ s, f b) m * (∏ b ∈ s, f b) n := h s hmn
+      have h2 := key (m * n)
+      simp_rw [h] at h2
+      exact eventually_const.mp (EventuallyEq.trans (.symm h2) (.mul (key m) (key n)))
   · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
     exact isMultiplicative_one
 
