@@ -7485,6 +7485,7 @@ public import Mathlib.Topology.Connected.CardComponents
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Connected.PathComponentOne
 public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Connected.Separation
