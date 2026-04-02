@@ -20,7 +20,7 @@ namespace Complex
 /-- The function `tanh` is meromorphic at any `z`. -/
 @[fun_prop]
 theorem meromorphicAt_tanh (z : ℂ) :
-    MeromorphicAt tanh z := by fun_prop [tanh]
+    MeromorphicAt tanh z := by fun_prop [Complex.tanh]
 
 /-- The function `tanh` is meromorphic. -/
 @[fun_prop]
@@ -29,7 +29,7 @@ theorem meromorphic_tanh : Meromorphic tanh := meromorphicAt_tanh
 /-- The function `tan` is meromorphic at any `z`. -/
 @[fun_prop]
 theorem meromorphicAt_tan (z : ℂ) :
-    MeromorphicAt tan z := by fun_prop [tan]
+    MeromorphicAt tan z := by fun_prop [Complex.tan]
 
 /-- The function `tan` is meromorphic. -/
 @[fun_prop]
