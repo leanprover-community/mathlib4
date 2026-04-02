@@ -185,6 +185,9 @@ theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [Is
     MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
   simp [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure]
 
+/-- A point `a` is a cluster point of the sequence `x` if and only if `a` frequently belongs to the
+closure `{x n}`. -/
+
 end MapClusterPt
 
 theorem accPt_sup {x : X} {F G : Filter X} :
