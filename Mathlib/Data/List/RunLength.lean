@@ -131,6 +131,7 @@ theorem runLengthRecOn_nil {p : List α → Sort*} (nil : p [])
     runLengthRecOn [] nil append = nil :=
   (rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem runLengthRecOn_append {p : List α → Sort*} {n : ℕ} (h : 0 < n) {a : α} {l : List α}
     (hl : a ∉ l.head?) (nil : p [])
     (append : ∀ (n : ℕ+) (a l), a ∉ l.head? → p l → p (replicate n a ++ l)) :
