@@ -93,7 +93,6 @@ lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A (g₁ * g₂⁻¹) a g₃ = indToCoindAux A g₁ a (g₃ * g₂) := by
   simpa using (indToCoindAux_snd_mul_inv g₁ g₃ g₂⁻¹ a).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
     indToCoindAux B g₁ (f.hom a) g₂ = f.hom (indToCoindAux A g₁ a g₂) := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s, rfl⟩ | h
@@ -178,7 +177,6 @@ noncomputable def indCoindIso (A : Rep.{u} k S) :
 
 variable (k S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[simps! hom_app inv_app]
