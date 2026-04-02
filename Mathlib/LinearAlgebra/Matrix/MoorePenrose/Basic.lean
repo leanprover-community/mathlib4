@@ -40,7 +40,10 @@ variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable {𝕜 : Type*} [RCLike 𝕜]
 
 omit [DecidableEq m] [DecidableEq n] in
-/-- Heterogeneous uniqueness for matrices. -/
+/-- Heterogeneous uniqueness for matrices.
+
+Unlike `IsMoorePenroseInverse.unique`, this applies to the rectangular
+`Matrix m n` / `Matrix n m` case. -/
 lemma isMoorePenroseInverse_unique {A : Matrix m n 𝕜} {B C : Matrix n m 𝕜}
     (hB : IsMoorePenroseInverse A B) (hC : IsMoorePenroseInverse A C) : B = C := by
   have h1 : B * A = C * A := by
