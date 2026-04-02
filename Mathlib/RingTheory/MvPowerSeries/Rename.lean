@@ -305,8 +305,7 @@ lemma HasSubst.Rename : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
     intro _ _
     simp_all [coeff_X]
 
-theorem rename_eq_subst :
-    rename f p = p.subst (X ∘ f) := by
+theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   classical
   ext n
   rw [coeff_rename, coeff_subst (HasSubst.Rename _) p n, finsum_eq_sum _
