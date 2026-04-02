@@ -160,12 +160,6 @@ theorem Measure.toOuterMeasure_apply (μ : Measure α) (s : Set α) :
     μ.toOuterMeasure s = μ s :=
   rfl
 
-@[simp]
-theorem ofMeasurable_zero (s : Set α) :
-    Measure.ofMeasurable (fun _ _ => 0) rfl (by simp) s = 0 := by
-  rw [Measure.ofMeasurable, ← MeasureTheory.Measure.toOuterMeasure_apply]
-  simp [inducedOuterMeasure_zero MeasurableSet.iUnion]
-
 theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by
   rw [μ.trimmed, μ.coe_toOuterMeasure]
 

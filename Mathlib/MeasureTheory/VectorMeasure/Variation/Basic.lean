@@ -42,18 +42,34 @@ variable {X V : Type*} {mX : MeasurableSpace X}
   [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 @[simp]
-lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
+theorem ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
+    MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  ext s; simp [VectorMeasure.ennrealToMeasure]
+
+@[simp]
+lemma preVariation_zero_eq_zero :
+    preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
+  ext s; simp [preVariation_apply]
+
+lemma variation_apply (μ : VectorMeasure X V) {s : Set X} :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
 @[simp]
 lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
     μ.ennrealVariation s = μ.variation s := Measure.toENNRealVectorMeasure_apply_measurable hs
 
-/-- Measure version of `le_var_aux` which was for subadditive functions. -/
+/-- Measure version of `sum_le_preVariationFun_of_subset`. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
-    (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t)
-    (hP₃ : (P : Set (Set X)).PairwiseDisjoint id) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
-  set Q := Finpartition.ofPairwiseDisjoint P hP₃ with hQ
+    (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : (P : Set (Set X)).PairwiseDisjoint id) :
+    ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
+  classical
+  set Q := Finpartition.ofPairwiseDisjoint P hP₂ with defQ
+  set Q' := Finpartition.ofSubset Q (filter_subset MeasurableSet Q.parts) rfl with defQ'
+  have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by
+    rw [defQ', Finpartition.ofSubset, defQ]
+    simp only [Finpartition.ofPairwiseDisjoint_parts, Set.bot_eq_empty, mem_filter, mem_erase,
+      ne_eq, and_imp]
+    grind
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ := by
       by_cases hbot : ⊥ ∈ P
@@ -64,31 +80,41 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
           ext p
           simpa [Q, Finpartition.ofPairwiseDisjoint] using fun hp => ne_of_mem_of_not_mem hp hbot
         simp_rw [this]
-    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ :=
-        sum_le_sum_of_subset (Q.parts_subset_extendOfLE (Finset.sup_le hP₁))
+    _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := by
+        apply (Finset.sum_subset _ _).symm
+        · rw [defQ']
+          simp
+        · intro s hs hs'
+          rw [defQ'] at hs'
+          simp only [Finpartition.ofSubset_parts, mem_filter, not_and] at hs'
+          simpa [enorm_eq_zero] using MeasureTheory.VectorMeasure.not_measurable _ (hs' hs)
+    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q' (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
+        sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
     _ ≤ μ.variation s := by
       simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
         ennrealPreVariation_apply]
       apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
       intro p hp
-      apply Q.mem_parts_or_mem_sdiff_of_mem_extendOfLE at hp
+      apply Q'.mem_parts_or_eq_sdiff_of_mem_extendOfLE at hp
       rcases hp with h | h
-      · simp only [Finpartition.ofPairwiseDisjoint_parts, Set.bot_eq_empty, mem_erase, ne_eq,
-          Q] at h
-        exact hP₂ p h.2
-      · simpa [h] using hs.diff (measurableSet_biUnion P hP₂)
+      · simp only [defQ', Finpartition.ofSubset_parts, mem_filter] at h
+        exact h.2
+      · rw [h]
+        apply MeasurableSet.diff hs
+        simp only [sup_set_eq_biUnion, id_eq]
+        exact MeasurableSet.biUnion (Finset.countable_toSet _) (by simp)
 
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
   by_cases hE : MeasurableSet E
-  · by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
-    · simp_all
-    · rw [variation]
-      simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
-      calc
-        ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
-        _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
-  · simp [μ.not_measurable' hE]
+  swap; · simp [μ.not_measurable' hE]
+  by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
+  · simp_all
+  · rw [variation]
+    simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
+    calc
+      ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
+      _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
 
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]

@@ -145,16 +145,6 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- The sup of measurable set subtypes over a finset equals the biUnion of the underlying sets. -/
-lemma Finset.sup_measurableSetSubtype_eq_biUnion {ι : Type*}
-    (s : ι → Subtype (@MeasurableSet X _)) (I : Finset ι) :
-    ((I.sup s : Subtype MeasurableSet) : Set X) = ⋃ i ∈ I, (s i).val := by
-  classical
-  refine I.induction_on (by simp) ?_
-  intro _ _ _ h
-  simp [← h]
-
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s))
     (P : ∀ (i : ℕ), Finpartition (⟨s i, hs i⟩ : Subtype MeasurableSet)) (n : ℕ) :
@@ -165,7 +155,7 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
     exact Set.disjoint_iff_inter_eq_empty.mp (hs' hij)
   let Q := Finpartition.combine P hs_disj.supIndep
   have hQ_le : (Finset.range n).sup s' ≤ ⟨⋃ i, s i, MeasurableSet.iUnion hs⟩ := by
-    rw [← Subtype.coe_le_coe, Finset.sup_measurableSetSubtype_eq_biUnion s']
+    rw [← Subtype.coe_le_coe, Finset.sup_coe (Psup := by measurability), Finset.sup_set_eq_biUnion]
     exact Set.iUnion₂_subset fun i _ => Set.subset_iUnion s i
   let R := Q.extendOfLE hQ_le
   calc ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p
@@ -272,15 +262,5 @@ noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 
 
 lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
     preVariation f hf hf' s = (ennrealPreVariation f hf hf').ennrealToMeasure s := rfl
-
-@[simp]
-theorem VectorMeasure.ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
-    MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  ext s; simp [VectorMeasure.ennrealToMeasure]
-
-@[simp]
-lemma preVariation_zero_eq_zero :
-    preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
-  ext s; simp [preVariation_apply]
 
 end MeasureTheory
