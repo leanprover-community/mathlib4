@@ -125,7 +125,7 @@ formatted as a collapsible message.
 -/
 def processPrettyOneLine (log msg fname : String.Slice) : IO (String.Slice × MessageData) := do
   let hash := log.takeWhile (!·.isWhitespace)
-  let PRdescr := (log.dropWhile (·.isWhitespace)).trimAscii
+  let PRdescr := (log.dropWhile (!·.isWhitespace)).trimAscii
   let gitDiffCLI := s!"git diff {hash}^...{hash} -- {fname}"
   let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: error in computing '{gitDiffCLI}'"
   let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
@@ -308,7 +308,7 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
       throwError "Found no commits!"
     let last := tmp.get! -- does not fail by the previous check
     let commitHash := last.takeWhile (!·.isWhitespace)
-    let PRdescr := (last.dropWhile (·.isWhitespace)).trimAscii
+    let PRdescr := (last.dropWhile (!·.isWhitespace)).trimAscii
     return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
