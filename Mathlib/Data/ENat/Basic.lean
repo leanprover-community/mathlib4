@@ -280,8 +280,8 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
 theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
-  by_cases hm : m = ⊤
-  · simp_all
+  rcases eq_or_ne m ⊤ with rfl | hm
+  · simpa
   · exact add_one_le_iff hm
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
