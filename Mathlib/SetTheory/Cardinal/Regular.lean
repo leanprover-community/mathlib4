@@ -6,7 +6,9 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
+public import Mathlib.SetTheory.Ordinal.FundamentalSequence
 
 /-!
 # Regular cardinals
@@ -77,20 +79,18 @@ lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 
 theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) := by
-  refine ⟨hc.trans (le_succ c), ?_⟩
-  generalize hd : succ c = d
-  induction d using Cardinal.inductionOn with | mk α
-  obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
-  have : NoMaxOrder α := by
-    rw [← isSuccPrelimit_type_lt_iff, ← hα]
-    exact (isSuccLimit_ord (hd ▸ hc.trans (le_succ c))).isSuccPrelimit
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
-  simp_rw [hα, cof_type, le_cof_iff, ← hd, succ_le_iff, ← not_le, isCofinal_iff_iUnion_Iio_eq_univ]
-  refine fun s hs hsc ↦ (mk_le_mk_of_subset hs.ge).not_gt ?_
-  rw [mk_univ, ← hd, lt_succ_iff, ← iUnion_coe_set s fun i ↦ Iio i.1]
-  apply (mk_iUnion_le _).trans (mul_le_of_le hc hsc _)
-  simp_rw [ciSup_le_iff' (bddAbove_of_small _), ← lt_succ_iff, hd]
-  exact fun i ↦ mk_Iio_lt i.1 hα
+  have hc₀ := hc.trans (le_succ c)
+  refine ⟨hc₀, ?_⟩
+  by_contra! hc'
+  obtain ⟨f, hf⟩ := exists_isFundamentalSeq (o := (succ c).ord) rfl
+  apply (hf.iSup_eq _).not_lt
+  · rw [← card_le_iff]
+    apply card_iSup_Iio_le
+    · simpa using hc'
+    · simp_rw [card_le_iff]
+      exact fun i ↦ (f i).2
+  · rw [← ord_one, ord_lt_ord, one_lt_cof_iff]
+    exact isSuccLimit_ord hc₀
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
