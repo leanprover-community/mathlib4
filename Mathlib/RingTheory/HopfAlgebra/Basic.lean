@@ -18,12 +18,12 @@ In this file we define `HopfAlgebra`, and provide instances for:
 ## Main definitions
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
-* `HopfAlgebra.antipode` : The `R`-linear map `A →ₗ[R] A`.
+* `HopfAlgebra.antipode` : the `R`-linear map `A →ₗ[R] A`.
 
 ## Main results
 
-* `HopfAlgebra.antipode_one` : The antipode of the unit is the unit.
-* `HopfAlgebra.antipode_mul` : The antipode is an antihomomorphism: `S(ab) = S(b)S(a)`.
+* `HopfAlgebra.antipode_one` : the antipode of the unit is the unit.
+* `HopfAlgebra.antipode_mul` : the antipode is an antihomomorphism: `S(ab) = S(b)S(a)`.
 
 ## TODO
 
@@ -137,39 +137,36 @@ open scoped ConvolutionProduct TensorProduct
 /-- The antipode reverses multiplication: `S(ab) = S(b)S(a)`. -/
 theorem antipode_mul (a b : A) :
     antipode R (a * b) = antipode R b * antipode R a := by
-  -- We show that the linear maps S ∘ μ and μ ∘ (S ⊗ S) ∘ comm are equal,
-  -- by proving they are both convolution inverses of μ.
+  -- We show that the linear maps `S ∘ μ` and `μ ∘ (S ⊗ S) ∘ comm` are equal,
+  -- by proving they are both convolution inverses of `μ`.
   suffices h : antipode R ∘ₗ LinearMap.mul' R A =
       LinearMap.mul' R A ∘ₗ TensorProduct.map (antipode R) (antipode R) ∘ₗ
         TensorProduct.comm R A A by
     exact congr(($h) (a ⊗ₜ b))
   apply left_inv_eq_right_inv (a := LinearMap.mul' R A)
-  · -- Left inverse: (S ∘ μ) * μ = 1
+  · -- Left inverse: `(S ∘ μ) * μ = 1`.
     refine TensorProduct.ext' fun x y => ?_
-    -- Unfold convolution product: (f * g)(x ⊗ y) = μ(f ⊗ g)(Δ(x ⊗ y))
+    -- Unfold convolution product: `(f * g)(x ⊗ y) = μ(f ⊗ g)(Δ(x ⊗ y))`.
     simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
-    -- The coalgebra on A ⊗ A: Δ(x ⊗ y) = σ (Δx ⊗ Δy) where σ = tensorTensorTensorComm
+    -- The coalgebra on `A ⊗ A: Δ(x ⊗ y) = σ (Δx ⊗ Δy)` where `σ = tensorTensorTensorComm`.
     rw [TensorProduct.comul_tmul]
-    -- Use Sweedler representations for x and y
+    -- Use Sweedler representations for `x` and `y`.
     let ℛx := ℛ R x; let ℛy := ℛ R y
     conv_lhs => rw [← ℛx.eq, ← ℛy.eq]
     simp only [TensorProduct.sum_tmul, TensorProduct.tmul_sum, map_sum,
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul, TensorProduct.map_tmul,
       LinearMap.mul'_apply, LinearMap.comp_apply]
     rw [Finset.sum_comm]
-    -- Goal: ∑ S(x₁y₁) * (x₂y₂) = algebraMap (ε(x)ε(y))
-    -- The counit on A ⊗ A: ε(x ⊗ y) = ε(y) • ε(x) = ε(x)ε(y) since R is commutative
+    -- The counit on `A ⊗ A`: `ε(x ⊗ y) = ε(y) • ε(x) = ε(x)ε(y)` since `R` is commutative.
     simp only [TensorProduct.counit_tmul, Algebra.algebraMap_eq_smul_one]
-    -- Use the bialgebra comultiplication axiom: Δ(xy) = Δ(x)Δ(y)
+    -- Use the bialgebra comultiplication axiom: `Δ(xy) = Δ(x)Δ(y)`.
     have key := mul_antipode_rTensor_comul_apply (R := R) (x * y)
     rw [Bialgebra.comul_mul, ← ℛx.eq, ← ℛy.eq] at key
     simp only [Finset.sum_mul, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
       map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply, Bialgebra.counit_mul] at key
     rw [Finset.sum_comm] at key
-    simp only [Algebra.algebraMap_eq_smul_one] at key
-    rw [mul_comm (counit (R := R) x) (counit y)] at key
-    exact key
-  · -- Right inverse: μ * (μ ∘ (S ⊗ S) ∘ comm) = 1
+    simpa [Algebra.algebraMap_eq_smul_one, mul_comm (counit x) (counit y)] using key
+  · -- Right inverse: `μ * (μ ∘ (S ⊗ S) ∘ comm) = 1`.
     refine TensorProduct.ext' fun x y => ?_
     simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
     rw [TensorProduct.comul_tmul]
@@ -180,22 +177,21 @@ theorem antipode_mul (a b : A) :
       LinearMap.mul'_apply, LinearMap.comp_apply]
     rw [Finset.sum_comm]
     simp only [TensorProduct.counit_tmul, Algebra.algebraMap_eq_smul_one]
-    -- Goal: ∑ (x₁y₁) * S(y₂)S(x₂) = ε(x)ε(y) • 1
-    -- Rearrange the sum using antipode axioms
+    -- Rearrange the sum using antipode axioms.
     calc ∑ i ∈ ℛx.index, ∑ j ∈ ℛy.index,
         (ℛx.left i * ℛy.left j) * (antipode R (ℛy.right j) * antipode R (ℛx.right i))
       _ = ∑ i ∈ ℛx.index, ∑ j ∈ ℛy.index,
           ℛx.left i * (ℛy.left j * antipode R (ℛy.right j) * antipode R (ℛx.right i)) := by
-        simp only [mul_assoc]
+        simp [mul_assoc]
       _ = ∑ i ∈ ℛx.index, ℛx.left i *
           ((∑ j ∈ ℛy.index, ℛy.left j * antipode R (ℛy.right j)) * antipode R (ℛx.right i)) := by
-        simp only [Finset.sum_mul, Finset.mul_sum]
+        simp [Finset.sum_mul, Finset.mul_sum]
       _ = ∑ i ∈ ℛx.index, ℛx.left i *
-          (counit (R := R) y • (1 : A) * antipode R (ℛx.right i)) := by
+          (counit y • 1 * antipode R (ℛx.right i)) := by
         rw [sum_mul_antipode_eq_smul ℛy]
       _ = ∑ i ∈ ℛx.index, ℛx.left i *
           (algebraMap R A (counit y) * antipode R (ℛx.right i)) := by
-        simp only [Algebra.smul_def, mul_one]
+        simp [Algebra.smul_def]
       _ = ∑ i ∈ ℛx.index, algebraMap R A (counit y) * (ℛx.left i * antipode R (ℛx.right i)) := by
         congr 1; ext i; rw [← mul_assoc, ← mul_assoc, Algebra.commutes]
       _ = algebraMap R A (counit y) * ∑ i ∈ ℛx.index, ℛx.left i * antipode R (ℛx.right i) := by
