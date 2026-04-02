@@ -106,13 +106,8 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
   ⟨fun ⟨_, h⟩ ↦ (eq_of_length_eq_zero h), (· ▸ ⟨nil, rfl⟩)⟩
 
 @[simp]
-lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
-  refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
-  induction p with
-  | nil => simp at hp
-  | cons h p' =>
-    simp only [Walk.length_cons, add_eq_right] at hp
-    exact (p'.eq_of_length_eq_zero hp) ▸ h
+lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v :=
+  ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
 @[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
@@ -150,6 +145,11 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.getLast (by simp) = b := by
   induction p <;> simp [*]
 
+@[simp]
+lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
+  cases p <;> simp
+
+@[deprecated cons_tail_support (since := "2026-03-16")]
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 
@@ -185,13 +185,9 @@ theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
   | nil => .cons_cons h (.singleton _)
   | cons h' p => .cons_cons h (isChain_adj_cons_support h' p)
 
-@[deprecated (since := "2025-09-24")] alias chain_adj_support := isChain_adj_cons_support
-
 theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
   | nil => .singleton _
   | cons h p => isChain_adj_cons_support h p
-
-@[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
 
 theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
     List.IsChain G.DartAdj (d :: p.darts) := by
@@ -203,9 +199,6 @@ theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.D
   | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => isChain_dartAdj_cons_darts (by rfl) p
-
-@[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
-@[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
