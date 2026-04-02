@@ -110,8 +110,7 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   swap; · simp [μ.not_measurable' hE]
   by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
   · simp_all
-  · rw [variation]
-    simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
+  · simp only [variation_apply, preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
     calc
       ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
       _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
