@@ -766,7 +766,7 @@ theorem translationNumber_of_map_pow_eq_add_int {x : ℝ} {n : ℕ} {m : ℤ} (h
     (hn : 0 < n) : τ f = m / n := by
   have := (f ^ n).translationNumber_of_eq_add_int h
   rwa [translationNumber_pow, mul_comm, ← eq_div_iff] at this
-  exact Nat.cast_ne_zero.2 (ne_of_gt hn)
+  exact Nat.cast_ne_zero.2 hn.ne'
 
 /-- If a predicate depends only on `f x - x` and holds for all `0 ≤ x ≤ 1`,
 then it holds for all `x`. -/

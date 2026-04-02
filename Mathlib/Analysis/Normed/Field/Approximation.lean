@@ -156,9 +156,9 @@ theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
   · rw [Monic, leadingCoeff, hdeg]
     simp
   · rcases lt_trichotomy n f.natDegree with h | h | h
-    · simpa [h, ne_of_lt h, ← dist_eq_norm_sub'] using hc n
+    · simpa [h, h.ne, ← dist_eq_norm_sub'] using hc n
     · simp [h, hf, hε]
-    · simp [not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
+    · simp [not_lt_of_gt h, h.ne', coeff_eq_zero_of_natDegree_lt h, hε]
 
 end Approximation
 

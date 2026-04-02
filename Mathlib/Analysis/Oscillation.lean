@@ -60,7 +60,7 @@ theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
   refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
   rw [zero_add]
   have : eball (f x) (ε / 2) ∈ (𝓝[D] x).map f :=
-    hf <| eball_mem_nhds _ (by simp [ne_of_gt hε])
+    hf <| eball_mem_nhds _ (by simp [hε.ne'])
   refine (biInf_le ediam this).trans (le_of_le_of_eq ediam_eball_le ?_)
   exact (ENNReal.mul_div_cancel (by simp) (by simp))
 

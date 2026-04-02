@@ -178,8 +178,8 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : HasDerivAt f (g x) x := by
   have A : HasDerivWithinAt f (g x) (Ici x) x := by
-    have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy =>
-      (f_diff y (ne_of_gt hy)).differentiableAt.differentiableWithinAt
+    have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy ↦
+      (f_diff y hy.ne').differentiableAt.differentiableWithinAt
     -- next line is the nontrivial bit of this proof, appealing to differentiability
     -- extension results.
     apply
@@ -189,7 +189,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     apply this.congr' _
     apply mem_of_superset self_mem_nhdsWithin fun y hy => _
     intro y hy
-    exact (f_diff y (ne_of_gt hy)).deriv.symm
+    exact (f_diff y hy.ne').deriv.symm
   have B : HasDerivWithinAt f (g x) (Iic x) x := by
     have diff : DifferentiableOn ℝ f (Iio x) := fun y hy =>
       (f_diff y (ne_of_lt hy)).differentiableAt.differentiableWithinAt

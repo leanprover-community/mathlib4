@@ -414,16 +414,14 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
     (hw2 : (y : ℚ) / z = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2))
     (H : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1) (co : Int.gcd m n = 1)
     (pp : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) : h.IsPrimitiveClassified := by
-  have hz : z ≠ 0 := ne_of_gt hzpos
   have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 := by
     apply Rat.div_int_inj hzpos hm2n2 (h.coprime_of_coprime hc) H
     rw [hw2]
     norm_cast
   use m, n
-  apply And.intro _ (And.intro co pp)
-  right
-  refine ⟨?_, h2.left⟩
-  rw [← Rat.coe_int_inj _ _, ← div_left_inj' ((mt (Rat.coe_int_inj z 0).mp) hz), hv2, h2.right]
+  refine ⟨Or.inr ⟨?_, h2.left⟩, co, pp⟩
+  rw [← Rat.coe_int_inj _ _, ← div_left_inj' ((mt (Rat.coe_int_inj z 0).mp) hzpos.ne'),
+    hv2, h2.right]
   norm_cast
 
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)

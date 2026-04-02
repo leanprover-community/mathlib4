@@ -138,7 +138,7 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f
   rw [← nhdsNE_sup_pure x₀, eventually_sup]
   refine ⟨?_, by simpa⟩
   have h_tendsto := hasDerivAt_iff_tendsto_slope.mp
-    (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt
+    (differentiableAt_of_deriv_ne_zero hf.ne').hasDerivAt
   filter_upwards [(h_tendsto.eventually <| eventually_gt_nhds hf),
     self_mem_nhdsWithin] with x hx₀ hx₁
   rw [mem_compl_iff, mem_singleton_iff, ← Ne.eq_def] at hx₁

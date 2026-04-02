@@ -44,7 +44,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or,
+      simpa only [hr.ne', Ne, mem_setOf_eq, mul_eq_zero, false_or,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy

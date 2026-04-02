@@ -26,10 +26,10 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
     ∫ x in Ioi (0 : ℝ), x ^ q * exp (-x ^ p) = (1 / p) * Gamma ((q + 1) / p) := by
   calc
     _ = ∫ (x : ℝ) in Ioi 0, (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
-      rw [← integral_comp_rpow_Ioi _ (one_div_ne_zero (ne_of_gt hp)),
-        abs_eq_self.mpr (le_of_lt (one_div_pos.mpr hp))]
+      rw [← integral_comp_rpow_Ioi _ (one_div_ne_zero hp.ne'),
+        abs_eq_self.mpr (one_div_pos.mpr hp).le]
       refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
-      rw [← rpow_mul (le_of_lt hx) _ p, one_div_mul_cancel (ne_of_gt hp), rpow_one]
+      rw [← rpow_mul hx.le _ p, one_div_mul_cancel hp.ne', rpow_one]
     _ = ∫ (x : ℝ) in Ioi 0, 1 / p * exp (-x) * x ^ (1 / p - 1 + q / p) := by
       simp_rw [smul_eq_mul, mul_assoc]
       refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
@@ -64,13 +64,13 @@ theorem integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :
     ∫ x in Ioi (0 : ℝ), exp (-x ^ p) = Gamma (1 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp neg_one_lt_zero) using 1
   · simp_rw [rpow_zero, one_mul]
-  · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp))]
+  · rw [zero_add, Gamma_add_one (one_div_ne_zero hp.ne')]
 
 theorem integral_exp_neg_mul_rpow {p b : ℝ} (hp : 0 < p) (hb : 0 < b) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ p) = b ^ (-1 / p) * Gamma (1 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_mul_rpow hp neg_one_lt_zero hb) using 1
   · simp_rw [rpow_zero, one_mul]
-  · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp)), mul_assoc]
+  · rw [zero_add, Gamma_add_one (one_div_ne_zero hp.ne'), mul_assoc]
 
 end real
 

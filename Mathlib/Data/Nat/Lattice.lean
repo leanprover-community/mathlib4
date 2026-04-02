@@ -95,7 +95,7 @@ protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m 
 theorem nonempty_of_pos_sInf {s : Set ℕ} (h : 0 < sInf s) : s.Nonempty := by
   by_contra contra
   rw [Set.not_nonempty_iff_eq_empty] at contra
-  have h' : sInf s ≠ 0 := ne_of_gt h
+  have h' : sInf s ≠ 0 := h.ne'
   apply h'
   rw [Nat.sInf_eq_zero]
   right

@@ -765,7 +765,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         refine ⟨c, mul_pos hc ?_⟩
         apply lt_of_le_of_ne (h'g _ _) (Ne.symm _)
         rw [← mem_support, g_supp, ← mem_preimage, preimage_inter]
-        have Hx : x ∈ tsupport (f c) := subset_tsupport _ (ne_of_gt hc)
+        have Hx : x ∈ tsupport (f c) := subset_tsupport _ hc.ne'
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
       apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
@@ -818,7 +818,7 @@ theorem exists_contMDiff_support_eq_eq_one_iff
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
   -- show that `f / (f + g)` is smooth
-  · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ ne_of_gt (A x))
+  · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ (A x).ne')
   -- show that the range is included in `[0, 1]`
   · refine range_subset_iff.2 (fun x ↦ ⟨div_nonneg (f_pos x) (A x).le, ?_⟩)
     apply div_le_one_of_le₀ _ (A x).le

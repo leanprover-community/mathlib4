@@ -313,13 +313,13 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   rcases lt_or_gt_of_ne h with h | h
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
+  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (neg_pos.2 h).le,
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
-      mul_div_cancel₀ _ (ne_of_lt h)]
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
+      mul_div_cancel₀ _ h.ne]
+  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul h.le,
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo₀ _ _ h,
-      abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
+      abs_of_pos h, mul_sub, mul_div_cancel₀ _ h.ne', smul_eq_mul]
 
 theorem map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     Measure.map (a * ·) volume = ENNReal.ofReal |a⁻¹| • volume := by

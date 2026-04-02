@@ -39,7 +39,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
   obtain ⟨C, hC0, hC⟩ := hf
   have hlim : Tendsto (fun n : ℕ => C ^ (1 / (n : ℝ)) * nα x) atTop (𝓝 (nα x)) := by
     nth_rewrite 2 [← one_mul (nα x)]
-    exact ((rpow_zero C ▸ ContinuousAt.tendsto (continuousAt_const_rpow (ne_of_gt hC0))).comp
+    exact ((rpow_zero C ▸ ContinuousAt.tendsto (continuousAt_const_rpow hC0.ne')).comp
       (tendsto_const_div_atTop_nhds_zero_nat 1)).mul tendsto_const_nhds
   apply ge_of_tendsto hlim
   simp only [eventually_atTop, ge_iff_le]

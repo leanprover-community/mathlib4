@@ -1082,8 +1082,8 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
     rwa [Classical.not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
-  exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
+  rw [← div_mul_cancel₀ r hyr.1.ne', coe_mul]
+  exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (hx 0).le
 
 set_option linter.deprecated false in
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]

@@ -81,7 +81,7 @@ theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x
     = (x : ℂ) ^ (-σ : ℂ) •
       (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
     rw [mellinInv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by simp [pi_pos])]
-    have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt hx)
+    have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr hx.ne'
     simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
     rw [smul_comm, ← Measure.integral_comp_mul_left]
     congr! 3

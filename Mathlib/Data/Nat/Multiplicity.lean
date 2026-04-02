@@ -238,7 +238,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
         simp +contextual [disjoint_right, *, dvd_iff_mod_eq_zero,
           Nat.mod_lt _ (pow_pos hp.pos _)]
       rw [emultiplicity_choose hp hkn (lt_succ_self _),
-        emultiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt
+        emultiplicity_eq_card_pow_dvd hp.one_lt.ne' hk0.bot_lt
           (lt_succ_of_le (log_mono_right hkn)),
         ← Nat.cast_add]
       apply WithTop.coe_mono

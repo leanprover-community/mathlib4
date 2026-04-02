@@ -173,7 +173,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
-      exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
+      exact ((S x).tsum_pos (fun i ↦ mul_nonneg (rpos i).le (g_nonneg i x)) n I).ne'
   · apply ContDiff.of_le _ (show (n : WithTop ℕ∞) ≤ ∞ from mod_cast le_top)
     refine
       contDiff_tsum_of_eventually (fun k => (g_smooth k).const_smul (r k))
@@ -442,16 +442,15 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
   · exact (locallyIntegrable_const _).indicator measurableSet_closedBall
   · apply ContDiffOn.mul
     · norm_cast
-      refine
-        (contDiffOn_const.mul ?_).inv fun x hx =>
-          ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
+      refine (contDiffOn_const.mul ?_).inv fun x hx ↦
+          (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E))).ne'
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
       apply ContDiffOn.norm ℝ
       · exact contDiffOn_fst
-      · intro x hx; exact ne_of_gt hx.1.1
+      · intro x hx; exact hx.1.1.ne'
     · apply (u_smooth E).comp_contDiffOn
-      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_gt hx.1.1) contDiffOn_snd
+      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx ↦ hx.1.1.ne') contDiffOn_snd
 
 theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=

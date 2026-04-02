@@ -1071,7 +1071,7 @@ variable [Finite G]
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
   obtain ⟨w, hw1, hw2⟩ := isOfFinOrder_of_finite x
-  refine ⟨w, Int.natCast_ne_zero.mpr (_root_.ne_of_gt hw1), ?_⟩
+  refine ⟨w, Int.natCast_ne_zero.mpr hw1.ne', ?_⟩
   rw [zpow_natCast]
   exact (isPeriodicPt_mul_iff_pow_eq_one _).mp hw2
 
