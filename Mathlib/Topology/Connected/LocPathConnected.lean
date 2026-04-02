@@ -210,7 +210,7 @@ lemma LocPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 lemma Topology.IsQuotientMap.locPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocPathConnectedSpace Y :=
-  h.2 ▸ LocPathConnectedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ LocPathConnectedSpace.coinduced f
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 instance Quot.locPathConnectedSpace {r : X → X → Prop} : LocPathConnectedSpace (Quot r) :=
