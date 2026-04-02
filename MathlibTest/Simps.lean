@@ -864,7 +864,7 @@ def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.re
 
 set_option pp.explicit true in
 /-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
-  @Eq X
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
     (@DFunLike.coe (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
       ((Functor.id.comp (Functor.const X)).obj X✝) (fun x => (Functor.id.comp (Functor.const X)).obj X✝)
       (@EquivLike.toFunLike
@@ -882,7 +882,7 @@ def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.r
 
 set_option pp.explicit true in
 /-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
-  @Eq X
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
     (@DFunLike.coe (Equiv X X) X (fun x => X)
       (@EquivLike.toFunLike
         (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
