@@ -309,6 +309,20 @@ class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
 
+-- TODO: add characterization in terms of the discriminant when the characteristic is not 2
+open Polynomial in
+/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
+
+To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
+`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
+@[mk_iff]
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+    extends W.HasMultiplicativeReduction R where
+  splitMultiplicativeReduction : letI I := W.integralModel R
+    Splits <| .map (algebraMap R (ResidueField R)) <|
+      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X - C (54 * I.b₆ - 3 * I.b₂ * I.b₄ + I.a₂ * I.c₄)
+
 variable {W : WeierstrassCurve K}
 
 theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction [IsMinimal R W] :
