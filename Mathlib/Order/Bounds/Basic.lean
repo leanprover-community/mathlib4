@@ -782,3 +782,22 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     Decidable (IsLeast { n : ℕ | p n } n) :=
   decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
+
+/-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
+@[to_dual (attr := implicit_reducible)
+/-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
+def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
+    SemilatticeSup α where
+  sup := sup
+  le_sup_left a b := (isLUB_pair a b).1 (mem_insert _ _)
+  le_sup_right a b := (isLUB_pair a b).1 (mem_insert_of_mem _ (mem_singleton _))
+  sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
+
+/-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
+@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
+    Lattice α where
+  __ := SemilatticeSup.ofIsLUB sup isLUB_pair
+  __ := SemilatticeInf.ofIsGLB inf isGLB_pair

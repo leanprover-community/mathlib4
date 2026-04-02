@@ -701,10 +701,10 @@ instance Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 
 instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
-  Subtype.instMeasurableSpace
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  Subtype.borelSpace _
+  inferInstanceAs <| BorelSpace (Subtype _)
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞

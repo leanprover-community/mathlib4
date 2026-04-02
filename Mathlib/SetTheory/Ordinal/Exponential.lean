@@ -184,7 +184,7 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   nth_rw 1 [← opow_one a]
   rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
-    · rw [lt_one_iff_zero] at a0
+    · rw [lt_one_iff] at a0
       rw [a0, zero_opow Ordinal.one_ne_zero]
       exact zero_le _
     rw [a1, one_opow, one_opow]
