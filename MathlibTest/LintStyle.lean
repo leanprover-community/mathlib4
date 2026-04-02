@@ -201,7 +201,6 @@ set_option linter.style.cdot true
 set_option allowUnsafeReducibility true in
 attribute [instance_reducible] Int.add
 
-set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 
@@ -216,7 +215,6 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by
     . have := 0
@@ -276,7 +274,6 @@ example : True := by
 end cdotLinter
 set_option linter.style.dollarSyntax true
 
-set_option linter.globalAttributeIn false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
 
@@ -287,7 +284,6 @@ warning: Please use '<|' instead of '$' for the pipe operator.
 Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-attribute [instance] Int.add in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
     · have := 0
