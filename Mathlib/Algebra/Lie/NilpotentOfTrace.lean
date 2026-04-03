@@ -13,24 +13,21 @@ public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.LinearAlgebra.Trace
 
 /-!
-# Trace-nilpotency criterion in gl(V)
+# Trace-nilpotency criterion
 
-Given subspaces `A ≤ B` of `gl(V)` and the set `M = {x ∈ gl(V) : [x, B] ⊆ A}`, any `x ∈ M`
-that is trace-orthogonal to all of `M` is nilpotent. This is the key technical lemma behind
-Cartan's criterion for semisimplicity.
-
-## Main definitions
-
-* `NilpotentOfTrace.M`: the set `{x ∈ gl(V) : [x, B] ⊆ A}`.
+Let `K` be an algebraically closed field of characteristic zero and `V` a finite-dimensional
+`K`-vector space. Given subspaces `A ≤ B` of `Module.End K V` and the set
+`M = {x ∈ Module.End K V | ∀ b ∈ B, ⁅x, b⁆ ∈ A}`, any `x ∈ M` that is trace-orthogonal to all
+of `M` is nilpotent. This is the key technical lemma behind Cartan's criterion for semisimplicity.
 
 ## Main results
 
-* `isNilpotent_of_trace_orthogonal_algClosed`: if `x ∈ M` satisfies `tr(xz) = 0` for all `z ∈ M`,
-  then `x` is nilpotent.
+* `isNilpotent_of_trace_orthogonal_algClosed`: if `x ∈ M` satisfies
+  `LinearMap.trace K V (x * z) = 0` for all `z ∈ M`, then `x` is nilpotent.
 
 ## References
 
-* [J.E. Humphreys, *Introduction to Lie Algebras and Representation Theory*][humphreys1972]
+* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Chapter 4
 -/
 
 @[expose] public section
@@ -41,9 +38,8 @@ open LinearMap Module.End
 
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 
-/-- The set `M = {x ∈ gl(V) : [x, B] ⊆ A}`. -/
-abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) :=
-  {x | ∀ b ∈ B, ⁅x, b⁆ ∈ A}
+/-- The set `M = {x ∈ Module.End K V | ∀ b ∈ B, ⁅x, b⁆ ∈ A}`. -/
+abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) := {x | ∀ b ∈ B, ⁅x, b⁆ ∈ A}
 
 lemma aeval_ad_maps_to
     (A B : Submodule K (Module.End K V)) (hAB : A ≤ B)
