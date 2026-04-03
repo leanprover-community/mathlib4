@@ -301,6 +301,7 @@ theorem localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
     Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (Localization.localization_tensor_algEquiv M S).commutes x
 
+variable {S} in
 @[simp]
 theorem localization_tensor_algEquiv_apply_one_tmul (x : S) :
     Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
