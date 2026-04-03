@@ -54,13 +54,9 @@ namespace Nat.Coprime
 
 lemma divisors_mul_injective {m n : ℕ} (hmn : m.Coprime n) :
     Set.InjOn (fun p : ℕ × ℕ => p.1 * p.2) (m.divisors ×ˢ n.divisors) := by
-  rcases eq_or_ne m 0 with rfl | hm0
-  · simp
-  rcases eq_or_ne n 0 with rfl | hn0
-  · simp
-  intro p1 hp1 p2 hp2 heq
+intro p1 hp1 p2 hp2 heq
   let hmn' := (Nat.coprime_iff_isRelPrime.mp hmn)
-  simp only [Set.mem_prod, SetLike.mem_coe, mem_divisors, ne_eq] at hp1 hp2
+  simp only [Set.mem_prod, SetLike.mem_coe, mem_divisors] at hp1 hp2
   exact (hmn'.existsUnique_dvd_dvd_of_dvd_mul
     (mul_dvd_mul hp1.1.1 hp1.2.1)).unique
     ⟨hp1.1.1, hp1.2.1, rfl⟩
