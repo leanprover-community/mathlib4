@@ -113,8 +113,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     have : Nontrivial (s.eigenspace μ) :=
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hμ)
     have hμ_E : μ ∈ E := Submodule.subset_span ⟨⟨μ, ⟨0, Module.finrank_pos⟩⟩, rfl⟩
-    have hφ : ∀ φ : Module.Dual ℚ E, φ ⟨μ, hμ_E⟩ = 0 := fun φ => by simp [h_f_zero φ]
-    exact congr_arg Subtype.val <| (Module.forall_dual_apply_eq_zero_iff ℚ ⟨μ, hμ_E⟩).mp hφ
+    exact congr_arg Subtype.val <|
+      (Module.forall_dual_apply_eq_zero_iff ℚ ⟨μ, hμ_E⟩).mp fun φ => by simp [h_f_zero φ]
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
@@ -141,8 +141,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hx
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
   have hyM : y ∈ M A B := by
+    have hp_ad_s : ad_s = aeval (ad K _ x) p := hp_eq.symm
     have had_y_adx : ad K _ y = aeval (ad K _ x) (r.comp p) := by
-      rw [had_y_eq, show ad_s = aeval (ad K _ x) p from hp_eq.symm, ← aeval_comp]
+      rw [had_y_eq, hp_ad_s, ← aeval_comp]
     obtain ⟨q', hq'⟩ : X ∣ r.comp p := by
       simpa using dvd_iff_isRoot.mpr
         (show eval 0 (r.comp p) = 0 by simp [eval_comp, hp_zero, hr_zero])
@@ -153,11 +154,10 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
   have hy_adj : y ∈ adjoin K {s} := by
     rw [adjoin_singleton_eq_range_aeval]
-    let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
-    let w : K → K := fun d => d
-    let g := Lagrange.interpolate (Finset.univ.image a) w c_val
-    have hg_eval : ∀ i, eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) :=
-      fun i => (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
+    let g := Lagrange.interpolate (Finset.univ.image a) (fun d : K => d)
+      (fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0)
+    have hg_eval : ∀ i, eval (a i) g = c i := fun i =>
+      (Lagrange.eval_interpolate_at_node _ (fun _ _ _ _ h => h)
         (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
     exact ⟨g, v.ext fun i => by
       change (aeval s g) (v i) = y (v i)
@@ -170,9 +170,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have htr_sy : trace K V (s * y) = ∑ i, a i * c i := by
     have : s * y = Matrix.toLin v v (Matrix.diagonal (fun i => a i * c i)) :=
       v.ext fun i => by
-        rw [Module.End.mul_apply, hy_diag, map_smul, hv_diag i, smul_smul, mul_comm (c i),
-          ← mem_eigenspace_iff.mp
-            (hasEigenvector_toLin_diagonal (fun i => a i * c i) i v).1]
+        simp only [Module.End.mul_apply, hy_diag i, map_smul, hv_diag i, smul_smul, mul_comm (c i)]
+        exact (mem_eigenspace_iff.mp
+          (hasEigenvector_toLin_diagonal (fun i => a i * c i) i v).1).symm
     rw [this, Matrix.trace_toLin_eq, Matrix.trace_diagonal]
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
