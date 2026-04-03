@@ -245,7 +245,7 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma face_bot (n : ℕ) :
+lemma face_empty (n : ℕ) :
     face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
   ext
   simpa using Finset.univ_neq_empty _
@@ -588,7 +588,7 @@ lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
   generalize hm : S.card = m
   obtain _ | m := m
   · obtain rfl : S = ∅ := by rwa [← Finset.card_eq_zero]
-    rw [face_bot]
+    rw [face_empty]
     infer_instance
   · rw [← hasDimensionLT_iff_of_iso
       (isoOfRepresentableBy (faceRepresentableBy S m (monoEquivOfFin S (by simpa))))]
