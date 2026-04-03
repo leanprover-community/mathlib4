@@ -103,11 +103,9 @@ theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 
-theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  refine ⟨Finsupp.linearCombination R b (Finsupp.equivFunOnFinite.symm fun i => f (b i)),
-    b.ext fun i => ?_⟩
-  rw [b.toDual_eq_repr _ i, repr_linearCombination b, Finsupp.equivFunOnFinite_symm_apply_toFun]
+theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ :=
+  eq_top_iff'.2 fun f => ⟨Finsupp.linearCombination R b <|
+    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext fun i => by simp⟩
 
 omit [DecidableEq ι] in
 @[simp]
@@ -271,7 +269,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
-/-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
+/-- For any `m : M n`, $\sum_{p ∈ Q n} (ε p m) • e p = m$ -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 

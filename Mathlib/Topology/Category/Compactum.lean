@@ -19,6 +19,7 @@ public import Mathlib.Data.Set.Constructions
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
 - A type `X : Type*`
 - A "structure" map `M X → X`.
+
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 
@@ -186,6 +187,7 @@ instance {X : Compactum} : CompactSpace X := by
 private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
   { F | A ∈ F }
 
+set_option backward.privateInPublic true in
 /-- A local definition used only in the proofs. -/
 private def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
@@ -261,6 +263,8 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
   intro F hF
@@ -350,6 +354,8 @@ theorem lim_eq_str {X : Compactum} (F : Ultrafilter X) : F.lim = X.str F := by
   rw [Ultrafilter.lim_eq_iff_le_nhds, le_nhds_iff]
   tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
   ext
   rw [mem_closure_iff_ultrafilter]
@@ -421,7 +427,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.hom.2, rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where
@@ -430,7 +436,7 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.hom.toFun) h
+    apply congrArg (fun f => f.hom.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

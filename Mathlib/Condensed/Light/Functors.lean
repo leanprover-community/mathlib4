@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.Light.CartesianClosed
 public import Mathlib.Condensed.Light.TopCatAdjunction
+public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
@@ -56,7 +57,7 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
   NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
       hom f := { toFun := f.hom }
-      inv f := TopCat.ofHom f }
+      inv f := InducedCategory.homMk (TopCat.ofHom f) }
 
 /--
 The functor from `LightProfinite` to `LightCondSet` preserves countable limits.
@@ -84,3 +85,6 @@ noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
     rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]
     infer_instance
   exact this.some
+
+instance : PreservesFiniteCoproducts lightProfiniteToLightCondSet.{u} :=
+  inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).yoneda

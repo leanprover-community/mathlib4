@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 # `min` and `max` in linearly ordered groups.
 -/
 
-@[expose] public section
+public section
 
 
 section

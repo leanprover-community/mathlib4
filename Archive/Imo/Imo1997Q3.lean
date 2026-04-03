@@ -74,7 +74,7 @@ lemma sign_eq_of_contra
   | one => rfl
   | mul_right p s sform ih =>
     suffices |S x p - S x (p * s)| ≤ (n + 1 : ℕ) + 1 by
-      rw [ih]; exact sign_eq_of_abs_sub_le (h _) (h _) (by norm_cast; omega) this
+      rw [ih]; exact sign_eq_of_abs_sub_le (h _) (h _) (by norm_cast; lia) this
     rw [Set.mem_range] at sform; obtain ⟨i, hi⟩ := sform
     iterate 2 rw [S, ← sum_add_sum_compl {i.castSucc, i.succ}]
     have cg : ∑ j ∈ {i.castSucc, i.succ}ᶜ, (j + 1) * x ((p * s) j) =
@@ -86,7 +86,7 @@ lemma sign_eq_of_contra
       sum_pair castSucc_lt_succ.ne, sum_pair castSucc_lt_succ.ne,
       Perm.mul_apply, Perm.mul_apply, ← hi, swap_apply_left, swap_apply_right,
       add_comm, add_sub_add_comm, ← sub_mul, ← sub_mul,
-      val_succ, coe_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
+      val_succ, val_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
       one_mul, neg_one_mul]
     calc
       _ ≤ |x (p i.succ)| + |-x (p i.castSucc)| := abs_add_le ..
@@ -99,8 +99,8 @@ lemma S_one_add_S_revPerm
   nth_rw 2 [S]; rw [← revPerm.sum_comp _ _ (by simp)]
   simp_rw [revPerm_apply, val_rev, rev_rev, S, Perm.one_apply, ← sum_add_distrib, ← add_mul]
   have cg : ∑ i : Fin n, (i + 1 + ((n - (i + 1) : ℕ) + 1)) * x i = ∑ i, (n + 1) * x i := by
-    congr! 2 with i; norm_cast; omega
-  rw [cg, ← mul_sum, abs_mul, hx₁, mul_one]; exact abs_of_nonneg (by norm_cast; omega)
+    congr! 2 with i; norm_cast; lia
+  rw [cg, ← mul_sum, abs_mul, hx₁, mul_one]; exact abs_of_nonneg (by norm_cast; lia)
 
 theorem result {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) (hx₂ : ∀ i, |x i| ≤ (n + 1) / 2) :
     ∃ p, |S x p| ≤ (n + 1) / 2 := by
@@ -108,7 +108,7 @@ theorem result {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) (hx₂ : ∀ i, |x
   | 0 => simp [S]
   | n + 1 =>
     by_contra! h
-    exact (lt_abs_add_of_sign_eq (h _) (h _) (by norm_cast; omega)
+    exact (lt_abs_add_of_sign_eq (h _) (h _) (by norm_cast; lia)
       (sign_eq_of_contra hx₂ h _)).ne' (S_one_add_S_revPerm hx₁)
 
 end Imo1997Q3

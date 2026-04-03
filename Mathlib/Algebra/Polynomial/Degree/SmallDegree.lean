@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.WithBot
 # Results on polynomials of specific small degrees
 -/
 
-@[expose] public section
+public section
 
 open Finsupp Finset
 
@@ -31,7 +31,7 @@ variable [Semiring R] {p q r : R[X]}
 theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) :=
   ext fun n =>
     Nat.casesOn n (by simp) fun n =>
-      Nat.casesOn n (by simp [coeff_C]) fun m => by
+      Nat.casesOn n (by simp) fun m => by
         have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
         simp [coeff_eq_zero_of_degree_lt this]
 

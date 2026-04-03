@@ -11,28 +11,15 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Cartesian closed categories
 
-We define exponentiable objects to be closed objects in a Cartesian monoidal category,
-i.e. `(X × -)` is a left adjoint.
+A cartesian closed category is a category with `CartesianMonoidalCategory` and `MonoidalClosed`
+instances. There used to be a separate definition `CartesianClosed`, with its own API, but over time
+this ended up as a duplicate of the former. Now, `CartesianClosed` and the surrounding API has been
+deprecated, and the API for `MonoidalClosed` should be used instead. This file now contains a few
+basic constructions for cartesian closed categories.
 
-We say a category is Cartesian closed if every object is exponentiable
-(equivalently, that the category equipped with the Cartesian monoidal structure is closed monoidal).
-
-Show that exponential forms a difunctor and define the exponential comparison morphisms.
-
-## Implementation Details
-
-Cartesian closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
-that a category that `hasFiniteProducts` is Cartesian closed, they should first promote the
-`hasFiniteProducts` instance to a `CartesianMonoidalCategory` one using
-`CategoryTheory.ofChosenFiniteProducts`.
-
-## TODO
-Some of the results here are true more generally for closed objects and
-for closed monoidal categories, and these could be generalised.
 -/
 
 @[expose] public section
-
 
 universe v v₂ u u₂
 
@@ -42,73 +29,28 @@ open Category Limits MonoidalCategory CartesianMonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
 
-/-- An object `X` is *exponentiable* if `(X × -)` is a left adjoint.
-We define this as being `Closed` in the Cartesian monoidal structure. -/
-abbrev Exponentiable (X : C) := Closed X
+instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
+    (A : C) [Closed A] :
+    (prod.functor.obj A).IsLeftAdjoint :=
+  Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)
 
-/-- Constructor for `Exponentiable X` which takes as an input an adjunction
-`MonoidalCategory.tensorLeft X ⊣ exp` for some functor `exp : C ⥤ C`. -/
-abbrev Exponentiable.mk (X : C) (exp : C ⥤ C) (adj : tensorLeft X ⊣ exp) : Exponentiable X where
-  rightAdj := exp
-  adj := adj
-
-/-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.
-This isn't an instance because it's not usually how we want to construct exponentials, we'll usually
-prove all objects are exponential uniformly.
--/
-def binaryProductExponentiable (hX : Exponentiable X) (hY : Exponentiable Y) :
-    Exponentiable (X ⊗ Y) := tensorClosed hX hY
-
-/-- The terminal object is always exponentiable.
-This isn't an instance because most of the time we'll prove Cartesian closed for all objects
-at once, rather than just for this one.
--/
-def terminalExponentiable : Exponentiable (𝟙_ C) := unitClosed
-
-variable (C) in
-/-- A category `C` is Cartesian closed if it has finite products and every object is exponentiable.
-We define this as `MonoidalClosed` with respect to the Cartesian monoidal structure. -/
-abbrev CartesianClosed := MonoidalClosed C
-
-variable (C) in
-/-- Constructor for `CartesianClosed C`. -/
-def CartesianClosed.mk (exp : ∀ (X : C), Exponentiable X) : CartesianClosed C where
-  closed X := exp X
-
-variable (A B : C) [Exponentiable A]
-
-/-- This is (-)^A. -/
-abbrev exp : C ⥤ C :=
-  ihom A
-
-namespace exp
-
-/-- The adjunction between A ⨯ - and (-)^A. -/
-abbrev adjunction : tensorLeft A ⊣ exp A :=
-  ihom.adjunction A
-
-/-- The evaluation natural transformation. -/
-abbrev ev : exp A ⋙ tensorLeft A ⟶ 𝟭 C :=
-  ihom.ev A
-
-/-- The coevaluation natural transformation. -/
-abbrev coev : 𝟭 C ⟶ tensorLeft A ⋙ exp A :=
-  ihom.coev A
+namespace CartesianClosed
 
 -- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms obtained using an exponentiable object. -/
-notation:20 A " ⟹ " B:19 => (exp A).obj B
+scoped notation:20 A " ⟹ " B:19 => (ihom A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Functor.obj` -/
 @[app_delab Functor.obj]
-meta def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 do
+meta def delabFunctorObjExp : Delab :=
+    whenPPOption getPPNotation <| withOverApp 6 do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard <| e.isAppOfArity' ``exp 5
+    guard <| e.isAppOfArity' ``ihom 5
     withNaryArg 3 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
@@ -116,158 +58,20 @@ meta def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp
 -- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms from an exponentiable object. -/
-notation:30 B " ^^ " A:30 => (exp A).obj B
-
--- Not simp as it can already prove it.
-@[reassoc]
-theorem ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B : C) :=
-  ihom.ev_coev A B
-
-@[reassoc]
-theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
-  ihom.coev_ev A B
-
-end exp
-
-instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
-    (A : C) [Closed A] :
-    (prod.functor.obj A).IsLeftAdjoint :=
-  Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)
-
-instance : PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjoint_preservesColimits
-
-variable {A}
-
--- Wrap these in a namespace so we don't clash with the core versions.
-namespace CartesianClosed
-
-/-- Currying in a Cartesian closed category. -/
-def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
-  (exp.adjunction A).homEquiv _ _
-
-/-- Uncurrying in a Cartesian closed category. -/
-def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
-  ((exp.adjunction A).homEquiv _ _).symm
-
-theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
-  rfl
-
-theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
-    ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
-  rfl
-
-@[reassoc]
-theorem curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) :
-    curry (_ ◁ f ≫ g) = f ≫ curry g :=
-  Adjunction.homEquiv_naturality_left _ _ _
-
-@[reassoc]
-theorem curry_natural_right (f : A ⊗ X ⟶ Y) (g : Y ⟶ Y') :
-    curry (f ≫ g) = curry f ≫ (exp _).map g :=
-  Adjunction.homEquiv_naturality_right _ _ _
-
-@[reassoc]
-theorem uncurry_natural_right (f : X ⟶ A ⟹ Y) (g : Y ⟶ Y') :
-    uncurry (f ≫ (exp _).map g) = uncurry f ≫ g :=
-  Adjunction.homEquiv_naturality_right_symm _ _ _
-
-@[reassoc]
-theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟹ Y) :
-    uncurry (f ≫ g) = _ ◁ f ≫ uncurry g :=
-  Adjunction.homEquiv_naturality_left_symm _ _ _
-
-@[simp]
-theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
-  (Closed.adj.homEquiv _ _).left_inv f
-
-@[simp]
-theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
-  (Closed.adj.homEquiv _ _).right_inv f
-
-theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
-  Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
-
-theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
-  Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
-
--- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟹ X) : uncurry g = (A ◁ g) ≫ (exp.ev A).app X :=
-  rfl
-
-theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (exp.coev A).app Y ≫ (exp A).map g :=
-  rfl
-
-theorem uncurry_id_eq_ev (A X : C) [Exponentiable A] : uncurry (𝟙 (A ⟹ X)) = (exp.ev A).app X := by
-  rw [uncurry_eq, whiskerLeft_id_assoc]
-
-theorem curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coev A).app X := by
-  rw [curry_eq, (exp A).map_id (A ⊗ _)]; apply comp_id
-
-theorem curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
-  (Closed.adj.homEquiv _ _).injective
-
-theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X)) :=
-  (Closed.adj.homEquiv _ _).symm.injective
+scoped notation:30 B " ^^ " A:30 => (ihom A).obj B
 
 end CartesianClosed
 
 open CartesianClosed
 
-/-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
-argument is explicit: any instance can be used. -/
-def expUnitNatIso [Exponentiable (𝟙_ C)] : 𝟭 C ≅ exp (𝟙_ C) :=
-  MonoidalClosed.unitNatIso (C := C)
-
-/-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
-The typeclass argument is explicit: any instance can be used. -/
-def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
-  (expUnitNatIso.app X).symm
-
 /-- The internal element which points at the given morphism. -/
-def internalizeHom (f : A ⟶ Y) : 𝟙_ C ⟶ A ⟹ Y :=
-  CartesianClosed.curry (fst _ _ ≫ f)
+def internalizeHom {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {A Y : C} [Closed A]
+    (f : A ⟶ Y) : 𝟙_ C ⟶ A ⟹ Y :=
+  MonoidalClosed.curry (fst _ _ ≫ f)
 
-section Pre
+variable {A B : C} [Closed A]
 
-variable {B}
-
-/-- Pre-compose an internal hom with an external hom. -/
-def pre (f : B ⟶ A) [Exponentiable B] : exp A ⟶ exp B :=
-  conjugateEquiv (exp.adjunction _) (exp.adjunction _) ((tensoringLeft _).map f)
-
-theorem prod_map_pre_app_comp_ev (f : B ⟶ A) [Exponentiable B] (X : C) :
-    (B ◁ (pre f).app X) ≫ (exp.ev B).app X =
-      f ▷ (A ⟹ X) ≫ (exp.ev A).app X :=
-  conjugateEquiv_counit _ _ ((tensoringLeft _).map f) X
-
-theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
-    CartesianClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (exp.ev A).app X := by
-  rw [uncurry_eq, prod_map_pre_app_comp_ev]
-
-theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
-    (exp.coev A).app X ≫ (pre f).app (A ⊗ X) =
-      (exp.coev B).app X ≫ (exp B).map (f ⊗ₘ 𝟙 _) := by
-  rw [tensorHom_id]
-  exact unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
-
-@[simp]
-theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
-  simp only [pre, Functor.map_id]
-  simp
-
-@[simp]
-theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
-    (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) : pre (f ≫ g) = pre g ≫ pre f := by
-  rw [pre, pre, pre, conjugateEquiv_comp]
-  simp
-
-end Pre
-
-/-- The internal hom functor given by the Cartesian closed structure. -/
-def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C where
-  obj X := exp X.unop
-  map f := pre f.unop
+open MonoidalClosed
 
 /-- If an initial object `I` exists in a CCC, then `A ⨯ I ≅ I`. -/
 @[simps]
@@ -275,7 +79,7 @@ def zeroMul {I : C} (t : IsInitial I) : A ⊗ I ≅ I where
   hom := snd _ _
   inv := t.to _
   hom_inv_id := by
-    have : snd A I = CartesianClosed.uncurry (t.to _) := by
+    have : snd A I = uncurry (t.to _) := by
       rw [← curry_eq_iff]
       apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
@@ -287,33 +91,22 @@ def mulZero [BraidedCategory C] {I : C} (t : IsInitial I) : I ⊗ A ≅ I :=
   β_ _ _ ≪≫ zeroMul t
 
 /-- If an initial object `0` exists in a CCC then `0^B ≅ 1` for any `B`. -/
-def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ 𝟙_ C where
+def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I ⟹ B ≅ 𝟙_ C where
   hom := default
-  inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
+  inv := curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
-noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
-    (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) where
-  hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
-  inv :=
-    CartesianClosed.uncurry
-      (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
-  hom_inv_id := by
-    ext
-    · rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
-    rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
-  inv_hom_id := by
-    rw [← uncurry_natural_right, ← eq_curry_iff]
-    ext
-    · rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
-        comp_id]
-    rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,
-      comp_id]
+@[deprecated "No replacement: use `asIso (coprodComparison (tensorLeft Z) _ _)` instead."
+(since := "2025-12-22")]
+noncomputable def prodCoprodDistrib [MonoidalCategory C] [HasBinaryCoproducts C]
+    [MonoidalClosed C] (X Y Z : C) : (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
+  asIso (coprodComparison (tensorLeft Z) _ _)
 
 /-- If an initial object `I` exists in a CCC then it is a strict initial object,
 i.e. any morphism to `I` is an iso.
@@ -331,13 +124,13 @@ instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
   strict_initial initialIsInitial _
 
 /-- If an initial object `0` exists in a CCC then every morphism from it is monic. -/
-theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mono (t.to B) :=
+theorem initial_mono {I : C} (B : C) (t : IsInitial I) [MonoidalClosed C] : Mono (t.to B) :=
   ⟨fun g h _ => by
     haveI := strict_initial t g
     haveI := strict_initial t h
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩
 
-instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
+instance Initial.mono_to [HasInitial C] (B : C) [MonoidalClosed C] : Mono (initial.to B) :=
   initial_mono B initialIsInitial
 
 variable {D : Type u₂} [Category.{v₂} D]
@@ -351,10 +144,83 @@ variable [CartesianMonoidalCategory D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
+@[implicit_reducible]
+noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [MonoidalClosed C] : MonoidalClosed D :=
   letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction
 
 end Functor
+
+@[deprecated (since := "2025-12-22")] alias Exponentiable := Closed
+@[deprecated (since := "2025-12-22")] alias Exponentiable.mk := Closed.mk
+@[deprecated (since := "2025-12-22")] alias binaryProductExponentiable := tensorClosed
+@[deprecated (since := "2025-12-22")] alias terminalExponentiable := unitClosed
+@[deprecated (since := "2025-12-22")] alias CartesianClosed := MonoidalClosed
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.mk := MonoidalClosed.mk
+@[deprecated (since := "2025-12-22")] alias exp := ihom
+@[deprecated (since := "2025-12-22")] alias exp.adjunction := ihom.adjunction
+@[deprecated (since := "2025-12-22")] alias exp.ev := ihom.ev
+@[deprecated (since := "2025-12-22")] alias exp.coev := ihom.coev
+@[deprecated (since := "2025-12-22")] alias exp.ev_coev := ihom.ev_coev
+@[deprecated (since := "2025-12-22")] alias exp.coev_ev := ihom.coev_ev
+@[deprecated (since := "2025-12-22")] alias exp.ev_coev_assoc := ihom.ev_coev_assoc
+@[deprecated (since := "2025-12-22")] alias exp.coev_ev_assoc := ihom.coev_ev_assoc
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry := MonoidalClosed.curry
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry := MonoidalClosed.uncurry
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.homEquiv_apply_eq :=
+  MonoidalClosed.homEquiv_apply_eq
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.homEquiv_symm_apply_eq :=
+  MonoidalClosed.homEquiv_symm_apply_eq
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_left :=
+  MonoidalClosed.curry_natural_left
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_left_assoc :=
+  MonoidalClosed.curry_natural_left_assoc
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_right :=
+  MonoidalClosed.curry_natural_right
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_natural_right_assoc :=
+  MonoidalClosed.curry_natural_right_assoc
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_right :=
+  MonoidalClosed.uncurry_natural_right
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_right_assoc :=
+  MonoidalClosed.uncurry_natural_right_assoc
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_left :=
+  MonoidalClosed.uncurry_natural_left
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_natural_left_assoc :=
+  MonoidalClosed.uncurry_natural_left_assoc
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_curry :=
+  MonoidalClosed.uncurry_curry
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_uncurry :=
+  MonoidalClosed.curry_uncurry
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_eq_iff :=
+  MonoidalClosed.curry_eq_iff
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.eq_curry_iff :=
+  MonoidalClosed.eq_curry_iff
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_eq :=
+  MonoidalClosed.uncurry_eq
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_eq :=
+  MonoidalClosed.curry_eq
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_id_eq_ev :=
+  MonoidalClosed.uncurry_id_eq_ev
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_id_eq_coev :=
+  MonoidalClosed.curry_id_eq_coev
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.curry_injective :=
+  MonoidalClosed.curry_injective
+@[deprecated (since := "2025-12-22")] alias CartesianClosed.uncurry_injective :=
+  MonoidalClosed.uncurry_injective
+@[deprecated (since := "2025-12-22")] alias expUnitNatIso := MonoidalClosed.unitNatIso
+@[deprecated (since := "2025-12-22")] alias expUnitIsoSelf := MonoidalClosed.unitIsoSelf
+@[deprecated (since := "2025-12-22")] alias pre := MonoidalClosed.pre
+@[deprecated (since := "2025-12-22")] alias prod_map_pre_app_comp_ev :=
+  MonoidalClosed.id_tensor_pre_app_comp_ev
+@[deprecated (since := "2025-12-22")] alias uncurry_pre :=
+  MonoidalClosed.uncurry_pre
+@[deprecated (since := "2025-12-22")] alias coev_app_comp_pre_app :=
+  MonoidalClosed.coev_app_comp_pre_app
+@[deprecated (since := "2025-12-22")] alias pre_id :=
+  MonoidalClosed.pre_id
+@[deprecated (since := "2025-12-22")] alias pre_map :=
+  MonoidalClosed.pre_map
+@[deprecated (since := "2025-12-22")] alias internalHom :=
+  MonoidalClosed.internalHom
 
 end CategoryTheory

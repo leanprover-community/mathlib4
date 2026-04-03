@@ -34,7 +34,7 @@ open CategoryTheory ComposableArrows Abelian
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
   (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
 
@@ -83,6 +83,7 @@ lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
       (exact_of_δ₀ (hS₁.homology_exact₁ i j hij).exact_toComposableArrows
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
 @[simp]

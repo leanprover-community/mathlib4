@@ -18,7 +18,7 @@ a proof that every natural number is the sum of four square numbers.
 The proof used is close to Lagrange's original proof.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Polynomial FiniteField Equiv

@@ -43,7 +43,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   same result for `n`-transitivity.
 
 
-* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : if the action of `G` on `α`
   is pretransitive, then it is `n.succ` pretransitive if and only if
   the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
 
@@ -113,7 +113,7 @@ end Functoriality
 
 namespace MulAction
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
@@ -361,9 +361,9 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
   refine ⟨fun hn ↦ ⟨fun x y ↦ ?_⟩, fun hn ↦ ⟨fun x y ↦ ?_⟩⟩
   · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
     have hg : g ∈ stabilizer G a := by
-      rw [mem_stabilizer_iff]
       rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+      convert hgxy (last n)
+      simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
     simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
@@ -443,7 +443,7 @@ open SubMulAction
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
-of the fixing_subgroup of a subset of adequate cardinality -/
+of the `fixingSubgroup` of a subset of adequate cardinality -/
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
@@ -520,85 +520,19 @@ open Equiv MulAction
 
 variable {α : Type*}
 
+/-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
+other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
+theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
+    (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
+  obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  classical
-  intro x y
-  have (x : Fin n ↪ α) : Cardinal.mk (range x) = n := by
-    simp [Finset.card_image_of_injective, PLift.down_injective]
-  have hxy : Cardinal.mk ((range x)ᶜ : Set α) = Cardinal.mk ((range y)ᶜ : Set α) := by
-    rw [← Cardinal.add_nat_inj n]
-    nth_rewrite 1 [← this x]
-    rw [← this y]
-    simp only [add_comm, Cardinal.mk_sum_compl]
-  rw [Cardinal.eq] at hxy
-  obtain ⟨φ⟩ := hxy
-  let φ' : α → α := Function.extend Subtype.val (fun a ↦ ↑(φ a)) id
-  set ψ : α → α := Function.extend x y φ'
-  have : Function.Bijective ψ := by
-    constructor
-    · intro a b hab
-      by_cases ha : a ∈ range x
-      · obtain ⟨i, rfl⟩ := ha
-        by_cases hb : b ∈ range x
-        · obtain ⟨j, rfl⟩ := hb
-          simp only [ψ, x.injective.extend_apply, y.injective.eq_iff] at hab
-          rw [hab]
-        · simp only [ψ, φ', x.injective.extend_apply] at hab
-          rw [Function.extend_apply' _ _ _ hb] at hab
-          rw [← Set.mem_compl_iff] at hb
-          rw [← Subtype.coe_mk b hb, Subtype.val_injective.extend_apply] at hab
-          exfalso
-          have : y i ∈ (range y)ᶜ := by
-            rw [hab]
-            exact Subtype.coe_prop (φ ⟨b, hb⟩)
-          rw [Set.mem_compl_iff] at this
-          apply this
-          exact mem_range_self i
-      · by_cases hb : b ∈ range x
-        · obtain ⟨j, rfl⟩ := hb
-          simp only [ψ, φ', x.injective.extend_apply] at hab
-          rw [Function.extend_apply' _ _ _ ha] at hab
-          rw [← Set.mem_compl_iff] at ha
-          rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab
-          exfalso
-          have : y j ∈ (range y)ᶜ := by
-            rw [← hab]
-            exact Subtype.coe_prop (φ ⟨a, ha⟩)
-          rw [Set.mem_compl_iff] at this
-          apply this
-          exact mem_range_self j
-        · simp only [ψ, Function.extend_apply' _ _ _ ha,
-            Function.extend_apply' _ _ _ hb, φ'] at hab
-          rw [← Set.mem_compl_iff] at ha hb
-          rw [← Subtype.coe_mk b hb, ← Subtype.coe_mk a ha] at hab
-          rw [Subtype.val_injective.extend_apply, Subtype.val_injective.extend_apply] at hab
-          rwa [← Subtype.coe_mk a ha, ← Subtype.coe_mk b hb,
-              Subtype.coe_inj, ← φ.injective.eq_iff, ← Subtype.coe_inj]
-    · intro b
-      by_cases hb : b ∈ range y
-      · obtain ⟨i, rfl⟩ := hb
-        use x i
-        simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
-  use Equiv.ofBijective ψ this
-  ext i
-  simp [ψ, x.injective.extend_apply]
+  exact fun x y => exists_smul_eq_embedding x y
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
@@ -649,11 +583,11 @@ alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on `α` is `(Nat.card α - 2)`-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
@@ -686,7 +620,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.card_eq_fintype_card] at hα1
-    rw [alternatingGroup.eq_bot_of_card_le_two hα1.le]
+    rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
@@ -741,5 +675,18 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPreprimitive (alternatingGroup α) α :=
   letI := isPretransitive_of_three_le_card α h
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
+
+end alternatingGroup
+
+namespace AlternatingGroup
+
+@[deprecated (since := "2025-12-16")]
+alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
+@[deprecated (since := "2025-12-16")]
+alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
+@[deprecated (since := "2025-12-16")]
+alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
+@[deprecated (since := "2025-12-16")]
+alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
 
 end AlternatingGroup

@@ -15,7 +15,7 @@ Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
 
 -/
 
-@[expose] public section
+public section
 
 suppress_compilation
 

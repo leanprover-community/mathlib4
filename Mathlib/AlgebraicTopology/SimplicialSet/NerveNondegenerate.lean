@@ -17,7 +17,7 @@ the monotone map `s.obj : Fin (n + 1) → X` is strictly monotone.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -46,12 +46,14 @@ lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
         → Fin.predAbove_of_le_castSucc, Fin.castSucc_castPred, Fin.castPred_castSucc,
         Fin.succAbove_castSucc_self, → LE.le.lt_or_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_nerve_degenerate_of_eq (s : (nerve X) _⦋n + 1⦌) {i : Fin (n + 1)}
     (hi : s.obj i.castSucc = s.obj i.succ) :
     s ∈ (nerve X).degenerate (n + 1) := by
   simp only [nerve_obj, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
   exact ⟨i, by rwa [mem_range_nerve_σ_iff]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ StrictMono s.obj := by
   obtain _ | n := n

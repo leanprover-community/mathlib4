@@ -39,7 +39,7 @@ open scoped Topology NNReal ENNReal
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
@@ -119,9 +119,8 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
   · have : IsOpen {(0 : 𝕜)} := isOpen_discrete {0}
     simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
     obtain ⟨ε, εpos, h'⟩ := this
-    wlog h : ‖x‖ < 1 generalizing 𝕜 with H
-    · push_neg at h
-      rcases h.eq_or_lt with h|h
+    wlog! h : ‖x‖ < 1 generalizing 𝕜 with H
+    · rcases h.eq_or_lt with h | h
       · rw [h]
       replace h := norm_inv x ▸ inv_lt_one_of_one_lt₀ h
       rw [← inv_inj, inv_one, ← norm_inv]
@@ -151,7 +150,7 @@ end NormedDivisionRing
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
 class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
@@ -281,6 +280,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
+@[implicit_reducible]
 def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
   toNormedField := h'
@@ -355,6 +355,7 @@ end SubfieldClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
+@[implicit_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
   __ := v.toNormedRing

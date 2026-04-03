@@ -11,13 +11,13 @@ public import Mathlib.Analysis.Calculus.FDeriv.Basic
 # The derivative of a composition (chain rule)
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 composition of functions (the chain rule).
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
@@ -31,7 +31,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
+variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}
 
 section Composition
 
@@ -44,51 +44,56 @@ get confused since there are too many possibilities for composition. -/
 
 variable (x)
 
-theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter F}
-    (hg : HasFDerivAtFilter g g' (f x) L') (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L') :
-    HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
-  let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
-  let eq₂ := (hg.isLittleO.comp_tendsto hL).trans_isBigO hf.isBigO_sub
-  refine .of_isLittleO <| eq₂.triangle <| eq₁.congr_left fun x' => ?_
-  simp
+theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter (F × F)}
+    (hg : HasFDerivAtFilter g g' L') (hf : HasFDerivAtFilter f f' L)
+    (hL : Tendsto (Prod.map f f) L L') :
+    HasFDerivAtFilter (g ∘ f) (g' ∘L f') L := by
+  -- This proof can be golfed a lot. However, it should be left this way for readability.
+  refine .of_isLittleOTVS <| calc
+    (fun p ↦ (g ∘ f) p.1 - (g ∘ f) p.2 - (g' ∘L f') (p.1 - p.2))
+      = fun p ↦ (g (f p.1) - g (f p.2) - g' (f p.1 - f p.2)) +
+          g' (f p.1 - f p.2 - f' (p.1 - p.2)) := by
+      ext; simp
+    _ =o[𝕜; L] (fun p ↦ p.1 - p.2) := .add ?Hg ?Hf
+  case Hg => calc (fun p ↦ g (f p.1) - g (f p.2) - g' (f p.1 - f p.2))
+    _ =o[𝕜; L] (fun p ↦ f p.1 - f p.2) :=
+      hg.isLittleOTVS.comp_tendsto hL
+    _ =O[𝕜; L] (fun p ↦ p.1 - p.2) := hf.isBigOTVS_sub
+  case Hf => calc (fun p ↦ g' (f p.1 - f p.2 - f' (p.1 - p.2)))
+    _ =O[𝕜; L] (fun p ↦ f p.1 - f p.2 - f' (p.1 - p.2)) := g'.isBigOTVS_comp
+    _ =o[𝕜; L] (fun p ↦ p.1 - p.2) := hf.isLittleOTVS
 
-/- A readable version of the previous theorem, a general form of the chain rule. -/
-example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
-    (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
-  have :=
-    calc
-      (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
-        hg.isLittleO.comp_tendsto le_rfl
-      _ =O[L] fun x' => x' - x := hf.isBigO_sub
-  refine .of_isLittleO <| this.triangle ?_
-  calc
-    (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
-    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := Eventually.of_forall fun x' => by simp
-    _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
-    _ =o[L] fun x' => x' - x := hf.isLittleO
+/-- The chain rule for derivatives in the sense of strict differentiability. -/
+@[fun_prop]
+protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
+    (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
+    HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
+  HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap_nhds hf.continuousAt.tendsto
 
 @[fun_prop]
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  HasFDerivAtFilter.comp x hg hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
+  HasFDerivAtFilter.comp hg hf <| .prodMap (hf.continuousWithinAt.tendsto_nhdsWithin hst) <|
+    tendsto_pure_pure ..
 
 @[fun_prop]
 theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  hg.comp x hf hf.continuousWithinAt
+  hg.hasFDerivWithinAt.comp x hf (mapsTo_univ _ _)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
-  HasFDerivAtFilter.comp x hg hf hst
+  HasFDerivAtFilter.comp hg hf <| hst.prodMap <| tendsto_pure_pure ..
 
 theorem HasFDerivWithinAt.comp_hasFDerivAt {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivAt f f' x)
     (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasFDerivAt (g ∘ f) (g' ∘L f') x :=
-  HasFDerivAtFilter.comp x hg hf <| tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩
+  HasFDerivAtFilter.comp hg hf <| .prodMap (tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩) <|
+    tendsto_pure_pure ..
 
 theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜] G} {t : Set F} {y : F}
     (hg : HasFDerivWithinAt g g' t y) (hf : HasFDerivAt f f' x)
@@ -99,7 +104,7 @@ theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜
 @[fun_prop]
 theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
-  HasFDerivAtFilter.comp x hg hf hf.continuousAt
+  HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure ..
 
 @[fun_prop]
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
@@ -215,15 +220,6 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
   hg.differentiableOn.comp hf (mapsTo_univ _ _)
 
-/-- The chain rule for derivatives in the sense of strict differentiability. -/
-@[fun_prop]
-protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
-    (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  .of_isLittleO <|
-    ((hg.isLittleO.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
-        hf.isBigO_sub).triangle <| by
-      simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
 
 @[fun_prop]
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
@@ -238,41 +234,33 @@ protected theorem DifferentiableOn.iterate {f : E → E} (hf : DifferentiableOn 
 variable {x}
 
 protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
-    (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
-    HasFDerivAtFilter f^[n] (f' ^ n) x L := by
+    (hf : HasFDerivAtFilter f f' L) (hL : Tendsto (Prod.map f f) L L) (n : ℕ) :
+    HasFDerivAtFilter f^[n] (f' ^ n) L := by
   induction n with
-  | zero => exact hasFDerivAtFilter_id x L
+  | zero => exact hasFDerivAtFilter_id L
   | succ n ihn =>
     rw [Function.iterate_succ, pow_succ]
-    rw [← hx] at ihn
-    exact ihn.comp x hf hL
+    exact ihn.comp hf hL
 
 @[fun_prop]
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
-  refine HasFDerivAtFilter.iterate hf ?_ hx n
-  convert hf.continuousAt.tendsto
-  exact hx.symm
+  refine HasFDerivAtFilter.iterate hf ?_ n
+  simpa [hx] using hf.continuousAt.tendsto.prodMap (tendsto_pure_pure f x)
 
 @[fun_prop]
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
-  refine HasFDerivAtFilter.iterate hf ?_ hx n
-  rw [nhdsWithin]
-  convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
-  exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
+  refine HasFDerivAtFilter.iterate hf ?_ n
+  simpa [hx] using hf.continuousWithinAt.tendsto_nhdsWithin hs |>.prodMap (tendsto_pure_pure f x)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasStrictFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictFDerivAt f^[n] (f' ^ n) x := by
-  induction n with
-  | zero => exact hasStrictFDerivAt_id x
-  | succ n ihn =>
-    rw [Function.iterate_succ, pow_succ]
-    rw [← hx] at ihn
-    exact ihn.comp x hf
+  refine HasFDerivAtFilter.iterate hf ?_ n
+  simpa [hx, ContinuousAt] using hf.continuousAt.prodMap' hf.continuousAt
 
 @[fun_prop]
 protected theorem DifferentiableAt.iterate {f : E → E} (hf : DifferentiableAt 𝕜 f x) (hx : f x = x)

@@ -71,6 +71,7 @@ open Set
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
+@[to_dual_dont_translate]
 structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
@@ -106,6 +107,7 @@ protected theorem mem_sets : s ∈ f.sets ↔ s ∈ f :=
 theorem univ_mem : univ ∈ f :=
   f.univ_sets
 
+@[gcongr]
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 
@@ -270,6 +272,7 @@ class NeBot (f : Filter α) : Prop where
   /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 
+@[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -298,6 +301,7 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
+@[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 

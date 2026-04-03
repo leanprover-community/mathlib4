@@ -55,6 +55,21 @@ instance [IsCardinalLocallyPresentable C κ] : IsCardinalAccessibleCategory C κ
 example (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := inferInstance
 
+section Finite
+
+open Cardinal
+attribute [local instance] fact_isRegular_aleph0
+
+/-- A category is locally finitely presentable if it is locally `ℵ₀`-presentable. -/
+abbrev IsLocallyFinitelyPresentable :=
+  IsCardinalLocallyPresentable.{w} C ℵ₀
+
+/-- A category is finitely accessible if it is `ℵ₀`-accessible. -/
+abbrev IsFinitelyAccessibleCategory :=
+  IsCardinalAccessibleCategory.{w} C ℵ₀
+
+end Finite
+
 end
 
 section

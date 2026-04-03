@@ -25,7 +25,7 @@ under the following operations:
 - `Fin.rev`.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 
@@ -646,7 +646,7 @@ theorem image_addNat_Ici (m) (i : Fin n) : (addNat · m) '' Ici i = Ici (i.addNa
   intro j hj
   have : (i : ℕ) + m ≤ j := hj
   refine ⟨⟨j - m, by lia⟩, ?_⟩
-  simp (disch := omega)
+  simp (disch := lia)
 
 @[simp]
 theorem image_addNat_Ioi (m) (i : Fin n) : (addNat · m) '' Ioi i = Ioi (i.addNat m) := by

@@ -76,7 +76,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { (inferInstance : OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 
@@ -113,8 +113,6 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=

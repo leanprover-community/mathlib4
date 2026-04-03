@@ -75,7 +75,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
-  |     [],  _ => [List.Pi.nil α]
+  | [], _ => [List.Pi.nil α]
   | i :: l, fs => (fs i).flatMap (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :
@@ -86,6 +86,7 @@ def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i
     pi (i :: l) t = ((t i).flatMap fun b ↦ (pi l t).map <| Pi.cons _ _ b) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
     (l : Multiset ι).pi (fs ·) = (↑(pi l fs) : Multiset (∀ i ∈ l, α i)) := by
   induction l with

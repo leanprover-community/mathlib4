@@ -23,7 +23,9 @@ chain rule, manifolds, higher derivative
 
 -/
 
-@[expose] public section
+public section
+
+assert_not_exists mfderiv
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
@@ -72,7 +74,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]
@@ -188,7 +190,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine ⟨continuousWithinAt_const, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 
@@ -264,23 +266,11 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_notMem_mulTSupport hx)
 
-@[deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
-
-@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
-
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_notMem]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
-
-@[deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
-
-@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 /-- Given two `C^n` functions `f` and `g` which coincide locally around the frontier of a set `s`,
 then the piecewise function defined using `f` on `s` and `g` elsewhere is `C^n`. -/
@@ -392,15 +382,26 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Open
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Opens.inclusion h : U → V) := by
-  rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
-  intro y
-  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
-  rw [Set.univ_inter]
-  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
+    ContMDiff I I n (Opens.inclusion h : U → V) := fun _ ↦
+  (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
+
+@[simp]
+lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (s : Set M)
+    (x : M) :
+    ContMDiffWithinAt I I' ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt I I' ∞ f s x :=
+  ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
+
+@[simp]
+lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (x : M) :
+    ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
+  rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
+
+@[simp]
+lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) :
+    ContMDiff I I' ∞ (Subtype.val ∘ f) ↔ ContMDiff I I' ∞ f := by
+  simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
 
 end ChartedSpace
 

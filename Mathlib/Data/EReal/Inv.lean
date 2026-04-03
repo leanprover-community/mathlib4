@@ -144,7 +144,7 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
 instance : CommMonoidWithZero EReal :=
-  { inferInstanceAs (MulZeroOneClass EReal) with
+  { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
@@ -251,7 +251,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
-    · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
+    · simp
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
       simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
@@ -307,7 +307,7 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
 
 lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
   intro a a_0 b b_0 a_b
-  simp only [mem_Ioi] at *
+  push _ ∈ _ at *
   lift a to ℝ using ⟨ne_top_of_lt a_b, ne_bot_of_gt a_0⟩
   match b with
   | ⊤ => exact inv_top ▸ inv_pos_of_pos_ne_top a_0 (coe_ne_top a)

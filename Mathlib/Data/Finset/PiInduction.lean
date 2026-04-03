@@ -27,7 +27,7 @@ finite type.
 finite set, finite type, induction, function
 -/
 
-@[expose] public section
+public section
 
 
 open Function

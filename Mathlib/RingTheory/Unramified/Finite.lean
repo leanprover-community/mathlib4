@@ -131,6 +131,7 @@ variable (R S) in
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
+
 See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
 This is the choice of such a `t`.
 -/
@@ -196,7 +197,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   -- Then `∑ Fᵢⱼ(bⱼ ⊗ bᵢ) = ∑ fⱼx ⊗ bᵢ = ∑ fⱼ ⊗ xbᵢ = ∑ aᵢⱼ(fⱼ ⊗ bᵢ) = ∑ Gᵢⱼ(bⱼ ⊗ bᵢ)`.
   -- Since `bⱼ ⊗ bᵢ` forms an `R`-basis of `S ⊗ S`, we conclude that `F = G`.
   have : F = G := by
-    apply Finsupp.finsuppProdEquiv.symm.injective
+    apply Finsupp.curryEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
     suffices (F.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a) =
@@ -231,8 +232,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
 
 /--
 Proposition I.2.3 of [iversen]
-If `S` is an unramified `R`-algebra, and `M` is a `S`-module, then the map
-`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits a `S`-linear section. -/
+If `S` is an unramified `R`-algebra, and `M` is an `S`-module, then the map
+`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits an `S`-linear section. -/
 noncomputable
 def sec :
     M →ₗ[S] S ⊗[R] M where

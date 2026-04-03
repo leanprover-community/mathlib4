@@ -47,14 +47,14 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
+@[semireducible] def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
   | 0 => []
   | n + 1 =>
     ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
 decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := rfl
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
@@ -191,7 +191,7 @@ theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
   simp
 
 theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
-    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b ^ l.length * d := by
   simp only [List.reverse_cons]
   rw [ofDigits_append]
   simp
@@ -206,8 +206,6 @@ theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
   induction L with
   | nil => simp [ofDigits]
   | cons d L ih => dsimp [ofDigits]; push_cast; rw [ih]
-
-@[deprecated (since := "2025-08-14")] alias coe_int_ofDigits := coe_ofDigits
 
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
@@ -358,15 +356,12 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   cases hd
   · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> omega
+    · apply Nat.div_lt_self <;> lia
     · assumption
 
--- TODO: find a good way to fix the linter error; simp_all is called on three goals, one remains
-set_option linter.flexible false in
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact digits_lt_base' hd
+  rcases b with (_ | _ | b) <;> simp_all [@digits_lt_base' _ m d]
 
 /-- an n-digit number in base b + 2 is less than (b + 2)^n -/
 theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
@@ -381,25 +376,19 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
     suffices ↑hd < b + 2 by linarith
     exact hl hd List.mem_cons_self
 
--- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
-set_option linter.flexible false in
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact ofDigits_lt_base_pow_length' hl
+  rcases b with (_ | _ | b) <;> simp_all [ofDigits_lt_base_pow_length']
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
   convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
--- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
-set_option linter.flexible false in
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
 theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact lt_base_pow_length_digits'
+  rcases b with (_ | _ | b) <;> simp_all [lt_base_pow_length_digits']
 
 theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     b.digits (b * m) = 0 :: b.digits m := by
@@ -521,7 +510,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
   | succ f ih =>
     grind
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 

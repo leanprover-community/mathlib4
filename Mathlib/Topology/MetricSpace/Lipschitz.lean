@@ -151,7 +151,7 @@ protected theorem dist : LipschitzWith 2 (Function.uncurry <| @dist α _) := by
   exact LipschitzWith.uncurry LipschitzWith.dist_left LipschitzWith.dist_right
 
 theorem dist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    dist (f^[n] x) (f^[n+1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
+    dist (f^[n] x) (f^[n + 1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [NNReal.coe_pow] using (hf.iterate n).dist_le_mul x (f x)
 
@@ -207,12 +207,6 @@ lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
     {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
   ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
     Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
-
-namespace Metric
-
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
-
-end Metric
 
 namespace LipschitzOnWith
 

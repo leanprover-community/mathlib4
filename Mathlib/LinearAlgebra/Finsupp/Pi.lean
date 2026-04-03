@@ -7,15 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 
@@ -68,7 +69,6 @@ variable [AddCommMonoid P] [Module R P]
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
-@[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
   map_add' x y := by
@@ -78,14 +78,79 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
     ext
     simp
 
+@[simp] theorem lcoeFun_apply (f : α →₀ M) : lcoeFun (R := R) f = ⇑f := rfl
+
+@[simp] theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
+    lcoeFun ∘ₗ lsingle x = .single R (fun _ ↦ M) x := by
+  ext; simp [single_eq_pi_single]
+
 end Finsupp
 
-variable {R : Type*} {M : Type*} {N : Type*}
+variable {R M N P : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [AddCommMonoid P] [Module R P]
 
 open Finsupp
 
 namespace LinearMap
+
+section prodOfFinsuppNat
+
+open Function
+
+variable (f : P × M →ₗ[R] M)
+
+/-- A linear map from a product module `P × M` to `M` induces a linear map from `P^(ℕ)` to `M`,
+where the `n`th component is given by `P —ι₁→ P × M` composed with `P × M —f→ M —ι₂→ P × M`
+`n` times. -/
+def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
+  Finsupp.lsum ℕ fun n ↦ ((.inr .. ∘ₗ f) ^ n) ∘ₗ .inl ..
+
+theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
+  simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.fst_sum]
+  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp)]
+  · simp
+  obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn
+  simp [pow_succ']
+
+theorem snd_prodOfFinsuppNat (x : ℕ →₀ P) :
+    (prodOfFinsuppNat f x).2 =
+    f (prodOfFinsuppNat f <| comapDomain.addMonoidHom (add_left_injective 1) x) := by
+  simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.snd_sum]
+  rw [← Finset.sum_preimage (· + 1) _ (add_left_injective 1).injOn _ (by simp_all)]
+  simp [pow_succ']
+
+variable {f}
+
+theorem prodOfFinsuppNat_injective (inj : Injective f) : Injective (prodOfFinsuppNat f) := by
+  intro x y
+  let s := x.support ∪ y.support
+  obtain eq | ne := s.eq_empty_or_nonempty
+  · simp_all [s]
+  set n := s.max' ne with hn
+  clear_value n; revert x y
+  induction n using Nat.strong_induction_on with | h n ih =>
+  intro x y s _ hn eq
+  rw [← x.single_add_erase 0, ← y.single_add_erase 0]
+  simp_rw [← mapDomain_comapDomain_nat_add_one, ← f.fst_prodOfFinsuppNat, eq]
+  congr 2
+  by_contra ne
+  apply ne (ih _ _ _ rfl (inj _))
+  · contrapose! ne; simp_all [-comapDomain_support]
+  · simp +contextual [hn, s, ← Nat.succ_le_iff, Finset.le_max']
+  simp_rw [← snd_prodOfFinsuppNat, eq]
+
+theorem exists_finsupp_nat_of_prod_injective (inj : Injective f) :
+    ∃ g : (ℕ →₀ P) →ₗ[R] M, Injective g :=
+  ⟨f ∘ₗ prodOfFinsuppNat f, inj.comp (prodOfFinsuppNat_injective inj)⟩
+
+theorem exists_finsupp_nat_of_fin_fun_injective {n : ℕ}
+    {f : (Fin (n + 1) → P) →ₗ[R] Fin n → P} (inj : Injective f) :
+    ∃ g : (ℕ →₀ P) →ₗ[R] Fin n → P, Injective g :=
+  have e := LinearEquiv.piCongrLeft R (fun _ ↦ P) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
+  exists_finsupp_nat_of_prod_injective (f := f ∘ₗ e.symm.toLinearMap) <| inj.comp e.symm.injective
+
+end prodOfFinsuppNat
 
 variable {α : Type*}
 
@@ -150,7 +215,7 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
     constructor
     <;> contrapose!
-    <;> simp_all (config := {contextual := true}) [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
+    <;> simp_all +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
 

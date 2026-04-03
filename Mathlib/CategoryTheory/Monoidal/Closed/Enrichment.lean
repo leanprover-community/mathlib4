@@ -23,7 +23,7 @@ All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoida
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

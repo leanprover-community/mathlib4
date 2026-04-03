@@ -39,7 +39,7 @@ def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
 
 @[simp]
 theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
-  rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  rw [ofScalars, smul_eq_zero]
   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
   use fun _ ↦ 1
   simp
@@ -68,7 +68,7 @@ theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalar
   refine Function.mtr fun h ↦ ?_
   simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.smul_apply]
-  push_neg
+  push Not
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
   simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
@@ -91,11 +91,16 @@ lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ →
     (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
   simp_rw [Pi.add_apply, Pi.add_def _ _]
   exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
 
+lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
+  ext; simp [ofScalars, sub_smul]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
   unfold ofScalars
   simp [Pi.smul_def x _, smul_smul]
@@ -256,7 +261,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   refine radius_eq_top_of_summable_norm _ fun r' ↦ ?_
   by_cases hrz : r' = 0
   · apply Summable.comp_nat_add (k := 1)
-    simpa [hrz] using (summable_const_iff 0).mpr rfl
+    simp [hrz]
   · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
@@ -277,12 +282,12 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   contrapose! this
   refine not_summable_of_ratio_norm_eventually_ge (r := 2) (by simp) ?_ ?_
   · contrapose! hc
-    apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
+    apply not_tendsto_atTop_of_tendsto_nhds (a := 0)
     apply Tendsto.congr' ?_ tendsto_const_nhds
     filter_upwards [hc] with n hc'
     rw [ofScalars_norm, norm_mul, norm_norm, mul_eq_zero] at hc'
     cases hc' <;> aesop
-  · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
+  · filter_upwards [hc.eventually_ge_atTop (2 * r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
     rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
     · convert hc

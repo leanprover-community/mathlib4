@@ -162,9 +162,6 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
   | smul_tprod r a =>
     rw [← TensorProduct.smul_tmul', map_smul, map_smul, ← gMul_def, tprod_mul_tprod R a _,
       cast_tprod]
-    congr 2 with i
-    rw [Fin.append_elim0]
-    refine congr_arg a (Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
@@ -190,7 +187,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   congr 1 with j
   rw [Fin.append_assoc]
   refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
-  rw [Fin.coe_cast, Fin.coe_cast]
+  rw [Fin.val_cast, Fin.val_cast]
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=

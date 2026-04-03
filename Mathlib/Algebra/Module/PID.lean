@@ -47,7 +47,7 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
-@[expose] public section
+public section
 
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.
@@ -74,7 +74,7 @@ variable [IsDomain R]
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
-theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
+theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
@@ -214,7 +214,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           ext i : 3
           simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_apply_one, Ideal.Quotient.mk_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
@@ -269,6 +269,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

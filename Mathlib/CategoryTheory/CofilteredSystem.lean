@@ -117,7 +117,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
@@ -167,15 +167,15 @@ def toPreimages : J ⥤ Type v where
   map g := MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
-    rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl
+    simpa using h (g ≫ f)
   map_id j := by
     simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
-    rfl
+    simp
   map_comp f g := by
     simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
-    rfl
+    ext
+    simp
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite

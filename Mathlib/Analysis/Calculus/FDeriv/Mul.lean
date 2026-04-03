@@ -22,9 +22,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
-@[expose] public section
+public section
 
-
+open scoped Ring
 open Asymptotics ContinuousLinearMap Topology
 
 section
@@ -43,85 +43,52 @@ section SMul
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
 
 If `c` is a differentiable scalar-valued function and `f` is a differentiable vector-valued
-function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section works for
-function `c` taking values in the base field, as well as in a normed algebra over the base
+function, then `fun x ↦ c x • f x` is differentiable as well. Lemmas in this section work for
+functions `c` taking values in the base field, as well as in a normed algebra over the base
 field: e.g., they work for `c : E → ℂ` and `f : E → F` provided that `F` is a complex
 normed vector space.
 -/
 
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prodMk hf
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (c • f) (c x • f' + c'.smulRight (f x)) x :=
   (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prodMk hf
 
-@[fun_prop]
-theorem HasFDerivWithinAt.fun_smul
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivWithinAt.smul
     (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x := by
+    HasFDerivWithinAt (c • f) (c x • f' + c'.smulRight (f x)) s x := by
   -- `by exact` to solve unification issues.
   exact (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x)).comp_hasFDerivWithinAt x <|
     hc.prodMk hf
 
-@[fun_prop]
-theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (c • f) (c x • f' + c'.smulRight (f x)) s x :=
-  hc.fun_smul hf
-
-@[fun_prop]
-theorem HasFDerivAt.fun_smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
-    HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x := by
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
+    HasFDerivAt (c • f) (c x • f' + c'.smulRight (f x)) x := by
   -- `by exact` to solve unification issues.
   exact (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x)).comp x <| hc.prodMk hf
 
-@[fun_prop]
-theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
-    HasFDerivAt (c • f) (c x • f' + c'.smulRight (f x)) x :=
-  hc.fun_smul hf
-
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_smul (hc : DifferentiableWithinAt 𝕜 c s x)
-    (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (fun y => c y • f y) s x :=
-  (hc.hasFDerivWithinAt.smul hf.hasFDerivWithinAt).differentiableWithinAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.smul (hc : DifferentiableWithinAt 𝕜 c s x)
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (c • f) s x :=
   (hc.hasFDerivWithinAt.smul hf.hasFDerivWithinAt).differentiableWithinAt
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 f x) :
-    DifferentiableAt 𝕜 (fun y => c y • f y) x :=
-  (hc.hasFDerivAt.smul hf.hasFDerivAt).differentiableAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (c • f) x :=
   (hc.hasFDerivAt.smul hf.hasFDerivAt).differentiableAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_smul (hc : DifferentiableOn 𝕜 c s) (hf : DifferentiableOn 𝕜 f s) :
-    DifferentiableOn 𝕜 (fun y => c y • f y) s := fun x hx => (hc x hx).smul (hf x hx)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.smul (hc : DifferentiableOn 𝕜 c s) (hf : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (c • f) s := fun x hx => (hc x hx).smul (hf x hx)
 
-@[simp, fun_prop]
-theorem Differentiable.fun_smul (hc : Differentiable 𝕜 c) (hf : Differentiable 𝕜 f) :
-    Differentiable 𝕜 fun y => c y • f y := fun x => (hc x).smul (hf x)
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.smul (hc : Differentiable 𝕜 c) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (c • f) := fun x => (hc x).smul (hf x)
 
@@ -199,117 +166,63 @@ open scoped RightActions
 variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_mul' {x : E} (ha : HasStrictFDerivAt a a' x)
-    (hb : HasStrictFDerivAt b b' x) :
-    HasStrictFDerivAt (fun y => a y * b y) (a x • b' + a' <• b x) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
-    (ha.prodMk hb)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
     (hb : HasStrictFDerivAt b b' x) :
     HasStrictFDerivAt (a * b) (a x • b' + a' <• b x) x :=
   ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
     (ha.prodMk hb)
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
-    HasStrictFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
-  convert hc.mul' hd
-  ext z
-  apply mul_comm
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (c * d) (c x • d' + d x • c') x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
 
-@[fun_prop]
-theorem HasFDerivWithinAt.fun_mul'
-    (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
-    HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a' <• b x) s x := by
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
+    HasFDerivWithinAt (a * b) (a x • b' + a' <• b x) s x := by
   -- `by exact` to solve unification issues.
   exact ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt
     (a x, b x)).comp_hasFDerivWithinAt x (ha.prodMk hb)
 
-@[fun_prop]
-theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
-    HasFDerivWithinAt (a * b) (a x • b' + a' <• b x) s x :=
-  ha.fun_mul' hb
-
-@[fun_prop]
-theorem HasFDerivWithinAt.fun_mul
-    (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
-    HasFDerivWithinAt (fun y => c y * d y) (c x • d' + d x • c') s x := by
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
+    HasFDerivWithinAt (c * d) (c x • d' + d x • c') s x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
 
-@[fun_prop]
-theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
-    HasFDerivWithinAt (c * d) (c x • d' + d x • c') s x :=
-  hc.fun_mul hd
-
-@[fun_prop]
-theorem HasFDerivAt.fun_mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
-    HasFDerivAt (fun y => a y * b y) (a x • b' + a' <• b x) x := by
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
+    HasFDerivAt (a * b) (a x • b' + a' <• b x) x := by
   -- `by exact` to solve unification issues.
   exact ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt
     (a x, b x)).comp x (ha.prodMk hb)
 
-@[fun_prop]
-theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
-    HasFDerivAt (a * b) (a x • b' + a' <• b x) x :=
-  ha.fun_mul' hb
-
-@[fun_prop]
-theorem HasFDerivAt.fun_mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
-    HasFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
+    HasFDerivAt (c * d) (c x • d' + d x • c') x := by
   convert hc.mul' hd
   ext z
   apply mul_comm
 
-@[fun_prop]
-theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
-    HasFDerivAt (c * d) (c x • d' + d x • c') x :=
-  hc.fun_mul hd
-
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_mul (ha : DifferentiableWithinAt 𝕜 a s x)
-    (hb : DifferentiableWithinAt 𝕜 b s x) : DifferentiableWithinAt 𝕜 (fun y => a y * b y) s x :=
-  (ha.hasFDerivWithinAt.mul' hb.hasFDerivWithinAt).differentiableWithinAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.mul (ha : DifferentiableWithinAt 𝕜 a s x)
     (hb : DifferentiableWithinAt 𝕜 b s x) : DifferentiableWithinAt 𝕜 (a * b) s x :=
   (ha.hasFDerivWithinAt.mul' hb.hasFDerivWithinAt).differentiableWithinAt
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_mul (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 𝕜 b x) :
-    DifferentiableAt 𝕜 (fun y => a y * b y) x :=
-  (ha.hasFDerivAt.mul' hb.hasFDerivAt).differentiableAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.mul (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 𝕜 b x) :
     DifferentiableAt 𝕜 (a * b) x :=
   (ha.hasFDerivAt.mul' hb.hasFDerivAt).differentiableAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_mul (ha : DifferentiableOn 𝕜 a s) (hb : DifferentiableOn 𝕜 b s) :
-    DifferentiableOn 𝕜 (fun y => a y * b y) s := fun x hx => (ha x hx).mul (hb x hx)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.mul (ha : DifferentiableOn 𝕜 a s) (hb : DifferentiableOn 𝕜 b s) :
     DifferentiableOn 𝕜 (a * b) s := fun x hx => (ha x hx).mul (hb x hx)
 
-@[simp, fun_prop]
-theorem Differentiable.fun_mul (ha : Differentiable 𝕜 a) (hb : Differentiable 𝕜 b) :
-    Differentiable 𝕜 fun y => a y * b y := fun x => (ha x).mul (hb x)
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable 𝕜 b) :
     Differentiable 𝕜 (a * b) := fun x => (ha x).mul (hb x)
 
@@ -478,11 +391,13 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-theorem hasStrictFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸} :
+theorem hasStrictFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
         proj l[i] <• ((l.drop (.succ i)).map x).prod) x := by
+  have := Fintype.ofFinite ι
   induction l with
   | nil => simp [hasStrictFDerivAt_const]
   | cons a l IH =>
@@ -508,10 +423,11 @@ theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} �
     Finset.sum_equiv (finCongr List.length_attach.symm) (by simp) (by simp)
 
 @[fun_prop]
-theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
+theorem hasFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
         proj l[i] <• ((l.drop (.succ i)).map x).prod) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_list_prod'.hasFDerivAt
 
 @[fun_prop]
@@ -519,7 +435,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         proj i <• (((List.finRange n).drop (.succ i)).map x).prod) x :=
-  (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
+  hasStrictFDerivAt_list_prod_finRange'.hasFDerivAt
 
 @[fun_prop]
 theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
@@ -535,9 +451,10 @@ Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
 For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 -/
 @[fun_prop]
-theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
+  have := Fintype.ofFinite ι
   refine hasStrictFDerivAt_list_prod'.congr_fderiv ?_
   conv_rhs => arg 1; arg 2; rw [← List.map_get_finRange l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
@@ -547,24 +464,27 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} 
     ext; simp only [smul_apply, op_smul_eq_smul, smul_eq_mul]; ring
 
 @[fun_prop]
-theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (u.map (fun i ↦ ((u.erase i).map x).prod • proj i)).sum x :=
+  have := Fintype.ofFinite ι
   u.inductionOn fun l ↦ by simpa using hasStrictFDerivAt_list_prod
 
 @[fun_prop]
-theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
+theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (Multiset.sum (u.map (fun i ↦ ((u.erase i).map x).prod • proj i))) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
-theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x := by
   simp only [Finset.sum_eq_multiset_sum, Finset.prod_eq_multiset_prod]
   exact hasStrictFDerivAt_multiset_prod
 
-theorem hasFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
+theorem hasFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_finset_prod.hasFDerivAt
 
 section Comp
@@ -723,12 +643,10 @@ TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` 
 of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ringInverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
-  by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
-
-@[deprecated (since := "2025-04-22")] alias hasFDerivAt_ring_inverse := hasFDerivAt_ringInverse
+  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
@@ -752,28 +670,25 @@ theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
 
-@[deprecated (since := "2025-04-22")]
-alias hasStrictFDerivAt_ring_inverse := hasStrictFDerivAt_ringInverse
-
 variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
-    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
+    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹ʳ) S z :=
   (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
-    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
+    DifferentiableAt 𝕜 (fun x => (h x)⁻¹ʳ) z :=
   (differentiableAt_inverse hz).comp z hf
 
 @[fun_prop]
 theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
-    DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹ʳ) S := fun x h => (hf x h).inverse (hz x h)
 
 @[simp, fun_prop]
 theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
-    Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
+    Differentiable 𝕜 fun x => (h x)⁻¹ʳ := fun x => (hf x).inverse (hz x)
 
 end AlgebraInverse
 
@@ -830,39 +745,21 @@ theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWi
 
 variable {h : E → R} {z : E} {S : Set E}
 
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
-    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
-  (differentiableAt_inv hz).comp_differentiableWithinAt z hf
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
     DifferentiableWithinAt 𝕜 (h⁻¹) S z :=
   (differentiableAt_inv hz).comp_differentiableWithinAt z hf
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
-    DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
-  (differentiableAt_inv hz).comp z hf
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
     DifferentiableAt 𝕜 (h⁻¹) z :=
   (differentiableAt_inv hz).comp z hf
 
-@[fun_prop]
-theorem DifferentiableOn.fun_inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
-    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
     DifferentiableOn 𝕜 (h⁻¹) S := fun x h => (hf x h).inv (hz x h)
 
-@[simp, fun_prop]
-theorem Differentiable.fun_inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
-    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv (hz x)
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
     Differentiable 𝕜 (h⁻¹) := fun x => (hf x).inv (hz x)
 

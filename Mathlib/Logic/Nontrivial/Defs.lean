@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Push.Attr
 
 /-!
@@ -70,6 +68,13 @@ theorem nontrivial_of_ne (x y : α) (h : x ≠ y) : Nontrivial α :=
 theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
   ⟨fun h ↦ @exists_ne α h x, fun ⟨_, hy⟩ ↦ nontrivial_of_ne _ _ hy⟩
 
+theorem Function.nontrivial_of_nontrivial (α β : Type*) [Nontrivial (α → β)] :
+    Nontrivial β := by
+  obtain ⟨f, g, h⟩ := exists_pair_ne (α → β)
+  rw [ne_eq, funext_iff, Classical.not_forall] at h
+  obtain ⟨a, h⟩ := h
+  exact nontrivial_of_ne _ _ h
+
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
 
@@ -126,3 +131,6 @@ instance : Nontrivial Bool :=
   ⟨⟨true, false, nofun⟩⟩
 
 end Bool
+
+theorem NeZero.nontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
+  ⟨⟨a, 0, NeZero.ne a⟩⟩
