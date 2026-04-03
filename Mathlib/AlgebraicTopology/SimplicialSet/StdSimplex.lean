@@ -254,8 +254,7 @@ lemma face_empty (n : ℕ) :
 lemma face_univ (n : ℕ) :
     face.{u} (.univ : Finset (Fin (n + 1))) = ⊤ := by
   ext
-  dsimp
-  simp only [Set.mem_univ, iff_true]
+  simp only [Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
   apply Finset.subset_univ
 
 end stdSimplex
