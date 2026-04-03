@@ -521,7 +521,7 @@ set_option backward.isDefEq.respectTransparency false in
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
 @[no_expose] noncomputable def orderIsoOfNonDegenerate
     {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
-    Fin (d + 1) ≃o (nonDegenerateEquiv' x).val where
+    Fin (d + 1) ≃o nonDegenerateEquiv' x where
   toEquiv := Equiv.ofBijective (fun i ↦ ⟨x.val i, Finset.mem_image_of_mem _ (by simp)⟩) (by
     constructor
     · have := (mem_nonDegenerate_iff_mono x.val).1 x.property
@@ -547,7 +547,7 @@ between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinali
       exact monotone_apply _ h
 
 lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
-    face (nonDegenerateEquiv' x).val = Subcomplex.ofSimplex x.val :=
+    face (nonDegenerateEquiv' x) = Subcomplex.ofSimplex x.val :=
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
 set_option backward.isDefEq.respectTransparency false in
