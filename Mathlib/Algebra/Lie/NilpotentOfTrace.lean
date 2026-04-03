@@ -45,7 +45,7 @@ lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
-  apply b.ext; intro k
+  refine b.ext fun k => ?_
   change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
   simp only [Module.Basis.end_apply_apply, hs k, map_smul]
   by_cases hjk : j = k
