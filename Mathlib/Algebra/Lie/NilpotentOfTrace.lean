@@ -60,10 +60,8 @@ lemma exists_lagrange_polynomial
     {ι : Type*} [Finite ι]
     (a : ι → K) (E : Submodule ℚ K) (f : E →ₗ[ℚ] ℚ)
     (ha : ∀ i, a i ∈ E) :
-    ∃ r : Polynomial K,
-      (∀ i j, eval (a i - a j) r =
-        algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧
-      eval 0 r = 0 := by
+    ∃ r : Polynomial K, (∀ i j, eval (a i - a j) r =
+      algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
   classical
   haveI : Fintype ι := Fintype.ofFinite ι
   let diffs := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
