@@ -247,7 +247,7 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
 (epi)morphism `f : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌` such that `x.simplex` is
 `X.map f.op x.toN.simplex` where `x.toN : X.N` is the unique nondegenerate
 simplex of `X` which generates the same subcomplex as `x`. -/
-noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
+@[no_expose] noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
   (existsUnique_toNπ rfl).exists.choose
 
 instance (x : X.S) : Epi x.toNπ := (existsUnique_toNπ rfl).exists.choose_spec.1
