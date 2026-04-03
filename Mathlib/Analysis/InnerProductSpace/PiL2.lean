@@ -1317,20 +1317,31 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
   simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
 
-variable (ι 𝕜 E) in
-/-- In a inner product space with dimension 1, a set `{v}` is a orthonormal basis for `‖v‖ = 1`. -/
-def FiniteDimensional.orthonormalBasisSingleton [Unique ι] (h : Module.finrank 𝕜 E = 1) (v : E)
-    (hv : ‖v‖ = 1) : OrthonormalBasis ι 𝕜 E :=
+namespace FiniteDimensional
+variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
+
+variable (ι v) in
+/-- In an inner product space with dimension 1, a set `{v}` is a orthonormal basis for `‖v‖ = 1`. -/
+def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
   (basisSingleton ι h v (fun h ↦ by simp [h] at hv)).toOrthonormalBasis (by simpa using hv)
 
 @[simp]
-theorem FiniteDimensional.orthonormalBasisSingleton_apply [Unique ι] (h : Module.finrank 𝕜 E = 1)
-    {v : E} (hv : ‖v‖ = 1) (i : ι) :
-    FiniteDimensional.orthonormalBasisSingleton ι 𝕜 E h v hv i = v := by
+theorem orthonormalBasisSingleton_apply (i : ι) :
+    FiniteDimensional.orthonormalBasisSingleton ι h v hv i = v := by
   simp [orthonormalBasisSingleton]
 
 @[simp]
-theorem FiniteDimensional.toBasis_orthonormalBasisSingleton [Unique ι] (h : Module.finrank 𝕜 E = 1)
-    {v : E} (hv : ‖v‖ = 1) : (orthonormalBasisSingleton ι 𝕜 E h v hv).toBasis =
+theorem toBasis_orthonormalBasisSingleton : (orthonormalBasisSingleton ι h v hv).toBasis =
     basisSingleton ι h v (fun h ↦ by simp [h] at hv) := by
   simp [orthonormalBasisSingleton]
+
+@[simp]
+theorem orthonormalBasisSingleton_repr_apply (w : E) :
+    (orthonormalBasisSingleton ι h v hv).repr w = WithLp.toLp 2 (Pi.single default ⟪v, w⟫) := by
+  ext
+  simp [OrthonormalBasis.repr_apply_apply, Pi.single_apply, Unique.eq_default]
+
+theorem range_orthonormalBasisSingleton : Set.range (orthonormalBasisSingleton ι h v hv) = {v} := by
+  simp
+
+end FiniteDimensional
