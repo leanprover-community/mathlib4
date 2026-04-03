@@ -67,6 +67,13 @@ lemma singularHomologyFunctor_obj_map_eq (H : TopCat.Homotopy f g) (R : C) (n : 
 alias congr_homologyMap_singularChainComplexFunctor :=
   singularHomologyFunctor_obj_map_eq
 
+end TopCat.Homotopy
+
+namespace AlgebraicTopology
+
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
+  {X Y : TopCat.{w}} {f g : X ⟶ Y} [CategoryWithHomology C]
+
 /-- A homotopy equivalence between topological spaces induces an isomorphism between the
 singular homology groups. -/
 @[simps] noncomputable
@@ -76,11 +83,11 @@ def singularHomologyFunctorHomotopyEquiv (H : X ≃ₕ Y) (R : C) (n : ℕ) :
   inv := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.symm.toFun)
   hom_inv_id := by
     rw [← Functor.map_comp, ← TopCat.ofHom_comp,
-      singularHomologyFunctor_obj_map_eq (g := 𝟙 X) (by exact H.left_inv.some)]
+      TopCat.Homotopy.singularHomologyFunctor_obj_map_eq (g := 𝟙 X) (by exact H.left_inv.some)]
     simp
   inv_hom_id := by
     rw [← Functor.map_comp, ← TopCat.ofHom_comp,
-      singularHomologyFunctor_obj_map_eq (g := 𝟙 Y) (by exact H.right_inv.some)]
+      TopCat.Homotopy.singularHomologyFunctor_obj_map_eq (g := 𝟙 Y) (by exact H.right_inv.some)]
     simp
 
 theorem isZero_singularHomologyFunctor_of_contractibleSpace
@@ -107,4 +114,4 @@ noncomputable def singularHomologyFunctorZeroOfContractibleSpace
     asIso (((singularHomologyFunctor C 0).obj R).map (terminal.from X)) ≪≫
     singularHomologyFunctorZeroOfTotallyDisconnectedSpace _ _ _ ≪≫ coproductUniqueIso _
 
-end TopCat.Homotopy
+end AlgebraicTopology
