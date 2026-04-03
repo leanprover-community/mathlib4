@@ -409,6 +409,9 @@ lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentati
   exact ⟨cokernel g, ⟨PreservesCokernel.iso (tilde.functor R) g ≪≫ iso ≪≫
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) P.isColimit⟩⟩
 
+theorem isIso_fromTildeΓ_iff_isQuasiCoherent (M : (Spec R).Modules) :
+    IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := sorry
+
 end IsQuasicoherent
 
 end AlgebraicGeometry
