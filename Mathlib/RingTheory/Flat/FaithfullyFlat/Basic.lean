@@ -633,11 +633,13 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
   inj' _ _ := baseChange_injective
   map_rel_iff' := baseChange_le_iff
 
-theorem IsNoetherian.ofFaithfullyFlat (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
+theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
+    (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
   rw [isNoetherian_iff'] at h ⊢
   exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
-theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M :=
+theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
+    (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M :=
   (baseChangeOrderEmbedding R M A).wellFoundedLT
 
 end Submodule
