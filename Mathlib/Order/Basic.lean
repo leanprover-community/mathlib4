@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Data.Prod.Init
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -864,7 +865,7 @@ type synonym `α ×ₗ β = α × β`.
 
 namespace Prod
 section LE
-variable [LE α] [LE β] {x y : α × β} {a a₁ a₂ : α} {b b₁ b₂ : β}
+variable [LE α] [LE β] {x y : α × β} {a a₁ a₂ : α} {b b₁ b₂ : β} {α₂} {β₂}
 
 instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
@@ -883,6 +884,26 @@ lemma GCongr.mk_le_mk (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) : (a₁, b₁) �
 
 @[to_dual (attr := simp) mk_le_swap]
 lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
+
+section
+variable {α β₁ β₂ : Type*} [LE β₁] [LE β₂]
+
+@[simp]
+lemma prodMk_le_prodMk_iff {u₁ v₁ : α → β₁} {u₂ v₂ : α → β₂} :
+    Prod.prodMk u₁ u₂ ≤ Prod.prodMk v₁ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
+  simp [Pi.le_def, Prod.le_def, forall_and]
+
+lemma const_le_prodMk_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
+    Function.const _ b ≤ Prod.prodMk v₁ v₂ ↔
+    Function.const _ b.1 ≤ v₁ ∧ Function.const _ b.2 ≤ v₂ :=
+  prodMk_const_const b.1 b.2 ▸ prodMk_le_prodMk_iff ..
+
+lemma prodMk_le_const_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
+    Prod.prodMk v₁ v₂ ≤ Function.const _ b ↔
+    v₁ ≤ Function.const _ b.1 ∧ v₂ ≤ Function.const _ b.2 :=
+  prodMk_const_const b.1 b.2 ▸ prodMk_le_prodMk_iff ..
+
+end
 
 end LE
 

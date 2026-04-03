@@ -106,7 +106,7 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨Prod.pair f g, f.2.prodMk g.2⟩
+  ⟨Prod.prodMk f g, f.2.prodMk g.2⟩
 
 end ContMDiffMap
 

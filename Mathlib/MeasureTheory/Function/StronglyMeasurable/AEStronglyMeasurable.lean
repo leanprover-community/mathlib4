@@ -229,7 +229,7 @@ protected theorem snd {f : α → β × γ} (hf : AEStronglyMeasurable[m] f μ) 
 
 @[fun_prop]
 protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
-    (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (Prod.pair f g) μ :=
+    (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (Prod.prodMk f g) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
 
