@@ -152,14 +152,16 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
   have hy_adj : y ∈ adjoin K {s} := by
     rw [adjoin_singleton_eq_range_aeval]
-    let g := Lagrange.interpolate (Finset.univ.image a) (fun d : K => d)
-      (fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0)
-    have hg_eval : ∀ i, eval (a i) g = c i := fun i =>
-      (Lagrange.eval_interpolate_at_node _ (Set.injOn_of_injective Function.injective_id)
-        (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
-    exact ⟨g, v.ext fun i => by
-      change (aeval s g) (v i) = y (v i)
-      rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, hy_diag i]⟩
+    let c_ext : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
+    let g := Lagrange.interpolate (Finset.univ.image a) (fun d : K => d) c_ext
+    refine ⟨g, v.ext fun i => ?_⟩
+    have hg : eval (a i) g = c i := by
+      have hmem : a i ∈ Finset.univ.image a := Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩
+      have h := Lagrange.eval_interpolate_at_node c_ext
+        (Set.injOn_of_injective Function.injective_id) hmem
+      exact h.trans (dif_pos (ha i))
+    change (aeval s g) (v i) = y (v i)
+    rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg, hy_diag i]
   have hny_comm : Commute n y :=
     commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K V (n * y) = 0 :=
