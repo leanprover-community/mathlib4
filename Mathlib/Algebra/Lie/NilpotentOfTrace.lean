@@ -132,8 +132,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
     rw [Module.End.aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
-    commute_of_mem_adjoin_singleton_of_commute hs_adj
-      (commute_of_mem_adjoin_self hn_adj).symm
+    commute_of_mem_adjoin_singleton_of_commute hs_adj (commute_of_mem_adjoin_self hn_adj).symm
   have h_ad_s_mem : ad_s ∈ adjoin K {ad K _ x} := by
     rw [hxns]; exact ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
   rw [adjoin_singleton_eq_range_aeval] at h_ad_s_mem
