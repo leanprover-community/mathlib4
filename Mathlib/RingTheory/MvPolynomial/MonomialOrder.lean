@@ -99,7 +99,7 @@ namespace MonomialOrder
 
 open MvPolynomial
 
-open scoped MonomialOrder
+open scoped MonomialOrder nonZeroDivisors
 
 variable {σ : Type*} {m : MonomialOrder σ}
 
@@ -223,8 +223,11 @@ theorem leadingCoeff_X {s : σ} :
 theorem leadingCoeff_one : m.leadingCoeff (1 : MvPolynomial σ R) = 1 :=
   m.leadingCoeff_monomial 1
 
-theorem monic_one : m.Monic (C 1 : MvPolynomial σ R) :=
+theorem monic_C_one : m.Monic (C 1 : MvPolynomial σ R) :=
   monic_monomial_one
+
+@[simp]
+lemma monic_one : m.Monic (1 : MvPolynomial σ R) := monic_monomial_one
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
@@ -801,11 +804,8 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
   rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
   aesop
 
-@[simp]
-lemma monic_one' : m.Monic (1 : MvPolynomial σ R) := monic_one
-
 @[simp, nontriviality]
-lemma monic_of_subsingleton [Subsingleton (MvPolynomial σ R)] (p : MvPolynomial σ R) :
+lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
     m.Monic p := by
   simp [Subsingleton.eq_one (α := MvPolynomial σ R)]
 
@@ -814,13 +814,12 @@ lemma degree_le_degree_of_support_subset {p q : MvPolynomial σ R} (h : p.suppor
   simp_rw [degree, m.toSyn.apply_symm_apply]
   exact Finset.sup_mono h
 
-theorem degree_mul_le' {f g : MvPolynomial σ R} :
+theorem toSyn_degree_mul_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f * g)) ≤ m.toSyn (m.degree f) + m.toSyn (m.degree g) :=
   map_add m.toSyn _ _ ▸ degree_mul_le
 
 lemma mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors
-    {f : MvPolynomial σ R}
-    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) : f ∈ nonZeroDivisors _ := by
+    {f : MvPolynomial σ R} (hf : m.leadingCoeff f ∈ R⁰) : f ∈ (MvPolynomial σ R)⁰ := by
   rw [← nonZeroDivisorsLeft_eq_nonZeroDivisors, mem_nonZeroDivisorsLeft_iff]
   intro g
   rw [← not_imp_not, ← m.leadingCoeff_eq_zero_iff (f := f * g)]
