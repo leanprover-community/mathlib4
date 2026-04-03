@@ -164,6 +164,7 @@ noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
   simp only [smul_def, ← mul_assoc, S_mul_S_eq, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]
@@ -229,7 +230,8 @@ private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B 
   induction n with
   | zero => simp only [zpow_zero, one_smul]
   | succ n hn =>
-    simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
+    simpa only [add_comm (n : ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc,
+      prop_red_T hS hT]
   | pred m hm =>
     rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
 

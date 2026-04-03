@@ -12,6 +12,8 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Free constructions
 
@@ -251,10 +253,6 @@ theorem traverse_mul' :
 
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
-
-@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
-theorem mul_map_seq (x y : FreeMagma α) :
-    ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 
 @[to_additive]
 instance : LawfulTraversable FreeMagma.{u} :=
@@ -647,10 +645,6 @@ end
 
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
-
-@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
-theorem mul_map_seq (x y : FreeSemigroup α) :
-    ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=

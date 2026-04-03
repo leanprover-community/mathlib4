@@ -43,20 +43,16 @@ variable {R} in
 of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
+deriving AddCommGroup, Module R
 
 instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩
 
-instance (x : FGModuleRepr R) : AddCommGroup x := by
-  unfold repr; infer_instance
-
-instance (x : FGModuleRepr R) : Module R x := by
-  unfold repr; infer_instance
-
-instance (x : FGModuleRepr R) : Module.Finite R x := by
-  unfold repr; infer_instance
+instance (x : FGModuleRepr R) : Module.Finite R x :=
+  inferInstanceAs <| Module.Finite R (_ ⧸ x.S)
 
 /-- A non-canonical representation of a finite module (as a quotient of `Rⁿ`). -/
+@[instance_reducible]
 noncomputable def ofFinite : FGModuleRepr R where
   n := (Module.Finite.exists_fin_quot_equiv R M).choose
   S := (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose
@@ -67,7 +63,8 @@ noncomputable def ofFiniteEquiv : ofFinite R M ≃ₗ[R] M :=
   Classical.choice (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose_spec
 
 instance : Category (FGModuleRepr R) :=
-  InducedCategory.category fun x : FGModuleRepr R ↦ FGModuleCat.of R x
+  inferInstanceAs (Category (InducedCategory _
+    (fun x : FGModuleRepr R ↦ FGModuleCat.of R x)))
 
 instance : SmallCategory (FGModuleRepr R) where
 

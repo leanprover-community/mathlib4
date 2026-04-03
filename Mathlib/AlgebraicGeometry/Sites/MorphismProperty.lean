@@ -85,11 +85,27 @@ lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Sch
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
 
+@[simp]
+lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
+    Presieve.singleton f ∈ precoverage P S ↔ Function.Surjective f.base ∧ P f := by
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
+  aesop
+
+lemma bot_mem_precoverage (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ Scheme.precoverage P X :=
+  ⟨fun x ↦ ‹IsEmpty X›.elim x, P.bot_mem_precoverage _⟩
+
+lemma precoverage_mono {P Q : MorphismProperty Scheme.{u}} (h : P ≤ Q) :
+    precoverage P ≤ precoverage Q := by
+  grw [precoverage, precoverage, MorphismProperty.precoverage_monotone h]
+
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
 
 instance [P.ContainsIdentities] [P.RespectsIso] : (precoverage P).HasIsos := by
   dsimp only [precoverage]; infer_instance
+
+instance [P.HasPullbacks] : (precoverage P).HasPullbacks where
+  hasPullbacks_of_mem _ hR := ⟨fun hg ↦ P.hasPullback _ (hR.2 hg)⟩
 
 instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
     (precoverage P).IsStableUnderBaseChange where

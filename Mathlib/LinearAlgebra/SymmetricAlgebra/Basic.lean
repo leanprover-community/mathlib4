@@ -85,8 +85,8 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | add b c hb hc => exact hb.add_right hc
 
 instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
-  __ := inferInstanceAs (CommSemiring (SymmetricAlgebra R M))
-  __ := inferInstanceAs (Ring (RingQuot (SymRel R M)))
+  __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
+  __ := (inferInstance : Ring (RingQuot (SymRel R M)))
 
 variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
@@ -168,7 +168,7 @@ variable {f : M →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
 section equiv
 
-/-- For `f : M →ₗ[R] A`, construst the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
+/-- For `f : M →ₗ[R] A`, construct the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
 from `IsSymmetricAlgebra f`. -/
 noncomputable def equiv : SymmetricAlgebra R M ≃ₐ[R] A :=
   .ofBijective (SymmetricAlgebra.lift f) h
@@ -240,9 +240,9 @@ theorem induction {motive : A → Prop}
   generalize h.equiv.invFun a = y
   change motive (SymmetricAlgebra.lift f y)
   induction y using SymmetricAlgebra.induction with
-    | algebraMap r => simpa using algebraMap r
-    | ι y => simpa using ι y
-    | mul _ _ hx hy => simpa using mul _ _ hx hy
-    | add _ _ hx hy => simpa using add _ _ hx hy
+  | algebraMap r => simpa using algebraMap r
+  | ι y => simpa using ι y
+  | mul _ _ hx hy => simpa using mul _ _ hx hy
+  | add _ _ hx hy => simpa using add _ _ hx hy
 
 end IsSymmetricAlgebra

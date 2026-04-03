@@ -58,7 +58,7 @@ the second and third notion here could also be called
 "locally contractible" and "semilocally contractible" respectively.
 We've enquired at
 https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility-locally-contractible-vs-strongly-local
-in the hope of gettting definitive naming advice.
+in the hope of getting definitive naming advice.
 
 The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
 imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot shrink to an open

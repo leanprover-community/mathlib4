@@ -126,6 +126,17 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
   have := FormallySmooth.of_restrictScalars R A B
   .of_formallyUnramified_and_formallySmooth
 
+lemma iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallyEtale R B ↔ Algebra.FormallyEtale A B :=
+  ⟨fun _ ↦ .of_restrictScalars (R := R), fun _ ↦ .comp _ A _⟩
+
+lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
+  ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
+
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
+
 end Comp
 
 lemma iff_of_surjective
@@ -134,6 +145,9 @@ lemma iff_of_surjective
     Algebra.FormallyEtale R S ↔ IsIdempotentElem (RingHom.ker (algebraMap R S)) := by
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
+
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
 
 section BaseChange
 
@@ -177,6 +191,9 @@ theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
 
+instance [FormallyEtale R S] (M : Submonoid S) : FormallyEtale R (Localization M) :=
+  .of_formallyUnramified_and_formallySmooth
+
 theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.localization_base M, FormallySmooth.localization_base M⟩
@@ -207,6 +224,8 @@ namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
 
+instance [Etale R A] : Smooth R A where
+
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
   formallyEtale := FormallyEtale.of_equiv e
@@ -231,6 +250,8 @@ theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A wher
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
 
+instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
+
 @[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
 end Etale
@@ -253,5 +274,11 @@ def FormallyEtale (f : R →+* S) : Prop :=
 lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
   rw [FormallyEtale, toAlgebra_algebraMap]
+
+lemma FormallyEtale.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyEtale)
+    (hg : g.FormallyEtale) :
+    (g.comp f).FormallyEtale := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyEtale.comp R S T
 
 end RingHom

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Linter.EmptyLine
 
 set_option linter.style.emptyLine true
@@ -114,7 +115,7 @@ D
 
 section TrailingComments
 
--- A comment here: the empy line before this should be ignored.
+-- A comment here: the empty line before this should be ignored.
 
 -- As well as mutual blocks
 
@@ -147,7 +148,7 @@ structure WithAString
 
                   embedded empty lines, but that is ok!"
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example : True := by  -- The following empty line is not reported, since the command is noisy.
 

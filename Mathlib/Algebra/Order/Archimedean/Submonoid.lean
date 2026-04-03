@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
 # Submonoids of archimedean monoids

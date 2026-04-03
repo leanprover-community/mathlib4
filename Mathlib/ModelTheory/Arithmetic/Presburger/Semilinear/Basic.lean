@@ -366,7 +366,7 @@ private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepO
   rw [linearIndepOn_iff_linearIndepOn_finset] at hs
   specialize hs t ht
   rw [linearIndepOn_finset_iffₛ] at hs
-  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (- ·) ∘ f) ?_ i hi
+  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (-·) ∘ f) ?_ i hi
   · simp_rw [← toRatVec_inj, map_sum]
     rw [← sub_eq_zero, ← Finset.sum_sub_distrib, ← heq]
     refine Finset.sum_congr rfl fun j hj => ?_
@@ -454,7 +454,7 @@ private noncomputable def floor (x i) :=
   ⌊hs.basis.repr (toRatVec x - toRatVec hs.base) i⌋
 
 private noncomputable def fract (x) :=
-  x + ∑ i, (- hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
+  x + ∑ i, (-hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
 
 private theorem floor_base (i) : hs.floor hs.base i = 0 := by simp [floor]
 
@@ -498,7 +498,7 @@ private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi 
   | add _ _ _ _ ih₁ ih₂ => simp [ih₁, ih₂]
 
 private theorem floor_toNat_sum_le (x) :
-    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (- hs.floor x i).toNat • i.1 := by
+    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (-hs.floor x i).toNat • i.1 := by
   rw [← toRatVec_mono]
   simp only [floor, map_add, map_sum, map_nsmul]
   rw [← sub_le_iff_le_add, ← Finset.sum_sub_distrib]
@@ -514,7 +514,7 @@ private theorem floor_toNat_sum_le (x) :
   · simp [toRatVec_nonneg]
 
 private theorem add_floor_neg_toNat_sum_eq (x) :
-    x + ∑ i, (- hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
+    x + ∑ i, (-hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
   simp only [fract]
   rw [tsub_add_cancel_of_le (hs.floor_toNat_sum_le x)]
 
@@ -647,7 +647,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
           tsub_add_cancel_of_le
             ((Int.le_toNat (neg_pos.2 hi).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hi))),
           add_assoc x,
-          Finset.add_sum_erase _ (fun j => (- hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          Finset.add_sum_erase _ (fun j => (-hs.floor x j).toNat • j.1) (Finset.mem_univ i),
           ← add_zero (Finset.sum (Finset.univ.erase i) _),
           ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hi.le,
           Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx]

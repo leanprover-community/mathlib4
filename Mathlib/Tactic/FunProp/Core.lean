@@ -9,7 +9,9 @@ public meta import Mathlib.Tactic.FunProp.Theorems
 public meta import Mathlib.Tactic.FunProp.ToBatteries
 public meta import Mathlib.Tactic.FunProp.Types
 public meta import Mathlib.Lean.Expr.Basic
-public meta import Batteries.Tactic.Exact
+public import Batteries.Tactic.Exact
+public import Mathlib.Tactic.FunProp.Theorems
+public import Qq
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
@@ -105,7 +107,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+    (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
   if (← isDefEq type e) then
 
@@ -126,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -167,7 +170,7 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 /--
 Try to prove `e` using the *identity lambda theorem*.
 
-For example, `e = q(Continuous fun x => x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+For example, `e = q(Continuous fun x ↦ x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
 def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -187,7 +190,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
 /--
 Try to prove `e` using the *constant lambda theorem*.
 
-For example, `e = q(Continuous fun x => y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+For example, `e = q(Continuous fun x ↦ y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
 def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -207,7 +210,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
 /--
 Try to prove `e` using the *apply lambda theorem*.
 
-For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+For example, `e = q(Continuous fun f ↦ f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
 def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -221,7 +224,7 @@ def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
 /--
 Try to prove `e` using *composition lambda theorem*.
 
-For example, `e = q(Continuous fun x => f (g x))` and `funPropDecl` is `FunPropDecl` for
+For example, `e = q(Continuous fun x ↦ f (g x))` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
 
 You also have to provide the functions `f` and `g`. -/
@@ -245,7 +248,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
 /--
 Try to prove `e` using *pi lambda theorem*.
 
-For example, `e = q(Continuous fun x y => f x y)` and `funPropDecl` is `FunPropDecl` for
+For example, `e = q(Continuous fun x y ↦ f x y)` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
 -/
 def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
@@ -266,12 +269,12 @@ def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
 
 
 /--
-Try to prove `e = q(P (fun x => let y := φ x; ψ x y)`.
+Try to prove `e = q(P (fun x ↦ let y := φ x; ψ x y)`.
 
 For example,
   - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x => let y := φ x; ψ x y)`
-  - `f = q(fun x => let y := φ x; ψ x y)`
+  - `e = q(Continuous fun x ↦ let y := φ x; ψ x y)`
+  - `f = q(fun x ↦ let y := φ x; ψ x y)`
 -/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -282,7 +285,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     let yValue := yValue.consumeMData
     let yBody  := yBody.consumeMData
     -- We perform reduction because the type is quite often of the form
-    -- `(fun x => Y) #0` which is just `Y`
+    -- `(fun x ↦ Y) #0` which is just `Y`
     -- Usually this is caused by the usage of `FunLike`
     let yType := yType.headBeta
     if (yType.hasLooseBVar 0) then
@@ -311,7 +314,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
       let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
       funProp (e.setArg (funPropDecl.funArgId) f)
 
-  | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
+  | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
 
 
 /-- Prove function property of using *morphism theorems*. -/
@@ -357,13 +360,13 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
   trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
   return none
 
-/-- Try to remove applied argument i.e. prove `P (fun x => f x y)` from `P (fun x => f x)`.
+/-- Try to remove applied argument i.e. prove `P (fun x ↦ f x y)` from `P (fun x ↦ f x)`.
 
 For example
   - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x => foo (bar x) y)`
-  - `fData` contains info on `fun x => foo (bar x) y`
-  This tries to prove `Continuous fun x => foo (bar x) y` from `Continuous fun x => foo (bar x)`
+  - `e = q(Continuous fun x ↦ foo (bar x) y)`
+  - `fData` contains info on `fun x ↦ foo (bar x) y`
+  This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -382,7 +385,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       applyCompRule funPropDecl e f g funProp
 
 
-/-- Prove function property of `fun f => f x₁ ... xₙ`. -/
+/-- Prove function property of `fun f ↦ f x₁ ... xₙ`. -/
 def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -522,7 +525,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       -- todo: decompose if uncurried and arguments do not match exactly
   return none
 
-/-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is free variable. -/
+/-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -558,7 +561,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     return none
 
 
-/-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is declared function. -/
+/-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is declared function. -/
 def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -625,7 +628,7 @@ mutual
     let e ← instantiateMVars e
 
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
+      (fun _ => do pure s!"{← ppExpr e}") do
 
     -- check cache for successful goals
     if let some { expr := _, proof? := some proof } := (← get).cache.find? e then

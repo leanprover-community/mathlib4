@@ -67,8 +67,8 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     _ = ↑(k % p) := by simp [this]
 
 lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
-  wlog hle : a ≤ b
-  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  wlog! hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ hle.le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
   rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
   constructor
@@ -101,7 +101,7 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, Int.dvd_zero]
+  · simp
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 

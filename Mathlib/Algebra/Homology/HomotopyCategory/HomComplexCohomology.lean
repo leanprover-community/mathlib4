@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.Algebra.Category.Grp.Abelian
 
 /-!
 # Cohomology of the hom complex
@@ -53,6 +53,12 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
     rintro α ⟨m, hm, β, hβ⟩
     exact ⟨m, hm, -β, by aesop⟩
 
+variable {K L n} in
+lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
+    α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
+  simp only [coboundaries, AddSubgroup.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk]
+  grind
+
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
 from `K` to `L`. -/
 def CohomologyClass : Type v := Cocycle K L n ⧸ coboundaries K L n
@@ -86,7 +92,7 @@ lemma mk_sub (x y : Cocycle K L n) :
 
 @[simp]
 lemma mk_neg (x : Cocycle K L n) :
-    mk (-x) = - mk x := rfl
+    mk (-x) = -mk x := rfl
 
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=
@@ -116,6 +122,7 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The additive map which sends a cohomology class to the corresponding morphism
 in the homotopy category. -/
 def toHom :
@@ -132,6 +139,7 @@ def toHom :
 lemma toHom_mk (x : Cocycle K L n) :
     toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -146,6 +154,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
   · rw [← mk_eq_zero_iff] at h
     rw [h, map_zero]
 
+variable (K L n) in
 lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _) := by
   refine ⟨fun x y h ↦ ?_, fun f ↦ ?_⟩
   · obtain ⟨x, rfl⟩ := x.mk_surjective
@@ -160,10 +169,11 @@ lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _)
 noncomputable def homAddEquiv :
     CohomologyClass K L n ≃+
       ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
-  AddEquiv.ofBijective toHom toHom_bijective
+  AddEquiv.ofBijective toHom (toHom_bijective _ _ _)
 
 end CohomologyClass
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps]

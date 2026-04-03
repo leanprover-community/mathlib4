@@ -5,8 +5,7 @@ Authors: Arthur Paulino
 -/
 module
 
-public meta import Lean.Elab.ElabRules
-public meta import Mathlib.Util.Tactic
+public import Mathlib.Init
 
 /-!
 # Defines the `swap_var` tactic
@@ -26,7 +25,7 @@ syntax swapRule := ident " ↔"? ppSpace ident
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.
 
-A *swap_rule* is of the form `x y` or `x ↔ y`, and "applying it" means swapping the variable name
+A `swap_rule` is of the form `x y` or `x ↔ y`, and "applying it" means swapping the variable name
 `x` by `y` and vice-versa on all hypotheses and the goal.
 
 ```lean

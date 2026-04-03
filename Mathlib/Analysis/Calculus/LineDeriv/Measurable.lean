@@ -21,7 +21,7 @@ way between differentiable and non-differentiable functions along the various li
 directed by `v`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

@@ -236,7 +236,7 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
   clear n f
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
-  | whiskerLeft  _ _ ih => funext; apply congr_fun ih
+  | whiskerLeft _ _ ih => funext; apply congr_fun ih
   | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl (congr_fun ih _)
   | @tensor W X Y Z _ _ ih₁ ih₂ =>
       funext n
@@ -267,6 +267,7 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
 of our proof of the coherence theorem. -/

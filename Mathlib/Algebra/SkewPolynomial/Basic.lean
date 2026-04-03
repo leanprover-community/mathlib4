@@ -38,7 +38,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 
 ## Implementation notes
 
-The implementation uses `Muliplicative ℕ` instead of `ℕ` as some notion
+The implementation uses `Multiplicative ℕ` instead of `ℕ` as some notion
 of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
 
 This decision was made because we use the type class `MulSemiringAction` to specify the properties
@@ -118,6 +118,7 @@ def support (p : SkewPolynomial R) : Finset ℕ :=
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp

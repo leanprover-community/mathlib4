@@ -485,7 +485,7 @@ instance : CommSemiring (Tropical R) :=
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
   induction n with
-  | zero => simp
+  | zero => simp [one_nsmul]
   | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)

@@ -107,6 +107,11 @@ instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
+/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
+instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
+
+@[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
+
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
   SetLike.ext'
@@ -134,10 +139,6 @@ protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
 theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (I : Set P)ᶜ := fun h ↦
   mt <| I.lower h
 
-/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
-  PartialOrder.lift SetLike.coe SetLike.coe_injective
-
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 
@@ -160,8 +161,6 @@ theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I
     have := mem_univ p
     rw [← hp] at this
     exact notMem this⟩
-
-@[deprecated (since := "2025-05-23")] alias isProper_of_not_mem := isProper_of_notMem
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals.
 
@@ -242,8 +241,6 @@ theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   exact iff_of_true (I.lower le_top h) trivial
 
 theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
-
-@[deprecated (since := "2025-05-23")] alias IsProper.top_not_mem := IsProper.top_notMem
 
 end OrderTop
 
@@ -360,21 +357,20 @@ instance : Max (Ideal P) :=
           le_sup_left, le_sup_right⟩
       lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
-instance : Lattice (Ideal P) :=
-  { Ideal.instPartialOrderIdeal with
-    sup := (· ⊔ ·)
-    le_sup_left := fun _ J i hi ↦
-      let ⟨w, hw⟩ := J.nonempty
-      ⟨i, hi, w, hw, le_sup_left⟩
-    le_sup_right := fun I _ j hj ↦
-      let ⟨w, hw⟩ := I.nonempty
-      ⟨w, hw, j, hj, le_sup_right⟩
-    sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
-      K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
-    inf := (· ⊓ ·)
-    inf_le_left := fun _ _ ↦ inter_subset_left
-    inf_le_right := fun _ _ ↦ inter_subset_right
-    le_inf := fun _ _ _ ↦ subset_inter }
+instance : Lattice (Ideal P) where
+  sup := (· ⊔ ·)
+  le_sup_left := fun _ J i hi ↦
+    let ⟨w, hw⟩ := J.nonempty
+    ⟨i, hi, w, hw, le_sup_left⟩
+  le_sup_right := fun I _ j hj ↦
+    let ⟨w, hw⟩ := I.nonempty
+    ⟨w, hw, j, hj, le_sup_right⟩
+  sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
+    K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
+  inf := (· ⊓ ·)
+  inf_le_left := fun _ _ ↦ inter_subset_left
+  inf_le_right := fun _ _ ↦ inter_subset_right
+  le_inf := fun _ _ _ ↦ subset_inter
 
 @[simp]
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
@@ -394,9 +390,6 @@ theorem mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
 
 theorem lt_sup_principal_of_notMem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
-
-@[deprecated (since := "2025-05-23")]
-alias lt_sup_principal_of_not_mem := lt_sup_principal_of_notMem
 
 end SemilatticeSupDirected
 
@@ -465,15 +458,9 @@ theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x �
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
-
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
-
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem
 
 end BooleanAlgebra
 

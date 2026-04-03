@@ -38,7 +38,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
+variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
@@ -64,6 +64,7 @@ lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (Aut
   suffices h : i.hom y = F.map f z by simpa [hu]
   exact hz.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
 of `F.obj X`. Then there exists a sub-object `Z` of `X` and an isomorphism
@@ -88,6 +89,7 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
   refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
   · exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The by a fiber functor `F : C ⥤ FintypeCat` induced functor `functorToAction F` to
 finite `Aut F`-sets is full. -/
 instance functorToAction_full : Functor.Full (functorToAction F) where

@@ -18,18 +18,18 @@ the inverse of the measure of `s`: `cond μ s = (μ s)⁻¹ • μ.restrict s`. 
 ensures that this is a probability measure (when `μ` is a finite measure).
 
 From this definition, we derive the "axiomatic" definition of conditional probability
-based on application: for any `s t : Set Ω`, we have `μ[t|s] = (μ s)⁻¹ * μ (s ∩ t)`.
+based on application: for any `s t : Set Ω`, we have `μ[t | s] = (μ s)⁻¹ * μ (s ∩ t)`.
 
 ## Main Statements
 
 * `cond_cond_eq_cond_inter`: conditioning on one set and then another is equivalent
   to conditioning on their intersection.
-* `cond_eq_inv_mul_cond_mul`: Bayes' Theorem, `μ[t|s] = (μ s)⁻¹ * μ[s|t] * (μ t)`.
+* `cond_eq_inv_mul_cond_mul`: Bayes' Theorem, `μ[t | s] = (μ s)⁻¹ * μ[s | t] * (μ t)`.
 
 ## Notation
 
 This file uses the notation `μ[|s]` the measure of `μ` conditioned on `s`,
-and `μ[t|s]` for the probability of `t` given `s` under `μ` (equivalent to the
+and `μ[t | s]` for the probability of `t` given `s` under `μ` (equivalent to the
 application `μ[|s] t`).
 
 These notations are contained in the scope `ProbabilityTheory`.
@@ -99,7 +99,7 @@ meta def condUnexpander : Lean.PrettyPrinter.Unexpander
 #guard_msgs in
 #check μ[|s]
 
-/-- Delaborator for `μ[t|s]` notation. -/
+/-- Delaborator for `μ[t | s]` notation. -/
 @[app_delab DFunLike.coe]
 meta def delabCondApplied : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
@@ -212,17 +212,17 @@ lemma cond_eq_zero_of_meas_eq_zero (hμs : μ s = 0) : μ[|s] = 0 := by simp [h�
 
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
 theorem cond_apply (hms : MeasurableSet s) (μ : Measure Ω) (t : Set Ω) :
-    μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
+    μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
 
-theorem cond_apply' (ht : MeasurableSet t) (μ : Measure Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
+theorem cond_apply' (ht : MeasurableSet t) (μ : Measure Ω) : μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply ht, Set.inter_comm, smul_eq_mul]
 
-@[simp] lemma cond_apply_self (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : μ[s|s] = 1 := by
+@[simp] lemma cond_apply_self (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : μ[s | s] = 1 := by
   simpa [cond] using ENNReal.inv_mul_cancel hs₀ hs
 
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω) :
-    μ[s ∩ t|s] = μ[t|s] := by
+    μ[s ∩ t | s] = μ[t | s] := by
   rw [cond_apply hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply hms]
 
 theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t | s] ≠ 0) :
@@ -254,24 +254,24 @@ theorem cond_cond_eq_cond_inter (hms : MeasurableSet s) (hmt : MeasurableSet t) 
   cond_cond_eq_cond_inter' hms hmt (measure_ne_top μ s)
 
 theorem cond_mul_eq_inter' (hms : MeasurableSet s) (hcs' : μ s ≠ ∞) (t : Set Ω) :
-    μ[t|s] * μ s = μ (s ∩ t) := by
+    μ[t | s] * μ s = μ (s ∩ t) := by
   obtain hcs | hcs := eq_or_ne (μ s) 0
   · simp [hcs, measure_inter_null_of_null_left]
   · rw [cond_apply hms, mul_comm, ← mul_assoc, ENNReal.mul_inv_cancel hcs hcs', one_mul]
 
 theorem cond_mul_eq_inter (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
-    μ[t|s] * μ s = μ (s ∩ t) := cond_mul_eq_inter' hms (measure_ne_top _ s) t
+    μ[t | s] * μ s = μ (s ∩ t) := cond_mul_eq_inter' hms (measure_ne_top _ s) t
 
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq (hms : MeasurableSet s) (μ : Measure Ω) [IsFiniteMeasure μ] :
-    μ[t|s] * μ s + μ[t|sᶜ] * μ sᶜ = μ t := by
+    μ[t | s] * μ s + μ[t | sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t,
     Set.inter_comm _ t]
   exact measure_inter_add_diff t hms
 
 /-- **Bayes' Theorem** -/
 theorem cond_eq_inv_mul_cond_mul (hms : MeasurableSet s) (hmt : MeasurableSet t) (μ : Measure Ω)
-    [IsFiniteMeasure μ] : μ[t|s] = (μ s)⁻¹ * μ[s|t] * μ t := by
+    [IsFiniteMeasure μ] : μ[t | s] = (μ s)⁻¹ * μ[s | t] * μ t := by
   rw [mul_assoc, cond_mul_eq_inter hmt s, Set.inter_comm, cond_apply hms]
 
 end Bayes
