@@ -26,12 +26,12 @@ lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by 
 namespace Sum
 
 @[simp]
-theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
+theorem elim_comp_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
     Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
   grind
 
 @[simp]
-theorem elim_swap_apply {α β γ : Type*} {f : α → γ} {g : β → γ} {x : β ⊕ α} :
+theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} {x : β ⊕ α} :
     Sum.elim f g (Sum.swap x) = Sum.elim g f x := by
   grind
 

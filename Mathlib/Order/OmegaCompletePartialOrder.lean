@@ -177,22 +177,22 @@ def inr (c : Chain β) : Chain (α ⊕ β) := c.map OrderEmbedding.inr.toOrderHo
 If the chain contains right values (chains can contain only left values, or only right values),
 then a default value is returned. -/
 @[simps]
-def projl [Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
+def projL [Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
   toFun n := Sum.elim id (fun _ ↦ default) (c n)
-  monotone' := Sum.elim_mono monotone_snd monotone_const c.monotone
+  monotone' := Monotone.sumElim monotone_snd monotone_const c.monotone
 
 /-- Projects right values out of a chain.
 If the chain contains left values (chains can contain only left values, or only right values),
 then a default value is returned. -/
 @[simps!]
-def projr [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
-  projl (c.map ⟨Sum.swap, Sum.swap_mono⟩)
+def projR [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
+  projL (c.map ⟨Sum.swap, Sum.swap_mono⟩)
 
 /-- Splits a chain of sums into a sum of chains. -/
 def toSum (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
   Sum.map
-    (fun d ↦ let : Inhabited α := ⟨d⟩; projl c)
-    (fun d ↦ let : Inhabited β := ⟨d⟩; projr c)
+    (fun d ↦ let : Inhabited α := ⟨d⟩; projL c)
+    (fun d ↦ let : Inhabited β := ⟨d⟩; projR c)
     (c 0)
 
 @[simp]
@@ -216,11 +216,11 @@ lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr :
   cases hc <;> simp [toSum, h₀, hₙ]
 
 lemma eq_inl_of_coe_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
-    (hn : c n = .inl x) : c = inl (projl c) := by
+    (hn : c n = .inl x) : c = inl (projL c) := by
   ext; cases c using sum_cases <;> simp_all
 
 lemma eq_inr_of_coe_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
-    (hn : c n = .inr x) : c = inr (projr c) := by
+    (hn : c n = .inr x) : c = inr (projR c) := by
   ext; cases c using sum_cases <;> simp_all
 
 end Chain
@@ -563,7 +563,7 @@ lemma ωScottContinuous_elim
     {h : α → β ⊕ δ} (hh : ωScottContinuous h) :
     ωScottContinuous (fun x ↦ (h x).elim (f x) (g x)) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
-  · exact Sum.elim_mono hf.monotone hg.monotone hh.monotone
+  · exact Monotone.sumElim hf.monotone hg.monotone hh.monotone
   · rw [hh.map_ωSup]
     generalize hc' : c.map ⟨h, hh.monotone⟩ = c'
     simp only [Chain.ext_iff, coe_map, OrderHom.coe_mk, funext_iff, Function.comp_apply] at hc'

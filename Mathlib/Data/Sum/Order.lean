@@ -178,7 +178,7 @@ theorem inl_strictMono : StrictMono (inl : α → α ⊕ β) := fun _ _ => LiftR
 
 theorem inr_strictMono : StrictMono (inr : β → α ⊕ β) := fun _ _ => LiftRel.inr
 
-theorem elim_mono {δ : Type*} [Preorder δ]
+theorem _root_.Monotone.sumElim {δ : Type*} [Preorder δ]
     {f : α → β → γ} (hf : Monotone (Function.uncurry f))
     {g : α → δ → γ} (hg : Monotone (Function.uncurry g))
     {h : α → β ⊕ δ} (hh : Monotone h) :
