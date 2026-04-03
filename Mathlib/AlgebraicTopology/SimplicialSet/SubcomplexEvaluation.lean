@@ -34,7 +34,7 @@ def evaluation (X : SSet.{u}) (j : SimplexCategoryᵒᵖ) :
   obj A := A.obj j
   map f := CategoryTheory.homOfLE (leOfHom f j)
 
-instance {J : Type*} [Category J] {X : SSet.{u}} [IsFilteredOrEmpty J] :
+instance {J : Type*} [Category* J] {X : SSet.{u}} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (Subcomplex.toSSetFunctor (X := X)) where
   preservesColimit {F} :=
     preservesColimit_of_preserves_colimit_cocone
