@@ -14,8 +14,7 @@ public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
-This file proves that a finite stably free module `M` is free if all of its localizations at
-maximal ideals are free of rank `1`.
+This file proves that a finite stably free module `M` is free if it is locally free of rank `1`.
 -/
 
 public section

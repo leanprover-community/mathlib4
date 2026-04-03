@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Basis.Prod
-public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.RingTheory.Finiteness.Small
 
 /-!
