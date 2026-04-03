@@ -104,7 +104,7 @@ section AlgebraCoconeApp
 
 /-- The `n`-th leg of the algebra cocone: the unique map `F^n(⊥) → B.a`. -/
 noncomputable def algebraCoconeApp (B : Endofunctor.Algebra F) :
-    (n : ℕ) → iterateObj F n ⟶ B.a
+    (n : ℕ) → (F.iterate n).obj (⊥_ C) ⟶ B.a
   | 0 => initial.to B.a
   | n + 1 => F.map (algebraCoconeApp B n) ≫ B.str
 

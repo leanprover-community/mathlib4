@@ -94,7 +94,7 @@ noncomputable def extendCocone (s : Cocone (initialChain F ⋙ F)) :
           congr_arg _ (Subsingleton.elim _ _)]
         rw [initialChain_map_succ_eq F hle]
         have := s.w (homOfLE hle)
-        simp only [Functor.comp_obj, Functor.comp_map, Functor.const_obj_obj] at this
+        simp only [Functor.comp_obj, Functor.comp_map] at this
         exact this }
 
 /-- If `c` is a colimit cocone for the initial chain, then `shiftCocone F c` is a

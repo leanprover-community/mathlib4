@@ -9,21 +9,23 @@ public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
-# The initial chain of an endofunctor
+# Iterated endofunctors and the initial chain
 
-Given a category `C` with an initial object and an endofunctor `F : C ⥤ C`,
-the *initial chain* is the sequence `⊥ → F(⊥) → F²(⊥) → ⋯` viewed as
-a functor from `ℕ` (as a preorder category) to `C`.
+Given an endofunctor `F : C ⥤ C`, we define the iterated functor `F.iterate n : C ⥤ C`
+which applies `F` a total of `n` times. This is a general-purpose definition that does
+not require the category to have an initial object.
+
+Given additionally an initial object, the *initial chain* is the sequence
+`⊥ → F(⊥) → F²(⊥) → ⋯` viewed as a functor from `ℕ` (as a preorder category) to `C`.
 
 ## Main definitions
 
-- `CategoryTheory.Endofunctor.iterateObj F n` : the `n`-th iterate `F^n(⊥)`
+- `CategoryTheory.Functor.iterate F n` : the `n`-th iterate `F^n : C ⥤ C`
 - `CategoryTheory.Endofunctor.iterateMap F n` : the successor map `F^n(⊥) → F^{n+1}(⊥)`
 - `CategoryTheory.Endofunctor.initialChain F` : the functor `ℕ ⥤ C`
 
 ## Main results
 
-- `CategoryTheory.Endofunctor.initialChain_obj` : `(initialChain F).obj n = iterateObj F n`
 - `CategoryTheory.Endofunctor.initialChain_map_succ` : the map for `n ≤ n+1` is `iterateMap F n`
 - `CategoryTheory.Endofunctor.initialChain_map_succ_eq` : the chain map at successor indices
   equals `F` applied to the chain map
@@ -38,41 +40,47 @@ a functor from `ℕ` (as a preorder category) to `C`.
 
 open CategoryTheory CategoryTheory.Limits
 
-namespace CategoryTheory.Endofunctor
-
 universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-section Definitions
+namespace CategoryTheory.Functor
+
+/-- The `n`-th iterate of an endofunctor `F : C ⥤ C`:
+`F.iterate 0 = 𝟭 C` and `F.iterate (n + 1) = F.iterate n ⋙ F`. -/
+def iterate (F : C ⥤ C) : ℕ → (C ⥤ C)
+  | 0 => 𝟭 C
+  | n + 1 => F.iterate n ⋙ F
+
+@[simp]
+lemma iterate_zero (F : C ⥤ C) : F.iterate 0 = 𝟭 C := rfl
+
+@[simp]
+lemma iterate_succ (F : C ⥤ C) (n : ℕ) : F.iterate (n + 1) = F.iterate n ⋙ F := rfl
+
+end CategoryTheory.Functor
+
+namespace CategoryTheory.Endofunctor
+
+section InitialChain
 
 variable (F : C ⥤ C) [HasInitial C]
 
-/-- The `n`-th iterate of `F` applied to the initial object: `F^n(⊥)`. -/
-noncomputable def iterateObj : ℕ → C
-  | 0 => ⊥_ C
-  | n + 1 => F.obj (iterateObj n)
-
-/-- The successor map `F^n(!) : F^n(⊥) → F^{n+1}(⊥)`, defined by applying `F` to the
-unique map from the initial object. -/
-noncomputable def iterateMap : (n : ℕ) → iterateObj F n ⟶ iterateObj F (n + 1)
+/-- The successor map `F^n(⊥) → F^{n+1}(⊥)` in the initial chain, defined by
+applying `F` iteratively to the unique map from the initial object. -/
+noncomputable def iterateMap :
+    (n : ℕ) → (F.iterate n).obj (⊥_ C) ⟶ (F.iterate (n + 1)).obj (⊥_ C)
   | 0 => initial.to _
   | n + 1 => F.map (iterateMap n)
-
-end Definitions
-
-section Functor
-
-variable (F : C ⥤ C) [HasInitial C]
 
 /-- The initial chain: the functor `ℕ ⥤ C` sending `n` to `F^n(⊥)`,
 constructed via `Functor.ofSequence` from the successor maps. -/
 noncomputable def initialChain : ℕ ⥤ C :=
-  Functor.ofSequence (X := iterateObj F) (iterateMap F)
+  Functor.ofSequence (X := fun n => (F.iterate n).obj (⊥_ C)) (iterateMap F)
 
 @[simp]
 lemma initialChain_obj (n : ℕ) :
-    (initialChain F).obj n = iterateObj F n := rfl
+    (initialChain F).obj n = (F.iterate n).obj (⊥_ C) := rfl
 
 @[simp]
 lemma initialChain_map_succ (n : ℕ) :
@@ -109,6 +117,6 @@ lemma initialChain_map_succ_eq {m n : ℕ} (h : m ≤ n) :
     rw [initialChain_map_succ, initialChain_map_succ]
     rfl
 
-end Functor
+end InitialChain
 
 end CategoryTheory.Endofunctor
