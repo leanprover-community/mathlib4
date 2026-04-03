@@ -239,7 +239,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
   ext <| by simp [range]
 
 theorem range_pair_subset (f : α → β) (g : α → γ) :
-    (range Prod.prodMk f g) ⊆ range f ×ˢ range g := by grind
+    (range (Prod.prodMk f g)) ⊆ range f ×ˢ range g := by grind
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
   ⟨(x, y), ⟨hx, hy⟩⟩
