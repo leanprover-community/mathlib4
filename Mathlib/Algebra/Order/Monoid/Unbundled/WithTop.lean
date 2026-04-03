@@ -684,30 +684,26 @@ namespace AddEquiv
 variable {γ : Type*} [Add α] [Add β] [Add γ] (e e₁ : α ≃+ β) (e₂ : β ≃+ γ)
 
 /-- A `AddEquiv` version of `Equiv.withBotCongr`. -/
-@[to_dual /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
-def withBotCongr : WithBot α ≃+ WithBot β := {
-  e.toEquiv.withBotCongr with
+@[to_dual (attr := simps!) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
+def withBotCongr : WithBot α ≃+ WithBot β where
+  __ := e.toEquiv.withBotCongr
   map_add' := e.toAddHom.withBotMap.map_add'
-}
 
 @[to_dual (attr := simp)]
 lemma coe_withBotCongr : e.withBotCongr = WithBot.map e := rfl
 
-@[to_dual]
-lemma coe_withBotCongr_eq_equiv_withBotCongr : e.withBotCongr = (e : α ≃ β).withBotCongr := rfl
+@[to_dual (attr := simp)]
+lemma withBotCongr_toEquiv : e.withBotCongr = (e : α ≃ β).withBotCongr := rfl
 
-@[to_dual]
-lemma coe_withBotCongr_eq_addHom_withBotMap : e.withBotCongr = (e : AddHom α β).withBotMap := rfl
-
-@[to_dual]
-lemma withBotCongr_apply (a : WithBot α) : e.withBotCongr a = a.map e := rfl
+@[to_dual (attr := simp)]
+lemma withBotCongr_toAddHom : e.withBotCongr = (e : AddHom α β).withBotMap := rfl
 
 @[to_dual (attr := simp)]
 lemma withBotCongr_refl : (AddEquiv.refl α).withBotCongr = AddEquiv.refl _ :=
   AddEquiv.ext <| congr_fun WithBot.map_id
 
 @[to_dual (attr := simp)]
-theorem withBotCongr_symm : e.symm.withBotCongr = e.withBotCongr.symm := rfl
+theorem withBotCongr_symm : e.withBotCongr.symm = e.symm.withBotCongr := rfl
 
 @[to_dual (attr := simp)]
 theorem withBotCongr_trans :
