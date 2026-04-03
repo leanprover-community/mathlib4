@@ -73,6 +73,7 @@ lemma Module.rankAtStalk_pos_iff_algebraMap_injective :
   rw [← PrimeSpectrum.comap_surjective_iff_injective_of_finite,
     PrimeSpectrum.rankAtStalk_pos_iff_comap_surjective]
 
+omit [Module.Flat R S] in
 /-- If `S` is free of rank `1` over `R`, the map `R →+* S` is an isomorphism. -/
 lemma Module.Free.bijective_algebraMap_of_finrank_eq_one [Nontrivial R] [Free R S]
     (h : finrank R S = 1) :
