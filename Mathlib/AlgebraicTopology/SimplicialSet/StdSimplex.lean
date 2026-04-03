@@ -475,7 +475,7 @@ noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
 
 set_option backward.isDefEq.respectTransparency false in
 variable (n) in
-lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
+private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     Function.Bijective (fun (⟨x, hx⟩ : (Δ[n] : SSet.{u}).nonDegenerate m) ↦
       (⟨Finset.image (objEquiv x).toOrderHom .univ, by
         dsimp
@@ -505,8 +505,8 @@ lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
 
 /-- Nondegenerate `d`-dimensional simplices of the standard simplex `Δ[n]`
 identify to subsets of `Fin (n + 1)` of cardinality `d + 1`. -/
-noncomputable def nonDegenerateEquiv' {n d : ℕ} : (Δ[n] : SSet.{u}).nonDegenerate d ≃
-    { S : Finset (Fin (n + 1)) | S.card = d + 1 } :=
+@[no_expose] noncomputable def nonDegenerateEquiv' {n d : ℕ} :
+    (Δ[n] : SSet.{u}).nonDegenerate d ≃ { S : Finset (Fin (n + 1)) | S.card = d + 1 } :=
   Equiv.ofBijective _ (bijective_image_objEquiv_toOrderHom_univ n d)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -519,7 +519,8 @@ lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
-noncomputable def orderIsoOfNonDegenerate {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
+@[no_expose] noncomputable def orderIsoOfNonDegenerate
+    {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) :
     Fin (d + 1) ≃o (nonDegenerateEquiv' x).val where
   toEquiv := Equiv.ofBijective (fun i ↦ ⟨x.val i, Finset.mem_image_of_mem _ (by simp)⟩) (by
     constructor
