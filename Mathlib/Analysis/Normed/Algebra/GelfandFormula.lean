@@ -8,7 +8,10 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
+<<<<<<< HEAD
 import Mathlib.Analysis.Complex.Liouville
+=======
+>>>>>>> master
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 
@@ -21,7 +24,8 @@ complex Banach algebra has nonempty spectrum.
 
 ## Main results
 
-* `spectrum.hasDerivAt_resolvent`: the resolvent function is differentiable on the resolvent set.
+* `spectrum.hasDerivAt_resolvent_const_left`: the resolvent function is differentiable on the
+  resolvent set.
 * `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
@@ -46,8 +50,11 @@ open Filter ENNReal
 
 namespace spectrum
 
-theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+section NonTriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+
+theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
     hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
@@ -55,8 +62,15 @@ theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [Norm
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 
+<<<<<<< HEAD
 theorem hasFDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+=======
+@[deprecated  (since := "2026-03-26")]
+alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
+
+theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+>>>>>>> master
     HasFDerivAt (resolvent · k)
       (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
@@ -65,7 +79,13 @@ theorem hasFDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [Nor
     simpa using (hasFDerivAt_const _ _).sub (hasFDerivAt_id (𝕜 := 𝕜) _)
   simpa [resolvent_eq hk] using H₁.comp a H₂
 
+<<<<<<< HEAD
 theorem hasDerivAt_resolvent' [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+=======
+end NonTriviallyNormedField
+
+theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+>>>>>>> master
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
   convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
@@ -142,7 +162,8 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
   by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
-    (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
+    hasDerivAt_resolvent_const_left (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)
+      |>.differentiableAt
   /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
   which contradicts that `resolvent a z` is invertible. -/
   have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
