@@ -461,13 +461,15 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
+@[aesop safe apply]
 protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 
+@[grind _=_]
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
@@ -488,7 +490,6 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
   rw [this, ← mul_assoc]
   have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
-
 
 section Regular
 
