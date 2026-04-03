@@ -110,12 +110,12 @@ variable {R : Type*} [CommSemiring R]
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
 `0` has degree `0`. -/
-def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
+noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
 variable (m) in
 /-- the leading coefficient of a multivariate polynomial with respect to a monomial ordering -/
-def leadingCoeff (f : MvPolynomial σ R) : R :=
+noncomputable def leadingCoeff (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
 
 variable (m) in
@@ -139,9 +139,9 @@ lemma C_mul_leadingCoeff_monomial_degree (p : MvPolynomial σ R) :
     m.Monic f :=
   Subsingleton.eq_one (m.leadingCoeff f)
 
-instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
-    Decidable (m.Monic f) := by
-  unfold Monic; infer_instance
+noncomputable instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
+    Decidable (m.Monic f) :=
+  inferInstanceAs <| Decidable (m.leadingCoeff f = 1)
 
 @[simp]
 theorem Monic.leadingCoeff_eq_one {f : MvPolynomial σ R} (hf : m.Monic f) : m.leadingCoeff f = 1 :=
@@ -520,8 +520,11 @@ theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
   tauto
 
 /-- Multiplicativity of leading coefficients -/
-theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
+@[simp] theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases! +distrib h : f = 0 ∨ g = 0
+  · cases h <;> simp [*]
+  obtain ⟨hf, hg⟩ := h
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
 /-- Monomial degree of powers -/
@@ -1196,7 +1199,7 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
   have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
     mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
-    m.leadingCoeff_mul hm1 hp1, m.leadingCoeff_mul hm2 hp2, m.leadingCoeff_monomial,
+    m.leadingCoeff_mul, m.leadingCoeff_monomial,
     degree_monomial, hc1, hc2, reduceIte, mul_right_comm, mul_comm c₂ c₁]
   rw [tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
@@ -1249,7 +1252,8 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     by_cases hb0 : g b = 0
     · simp_all
     simp? [Finset.sum_insert hb, hb0] at hfd hd says
-      simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
+      simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false]
+        at hfd hd
     obtain ⟨⟨rfl, isunit_gb⟩, hd⟩ := hd
     use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
     simp? [Finset.sum_insert hb, hb] says

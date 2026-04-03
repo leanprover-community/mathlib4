@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+
 /-!
 
 # Separable degree
@@ -810,7 +811,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
   clear_value g
-  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
+  have hx : x ∈ E'⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
