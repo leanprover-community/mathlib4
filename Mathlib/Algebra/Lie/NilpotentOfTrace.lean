@@ -180,7 +180,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     have h : f (∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E)) = 0 := by rw [h_sum_E, map_zero]
     simp only [map_sum, map_smul, smul_eq_mul] at h
     simpa [sq] using h
-  have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := fun i =>
-    eq_zero_of_pow_eq_zero ((Finset.sum_eq_zero_iff_of_nonneg
-      (fun j _ => sq_nonneg _)).mp h_sum_sq i (Finset.mem_univ _))
+  have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := by
+    intro i
+    have h_sq := (Finset.sum_eq_zero_iff_of_nonneg fun _ _ => sq_nonneg _).mp h_sum_sq
+    exact eq_zero_of_pow_eq_zero (h_sq i (Finset.mem_univ _))
   exact (Submodule.linearMap_eq_zero_iff_of_eq_span f rfl).mpr fun ⟨_, ⟨i, rfl⟩⟩ => h_each_zero i
