@@ -6,12 +6,9 @@ Authors: Larsen Close
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
-public import Mathlib.CategoryTheory.Presentable.Adjunction
-public import Mathlib.CategoryTheory.Presentable.Type
 
 /-!
 # The category of modules is locally finitely presentable
@@ -23,6 +20,9 @@ generator of `ℵ₀`-presentable objects.
 
 ## Main results
 
+- `ModuleCat.coyonedaObjIsoForget`: the functor `Hom(R, -)` is naturally isomorphic
+  to the forgetful functor `ModuleCat R ⥤ Type u`.
+- `ModuleCat.isCardinalPresentable_self`: the free rank-1 module `R` is `ℵ₀`-presentable.
 - `ModuleCat.isLocallyFinitelyPresentable`: `ModuleCat R` is locally finitely
   presentable.
 
@@ -36,7 +36,7 @@ generator of `ℵ₀`-presentable objects.
 
 universe u
 
-open CategoryTheory CategoryTheory.Limits Cardinal
+open CategoryTheory CategoryTheory.Limits Cardinal Opposite
 
 attribute [local instance] fact_isRegular_aleph0
 
@@ -60,6 +60,22 @@ noncomputable instance forgetAccessible :
     have : IsFiltered J := isFiltered_of_isCardinalFiltered J ℵ₀
     exact PreservesFilteredColimitsOfSize.preserves_filtered_colimits
       (F := forget (ModuleCat.{u} R)) J⟩
+
+/-- The functor `Hom(R, -)` is naturally isomorphic to the forgetful functor
+`ModuleCat R ⥤ Type u`. The equivalence at each component sends a linear map
+`f : R →ₗ[R] M` to `f(1)`. -/
+noncomputable def coyonedaObjIsoForget :
+    coyoneda.obj (op (ModuleCat.of R R)) ≅ forget (ModuleCat.{u} R) :=
+  NatIso.ofComponents
+    (fun M ↦ (ConcreteCategory.homEquiv.trans
+      (LinearMap.ringLmapEquivSelf R R M).toEquiv).toIso)
+    (fun {X Y} f => by ext g; exact ConcreteCategory.comp_apply g f 1)
+
+/-- The free rank-1 module `R` is `ℵ₀`-presentable: `Hom(R, -)` preserves
+filtered colimits because it identifies with the forgetful functor. -/
+noncomputable instance isCardinalPresentable_self :
+    IsCardinalPresentable (ModuleCat.of R R) (ℵ₀ : Cardinal.{u}) :=
+  Functor.isCardinalAccessible_of_natIso (coyonedaObjIsoForget R).symm ℵ₀
 
 /-- **`ModuleCat R` is locally finitely presentable**
 (Gabriel-Ulmer, Adamek-Rosicky 1.11).
@@ -102,21 +118,6 @@ noncomputable instance isLocallyFinitelyPresentable :
             one_smul]⟩
       exact isIso_of_mono_of_epi i
   -- (3) R is ℵ₀-presentable
-  · intro M hM; subst hM
-    haveI : IsCardinalPresentable PUnit.{u+1}
-        (ℵ₀ : Cardinal.{u}) := by
-      rw [Types.isCardinalPresentable_iff]
-      exact hasCardinalLT_of_finite _ _ le_rfl
-    haveI : IsCardinalPresentable
-        (ModuleCat.of R (PUnit.{u+1} →₀ R))
-        (ℵ₀ : Cardinal.{u}) := by
-      change IsCardinalPresentable
-        ((ModuleCat.free R).obj PUnit.{u+1}) ℵ₀
-      exact Adjunction.isCardinalPresentable_leftAdjoint_obj
-        (ModuleCat.adj R) ℵ₀ PUnit.{u+1}
-    exact isCardinalPresentable_of_iso
-      (((Finsupp.linearEquivFunOnFinite R R PUnit.{u+1}).trans
-        (LinearEquiv.funUnique PUnit.{u+1} R R)).toModuleIso)
-      ℵ₀
+  · intro M hM; subst hM; exact isCardinalPresentable_self R
 
 end ModuleCat
