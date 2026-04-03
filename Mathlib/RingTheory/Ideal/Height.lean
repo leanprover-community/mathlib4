@@ -127,9 +127,8 @@ lemma Ideal.height_strict_mono_of_isPrime {I J : Ideal R} [I.IsPrime]
 
 lemma Ideal.height_strict_mono_of_isPrime_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     (h : I < J) [J.FiniteHeight] : I.height < J.height := by
-  have : I.FiniteHeight := by
-    simpa [Ideal.finiteHeight_iff, ‹I.IsPrime›.ne_top] using
-      (lt_of_le_of_lt (Ideal.height_mono h.le) (J.height_lt_top IsPrime.ne_top')).ne
+  have : I.FiniteHeight := I.finiteHeight_iff.mpr
+    (Or.inr (lt_of_le_of_lt (Ideal.height_mono h.le) (J.height_lt_top IsPrime.ne_top')).ne)
   exact Ideal.height_strict_mono_of_isPrime h
 
 @[deprecated "Use `Ideal.height_strict_mono_of_isPrime_of_isPrime` instead."
@@ -143,11 +142,9 @@ private lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
 
 lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
     I.height ≤ ringKrullDim R := by
-  rw [Ideal.height]
   obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
   have := Ideal.minimalPrimes_isPrime hP
-  refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
-  simpa using iInf₂_le _ hP
+  exact (WithBot.coe_le_coe.mpr (iInf₂_le _ hP)).trans P.primeHeight_le_ringKrullDim
 
 /-- If `R` has finite Krull dimension, there exists a maximal ideal `m` with `ht m = dim R`. -/
 lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
