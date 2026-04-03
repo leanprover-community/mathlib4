@@ -196,7 +196,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
   haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
-  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+  apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
@@ -248,6 +248,7 @@ Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
   This is `range_le_ker_of_exact_rTensor`.
 - Then in `rTensor_reflects_exact`, we show `ker l₂₃ = range l₁₂` by considering the cohomology
   `ker l₂₃ ⧸ range l₁₂`.
+
 This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
 comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 

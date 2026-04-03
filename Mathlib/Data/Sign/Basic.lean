@@ -120,6 +120,7 @@ is required; consider ℂ with the order `z ≤ w` iff they have the same imagin
 `z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
 `0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
 (`Complex.orderedCommRing`) -/
+@[simps -fullyApplied]
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero

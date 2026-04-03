@@ -165,12 +165,75 @@ theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   fun _ _ ↦ le_sInf_iff.symm
 
+section image2
+
+section LUB_GLB
+
+variable [Preorder α] [Preorder β] [Preorder γ] {s : Set α}
+  {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
+  {a₀ : α} {b₀ : β} {c₀ : γ}
+
+theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+    (h₂ : ∀ a, GaloisConnection (l a) (u₂ a))
+    (ha₀ : IsLUB s a₀) (hb₀ : IsLUB t b₀) :
+    IsLUB (image2 l s t) (l a₀ b₀) := by
+  simp_rw [isLUB_iff_le_iff, mem_upperBounds] at ha₀ hb₀
+  simp_rw [isLUB_iff_le_iff, mem_upperBounds, forall_mem_image2, (h₂ _).le_iff_le,
+    ← hb₀, ← (h₂ _).le_iff_le, (h₁ _).le_iff_le, ← ha₀, forall_true_iff]
+
+theorem isLUB_image2_of_isLUB_isGLB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+    (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a))
+    (ha₀ : IsLUB s a₀) (hb₀ : IsGLB t b₀) :
+    IsLUB (image2 l s t) (l a₀ b₀) :=
+  isLUB_image2_of_isLUB_isLUB (β := βᵒᵈ) h₁ h₂ ha₀ hb₀
+
+theorem isLUB_image2_of_isGLB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+    (h₂ : ∀ a, GaloisConnection (l a) (u₂ a))
+    (ha₀ : IsGLB s a₀) (hb₀ : IsLUB t b₀) :
+    IsLUB (image2 l s t) (l a₀ b₀) :=
+  isLUB_image2_of_isLUB_isLUB (α := αᵒᵈ) h₁ h₂ ha₀ hb₀
+
+theorem isLUB_image2_of_isGLB_isGLB (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+    (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a))
+    (ha₀ : IsGLB s a₀) (hb₀ : IsGLB t b₀) :
+    IsLUB (image2 l s t) (l a₀ b₀) :=
+  isLUB_image2_of_isLUB_isLUB (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂ ha₀ hb₀
+
+theorem isGLB_image2_of_isGLB_isGLB (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a))
+    (ha₀ : IsGLB s a₀) (hb₀ : IsGLB t b₀) :
+    IsGLB (image2 u s t) (u a₀ b₀) :=
+  isLUB_image2_of_isLUB_isLUB (α := αᵒᵈ) (β := βᵒᵈ) (γ := γᵒᵈ)
+    (fun b ↦ (h₁ b).dual) (fun a ↦ (h₂ a).dual) ha₀ hb₀
+
+theorem isGLB_image2_of_isGLB_isLUB (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+    (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual))
+    (ha₀ : IsGLB s a₀) (hb₀ : IsLUB t b₀) :
+    IsGLB (image2 u s t) (u a₀ b₀) :=
+  isGLB_image2_of_isGLB_isGLB (β := βᵒᵈ) h₁ h₂ ha₀ hb₀
+
+theorem isGLB_image2_of_isLUB_isGLB (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a))
+    (ha₀ : IsLUB s a₀) (hb₀ : IsGLB t b₀) :
+    IsGLB (image2 u s t) (u a₀ b₀) :=
+  isGLB_image2_of_isGLB_isGLB (α := αᵒᵈ) h₁ h₂ ha₀ hb₀
+
+theorem isGLB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+    (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual))
+    (ha₀ : IsLUB s a₀) (hb₀ : IsLUB t b₀) :
+    IsGLB (image2 u s t) (u a₀ b₀) :=
+  isGLB_image2_of_isGLB_isGLB (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂ ha₀ hb₀
+
+end LUB_GLB
+
+section CompleteLattice
+
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
-    (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  simp_rw [sSup_image2, ← (h₂ _).l_sSup, ← (h₁ _).l_sSup]
+    (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sSup s) (sSup t) :=
+  (isLUB_image2_of_isLUB_isLUB h₁ h₂ (isLUB_sSup _) (isLUB_sSup _)).sSup_eq
 
 theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
@@ -187,8 +250,8 @@ theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ o
   sSup_image2_eq_sSup_sSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 
 theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
-    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sInf s) (sInf t) := by
-  simp_rw [sInf_image2, ← (h₂ _).u_sInf, ← (h₁ _).u_sInf]
+    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sInf s) (sInf t) :=
+  (isGLB_image2_of_isGLB_isGLB h₁ h₂ (isGLB_sInf _) (isGLB_sInf _)).sInf_eq
 
 theorem sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
@@ -203,6 +266,10 @@ theorem sInf_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l�
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sSup s) (sSup t) :=
   sInf_image2_eq_sInf_sInf (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
+
+end CompleteLattice
+
+end image2
 
 end
 
@@ -370,14 +437,14 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
+    isLUB_sSup _ := gi.isLUB_of_u_image (isLUB_sSup _)
     sInf := fun s =>
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    isGLB_sInf _ := by
+      rw [gi.choice_eq]
+      exact gi.isGLB_of_u_image (isGLB_sInf _) }
 
 end lift
 
@@ -471,7 +538,7 @@ abbrev liftLattice [Lattice β] (gi : GaloisCoinsertion l u) : Lattice α :=
 -- See note [reducible non-instances]
 /-- Lift the bot along a Galois coinsertion -/
 abbrev liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : OrderBot α :=
-  { @OrderDual.instOrderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
+  { @OrderDual.instOrderBotOfOrderTop _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
 
 -- See note [reducible non-instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois coinsertion -/

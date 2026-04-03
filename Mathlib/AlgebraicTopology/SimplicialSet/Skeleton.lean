@@ -21,8 +21,8 @@ If `i : X ⟶ Y` is a monomorphism, we define
 
 ## TODO
 * show that `X.skeleton (n + 1)` is obtained from `X.skeleton n` by
-attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
-for `skeletonOfMono i`) (@joelriou).
+  attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
+  for `skeletonOfMono i`) (@joelriou).
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
 -/

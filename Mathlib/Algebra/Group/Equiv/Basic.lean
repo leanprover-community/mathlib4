@@ -187,16 +187,6 @@ lemma monoidHomCongrRight_trans (e₁₂ : N₁ ≃* N₂) (e₂₃ : N₂ ≃* 
 
 end monoidHomCongr
 
-/-- A multiplicative analogue of `Equiv.arrowCongr`,
-for multiplicative maps from a monoid to a commutative monoid.
--/
-@[to_additive (attr := deprecated MulEquiv.monoidHomCongrLeft (since := "2025-08-12"))
-  /-- An additive analogue of `Equiv.arrowCongr`,
-  for additive maps from an additive monoid to a commutative additive monoid. -/]
-def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
-    (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) :=
-  f.monoidHomCongrLeft.trans g.monoidHomCongrRight
-
 /-- A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
 multiplicative equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
@@ -239,37 +229,6 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
   { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 
 end MulEquiv
-
-namespace MonoidHom
-variable {M N₁ N₂ : Type*} [Monoid M] [CommMonoid N₁] [CommMonoid N₂]
-
-/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps -isSimp,
-deprecated MulEquiv.monoidHomCongrLeftEquiv (since := "2025-08-12"))
-/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps -isSimp,
-deprecated MulEquiv.monoidHomCongrRightEquiv (since := "2025-08-12"))
-/-- The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
-an additive equivalence `e : α ≃+ β`. -/]
-def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (γ →* α) ≃ (γ →* β) where
-  toFun f := e.toMonoidHom.comp f
-  invFun g := e.symm.toMonoidHom.comp g
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-end MonoidHom
 
 namespace Equiv
 

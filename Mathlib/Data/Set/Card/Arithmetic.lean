@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Results using cardinal arithmetic
