@@ -302,14 +302,11 @@ instance (priority := low) {V P : Type*}
     ConvexSpace.IsMetricCompatible P where
   dist_iConvexCombo_le' f σ₁ σ₂ := by
     let p : P := Nonempty.some inferInstance
-    simp only [iConvexCombo, AddTorsor.convexCombination_eq_affineCombination, ge_iff_le]
-    rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ (f.map σ₁).total p,
-      Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ (f.map σ₂).total p]
-    trans ‖((StdSimplex.map σ₁ f).weights.sum fun x i ↦ i • (x -ᵥ p)) -
-      (StdSimplex.map σ₂ f).weights.sum fun x i ↦ i • (x -ᵥ p)‖
-    · simp [dist_eq_norm_vsub, Finsupp.sum]
+    simp only [AddTorsor.iConvexCombo_eq_affineCombination, ge_iff_le]
+    rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p,
+      Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p]
     trans ‖f.weights.sum fun a b ↦ b • (σ₁ a -ᵥ σ₂ a)‖
-    · simp [StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul, ← Finsupp.sum_sub, ← smul_sub]
+    · simp [dist_eq_norm_vsub, Finsupp.sum, ← Finset.sum_sub_distrib, ← smul_sub]
     grw [Finsupp.sum, Finsupp.sum, norm_sum_le]
     simp [norm_smul, abs_eq_self.mpr (f.nonneg _), dist_eq_norm_vsub]
 
