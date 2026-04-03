@@ -10,8 +10,9 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Tactic.Rify
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
+import Mathlib.Tactic.Rify
 
 /-!
 # Schnirelmann density
@@ -271,49 +272,49 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
 open Pointwise
 
 /-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, then every
-  natural number is sum of an element of `{0} ∪ A` and `{0} ∪ B`.
-  Note that we cannot omit zeroes from this theorem, as shown by the counterexample `A = B = Odd`.
+natural number is sum of an element of `{0} ∪ A` and `{0} ∪ B`.
+Note that we cannot omit zeroes from this theorem, as shown by the counterexample `A = B = Odd`.
 -/
-theorem sumset_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [DecidablePred (· ∈ A)]
+theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [DecidablePred (· ∈ A)]
     [DecidablePred (· ∈ B)] (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) :
     ({0} ∪ A) + ({0} ∪ B) = Set.univ := by
   rw [Set.eq_univ_iff_forall]
   rintro (_ | m)
   · exact ⟨0, by simp, 0, by simp⟩
-  · set n := m + 1
-    by_cases hnA : n ∈ A
-    · exact ⟨n, by simp [hnA], 0, by simp, rfl⟩
-    · by_cases hnB : n ∈ B
-      · exact ⟨0, by simp, n, by simp [hnB]⟩
-      let f : ℕ ⊕ ℕ → ℕ
-        | Sum.inl x => x
-        | Sum.inr y => n - y
-      let sA := {a ∈ Ioc 0 n | a ∈ A}
-      let sB := {b ∈ Ioc 0 n | b ∈ B}
-      have hc : (image f (disjSum sA sB)).card < (disjSum sA sB).card := calc
-        (image f (disjSum sA sB)).card ≤ (Ioo 0 n).card := card_le_card (by grind [mem_disjSum])
-        _ < n := by rw [Nat.card_Ioo, Nat.sub_zero]; exact lt_add_one (n - 1)
-        _ ≤ sA.card + sB.card := by
-          rify
-          nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
-            @schnirelmannDensity_mul_le_card_filter B _ n]
-        _ = (disjSum sA sB).card := (card_disjSum sA sB).symm
-      obtain ⟨x, hx, y, hy, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc
-      match x, y with
-      | Sum.inl a, Sum.inl a' => grind
-      | Sum.inl a, Sum.inr b =>
-        simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
-        exact ⟨a, by simp [hx], b, by simp [hy], by lia⟩
-      | Sum.inr b, Sum.inl a =>
-        simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
-        exact ⟨a, by simp [hy], b, by simp [hx], by lia⟩
-      | Sum.inr b, Sum.inr b' => grind [inr_mem_disjSum]
+  set n := m + 1
+  by_cases hnA : n ∈ A
+  · exact ⟨n, by simp [hnA], 0, by simp, rfl⟩
+  by_cases hnB : n ∈ B
+  · exact ⟨0, by simp, n, by simp [hnB]⟩
+  let f : ℕ ⊕ ℕ → ℕ
+    | .inl x => x
+    | .inr y => n - y
+  let sA := {a ∈ Ioc 0 n | a ∈ A}
+  let sB := {b ∈ Ioc 0 n | b ∈ B}
+  have hc : (image f (disjSum sA sB)).card < (disjSum sA sB).card := calc
+    (image f (disjSum sA sB)).card ≤ (Ioo 0 n).card := card_le_card (by grind [mem_disjSum])
+    _ < n := by grind [Nat.card_Ioo]
+    _ ≤ sA.card + sB.card := by
+      rify
+      nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
+        @schnirelmannDensity_mul_le_card_filter B _ n]
+    _ = (disjSum sA sB).card := (card_disjSum sA sB).symm
+  obtain ⟨x, hx, y, hy, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc
+  match x, y with
+  | Sum.inl a, Sum.inl a' => grind
+  | Sum.inl a, Sum.inr b =>
+    simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
+    exact ⟨a, by simp [hx], b, by simp [hy], by lia⟩
+  | Sum.inr b, Sum.inl a =>
+    simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
+    exact ⟨a, by simp [hy], b, by simp [hx], by lia⟩
+  | Sum.inr b, Sum.inr b' => grind [inr_mem_disjSum]
 
-/-- A version of the previous theorem which assumes that `0` is an element of both `A` and `B`. -/
-theorem sumset_univ_of_schirelmannDensity_ge_one' {A B : Set ℕ} [DecidablePred (· ∈ A)]
+/-- A version of 'zero_union_add_eq_univ_of_schirelmannDensity_ge_one' which assumes that `0` is an element of both `A` and `B`. -/
+theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ} [DecidablePred (· ∈ A)]
     [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
-    (h : schnirelmannDensity A + schnirelmannDensity B ≥ 1) : A + B = Set.univ := by
-  have := sumset_univ_of_schirelmannDensity_ge_one h
+    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = Set.univ := by
+  have := zero_union_add_eq_univ_of_schirelmannDensity_ge_one h
   rw [Set.union_eq_right.mpr (Set.singleton_subset_iff.mpr hA),
   Set.union_eq_right.mpr (Set.singleton_subset_iff.mpr hB)] at this
   exact this
