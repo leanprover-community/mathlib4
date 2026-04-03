@@ -446,27 +446,25 @@ lemma mapMahlerMeasure_zero : (0 : A[X]).mapMahlerMeasure v = 0 := by
 lemma mapMahlerMeasure_one : (1 : A[X]).mapMahlerMeasure v = 1 := by
   simp [mapMahlerMeasure]
 
-variable {A : Type*} [NormedRing A] (p : A[X]) {v : A →+* ℂ}
+variable {A : Type*} [NormedRing A] (p : A[X]) (v : A →+* ℂ)
 
 lemma mapMahlerMeasure_const (hv : Isometry v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
-  simp [mapMahlerMeasure, Isometry.norm_map_of_map_zero hv (map_zero v)]
+  simp [mapMahlerMeasure, hv.norm_map_of_map_zero (map_zero _)]
 
 lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
     ‖p.leadingCoeff‖ ≤ p.mapMahlerMeasure v := by
   by_cases hp : p.leadingCoeff = 0
   · simp [hp, mapMahlerMeasure_nonneg]
   · have hv_ne : v p.leadingCoeff ≠ 0 :=
-      fun h ↦ hp (Isometry.injective hv (h.trans (map_zero v).symm))
-    have hmap : v p.leadingCoeff = (p.map v).leadingCoeff :=
-      (leadingCoeff_map_of_leadingCoeff_ne_zero (R := A) (S := ℂ) v hv_ne).symm
-    have hv_norm : ‖p.leadingCoeff‖ = ‖v p.leadingCoeff‖ :=
-      (Isometry.norm_map_of_map_zero hv (map_zero v) _).symm
-    grw [hv_norm, hmap, leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
+      fun h ↦ hp <| hv.injective <| h.trans (map_zero _).symm
+    have hv_norm : ‖v p.leadingCoeff‖ = ‖p.leadingCoeff‖ := hv.norm_map_of_map_zero (map_zero _) _
+    grw [←hv_norm, ←leadingCoeff_map_of_leadingCoeff_ne_zero v hv_ne,
+      leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
 
 variable {p} in
 lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometry v) (hp : p.Monic) :
     1 ≤ p.mapMahlerMeasure v := by
-  grw [← p.leadingCoeff_le_mapMahlerMeasure hv, hp.leadingCoeff, norm_one]
+  grw [← p.leadingCoeff_le_mapMahlerMeasure v hv, hp.leadingCoeff, norm_one]
 
 variable {p} in
 theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
@@ -476,24 +474,22 @@ theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
   ext i
   have hci := h ▸ Polynomial.coeff_zero i
   simp only [coeff_map] at hci
-  exact Isometry.injective hv (hci.trans (map_zero v).symm)
+  exact hv.injective <| hci.trans (map_zero v).symm
 
 theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
     p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
-  have hinj : Function.Injective (v : A → ℂ) := Isometry.injective hv
   apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
-  rw [sum_def, sum_def, support_map_of_injective _ hinj]
+  rw [sum_def, sum_def, support_map_of_injective _ hv.injective]
   exact Finset.sum_congr rfl fun x _ ↦ by
-    simp [Isometry.norm_map_of_map_zero hv (map_zero v)]
+    simp [hv.norm_map_of_map_zero (map_zero _)]
 
 theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
-  have hinj : Function.Injective (v : A → ℂ) := Isometry.injective hv
   have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
-    (Isometry.norm_map_of_map_zero hv (map_zero v) _).symm
+    (hv.norm_map_of_map_zero (map_zero _) _).symm
   have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
   grw [hv_norm, hcoeff, norm_coeff_le_choose_mul_mahlerMeasure,
-    natDegree_map_eq_of_injective hinj, mapMahlerMeasure]
+    natDegree_map_eq_of_injective hv.injective, mapMahlerMeasure]
 
 end Polynomial
 
