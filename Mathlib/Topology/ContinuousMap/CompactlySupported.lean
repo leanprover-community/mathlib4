@@ -752,13 +752,12 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
   map_add' f g := by simp
-  map_smul' a f := by
-    simp
-    with_reducible_and_instances rfl
+  map_smul' a f := by simp
 
 @[simp, norm_cast]
 lemma coe_toRealLinearMap : (toRealLinearMap : C_c(α, ℝ≥0) → C_c(α, ℝ)) = toReal := rfl
@@ -776,14 +775,13 @@ lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (-toReal f) =
 
 section toNNRealLinear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
 noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
   toFun f := .mk (Λ (toRealLinearMap f)) (Λ.map_nonneg (by simp))
   map_add' f g := by simp; rfl
-  map_smul' a f := by
-    simp
-    simp only [NNReal.smul_def]; rfl
+  map_smul' a f := by simp [NNReal.smul_def]; rfl
 
 @[simp]
 lemma toNNRealLinear_apply (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) (f : C_c(α, ℝ≥0)) :
