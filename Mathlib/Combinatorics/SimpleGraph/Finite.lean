@@ -238,9 +238,6 @@ theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.nei
   by_contra!
   simp_all [degree_eq_zero_of_subsingleton]
 
-theorem degree_le_enatCard [Fintype V] : G.degree v ≤ Fintype.card V := by
-  grw [← card_neighborSet_eq_degree, set_fintype_card_le_univ]
-
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
@@ -299,6 +296,13 @@ lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G �
     G.degree v ≤ H.degree v := by
   simp_rw [← card_neighborSet_eq_degree]
   exact Set.card_le_card fun v hv => hle hv
+
+theorem degree_lt_card_verts [Fintype V] [DecidableRel G.Adj] (v : V) :
+    G.degree v < Fintype.card V := by
+  classical
+  apply Finset.card_lt_card
+  rw [Finset.ssubset_iff]
+  exact ⟨v, by simp, Finset.subset_univ _⟩
 
 end FiniteAt
 
@@ -408,13 +412,9 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
 theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
     G.minDegree < Fintype.card V := by
-  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
-  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
-  have h : v ∉ G.neighborFinset v :=
-    (G.mem_neighborFinset v v).not.mpr (G.loopless.irrefl v)
-  contrapose! h
-  rw [eq_of_subset_of_card_le (subset_univ _) h]
-  exact mem_univ v
+  have ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [hv]
+  apply degree_lt_card_verts
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
@@ -465,12 +465,6 @@ lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
   Nat.le_zero.1 <| (minDegree_le_maxDegree _).trans (by simp)
-
-theorem degree_lt_card_verts [DecidableRel G.Adj] (v : V) : G.degree v < Fintype.card V := by
-  classical
-  apply Finset.card_lt_card
-  rw [Finset.ssubset_iff]
-  exact ⟨v, by simp, Finset.subset_univ _⟩
 
 /--
 The maximum degree of a nonempty graph is less than the number of vertices. Note that the assumption

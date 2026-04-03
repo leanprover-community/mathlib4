@@ -94,7 +94,7 @@ theorem edegree_eq_toNat_edegree_of_finite_neighborSet (h : G.neighborSet v |>.F
 theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.degree v := by
   simp [← encard_neighborSet, ← Set.ncard_def]
 
-theorem edegree_le_enatCard : G.edegree v ≤ ENat.card V := by
+theorem edegree_le_card : G.edegree v ≤ ENat.card V := by
   grw [← encard_neighborSet, Set.encard_le_card]
 
 @[simp]
@@ -102,15 +102,15 @@ theorem encard_incidenceSet : (G.incidenceSet v).encard = G.edegree v := by
   classical
   simp [Set.encard_congr <| G.incidenceSetEquivNeighborSet v]
 
-theorem degree_le_card_edgeSet : G.edegree v ≤ G.edgeSet.encard := by
+theorem edegree_le_encard_edgeSet : G.edegree v ≤ G.edgeSet.encard := by
   grw [← encard_incidenceSet, incidenceSet_subset]
 
 variable {G H} in
 theorem Copy.edegree_le (f : Copy G H) (v : V) : G.edegree v ≤ H.edegree (f v) :=
   f.mapNeighborSet v |>.encard_le
 
-variable {G G' v} in
-lemma edegree_le_of_le (hle : G ≤ G') : G.edegree v ≤ G'.edegree v :=
+variable {G G'} in
+lemma edegree_le_of_le (hle : G ≤ G') (v : V) : G.edegree v ≤ G'.edegree v :=
   Set.encard_le_encard fun _ hadj ↦ hle hadj
 
 variable {G} in
