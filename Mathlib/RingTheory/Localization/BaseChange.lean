@@ -267,6 +267,7 @@ noncomputable def tensor_localization_algEquiv :
     (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
   (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
 
+variable {S} in
 @[simp]
 theorem tensor_localization_algEquiv_apply_tmul_one (x : S) :
     Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
