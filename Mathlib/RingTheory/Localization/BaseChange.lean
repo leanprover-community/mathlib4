@@ -291,7 +291,7 @@ theorem tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
 
 /-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
 noncomputable def localization_tensor_algEquiv :
-    (Localization M ⊗[R] S) ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
   { __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
       (Localization.tensor_localization_algEquiv M S).toRingEquiv
     commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
