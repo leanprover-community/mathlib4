@@ -427,7 +427,7 @@ section
 variable {S : C} {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
   {i i' j j' : E.I₀} (hii' : i = i') (hjj' : j = j')
 
-/-- If `i = i'` and `j = j'` this is an equivalence betweeen the `1`-index type at `i`, `j` and
+/-- If `i = i'` and `j = j'` this is an equivalence between the `1`-index type at `i`, `j` and
 the one at `i'`, `j'`. -/
 def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
     (hii' : i = i') (hjj' : j = j') :
@@ -477,8 +477,8 @@ lemma I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
   simpa using h
 
 /--
-If `i = i'` and `j = j'` this is the isomorphism betweeen the `1`-component at
-`congrIndexOneOfEq k : E.I₁ i' j'` and the `1``-compontent at `k : E.I₁ i j`.
+If `i = i'` and `j = j'` this is the isomorphism between the `1`-component at
+`congrIndexOneOfEq k : E.I₁ i' j'` and the `1`-component at `k : E.I₁ i j`.
 
 Note: This isomorphism could also be constructed inline from `eqToIso`. We only
 use `eqToIso` directly to construct isomorphisms `E.Y k ≅ E.Y k'` where `k k' : E.I₁ i j`
@@ -755,7 +755,7 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .snd _, .id _ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
+/-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
     WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
@@ -776,7 +776,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
-the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
+the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
 noncomputable
 def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ ⥤ A) :
     IsLimit (E.multifork G) ≃ IsLimit (F.multifork G) := by

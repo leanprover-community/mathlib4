@@ -53,7 +53,7 @@ noncomputable section
 
 open CategoryTheory Limits Representation Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G)
 
 namespace groupHomology
 
@@ -61,7 +61,7 @@ section Chains
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ A.V :=
+def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
   (LinearEquiv.finsuppUnique _ _ _).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
@@ -84,27 +84,22 @@ end Chains
 
 section Differentials
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ A.V :=
+def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k A.V :=
   ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem d₁₀_single (g : G) (a : A) : d₁₀ A (single g a) = A.ρ g⁻¹ a - a := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₁₀_single_inv (g : G) (a : A) :
     d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_d₁₀_eq_coinvariantsKer :
     LinearMap.range (d₁₀ A).hom = Coinvariants.ker A.ρ := by
   symm
@@ -139,7 +134,6 @@ lemma chains₁ToCoinvariantsKer_surjective :
   rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
   use y, Subtype.ext hy
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
   ext
@@ -221,7 +215,6 @@ lemma d₃₂_single_one_thd (g h : G) (a : A) :
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₁₀` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
@@ -246,7 +239,6 @@ theorem eq_d₁₀_comp_inv :
     (chainsIso₁ A).inv ≫ (inhomogeneousChains A).d 1 0 = d₁₀ A ≫ (chainsIso₀ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₁₀_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₂₁` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
@@ -272,7 +264,6 @@ theorem eq_d₂₁_comp_inv :
     (chainsIso₂ A).inv ≫ (inhomogeneousChains A).d 2 1 = d₂₁ A ≫ (chainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₁_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₃₂` gives a simpler expression for the 2nd differential: that is, the following
 square commutes:
@@ -300,7 +291,6 @@ theorem eq_d₃₂_comp_inv :
     (chainsIso₃ A).inv ≫ (inhomogeneousChains A).d 3 2 = d₃₂ A ≫ (chainsIso₂ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₃₂_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
   ext x g
@@ -359,7 +349,6 @@ theorem d₂₁_apply_mem_cycles₁ (x : G × G →₀ A) :
     d₂₁ A x ∈ cycles₁ A :=
   congr($(d₂₁_comp_d₁₀ A) x)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
   rw [cycles₁, d₁₀_eq_zero_of_isTrivial, ModuleCat.hom_zero, LinearMap.ker_zero]
@@ -704,8 +693,8 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rfl
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def cyclesIso₀ : cycles A 0 ≅ A.V :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ chainsIso₀ A
+def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
+  (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp) ≪≫ chainsIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -852,10 +841,10 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
 
 /-- The quotient map from `A` to `H₀(G, A)`. -/
-def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H0π A) := by unfold H0π; infer_instance
+instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -890,7 +879,7 @@ variable [A.IsTrivial]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ A.V :=
+    H0 A ≅ ModuleCat.of k A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
     ext; simp [inhomogeneousChains.d_def, inhomogeneousChains.d_single (G := G),
        Unique.eq_default (α := Fin 0 → G)]).symm ≪≫ cyclesIso₀ A
@@ -920,7 +909,7 @@ def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1063,7 +1052,7 @@ def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 

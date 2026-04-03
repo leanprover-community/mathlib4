@@ -11,7 +11,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 /-!
 # The argument of a complex number.
 
-We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
+We define `arg : ℂ → ℝ`, returning a real number in the range $(-π, π]$,
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/
@@ -24,7 +24,7 @@ open scoped ComplexConjugate Real Topology
 namespace Complex
 variable {a x z : ℂ}
 
-/-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
+/-- `arg` returns values in the range $(-π, π]$, such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
   `arg 0` defaults to `0` -/
 noncomputable def arg (x : ℂ) : ℝ :=
@@ -459,7 +459,6 @@ theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I_eq_toIocMod zero_lt_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem arg_mul_cos_add_sin_mul_I_sub {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) - θ = 2 * π * ⌊(π - θ) / (2 * π)⌋ := by
   rw [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr, toIocMod_sub_self, toIocDiv_eq_neg_floor,
@@ -642,7 +641,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
     rw [ha]
     replace hs := mem_slitPlane_iff.mpr.mt hs
-    push_neg at hs
+    push Not at hs
     refine
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
         continuousAt_const
