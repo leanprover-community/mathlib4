@@ -83,8 +83,11 @@ theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.
 theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
     MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) := by
   simp_rw [toMvPowerSeries_apply]
+  refine { const_coeff := ?_, coeff_zero := ?_ }
+  · simp_all [constantCoeff]
+  · intro d
 
-  sorry
+    sorry
   -- MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by
   --   rw [toMvPowerSeries_apply, constantCoeff_subst_eq_zero (MvPowerSeries.constantCoeff_X _) _ hf]
 
