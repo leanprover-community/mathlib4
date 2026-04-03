@@ -32,6 +32,15 @@ variable (P Q : ObjectProperty C) (X : C)
 
 @[simp high] lemma prop_sup_iff : (P ⊔ Q) X ↔ P X ∨ Q X := Iff.rfl
 
+instance nonempty_sup_left [P.Nonempty] : (P ⊔ Q).Nonempty :=
+  nonempty_of_prop (Or.inl P.prop_arbitrary)
+
+instance nonempty_sup_right [Q.Nonempty] : (P ⊔ Q).Nonempty :=
+  nonempty_of_prop (Or.inr Q.prop_arbitrary)
+
+instance nonempty_top [Nonempty C] : (⊤ : ObjectProperty C).Nonempty :=
+  nonempty_of_prop (X := Classical.arbitrary C) (by trivial)
+
 lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := by
   ext X
   simp only [prop_sup_iff]
@@ -68,6 +77,9 @@ variable {α : Sort*} (P : α → ObjectProperty C) (X : C)
 @[simp high] lemma prop_iSup_iff :
     (⨆ (a : α), P a) X ↔ ∃ (a : α), P a X := by simp
 
+lemma nonempty_iSup (a : α) [(P a).Nonempty] : (⨆ a, P a).Nonempty :=
+  nonempty_of_prop ((prop_iSup_iff P _).mpr ⟨a, (P a).prop_arbitrary⟩)
+
 lemma isoClosure_iSup :
     ((⨆ (a : α), P a)).isoClosure = ⨆ (a : α), (P a).isoClosure := by
   refine le_antisymm ?_ ?_
@@ -86,6 +98,17 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     isoClosure_iSup, isoClosure_eq_self]
 
 end
+
+@[push]
+lemma ne_bot_iff_exists (P : ObjectProperty C) : ¬ P = ⊥ ↔ ∃ X, P X := by
+  simp [← le_bot_iff, not_le_iff_exists]
+
+lemma nonempty_iff_ne_bot (P : ObjectProperty C) : P.Nonempty ↔ ¬ P = ⊥ := by
+  rw [ne_bot_iff_exists, nonempty_iff]
+
+@[push]
+lemma not_nonempty_iff_eq_bot (P : ObjectProperty C) : ¬ P.Nonempty ↔ P = ⊥ := by
+  rw [P.nonempty_iff_ne_bot, not_not]
 
 @[simp]
 lemma ι_map_top (P : ObjectProperty C) :

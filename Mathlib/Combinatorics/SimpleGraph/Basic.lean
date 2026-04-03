@@ -619,6 +619,9 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
+@[simp] lemma le_fromEdgeSet_iff : G ≤ fromEdgeSet s ↔ G.edgeSet ⊆ s := by
+  simp [← edgeSet_subset_edgeSet, Set.subset_def]; grind [not_isDiag_of_mem_edgeSet]
+
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
     fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
@@ -659,7 +662,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 
 @[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
-  simpa using Set.diff_subset_diff h fun _ a ↦ a
+  simp only [le_fromEdgeSet_iff, edgeSet_fromEdgeSet]; grw [h]; exact sdiff_le
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]

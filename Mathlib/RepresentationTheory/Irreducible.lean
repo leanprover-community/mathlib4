@@ -84,6 +84,7 @@ variable (ρ) in
       algebraMap_intertwiningMap_bijective_of_isAlgClosed).symm]
   exact CommSemiring.finrank_self k
 
+open scoped IsMulCommutative in
 set_option backward.isDefEq.respectTransparency false in
 include ρ in
 variable (ρ) in

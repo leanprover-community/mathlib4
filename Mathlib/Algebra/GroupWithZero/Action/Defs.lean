@@ -347,6 +347,8 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
+attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
+
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]

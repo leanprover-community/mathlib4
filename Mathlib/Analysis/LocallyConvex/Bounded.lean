@@ -225,7 +225,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
     rw [absorbs_iff_norm] at hVS
-    push_neg at hVS
+    push Not at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩

@@ -79,7 +79,7 @@ def funPropTac : Tactic
         unless (← getFunProp? type).isSome do
           let hint :=
             if let some n := type.getAppFn.constName?
-            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            then s!" Consider marking `{n}` with `@[fun_prop]`."
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 

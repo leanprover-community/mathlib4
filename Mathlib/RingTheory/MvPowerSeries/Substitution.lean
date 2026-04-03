@@ -25,6 +25,7 @@ It is only well defined under one of the two following conditions:
     - For every `s`, the constant coefficient of `a s` is nilpotent;
     - For every `d : σ →₀ ℕ`, all but finitely many of the coefficients
       `(a s).coeff d` vanish.
+
 In the other cases, it is defined as 0 (dummy value).
 
 When `HasSubst a`, `MvPowerSeries.subst a` gives rise to an algebra homomorphism

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
@@ -33,6 +34,7 @@ We provide many ways to build finpartitions:
 * `Finpartition.indiscrete`: The indiscrete, aka trivial, aka pure, finpartition made of a single
   part.
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
+* `Finpartition.toSubtype`: Turns a finpartition of a type to one of a subtype.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
 * `Finpartition.extend`: Extends a finpartition of `a` to a finpartition of `a ⊔ b` by adding `b`
@@ -313,6 +315,32 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 
 end Order
 
+/-- A `Finpartition` constructor in `Subtype Pr` for `Pr : Set X → Prop` such that `Pr` is closed
+under intersection and union and `Pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `Pr s` and `Pr p` for each part `p`. -/
+noncomputable def toSubtype {s : α} (P : Finpartition s)
+    {Pr : α → Prop} (Prsup : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊔ t))
+    (Prinf : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊓ t)) (Prbot : Pr (⊥ : α))
+    (hs : Pr s) (hP : ∀ p ∈ P.parts, Pr p) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    Finpartition (⟨s, hs⟩ : Subtype Pr) :=
+  letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+  letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+  { parts := preimage P.parts Subtype.val Subtype.val_injective.injOn
+    supIndep t ht i hi hi' := by
+      classical
+      have : (fun (i : Subtype Pr) => (id i).val) = id ∘ Subtype.val := rfl
+      rw [disjoint_subtype_iff Prinf Prbot, sup_coe, this, ← sup_image t Subtype.val id]
+      · apply P.supIndep
+        · simpa [image_subset_iff_subset_preimage] using ht
+        · simpa using hi
+        · simpa [i.property] using hi'
+      exact Prsup
+    sup_parts := by
+      simpa [Finset.sup_preimage_val_id Prsup Prbot hP] using P.sup_parts
+    bot_notMem := by simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
+
 end Lattice
 
 section DistribLattice
@@ -415,7 +443,7 @@ def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartitio
     rw [sup_biUnion]
     exact sup_congr rfl fun i _ => (P i).sup_parts
   bot_notMem := by
-    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
 
 /-- The sum of a set-valued function over a combined partition equals the sum of sums over component
 partitions. -/

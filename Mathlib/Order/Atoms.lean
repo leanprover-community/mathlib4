@@ -130,7 +130,7 @@ protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
   change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
-  push_neg at ha'
+  push Not at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
     disjoint_iSup_iff.2 fun i => fun x hxa hxf => le_bot_iff.2 <| of_not_not fun hx =>
       have hxa : x < a := (le_iff_eq_or_lt.1 hxa).resolve_left (by rintro rfl; exact ha' _ hxf)
@@ -241,7 +241,7 @@ theorem covBy_iff {K L : A} :
 theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
-  push_neg
+  push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, ne_comm, implies_true]

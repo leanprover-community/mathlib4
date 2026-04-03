@@ -279,6 +279,11 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
+  rcases eq_or_ne m ⊤ with rfl | hm
+  · simpa
+  · exact add_one_le_iff hm
+
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
 
@@ -607,6 +612,9 @@ end ENat
 
 namespace ENat.WithBot
 
+@[simp]
+lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
@@ -620,6 +628,17 @@ lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := b
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n < m := by
+  induction n with
+  | bot => simp
+  | coe n =>
+    norm_cast
+    simp [add_one_le_iff']
+
+@[simp]
+lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
+  add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
 
 @[simp]
 lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=

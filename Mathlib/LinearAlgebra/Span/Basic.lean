@@ -160,7 +160,7 @@ Scott continuous for the ω-complete partial order induced by the complete latti
 theorem coe_scott_continuous :
     OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
-    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    ⟨SetLike.coe_mono, fun _ ↦ coe_iSup_of_chain _⟩
 
 section IsScalarTower
 

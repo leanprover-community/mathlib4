@@ -262,3 +262,48 @@ instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
 -/
+
+library_note «commutative subobjects» /--
+The algebraic hierarchy is designed so that commutativity (e.g., of multiplication) is bundled
+into the type class, so that we have, for example `Group` and `CommGroup`, `Ring` and `CommRing`,
+etc.
+
+It is often the case that one may desire to work with a commutative subobject inside an
+ambient noncommutative type. In cases like `Subgroup.center` or `Subring.center`, the subobject is
+*always* commutative, and in these cases one should simply imbue those subobjects (coerced to
+`Type`) with the appropriate `Comm*` instance. However, in other cases, the commutativity of the
+subobject may be conditional on commutativity of some other object. For example,
+`Subgroup.closure s` is not always commutative, but it is when `s` is a commutative subset.
+Likewise, if `S : Subgroup G` is a commutative subgroup, then `S.topologicalClosure` is also
+commutative.
+
+For such scenarios, users should prefer to use the unbundled `IsMulCommutative` typeclass, and to
+provide theorems such as:
+```
+theorem isMulCommutative_closure {G : Type*} [Group G] {k : Set G}
+    (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    IsMulCommutative (closure k)
+```
+or even *instances* such as
+```
+instance Subgroup.instIsMulCommutative_closure {S G : Type*} [Group G] [SetLike S G]
+    [MulMemClass S G] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set G))
+```
+and
+```
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure
+```
+Note that we prefer to name these instances manually because they are occasionally useful as
+theorems. For example, the proof of the topological closure instance for subgroups above is proved
+immediately from the one for monoids via: `s.toSubmonoid.isMulCommutative_topologicalClosure`.
+
+In practice, we wish to be able to use the library of theorems about (bundled) commutativity for
+subobjects as well, and so we also provide instances which take as input the unbundled
+`Group G` and `IsMulCommutative G` and produce the bundled `CommGroup G`. However, to avoid
+deleterious effects to type class synthesis for bundled commutativity (by forcing Lean to search
+the entirery of both the bundled and unbundled hierarchies), these instances are only
+available inside the `IsMulCommutative` scope and are simultaneously given the very low priority
+`50`.
+-/

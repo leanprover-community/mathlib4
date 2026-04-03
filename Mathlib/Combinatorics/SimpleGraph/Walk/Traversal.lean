@@ -5,7 +5,7 @@ Authors: Kyle Miller, Daniel Weber
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 
 /-!
 # Traversing walks

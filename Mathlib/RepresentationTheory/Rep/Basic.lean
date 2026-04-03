@@ -409,11 +409,6 @@ theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
   simp [leftRegularHom]
 
-end setup
-
-section Commutative
-
-variable {G : Type v} [CommMonoid G]
 variable (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
@@ -436,7 +431,7 @@ abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
 def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     A ⟶ quotient A W le_comap := Rep.ofHom ⟨W.mkQ, fun _ ↦ rfl⟩
 
-end Commutative
+end setup
 
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
@@ -917,8 +912,6 @@ variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
 abbrev leftRegularTensorTrivialIsoFree :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
-
-variable {α}
 
 end
 end

@@ -169,6 +169,10 @@ lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
   ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
 
+instance [P.Nonempty] [Q.Nonempty] : (extensionProduct P Q).Nonempty := by
+  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦(1 : ℤ)⟧)
+  exact ⟨_, _, _, _, _, _, hT, P.prop_arbitrary, Q.prop_arbitrary⟩
+
 @[simp]
 lemma extensionProduct_bot_left : extensionProduct ⊥ P = ⊥ := by
   rw [eq_bot_iff]
@@ -306,6 +310,11 @@ lemma extensionProductIter_succ' [IsTriangulated C] (n : ℕ) :
   | zero => rfl
   | succ n h =>
     rw [extensionProductIter_succ, h, ← extensionProduct_assoc, ← extensionProductIter_succ, ← h]
+
+instance [P.Nonempty] (n : ℕ) : (P.extensionProductIter n).Nonempty := by
+  induction n with
+  | zero => rwa [extensionProductIter_zero]
+  | succ n h => rw [extensionProductIter_succ]; infer_instance
 
 lemma extensionProductIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1) :
     P.extensionProductIter (n + m) =

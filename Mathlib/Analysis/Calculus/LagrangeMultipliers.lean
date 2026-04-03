@@ -133,7 +133,7 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → StrongDual ℝ E) := by
   cases nonempty_fintype ι
-  rw [Fintype.linearIndependent_iff]; push_neg
+  rw [Fintype.linearIndependent_iff]; push Not
   rcases hextr.exists_multipliers_of_hasStrictFDerivAt hf' hφ' with ⟨Λ, Λ₀, hΛ, hΛf⟩
   refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf

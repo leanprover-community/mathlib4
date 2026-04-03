@@ -1003,7 +1003,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x 
   · contrapose!
     intro h
     rw [LinearIndependent.pair_iff] at h
-    push_neg at h
+    push Not at h
     obtain ⟨r, s, hl, h0⟩ := h
     by_cases hr : r = 0; · simp_all
     by_cases hs : s = 0; · simp_all

@@ -457,7 +457,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
   simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
     and_self_iff, List.nodup_nil] at h
-  push_neg at h
+  push Not at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
@@ -473,7 +473,7 @@ theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
   intro
   simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,
     mem_singleton]
-  push_neg
+  push Not
   rintro ha ⟨hx, hy⟩ H
   rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
   exact ha H

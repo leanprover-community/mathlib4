@@ -128,7 +128,10 @@ example : 1 + 1 = 2 := by
   grind
 
 /--
-warning: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
+info: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
@@ -142,7 +145,11 @@ example : 1 + 1 = 2 := by
 
 set_option linter.unusedTactic false
 
-/-- warning: 'skip; grind' can be replaced with 'grind' -/
+/-- info: 'skip; grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
+-/
 #guard_msgs in
 example : 0 = 0 := by
   intros
@@ -157,7 +164,11 @@ set_option linter.unusedTactic true
 -- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
 -- used with `Finset.instInsert` that is not properly handled
 
-/-- warning: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind' -/
+/-- info: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
+-/
 #guard_msgs in
 theorem Associated.prod' {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : Associated (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by

@@ -110,15 +110,15 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
 
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by
-  obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
+  obtain ⟨n, rfl⟩ | ha := eq_natCast_or_omega0_le a
   · apply (card_le_card <| opow_le_opow_left b (natCast_lt_omega0 n).le).trans
     apply (card_opow_le_of_omega0_le_left le_rfl _).trans
     simp [hb]
   · exact card_opow_le_of_omega0_le_left ha b
 
 theorem card_opow_le (a b : Ordinal) : (a ^ b).card ≤ max ℵ₀ (max a.card b.card) := by
-  obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
-  · obtain ⟨m, rfl⟩ | hb := eq_nat_or_omega0_le b
+  obtain ⟨n, rfl⟩ | ha := eq_natCast_or_omega0_le a
+  · obtain ⟨m, rfl⟩ | hb := eq_natCast_or_omega0_le b
     · rw [opow_natCast, ← natCast_pow, card_nat]
       exact le_max_of_le_left natCast_le_aleph0
     · exact (card_opow_le_of_omega0_le_right _ hb).trans (le_max_right _ _)

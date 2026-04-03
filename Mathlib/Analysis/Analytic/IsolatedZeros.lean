@@ -359,7 +359,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   apply union_subset_union_right (f ⁻¹' s)
   intro x hx
   push _ ∈ _ at hx ⊢
-  push_neg at hx
+  push Not at hx
   tauto
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and

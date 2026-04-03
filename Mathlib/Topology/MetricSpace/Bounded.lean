@@ -121,6 +121,14 @@ protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBound
 theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
   ⟨fun h => h.subset subset_closure, fun h => h.closure⟩
 
+theorem hasBasis_nhds_isOpen_isBounded (x : α) :
+    (𝓝 x).HasBasis (fun a ↦ x ∈ a ∧ IsOpen a ∧ Bornology.IsBounded a) id := by
+  simp_rw [← and_assoc]
+  apply (nhds_basis_opens x).restrict fun s hs ↦ ?_
+  exact ⟨s ∩ Metric.ball x 1,
+    by aesop (add safe apply IsOpen.inter),
+    by simpa using Metric.isBounded_ball.subset Set.inter_subset_right⟩
+
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩

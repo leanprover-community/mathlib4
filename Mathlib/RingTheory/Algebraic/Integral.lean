@@ -150,7 +150,7 @@ namespace IsAlgebraic
 
 theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
   by_cases inj : Function.Injective (algebraMap R A); swap
-  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+  · rw [injective_iff_map_eq_zero] at inj; push Not at inj
     have ⟨r, eq, ne⟩ := inj
     exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz

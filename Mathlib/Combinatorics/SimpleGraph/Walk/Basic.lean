@@ -145,6 +145,11 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.getLast (by simp) = b := by
   induction p <;> simp [*]
 
+@[simp]
+lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
+  cases p <;> simp
+
+@[deprecated cons_tail_support (since := "2026-03-16")]
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 

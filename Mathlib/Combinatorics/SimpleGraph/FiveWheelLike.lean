@@ -170,9 +170,9 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.1 (by simp [hw.isNClique_fst_left.2])
   have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.1 (by simp [hw.isNClique_snd_right.2])
   -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
-  -- `x` which shares its colour with `v`
+  -- `x` which shares its color with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
-  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its colour with `v`.
+  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its color with `v`.
   obtain ⟨y, hy, hcy⟩ := this (a := C v) trivial
   rw [coe_insert] at *
   -- However since `insert v s` and `insert v t` are cliques, we must have `x = w₁` and `y = w₂`.

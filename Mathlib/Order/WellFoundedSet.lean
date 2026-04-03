@@ -846,7 +846,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
     exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero_iff.1 con)
   rw [IsBadSeq] at hf'
-  push_neg at hf'
+  push Not at hf'
   obtain ⟨m, n, mn, hmn⟩ := hf' fun n x hx => by
     split_ifs at hx with hn
     exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]

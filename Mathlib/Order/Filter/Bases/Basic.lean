@@ -298,7 +298,7 @@ theorem HasBasis.eventually_iff (hl : l.HasBasis p s) {q : α → Prop} :
 
 theorem HasBasis.frequently_iff (hl : l.HasBasis p s) {q : α → Prop} :
     (∃ᶠ x in l, q x) ↔ ∀ i, p i → ∃ x ∈ s i, q x := by
-  simp only [Filter.Frequently, hl.eventually_iff]; push_neg; rfl
+  simp only [Filter.Frequently, hl.eventually_iff]; push Not; rfl
 
 theorem HasBasis.exists_iff (hl : l.HasBasis p s) {P : Set α → Prop}
     (mono : ∀ ⦃s t⦄, s ⊆ t → P t → P s) : (∃ s ∈ l, P s) ↔ ∃ i, p i ∧ P (s i) :=

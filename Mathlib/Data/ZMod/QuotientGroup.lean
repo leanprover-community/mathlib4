@@ -29,6 +29,7 @@ zmod, quotient group
 assert_not_exists Ideal TwoSidedIdeal
 
 open QuotientAddGroup Set ZMod
+open scoped IsMulCommutative
 
 variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
 

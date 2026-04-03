@@ -166,6 +166,7 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
+example (a : ℚ) (m n : ℕ) : (a ^ (m + 1)) ^ n = a ^ (n * (m + 1)) := by ring
 
 -- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry

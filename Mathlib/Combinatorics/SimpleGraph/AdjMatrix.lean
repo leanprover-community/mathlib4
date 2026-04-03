@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard

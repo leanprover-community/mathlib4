@@ -123,6 +123,12 @@ theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
 theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
   gc_ceil_coe _ _
 
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ not_succ_le_self ⌊(0 : α)⌋₊ <|
+    (le_floor_iff (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
+
 end OrderedSemiring
 
 section LinearOrderedSemiring
@@ -255,6 +261,12 @@ theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
 @[simp]
 theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
   rfl
+
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ (Int.lt_succ ⌊(0 : α)⌋).not_ge <|
+    (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
 
 /-! #### Floor -/
 

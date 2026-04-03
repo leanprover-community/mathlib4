@@ -121,12 +121,9 @@ theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
     forall_eq_or_imp, le_sup_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     true_and]
   intro i' h_lt
-  apply le_sup_of_le_right
-  apply le_sSup_of_le
-  · use i'
-  · apply le_trans (h _)
-    simp only [OrderHom.toFun_eq_coe]
-    exact g.monotone (ih i' h_lt)
+  grw [← le_sup_right]
+  refine le_sSup_of_le ⟨i', h_lt, rfl⟩ ?_
+  grw [h _, ih i' h_lt]
 
 theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
   intro x₁ x₂ h a

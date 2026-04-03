@@ -365,7 +365,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   right_triangle_components Y := by
     ext
     simp only [skyscraperPresheafFunctor_obj, Functor.id_obj, skyscraperPresheaf_obj,
-      Functor.comp_obj, Presheaf.stalkFunctor_obj, unit_app, counit_app,
+      Presheaf.stalkFunctor_obj, unit_app, counit_app,
       skyscraperPresheafStalkOfSpecializes, skyscraperPresheafFunctor_map, Presheaf.comp_app,
       toSkyscraperPresheaf_app, Category.id_comp, SkyscraperPresheafFunctor.map'_app]
     split_ifs with h

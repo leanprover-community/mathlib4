@@ -6,7 +6,7 @@ Authors: Kyle Miller, Rémi Bottinelli, Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 
 /-!
 # Mapping walks between graphs

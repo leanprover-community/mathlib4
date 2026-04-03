@@ -397,12 +397,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       use ((z - l) / (u - l))
       constructor
       · norm_cast
-        rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp only [sub_re, hz₁, ofReal_re, sub_im, ofReal_im, sub_zero, ofReal_sub, sub_self,
-          mul_zero, zero_div, add_zero]
-        rw [div_mul_eq_div_div_swap, mul_div_assoc,
-          div_self (by norm_cast; linarith),
-          mul_one, div_self (by norm_cast; linarith)]
+        grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp only [one_mul, add_sub_cancel, hz₂]
   rw [this]

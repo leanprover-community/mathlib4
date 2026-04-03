@@ -293,8 +293,6 @@ theorem algebraMap_right_apply (r : R) :
 theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap R (WithVal v)) := (toVal_injective v).comp h
 
-variable {R : Type*} [CommRing R] (v : Valuation R Γ₀) (w : Valuation S Γ₀) [Algebra R S]
-
 end right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)

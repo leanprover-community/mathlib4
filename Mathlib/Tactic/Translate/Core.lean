@@ -146,7 +146,7 @@ register_option linter.translateReorder : Bool := {
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
-/-- Linter used by translate attributes that checks if the relevant_arg is
+/-- Linter used by translate attributes that checks if the `relevant_arg` is
 automatically generated. -/
 register_option linter.translateRelevantArg : Bool := {
   defValue := true
