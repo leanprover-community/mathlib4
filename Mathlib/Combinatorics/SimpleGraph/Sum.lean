@@ -91,6 +91,7 @@ lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
 
 /-- Given isomorphisms `f : G ≃g G'` and `g : H ≃g H'`, returns an isomorphism from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps!, simps toEquiv]
 def Iso.sumCongr (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' where
   toEquiv := f.toEquiv.sumCongr g.toEquiv
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp [f.map_rel_iff, g.map_rel_iff]
