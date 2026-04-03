@@ -7,6 +7,9 @@ module
 
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
+import Std.Data.Iterators
+public meta import Std.Data.Iterators.Combinators.Zip
+meta import Std.Data.Iterators.Producers.Range
 
 /-!
 # The "DocString" style linter
@@ -91,6 +94,33 @@ def checkVersoSyntax (fileName : Option String := none) (docComment : String) :
   let s := Doc.Parser.document.run ictx pmctx (getTokenTable env) s
   return s.allErrors
 
+/-- Determines if a given Verso parse error should be silenced in the Verso syntax linter.
+This happens when it is valid Markdown syntax that we will migrate all at once.
+-/
+def isSilencedVersoWarning (err : Parser.Error) : Bool := Id.run do
+  -- Ignore Markdown link/reference syntax (this should be fixed automatically and all at once).
+  return "link target '(url)' or '[ref]' (use '\\[' for a literal '[')" ∈ err.expected
+
+open Parser in
+/--
+Try to parse `docComment` as a Verso docstring, and report any parse errors,
+ignoring those that should be silenced by linters.
+
+`fileName` is the file where this docstring is defined (default: the file currently being
+elaborated).
+-/
+def lintVersoSyntax (fileName : Option String := none) (docComment : String) :
+    Elab.TermElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
+  -- Drop anything that looks like an autolink: this is not supported by Verso adding full links
+  -- everywhere would be very noisy.
+  let trimmedStr := String.join <| Std.Iter.toList <| docComment.splitInclusive Char.isWhitespace |>.map fun str =>
+    if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL" else str.toString
+  -- Drop anything between LaTeX `$$`s.
+  let trimmedStr := String.join <| Std.Iter.toList <| trimmedStr.split "$$" |>.zip (0...<docComment.length).iter
+    |>.map fun (str, i) => if i % 2 == 0 then str.toString else "LaTeX"
+  let errs ← checkVersoSyntax fileName trimmedStr
+  return errs.filter (fun (_, _, err) => !isSilencedVersoWarning err)
+
 namespace Style
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
@@ -145,7 +175,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- If Verso is already enabled for docstrings, then this check would be superfluous.
     if !doc.verso.get (← getOptions) &&
         getLinterValue linter.style.docStringVerso (← getLinterOptions) then do
-      let errs ← Command.liftTermElabM (checkVersoSyntax (docComment := docString))
+      let errs ← Command.liftTermElabM (lintVersoSyntax (docComment := docString))
       for (pos, stxStack, err) in errs do
         Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
 
@@ -168,7 +198,7 @@ def moduleDocVersoLinter : Linter where run := withSetOptionIn fun stx ↦ do
   | _ => none) | return
   try
     let docString ← getDocStringText ⟨moduleDoc⟩
-    let errs ← Command.liftTermElabM (checkVersoSyntax (docComment := docString))
+    let errs ← Command.liftTermElabM (lintVersoSyntax (docComment := docString))
     for (pos, stxStack, err) in errs do
       Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
   catch _ => return
