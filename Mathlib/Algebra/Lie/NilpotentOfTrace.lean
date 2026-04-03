@@ -63,26 +63,21 @@ lemma exists_lagrange_polynomial
     ∃ r : Polynomial K, (∀ i j, eval (a i - a j) r =
       algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
   classical
-  haveI : Fintype ι := Fintype.ofFinite ι
-  let diffs := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
+  have : Fintype ι := Fintype.ofFinite ι
+  let diffs := insert 0 (Finset.univ.image (fun p : ι × ι => a p.1 - a p.2))
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
   let v : K → K := fun d => d
   have hinj : Set.InjOn v ↑diffs := fun _ _ _ _ h => h
   have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
   have hmem : ∀ i j, a i - a j ∈ diffs :=
-    fun i j => Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩
+    fun i j => Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩)
   refine ⟨Lagrange.interpolate diffs v g, fun i j => ?_, ?_⟩
   · rw [Lagrange.eval_interpolate_at_node g hinj (hmem i j),
       hg _ (E.sub_mem (ha i) (ha j)),
       show (⟨a i - a j, E.sub_mem (ha i) (ha j)⟩ : E) = ⟨a i, ha i⟩ - ⟨a j, ha j⟩ from rfl,
       map_sub, map_sub]
-  · by_cases h : Nonempty ι
-    · obtain ⟨i⟩ := h
-      rw [Lagrange.eval_interpolate_at_node g hinj
-        (Finset.mem_image.mpr ⟨(i, i), Finset.mem_univ _, sub_self _⟩),
-        hg _ E.zero_mem, show (⟨(0 : K), E.zero_mem⟩ : E) = 0 from rfl, map_zero, map_zero]
-    · have : IsEmpty ι := not_nonempty_iff.mp h
-      simp [show diffs = ∅ from by simp [diffs]]
+  · rw [Lagrange.eval_interpolate_at_node g hinj (Finset.mem_insert_self 0 _),
+      hg _ E.zero_mem, show (⟨(0 : K), E.zero_mem⟩ : E) = 0 from rfl, map_zero, map_zero]
 
 end Lagrange
 
