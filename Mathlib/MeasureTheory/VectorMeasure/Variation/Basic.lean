@@ -50,8 +50,8 @@ theorem ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
 lemma preVariation_zero_eq_zero :
     preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
   ext s; simp [preVariation_apply]
-
-lemma variation_apply (μ : VectorMeasure X V) {s : Set X} :
+@[simp]
+lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
 @[simp]
@@ -64,12 +64,8 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
     ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
   classical
   set Q := Finpartition.ofPairwiseDisjoint P hP₂ with defQ
-  set Q' := Finpartition.ofSubset Q (filter_subset MeasurableSet Q.parts) rfl with defQ'
-  have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by
-    rw [defQ', Finpartition.ofSubset, defQ]
-    simp only [Finpartition.ofPairwiseDisjoint_parts, Set.bot_eq_empty, mem_filter, mem_erase,
-      ne_eq, and_imp]
-    grind
+  set Q' := Q.ofSubset (filter_subset MeasurableSet Q.parts) rfl with defQ'
+  have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by simp [Q', Q]; grind
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ := by
       by_cases hbot : ⊥ ∈ P
@@ -81,28 +77,20 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
           simpa [Q, Finpartition.ofPairwiseDisjoint] using fun hp => ne_of_mem_of_not_mem hp hbot
         simp_rw [this]
     _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := by
-        apply (Finset.sum_subset _ _).symm
-        · rw [defQ']
-          simp
-        · intro s hs hs'
-          rw [defQ'] at hs'
-          simp only [Finpartition.ofSubset_parts, mem_filter, not_and] at hs'
-          simpa [enorm_eq_zero] using MeasureTheory.VectorMeasure.not_measurable _ (hs' hs)
-    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q' (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
+        refine (Finset.sum_subset (by simp [Q']) ?_).symm
+        simp_all [μ.not_measurable]
+    _ ≤ ∑ p ∈ (Q'.extendOfLE (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
         sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
     _ ≤ μ.variation s := by
       simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
         ennrealPreVariation_apply]
       apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
       intro p hp
-      apply Q'.mem_parts_or_eq_sdiff_of_mem_extendOfLE at hp
-      rcases hp with h | h
-      · simp only [defQ', Finpartition.ofSubset_parts, mem_filter] at h
-        exact h.2
-      · rw [h]
-        apply MeasurableSet.diff hs
-        simp only [sup_set_eq_biUnion, id_eq]
-        exact MeasurableSet.biUnion (Finset.countable_toSet _) (by simp)
+      rcases Q'.mem_parts_or_eq_sdiff_of_mem_extendOfLE _ hp with h | rfl
+      · simp_all
+      apply hs.diff
+      simp only [sup_set_eq_biUnion, id_eq]
+      exact MeasurableSet.biUnion (Finset.countable_toSet _) (by simp)
 
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
@@ -110,27 +98,25 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   swap; · simp [μ.not_measurable' hE]
   by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
   · simp_all
-  · simp only [variation_apply, preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
-    calc
-      ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
-      _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
+  calc
+    ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
+    _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
 
+@[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
   exact preVariation_zero_eq_zero
 
+@[simp]
 lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
     (-μ).variation = μ.variation := by simp [variation]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
   by_cases hsm : MeasurableSet s
-  · by_contra! hc
-    refine (lt_self_iff_false (0 : ℝ≥0∞)).mp ?_
-    calc
-      0 < ‖μ s‖ₑ := enorm_pos.mpr hc
-      _ ≤ μ.variation s := enorm_measure_le_variation μ s
-      _ = 0 := by simpa [ennrealVariation_apply _ hsm] using hs
+  · suffices ‖μ s‖ₑ ≤ 0 by simp_all
+    grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
 
 end MeasureTheory.VectorMeasure

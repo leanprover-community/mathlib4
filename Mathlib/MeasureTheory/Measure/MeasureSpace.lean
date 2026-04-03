@@ -826,10 +826,9 @@ theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure 
   Subsingleton.elim μ 0
 
 @[simp]
-theorem ofMeasurable_zero : Measure.ofMeasurable (fun (_s : Set α) _hs => 0) rfl (by simp) = 0 := by
+theorem ofMeasurable_zero : ofMeasurable (α := α) (fun _ _ => 0) rfl (by simp) = 0 := by
   ext s
-  rw [Measure.ofMeasurable, ← MeasureTheory.Measure.toOuterMeasure_apply]
-  simp [inducedOuterMeasure_zero MeasurableSet.iUnion]
+  simp [ofMeasurable, ← toOuterMeasure_apply, inducedOuterMeasure_zero MeasurableSet.iUnion]
 
 instance instInhabited {_ : MeasurableSpace α} : Inhabited (Measure α) :=
   ⟨0⟩

@@ -86,10 +86,9 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
   calc
     ∑ p ∈ P.parts, f p = ∑ p ∈ (P.toMeasurableSet hs hP).parts, f p :=
       P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
-       (by measurability) hs hP f
+        (by measurability) hs hP f
     _ ≤ ⨆ (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ Q.parts, f p :=
-      le_iSup (fun (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) => ∑ p ∈ Q.parts, f p)
-        (P.toMeasurableSet hs hP)
+      le_iSup (fun Q => ∑ p ∈ Q.parts, f p.1) (P.toMeasurableSet hs hP)
 
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then
 `∑ p ∈ P.parts, f p ≤ preVariationFun f s₂`. -/
