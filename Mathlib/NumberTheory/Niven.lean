@@ -182,7 +182,7 @@ theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) 
 
 theorem irrational_cos_rat_mul_pi {r : ℚ} (hr : 3 < r.den) :
     Irrational (cos (r * π)) := by
-  rw [← show (Int.fract r).den = r.den from Rat.sub_intCast_den r ⌊r⌋] at hr
+  rw [← Rat.den_intFract] at hr
   by_contra! hnz
   rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr' | hr' | hr' | hr')
   all_goals (try rw [Set.mem_singleton_iff] at hr'); rw [hr'] at hr; norm_num at hr

@@ -44,6 +44,8 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
 
@@ -100,12 +102,12 @@ instance instInfCoe : Min L where
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
 instance instLatticeCoe (L : Sublattice α) : Lattice L :=
-  Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
 instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
-  Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The natural lattice hom from a sublattice to the original lattice. -/
 def subtype (L : Sublattice α) : LatticeHom L α where

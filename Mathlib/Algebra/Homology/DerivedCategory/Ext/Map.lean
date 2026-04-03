@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 /-!
 # Map Between Ext Induced by Exact Functor
 
-In this file, we develope the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
+In this file, we develop the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
 where `F` is an exact functor between abelian categories.
 
 -/
@@ -44,6 +44,7 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     (ComplexShape.up ℤ)).smallShiftedHomMap
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
+set_option backward.isDefEq.respectTransparency false in
 open Functor in
 lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]

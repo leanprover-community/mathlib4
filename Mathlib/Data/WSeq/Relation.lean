@@ -118,8 +118,8 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
   fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by rwa [LiftRel.swap, H.swap_eq] at h
 
-theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun s t u h1 h2 => by
+theorem LiftRel.trans (R : α → α → Prop) (H : IsTrans α R) : IsTrans _ (LiftRel R) := by
+  refine ⟨fun s t u h1 h2 ↦ ?_⟩
   refine ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => ?_⟩
   rcases h with ⟨t, h1, h2⟩
   have h1 := liftRel_destruct h1
@@ -147,10 +147,10 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
     obtain ⟨c, u⟩ := c
     obtain ⟨ab, st⟩ := t1
     obtain ⟨bc, tu⟩ := t2
-    exact ⟨H ab bc, t, st, tu⟩
+    exact ⟨H.trans a b c ab bc, t, st, tu⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @(LiftRel.symm R @symm), @(LiftRel.trans R @trans)⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) :=
+  ⟨LiftRel.refl R H.refl, @(LiftRel.symm R @H.symm), LiftRel.trans R H.isTrans |>.trans _ _ _⟩
 
 /-- If two sequences are equivalent, then they have the same values and
   the same computational behavior (i.e. if one loops forever then so does
@@ -171,7 +171,7 @@ theorem Equiv.symm : ∀ {s t : WSeq α}, s ~ʷ t → t ~ʷ s :=
 
 @[trans]
 theorem Equiv.trans : ∀ {s t u : WSeq α}, s ~ʷ t → t ~ʷ u → s ~ʷ u :=
-  @(LiftRel.trans (· = ·) (@Eq.trans _))
+  LiftRel.trans (· = ·) inferInstance |>.trans _ _ _
 
 theorem Equiv.equivalence : Equivalence (@Equiv α) :=
   ⟨@Equiv.refl _, @Equiv.symm _, @Equiv.trans _⟩

@@ -75,6 +75,16 @@ instance (priority := 75) toNonUnitalNonAssocSemiring :
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
+/- Prefer subclasses of `NonUnitalNonAssocCommSemiring` over subclasses of
+`NonUnitalSubsemiringClass`. -/
+/-- A non-unital subsemiring of a `NonUnitalNonAssocCommSemiring` inherits a
+`NonUnitalNonAssocCommSemiring` structure -/
+instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocCommSemiring R]
+    [SetLike S R] [NonUnitalSubsemiringClass S R] :
+    NonUnitalNonAssocCommSemiring s := fast_instance%
+  Subtype.coe_injective.nonUnitalNonAssocCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
+
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
   Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ => rfl
 
@@ -137,6 +147,8 @@ instance : SetLike (NonUnitalSubsemiring R) R where
 lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]

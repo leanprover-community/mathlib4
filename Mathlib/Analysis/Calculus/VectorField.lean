@@ -615,7 +615,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
     {f : E → F} {V W : F → F} {x : E} {t : Set F}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
@@ -650,8 +650,8 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. Variant where unique differentiability and
-the invariance property are only required in a smaller set `u`. -/
+completeness but requiring that `f` is a local diffeomorphism. Variant where unique
+differentiability and the invariance property are only required in a smaller set `u`. -/
 lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
@@ -680,7 +680,7 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x : E}
     (hf : IsSymmSndFDerivAt 𝕜 f x) (h'f : ContDiffAt 𝕜 2 f x)
     (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
@@ -692,7 +692,7 @@ lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x 
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullbackWithin_lieBracketWithin
     {f : E → F} {V W : F → F} {x : E} {t : Set F} (hn : minSmoothness 𝕜 2 ≤ n)
     (h'f : ContDiffWithinAt 𝕜 n f s x)
@@ -704,7 +704,7 @@ lemma pullbackWithin_lieBracketWithin
   (h'f.isSymmSndFDerivWithinAt hn hu h'x hx) (h'f.of_le (le_minSmoothness.trans hn)) hV hW hu hx hst
 
 /-- The Lie bracket commutes with taking pullbacks. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullback_lieBracket (hn : minSmoothness 𝕜 2 ≤ n)
     {f : E → F} {V W : F → F} {x : E} (h'f : ContDiffAt 𝕜 n f x)
     (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
