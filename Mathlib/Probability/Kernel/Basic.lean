@@ -130,7 +130,7 @@ section Copy
 /-- The deterministic kernel that maps `x : α` to the Dirac measure at `(x, x) : α × α`. -/
 noncomputable
 def copy (α : Type*) [MeasurableSpace α] : Kernel α (α × α) :=
-  Kernel.deterministic (fun x ↦ (x, x)) (measurable_id.prod measurable_id)
+  Kernel.deterministic Prod.diag (measurable_id.prod measurable_id)
 
 instance : IsMarkovKernel (copy α) := by rw [copy]; infer_instance
 

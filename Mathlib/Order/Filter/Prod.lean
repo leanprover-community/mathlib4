@@ -202,7 +202,7 @@ theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α ×
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
+theorem tendsto_diag : Tendsto Prod.diag f (f ×ˢ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :

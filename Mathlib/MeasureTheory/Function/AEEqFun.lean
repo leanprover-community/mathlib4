@@ -397,15 +397,15 @@ def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ 
 
 @[simp]
 theorem pair_mk_mk (f : α → β) (hf) (g : α → γ) (hg) :
-    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (fun x => (f x, g x)) (hf.prodMk hg) :=
+    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (Prod.pair f g) (hf.prodMk hg) :=
   rfl
 
 theorem pair_eq_mk (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) :
     f.pair g =
-      mk (fun x => (f x, g x)) (f.aestronglyMeasurable.prodMk g.aestronglyMeasurable) := by
+      mk (Prod.pair f g) (f.aestronglyMeasurable.prodMk g.aestronglyMeasurable) := by
   simp only [← pair_mk_mk, mk_coeFn, f.aestronglyMeasurable, g.aestronglyMeasurable]
 
-theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] fun x => (f x, g x) := by
+theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] Prod.pair f g := by
   rw [pair_eq_mk]
   apply coeFn_mk
 

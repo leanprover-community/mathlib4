@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Prod
+public import Mathlib.Data.Prod.Init
 
 /-!
 # The product of two `AddGroupWithOne`s.
@@ -21,7 +22,7 @@ variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
 instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
-    intCast := fun n => (n, n)
+    intCast := Prod.pair IntCast.intCast IntCast.intCast
     intCast_ofNat := fun _ => by ext <;> simp
     intCast_negSucc := fun _ => by ext <;> simp }
 

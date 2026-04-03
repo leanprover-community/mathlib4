@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Prod.Init
 
 /-!
 # The product of two `AddMonoidWithOne`s.
@@ -24,7 +25,7 @@ variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
 instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
   { Prod.instAddMonoid, @Prod.instOne α β _ _ with
-    natCast := fun n => (n, n)
+    natCast := Prod.pair NatCast.natCast NatCast.natCast
     natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero
     natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Sum.Basic
+public import Mathlib.Data.Prod.Init
 
 /-!
 # Sets in product and pi types
@@ -179,7 +180,7 @@ theorem preimage_prod_map_prod (f : α → β) (g : γ → δ) (s : Set β) (t :
   rfl
 
 theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
-    (fun x => (f x, g x)) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
+    (Prod.pair f g) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
   rfl
 
 @[simp]
@@ -238,7 +239,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
   ext <| by simp [range]
 
 theorem range_pair_subset (f : α → β) (g : α → γ) :
-    (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by grind
+    (range Prod.pair f g) ⊆ range f ×ˢ range g := by grind
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
   ⟨(x, y), ⟨hx, hy⟩⟩
@@ -259,7 +260,7 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
 
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
-    (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
+    (Prod.pair f g) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 
@@ -408,7 +409,7 @@ end Prod
 /-! ### Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`fun x ↦ (x, x)`.
+`Prod.diag`.
 -/
 
 
@@ -428,25 +429,25 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : (range fun x => (x, x)) = diagonal α := by
+theorem range_diag : range Prod.diag = diagonal α := by
   ext ⟨x, y⟩
-  simp [diagonal, eq_comm]
+  simp [Prod.ext_iff]
 
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  rw [← range_diag, range_subset_iff]
+  simp_rw [← range_diag, range_subset_iff, Prod.diag_apply]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diag_preimage_prod (s t : Set α) : Prod.diag ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
+theorem diag_preimage_prod_self (s : Set α) : Prod.diag ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+theorem diag_image (s : Set α) : Prod.diag '' s = diagonal α ∩ s ×ˢ s := by
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by

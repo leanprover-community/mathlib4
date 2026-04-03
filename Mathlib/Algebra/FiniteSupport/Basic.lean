@@ -55,7 +55,7 @@ lemma HasFiniteMulSupport.snd {M' : Type*} [One M'] {f : α → M × M'} (hf : H
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prodMk {M' : Type*} [One M'] {f : α → M} {g : α → M'}
     (hf : HasFiniteMulSupport f) (hg : HasFiniteMulSupport g) :
-    HasFiniteMulSupport fun a ↦ (f a, g a) := by
+    HasFiniteMulSupport (Prod.pair f g) := by
   simp only [HasFiniteMulSupport] at hf hg ⊢
   rw [mulSupport_prodMk f g]
   exact hf.union hg

@@ -99,14 +99,14 @@ lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Typ
   ext s hs
   simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
 
-lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
+lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map Prod.diag := by
   ext s hs
   rw [compProd_apply hs, map_apply (measurable_id.prod measurable_id) hs]
   have h_meas a : MeasurableSet (Prod.mk a ⁻¹' s) := measurable_prodMk_left hs
   simp_rw [Kernel.id_apply, dirac_apply' _ (h_meas _)]
   calc ∫⁻ a, (Prod.mk a ⁻¹' s).indicator 1 a ∂μ
-  _ = ∫⁻ a, ((fun x ↦ (x, x)) ⁻¹' s).indicator 1 a ∂μ := rfl
-  _ = μ ((fun x ↦ (x, x)) ⁻¹' s) := by
+  _ = ∫⁻ a, (Prod.diag ⁻¹' s).indicator 1 a ∂μ := rfl
+  _ = μ (Prod.diag ⁻¹' s) := by
     rw [lintegral_indicator_one]
     exact (measurable_id.prod measurable_id) hs
 
