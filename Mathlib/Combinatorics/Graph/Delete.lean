@@ -27,7 +27,7 @@ graphs, edge deletion, vertex deletion
 
 @[expose] public section
 
-variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β} {F : Set β} {X : Set α}
+variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β} {F F₀ : Set β} {X : Set α}
 
 open Set Function
 
@@ -54,7 +54,7 @@ lemma edgeRestrict_le {E₀ : Set β} : G ↾ E₀ ≤ G where
   isLink_mono := by simp
 
 @[simp]
-lemma edgeRestrict_eq_iff (G : Graph α β) (E₀ : Set β) : G ↾ E₀ = G ↔ E(G) ⊆ E₀ :=
+lemma edgeRestrict_eq_self_iff (G : Graph α β) (E₀ : Set β) : G ↾ E₀ = G ↔ E(G) ⊆ E₀ :=
   ⟨fun h ↦ by simpa using h.ge.edgeSet_mono,
     fun h ↦ (Compatible.of_le edgeRestrict_le).ext (by simp) (by simpa)⟩
 
@@ -77,7 +77,7 @@ lemma edgeRestrict_mono_left (h : H ≤ G) (F : Set β) : H ↾ F ≤ G ↾ F :=
   simp [inter_subset_left.trans h.edgeSet_mono]
 
 @[gcongr]
-lemma edgeRestrict_mono_right (G : Graph α β) {F₀ : Set β} (hss : F₀ ⊆ F) : G ↾ F₀ ≤ G ↾ F where
+lemma edgeRestrict_mono_right (G : Graph α β) (hss : F₀ ⊆ F) : G ↾ F₀ ≤ G ↾ F where
   vertexSet_mono := subset_rfl
   isLink_mono _ _ _ := fun h ↦ ⟨hss h.1, h.2⟩
 
