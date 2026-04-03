@@ -12,11 +12,10 @@ public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
 
 /-!
 
-# Convex metric spaces
+# Convex spaces with compatible metric structure
 
-A convex metric space is a convex space with a compatible metric structure.
-Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
-which is what one would expect from the triangle inequality.
+A convex space has a compatible metric structure if `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`.
+This is what one would expect from the triangle inequality.
 
 Note that there is a separate notion of convex metric spaces in the literature
 that has little to do with this definition.
