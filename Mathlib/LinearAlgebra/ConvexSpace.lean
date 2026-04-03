@@ -63,6 +63,8 @@ namespace StdSimplex
 
 variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*}
 
+@[simp] lemma weights_nonneg (f : StdSimplex R M) (i : M) : 0 ≤ f.weights i := f.nonneg i
+
 lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
   by_contra!
   simpa [Subsingleton.elim f.weights 0, -total] using f.total
