@@ -96,9 +96,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     (htr : ∀ y ∈ M A B, trace K V (x * y) = 0) :
     IsNilpotent x := by
   rcases eq_or_ne x 0 with rfl | hx
-  · exact .zero
-  obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hxns⟩ :=
-    x.exists_isNilpotent_isSemisimple
+  · exact IsNilpotent.zero
+  obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hxns⟩ := x.exists_isNilpotent_isSemisimple
   classical
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
