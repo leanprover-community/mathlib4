@@ -15,15 +15,15 @@ public import Mathlib.LinearAlgebra.Trace
 /-!
 # Trace-nilpotency criterion
 
-Let `K` be an algebraically closed field of characteristic zero and `V` a finite-dimensional
-`K`-vector space. Given subspaces `A ≤ B` of `Module.End K V` and the set
+Given subspaces `A ≤ B` of `Module.End K V` and the set
 `M = {x ∈ Module.End K V | ∀ b ∈ B, ⁅x, b⁆ ∈ A}`, any `x ∈ M` that is trace-orthogonal to all
 of `M` is nilpotent. This is the key technical lemma behind Cartan's criterion for semisimplicity.
 
 ## Main results
 
-* `isNilpotent_of_trace_orthogonal_algClosed`: if `x ∈ M` satisfies
-  `LinearMap.trace K V (x * z) = 0` for all `z ∈ M`, then `x` is nilpotent.
+* `isNilpotent_of_trace_orthogonal_algClosed`: if `K` is an algebraically closed field of
+  characteristic zero and `V` is finite-dimensional, then any `x ∈ M` satisfying
+  `LinearMap.trace K V (x * z) = 0` for all `z ∈ M` is nilpotent.
 
 ## References
 
