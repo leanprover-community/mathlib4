@@ -65,7 +65,7 @@ instance : TopologicalSpace (SL n R) :=
 
 omit [IsTopologicalRing R] in
 @[fun_prop]
-theorem Matrix.SpecialLinearGroup.continuous_apply {α : Type*} [TopologicalSpace α]
+theorem continuous_apply {α : Type*} [TopologicalSpace α]
     (f : α → SL n R) (hf : Continuous f) (i) :
     Continuous (fun x ↦ f x i) :=
   (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
