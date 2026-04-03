@@ -110,7 +110,7 @@ variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
 def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
-  (equivOfCompatibleSMul R A A M).symm ≪≫ₗ TensorProduct.lid _ _
+  (equivOfCompatibleSMul R A A A M).symm ≪≫ₗ TensorProduct.lid _ _
 
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
 

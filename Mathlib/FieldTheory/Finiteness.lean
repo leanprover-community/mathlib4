@@ -42,6 +42,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
     rw [Set.Finite.coe_toFinset, ← b.span_eq, Basis.coe_ofVectorSpace, Subtype.range_coe]
 
 /-- In a Noetherian module over a division ring, all bases are indexed by a finite type. -/
+@[implicit_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
   b.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K V)
 
@@ -99,15 +100,7 @@ theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
   rw [Nat.card_congr b.equivFun.toEquiv, Nat.card_fun, finrank_eq_nat_card_basis b]
 
 /-- A module over a division ring is Noetherian if and only if it is finitely generated. -/
-theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
-  constructor
-  · intro h
-    exact
-      ⟨⟨finsetBasisIndex K V, by
-          convert (finsetBasis K V).span_eq
-          simp⟩⟩
-  · rintro ⟨s, hs⟩
-    rw [IsNoetherian.iff_rank_lt_aleph0, ← rank_top, ← hs]
-    exact lt_of_le_of_lt (rank_span_le _) s.finite_toSet.lt_aleph0
+theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V :=
+  ⟨fun _ ↦ IsNoetherian.finite _ _, fun _ ↦ isNoetherian_of_isNoetherianRing_of_finite _ _⟩
 
 end IsNoetherian

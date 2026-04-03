@@ -130,7 +130,6 @@ instance : IsNontrivial v where
 
 section Restrict
 
-set_option backward.isDefEq.respectTransparency false in
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
@@ -173,19 +172,19 @@ variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
@@ -215,6 +214,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/
+@[implicit_reducible]
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
   hom' := e.emb.comp embedding
