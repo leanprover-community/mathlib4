@@ -497,7 +497,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
   · intro ⟨S, hS⟩
     dsimp at hS
     let e := monoEquivOfFin S (k := m + 1) (by simpa using hS)
-    refine ⟨⟨objMk ((OrderHom.Subtype.val _).comp (e.toOrderEmbedding.toOrderHom)), ?_⟩, ?_⟩
+    refine ⟨⟨objMk ((OrderHom.Subtype.val _).comp e.toOrderEmbedding.toOrderHom), ?_⟩, ?_⟩
     · rw [mem_nonDegenerate_iff_mono, SimplexCategory.mono_iff_injective]
       intro a b h
       grind [e.injective, dsimp% h]
