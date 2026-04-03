@@ -34,6 +34,21 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
+/-- Parse a string as a tactic sequence.
+
+This is a slight modification of `Parser.runParserCategory`. -/
+def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
+    Except String (TSyntax ``Lean.Parser.Tactic.tacticSeq) :=
+  let p := andthenFn whitespace Tactic.tacticSeq.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if s.hasError then
+    .error (s.toErrorMsg ictx)
+  else if s.pos.atEnd input then
+    .ok ⟨s.stxStack.back⟩
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
 /-- `#parse parserFnId => str` allows to capture parsing exceptions.
 `parserFnId` is the identifier of a `ParserFn` and `str` is the string that
 `parserFnId` should parse.

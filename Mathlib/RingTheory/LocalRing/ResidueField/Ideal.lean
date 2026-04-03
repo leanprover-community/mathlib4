@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.SurjectiveOnStalks
 
@@ -89,6 +89,9 @@ noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
 instance (I : Ideal A) [I.IsPrime] : IsScalarTower R (A ⧸ I) I.ResidueField :=
   .of_algebraMap_eq' rfl
 
+instance (I : Ideal R) [I.IsPrime] : (⊥ : Ideal I.ResidueField).LiesOver I :=
+  ⟨I.ker_algebraMap_residueField.symm⟩
+
 @[simp]
 lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
@@ -145,6 +148,15 @@ lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
 instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+
+instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
+  .comp _ (Localization.AtPrime p) _
+
+instance [Algebra.EssFiniteType R A]
+    (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    Algebra.EssFiniteType p.ResidueField q.ResidueField := by
+  have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
+  refine .of_comp R _ _
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift

@@ -130,7 +130,7 @@ lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X →
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MagmaCat} (f : X ⟶ Y) :
-    (forget MagmaCat).map f = f := rfl
+    (forget MagmaCat).map f = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -448,10 +448,7 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     let e : X ≃* Y := { f.hom, i.toEquiv with }
     exact e.toSemigrpIso.isIso_hom
 
-/--
-Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms.
-We could have used `CategoryTheory.HasForget.ReflectsIso` alternatively.
--/
+/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
 @[to_additive]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩

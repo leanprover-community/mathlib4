@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Matrix multiplication
@@ -690,7 +691,6 @@ variable [NonUnitalNonAssocSemiring α]
 /--
 `M *ᵥ v` (notation for `mulVec M v`) is the matrix-vector product of matrix `M` and vector `v`,
 where `v` is seen as a column vector.
-Put another way, `M *ᵥ v` is the vector whose entries are those of `M * col v` (see `col_mulVec`).
 
 The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
@@ -704,7 +704,6 @@ scoped infixr:73 " *ᵥ " => Matrix.mulVec
 /--
 `v ᵥ* M` (notation for `vecMul v M`) is the vector-matrix product of vector `v` and matrix `M`,
 where `v` is seen as a row vector.
-Put another way, `v ᵥ* M` is the vector whose entries are those of `row v * M` (see `row_vecMul`).
 
 The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
@@ -815,8 +814,6 @@ theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
     v ᵥ* (b • M) = b • v ᵥ* M := by
   ext
   exact dotProduct_smul _ _ _
-
-@[deprecated (since := "2025-08-14")] alias smul_mulVec_assoc := smul_mulVec
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
@@ -1112,17 +1109,6 @@ lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l 
   rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
 
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring α]
-
-@[deprecated mulVec_smul (since := "2025-08-14")]
-theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α) :
-    A *ᵥ (a • b) = a • A *ᵥ b :=
-  mulVec_smul _ _ _
-
-end CommSemiring
 
 section NonAssocRing
 

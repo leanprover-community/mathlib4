@@ -92,7 +92,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*}
     1 ≤ (binomialSeries 𝔸 a).radius := by
   by_cases ha : ∀ (k : ℕ), a ≠ k
   · rw [binomialSeries_radius_eq_one ha]
-  · push_neg at ha
+  · push Not at ha
     rcases ha with ⟨k, rfl⟩
     simp [binomialSeries_radius_eq_top_of_nat]
 
@@ -162,7 +162,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
   have H : ((binomialSeries ℂ (-a)).compContinuousLinearMap (-1)) =
       .ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n := by
     ext n; simp [FormalMultilinearSeries.compContinuousLinearMap, binomialSeries, Ring.choose_neg,
-      Units.smul_def, Int.coe_negOnePow_natCast, ← pow_add, ← mul_assoc]
+      Units.smul_def, ← pow_add, ← mul_assoc]
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (-a)) (binomialSeries ℂ (-a : ℂ)) (-0) 1 := by
     simpa using one_add_cpow_hasFPowerSeriesOnBall_zero
   simpa [cpow_neg, Function.comp_def, ← sub_eq_add_neg, H] using
@@ -234,6 +234,7 @@ end Complex
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp← ] Complex.ofReal_choose in
 attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
@@ -256,6 +257,7 @@ theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
 @[deprecated (since := "2025-12-08")]
 alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
@@ -274,6 +276,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     have : 0 ≤ 1 - x := by grind
     simp [-Complex.inv_re, ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r ≠ 0) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x) ^ (a + 1))
       (.ofScalars ℝ (𝕜 := ℝ) fun n ↦ (r ^ (n + a + 1))⁻¹ * ↑(Nat.choose (a + n) a)) 0 ‖r‖ₑ := by

@@ -6,6 +6,8 @@ Authors: Inna Capdeboscq, Damiano Testa
 
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-!
@@ -67,18 +69,42 @@ inductive IsSubnormal : Subgroup G → Prop where
   | step : ∀ H K, (h_le : H ≤ K) → (hSubn : IsSubnormal K) → (hN : (H.subgroupOf K).Normal) →
     IsSubnormal H
 
+/-- An additive subgroup `H` of an additive group `G` satisfies `IsSubnormal` if
+* either `H = ⊤`;
+* or there is an additive subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
+  `K` satisfies `IsSubnormal`.
+
+Equivalently, `H.IsSubnormal` means that there is a chain of additive subgroups
+`H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
+* `H = H₀`,
+* `G = Hₙ`,
+* for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal additive subgroup of `Hᵢ₊₁`.
+
+See `isSubnormal_iff` for this characterisation.
+-/
+inductive _root_.AddSubgroup.IsSubnormal {G : Type*} [AddGroup G] : AddSubgroup G → Prop where
+  /-- The whole additive subgroup `G` is subnormal in itself. -/
+  | top : IsSubnormal (⊤ : AddSubgroup G)
+  /-- An additive subgroup `H` is subnormal if there is a subnormal additive subgroup `K`
+  containing `H` that is subnormal itself and such that `H` is normal in `K`. -/
+  | step : ∀ H K, (h_le : H ≤ K) → (hSubn : IsSubnormal K) → (hN : (H.addSubgroupOf K).Normal) →
+    IsSubnormal H
+
 attribute [simp] Subgroup.IsSubnormal.top
 
 /-- A normal subgroup is subnormal. -/
+@[to_additive /-- A normal additive subgroup is subnormal. -/]
 lemma Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
   IsSubnormal.step _ ⊤ le_top IsSubnormal.top normal_subgroupOf
 
 namespace IsSubnormal
 
 /-- The trivial subgroup is subnormal. -/
-@[simp] lemma bot : IsSubnormal (⊥ : Subgroup G) := normal_bot.isSubnormal
+@[to_additive (attr := simp) /-- The trivial additive subgroup is subnormal. -/]
+lemma bot : IsSubnormal (⊥ : Subgroup G) := normal_bot.isSubnormal
 
 /-- A subnormal subgroup of a simple group is normal. -/
+@[to_additive /-- A subnormal additive subgroup of a simple additive group is normal. -/]
 lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
     H.Normal := by
   induction hN with
@@ -89,10 +115,13 @@ lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
     · grind [!normal_subgroupOf_iff_le_normalizer_inf, inf_of_le_left, normalizer_eq_top_iff]
 
 /-- A subnormal subgroup of a simple group is either trivial or the whole group. -/
+@[to_additive /-- A subnormal additive subgroup of a simple additive group is either trivial or the
+whole group. -/]
 lemma eq_bot_or_top_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : IsSubnormal H) :
     H = ⊥ ∨ H = ⊤ :=
   (hN.normal_of_isSimpleGroup hG).eq_bot_or_eq_top
 
+@[to_additive]
 lemma iff_eq_top_or_exists :
     IsSubnormal H ↔ H = ⊤ ∨ ∃ K, H < K ∧ IsSubnormal K ∧ (H.subgroupOf K).Normal where
   mp h := by
@@ -113,6 +142,8 @@ lemma iff_eq_top_or_exists :
     · exact step _ _ HK.le Ksn h
 
 /-- A proper subnormal subgroup is contained in a proper normal subgroup. -/
+@[to_additive /-- A proper subnormal additive subgroup is contained in a proper normal additive
+subgroup. -/]
 lemma exists_normal_and_le_and_lt_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
     ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
   induction hN with
@@ -126,6 +157,8 @@ lemma exists_normal_and_le_and_lt_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠
 /--
 A subnormal subgroup is either the whole group or it is contained in a proper normal subgroup.
 -/
+@[to_additive /-- A subnormal additive subgroup is either the whole group or it is contained in a
+proper normal additive subgroup. -/]
 lemma lt_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
   obtain rfl | H_ne := eq_or_ne H ⊤
   · simp
@@ -137,7 +170,10 @@ the following one.
 
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
--- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
+@[to_additive /-- A characterisation of satisfying `IsSubnormal` in terms of chains of additive
+subgroups, each normal in the following one.
+
+The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`. -/]
 lemma isSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
     (Monotone f) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
@@ -153,7 +189,8 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
       · grind
       · refine monotone_nat_of_le_succ ?_
         grind only [monotone_iff_forall_lt]
-      · grind
+      · simp +instances only
+        grind
   mpr := by
     rintro ⟨n, hyps⟩
     revert H
@@ -172,6 +209,9 @@ Subnormality is transitive.
 
 This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not.
 -/
+@[to_additive /-- Subnormality is transitive.
+
+This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not. -/]
 protected
 lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
     IsSubnormal (H.map K.subtype) := by
@@ -188,10 +228,70 @@ lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
 If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`,
 then `H` is a subnormal subgroup of `G`.
 -/
+@[to_additive /-- If `H` is a subnormal additive subgroup of `K` and `K` is a subnormal
+additive subgroup of `G`, then `H` is a subnormal additive subgroup of `G`. -/]
 protected
 lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnormal K) :
     IsSubnormal H := by
   have key := Hsn.trans' Ksn
   rwa [map_subgroupOf_eq_of_le HK] at key
+
+/-- The image of a subnormal subgroup under a surjective homomorphism is subnormal. -/
+@[to_additive
+/-- The image of a subnormal additive subgroup under a surjective homomorphism is subnormal. -/]
+protected
+lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.IsSubnormal) :
+    IsSubnormal (map f H) := by
+  induction hS with
+  | top =>
+    rw [map_top_of_surjective f hf]
+    apply top
+  | step H K h_le hSubn hN ih =>
+    apply step _ (map f K) (map_mono h_le) ih
+    rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
+    exact normal_subgroupOf_of_le_normalizer ((map_mono hN).trans (H.le_normalizer_map f))
+
+/-- The quotient of a subnormal subgroup by a normal subgroup is subnormal. -/
+@[to_additive
+/-- The quotient of a subnormal additive subgroup by a normal additive subgroup is subnormal. -/]
+protected lemma quotient [K.Normal] (hS : H.IsSubnormal) :
+    IsSubnormal (map (QuotientGroup.mk' K) H) :=
+  hS.map (QuotientGroup.mk'_surjective K)
+
+/-- The inverse image of a subnormal subgroup under a group homomorphism is a subnormal subgroup. -/
+@[to_additive /-- The inverse image of a subnormal additive subgroup under an additive group
+homomorphism is a subnormal additive subgroup. -/]
+protected
+lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnormal) :
+    (comap f H').IsSubnormal := by
+  induction h with
+  | top => simp
+  | step H K h_le hSubn hN ih =>
+    apply step _ (comap f K) (comap_mono h_le) ih
+    rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
+    rw [normal_subgroupOf_iff_le_normalizer (comap_mono h_le)]
+    exact (comap_mono hN).trans (le_normalizer_comap f)
+
+@[to_additive (attr := simp)]
+protected lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap _
+
+/-- The intersection of two subnormal subgroups is subnormal. -/
+@[to_additive /-- The intersection of two subnormal additive subgroups is additive subnormal. -/]
+protected lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal := by
+  simpa using hH.subgroupOf.trans' hK
+
+open scoped Pointwise
+
+/--
+If `g : Γ` is an element of a group acting on `G` and `H` is subnormal, then `g • H` is subnormal.
+-/
+protected lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
+    (g : Γ) : (g • H).IsSubnormal :=
+  hS.map (MulAction.surjective g)
+
+/-- If the subgroup `H` of a group `G` is trivial, then it is subnormal. -/
+@[to_additive /-- If the additive subgroup `H` of a group `G` is trivial, then it is subnormal. -/]
+lemma of_subsingleton [Subsingleton H] : H.IsSubnormal := by
+  simp [eq_bot_of_subsingleton H]
 
 end Subgroup.IsSubnormal

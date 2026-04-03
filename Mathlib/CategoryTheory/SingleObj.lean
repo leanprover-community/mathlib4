@@ -195,6 +195,7 @@ namespace MulEquiv
 
 variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret a monoid isomorphism `f : M ≃* N` as an equivalence `SingleObj M ≌ SingleObj N`. -/
 @[simps!]
 def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
@@ -245,6 +246,7 @@ instance toCat_full : toCat.Full where
     let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y.toFunctor
     ⟨ofHom x, Cat.Hom.ext h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance toCat_faithful : toCat.Faithful where
   map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
 

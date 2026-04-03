@@ -65,6 +65,7 @@ variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
 variable (ρ₁₂ σ₁₂)
 
+-- TODO: refactor to use a structure holding the assumptions, as in `IsBilinearMap` below.
 /-- Create a bilinear map from a function that is semilinear in each component.
 See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
@@ -354,10 +355,8 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
@@ -598,3 +597,31 @@ lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
 end restrictScalarsRange₂
 
 end LinearMap
+
+section IsBilinearMap
+
+variable
+  (R : Type*) [CommSemiring R]
+  {E : Type*} [AddCommMonoid E] [Module R E]
+  {F : Type*} [AddCommMonoid F] [Module R F]
+  {G : Type*} [AddCommMonoid G] [Module R G]
+
+-- TODO Also make a semi-linear version.
+/-- Bundled statement of bilinearity for a function.
+
+The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
+`IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a
+declaration. -/
+structure IsBilinearMap (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+variable {R} in
+/-- Make a bilinear map from a function and a bundled statement of bilinearity. -/
+def IsBilinearMap.toLinearMap {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+end IsBilinearMap

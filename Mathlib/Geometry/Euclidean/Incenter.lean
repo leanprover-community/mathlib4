@@ -783,6 +783,7 @@ lemma touchpoint_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin 
     (s.reindex e).touchpoint signs i = s.touchpoint (signs.map e.symm) (e.symm i) :=
   orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex _ _) (s.excenter_reindex _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 @[simp] lemma ExcenterExists.touchpoint_map {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
@@ -974,7 +975,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
-    grind [Finset.mem_filter_univ]
+    grind
   · rintro ⟨signs, h⟩
     replace h := (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
     rcases h with ⟨r, h⟩
