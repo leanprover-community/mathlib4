@@ -65,9 +65,7 @@ def degree : Verts → ℕ
   | B1 => 2 | B2 => 2 | B3 => 2 | B4 => 2 | B5 => 2 | B6 => 2 | B7 => 2
 
 @[simp]
-lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by
-  rw [← graph.card_neighborFinset_eq_degree]
-  cases v <;> rfl
+lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;> rfl
 
 lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
   cases w <;> decide
@@ -81,6 +79,7 @@ lemma setOf_odd_degree_eq :
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
   have h := h.card_odd_degree
   have h' := setOf_odd_degree_eq
+  apply_fun Fintype.card at h'
   rw [h'] at h
   simp at h
 

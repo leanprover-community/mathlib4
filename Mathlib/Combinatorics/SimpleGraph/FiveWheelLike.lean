@@ -256,7 +256,7 @@ private lemma sum_degree_le_of_le_not_adj [Fintype α] [DecidableEq α] [Decidab
     (hxc : ∀ y ∈ Xᶜ, j ≤ #{z ∈ W | ¬ G.Adj y z}) :
     ∑ w ∈ W, G.degree w ≤ #X * (#W - i) + #Xᶜ * (#W - j) := calc
   _ = ∑ v, #(G.neighborFinset v ∩ W) := by
-    simp_rw [← card_neighborFinset_eq_degree, card_eq_sum_ones]
+    simp_rw [degree, card_eq_sum_ones]
     exact sum_comm' (by simp [and_comm, adj_comm])
   _ ≤ _ := by
     simp_rw [← union_compl X, sum_union disjoint_compl_right (s₁ := X), neighborFinset_eq_filter,
@@ -346,14 +346,12 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
         notMem_mono inter_subset_left hbs, erase_eq_of_notMem <| notMem_mono inter_subset_right hat,
         card_insert_of_notMem (fun h ↦ G.irrefl (hW h)), hw.card_inter]
 
-omit [DecidableRel G.Adj] in
 /--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`
 -/
 lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
     (hm : G.FiveWheelLikeFree r (k + 1)) : G.minDegree ≤ (2 * r + k) * ‖α‖ / (2 * r + k + 3) := by
-  classical
   let X : Finset α := {x | ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y}
   let W := {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))
   -- Any vertex in `X` has at least 3 non-neighbors in `W` (otherwise we could build a bigger wheel)
@@ -417,8 +415,9 @@ If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 
 then `G` is `r + 1`-colorable, e.g. if `G` is `K₃`-free and `2 * n / 5 < G.minDegree` then `G`
 is `2`-colorable.
 -/
-theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] (hf : G.CliqueFree (r + 1))
-    (hd : (3 * r - 4) * ‖α‖ / (3 * r - 1) < G.minDegree) : G.Colorable r := by
+theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
+    (hf : G.CliqueFree (r + 1)) (hd : (3 * r - 4) * ‖α‖ / (3 * r - 1) < G.minDegree) :
+    G.Colorable r := by
   match r with
   | 0 | 1 => aesop
   | r + 2 =>
