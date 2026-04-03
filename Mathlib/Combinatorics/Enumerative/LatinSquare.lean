@@ -73,29 +73,26 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   /-- An `m × n` array of symbols. -/
   M : Matrix m n α
   /-- An `m × n` Latin rectangle contains `n` distinct entries. -/
-  exactly_n_symbols : Fintype.card α = Fintype.card n
+  card_eq : Fintype.card α = Fintype.card n
   /-- Each row contains each symbol exactly once. -/
-  once_per_row : ∀ i, Function.Bijective (M.row i)
+  row_injective : ∀ i, Function.Bijective (M.row i)
   /-- Entries cannot repeat in a given column. -/
-  distinct_col_entries : ∀ y, Function.Injective (M.col y)
+  col_injective : ∀ y, Function.Injective (M.col y)
   /-- The number of rows is less than or equal to the number of columns. -/
-  m_le_n : Fintype.card m ≤ Fintype.card n := by simp
+  card_le : Fintype.card m ≤ Fintype.card n := by simp
 
 attribute [coe] LatinRectangle.M
 
 /-- Pretty printing of Latin rectangles. -/
-instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [Repr α] :
-  Repr (LatinRectangle (Fin m) (Fin n) α) where
+instance {m n : ℕ} [Repr α] : Repr (LatinRectangle (Fin m) (Fin n) α) where
   reprPrec L _ := repr L.M
 
-/-- A LatinSquare is a Square LatinRectangle -/
-abbrev LatinSquare (n : Type*) [Fintype n] (α : Type*) [Fintype α] [DecidableEq α] :=
-  LatinRectangle n n α
+variable (n α) in
+/-- A LatinSquare is a square LatinRectangle -/
+abbrev LatinSquare := LatinRectangle n n α
 
 /-- Get the underlying `Matrix` of a `LatinRectangle`. -/
-instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
-  [Fintype n] [Fintype α] [DecidableEq α] :
-  Coe (LatinRectangle m n α) (Matrix m n α) where
+instance : Coe (LatinRectangle m n α) (Matrix m n α) where
   coe A := A.M
 
 /-- Get a specific column of a `LatinRectangle`. -/
@@ -107,29 +104,28 @@ abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix
 /-- Construct a `LatinSquare` given that both the rows and columns are bijective -/
 @[reducible]
 def LatinSquare.fromOncePerColumn
-  [Fintype n] [Fintype α] [DecidableEq α]
     (M : Matrix n n α)
-    (exactly_n_symbols : Fintype.card α = Fintype.card n)
-    (once_per_row : ∀ i, Function.Bijective (M.row i))
-    (once_per_column : ∀ j, Function.Bijective (M.col j)) : LatinSquare n α := {
+    (card_eq : Fintype.card α = Fintype.card n)
+    (row_bijective : ∀ i, Function.Bijective (M.row i))
+    (col_bijective : ∀ j, Function.Bijective (M.col j)) : LatinSquare n α := {
     M := M,
-    exactly_n_symbols := exactly_n_symbols,
-    once_per_row := once_per_row,
-    distinct_col_entries := (once_per_column · |>.injective)
+    card_eq := card_eq,
+    row_injective := row_bijective,
+    col_injective := (col_bijective · |>.injective)
   }
 
-/-- Every Finite Group's Cayley table is an example of a Latin Square. -/
-@[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
+/-- The Cayley table of a finite `Group` is an example of a Latin square. -/
+@[to_additive /-- The Cayley table of a finite `AddGroup` is an example of a Latin square. -/,
   reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     LatinSquare G G :=
   LatinSquare.fromOncePerColumn
     (M := fun i j ↦ i * j)
-    (exactly_n_symbols := by rfl)
-    (once_per_row := by
+    (card_eq := by rfl)
+    (row_bijective := by
       simp only [Matrix.row]
       exact Group.mulLeft_bijective (G := G))
-    (once_per_column := by
+    (col_bijective := by
       simp only [Matrix.col]
       exact Group.mulRight_bijective (G := G))
 
@@ -145,22 +141,22 @@ def LatinRectangle.relabel
     (h : α ≃ β) :
     LatinRectangle m' n' β := {
   M := (A.M.reindex f g).map h.toFun
-  exactly_n_symbols := by
+  card_eq := by
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
     have h' : Fintype.card α = Fintype.card β := Fintype.card_congr h
-    have k' := A.exactly_n_symbols
+    have k' := A.card_eq
     lia,
-  once_per_row i' :=
-    h.bijective.comp (A.once_per_row (f.symm i') |>.comp g.symm.bijective)
-  distinct_col_entries := by
-    have h' := A.distinct_col_entries
+  row_injective i' :=
+    h.bijective.comp (A.row_injective (f.symm i') |>.comp g.symm.bijective)
+  col_injective := by
+    have h' := A.col_injective
     simp only [Function.Injective, Matrix.col_apply, Matrix.reindex_apply, Equiv.toFun_as_coe,
       Matrix.map_apply, Matrix.submatrix_apply, EmbeddingLike.apply_eq_iff_eq] at *
     intro y a₁ a₂ h
     convert h' (g.symm y) h
     simp
-  m_le_n := by
-    have ineq := A.m_le_n
+  card_le := by
+    have ineq := A.card_le
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
     lia
@@ -309,7 +305,7 @@ lemma col_card
     (A : LatinRectangle k n α) :
     ∀ j, (Finset.image (LatinRectangle.col A j) Finset.univ).card = Fintype.card k := by
   intro j
-  have h_inj := A.distinct_col_entries
+  have h_inj := A.col_injective
   exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
 lemma card_symbols_not_in
@@ -319,7 +315,7 @@ lemma card_symbols_not_in
     ∀ j, Finset.card (symbolsNotIn A j) = Fintype.card n - Fintype.card k := by
   simp [symbolsNotIn,
         Finset.card_sdiff,
-        A.exactly_n_symbols,
+        A.card_eq,
         col_card A]
 
 lemma row_entry_to_column_entry
@@ -329,7 +325,7 @@ lemma row_entry_to_column_entry
     (x : α) :
     ∃ f : k → n,
     ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
-  have hrow := A.once_per_row
+  have hrow := A.row_injective
   conv at hrow =>
     ext
     rw [Function.bijective_iff_existsUnique]
@@ -362,7 +358,7 @@ lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ
     exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
 
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
-theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
+theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one
     {n : Type*} [Fintype n]
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
@@ -392,7 +388,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
       rw [<- hf] at h₁ h₁'
       rw [h₁''] at h₁'
       rw [<- h₁'] at h₁
-      have hinj := A.distinct_col_entries
+      have hinj := A.col_injective
       specialize hinj (f a2)
       simp only [Function.Injective, Matrix.col] at hinj
       exact hinj h₁
@@ -440,7 +436,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
       intro x'
       rw [Finset.mem_image]
       intro ha
-      have h := A.once_per_row
+      have h := A.row_injective
       obtain ⟨a, ha⟩ := ha
       use a
       refine ⟨ ?_, ha.2 ⟩
@@ -486,8 +482,8 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
     else (f' ⟨j, by simp⟩ )
   let A' : LatinRectangle k' n α := {
     M := M'
-    exactly_n_symbols := A.exactly_n_symbols
-    once_per_row := by
+    card_eq := A.card_eq
+    row_injective := by
       simp only [Matrix.row, M']
       intro y
       split_ifs
@@ -499,11 +495,11 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
         have h₁' := Function.leftInverse_invFun ι.inj'
         simp only [Function.Embedding.toFun_eq_coe] at h₁'
         rw [h₁']
-        have h := A.once_per_row
+        have h := A.row_injective
         simp only [Matrix.row] at h
         apply h
       · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
-        have h₂ := A.exactly_n_symbols.symm
+        have h₂ := A.card_eq.symm
         have h₃pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h₂]
         have h₃ : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α) :=
                   ⟨hf.1, h₃pre⟩
@@ -523,7 +519,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
           specialize h₃ b
           simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h₃
           exact h₃
-    distinct_col_entries := by
+    col_injective := by
       intro y
       simp only [Function.Injective, Matrix.col, Matrix.transpose,
                  Finset.mem_image, Finset.mem_univ, true_and,
@@ -539,7 +535,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
         have h₂' := Function.leftInverse_invFun ι.inj'
         simp only [Function.Embedding.toFun_eq_coe] at h₂'
         rw [<- ha2',h₂']
-        have h := A.distinct_col_entries
+        have h := A.col_injective
         unfold Function.Injective at h
         intro hM
         apply h at hM
@@ -565,7 +561,7 @@ theorem LatinRectangle.exists_extension_of_non_square_LatinRectangle
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
           (by simpa using if_h₁) (by simpa using if_h₂)
-    m_le_n := by lia
+    card_le := by lia
   }
   use A'
   unfold IsSubrect
@@ -651,7 +647,7 @@ theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
       have hm_lt : m < a := by lia
       have ι_h := Function.Embedding.nonempty_of_card_le hk'_le
       let ι' : k ↪ k' := Classical.choice ι_h
-      have H := LatinRectangle.exists_extension_of_non_square_LatinRectangle A h_k_lt_n ι' hk'_card
+      have H := LatinRectangle.exists_isSubrect_of_card_eq_card_add_one A h_k_lt_n ι' hk'_card
       have ⟨A', hA⟩ := H
       have ih := ih m hm_lt (k := k') (A := A') h_k'_le_n hm
       have ⟨A'', hA''⟩ := ih
