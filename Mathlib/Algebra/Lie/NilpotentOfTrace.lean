@@ -166,12 +166,10 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have htr_ny : trace K V (n * y) = 0 :=
     (LinearMap.isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
   have htr_sy : trace K V (s * y) = ∑ i, a i * c i := by
-    have : s * y = Matrix.toLin v v (Matrix.diagonal (fun i => a i * c i)) :=
-      v.ext fun i => by
-        simp only [Module.End.mul_apply, hy_diag i, map_smul, hv_diag i, smul_smul, mul_comm (c i)]
-        exact (mem_eigenspace_iff.mp
-          (hasEigenvector_toLin_diagonal (fun i => a i * c i) i v).1).symm
-    rw [this, Matrix.trace_toLin_eq, Matrix.trace_diagonal]
+    rw [trace_eq_matrix_trace (b := v), Matrix.trace]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    simp [Matrix.diag, toMatrix_apply, Module.End.mul_apply, hy_diag i, map_smul,
+      hv_diag i, smul_smul, mul_comm (c i)]
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
   have h_sum_sq : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
