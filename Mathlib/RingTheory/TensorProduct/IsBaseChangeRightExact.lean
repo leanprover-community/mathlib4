@@ -12,10 +12,10 @@ public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
-# Lemmas about IsBaseChange under Exact Sequences
+# Lemmas about `IsBaseChange` under exact sequences
 
-In this file, we show that cokernel preserves `IsBaseChange S`.
-For kernel version (needs flat), see `Mathlib.RingTheory.Flat.IsBaseChange`.
+In this file, we show that taking cokernels commutes with base change.
+If `S` is flat, the same holds for kernels, see `Mathlib.RingTheory.Flat.IsBaseChange`.
 
 # Main Results
 
@@ -46,20 +46,20 @@ variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGro
   (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
   {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃}
 
-lemma IsBaseChange.of_right_exact (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
-    (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)(isb1 : IsBaseChange S h₁)
-    (isb2 : IsBaseChange S h₂) (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
-    (exac2 : Function.Exact f' g') (surj2 : Function.Surjective g') : IsBaseChange S h₃ := by
-  change Function.Bijective _ at isb1 isb2 ⊢
+lemma IsBaseChange.of_right_exact (comm₁ : h₂.comp f = (f'.restrictScalars R).comp h₁)
+    (comm₂ : h₃.comp g = (g'.restrictScalars R).comp h₂) (isb₁ : IsBaseChange S h₁)
+    (isb₂ : IsBaseChange S h₂) (exact₁ : Function.Exact f g) (surj₁ : Function.Surjective g)
+    (exact₂ : Function.Exact f' g') (surj₂ : Function.Surjective g') : IsBaseChange S h₃ := by
+  simp only [IsBaseChange, IsTensorProduct] at isb₁ isb₂ ⊢
   refine LinearMap.bijective_of_surjective_of_bijective_of_right_exact
     ((f.baseChange S).restrictScalars R) ((g.baseChange S).restrictScalars R)
-    (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exac2 isb1.2 isb2 ?_ surj2
+    (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exact₂ isb₁.2 isb₂ ?_ surj₂
   · ext s m
-    simpa using congr(s • ($comm1 m)).symm
+    simpa using congr(s • ($comm₁ m)).symm
   · ext s m
-    simpa using congr(s • ($comm2 m)).symm
-  · simpa [LinearMap.baseChange_eq_ltensor] using lTensor_exact S exac1 surj1
-  · simpa [LinearMap.baseChange_eq_ltensor] using LinearMap.lTensor_surjective S surj1
+    simpa using congr(s • ($comm₂ m)).symm
+  · exact lTensor_exact S exact₁ surj₁
+  · exact LinearMap.lTensor_surjective S surj₁
 
 lemma IsBaseChange.of_equiv_left (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
     (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)

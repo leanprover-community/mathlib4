@@ -319,9 +319,7 @@ variable (G)
 @[to_additive /-- Negation in a topological group as a homeomorphism. -/]
 protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
     [ContinuousInv G] : G ≃ₜ G :=
-  { Equiv.inv G with
-    continuous_toFun := continuous_inv
-    continuous_invFun := continuous_inv }
+  { Equiv.inv G with }
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.symm_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
@@ -632,9 +630,7 @@ theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ �
 /-- The map `(x, y) ↦ (x, x * y)` as a homeomorphism. This is a shear mapping. -/
 @[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a homeomorphism. This is a shear mapping. -/]
 protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with
-    continuous_toFun := by dsimp; fun_prop
-    continuous_invFun := by dsimp; fun_prop }
+  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with }
 
 @[to_additive (attr := simp)]
 theorem Homeomorph.shearMulRight_coe :
@@ -882,12 +878,6 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_one := IsTopologicalGroup.isOpenMap_iff_nhds_one
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_zero := IsTopologicalAddGroup.isOpenMap_iff_nhds_zero
 
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
@@ -1308,7 +1298,6 @@ its additive units. -/]
 def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃ₜ Gˣ where
   toEquiv := toUnits.toEquiv
   continuous_toFun := Units.continuous_iff.2 ⟨continuous_id, continuous_inv⟩
-  continuous_invFun := Units.continuous_val
 
 @[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
     IsEmbedding (val : Gˣ → G) :=
