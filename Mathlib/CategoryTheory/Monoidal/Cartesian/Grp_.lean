@@ -66,7 +66,8 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[CategoryTheory.MonObj] attribute [instance] Hom.group Hom.addGroup
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.group
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addGroup
 
 @[to_additive]
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
@@ -307,6 +308,7 @@ additive group structure. -/]
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup
 
 section
 
