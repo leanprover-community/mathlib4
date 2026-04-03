@@ -6,6 +6,7 @@ Authors: Robert Maxton
 module
 
 public import Mathlib.Init
+public meta import Lean.Meta
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! Delab checking canonicity.
@@ -18,17 +19,22 @@ Synthesized instances are considered 'canonical' for this purpose.
 public meta section
 open Lean Meta PrettyPrinter.Delaborator SubExpr
 
+
+def Lean.Meta.isCanonicalInstance (inst : Expr) : MetaM Bool := do
+  let type ← inferType inst
+  let .some synthInst ← trySynthInstance type | return false
+  isDefEqI inst synthInst
+
 /-- When the delab reader is pointed at an expression for an instance, returns `(true, t)`
-**iff** instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
+iff instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
 -/
 def delabCheckingCanonical : DelabM (Bool × Term) := do
-  let instD ← delab
   let inst ← getExpr
-  let type ← inferType inst
-  -- if there is no synthesized instance, still return `false`
-  -- (because `inst` is still non-canonical)
-  let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
-  withReducibleAndInstances <| return (← Meta.isDefEq inst synthInst, instD)
+  if ← isCanonicalInstance inst then
+    return (true, ← annotateTermInfo <| ← `(_))
+  else
+    return (false, ← delab)
+namespace Delab.Noncanonical
 
 /-- Delaborate an expression with arity `arity` into a unary notation `mkStx` iff the argument
 `arg` is a non-canonical instance (is not defeq to what is synthesized for its type, or else
@@ -39,12 +45,19 @@ def delabUnary (arity arg : Nat) (mkStx : Term → DelabM Term) : Delab :=
     mkStx instD
 
 /-- Delaborate an expression with arity `arity` into a binary notation `mkStx` iff either
-argument `arg₁` or `arg₂` are non-canonical instance (are not defeq to what is synthesized for
-its type, or else instance synthesis fails). -/
-def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term) : Delab :=
+argument `arg₁` or `arg₂` are non-canonical instances (are not defeq to what is synthesized for
+its type, or else instance synthesis fails). If `hole` is not `none`, it is used
+in place of a canonical instance. -/
+def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term)
+    (hole : Option (DelabM Term) := none) : Delab :=
   withOverApp arity <| whenPPOption Lean.getPPNotation do
     let (canonα?, instDα) ← withNaryArg arg₁ delabCheckingCanonical
     let (canonβ?, instDβ) ← withNaryArg arg₂ delabCheckingCanonical
-    -- fall through to normal delab if both canonical
     if canonα? && canonβ? then failure
     mkStx instDα instDβ
+--     let hole ← hole.sequence
+--     mkStx (replace? hole canonα? instDα) (replace? hole canonβ? instDβ)
+-- where
+--   replace? h b i := bif b then h.getD i else i
+
+end Delab.Noncanonical

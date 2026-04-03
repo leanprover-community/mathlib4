@@ -198,11 +198,11 @@ scoped notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 /-- Notation for `closure` with respect to a non-standard topology. -/
 scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 
-/-- Notation for `Continuous` with respect to a non-standard topologies. -/
+/-- Notation for `Continuous` with respect to non-standard topologies. -/
 scoped notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-open Topology Lean.PrettyPrinter.Delaborator
+open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 
 /-- Delaborator for `IsOpen[_]`. -/
 @[scoped app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
@@ -216,7 +216,8 @@ meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
 
 /-- Delaborator for `Continuous[_, _]`. -/
 @[scoped app_delab Continuous]
-meta def delabContinuous : Delab := delabBinary 4 2 3 fun x y ↦ `(Continuous[$x, $y])
+meta def delabContinuous : Delab :=
+  delabBinary 4 2 3 (fun x y ↦ `(Continuous[$x, $y])) (some `(_))
 
 end Topology
 

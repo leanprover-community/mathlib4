@@ -119,14 +119,12 @@ section applied
 -- in either or both slots do trigger the delab and that
 -- `instTopologicalSpaceNat`, `sierpinskiSpace` does not.
 
-/-- info: [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p,
-  Continuous[induced g inferInstance, inferInstance] g] : List Prop -/
+/-- info: [Continuous[τ₁, _] p, Continuous[τ₂, _] p, Continuous[induced g inferInstance, inferInstance] g] : List Prop -/
 #guard_msgs(info) in
 #check [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p,
   Continuous[induced g inferInstance, inferInstance] g]
 
-/-- info: [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p,
-  Continuous[inferInstance, coinduced h inferInstance] h] : List Prop -/
+/-- info: [Continuous[_, σ₁] p, Continuous[_, σ₂] p, Continuous[inferInstance, coinduced h inferInstance] h] : List Prop -/
 #guard_msgs(info) in
 #check [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p,
   Continuous[inferInstance, coinduced h inferInstance] h]
@@ -143,25 +141,32 @@ section unapplied
 
 -- Same as above, except for unapplied operators.
 
-/-- info: [Continuous[τ₁, sierpinskiSpace], Continuous[τ₂, sierpinskiSpace]]
+/-- info: [Continuous[τ₁, _], Continuous[τ₂, _]]
 : List ((ℕ → Prop) → Prop) -/
 #guard_msgs(info) in
 #check [Continuous[τ₁, sierpinskiSpace], Continuous[τ₂, sierpinskiSpace]]
 
+-- Note: This is *not* the desired behavior. Treat it instead as a 'bug tracker.'
+-- When `(try)SynthInstance` in `$check` is fixed, this should no longer trigger the delab
+-- on the right, so we should get `Continuous[induced g inferInstance, _]`.
 /-- info:
-Continuous[induced g inferInstance, inferInstanceAs (TopologicalSpace α)] : (β → α) → Prop -/
+Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 #guard_msgs(info) in
-#check Continuous[induced g inferInstance, inferInstanceAs (TopologicalSpace α)]
+#check Continuous[induced g inferInstance, inferInstanceAs% (TopologicalSpace α)]
 
-/-- info: [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
+/-- info: [Continuous[_, σ₁], Continuous[_, σ₂]]
 : List ((ℕ → Prop) → Prop) -/
 #guard_msgs(info) in
 #check [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
 
+
+-- As above, this is not the desired behavior. When `(try)SynthInstance` in `#check` is fixed,
+-- this should no longer trigger the delab on the left, so we should get
+-- `Continuous[_, coinduced h inferInstance]`.
 /-- info:
-Continuous[inferInstanceAs (TopologicalSpace α), coinduced h inferInstance] : (α → β) → Prop -/
+Continuous[inst✝, coinduced h inferInstance] : (α → β) → Prop -/
 #guard_msgs(info) in
-#check Continuous[inferInstanceAs (TopologicalSpace α), coinduced h inferInstance]
+#check Continuous[inferInstanceAs% (TopologicalSpace α), coinduced h inferInstance]
 
 /-- info: [Continuous[induced p inferInstance, coinduced p inferInstance], Continuous]
 : List ((ℕ → Prop) → Prop) -/
