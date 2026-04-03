@@ -1003,8 +1003,9 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       sum_eq_sum_iff_single (i := (a, x.order)), mul_left_inj' (coeff_order_eq_zero.not.2 hx)]
     · simp [hx]
       grind
-    · simp +contextual only [mem_union, mem_setAddAntidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
-        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
+    · simp +contextual only [mem_union, mem_setAddAntidiagonal,
+        mul_eq_mul_right_iff, Prod.mk.injEq, ne_eq, ← or_and_right, or_false,
+        and_imp, Prod.forall, mem_support, not_and]
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq

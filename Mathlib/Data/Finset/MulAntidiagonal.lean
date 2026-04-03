@@ -132,7 +132,8 @@ theorem isPWO_support_setMulAntidiagonal :
 alias isPWO_support_mulAntidiagonal := isPWO_support_setMulAntidiagonal
 
 @[to_additive]
-theorem setMulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α]
+theorem setMulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α]
+    [IsOrderedCancelMonoid α]
     {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     setMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) =
       {(hs.min hns, ht.min hnt)} := by

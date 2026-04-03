@@ -432,8 +432,9 @@ def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFa
 
 theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ')
     (a : α × β) :
-    ∑ x ∈ setVAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g, (s a.1).coeff x.1 •
-      (t a.2).coeff x.2 = ∑ x ∈ setVAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
+    ∑ x ∈ setVAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g,
+      (s a.1).coeff x.1 • (t a.2).coeff x.2 =
+    ∑ x ∈ setVAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
       (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
   refine sum_subset (fun gh hgh => ?_) fun gh hgh h => ?_
   · simp_all only [mem_setVAddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
@@ -455,9 +456,10 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   rw [finsum_eq_sum _ (hasFiniteSupport_smul s t gh), ← sum_product_right']
   refine sum_subset (fun ab hab => ?_) (fun ab _ hab => by simp_all)
   have hsupp := smul_support_subset_prod s t gh
-  simp_all only [mem_setVAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
-    Function.mem_support, Set.Finite.coe_toFinset, support_subset_iff, Set.mem_prod,
-    Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
+  simp_all only [mem_setVAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
+    Set.Finite.mem_toFinset, Function.mem_support, Set.Finite.coe_toFinset,
+    support_subset_iff, Set.mem_prod, Set.mem_setOf_eq, Prod.forall, coeff_support,
+    mem_product]
   exact hsupp ab.1 ab.2 hab
 
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
