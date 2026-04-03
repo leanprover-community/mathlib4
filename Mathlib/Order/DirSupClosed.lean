@@ -57,9 +57,6 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
   simp [DirSupInaccOn, DirSupInacc]
 
-alias ⟨DirSupClosed.of_univ, DirSupClosed.to_univ⟩ := dirSupClosedOn_univ
-alias ⟨DirSupInacc.of_univ, DirSupInacc.to_univ⟩ := dirSupInaccOn_univ
-
 @[simp] lemma DirSupClosed.dirSupClosedOn : DirSupClosed s → DirSupClosedOn D s := @fun h _ _ ↦ @h _
 @[simp] lemma DirSupInacc.dirSupInaccOn : DirSupInacc s → DirSupInaccOn D s := @fun h _ _ ↦ @h _
 
