@@ -3,8 +3,10 @@ Copyright (c) 2025 Evan Spotte-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Set.Card
 
 /-!
 # Directed hypergraphs
@@ -43,6 +45,8 @@ all dihypergraphs are *without repeated edge*. Further, a vertex cannot be prese
 than once; developing the theory of such *weighted directed edges* (treating the degeneracy of
 a vertex in a edge source/destination as a kind of weight) is a topic for future work.
 -/
+
+@[expose] public section
 
 open Set
 
