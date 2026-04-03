@@ -181,6 +181,14 @@ lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (hGH : G < H) : V(G) ⊂ V(H) �
   by_contra! heq
   exact hGH.2 <| (Compatible.of_le_le hGH.1 le_rfl).ext heq.1 heq.2
 
+@[simp]
+lemma noEdge_le_iff : noEdge X β ≤ G ↔ X ⊆ V(G) := ⟨(·.vertexSet_mono), fun h ↦ ⟨h, by simp⟩⟩
+
+@[simp]
+lemma le_noEdge_iff : G ≤ noEdge X β ↔ V(G) ⊆ X ∧ E(G) = ∅ :=
+  ⟨fun h ↦ ⟨h.vertexSet_mono, subset_empty_iff.1 h.edgeSet_mono⟩,
+    fun h ↦ ⟨h.1, fun e x y he ↦ by simpa [h] using he.edge_mem⟩⟩
+
 end Subgraph
 
 section SpanningSubgraph
@@ -219,6 +227,14 @@ lemma mono_left (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤s G) : K ≤s G where
 
 lemma ext_of_edgeSet (hE : E(H) = E(G)) (h : H ≤s G) : H = G :=
   h.compatible.ext h.vertexSet_eq hE
+
+@[gcongr]
+lemma bouquet_mono (h : F₁ ⊆ F₂) : bouquet x F₁ ≤s bouquet x F₂ where
+  vertexSet_eq := rfl
+
+@[gcongr]
+lemma banana_mono (hF : F₁ ⊆ F₂) : banana u v F₁ ≤s banana u v F₂ where
+  vertexSet_eq := rfl
 
 end IsSpanningSubgraph
 
@@ -408,6 +424,17 @@ lemma isInducedSubgraph_bot_iff : G ≤i ⊥ ↔ G = ⊥ :=
 @[simp]
 lemma isClosedSubgraph_bot_iff : G ≤c ⊥ ↔ G = ⊥ :=
   ⟨fun h => le_bot_iff.mp h.le, fun h => h ▸ .rfl⟩
+
+lemma not_disjoint_of_mem_mem (h : x ∈ V(G)) (h' : x ∈ V(H)) : ¬ Disjoint G H := by
+  simp only [Disjoint, le_bot_iff, not_forall, ne_eq, ne_bot_iff]
+  use noEdge {x} β
+  simp [h, h']
+
+lemma vertexSet_disjoint_of_disjoint (h : Disjoint G H) : Disjoint V(G) V(H) := by
+  contrapose! h
+  rw [not_disjoint_iff] at h
+  obtain ⟨x, hx₁, hx₂⟩ := h
+  exact not_disjoint_of_mem_mem hx₁ hx₂
 
 end OrderBot
 
