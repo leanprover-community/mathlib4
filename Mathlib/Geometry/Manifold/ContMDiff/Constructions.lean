@@ -55,39 +55,39 @@ section ProdMk
 
 theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt I J' n g s x) :
-    ContMDiffWithinAt I (I'.prod J') n (Prod.prodMk f g) s x := by
+    ContMDiffWithinAt I (I'.prod J') n (Prod.pair f g) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (Prod.prodMk f g) s x := by
+    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (Prod.pair f g) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
-    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (Prod.prodMk f g) x :=
+    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (Prod.pair f g) x :=
   hf.prodMk hg
 
 nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
-    ContMDiffAt I 𝓘(𝕜, E' × F') n (Prod.prodMk f g) x :=
+    ContMDiffAt I 𝓘(𝕜, E' × F') n (Prod.pair f g) x :=
   hf.prodMk_space hg
 
 theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
-    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (Prod.prodMk f g) s :=
+    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (Prod.pair f g) s :=
   fun x hx => (hf x hx).prodMk (hg x hx)
 
 theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (Prod.prodMk f g) s :=
+    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (Prod.pair f g) s :=
   fun x hx => (hf x hx).prodMk_space (hg x hx)
 
 nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
-    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n Prod.prodMk f g := fun x =>
+    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n Prod.pair f g := fun x =>
   (hf x).prodMk (hg x)
 
 theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
-    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n Prod.prodMk f g := fun x =>
+    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n Prod.pair f g := fun x =>
   (hf x).prodMk_space (hg x)
 
 end ProdMk

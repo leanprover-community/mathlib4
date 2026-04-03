@@ -3652,6 +3652,7 @@ public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Bool.Count
+public import Mathlib.Data.Bool.Init
 public import Mathlib.Data.Bool.Set
 public import Mathlib.Data.Bracket
 public import Mathlib.Data.Bundle

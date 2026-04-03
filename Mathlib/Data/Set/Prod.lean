@@ -180,7 +180,7 @@ theorem preimage_prod_map_prod (f : α → β) (g : γ → δ) (s : Set β) (t :
   rfl
 
 theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
-    (Prod.prodMk f g) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
+    (Prod.pair f g) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
   rfl
 
 @[simp]
@@ -239,7 +239,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
   ext <| by simp [range]
 
 theorem range_pair_subset (f : α → β) (g : α → γ) :
-    (range (Prod.prodMk f g)) ⊆ range f ×ˢ range g := by grind
+    (range (Prod.pair f g)) ⊆ range f ×ˢ range g := by grind
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
   ⟨(x, y), ⟨hx, hy⟩⟩
@@ -260,7 +260,7 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
 
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
-    (Prod.prodMk f g) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
+    (Prod.pair f g) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 

@@ -24,6 +24,11 @@ universe u₁ u₂ u₃ u₄
 
 variable {α : Type u₁} {β : Type u₂} {γ : Sort u₃} {δ : Type u₄}
 
+def cases {γ : α ⊕ β → Sort u₃} (f : (a : α) → γ (inl a)) (g : (b : β) → γ (inr b))
+    (x : α ⊕ β) : γ x := x.casesOn f g
+
+theorem elim_eq_cases {f : α → γ} {g : β → γ} : Sum.elim f g = Sum.cases f g := rfl
+
 theorem elim_apply_of_isLeft {f : α → γ} {g : β → γ} {x} (h : x.isLeft) :
     Sum.elim f g x = f (x.getLeft h) := by grind
 

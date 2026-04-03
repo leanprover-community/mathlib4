@@ -352,7 +352,7 @@ protected theorem snd {m : MeasurableSpace α} [TopologicalSpace β] [Topologica
 @[fun_prop]
 protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
-    StronglyMeasurable Prod.prodMk f g := by
+    StronglyMeasurable Prod.pair f g := by
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)

@@ -890,16 +890,16 @@ variable {α β₁ β₂ : Type*} [LE β₁] [LE β₂]
 
 @[simp]
 lemma prodMk_le_prodMk_iff {u₁ v₁ : α → β₁} {u₂ v₂ : α → β₂} :
-    Prod.prodMk u₁ u₂ ≤ Prod.prodMk v₁ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
+    Prod.pair u₁ u₂ ≤ Prod.pair v₁ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
   simp [Pi.le_def, Prod.le_def, forall_and]
 
 lemma const_le_prodMk_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    Function.const _ b ≤ Prod.prodMk v₁ v₂ ↔
+    Function.const _ b ≤ Prod.pair v₁ v₂ ↔
     Function.const _ b.1 ≤ v₁ ∧ Function.const _ b.2 ≤ v₂ :=
   prodMk_const_const b.1 b.2 ▸ prodMk_le_prodMk_iff ..
 
 lemma prodMk_le_const_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    Prod.prodMk v₁ v₂ ≤ Function.const _ b ↔
+    Prod.pair v₁ v₂ ≤ Function.const _ b ↔
     v₁ ≤ Function.const _ b.1 ∧ v₂ ≤ Function.const _ b.2 :=
   prodMk_const_const b.1 b.2 ▸ prodMk_le_prodMk_iff ..
 

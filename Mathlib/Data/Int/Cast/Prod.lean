@@ -22,7 +22,7 @@ variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
 instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
-    intCast := Prod.prodMk IntCast.intCast IntCast.intCast
+    intCast := Prod.pair IntCast.intCast IntCast.intCast
     intCast_ofNat := fun _ => by ext <;> simp
     intCast_negSucc := fun _ => by ext <;> simp }
 

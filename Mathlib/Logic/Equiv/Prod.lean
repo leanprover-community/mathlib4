@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Data.Prod.Init
+public import Mathlib.Data.Sum.Init
+public import Mathlib.Data.Bool.Init
 
 /-!
 # Equivalence between product types
@@ -338,56 +341,59 @@ section
 
 /-- The type of functions to a product `β × γ` is equivalent to the type of pairs of functions
 `α → β` and `β → γ`. -/
-@[simps]
-def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
-    ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
-  toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
-  invFun := fun p c => (p.1 c, p.2 c)
+@[simps! (attr := grind =)]
+def arrowProdEquivProdArrow (α β γ : Type*) : (α → β × γ) ≃ (α → β) × (α → γ) where
+  toFun := Prod.pair (Prod.fst <| · ·) (Prod.snd <| · ·)
+  invFun := Prod.pair.uncurry
+
+/-- The type of a pi-type indexed by `i : ι` to products `β i × γ i` is equivalent to product of two
+pi-types `∀ i, β i` and `∀ i, γ i`. This is a dependent version of
+`Equiv.arrowProdEquivProdArrow`. -/
+@[simps! (attr := grind =)]
+def piProdEquivProdPi (α : Type*) (β γ : α → Type*) :
+    (∀ i, β i × γ i) ≃ (∀ i, β i) × (∀ i, γ i) where
+  toFun := Prod.pair (Prod.fst <| · ·) (Prod.snd <| · ·)
+  invFun := Pi.prod.uncurry
 
 open Sum
+
+/-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
+on `α` and on `β`. -/
+@[simps! (attr := grind =)]
+def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → γ) × (β → γ) where
+  toFun := Prod.pair (· <| inl ·) (· <| inr ·)
+  invFun := Sum.elim.uncurry
+  left_inv f := by ext (i | i) <;> rfl
+
+@[deprecated sumArrowEquivProdArrow_symm_apply (since := "2026-04-03")]
+theorem sumArrowEquivProdArrow_symm_apply_inl {α β γ} (f : α → γ) (g : β → γ) (a : α) :
+    ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inl a) = f a := by
+  apply sumArrowEquivProdArrow_symm_apply
+
+@[deprecated sumArrowEquivProdArrow_symm_apply (since := "2026-04-03")]
+theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β → γ) (b : β) :
+    ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inr b) = g b := by
+  apply sumArrowEquivProdArrow_symm_apply
 
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps (attr := grind =)]
 def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
     (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
-  toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
-  invFun g := Sum.rec g.1 g.2
+  toFun := Prod.pair (· <| inl ·) (· <| inr ·)
+  invFun := Sum.rec.uncurry
   left_inv f := by ext (i | i) <;> rfl
 
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps! (attr := grind =)]
 def prodPiEquivSumPi {ι ι'} (π : ι → Type u) (π' : ι' → Type u) :
-    ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
+    ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i : ι ⊕ ι', i.elim π π' :=
   sumPiEquivProdPi (Sum.elim π π') |>.symm
 
-/-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
-on `α` and on `β`. -/
-def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → γ) × (β → γ) :=
-  ⟨fun f => (f ∘ inl, f ∘ inr), fun p => Sum.elim p.1 p.2, fun f => by ext ⟨⟩ <;> rfl, fun p => by
-    cases p
-    rfl⟩
-
-@[simp, grind =]
-theorem sumArrowEquivProdArrow_apply_fst {α β γ} (f : α ⊕ β → γ) (a : α) :
-    (sumArrowEquivProdArrow α β γ f).1 a = f (inl a) :=
-  rfl
-
-@[simp, grind =]
-theorem sumArrowEquivProdArrow_apply_snd {α β γ} (f : α ⊕ β → γ) (b : β) :
-    (sumArrowEquivProdArrow α β γ f).2 b = f (inr b) :=
-  rfl
-
-@[simp, grind =]
-theorem sumArrowEquivProdArrow_symm_apply_inl {α β γ} (f : α → γ) (g : β → γ) (a : α) :
-    ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inl a) = f a :=
-  rfl
-
-@[simp, grind =]
-theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β → γ) (b : β) :
-    ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inr b) = g b :=
-  rfl
+def piProdEquivSumPi (α : Type*) (β γ : α → Type u) :
+    (∀ i, β i × γ i) ≃ ∀ i : α ⊕ α, i.elim β γ :=
+  (piProdEquivProdPi _ _ _).trans (prodPiEquivSumPi _ _)
 
 /-- Type product is right distributive with respect to type sum up to an equivalence. -/
 def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
@@ -423,18 +429,18 @@ def sigmaProdDistrib {ι : Type*} (α : ι → Type*) (β : Type*) : (Σ i, α i
 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/
 @[simps (attr := grind =)]
-def boolProdEquivSum (α) : Bool × α ≃ α ⊕ α where
-  toFun p := if p.1 then (inr p.2) else (inl p.2)
-  invFun := Sum.elim (Prod.mk false) (Prod.mk true)
-  left_inv := by rintro ⟨_ | _, _⟩ <;> rfl
-  right_inv := by rintro (_ | _) <;> rfl
+def boolProdEquivSum (α : Type*) : Bool × α ≃ α ⊕ α where
+  toFun := (cond · inr inl).uncurry
+  invFun := Prod.pair Sum.isRight Sum.get
+  left_inv := by grind
+  right_inv := by grind
 
 /-- The function type `Bool → α` is equivalent to `α × α`. -/
 @[simps (attr := grind =)]
 def boolArrowEquivProd (α : Type*) : (Bool → α) ≃ α × α where
-  toFun f := (f false, f true)
-  invFun p b := if b then p.2 else p.1
-  left_inv _ := by grind
+  toFun := Prod.pair (· false) (· true)
+  invFun  := flip (cond · Prod.snd Prod.fst ·)
+  left_inv _ := by grind [flip]
 
 end
 

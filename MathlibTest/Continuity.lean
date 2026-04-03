@@ -51,7 +51,7 @@ example (b : Y) : Continuous (fun _ : X => b) := by continuity
 
 example (f : C(X, Y)) (g : C(Y, Z)) : Continuous (g ∘ f) := by continuity
 
-example (f : C(X, Y)) (g : C(X, Z)) : Continuous (Prod.prodMk f g) := by continuity
+example (f : C(X, Y)) (g : C(X, Z)) : Continuous (Prod.pair f g) := by continuity
 
 example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := by continuity
 

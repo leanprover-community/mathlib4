@@ -593,7 +593,7 @@ variable {R A B C}
 /-- The `Pi.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
-  { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
+  { f.toAlgHom.prod g.toAlgHom with map_star' := by simp [Prod.star_def, map_star, Prod.ext_iff] }
 
 theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl

@@ -830,6 +830,8 @@ section CurryAndUncurry
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
 
+@[simp] theorem uncurry_apply {α β γ} (f : α → β → γ) (p : α × β) : uncurry f p = f p.1 p.2 := rfl
+
 theorem uncurry_injective {α β γ} : Function.Injective (uncurry : (α → β → γ) → _) :=
   LeftInverse.injective curry_uncurry
 

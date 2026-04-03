@@ -50,7 +50,7 @@ Let's mark the product constructor.
 -/
 
 attribute [fun_prop]
-  Measurable.prodMk -- Measurable f → Measurable g → Measurable Prod.prodMk f g
+  Measurable.prodMk -- Measurable f → Measurable g → Measurable Prod.pair f g
 
 /-!
 When it comes to product projection, their properties are usually stated in two different ways

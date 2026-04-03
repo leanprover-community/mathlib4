@@ -61,7 +61,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [Topolog
 
 @[simp]
 theorem continuous_prodMk {f : X → Y} {g : X → Z} :
-    (Continuous Prod.prodMk f g) ↔ Continuous f ∧ Continuous g :=
+    (Continuous Prod.pair f g) ↔ Continuous f ∧ Continuous g :=
   continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
 
 @[continuity]
@@ -138,7 +138,7 @@ theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × 
 
 @[continuity, fun_prop]
 theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous Prod.prodMk f g :=
+    Continuous Prod.pair f g :=
   continuous_prodMk.2 ⟨hf, hg⟩
 
 @[continuity]
@@ -345,7 +345,7 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
 
 @[fun_prop]
 theorem ContinuousAt.prodMk {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
-    (hg : ContinuousAt g x) : ContinuousAt (Prod.prodMk f g) x :=
+    (hg : ContinuousAt g x) : ContinuousAt (Prod.pair f g) x :=
   hf.prodMk_nhds hg
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
