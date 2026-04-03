@@ -92,16 +92,6 @@ variable {A : Type w} [CommRing A] [Algebra R A]
 variable {B : Type w} [CommRing B] [Algebra R B]
 variable (f : A →ₐ[R] B)
 
-lemma baseChange_mkQ_surjective (N : G(k, (A ⊗[R] M); A)) :
-    letI : Algebra A B := f.toAlgebra
-    letI : IsScalarTower R A B :=
-      IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
-    Function.Surjective (N.toSubmodule.mkQ.baseChange B ∘ₗ
-      (cancelBaseChange R A B B M).symm.toLinearMap) := by
-  algebraize [f.toRingHom]
-  apply ((cancelBaseChange R A B B M).symm.surjective_comp (LinearMap.baseChange B N.mkQ)).mpr
-  rw [LinearMap.baseChange_eq_ltensor]
-  exact LinearMap.lTensor_surjective _ <| Submodule.mkQ_surjective N.toSubmodule
 
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
@@ -110,7 +100,7 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
   letI f' := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
-  haveI equiv := f'.quotKerEquivOfSurjective (baseChange_mkQ_surjective f N)
+  haveI equiv := f'.quotKerEquivOfSurjective (baseChange_mkQ_surjective f N.toSubmodule)
   { toSubmodule := f'.ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
@@ -125,17 +115,26 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
 
 variable (k)
 
+lemma baseChange_comp_cancelBaseChange_symm_self
+    {P : Type*} [AddCommGroup P] [Module A P]
+    (f : (A ⊗[R] M) →ₗ[A] P) :
+    f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm =
+    (TensorProduct.lid A P).symm ∘ₗ f := by
+  rw [cancelBaseChange_self_eq_lid]
+  ext x
+  simp
+
+lemma ker_baseChange_comp_cancelBaseChange_symm
+    {P : Type*} [AddCommGroup P] [Module A P] (f : (A ⊗[R] M) →ₗ[A] P) :
+    (f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm).ker = f.ker := by
+  rw [baseChange_comp_cancelBaseChange_symm_self, LinearMap.ker_comp,
+    LinearEquiv.ker, Submodule.comap_bot]
+
 theorem map_id (A : CommAlgCat R) : map (.id R A) = 𝟙 G(k, A ⊗[R] M; A)  := by
   ext1 N
   rw [types_id_apply]
-  ext x
-  simp only [map, LinearMap.mem_ker, LinearMap.coe_comp,
-              LinearEquiv.coe_coe, Function.comp_apply]
-  erw [cancelBaseChange_self_eq_lid, TensorProduct.lid_symm_apply]
-  change 1 ⊗ₜ[↑A] N.mkQ x = 0 ↔ x ∈ N.toSubmodule
-  rw [← (TensorProduct.lid (↑A) ((↑A ⊗[R] M) ⧸ N.toSubmodule)).injective.eq_iff]
-  simp [TensorProduct.lid_tmul, map_zero, one_smul, Submodule.Quotient.mk_eq_zero,
-        Submodule.mkQ_apply]
+  ext1
+  exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans (Submodule.ker_mkQ N.toSubmodule)
 
 variable {C : Type w} [CommRing C] [Algebra R C]
 variable (g : B →ₐ[R] C)
