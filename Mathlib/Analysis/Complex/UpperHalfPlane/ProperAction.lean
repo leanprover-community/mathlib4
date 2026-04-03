@@ -48,7 +48,7 @@ instance instContinuousSMulSL2R : ContinuousSMul SL(2, ℝ) ℍ where
         ContinuousAt (fun ⟨h, z⟩ ↦ (h 0 0 * (z : ℂ) + h 0 1) / (h 1 0 * z + h 1 1)) (g, τ) by
       simpa [continuous_induced_rng, continuous_iff_continuousAt, Function.comp_def,
         coe_specialLinearGroup_apply]
-    refine fun g τ ↦ ?_
+    intro g τ
     fun_prop (disch := exact denom_ne_zero g τ)
 
 open Topology in

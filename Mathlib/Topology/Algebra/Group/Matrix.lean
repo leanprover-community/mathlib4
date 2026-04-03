@@ -35,7 +35,7 @@ omit [IsTopologicalRing R] in
 @[fun_prop]
 theorem continuous_apply {α : Type*} [TopologicalSpace α]
     (f : α → GL n R) (hf : Continuous f) (i : n) :
-    Continuous (fun x => f x i) :=
+    Continuous (fun x ↦ f x i) :=
   (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
 
 /-- The determinant is continuous as a map from the general linear group to the units. -/
@@ -67,7 +67,7 @@ omit [IsTopologicalRing R] in
 @[fun_prop]
 theorem Matrix.SpecialLinearGroup.continuous_apply {α : Type*} [TopologicalSpace α]
     (f : α → SL n R) (hf : Continuous f) (i) :
-    Continuous (fun x => f x i) :=
+    Continuous (fun x ↦ f x i) :=
   (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
 
 /-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
