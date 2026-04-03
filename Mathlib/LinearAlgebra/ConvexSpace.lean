@@ -181,8 +181,6 @@ namespace StdSimplex
 
 export ConvexSpace (sConvexCombo)
 
-end StdSimplex
-
 instance : ConvexSpace R (StdSimplex R I) where
   sConvexCombo σ := σ.join
   assoc f := by exact (join_join f).symm
@@ -192,13 +190,15 @@ instance : ConvexSpace R (StdSimplex R I) where
     f.sConvexCombo.weights = f.weights.sum (fun d r => r • d.weights) :=
   StdSimplex.join_weights _
 
+lemma map_sConvexCombo (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
+    s.sConvexCombo.map f = (s.map (map f)).sConvexCombo :=
+  StdSimplex.map_join s f
+
+end StdSimplex
+
 lemma sConvexCombo_sConvexCombo (f : StdSimplex R (StdSimplex R M)) :
     f.sConvexCombo.sConvexCombo = (f.map sConvexCombo).sConvexCombo :=
   (ConvexSpace.assoc f).symm
-
-lemma StdSimplex.map_sConvexCombo (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
-    s.sConvexCombo.map f = (s.map (map f)).sConvexCombo :=
-  StdSimplex.map_join s f
 
 /-- The public constructor for `ConvexSpace`. -/
 abbrev ConvexSpace.mk {M : Type*} (sConvexCombo : StdSimplex R M → M)
