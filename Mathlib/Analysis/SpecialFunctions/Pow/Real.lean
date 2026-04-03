@@ -562,7 +562,7 @@ lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
+  ⟨lt_imp_lt_of_le_imp_le fun h ↦ by gcongr, fun h ↦ by gcongr⟩
 
 theorem rpow_le_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff hy hx hz
@@ -660,7 +660,7 @@ theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^
 
 theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) : x ^ z ≤ 1 := by
   rw [← one_rpow z]
-  exact rpow_le_rpow hx1 hx2 hz
+  gcongr
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
   convert rpow_lt_rpow_of_exponent_lt hx hz
@@ -676,7 +676,7 @@ theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
 
 theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := by
   rw [← one_rpow z]
-  exact rpow_le_rpow zero_le_one hx hz
+  gcongr
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
@@ -730,8 +730,8 @@ theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤
 lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
     (max x y) ^ p = max (x ^ p) (y ^ p) := by
   rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hx hxy hp)]
-  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hy hxy hp)]
+  · rw [max_eq_right hxy, max_eq_right (by gcongr)]
+  · rw [max_eq_left hxy, max_eq_left (by gcongr)]
 
 theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
   simpa only [rpow_one]

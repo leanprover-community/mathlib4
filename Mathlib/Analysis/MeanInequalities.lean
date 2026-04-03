@@ -558,9 +558,9 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : �
     intro s
     obtain ⟨hp, hq, hr⟩ := hpqr.all_pos
     refine le_trans (Lr_rpow_le_Lp_mul_Lq s f g hpqr) (mul_le_mul ?_ ?_ bot_le bot_le)
-    · rw [NNReal.rpow_le_rpow_iff (by positivity)]
+    · gcongr
       exact hf.sum_le_tsum _ (fun _ _ => zero_le _)
-    · rw [NNReal.rpow_le_rpow_iff (by positivity)]
+    · gcongr
       exact hg.sum_le_tsum _ (fun _ _ => zero_le _)
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i * g i) ^ r) := by
     refine ⟨(∑' i, f i ^ p) ^ (r / p) * (∑' i, g i ^ q) ^ (r / q), ?_⟩
@@ -696,8 +696,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
         ((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p := by
     intro s
     rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
-    refine le_trans (Lp_add_le s f g hp) (add_le_add ?_ ?_) <;>
-        rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
+    refine le_trans (Lp_add_le s f g hp) (add_le_add ?_ ?_) <;> gcongr <;>
       refine Summable.sum_le_tsum _ (fun _ _ => zero_le _) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
