@@ -102,7 +102,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
   let v := eigenDecomp.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
-  let a : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
+  let a : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
   have hv_diag : ∀ i, s (v i) = a i • v i := fun i =>
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
@@ -117,7 +117,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     simpa using Subsingleton.elim (⟨μ, hμ_E⟩ : E) 0
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
-  have : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
+  have : Fintype (Σ μ, Fin (Module.finrank K (s.eigenspace μ))) :=
     v.fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
   let c := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y := Matrix.toLin v v (Matrix.diagonal c)
@@ -170,7 +170,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     refine Finset.sum_congr rfl fun i _ => ?_
     simp [Matrix.diag, toMatrix_apply, Module.End.mul_apply, hy_diag i, map_smul,
       hv_diag i, smul_smul, mul_comm (c i)]
-  have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
+  have htr_sum : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
   have h_sum_sq : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), f ⟨a i, ha i⟩ ^ 2 = 0 := by
     have h_sum_E : ∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
@@ -182,6 +182,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     simpa [sq] using h
   have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := by
     intro i
-    have h_sq := (Finset.sum_eq_zero_iff_of_nonneg fun _ _ => sq_nonneg _).mp h_sum_sq
-    exact eq_zero_of_pow_eq_zero (h_sq i (Finset.mem_univ _))
-  exact (Submodule.linearMap_eq_zero_iff_of_eq_span f rfl).mpr fun ⟨_, ⟨i, rfl⟩⟩ => h_each_zero i
+    have h_nonneg : ∀ j ∈ Finset.univ, 0 ≤ f ⟨a j, ha j⟩ ^ 2 := fun j _ => sq_nonneg _
+    have h_sq_zero := (Finset.sum_eq_zero_iff_of_nonneg h_nonneg).mp h_sum_sq i (Finset.mem_univ _)
+    exact eq_zero_of_pow_eq_zero h_sq_zero
+  rw [Submodule.linearMap_eq_zero_iff_of_eq_span f rfl]
+  rintro ⟨_, ⟨i, rfl⟩⟩
+  exact h_each_zero i
