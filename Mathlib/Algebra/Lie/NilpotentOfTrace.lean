@@ -172,15 +172,15 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
       hv_diag i, smul_smul, mul_comm (c i)]
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
-  have h_sum_sq : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
-      f ⟨a i, ha i⟩ ^ 2 = (0 : ℚ) := by
+  have h_sum_sq : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), f ⟨a i, ha i⟩ ^ 2 = 0 := by
     have h_sum_E : ∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
       apply_fun E.subtype using Subtype.val_injective
       simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
-      convert htr_sum using 1; congr 1; ext i; rw [smul_def, mul_comm]
+      exact (Finset.sum_congr rfl fun i _ => by rw [smul_def, mul_comm]).trans htr_sum
     have := congr_arg f h_sum_E
     simp only [map_sum, map_smul, smul_eq_mul, map_zero] at this
-    convert this using 1; congr 1; ext i; ring
+    convert this using 1
+    exact Finset.sum_congr rfl fun i _ => by ring
   have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := fun i =>
     eq_zero_of_pow_eq_zero ((Finset.sum_eq_zero_iff_of_nonneg
       (fun j _ => sq_nonneg _)).mp h_sum_sq i (Finset.mem_univ _))
