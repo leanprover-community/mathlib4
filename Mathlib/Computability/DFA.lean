@@ -112,9 +112,8 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
   List.foldl_append
 
-/--
-`M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
--/
+/-- `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state. -/
+@[simps]
 def acceptsFrom (s : σ) : Language α := ⟨{x | M.evalFrom s x ∈ M.accept}⟩
 
 theorem mem_acceptsFrom {s : σ} {x : List α} :
@@ -214,7 +213,8 @@ theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval
   simp [eval]
 
 @[simp]
-theorem toSet_accepts_comap (f : α' → α) : (M.comap f).accepts.toSet = List.map f ⁻¹' M.accepts.toSet := by
+theorem toSet_accepts_comap (f : α' → α) :
+    (M.comap f).accepts.toSet = List.map f ⁻¹' M.accepts.toSet := by
   ext x
   conv =>
     rhs
