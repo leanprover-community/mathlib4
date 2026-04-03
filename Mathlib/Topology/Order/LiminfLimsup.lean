@@ -213,15 +213,28 @@ theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
         exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
   · simp_all [ClusterPt, Filter.eq_top_of_neBot]
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
+theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
+  ClusterPt.limsSup (α := αᵒᵈ) hc hb
+
 /-- Every cluster point `x` of a filter `f` is less than or equal to `f.limsSup`. -/
 theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
-    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
     x ≤ f.limsSup := by
-  simp only [ClusterPt, Set.mem_setOf_eq] at ha
-  have : (𝓝 a ⊓ f).limsSup = a := limsSup_eq_of_le_nhds inf_le_left
+  simp only [ClusterPt] at hx
+  have : (𝓝 x ⊓ f).limsSup = x := limsSup_eq_of_le_nhds inf_le_left
   refine this ▸ limsSup_le_limsSup_of_le inf_le_right ?_ hb
-  exact (IsBounded.mono inf_le_left (isBounded_ge_nhds a)).isCobounded_le
+  exact (IsBounded.mono inf_le_left (isBounded_ge_nhds x)).isCobounded_le
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Every cluster point `x` of a filter `f` is greater than or equal to `f.limsInf`. -/
+theorem ClusterPt.limsInf_le {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f.limsInf ≤ x :=
+  hx.le_limsSup (α := αᵒᵈ)
 
 /-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. -/
 theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
@@ -229,20 +242,6 @@ theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
     IsGreatest {x | ClusterPt x f} f.limsSup :=
   ⟨ClusterPt.limsSup, fun a ha => ha.le_limsSup⟩
-
-/-- Every cluster point `x` of a filter `f` is greater than or equal to `f.limsInf`. -/
-theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
-    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
-    f.limsInf ≤ x :=
-  hx.le_limsSup (α := αᵒᵈ)
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
-theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
-    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
-    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
-  ClusterPt.limsSup (α := αᵒᵈ) hc hb
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `limsInf` of a filter `f` is the least cluster point of `f`. -/
@@ -256,8 +255,29 @@ theorem isLeast_clusterPt_limsInf {f : Filter α} [NeBot f]
 theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
-    MapClusterPt (limsup u f) f u :=
+    MapClusterPt (f.limsup u) f u :=
   ClusterPt.limsSup
+
+/-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
+theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    MapClusterPt (liminf u f) f u :=
+  ClusterPt.limsInf
+
+/-- Every cluster point `x` of a function `u` along a filter `f` is less than or equal to
+`limsup u f`. -/
+theorem MapClusterPt.le_limsup {u : β → α} {f : Filter β} [NeBot f]
+    {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    x ≤ f.limsup u :=
+  hx.le_limsSup
+
+/-- Every cluster point `x` of a function `u` along a filter `f` is greater than or equal to
+`liminf u f`. -/
+theorem MapClusterPt.liminf_le {u : β → α} {f : Filter β} [NeBot f]
+    {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    f.liminf u ≤ x :=
+  hx.limsInf_le
 
 /-- The `limsup` of a function `u` along a filter `f` is the greatest cluster point of `u` along
 `f`. -/
@@ -267,20 +287,13 @@ theorem isGreatest_mapClusterPt_limsup {u : β → α} {f : Filter β} [NeBot f]
     IsGreatest {x | MapClusterPt x f u} (limsup u f) :=
   isGreatest_clusterPt_limsSup
 
-/-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
-theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
-    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
-    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
-    MapClusterPt (liminf u f) f u :=
-  MapClusterPt.limsup (α := αᵒᵈ)
-
 /-- The `liminf` of a function `u` along a filter `f` is the least cluster point of `u` along
 `f`. -/
 theorem isLeast_mapClusterPt_liminf {u : β → α} {f : Filter β} [NeBot f]
     (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     IsLeast {x | MapClusterPt x f u} (liminf u f) :=
-  isGreatest_mapClusterPt_limsup (α := αᵒᵈ)
+  isLeast_clusterPt_limsInf
 
 /-- If the liminf and the limsup of a function coincide, then the limit of the function
 exists and has the same value. -/
@@ -327,13 +340,13 @@ variable [FirstCountableTopology α] {f : Filter α}
 theorem exists_seq_tendsto_limsSup [NeBot f] [IsCountablyGenerated f]
     (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
-    ∃ x : ℕ → α, Tendsto x atTop f ∧ Tendsto x atTop (𝓝 f.limsSup) :=
+    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsSup) ∧ Tendsto x atTop f :=
   (ClusterPt.limsSup).exists_seq_tendsto
 
 theorem exists_seq_tendsto_limsInf [NeBot f] [IsCountablyGenerated f]
     (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
-    ∃ x : ℕ → α, Tendsto x atTop f ∧ Tendsto x atTop (𝓝 f.limsInf) :=
+    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsInf) ∧ Tendsto x atTop f  :=
   (ClusterPt.limsInf).exists_seq_tendsto
 
 variable {f : Filter β}
@@ -341,13 +354,13 @@ variable {f : Filter β}
 theorem exists_seq_tendsto_limsup [NeBot f] [IsCountablyGenerated f] {u : β → α}
     (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
-    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) :=
+    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) ∧ Tendsto x atTop f :=
   (MapClusterPt.limsup).exists_seq_tendsto
 
 theorem exists_seq_tendsto_liminf [NeBot f] {u : β → α} [IsCountablyGenerated f]
     (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
     (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
-    ∃ x : ℕ → β, Tendsto x atTop f ∧ Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) :=
+    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) ∧ Tendsto x atTop f :=
   (MapClusterPt.liminf).exists_seq_tendsto
 
 variable [CountableInterFilter f] {u : β → α}
