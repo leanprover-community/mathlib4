@@ -1321,7 +1321,8 @@ namespace FiniteDimensional
 variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
 
 variable (ι v) in
-/-- In an inner product space with dimension 1, a set `{v}` is a orthonormal basis for `‖v‖ = 1`. -/
+/-- In an inner product space with dimension 1, a set `{v}` is an orthonormal basis for
+`‖v‖ = 1`. -/
 def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
   (basisSingleton ι h v (fun h ↦ by simp [h] at hv)).toOrthonormalBasis (by simpa using hv)
 
