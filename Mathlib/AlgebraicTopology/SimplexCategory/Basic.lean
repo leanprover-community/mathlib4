@@ -616,6 +616,9 @@ lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 
 @[simp]
 lemma δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n⦌.len + 1)) : δ i j = i.succAbove j := rfl
 
+@[simp]
+lemma σ_apply {n : ℕ} (i : Fin (n + 1)) (j : Fin (⦋n + 1⦌.len + 1)) : σ i j = i.predAbove j := rfl
+
 end Concrete
 
 section EpiMono

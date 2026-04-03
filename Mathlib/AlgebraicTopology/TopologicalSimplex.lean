@@ -56,7 +56,7 @@ instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=
 lemma _root_.stdSimplex.map_δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n + 1⦌.len + 1))
     (σ : stdSimplex ℝ (Fin (⦋n⦌.len + 1))) :
     stdSimplex.map (SimplexCategory.δ i) σ j =
-      (if i < j then σ ⟨j - 1, by simpa using j.2⟩ else 0) +
+      (if i < j then σ ⟨j - 1, by simp_all; lia⟩ else 0) +
       (if h : i > j then σ ⟨j, by simp_all; lia⟩ else 0) := by
   simp only [_root_.SimplexCategory.len_mk, stdSimplex.map_coe, FunOnFinite.linearMap_apply_apply,
     SimplexCategory.δ_apply, Fin.succAbove_eq_iff]
