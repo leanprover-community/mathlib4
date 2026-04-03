@@ -4120,6 +4120,7 @@ public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part
 public import Mathlib.Data.Pi.Interval
 public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Prod.Init
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Prod.TProd
@@ -4245,6 +4246,7 @@ public import Mathlib.Data.String.Defs
 public import Mathlib.Data.String.Lemmas
 public import Mathlib.Data.Subtype
 public import Mathlib.Data.Sum.Basic
+public import Mathlib.Data.Sum.Init
 public import Mathlib.Data.Sum.Interval
 public import Mathlib.Data.Sum.Lattice
 public import Mathlib.Data.Sum.Order
