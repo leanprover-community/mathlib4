@@ -8,10 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
-<<<<<<< HEAD
-import Mathlib.Analysis.Complex.Liouville
-=======
->>>>>>> master
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 
@@ -62,15 +58,10 @@ theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolvent
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 
-<<<<<<< HEAD
-theorem hasFDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
-=======
 @[deprecated  (since := "2026-03-26")]
 alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
 
 theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
->>>>>>> master
     HasFDerivAt (resolvent · k)
       (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
@@ -79,13 +70,9 @@ theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a
     simpa using (hasFDerivAt_const _ _).sub (hasFDerivAt_id (𝕜 := 𝕜) _)
   simpa [resolvent_eq hk] using H₁.comp a H₂
 
-<<<<<<< HEAD
-theorem hasDerivAt_resolvent' [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
-=======
 end NonTriviallyNormedField
 
 theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
->>>>>>> master
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
   convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
