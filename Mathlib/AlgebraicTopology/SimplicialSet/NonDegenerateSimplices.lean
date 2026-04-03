@@ -57,7 +57,7 @@ lemma mk_surjective (x : X.N) :
 a simplicial set `X`. -/
 @[elab_as_elim]
 def induction {motive : X.N → Sort*}
-    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) (s : X.N) :
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) (s : X.N) :
     motive s :=
   mk s.dim ⟨_, s.nonDegenerate⟩
 
