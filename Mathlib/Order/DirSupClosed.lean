@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christopher Hoskin
+Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Sets closed under directed suprema
@@ -24,48 +27,74 @@ nonempty directed set `t` is contained in `s`, then `t` and `s` must have nonemp
 
 @[expose] public section
 
-variable {α : Type*}
+variable {α : Type*} {s t : Set α} {D D₁ D₂ : Set (Set α)}
 
 open Set
 
 section Preorder
-variable [Preorder α] {s t : Set α}
+variable [Preorder α]
 
-/--
-A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
-upper bound `a` and is a subset of `s` then `a` also lies in `s`.
--/
-def DirSupClosed (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
+/-- A predicate for a set which is closed under directed suprema of nonempty sets.
+This is the complement of a `DirSupInaccOn` set. -/
+def DirSupClosedOn (D : Set (Set α)) (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
 
-/-- A set `s` is said to be inaccessible by directed joins on `D` if, when the least upper bound of
-a directed set `d` in `D` lies in `s` then `d` has non-empty intersection with `s`. -/
+/-- A predicate for a set which is inaccessible by directed suprema of nonempty sets in `D`.
+This is the complement of a `DirSupClosedOn` set. -/
 def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
   ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 
-/-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
-directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
+/-- A predicate for a set which is closed under directed suprema of nonempty sets.
+This is the complement of a `DirSupInacc` set. -/
+def DirSupClosed (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
+
+/-- A predicate for a set which is inaccessible by directed suprema of nonempty sets.
+This is the complement of a `DirSupClosed` set. -/
 def DirSupInacc (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
+
+@[simp] lemma dirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
+  simp [DirSupClosedOn, DirSupClosed]
 
 @[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
   simp [DirSupInaccOn, DirSupInacc]
 
-@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
-    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
+alias ⟨DirSupClosed.of_univ, DirSupClosed.to_univ⟩ := dirSupClosedOn_univ
+alias ⟨DirSupInacc.of_univ, DirSupInacc.to_univ⟩ := dirSupInaccOn_univ
 
-lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
-    DirSupInaccOn D₁ s := fun _ a ↦ hf (hD a)
+@[simp] lemma DirSupClosed.dirSupClosedOn : DirSupClosed s → DirSupClosedOn D s := @fun h _ _ ↦ @h _
+@[simp] lemma DirSupInacc.dirSupInaccOn : DirSupInacc s → DirSupInaccOn D s := @fun h _ _ ↦ @h _
 
-@[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
-  simp [DirSupInacc, ← not_disjoint_iff_nonempty_inter, disjoint_compl_right_iff, not_imp_not]
-  tauto
+@[gcongr]
+lemma DirSupClosedOn.mono (hD : D₁ ⊆ D₂) (hf : DirSupClosedOn D₂ s) : DirSupClosedOn D₁ s :=
+  fun _ a ↦ hf (hD a)
 
-@[simp] lemma dirSupClosed_compl : DirSupClosed sᶜ ↔ DirSupInacc s := by
-  rw [← dirSupInacc_compl, compl_compl]
+@[gcongr]
+lemma DirSupInaccOn.mono (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) : DirSupInaccOn D₁ s :=
+  fun _ a ↦ hf (hD a)
 
-alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
+@[simp]
+lemma dirSupClosedOn_compl : DirSupClosedOn D sᶜ ↔ DirSupInaccOn D s := by
+  simp_rw [DirSupClosedOn, DirSupInaccOn, ← not_disjoint_iff_nonempty_inter]
+  grind
+
+@[simp]
+lemma dirSupClosed_compl : DirSupClosed sᶜ ↔ DirSupInacc s := by
+  rw [← dirSupClosedOn_univ, dirSupClosedOn_compl, dirSupInaccOn_univ]
+
+@[simp]
+lemma dirSupInaccOn_compl : DirSupInaccOn D sᶜ ↔ DirSupClosedOn D s := by
+  rw [← dirSupClosedOn_compl, compl_compl]
+
+@[simp]
+lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
+  rw [← dirSupClosed_compl, compl_compl]
+
+alias ⟨DirSupClosedOn.of_compl, DirSupInaccOn.compl⟩ := dirSupClosedOn_compl
+alias ⟨DirSupInaccOn.of_compl, DirSupClosedOn.compl⟩ := dirSupInaccOn_compl
 alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
+alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 
 lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
   fun _d hds hd hd' _a ha ↦
