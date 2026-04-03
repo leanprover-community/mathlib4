@@ -381,8 +381,6 @@ lemma not_nil_iff {p : G.Walk v w} :
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
-lemma not_nil_iff_ne_nil {p : G.Walk v v} : ¬ p.Nil ↔ p ≠ nil := by rw [nil_iff_eq_nil]
-
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=

@@ -127,7 +127,7 @@ lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsC
   have hwg' : w.length = G.egirth := by
     refine ((ENat.toNat_eq_iff ?_).mp hwg.symm).symm
     simp only [ne_eq, length_eq_zero_iff]
-    exact not_nil_iff_ne_nil.mp hw.not_nil
+    exact nil_iff_eq_nil.not.mp hw.not_nil
   hw.isTrail.isCycle_of_length_eq_egirth hwg'
 
 end girth
