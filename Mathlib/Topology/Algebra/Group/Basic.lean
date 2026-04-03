@@ -1335,6 +1335,12 @@ theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :
     refine .inter (isClosed_singleton.preimage ?_) (isClosed_singleton.preimage ?_) <;>
     fun_prop
 
+lemma _root_.Topology.IsClosedEmbedding.units_map [ContinuousMul α] [T1Space α] {f : α →* β}
+    (hf : IsClosedEmbedding f) : IsClosedEmbedding (map f) := by
+  refine .of_comp isEmbedding_embedProduct ?_
+  exact (hf.prodMap (opHomeomorph.isClosedEmbedding.comp
+    <| hf.comp opHomeomorph.symm.isClosedEmbedding)).comp isClosedEmbedding_embedProduct
+
 @[to_additive]
 instance [T1Space α] [ContinuousMul α] [CompactSpace α] : CompactSpace αˣ :=
   isClosedEmbedding_embedProduct.compactSpace
