@@ -35,11 +35,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 * `MvPowerSeries.renameEquiv`
 * `MvPowerSeries.killCompl`
 
-## TODO
-
-* Show that under appropriate substitution, `MvPowerSeries.substAlgHom` coincides with
-  `MvPowerSeries.rename` in the `CommRing` case.
-
 -/
 
 @[expose] public section
@@ -295,21 +290,17 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R)
 
-lemma HasSubst.Rename : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
+lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
   const_coeff := by simp
-  coeff_zero d := by
-    classical
-    refine Set.Finite.subset (d.support.finite_toSet.biUnion'
-      (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun (x : σ) => ?_)
-    contrapose
-    intro _ _
-    simp_all [coeff_X]
+  coeff_zero d := Set.Finite.subset (d.support.finite_toSet.biUnion'
+    (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun x => by
+      contrapose; intro _ _; classical simp_all [coeff_X])
 
 theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   classical
   ext n
-  rw [coeff_rename, coeff_subst (HasSubst.Rename _) p n, finsum_eq_sum _
-    (coeff_subst_finite (HasSubst.Rename _) p n)]
+  rw [coeff_rename, coeff_subst (HasSubst.X_comp _) p n, finsum_eq_sum _
+    (coeff_subst_finite (HasSubst.X_comp _) p n)]
   have (d : σ →₀ ℕ) (hd : ¬(coeff d) p * (coeff n) (d.prod fun s e ↦ X (f s) ^ e) = 0) :
       mapDomain f d = n := by
     simp_rw [← monomial_mapDomain_eq_prod] at hd
