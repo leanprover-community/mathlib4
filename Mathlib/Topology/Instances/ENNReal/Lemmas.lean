@@ -284,8 +284,8 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
         exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
-      conv_lhs => rw [← mul_one ε]
-      gcongr <;> simp [*]
+      nth_rw 1 [← mul_one ε]
+      gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -759,7 +759,7 @@ lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞}
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   gcongr
-  exacts [t_ne_top, min_le_left t x]
+  exact min_le_left t x
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 

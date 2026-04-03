@@ -15,6 +15,10 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 
 public meta section
 
+/-! We also use `assumption` to discharge side goals.
+NB. This might run before `positivity` now; hopefully that is fine. -/
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| assumption)
+
 /-!
 We register `gcongr` with the `hint` tactic.
 -/
