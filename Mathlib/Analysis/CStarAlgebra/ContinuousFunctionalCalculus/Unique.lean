@@ -109,7 +109,7 @@ namespace StarAlgHom
 
 section IsTopologicalRing
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
@@ -171,7 +171,7 @@ lemma realContinuousMapOfNNReal_injective :
 
 end StarAlgHom
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     ContinuousMap.UniqueHom ℝ≥0 A where
@@ -292,7 +292,7 @@ open ContinuousMapZero
 
 section IsTopologicalRing
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
@@ -364,7 +364,7 @@ open ContinuousMapZero
 
 set_option backward.isDefEq.respectTransparency false in
 instance NNReal.instContinuousMapZero.UniqueHom
-    [TopologicalSpace A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [TopologicalSpace A] [IsSemitopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :
     ContinuousMapZero.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs h0 φ ψ hφ hψ h := by

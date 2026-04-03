@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-! # Linear topology on the ring of multivariate power series
 
 - `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
-all coefficients the exponent of which is smaller than some bound vanish.
+  all coefficients the exponent of which is smaller than some bound vanish.
 
 - `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis

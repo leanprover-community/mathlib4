@@ -71,12 +71,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-
--- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem⟩
@@ -471,7 +466,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_swap α]
+  simp [mem_iff_getElem, @forall_comm α]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
@@ -862,88 +857,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
-
-section FoldlEqFoldr
-
--- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α}
-
-theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
-  | _, _, nil => rfl
-  | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
-    rw [hassoc.assoc]
-
-theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm.comm a b
-  | a, b, c :: l => by
-    simp only [foldl_cons]
-    have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
-
-theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
-    ∀ a l, foldl f a l = foldr f a l
-  | _, nil => rfl
-  | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
-    rw [foldl_eq_foldr a l]
-
-end FoldlEqFoldr
-
-section FoldlEqFoldr'
-
-variable {f : α → β → α}
-variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
-
-include hf
-
-theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldl, foldl, foldl, ← foldl_eq_of_comm' .., foldl, hf]
-
-theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
-  | _, [] => rfl
-  | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
-
-end FoldlEqFoldr'
-
-section FoldlEqFoldr'
-
-variable {f : α → β → β}
-
-theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
-    ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
-
-end FoldlEqFoldr'
-
-section
-
-variable {op : α → α → α} [ha : Std.Associative op]
-
-/-- Notation for `op a b`. -/
-local notation a " ⋆ " b => op a b
-
--- Setting `priority := high` means that Lean will prefer this notation to the identical one
--- for `Seq.seq`
-/-- Notation for `foldl op a l`. -/
-local notation (priority := high) l " <*> " a => foldl op a l
-
-theorem foldl_op_eq_op_foldr_assoc :
-    ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
-  | [], _, _ => rfl
-  | a :: l, a₁, a₂ => by
-    simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
-
-variable [hc : Std.Commutative op]
-
-theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ ⋆ l <*> a₂ := by
-  rw [foldl_cons, hc.comm, foldl_assoc]
-
-end
 
 /-! ### foldlM, foldrM, mapM -/
 
