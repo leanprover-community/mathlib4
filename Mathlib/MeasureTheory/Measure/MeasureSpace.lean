@@ -553,9 +553,11 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
       rcases (hx.eventually_le_atBot i).exists with ⟨n, hn⟩
       exact ⟨n, hs hn⟩
 
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere monotone
+is equal to the infimum of the measures. -/
 theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
-    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α}
-    (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
+    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   obtain ⟨i, hi⟩ := hfin
@@ -582,9 +584,11 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
   hs.dual_left.measure_iInter hsm hfin
 
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere antitone
+is equal to the infimum of the measures. -/
 lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
-    [(atTop : Filter ι).IsCountablyGenerated]
-    {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
     (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   refine measure_iInter_of_ae_monotone (ι := ιᵒᵈ) ?_ hsm hfin
