@@ -12,17 +12,44 @@ public import Mathlib
 
 universe u v
 
-open CategoryTheory
+open CategoryTheory Limits TopologicalSpace
 
 namespace AlgebraicGeometry.Scheme
 
-variable (X : Scheme.{u})
+open Modules
+
+variable {X : Scheme.{u}}
+
+section
+
+variable {Y : Scheme.{u}} (φ : X ≅ Y)
+
+#check SheafOfModules.unit
+
+noncomputable def modulesEquiv : X.Modules ≌ Y.Modules :=
+  haveI : (Opens.mapMapIso (forgetToTop.mapIso φ)).functor.IsContinuous (Opens.grothendieckTopology Y)
+    (Opens.grothendieckTopology X) := inferInstanceAs ((Opens.map φ.hom.base).IsContinuous _ _)
+  haveI : (Opens.mapMapIso (forgetToTop.mapIso φ)).inverse.IsContinuous (Opens.grothendieckTopology X)
+    (Opens.grothendieckTopology Y) := inferInstanceAs ((Opens.map φ.inv.base).IsContinuous _ _)
+  SheafOfModules.pushforwardPushforwardEquivalence (Opens.mapMapIso (forgetToTop.mapIso φ))
+    φ.hom.toRingCatSheafHom φ.inv.toRingCatSheafHom sorry sorry
+
+@[simp]
+lemma modulesEquiv_functor : (modulesEquiv φ).functor = pushforward φ.hom := rfl
+
+@[simp]
+lemma modulesEquiv_inverse : (modulesEquiv φ).inverse = pushforward φ.inv := rfl
+
+lemma modulesEquiv_inv : (modulesEquiv φ).symm = modulesEquiv φ.symm := rfl
+
+end
 
 abbrev QuasicoherentSheaves :=
   (SheafOfModules.isQuasicoherent (R := X.ringCatSheaf)).FullSubcategory
 
 namespace QuasicoherentSheaves
 
+variable (X) in
 def toModules : X.QuasicoherentSheaves ⥤ X.Modules :=
   (SheafOfModules.isQuasicoherent (R := X.ringCatSheaf)).ι
 
@@ -72,21 +99,15 @@ noncomputable def tildeEquiv : ModuleCat R ≌ (Spec R).QuasicoherentSheaves :=
   (tildeEquiv_aux R).trans
     (ObjectProperty.fullSubcategoryCongr isQuasicoherent_eq_essImage_tilde_functor)
 
+#check Adjunction.has_colimits_of_equivalence
+
+instance hasColimitsOfSize : HasColimitsOfSize.{v, u} (Spec R).QuasicoherentSheaves :=
+  Adjunction.has_colimits_of_equivalence tildeEquiv.inverse
+
+instance hasLimitsOfSize : HasLimitsOfSize.{u, u} (Spec R).QuasicoherentSheaves :=
+  Adjunction.has_limits_of_equivalence tildeEquiv.inverse
+
 open Modules
-
-variable {Y : Scheme.{u}} (φ : X ≅ Y)
-
-#check SheafOfModules.pushforwardPushforwardEquivalence
-
-set_option backward.isDefEq.respectTransparency false in
-noncomputable def Modules.equivOfIso : X.Modules ≌ Y.Modules where
-  functor := Modules.pushforward φ.hom
-  inverse := Modules.pushforward φ.inv
-  unitIso := (pushforwardId X).symm ≪≫ pushforwardCongr φ.hom_inv_id.symm ≪≫
-    (pushforwardComp φ.hom φ.inv).symm
-  counitIso := pushforwardComp φ.inv φ.hom ≪≫ pushforwardCongr φ.inv_hom_id ≪≫ pushforwardId Y
-  functor_unitIso_comp :=
-    sorry
 
 example : tildeEquiv.inverse = (toModules (Spec R)) ⋙ moduleSpecΓFunctor := rfl
 
