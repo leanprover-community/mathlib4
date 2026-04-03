@@ -110,9 +110,9 @@ lemma IsSubgraph.isLink_eqOn (hHG : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
   fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
 
-lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
+lemma IsSubgraph.compatible (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
 
-lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG
+lemma IsSubgraph.compatible' (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG
 
 lemma Compatible.anti_left (hG₁G : G₁ ≤ G) (h : Compatible G H) : Compatible G₁ H :=
   fun _ he₁ he₂ _ _ ↦ hG₁G.isLink_iff he₁ |>.trans <| h (hG₁G.edgeSet_mono he₁) he₂ ..
@@ -166,7 +166,7 @@ lemma Adj.mono (hHG : H ≤ G) (h : H.Adj x y) : G.Adj x y :=
   (h.choose_spec.mono hHG).adj
 
 lemma le_iff_compatible_subset_subset : G ≤ H ↔ Compatible G H ∧ V(G) ⊆ V(H) ∧ E(G) ⊆ E(H) :=
-  ⟨fun h ↦ ⟨Compatible.of_le h, h.1, h.edgeSet_mono⟩, fun ⟨h, hV, hE⟩ ↦
+  ⟨fun h ↦ ⟨h.compatible, h.1, h.edgeSet_mono⟩, fun ⟨h, hV, hE⟩ ↦
     ⟨hV, fun _ _ _ hxy ↦ h hxy.edge_mem (hE hxy.edge_mem) .. |>.mp hxy⟩⟩
 
 lemma Compatible.le_iff (hH : Compatible H₁ H₂) : H₁ ≤ H₂ ↔ V(H₁) ⊆ V(H₂) ∧ E(H₁) ⊆ E(H₂) :=
@@ -218,7 +218,7 @@ lemma mono_left (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤s G) : K ≤s G where
   vertexSet_eq := hKG.vertexSet_mono.antisymm <| h.vertexSet_eq.symm.le.trans hHK.vertexSet_mono
 
 lemma ext_of_edgeSet (hE : E(H) = E(G)) (h : H ≤s G) : H = G :=
-  (Compatible.of_le h.le).ext h.vertexSet_eq hE
+  h.compatible.ext h.vertexSet_eq hE
 
 end IsSpanningSubgraph
 
@@ -269,7 +269,7 @@ lemma le_of_le_subset (h' : K ≤ G) (hsu : V(K) ⊆ V(H)) (h : H ≤i G) : K �
   exact h.2 (huv.mono h') (hsu huv.left_mem) (hsu huv.right_mem) |>.edge_mem
 
 lemma ext_of_vertexSet (hV : V(H) = V(G)) (h : H ≤i G) : H = G :=
-  (Compatible.of_le h.le).ext hV <| antisymm h.edgeSet_mono <| fun e he ↦ by
+  h.compatible.ext hV <| antisymm h.edgeSet_mono <| fun e he ↦ by
     obtain ⟨_, _, hxy⟩ := G.exists_isLink_of_mem_edgeSet he
     exact h.isLink_of_mem_mem hxy (hV ▸ hxy.left_mem) (hV ▸ hxy.right_mem) |>.edge_mem
 
@@ -305,7 +305,7 @@ lemma mk' (hHG : H ≤ G) (hclosed : ∀ ⦃e x⦄, G.Inc e x → x ∈ V(H) →
   closed _ _ he hx := hclosed he hx
 
 protected lemma trans (h₁ : G ≤c G₁) (h₂ : G₁ ≤c G₂) : G ≤c G₂ :=
-  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦  h₁.closed (h.of_compatible (Compatible.of_ge h₂.le)
+  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦  h₁.closed (h.of_compatible h₂.compatible'
     (h₂.closed h (h₁.vertexSet_mono hx))) hx
 
 instance : IsPartialOrder (Graph α β) (· ≤c ·) where
@@ -316,7 +316,7 @@ instance : IsPartialOrder (Graph α β) (· ≤c ·) where
 @[simp] protected lemma rfl : G ≤c G := refl G
 
 lemma inc_congr (hx : x ∈ V(H)) (hHG : H ≤c G) : H.Inc e x ↔ G.Inc e x :=
-  ⟨(·.mono hHG.le), fun he ↦ he.of_compatible (Compatible.of_ge hHG.le) (hHG.closed he hx)⟩
+  ⟨(·.mono hHG.le), fun he ↦ he.of_compatible hHG.compatible' (hHG.closed he hx)⟩
 
 lemma isLink_congr (hx : x ∈ V(H)) (hHG : H ≤c G) : H.IsLink e x y ↔ G.IsLink e x y :=
   ⟨(·.mono hHG.le), fun h ↦ h.anti_of_mem hHG.le ((hHG.inc_congr hx).mpr h.inc_left).edge_mem⟩
@@ -368,7 +368,7 @@ instance : OrderBot (Graph α β) where
 instance : Inhabited (Graph α β) where
   default := ⊥
 
-@[simp] lemma noEdge_empty : Graph.noEdge (∅ : Set α) β = ⊥ := rfl
+@[simp, grind =] lemma noEdge_empty : Graph.noEdge (∅ : Set α) β = ⊥ := rfl
 
 @[simp] lemma bot_vertexSet : V((⊥ : Graph α β)) = ∅ := rfl
 
@@ -376,12 +376,11 @@ instance : Inhabited (Graph α β) where
 
 @[simp] lemma bot_isClosedSubgraph (G : Graph α β) : ⊥ ≤c G := IsClosedSubgraph.mk' bot_le (by simp)
 
-@[simp] lemma bot_not_isLink : ¬ (⊥ : Graph α β).IsLink e x y := id
-
 lemma eq_bot_or_vertexSet_nonempty (G : Graph α β) : G = ⊥ ∨ V(G).Nonempty := by
   refine (em (V(G) = ∅)).elim (fun he ↦ .inl (Graph.ext he fun e x y ↦ ?_)) (Or.inr ∘
     nonempty_iff_ne_empty.mpr)
-  simp only [bot_not_isLink, iff_false]
+  simp only [bot_edgeSet, mem_empty_iff_false, not_false_eq_true, not_isLink_of_notMem_edgeSet,
+    iff_false]
   exact fun h ↦ by simpa [he] using h.left_mem
 
 @[simp]
@@ -397,6 +396,18 @@ lemma vertexSet_not_nonempty_iff : ¬ V(G).Nonempty ↔ G = ⊥ := by
   simp [not_nonempty_iff_eq_empty]
 
 lemma ne_bot_of_mem_vertexSet (h : x ∈ V(G)) : G ≠ ⊥ := ne_bot_iff.mpr ⟨x, h⟩
+
+@[simp]
+lemma isSpanningSubgraph_bot_iff : G ≤s ⊥ ↔ G = ⊥ :=
+  ⟨fun h => le_bot_iff.mp h.le, fun h => h ▸ .rfl⟩
+
+@[simp]
+lemma isInducedSubgraph_bot_iff : G ≤i ⊥ ↔ G = ⊥ :=
+  ⟨fun h => le_bot_iff.mp h.le, fun h => h ▸ .rfl⟩
+
+@[simp]
+lemma isClosedSubgraph_bot_iff : G ≤c ⊥ ↔ G = ⊥ :=
+  ⟨fun h => le_bot_iff.mp h.le, fun h => h ▸ .rfl⟩
 
 end OrderBot
 
