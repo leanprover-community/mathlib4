@@ -55,6 +55,8 @@ Husain, Aaron Liu, Tristan Figueroa-Reid, and John Talbot for patient guidance a
 on this implementation.
 -/
 
+@[expose] public section
+
 open Set
 
 variable {α β γ : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
