@@ -573,7 +573,6 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   __ := instNonUnitalSemiring
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
-  bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
 
@@ -705,7 +704,9 @@ noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
-  map_add' := span_union
+  map_add' s t := by
+    simp_rw [SetSemiring.add_def, span_union]
+    rfl
   map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
 
 variable (R) in
@@ -797,7 +798,6 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
 
 variable (R A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
@@ -824,7 +824,7 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
   mul_le_mul' (span_mono h₁) h₂
 
 theorem singleton_smul (a : A) (M : Submodule R A) :
-    Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
+    SetSemiring.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
   rw [setSemiring_smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
   exact (map (LinearMap.mulLeft R a) M).span_eq
