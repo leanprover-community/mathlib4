@@ -104,8 +104,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
   let v := hI.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
   let a : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
-  have hv_diag : ∀ i, s (v i) = a i • v i := fun σ =>
-    mem_eigenspace_iff.mp (hI.collectedBasis_mem _ σ)
+  have hv_diag : ∀ i, s (v i) = a i • v i := fun i =>
+    mem_eigenspace_iff.mp (hI.collectedBasis_mem _ i)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
   suffices hs_zero : s = 0 by rw [hxns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
