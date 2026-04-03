@@ -67,7 +67,7 @@ lemma singularHomologyFunctor_obj_map_eq_of_homotopic (H : TopCat.Homotopy f g) 
 alias congr_homologyMap_singularChainComplexFunctor :=
   singularHomologyFunctor_obj_map_eq_of_homotopic
 
-/-- An homotopic equivalence between topological spaces induce an isomorphism between the
+/-- A homotopy equivalence between topological spaces induces an isomorphism between the
 singular homology groups. -/
 @[simps] noncomputable
 def singularHomologyFunctorHomotopyEquiv (H : X ≃ₕ Y) (R : C) (n : ℕ) :
