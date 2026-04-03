@@ -294,7 +294,7 @@ noncomputable def localization_tensor_algEquiv :
     Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) where
   __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
     (Localization.tensor_localization_algEquiv M S).toRingEquiv
-  commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
+  commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S
 
 @[simp]
 theorem localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
