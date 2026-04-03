@@ -19,7 +19,8 @@ Synthesized instances are considered 'canonical' for this purpose.
 public meta section
 open Lean Meta PrettyPrinter.Delaborator SubExpr
 
-
+/-- Returns `true` iff the given instance is defeq to the instance synthesized for its type, and
+returns `false` otherwise (including if instance synthesis fails). -/
 def Lean.Meta.isCanonicalInstance (inst : Expr) : MetaM Bool := do
   let type ← inferType inst
   let .some synthInst ← trySynthInstance type | return false
@@ -46,18 +47,12 @@ def delabUnary (arity arg : Nat) (mkStx : Term → DelabM Term) : Delab :=
 
 /-- Delaborate an expression with arity `arity` into a binary notation `mkStx` iff either
 argument `arg₁` or `arg₂` are non-canonical instances (are not defeq to what is synthesized for
-its type, or else instance synthesis fails). If `hole` is not `none`, it is used
-in place of a canonical instance. -/
-def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term)
-    (hole : Option (DelabM Term) := none) : Delab :=
+its type, or else instance synthesis fails). -/
+def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term) : Delab :=
   withOverApp arity <| whenPPOption Lean.getPPNotation do
     let (canonα?, instDα) ← withNaryArg arg₁ delabCheckingCanonical
     let (canonβ?, instDβ) ← withNaryArg arg₂ delabCheckingCanonical
     if canonα? && canonβ? then failure
     mkStx instDα instDβ
---     let hole ← hole.sequence
---     mkStx (replace? hole canonα? instDα) (replace? hole canonβ? instDβ)
--- where
---   replace? h b i := bif b then h.getD i else i
 
 end Delab.Noncanonical
