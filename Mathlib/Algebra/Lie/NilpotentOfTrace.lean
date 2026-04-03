@@ -41,16 +41,6 @@ variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 /-- The set `M = {x ∈ Module.End K V | ∀ b ∈ B, ⁅x, b⁆ ∈ A}`. -/
 abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) := {x | ∀ b ∈ B, ⁅x, b⁆ ∈ A}
 
-lemma aeval_ad_maps_to
-    (A B : Submodule K (Module.End K V)) (hAB : A ≤ B)
-    (x : Module.End K V) (hxM : x ∈ M A B)
-    (q : Polynomial K) (hq : eval 0 q = 0) :
-    ∀ b ∈ B, (aeval (LieAlgebra.ad K (Module.End K V) x) q) b ∈ A := by
-  set ad_x := LieAlgebra.ad K (Module.End K V) x
-  obtain ⟨q', rfl⟩ : X ∣ q := by simpa using dvd_iff_isRoot.mpr hq
-  intro b hb
-  rw [map_mul, aeval_X, Module.End.mul_apply]
-  exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' ad_x fun _ h => hAB (hxM _ h))
 
 lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
@@ -161,10 +151,13 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have hyM : y ∈ M A B := by
     have had_y_adx : LieAlgebra.ad K _ y = aeval (LieAlgebra.ad K _ x) (r.comp p) := by
       rw [had_y_eq, show ad_s = aeval (LieAlgebra.ad K _ x) p from hp_eq.symm, ← aeval_comp]
+    obtain ⟨q', hq'⟩ : X ∣ r.comp p := by
+      simpa using dvd_iff_isRoot.mpr
+        (show eval 0 (r.comp p) = 0 by simp [eval_comp, hp_zero, hr_zero])
     intro b hb
     change (LieAlgebra.ad K _ y) b ∈ A
-    rw [had_y_adx]
-    exact aeval_ad_maps_to A B hAB x hxM _ (by simp [eval_comp, hp_zero, hr_zero]) b hb
+    rw [had_y_adx, hq', map_mul, aeval_X, Module.End.mul_apply]
+    exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
   have hy_adj : y ∈ Algebra.adjoin K {s} := by
     rw [Algebra.adjoin_singleton_eq_range_aeval]
