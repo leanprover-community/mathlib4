@@ -219,13 +219,6 @@ def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ)
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
   simp [conjGL, mapGL, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-@[deprecated "use mem_conjGL" (since := "2025-08-16")]
-lemma mem_conjGL' {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
-    x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
-  rw [mem_conjGL]
-  refine exists_congr fun y ↦ and_congr_right fun hy ↦ ?_
-  rw [eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul]
-
 @[simp]
 lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
     conjGL Γ g = (toConjAct g⁻¹) • Γ := by
@@ -243,6 +236,7 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
 `x ∈ Γ(N)`. -/
 theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
@@ -344,8 +338,6 @@ lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
   ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
-
-@[deprecated (since := "2025-09-17")] alias IsArithmetic.conj := _root_.Subgroup.IsArithmetic.conj
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
 lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)

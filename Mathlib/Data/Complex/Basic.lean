@@ -287,7 +287,7 @@ instance : Nontrivial ℂ :=
 namespace SMul
 
 -- The useless `0` multiplication in `smul` is to make sure that
--- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
+-- `Module.restrictScalars ℝ ℂ ℂ = Complex.module` definitionally.
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
@@ -419,6 +419,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 @[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 
 /-! ### Complex conjugation -/

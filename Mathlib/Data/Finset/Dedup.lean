@@ -194,8 +194,6 @@ protected theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.to
   mp h := Finset.ext fun x => by simp [← Finset.mem_toList, h.mem_iff]
   mpr h := .of_eq <| congrArg Finset.toList h
 
-@[deprecated (since := "2025-08-05")] alias _root_.perm_toList := Finset.perm_toList
-
 end ToList
 
 end Finset

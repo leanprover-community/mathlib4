@@ -29,6 +29,7 @@ section Ordered
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a : A` is a selfadjoint element in a C⋆-algebra with `‖a‖ ≤ 1`,
 then `a + I • CFC.sqrt (1 - a ^ 2)` is unitary.
 

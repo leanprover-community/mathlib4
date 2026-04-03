@@ -36,6 +36,15 @@ namespace algebraAdjoinAdjoin
 scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
 
+@[simp]
+theorem coe_algebraMap (x : Algebra.adjoin F S) :
+    (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
+
+@[simp]
+theorem algebraMap_eq_gen_self {x : E} :
+    algebraMap (Algebra.adjoin F {x}) F⟮x⟯ ⟨x, Algebra.self_mem_adjoin_singleton F x⟩ =
+    AdjoinSimple.gen F x := rfl
+
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
@@ -119,6 +128,8 @@ end FG
 
 section AdjoinSimple
 
+open Algebra
+
 variable (α : E)
 
 @[simp]
@@ -137,12 +148,12 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_toSubalgebra_of_isAlgebraic
 
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
 
 @[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
@@ -159,7 +170,7 @@ theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebr
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ F[x] = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ :=
   adjoin_simple_eq_top_iff_of_isAlgebraic
@@ -189,15 +200,15 @@ variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
 
 /-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
 noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
-    Algebra.adjoin A {b} →+* A⟮((algebraMap B C) b)⟯ :=
+    A[b] →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.comp (Subalgebra.inclusion <|
     algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
     (Algebra.RingHom.adjoinAlgebraMap b)
 
-noncomputable instance : Algebra (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ :=
+noncomputable instance : Algebra (A[b]) A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
 
-instance : IsScalarTower (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ C :=
+instance : IsScalarTower (A[b]) A⟮(algebraMap B C) b⟯ C :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 end RingHom
@@ -215,7 +226,7 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
-  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- TODO: rather than using `← coe_type_toSubalgebra` here, perhaps we should restate another
   -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
   simp only [← coe_type_toSubalgebra] at this
   rw [Algebra.restrictScalars_adjoin] at this

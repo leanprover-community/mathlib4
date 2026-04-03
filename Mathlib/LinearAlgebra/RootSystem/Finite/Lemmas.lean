@@ -65,12 +65,8 @@ lemma coxeterWeightIn_le_four (S : Type*)
   rw [hsj'] at hsj
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
     rw [mul_le_mul_iff_right₀ four_pos]
-    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
-    intro x
-    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
-    change _ = (P.posRootForm S).form x x at hs'
-    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
-    rwa [← hs']
+    exact (P.posRootForm S).posForm.apply_sq_le_of_symm (zero_le_posForm _ _ ·)
+      (P.posRootForm S).isSymm_posForm ri rj
   have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
     apply algebraMap_injective S R
     simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
@@ -313,7 +309,7 @@ lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     B.form (α k) (α k) = B.form (α i) (α i) ∨
     B.form (α k) (α k) = B.form (α j) (α j) := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := (inferInstance : Nonempty ι)
   by_cases! h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h
