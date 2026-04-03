@@ -108,13 +108,8 @@ private lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPri
     [J.FiniteHeight] : I.primeHeight < J.primeHeight := by
   have : I.FiniteHeight := by
     rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top, Ideal.height_eq_primeHeight]
-    right
-    exact lt_of_le_of_lt (Ideal.primeHeight_mono h.le) (Ideal.primeHeight_lt_top J)
+    exact Or.inr (lt_of_le_of_lt (Ideal.primeHeight_mono h.le) (Ideal.primeHeight_lt_top J))
   exact Order.height_strictMono h (Ideal.primeHeight_lt_top _)
-
-lemma Ideal.height_strict_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J)
-    [J.FiniteHeight] : I.height < J.height := by
-  simpa [Ideal.height_eq_primeHeight] using Ideal.primeHeight_strict_mono h
 
 @[gcongr]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
@@ -126,15 +121,14 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
-lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
+lemma Ideal.height_strict_mono_of_isPrime {I J : Ideal R} [I.IsPrime]
     (h : I < J) [I.FiniteHeight] : I.height < J.height := by
-  rw [Ideal.height_eq_primeHeight I]
   by_cases hJ : J = ⊤
-  · rw [hJ, height_top]
-    exact I.primeHeight_lt_top
-  · rw [← ENat.add_one_le_iff I.primeHeight_ne_top, Ideal.height]
+  · grw [hJ, height_top]
+    exact I.height_lt_top IsPrime.ne_top'
+  · rw [← ENat.add_one_le_iff (I.height_ne_top IsPrime.ne_top'), I.height_eq_primeHeight]
     refine le_iInf₂ (fun K hK ↦ ?_)
-    haveI := Ideal.minimalPrimes_isPrime hK
+    have := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h (Ideal.le_minimalPrimes hK)
     exact Ideal.primeHeight_add_one_le_of_lt this
 
@@ -164,17 +158,13 @@ lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
   rw [finiteHeight_iff, or_iff_not_imp_left, ← lt_top_iff_ne_top, ← WithBot.coe_lt_coe]
-  intro h
-  have h1 := ringKrullDim_lt_top (R := R)
-  have h2 := Ideal.height_le_ringKrullDim_of_ne_top h
-  exact lt_of_le_of_lt h2 h1
+  exact fun h ↦ lt_of_le_of_lt (Ideal.height_le_ringKrullDim_of_ne_top h) ringKrullDim_lt_top
 
 /-- If J has finite height and I ≤ J, then I has finite height -/
 lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [FiniteHeight J] :
     FiniteHeight I where
-  eq_top_or_height_ne_top := Or.inr <| by
-    rw [← lt_top_iff_ne_top]
-    exact (height_mono e).trans_lt (height_lt_top hJ)
+  eq_top_or_height_ne_top := Or.inr <|
+    lt_top_iff_ne_top.mp ((height_mono e).trans_lt (height_lt_top hJ))
 
 /-- If J is a prime ideal containing I, and its height is less than or equal to the height of I,
 then J is a minimal prime over I -/
@@ -185,7 +175,7 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
   have := Ideal.minimalPrimes_isPrime h₁
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
-  exact lt_irrefl _ ((height_strict_mono_of_is_prime h₃).trans_le
+  exact lt_irrefl _ ((height_strict_mono_of_isPrime h₃).trans_le
     (e'.trans <| height_mono (Ideal.le_minimalPrimes h₁)))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
@@ -193,13 +183,9 @@ private lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
     primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
   rw [Ideal.primeHeight, Order.height_eq_zero, minimalPrimes, Ideal.minimalPrimes]
   simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
-  constructor
-  · intro h
-    refine ⟨inferInstance, ?_⟩
-    by_contra! ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩
-    exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
-  · rintro ⟨hI, hI'⟩ b hb
-    exact hI' (y := b.asIdeal) b.isPrime hb
+  refine ⟨fun h ↦ ⟨‹_›, ?_⟩, fun ⟨hI, hI'⟩ b hb ↦ hI' b.isPrime hb⟩
+  by_contra! ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩
+  exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
 
 lemma Ideal.height_eq_zero_iff {I : Ideal R} [I.IsPrime] : height I = 0 ↔ I ∈ minimalPrimes R := by
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight_eq_zero_iff]
