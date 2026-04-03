@@ -59,7 +59,7 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
   have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by simp [Q', Q]; grind
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ :=
-      (Finpartition.sum_ofPairwiseDisjoint_eq_sum _ _ _ (by simp)).symm
+      (Finpartition.sum_ofPairwiseDisjoint_eq_sum hP₂ (by simp)).symm
     _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := (Q.sum_ofSubset_eq_sum _ _ _ (by simp_all)).symm
     _ ≤ ∑ p ∈ (Q'.extendOfLE (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
       sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
@@ -88,7 +88,7 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
-  exact preVariation_zero_eq_zero
+  exact preVariation_zero
 
 @[simp]
 lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
