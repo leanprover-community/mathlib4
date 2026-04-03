@@ -410,7 +410,7 @@ lemma one_le_c₃ : 1 ≤ c₃ α' β' γ' :=
   one_le_mul_of_one_le_of_one_le (one_le_mul_of_one_le_of_one_le
   (one_le_mul_of_one_le_of_one_le (mod_cast one_le_c₂ α' β' γ') <|
   le_add_of_nonneg_right <| house_nonneg _) <|
-  one_le_sqrt.mpr <| mod_cast (by have := one_le_m (K := K) ; lia)) <| le_max_left 1 _
+  one_le_sqrt.mpr <| mod_cast (by have := one_le_m (K := K); lia)) <| le_max_left 1 _
 
 include h2mq hq0 in
 lemma abs_q_pow_mul_house_le_c₃_pow : |↑q| ^ (n (K := K) q - 1) *
@@ -804,10 +804,10 @@ lemma house_eta_le_c₄_pow :
       (A α' β' γ' q) (hM_ne_zero α β σ  α' β' γ' hirr htriv habc q hq0 h2mq)
       (mul_pos (Nat.zero_lt_succ (2 * h (K := K) + 1))
       (one_le_n (K := K) q hq0 h2mq)) (lt_of_lt_of_eq (  (mul_assoc 2 _ _).symm ▸
-       lt_mul_of_one_lt_left (Nat.mul_pos one_le_m <| Nat.div_pos_iff.mpr
-       ⟨Nat.zero_lt_succ (Nat.mul 2 (2 * h (K := K) + 1) + 1),
-       Nat.le_of_dvd (Nat.pow_pos hq0) h2mq⟩) <|
-       (Nat.one_lt_two)) ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
+      lt_mul_of_one_lt_left (Nat.mul_pos one_le_m <| Nat.div_pos_iff.mpr
+      ⟨Nat.zero_lt_succ (Nat.mul 2 (2 * h (K := K) + 1) + 1),
+      Nat.le_of_dvd (Nat.pow_pos hq0) h2mq⟩) <|
+      (Nat.one_lt_two)) ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
       (fun u t ↦ house_matrixA_le α β σ  α' β' γ' hirr htriv habc q hq0 u t h2mq)
       (Fintype.card_fin _)).choose_spec).2.2 t
   · have q_sq_eq_two_mn : q ^ 2 = 2 * m * n (K := K) q := Eq.symm (Nat.mul_div_cancel' h2mq)
