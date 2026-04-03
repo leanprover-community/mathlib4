@@ -48,7 +48,8 @@ theorem get_apply_of_isLeft (h : x.isLeft) :
 theorem get_apply_of_isRight (h : x.isRight) :
     x.get = x.getRight h := by grind
 
-theorem get_apply : Sum.get x = if h : x.isLeft then x.getLeft h else x.getRight (by grind) := by   grind
+theorem get_apply : Sum.get x = if h : x.isLeft then x.getLeft h else x.getRight (by grind) := by
+    grind
 
 @[simp, grind =] theorem get_map {f : β → α} {g : δ → α} {y : β ⊕ δ} :
     (y.map f g).get = y.elim f g := by cases y <;> rfl

@@ -80,7 +80,8 @@ variable {a b : α}
 @[simp, grind =] theorem fst_diag : (Prod.diag a).1 = a := rfl
 @[simp, grind =] theorem snd_diag : (Prod.diag a).2 = a := rfl
 
-@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (Prod.diag a) = Prod.pair f g a := rfl
+@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (Prod.diag a) =
+    Prod.pair f g a := rfl
 
 theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Prod.diag = Prod.pair f g := rfl
 
