@@ -182,13 +182,19 @@ lemma eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _�
   · simp only [le_antisymm_iff]
     rfl
 
+lemma subcomplex_map_le (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌)
+    (hf : X.map f.op y.simplex = x.simplex) :
+    x.subcomplex ≤ y.subcomplex := by
+  simp only [Subcomplex.ofSimplex_le_iff]
+  exact ⟨_, hf⟩
+
 lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
     (hf : X.map f.op y.simplex = x.simplex) :
     x.subcomplex = y.subcomplex := by
-  refine le_antisymm ?_ ?_ <;> simp only [Subcomplex.ofSimplex_le_iff]
-  · exact ⟨_, hf⟩
-  · have := isSplitEpi_of_epi f
-    exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  refine le_antisymm (subcomplex_map_le x y f hf) ?_
+  simp only [Subcomplex.ofSimplex_le_iff]
+  have := isSplitEpi_of_epi f
+  exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
 
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
