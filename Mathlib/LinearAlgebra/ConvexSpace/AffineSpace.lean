@@ -103,15 +103,30 @@ instance instConvexSpace : ConvexSpace R P where
   assoc := convexCombination_assoc
 
 /-- `ConvexSpace.convexCombination` in an affine space is the affine combination. -/
-theorem convexCombination_eq_affineCombination (s : StdSimplex R P) :
+theorem sConvexCombo_eq_affineCombination (s : StdSimplex R P) :
     s.sConvexCombo = s.weights.support.affineCombination R id s.weights := by
   rfl
+
+@[deprecated (since := "2026-04-03")]
+alias convexCombination_eq_affineCombination := sConvexCombo_eq_affineCombination
+
+theorem iConvexCombo_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
+    s.iConvexCombo f = s.weights.support.affineCombination R f s.weights := by
+  let p : P := Nonempty.some inferInstance
+  simp only [iConvexCombo, sConvexCombo_eq_affineCombination]
+  rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
+    (b := p) (h := (s.map f).total),
+    Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
+    (b := p) (h := s.total)]
+  suffices ((s.weights.mapDomain f).sum fun x r ↦ r • (x -ᵥ p)) =
+    s.weights.sum fun x r ↦ r • (f x -ᵥ p) by simpa
+  simp [Finsupp.sum_mapDomain_index, add_smul]
 
 /-- `convexComboPair` in an affine space is the affine line map. -/
 theorem convexComboPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     (h : s + t = 1) (x y : P) :
     convexComboPair s t hs ht h x y = AffineMap.lineMap y x s := by
-  simp only [convexComboPair, AddTorsor.convexCombination_eq_affineCombination, StdSimplex.duple,
+  simp only [convexComboPair, AddTorsor.sConvexCombo_eq_affineCombination, StdSimplex.duple,
     AffineMap.lineMap_apply]
   classical
   -- Use weighted subtraction with base point y
@@ -142,7 +157,7 @@ namespace Convexity
 
 theorem sConvexCombo_eq_sum (f : StdSimplex R V) :
     f.sConvexCombo = f.weights.sum fun i r ↦ r • i := by
-  simp [AddTorsor.convexCombination_eq_affineCombination,
+  simp [AddTorsor.sConvexCombo_eq_affineCombination,
     Finset.affineCombination_eq_linear_combination _ _ _ f.total, Finsupp.sum]
 
 @[deprecated (since := "2026-04-03")]
