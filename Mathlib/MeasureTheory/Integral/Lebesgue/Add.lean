@@ -217,7 +217,7 @@ theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Fi
   by_cases! hu : ¬ u.NeBot
   · simp_all
   · obtain ⟨g, hg⟩ : ∃ g : ℕ → ι, Tendsto g atTop u ∧
-      Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) :=
+        Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) :=
       exists_seq_tendsto_liminf
     calc
     _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ := by
