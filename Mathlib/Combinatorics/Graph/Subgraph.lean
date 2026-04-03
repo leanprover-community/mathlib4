@@ -13,7 +13,7 @@ public import Mathlib.Tactic.TFAE
 
 This file develops the basic theory of subgraphs for multigraphs `Graph α β`:
 the subgraph relation, standard classes of subgraphs (spanning, induced, closed),
-and components.
+and the bottom element `⊥`.
 
 ## Main definitions
 
@@ -22,6 +22,7 @@ and components.
 - `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
 - `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
 - `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
+- `⊥`: empty graph with no vertices or edges as its bottom element.
 
 ## Implementation notes
 
@@ -296,6 +297,8 @@ scoped infixl:50 " ≤c " => Graph.IsClosedSubgraph
 
 namespace IsClosedSubgraph
 
+alias isInducedSubgraph := toIsInducedSubgraph
+
 lemma mk' (hHG : H ≤ G) (hclosed : ∀ ⦃e x⦄, G.Inc e x → x ∈ V(H) → e ∈ E(H)) : H ≤c G where
   toIsSubgraph := hHG
   isLink_of_mem_mem _ _ _ he hx _ := he.anti_of_mem hHG (hclosed he.inc_left hx)
@@ -355,5 +358,46 @@ lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_isLink (hHG : H ≤i G) 
   tauto
 
 end ClosedSubgraph
+
+section OrderBot
+
+instance : OrderBot (Graph α β) where
+  bot := noEdge ∅ β
+  bot_le G := by constructor <;> simp
+
+instance : Inhabited (Graph α β) where
+  default := ⊥
+
+@[simp] lemma noEdge_empty : Graph.noEdge (∅ : Set α) β = ⊥ := rfl
+
+@[simp] lemma bot_vertexSet : V((⊥ : Graph α β)) = ∅ := rfl
+
+@[simp] lemma bot_edgeSet : E((⊥ : Graph α β)) = ∅ := rfl
+
+@[simp] lemma bot_isClosedSubgraph (G : Graph α β) : ⊥ ≤c G := IsClosedSubgraph.mk' bot_le (by simp)
+
+@[simp] lemma bot_not_isLink : ¬ (⊥ : Graph α β).IsLink e x y := id
+
+lemma eq_bot_or_vertexSet_nonempty (G : Graph α β) : G = ⊥ ∨ V(G).Nonempty := by
+  refine (em (V(G) = ∅)).elim (fun he ↦ .inl (Graph.ext he fun e x y ↦ ?_)) (Or.inr ∘
+    nonempty_iff_ne_empty.mpr)
+  simp only [bot_not_isLink, iff_false]
+  exact fun h ↦ by simpa [he] using h.left_mem
+
+@[simp]
+lemma vertexSet_eq_empty_iff : V(G) = ∅ ↔ G = ⊥ := by
+  refine ⟨fun h ↦ bot_le.antisymm' ⟨by simp [h], fun e x y he ↦ ?_⟩, fun h ↦ by simp [h]⟩
+  simpa [h] using he.left_mem
+
+@[push, simp]
+lemma ne_bot_iff : G ≠ ⊥ ↔ V(G).Nonempty := not_iff_not.mp <| by simp [not_nonempty_iff_eq_empty]
+
+@[push, simp]
+lemma vertexSet_not_nonempty_iff : ¬ V(G).Nonempty ↔ G = ⊥ := by
+  simp [not_nonempty_iff_eq_empty]
+
+lemma ne_bot_of_mem_vertexSet (h : x ∈ V(G)) : G ≠ ⊥ := ne_bot_iff.mpr ⟨x, h⟩
+
+end OrderBot
 
 end Graph
