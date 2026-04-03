@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 # Leibniz Constructions
@@ -498,6 +499,9 @@ class PreservesCobaseChange (F : Arrow C₁ ⥤ Arrow C₂) : Prop where
       (F.obj (Arrow.mk f)).hom
       (F.map (Arrow.homMk' s t h.w)).right
 
+#check MorphismProperty.isStableUnderCobaseChange_iff_pushouts_le
+-- want f ∈ W.pushouts → (F.obj f) ∈ ((temp.inv W).map F).pushouts
+
 open MorphismProperty in
 instance inverseImageArrow_isStableUnderCobaseChange_of_preservesCobaseChange
     (W : MorphismProperty C₂) (F : Arrow C₁ ⥤ Arrow C₂)
@@ -537,6 +541,32 @@ instance [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChan
     [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)] :
     IsStableUnderCobaseChange (W.inverseImageArrow (F.leibnizPushout.obj ι)) := by
   infer_instance
+
+def temp : (ObjectProperty (Arrow C₂)) ≅ MorphismProperty C₂ where
+  hom P _ _ f := P (Arrow.mk f)
+  inv P f := P f.hom
+
+open MorphismProperty in
+example [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChange W]
+    (ι : Arrow C₁)
+    [PreservesColimitsOfSize.{0, 0} (F.obj ι.left)]
+    [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)] :
+    IsStableUnderCobaseChange (temp.hom ((W.commaObj _ _).inverseImage (F.leibnizPushout.obj ι))) :=
+  instIsStableUnderCobaseChangeInverseImageArrowObjArrowLeibnizPushoutOfLeftOfPreservesColimitsOfSizeRight ..
+
+variable (W : MorphismProperty C₃) (F : Arrow C₂ ⥤ Arrow C₃)
+
+example : temp.hom ((temp.inv W).inverseImage F) = (W.inverseImageArrow F) := rfl
+
+example (W : MorphismProperty C₂) : MorphismProperty.IsStableUnderCobaseChange (temp.hom ((temp.inv W).map F)) := by
+  constructor
+  rintro A A' B B' f g f' g' hP ⟨X, hX, ⟨h⟩⟩
+  simp [temp] at hX ⊢
+  refine ⟨?_, ?_⟩
+  · sorry
+  · sorry
+
+#check (W.commaObj (𝟭 C₃) (𝟭 C₃)).inverseImage F
 
 end Functor
 
