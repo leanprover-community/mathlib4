@@ -7289,7 +7289,7 @@ public import Mathlib.Topology.Algebra.Module.Alternating.Basic
 public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 public import Mathlib.Topology.Algebra.Module.Basic
 public import Mathlib.Topology.Algebra.Module.Cardinality
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Module.Determinant
