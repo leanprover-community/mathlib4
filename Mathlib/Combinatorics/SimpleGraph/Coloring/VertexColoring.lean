@@ -127,10 +127,10 @@ theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   C.isIndepSet_colorClass c
 
-def Coloring.of_hom {V' : Type*} {G' : SimpleGraph V'} {α : Type*}
-    (C : G'.Coloring α) (f : G →g G') : G.Coloring α where
-  toFun v := C (f.toFun v)
-  map_rel' hadj := C.valid (f.map_adj hadj)
+/-- Coloring induced from a homomorphism to a colored graph. -/
+def Coloring.of_hom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
+    (f : G →g G') : G.Coloring α :=
+  C.comp f
 
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
