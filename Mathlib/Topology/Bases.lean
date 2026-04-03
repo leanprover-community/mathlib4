@@ -710,20 +710,21 @@ variable [FirstCountableTopology α] {x : α}
 
 /-- In a first-countable space, a cluster point `x` of a countably generated filter is the limit of
 some sequence. -/
-theorem ClusterPt.exists_seq_tendsto {f : Filter α} [IsCountablyGenerated f] (hx : ClusterPt x f) :
+theorem _root_.ClusterPt.exists_seq_tendsto {f : Filter α} [IsCountablyGenerated f]
+    (hx : ClusterPt x f) :
     ∃ ψ : ℕ → α, Tendsto ψ atTop (𝓝 x) ∧ Tendsto ψ atTop f := by
   unfold ClusterPt at hx
   obtain ⟨g, hg⟩ := Filter.exists_seq_tendsto (𝓝 x ⊓ f)
-  exact ⟨g, (tendsto_inf.1 hg).2, (tendsto_inf.1 hg).1⟩
+  exact ⟨g, (tendsto_inf.1 hg).1, (tendsto_inf.1 hg).2⟩
 
-theorem MapClusterPt.exists_seq_tendsto {ι : Type*} {f : Filter ι} [IsCountablyGenerated f] {x : α}
-    {u : ι → α} (hx : MapClusterPt x f u) :
-    ∃ ψ : ℕ → ι, Tendsto ψ atTop f ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
-  seq_tendsto_of_neBot hx
+theorem _root_.MapClusterPt.exists_seq_tendsto {ι : Type*} {f : Filter ι} [IsCountablyGenerated f]
+    {x : α} {u : ι → α} (hx : MapClusterPt x f u) :
+    ∃ ψ : ℕ → ι, Tendsto (u ∘ ψ) atTop (𝓝 x) ∧ Tendsto ψ atTop f := by
+  grind [exists_seq_comp_tendsto hx]
 
 /-- In a first-countable space, a cluster point `x` of a sequence
 is the limit of some subsequence. -/
-theorem MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x atTop u) :
+theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x atTop u) :
     ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 

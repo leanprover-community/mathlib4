@@ -213,16 +213,29 @@ theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
         exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
   · simp_all [ClusterPt, Filter.eq_top_of_neBot]
 
-/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. -/
-theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
+/-- Every cluster point `x` of a filter `f` is less than or equal to `f.limsSup`. -/
+theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
     (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
-    IsGreatest {x | ClusterPt x f} f.limsSup := by
-  refine ⟨ClusterPt.limsSup, fun a ha => ?_⟩
+    x ≤ f.limsSup := by
   simp only [ClusterPt, Set.mem_setOf_eq] at ha
   have : (𝓝 a ⊓ f).limsSup = a := limsSup_eq_of_le_nhds inf_le_left
   refine this ▸ limsSup_le_limsSup_of_le inf_le_right ?_ hb
   exact (IsBounded.mono inf_le_left (isBounded_ge_nhds a)).isCobounded_le
+
+/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. -/
+theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    IsGreatest {x | ClusterPt x f} f.limsSup :=
+  ⟨ClusterPt.limsSup, fun a ha => ha.le_limsSup⟩
+
+/-- Every cluster point `x` of a filter `f` is greater than or equal to `f.limsInf`. -/
+theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    f.limsInf ≤ x :=
+  hx.le_limsSup (α := αᵒᵈ)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `limsInf` of a filter `f` is a cluster point of `f`. -/

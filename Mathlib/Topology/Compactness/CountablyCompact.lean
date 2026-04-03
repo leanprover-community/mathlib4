@@ -54,7 +54,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 noncomputable section
 
-open Set Filter Topology TopologicalSpace
+open Set Filter Topology
 
 variable {ι E F : Type*} [TopologicalSpace E] [TopologicalSpace F] {A B : Set E}
 
