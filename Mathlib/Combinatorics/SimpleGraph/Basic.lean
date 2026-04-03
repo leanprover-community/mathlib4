@@ -776,6 +776,14 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
+@[simp]
+theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
+  grind [mem_neighborSet, top_adj]
+
+@[simp]
+theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
+  grind
+
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
 def commonNeighbors (v w : V) : Set V :=

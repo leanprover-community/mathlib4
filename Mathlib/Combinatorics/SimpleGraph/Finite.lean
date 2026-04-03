@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
 
 /-!
@@ -196,6 +197,10 @@ theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rf
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
 
+@[simp]
+theorem ncard_neighborSet : (G.neighborSet v).ncard = G.degree v := by
+  simp [Set.ncard_eq_toFinset_card']
+
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
 
@@ -232,6 +237,9 @@ theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.nei
     (h : G.degree v ≠ 0) : Nontrivial V := by
   by_contra!
   simp_all [degree_eq_zero_of_subsingleton]
+
+theorem degree_le_enatCard [Fintype V] : G.degree v ≤ Fintype.card V := by
+  grw [← card_neighborSet_eq_degree, set_fintype_card_le_univ]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
@@ -365,7 +373,7 @@ theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
   obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
   obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
-  exact ⟨v, by simp [minDegree, ht]⟩
+  exact ⟨v, by simp [minDegree, ht, -ENat.some_eq_coe]⟩
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
 theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.degree v := by
