@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Topology on `E →L[𝕜] F` when `E` is finite dimensional
@@ -114,6 +114,15 @@ def flipOfFiniteDimensionalV2 [FiniteDimensional 𝕜 E]
       right_inv := sorry }
   sorry
 
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+identifies with the product topology. -/
+def flipOfBasis [Fintype ι] (b : Basis ι 𝕜 E)
+    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
+    (h𝔖₂ : ⋃₀ 𝔖 = .univ)
+    (h𝔗₁ : ∀ t ∈ 𝔗, IsVonNBounded 𝕜 t) :
+    (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) ≃L[𝕜]
+      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) :=
+  let Φ₁ :
 
 /-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
