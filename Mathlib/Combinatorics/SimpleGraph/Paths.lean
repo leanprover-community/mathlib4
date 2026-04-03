@@ -202,7 +202,7 @@ theorem isPath_iff_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p.Nil := by
   cases p <;> simp [IsPath.nil]
 
 theorem isPath_iff_eq_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p = nil := by
-  cases p <;> simp
+  simp [nil_iff_eq_nil]
 
 theorem IsPath.nil_iff_eq {u v : V} {p : G.Walk u v} (hp : p.IsPath) : p.Nil ↔ u = v := by
   refine ⟨fun ⟨⟩ ↦ rfl, ?_⟩
