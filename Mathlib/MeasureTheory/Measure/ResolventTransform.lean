@@ -58,7 +58,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
   Measurable (resolvent (R := 𝕜) a) := by
   classical
   have h1 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a) :=
-    HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent hx)
+    HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent_const_left hx)
   have h2 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a)ᶜ := by
     rw [continuousOn_iff_continuous_restrict]
     convert continuous_const (y := (0 : A)) with x
@@ -160,7 +160,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Me
       _ ≤ ‖(algebraMap 𝕜 A) x - w‖ := by grw [norm_sub_le_norm_add]; grind
   have h_deriv : ∀ᵐ x ∂μ, ∀ w ∈ s, HasDerivAt (fun w ↦ resolvent w x) (resolvent w x ^ 2) w := by
     filter_upwards [support_mem_ae] with x hx w hw
-    apply hasDerivAt_resolvent'
+    apply hasDerivAt_resolvent_const_right
     replace hw := hs_μ hw
     contrapose! hw
     rw [Set.notMem_compl_iff]
