@@ -49,8 +49,8 @@ theorem pair_comp {δ} {h : δ → γ} : Prod.pair f g ∘ h = Prod.pair (f ∘ 
 
 @[simp] theorem pair_fst_snd_comp {f : γ → α × β} : Prod.pair (fst ∘ f) (snd ∘ f) = f := rfl
 
-theorem pair_eq_iff {f f' : γ → α} {g g' : γ → β} : Prod.pair f g = Prod.pair f' g' ↔ f = f' ∧ g = g' := by
-  simp [funext_iff, Prod.ext_iff, forall_and]
+theorem pair_eq_iff {f f' : γ → α} {g g' : γ → β} : Prod.pair f g = Prod.pair f' g' ↔
+    f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
 
 end
 
