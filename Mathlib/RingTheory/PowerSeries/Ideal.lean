@@ -136,7 +136,7 @@ theorem exist_eq_span_eq_ncard_of_X_notMem (hI : X ∉ I) {S : Set R}
   obtain ⟨T, hTI, hinj, hT⟩ := this.exists_subset_injOn_image_eq
   refine ⟨T, eq_of_le_of_X_notMem_of_fg_of_isPrime (span_le.2  hTI) hI (Submodule.fg_def.2
     ⟨T, (hT ▸ hS).of_finite_image hinj, rfl⟩) ?_, Finite.of_injOn
-    (fun f hf ↦ hT ▸ Set.mem_image_of_mem _ hf) hinj hS, hT ▸ (ncard_image_of_injOn hinj).symm⟩
+    (fun f hf ↦ hT ▸ Set.mem_image_of_mem _ hf) hinj hS, hT ▸ hinj.ncard_image.symm⟩
   rw [map_le_iff_le_comap]
   intro f hf
   rw [mem_comap, mem_map_iff_of_surjective _ constantCoeff_surj]

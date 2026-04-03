@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Defs
 
 @[expose] public section
 
+open scoped Ring
+
 variable {R : Type*}
 
 section NonUnitalNonAssocSemiring
@@ -62,6 +64,7 @@ theorem IsAddUnit.mul_right {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (x * y
 end NonUnitalNonAssocSemiring
 
 /-- `-⅟a` is the inverse of `-a` -/
+@[implicit_reducible]
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
   ⟨-⅟a, by simp, by simp⟩
 
@@ -124,7 +127,7 @@ theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [In
 
 /-- A version of `inv_add_inv'` for `Ring.inverse`. -/
 theorem Ring.inverse_add_inverse [Semiring R] {a b : R} (h : IsUnit a ↔ IsUnit b) :
-    Ring.inverse a + Ring.inverse b = Ring.inverse a * (a + b) * Ring.inverse b := by
+    a⁻¹ʳ + b⁻¹ʳ = a⁻¹ʳ * (a + b) * b⁻¹ʳ := by
   by_cases ha : IsUnit a
   · have hb := h.mp ha
     obtain ⟨ia⟩ := ha.nonempty_invertible
@@ -135,7 +138,7 @@ theorem Ring.inverse_add_inverse [Semiring R] {a b : R} (h : IsUnit a ↔ IsUnit
 
 /-- A version of `inv_sub_inv'` for `Ring.inverse`. -/
 theorem Ring.inverse_sub_inverse [Ring R] {a b : R} (h : IsUnit a ↔ IsUnit b) :
-    Ring.inverse a - Ring.inverse b = Ring.inverse a * (b - a) * Ring.inverse b := by
+    a⁻¹ʳ - b⁻¹ʳ = a⁻¹ʳ * (b - a) * b⁻¹ʳ := by
   by_cases ha : IsUnit a
   · have hb := h.mp ha
     obtain ⟨ia⟩ := ha.nonempty_invertible

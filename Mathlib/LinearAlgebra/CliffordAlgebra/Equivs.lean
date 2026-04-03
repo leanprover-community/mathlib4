@@ -128,6 +128,7 @@ def Q : QuadraticForm ℝ ℝ :=
 theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate result for `CliffordAlgebraComplex.equiv`: clifford algebras over
 `CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
@@ -163,6 +164,7 @@ def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
   Complex.liftAux_apply_I _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ := by
   ext1

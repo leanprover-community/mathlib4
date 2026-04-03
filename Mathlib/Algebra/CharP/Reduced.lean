@@ -6,7 +6,6 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 module
 
 public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Results about characteristic p reduced rings
