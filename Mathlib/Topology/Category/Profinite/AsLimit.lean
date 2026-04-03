@@ -45,11 +45,8 @@ variable (X : Profinite.{u})
 
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
-  obj S := @FintypeCat.of S (Fintype.ofFinite S)
+  obj S := FintypeCat.of S
   map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
-  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
-  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by ext ⟨x⟩; rfl
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
@@ -79,6 +76,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
         -- Porting note: end replacement block
         apply hb)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/
@@ -89,7 +87,7 @@ def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
+  Limits.Cone.ext (isoAsLimitConeLift _) fun _ => rfl
 
 /-- `X.asLimitCone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=

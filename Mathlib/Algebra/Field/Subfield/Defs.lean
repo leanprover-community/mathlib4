@@ -141,12 +141,15 @@ add_decl_doc Subfield.toSubring
 namespace Subfield
 
 /-- The underlying `AddSubgroup` of a subfield. -/
+@[reducible]
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
@@ -272,7 +275,6 @@ instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
-/-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -344,7 +346,6 @@ theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 

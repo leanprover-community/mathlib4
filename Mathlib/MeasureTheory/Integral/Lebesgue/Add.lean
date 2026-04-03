@@ -232,6 +232,11 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
     _ = ⨆ n, (eapprox f n).lintegral μ := by
       congr; ext n; rw [(eapprox f n).lintegral_eq_lintegral]
 
+/-- Generalization of `lintegral_eq_iSup_eapprox_lintegral` to ae-measurable functions. -/
+theorem lintegral_eq_iSup_eapprox_lintegral' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    ∫⁻ a, f a ∂μ = ⨆ n, (eapprox (hf.mk f) n).lintegral μ := by
+  rw [lintegral_congr_ae hf.ae_eq_mk, lintegral_eq_iSup_eapprox_lintegral hf.measurable_mk]
+
 lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (n : ℕ) :
     (eapprox f n).lintegral μ ≤ ∫⁻ x, f x ∂μ := by
   rw [lintegral_eq_iSup_eapprox_lintegral hf]
@@ -450,6 +455,18 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
     (hf : AEMeasurable f (μ.trim hm)) : ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ := by
   rw [lintegral_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk), lintegral_congr_ae hf.ae_eq_mk,
     lintegral_trim hm hf.measurable_mk]
+
+theorem setLIntegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f (μ.trim hm)) {s : Set α} (hs : MeasurableSet[m] s) :
+    ∫⁻ x in s, f x ∂μ.trim hm = ∫⁻ x in s, f x ∂μ := by
+  rw [← lintegral_trim_ae hm]
+  all_goals rw [← restrict_trim hm _ hs]
+  exact hf.restrict
+
+theorem setLIntegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
+    (hf : Measurable[m] f) {s : Set α} (hs : MeasurableSet[m] s) :
+    ∫⁻ x in s, f x ∂μ.trim hm = ∫⁻ x in s, f x ∂μ :=
+  setLIntegral_trim_ae _ hf.aemeasurable hs
 
 end Trim
 

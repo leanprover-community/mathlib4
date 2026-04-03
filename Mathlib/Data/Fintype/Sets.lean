@@ -51,6 +51,7 @@ theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
@@ -263,6 +264,8 @@ theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
   Fintype.subtype (univ.filter p) (by simp)
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s

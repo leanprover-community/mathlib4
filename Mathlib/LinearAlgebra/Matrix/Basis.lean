@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Bases and matrices
@@ -257,6 +258,7 @@ theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
     b.toMatrix b' * b'.toMatrix b = 1 := by rw [toMatrix_mul_toMatrix, toMatrix_self]
 
 /-- A matrix whose columns form a basis `b'`, expressed w.r.t. a basis `b`, is invertible. -/
+@[implicit_reducible]
 def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
     Invertible (b.toMatrix b') :=
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩
