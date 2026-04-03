@@ -35,7 +35,7 @@ variable [SemilatticeSup α] [OrderBot α]
 /-- See also `Finset.product_biUnion`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a => by simp [@forall_comm _ γ]
 
 theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
@@ -119,7 +119,7 @@ variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
 theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = s.sup' h.fst fun i => t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a => by simp [@forall_comm _ γ]
 
 theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
