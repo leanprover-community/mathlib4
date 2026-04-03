@@ -290,7 +290,6 @@ lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by c
   norm_num
   exact rpow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a unital C⋆-algebra, if `a` is strictly positive, and `a ≤ b`, then `b` is
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)

@@ -95,7 +95,6 @@ section UnitalCStarAlgebra
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`. -/
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩

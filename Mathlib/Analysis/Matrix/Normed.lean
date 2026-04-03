@@ -308,7 +308,6 @@ theorem linfty_opNNNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊
 theorem linfty_opNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ∑ i, ‖v i‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateRow v).trans <| by simp [NNReal.coe_sum]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
@@ -603,7 +602,6 @@ lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖
 lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
   Subtype.ext <| frobenius_norm_replicateCol v
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
