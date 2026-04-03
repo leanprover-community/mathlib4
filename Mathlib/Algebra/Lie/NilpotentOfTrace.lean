@@ -67,7 +67,7 @@ lemma exists_lagrange_polynomial
   let diffs := insert 0 (Finset.univ.image (fun p : ι × ι => a p.1 - a p.2))
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
   let v : K → K := fun d => d
-  have hinj : Set.InjOn v ↑diffs := fun _ _ _ _ h => h
+  have hinj : Set.InjOn v diffs := fun _ _ _ _ h => h
   have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
   have hmem : ∀ i j, a i - a j ∈ diffs :=
     fun i j => Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩)
