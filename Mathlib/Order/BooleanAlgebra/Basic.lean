@@ -643,4 +643,67 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [LE α] [LT
   sdiff_eq a b := hf <| (map_sdiff _ _).trans <| sdiff_eq.trans <| by rw [map_inf, map_compl]
   himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
 
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `Top` across an `Equiv`. -/
+protected abbrev top [Top β] : Top α where
+  top := e.symm ⊤
+
+lemma top_def [Top β] :
+    letI := e.top
+    ⊤ = e.symm ⊤ := rfl
+
+/-- Transfer `Bot` across an `Equiv`. -/
+protected abbrev bot [Bot β] : Bot α where
+  bot := e.symm ⊥
+
+lemma bot_def [Bot β] :
+    letI := e.bot
+    ⊥ = e.symm ⊥ := rfl
+
+/-- Transfer `Compl` across an `Equiv`. -/
+protected abbrev compl [Compl β] : Compl α where
+  compl a := e.symm (e a)ᶜ
+
+lemma compl_def [Compl β] (a : α) :
+    letI := e.compl
+    aᶜ = e.symm (e a)ᶜ := rfl
+
+/-- Transfer `SDiff` across an `Equiv`. -/
+protected abbrev sdiff [SDiff β] : SDiff α where
+  sdiff a b := e.symm (e a \ e b)
+
+lemma sdiff_def [SDiff β] (a b : α) :
+    letI := e.sdiff
+    a \ b = e.symm (e a \ e b) := rfl
+
+/-- Transfer `HImp` across an `Equiv`. -/
+protected abbrev himp [HImp β] : HImp α where
+  himp a b := e.symm (e a ⇨ e b)
+
+lemma himp_def [HImp β] (a b : α) :
+    letI := e.himp
+    a ⇨ b = e.symm (e a ⇨ e b) := rfl
+
+/-- Transfer `GeneralizedBooleanAlgebra` across an `Equiv`. -/
+protected abbrev generalizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra α := by
+  let bot := e.bot
+  let sdiff := e.sdiff
+  let distribLattice := e.distribLattice
+  apply e.injective.generalizedBooleanAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `BooleanAlgebra` across an `Equiv`. -/
+protected abbrev booleanAlgebra [BooleanAlgebra β] : BooleanAlgebra α := by
+  let top := e.top
+  let compl := e.compl
+  let himp := e.himp
+  let generalizedBooleanAlgebra := e.generalizedBooleanAlgebra
+  apply e.injective.booleanAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
+
 end lift

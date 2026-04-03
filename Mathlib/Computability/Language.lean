@@ -75,6 +75,10 @@ namespace Language
 @[simp] lemma ofSet_toSet (l : Language α) : ofSet l.toSet = l := rfl
 lemma toSet_ofSet (s : Set (List α)) : (ofSet s).toSet = s := rfl
 
+def equiv : Language α ≃ Set (List α) where
+  toFun := toSet
+  invFun := ofSet
+
 instance : Membership (List α) (Language α) where
   mem l w := w ∈ l.toSet
 
@@ -109,7 +113,7 @@ lemma le_def (l m : Language α) : l ≤ m ↔ l.toSet ⊆ m.toSet := Iff.rfl
 lemma sup_def (l m : Language α) : l ⊔ m = ⟨l.toSet ∪ m.toSet⟩ := rfl
 lemma inf_def (l m : Language α) : l ⊓ m = ⟨l.toSet ∩ m.toSet⟩ := rfl
 
-instance : BooleanAlgebra (Language α) where
+instance : BooleanAlgebra (Language α) :=
   le_sup_inf _ _ _ := by
     simp only [le_def, sup_def, inf_def]
     exact le_sup_inf
