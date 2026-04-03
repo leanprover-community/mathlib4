@@ -88,7 +88,7 @@ instance {m n : ℕ} [Repr α] : Repr (LatinRectangle (Fin m) (Fin n) α) where
   reprPrec L _ := repr L.M
 
 variable (n α) in
-/-- A LatinSquare is a square LatinRectangle -/
+/-- A `LatinSquare` is a square `LatinRectangle` -/
 abbrev LatinSquare := LatinRectangle n n α
 
 /-- Get the underlying `Matrix` of a `LatinRectangle`. -/
