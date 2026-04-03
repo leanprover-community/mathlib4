@@ -330,8 +330,6 @@ theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆
   · convert h
     rw [← sSup_range, Subtype.range_coe]
 
-@[deprecated (since := "2026-04-04")] alias ciSup_image := cbiSup_id
-
 theorem cbiInf_id {s : Set α} (hs : BddBelow s) (h : sInf s ≤ sInf ∅) : ⨅ i ∈ s, i = sInf s := by
   rw [← csInf_image (Subtype.range_coe ▸ hs), Set.image_id']
   · convert h
