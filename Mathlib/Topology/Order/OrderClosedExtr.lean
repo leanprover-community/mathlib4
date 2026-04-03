@@ -27,7 +27,7 @@ public section
 
 open Set
 
-/-- If `f` is monotone on `(a,b]` and antitone on `[b,c)` then `f` has
+/-- If `f` is monotone on `Ioc a b` and antitone on `Ico b c` then `f` has
 a local maximum at `b`. -/
 lemma isLocalMax_of_mono_anti
     {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
@@ -37,7 +37,7 @@ lemma isLocalMax_of_mono_anti
     (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b :=
   (isMaxOn_Ioo_of_mono_anti h₀ h₁).isLocalMax (Ioo_mem_nhds g₀ g₁)
 
-/-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
+/-- If `f` is antitone on `Ioc a b` and monotone on `Ico b c` then `f` has
 a local minimum at `b`. -/
 lemma isLocalMin_of_anti_mono
     {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
