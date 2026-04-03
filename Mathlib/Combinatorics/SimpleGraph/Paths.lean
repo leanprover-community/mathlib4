@@ -568,22 +568,19 @@ lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : 
     (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges :=
   List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
-variable {c : G.Walk v v}
+@[simp] lemma isTrail_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u).IsTrail ↔ c.IsTrail := by
+  rw [isTrail_def, isTrail_def, (c.rotate_edges hu).perm.nodup_iff]
 
-protected lemma IsTrail.rotate (hc : c.IsTrail) : (c.rotate u).IsTrail := by
-  by_cases hu : u ∈ c.support
-  · rw [isTrail_def, (c.rotate_edges hu).perm.nodup_iff]
-    exact hc.edges_nodup
-  · simp [*]
+@[simp] lemma isCircuit_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u).IsCircuit ↔ c.IsCircuit := by simp [isCircuit_def, hu]
 
-protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
-    (h : u ∈ c.support) : (c.rotate u).IsCircuit := ⟨hc.isTrail.rotate, by simp [*]⟩
+@[simp] lemma isCycle_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u).IsCycle ↔ c.IsCycle := by simp [isCycle_def, (support_rotate _).perm.nodup_iff, hu]
 
-protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
-    (c.rotate u).IsCycle := by
-  refine ⟨hc.isCircuit.rotate h, ?_⟩
-  rw [(support_rotate h).nodup_iff]
-  exact hc.support_nodup
+protected alias ⟨IsTrail.of_rotate, IsTrail.rotate⟩ := isTrail_rotate
+protected alias ⟨IsCircuit.of_rotate, IsCircuit.rotate⟩ := isCircuit_rotate
+protected alias ⟨IsCycle.of_rotate, IsCycle.rotate⟩ := isCycle_rotate
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
     (c.takeUntil w h).IsPath := by

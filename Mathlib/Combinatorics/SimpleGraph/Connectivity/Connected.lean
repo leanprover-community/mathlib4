@@ -755,6 +755,9 @@ theorem isBridge_iff {u v : V} :
 @[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) (h : G.Adj u v) :
     G.IsBridge s(u, v) := ⟨h, fun h ↦ huv <| h.mono <| deleteEdges_le _⟩
 
+lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
+  cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
+
 set_option backward.isDefEq.respectTransparency false in
 theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     (G.deleteEdges {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
@@ -823,7 +826,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
     have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
-    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate v) hc.isTrail.rotate ?_
+    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate v) (hc.isTrail.rotate hvc) ?_
       (Walk.start_mem_support _)
     rwa [(c.rotate_edges hvc).mem_iff, Sym2.eq_swap]
 
