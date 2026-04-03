@@ -336,6 +336,11 @@ theorem convexComboPair_symm {x y : M} :
   ext1
   simp [StdSimplex.duple, add_comm]
 
+lemma IsAffineMap.map_convexComboPair {f : M → N} (hf : IsAffineMap R f)
+    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) :
+    f (convexComboPair s t hs ht h x y) = convexComboPair s t hs ht h (f x) (f y) := by
+  simp [hf.map_sConvexCombo, convexComboPair]
+
 /-- Flattening with the outer combination specilaized to `convexComboPair`. -/
 lemma convexComboPair_iConvexCombo_iConvexCombo {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)

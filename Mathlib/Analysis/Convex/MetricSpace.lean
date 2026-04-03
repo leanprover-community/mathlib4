@@ -41,7 +41,7 @@ namespace Convexity
 
 open ConvexSpace
 
-variable {X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
+variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
 
 variable (X) in
 /-- A convex metric space is a real convex space with a compatible metric structure.
@@ -84,13 +84,21 @@ lemma dist_iConvexCombo_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X)
       Finsupp.sum_mapDomain_index]
     exact Finsupp.sum_congr fun x hx ↦ by simp [H, hx]
 
+lemma dist_iConvexCombo_left_le (f : StdSimplex ℝ I) (g : I → X) (x : X) :
+    dist (f.iConvexCombo g) x ≤ f.weights.sum fun i r ↦ r * dist (g i) x := by
+  simpa using dist_iConvexCombo_le f g (fun _ ↦ x)
+
+lemma dist_iConvexCombo_right_le (x : X) (f : StdSimplex ℝ I) (g : I → X) :
+    dist x (f.iConvexCombo g) ≤ f.weights.sum fun i r ↦ r * dist x (g i) := by
+  simpa using dist_iConvexCombo_le f (fun _ ↦ x) g
+
 lemma dist_sConvexCombo_left_le (f : StdSimplex ℝ X) (x : X) :
     dist f.sConvexCombo x ≤ f.weights.sum fun i r ↦ r * dist i x := by
-  simpa using dist_iConvexCombo_le f id (fun _ ↦ x)
+  simpa using dist_iConvexCombo_left_le f id x
 
-lemma dist_sConvexCombo_right_le (f : StdSimplex ℝ X) (x : X) :
+lemma dist_sConvexCombo_right_le (x : X) (f : StdSimplex ℝ X) :
     dist x f.sConvexCombo ≤ f.weights.sum fun i r ↦ r * dist x i := by
-  simpa using dist_iConvexCombo_le f (fun _ ↦ x) id
+  simpa using dist_iConvexCombo_right_le x f id
 
 @[simp]
 lemma dist_convexComboPair_left
