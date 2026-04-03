@@ -58,14 +58,14 @@ open HomologicalComplex in
 /-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
 singular homology with coefficients in `R` (e.g. `R := ℤ` considered as
 an object of the category of abelian groups). -/
-lemma singularHomologyFunctor_obj_map_eq_of_homotopic (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
+lemma singularHomologyFunctor_obj_map_eq (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
     (((singularHomologyFunctor C n).obj R)).map f =
     (((singularHomologyFunctor C n).obj R)).map g :=
   (H.singularChainComplexFunctorObjMap R).homologyMap_eq n
 
 @[deprecated (since := "2026-04-01")]
 alias congr_homologyMap_singularChainComplexFunctor :=
-  singularHomologyFunctor_obj_map_eq_of_homotopic
+  singularHomologyFunctor_obj_map_eq
 
 /-- A homotopy equivalence between topological spaces induces an isomorphism between the
 singular homology groups. -/
@@ -76,12 +76,12 @@ def singularHomologyFunctorHomotopyEquiv (H : X ≃ₕ Y) (R : C) (n : ℕ) :
   inv := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.invFun)
   hom_inv_id := by
     rw [← Functor.map_comp, ← TopCat.ofHom_comp,
-      singularHomologyFunctor_obj_map_eq_of_homotopic (g := 𝟙 X) (by exact H.left_inv.some),
-      CategoryTheory.Functor.map_id]
+      singularHomologyFunctor_obj_map_eq (g := 𝟙 X) (by exact H.left_inv.some)]
+    simp
   inv_hom_id := by
     rw [← Functor.map_comp, ← TopCat.ofHom_comp,
-      singularHomologyFunctor_obj_map_eq_of_homotopic (g := 𝟙 Y) (by exact H.right_inv.some),
-      CategoryTheory.Functor.map_id]
+      singularHomologyFunctor_obj_map_eq (g := 𝟙 Y) (by exact H.right_inv.some)]
+    simp
 
 theorem isZero_singularHomologyFunctor_of_contractibleSpace
     (X : TopCat.{w}) [ContractibleSpace X] (R : C) (n : ℕ) (hn : n ≠ 0) :
