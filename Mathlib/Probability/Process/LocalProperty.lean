@@ -115,7 +115,7 @@ lemma stoppedProcess_localSeq [Zero E] (hX : Locally p 𝓕 X P) (n : ℕ) :
   hX.choose_spec.2 n
 
 lemma of_prop [Zero E] (hp : p X) : Locally p 𝓕 X P :=
-  ⟨fun n _ ↦ (⊤ : WithTop ι), isLocalizingSequence_const_top _ _, by simpa⟩
+  ⟨fun n _ ↦ ⊤, isLocalizingSequence_const_top _ _, by simpa⟩
 
 lemma mono [Zero E] (hpq : ∀ X, p X → q X) (hpX : Locally p 𝓕 X P) :
     Locally q 𝓕 X P :=
