@@ -86,7 +86,7 @@ end NilpotentOfTrace
 variable {K : Type*} [Field K] [IsAlgClosed K] [CharZero K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
-open LieAlgebra LinearMap Module.End NilpotentOfTrace Polynomial in
+open Algebra LieAlgebra LinearMap Module.End NilpotentOfTrace Polynomial in
 /-- If `x ∈ M A B` is trace-orthogonal to all of `M A B`, then `x` is nilpotent. -/
 theorem isNilpotent_of_trace_orthogonal_algClosed
     (A B : Submodule K (Module.End K V))
@@ -132,14 +132,14 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
     rw [Module.End.aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hs_adj
-      (Algebra.commute_of_mem_adjoin_self hn_adj).symm
-  have h_ad_s_mem : ad_s ∈ Algebra.adjoin K {ad K _ x} := by
+    commute_of_mem_adjoin_singleton_of_commute hs_adj
+      (commute_of_mem_adjoin_self hn_adj).symm
+  have h_ad_s_mem : ad_s ∈ adjoin K {ad K _ x} := by
     rw [hxns]; exact ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
-  rw [Algebra.adjoin_singleton_eq_range_aeval] at h_ad_s_mem
+  rw [adjoin_singleton_eq_range_aeval] at h_ad_s_mem
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hx
-    (Algebra.commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
+    (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
   have hyM : y ∈ M A B := by
     have had_y_adx : ad K _ y = aeval (ad K _ x) (r.comp p) := by
       rw [had_y_eq, show ad_s = aeval (ad K _ x) p from hp_eq.symm, ← aeval_comp]
@@ -151,8 +151,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     rw [had_y_adx, hq', map_mul, aeval_X, Module.End.mul_apply]
     exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
-  have hy_adj : y ∈ Algebra.adjoin K {s} := by
-    rw [Algebra.adjoin_singleton_eq_range_aeval]
+  have hy_adj : y ∈ adjoin K {s} := by
+    rw [adjoin_singleton_eq_range_aeval]
     let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
     let w : K → K := fun d => d
     let g := Lagrange.interpolate (Finset.univ.image a) w c_val
@@ -163,7 +163,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
       change (aeval s g) (v i) = y (v i)
       rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, hy_diag i]⟩
   have hny_comm : Commute n y :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
+    commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K V (n * y) = 0 :=
     (LinearMap.isNilpotent_trace_of_isNilpotent
       (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
@@ -180,7 +180,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
       (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
     apply_fun E.subtype using Subtype.val_injective
     simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
-    convert htr_sum using 1; congr 1; ext i; rw [Algebra.smul_def, mul_comm]
+    convert htr_sum using 1; congr 1; ext i; rw [smul_def, mul_comm]
   have h_sum_sq : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
       f ⟨a i, ha i⟩ ^ 2 = (0 : ℚ) := by
     have := congr_arg f h_sum_E
