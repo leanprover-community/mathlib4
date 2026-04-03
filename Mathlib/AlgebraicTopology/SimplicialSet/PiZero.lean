@@ -5,14 +5,18 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
 # Connected components of simplicial sets
 
+In this file, we define the type `π₀ X` of connected components
+of a simplicial sets. We also introduce typeclasses
+`IsPreconnected X` and `IsConnected X`.
+
 -/
+
+@[expose] public section
 
 universe u
 
@@ -22,86 +26,83 @@ namespace SSet
 
 variable {X Y Z : SSet.{u}}
 
+/-- The homotopy relation on `0`-simplices of a simplicial set. It holds
+for `x₀` and `x₁` when there exists an edge from `x₀` to `x₁`. -/
 def π₀Rel (x₀ x₁ : X _⦋0⦌) : Prop :=
-  ∃ (e : X _⦋1⦌), X.δ 1 e = x₀ ∧ X.δ 0 e = x₁
+  Nonempty (Edge x₀ x₁)
 
 variable (X) in
+/-- The type of connected components of a simplicial set. -/
 def π₀ : Type u := Quot (π₀Rel (X := X))
 
-def π₀.mk : X _⦋0⦌ → X.π₀ := Quot.mk _
+namespace π₀
 
-lemma π₀.mk_surjective : Function.Surjective (π₀.mk (X := X)) := Quot.mk_surjective
+/-- The connected component of a `0`-simplex of a simplicial set. -/
+def mk : X _⦋0⦌ → π₀ X := Quot.mk _
 
-lemma π₀.sound {x₀ x₁ : X _⦋0⦌} (e : X _⦋1⦌) (h₀ : X.δ 1 e = x₀) (h₁ : X.δ 0 e = x₁) :
+lemma mk_surjective : Function.Surjective (π₀.mk (X := X)) := Quot.mk_surjective
+
+lemma sound {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
     π₀.mk x₀ = π₀.mk x₁ :=
-  Quot.sound ⟨e, h₀, h₁⟩
+  Quot.sound ⟨e⟩
 
-lemma π₀.mk_eq_mk_iff (x₀ x₁ : X _⦋0⦌) :
+lemma mk_eq_mk_iff (x₀ x₁ : X _⦋0⦌) :
     π₀.mk x₀ = π₀.mk x₁ ↔ Relation.EqvGen π₀Rel x₀ x₁ :=
   Quot.eq
 
-def mapπ₀ (f : X ⟶ Y) : π₀ X → π₀ Y :=
-  Quot.lift (fun x ↦ π₀.mk (f.app _ x)) (by
-    rintro _ _ ⟨e, rfl, rfl⟩
-    apply π₀.sound (f.app _ e)
-    all_goals simp only [δ_naturality_apply])
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma rec {motive : π₀ X → Prop} (mk : ∀ (x : X _⦋0⦌), motive (.mk x)) (x : π₀ X) :
+    motive x := by
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  exact mk x
+
+/-- Constructor for maps from the type of connected components of a simplicial set. -/
+def lift {T : Type*} (f : X _⦋0⦌ → T)
+    (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
+    π₀ X → T :=
+  Quot.lift f (by rintro x y ⟨e⟩; exact hf e)
 
 @[simp]
-lemma mapπ₀_mk (f : X ⟶ Y) (x₀ : X _⦋0⦌) : mapπ₀ f (π₀.mk x₀) = π₀.mk (f.app _ x₀) := rfl
+lemma lift_mk {T : Type*} (f : X _⦋0⦌ → T)
+    (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) (x : X _⦋0⦌) :
+    lift f hf (.mk x) = f x :=
+  rfl
+
+end π₀
+
+/-- The map `π₀ X → π₀ Y` induced by a morphism `X ⟶ Y` of simplicial sets. -/
+def mapπ₀ (f : X ⟶ Y) : π₀ X → π₀ Y :=
+  π₀.lift (π₀.mk ∘ f.app _) (fun _ _ e ↦ π₀.sound (e.map f))
+
+@[simp]
+lemma mapπ₀_mk (f : X ⟶ Y) (x₀ : X _⦋0⦌) :
+    mapπ₀ f (π₀.mk x₀) = π₀.mk (f.app _ x₀) :=
+  rfl
 
 @[simp]
 lemma mapπ₀_id_apply (x : π₀ X) : mapπ₀ (𝟙 X) x = x := by
-  obtain ⟨x, rfl⟩ := x.mk_surjective
-  rw [mapπ₀_mk, NatTrans.id_app, types_id_apply]
+  induction x
+  simp
 
 @[simp]
 lemma mapπ₀_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (x : π₀ X) :
     mapπ₀ (f ≫ g) x = mapπ₀ g (mapπ₀ f x) := by
-  obtain ⟨x, rfl⟩ := x.mk_surjective
+  induction x
   simp
 
+/-- The functor which sends a simplicial set to the type of its connected components. -/
 @[simps]
 def π₀Functor : SSet.{u} ⥤ Type u where
   obj X := π₀ X
   map f := mapπ₀ f
 
-def toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor.{u} where
-  app X := π₀.mk
-
-abbrev coforkπ₀Functor :
-    Cofork (SSet.evaluation.{u}.map (SimplexCategory.δ (1 : Fin 2)).op)
-      (SSet.evaluation.map (SimplexCategory.δ (0 : Fin 2)).op) :=
-  Cofork.ofπ toπ₀NatTrans (by
-    ext X s
-    exact π₀.sound s rfl rfl)
-
-def isColimitCoforkπ₀Functor : IsColimit coforkπ₀Functor.{u} :=
-  evaluationJointlyReflectsColimits _ (fun X ↦
-    (isColimitMapCoconeCoforkEquiv _ _).2
-      (Cofork.IsColimit.mk _ (fun s ↦ Quot.lift s.π (by
-          dsimp at s
-          rintro _ _ ⟨h, rfl, rfl⟩
-          exact congr_fun s.condition h))
-        (fun s ↦ rfl) (fun s m hm ↦ by
-          ext x
-          obtain ⟨x, rfl⟩ := x.mk_surjective
-          dsimp at s m hm x ⊢
-          exact congr_fun hm x)))
-
-instance {J : Type*} [Category J] [Small.{u} J] :
-    PreservesColimitsOfShape J π₀Functor.{u} := by
-  have : (ObjectProperty.preservesColimitsOfShape J :
-      ObjectProperty (SSet.{u} ⥤ Type u)).IsClosedUnderColimitsOfShape
-        WalkingParallelPair :=
-    ObjectProperty.closedUnderColimitsOfShape_preservesColimitsOfShape ..
-  exact (ObjectProperty.preservesColimitsOfShape J).prop_of_isColimit
-    isColimitCoforkπ₀Functor (by
-      rintro (_ | _) <;> apply evaluation_preservesColimitsOfShape)
-
 variable (X)
-abbrev IsPreconnected : Prop := Subsingleton (π₀ X)
 
-class IsConnected : Prop extends IsPreconnected X where
+/-- A simplicial set is preconnected when it has at most one connected component. -/
+protected abbrev IsPreconnected : Prop := Subsingleton (π₀ X)
+
+/-- A simplicial set is econnected when it has exactly one connected component. -/
+protected class IsConnected : Prop extends SSet.IsPreconnected X where
   nonempty : X.Nonempty := by infer_instance
 
 attribute [instance] IsConnected.nonempty
