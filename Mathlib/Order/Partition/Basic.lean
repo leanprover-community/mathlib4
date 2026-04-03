@@ -201,16 +201,15 @@ lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
 /-- The top partition of `s` is the partition with the single part `s`. -/
 instance : OrderTop (Partition s) where
   top := removeBot {s} (sSupIndep_singleton s) sSup_singleton
-  le_top P x hxP := by
-    simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+  le_top P x hxP := by simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+
+lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup_singleton := rfl
 
 @[simp] lemma parts_top (hs : s ≠ ⊥) : ((⊤ : Partition s) : Set α) = {s} := by
-  change (removeBot {s} (sSupIndep_singleton s) sSup_singleton).parts = _
-  simpa
+  simpa [top_def]
 
 @[simp] lemma mem_top_iff {a : α} : a ∈ (⊤ : Partition s) ↔ a = s ∧ a ≠ ⊥ := by
-  change a ∈ removeBot {s} (sSupIndep_singleton s) sSup_singleton ↔ _
-  rw [mem_removeBot, mem_singleton_iff]
+  rw [top_def, mem_removeBot, mem_singleton_iff]
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by
   simp
