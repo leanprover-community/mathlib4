@@ -76,90 +76,90 @@ variable {E F : Type*} {β : Type*} [LinearOrder β]
 def sublevelLeft (b : β) (z : F) : Set X :=
   (fun x => f x z) ∘ (fun x ↦ ↑x)⁻¹' Iic b
 
-@[deprecated (since := "today")] alias C := sublevel_left
+@[deprecated (since := "today")] alias C := sublevelLeft
 
 variable {X Y f}
 
-theorem mem_sublevel_left_iff {b : β} {y : Y} {x : X} :
-    x ∈ sublevel_left X f b y ↔ f x y ≤ b := by simp [sublevel_left]
+theorem mem_sublevelLeft_iff {b : β} {y : Y} {x : X} :
+    x ∈ sublevelLeft X f b y ↔ f x y ≤ b := by simp [sublevelLeft]
 
-@[deprecated (since := "today")] alias mem_C_iff := mem_sublevel_left_iff
+@[deprecated (since := "today")] alias mem_C_iff := mem_sublevelLeft_iff
 
-/-- `sublevel_left` is parameterwise monotone -/
-theorem monotone_sublevel_left {u v : β} (y : Y) (h : u ≤ v) :
-    sublevel_left X f u y ⊆ sublevel_left X f v y :=
+/-- `sublevelLeft` is parameterwise monotone -/
+theorem monotone_sublevelLeft {u v : β} (y : Y) (h : u ≤ v) :
+    sublevelLeft X f u y ⊆ sublevelLeft X f v y :=
   fun _ hxu ↦ le_trans hxu h
 
-@[deprecated (since := "today")] alias monotone_C := monotone_sublevel_left
+@[deprecated (since := "today")] alias monotone_C := monotone_sublevelLeft
 
-/-- Disjointness criterion for two `sublevel_left` at different values of the parameter -/
-theorem disjoint_sublevel_left {a : E} {b : β} {y y' : Y}
+/-- Disjointness criterion for two `sublevelLeft` at different values of the parameter -/
+theorem disjoint_sublevelLeft {a : E} {b : β} {y y' : Y}
     (ha : ∀ x ∈ X, f a y ⊔ f a y' ≤ f x y ⊔ f x y')
     (hb : b < f a y ⊔ f a y') :
-    Disjoint (sublevel_left X f b y) (sublevel_left X f b y') := by
+    Disjoint (sublevelLeft X f b y) (sublevelLeft X f b y') := by
   rw [Set.disjoint_iff]
   rintro ⟨x, hx⟩ ⟨hx1, hx2⟩
   apply hb.not_ge
   grw [ha x hx]
   simpa using ⟨hx1, hx2⟩
 
-@[deprecated (since := "today")] alias disjoint_C := disjoint_sublevel_left
+@[deprecated (since := "today")] alias disjoint_C := disjoint_sublevelLeft
 
 /-- From lower semicontinuity of `f(·, y)` and compactness  of `X`,
-deduce that `sublevel_left` sets are nonempty -/
-theorem nonempty_sublevel_left [TopologicalSpace E]
+deduce that `sublevelLeft` sets are nonempty -/
+theorem nonempty_sublevelLeft [TopologicalSpace E]
     (ne_X : X.Nonempty) (kX : IsCompact X)
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (y : Y) {b : β} (h : ∀ y ∈ Y, ∃ x ∈ X, f x y ≤ b) :
-    (sublevel_left X f b y).Nonempty := by
+    (sublevelLeft X f b y).Nonempty := by
   rcases y with ⟨y, hy⟩
   obtain ⟨x, hx, hx_le⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy y hy)
   obtain ⟨x', hx', hx'b⟩ := h y hy
   exact ⟨⟨x, hx⟩, le_trans (hx_le hx') hx'b⟩
 
-@[deprecated (since := "today")] alias nonempty_C := nonempty_sublevel_left
+@[deprecated (since := "today")] alias nonempty_C := nonempty_sublevelLeft
 
-/-- From lower semicontinuity of `f(·, y)`, deduce that `sublevel_left` sets are closed -/
-theorem isClosed_sublevel_left [TopologicalSpace E]
+/-- From lower semicontinuity of `f(·, y)`, deduce that `sublevelLeft` sets are closed -/
+theorem isClosed_sublevelLeft [TopologicalSpace E]
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (b : β) (y : Y) :
-    IsClosed (sublevel_left X f b y) := by
+    IsClosed (sublevelLeft X f b y) := by
   specialize hfy y.val y.prop
   rw [← lowerSemicontinuous_restrict_iff, lowerSemicontinuous_iff_isClosed_preimage] at hfy
   exact hfy b
 
-@[deprecated (since := "today")] alias isClosed_C := isClosed_sublevel_left
+@[deprecated (since := "today")] alias isClosed_C := isClosed_sublevelLeft
 
 /-- From the quasi-convexity of `f (·, y)`, deduce that `sublevelLeft` is connected -/
-theorem isPreconnected_sublevel_left [TopologicalSpace E]
+theorem isPreconnected_sublevelLeft [TopologicalSpace E]
     [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E]
     [ContinuousSMul ℝ E]
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X (fun x ↦ f x y))
     (b : β) (y : Y) :
-    IsPreconnected (sublevel_left X f b y) :=
+    IsPreconnected (sublevelLeft X f b y) :=
   (hfy' y.val y.prop).isPreconnected_preimage_subtype
 
-@[deprecated (since := "today")] alias isPreconnected_C := isPreconnected_sublevel_left
+@[deprecated (since := "today")] alias isPreconnected_C := isPreconnected_sublevelLeft
 
-/-- From the quasi-concavity of `f (x, ·)`, deduce an inclusion of `sublevel_left` sets -/
-theorem sublevel_left_subset_union [AddCommGroup F] [Module ℝ F]
+/-- From the quasi-concavity of `f (x, ·)`, deduce an inclusion of `sublevelLeft` sets -/
+theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (b : β) (y y' : Y) (z : segment ℝ y.val y'.val) :
-    sublevel_left X f b z ⊆ sublevel_left X f b y ∪ sublevel_left X f b y' := fun x hx ↦ by
-    simp only [Set.mem_union, mem_sublevel_left_iff, ← inf_le_iff]
+    sublevelLeft X f b z ⊆ sublevelLeft X f b y ∪ sublevelLeft X f b y' := fun x hx ↦ by
+    simp only [Set.mem_union, mem_sublevelLeft_iff, ← inf_le_iff]
     specialize hfx' x x.2 (f x y ⊓ f x y')
     rw [convex_iff_segment_subset] at hfx'
     specialize hfx' ⟨y.prop, inf_le_left⟩ ⟨y'.prop, inf_le_right⟩ z.prop
     exact le_trans hfx'.2 hx
 
-@[deprecated (since := "today")] alias C_subset_union := sublevel_left_subset_union
+@[deprecated (since := "today")] alias C_subset_union := sublevelLeft_subset_union
 
-/-- `sublevel_left X f b z` is contained in either
-`sublevel_left X f b y` or in `sublevel_left X f b y'`.
+/-- `sublevelLeft X f b z` is contained in either
+`sublevelLeft X f b y` or in `sublevelLeft X f b y'`.
 
-The hypotheses imply that `sublevel_left X f b z` is connected,
+The hypotheses imply that `sublevelLeft X f b z` is connected,
 and that the two other are disjoint. -/
- theorem sublevel_left_subset_or [TopologicalSpace E] [AddCommGroup E]
+ theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
     [IsTopologicalAddGroup E] [Module ℝ E] [ContinuousSMul ℝ E]
     [AddCommGroup F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
@@ -170,15 +170,15 @@ and that the two other are disjoint. -/
     (ha : ∀ x ∈ X, f a y ⊔ f a y' ≤ f x y ⊔ f x y')
     (hb : b < f a y ⊔ f a y')
     (z : segment ℝ y.val y'.val) :
-    sublevel_left X f b z ⊆ sublevel_left X f b y ∨
-      sublevel_left X f b z ⊆ sublevel_left X f b y' := by
+    sublevelLeft X f b z ⊆ sublevelLeft X f b y ∨
+      sublevelLeft X f b z ⊆ sublevelLeft X f b y' := by
   apply isPreconnected_iff_subset_of_disjoint_closed.mp
-    (isPreconnected_sublevel_left hfy' b ⟨z, cY.segment_subset y.prop y'.prop z.prop⟩)
-    _ _ (isClosed_sublevel_left hfy b y) (isClosed_sublevel_left hfy b y')
-    (sublevel_left_subset_union hfx' b y y' z)
-  simp [(disjoint_sublevel_left ha hb).inter_eq]
+    (isPreconnected_sublevelLeft hfy' b ⟨z, cY.segment_subset y.prop y'.prop z.prop⟩)
+    _ _ (isClosed_sublevelLeft hfy b y) (isClosed_sublevelLeft hfy b y')
+    (sublevelLeft_subset_union hfx' b y y' z)
+  simp [(disjoint_sublevelLeft ha hb).inter_eq]
 
-@[deprecated (since := "today")] alias C_subset_or := sublevel_left_subset_or
+@[deprecated (since := "today")] alias C_subset_or := sublevelLeft_subset_or
 
 variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
@@ -193,48 +193,48 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
 
 variable (X Y f) in
 /-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
-def setOf_sublevel_left_subset [AddCommGroup F] [Module ℝ F]
+def setOf_sublevelLeft_subset [AddCommGroup F] [Module ℝ F]
     (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
-    {z | sublevel_left X f b z ⊆ sublevel_left X f b' y}
+    {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
 
-@[deprecated (since := "today")] alias J := setOf_sublevel_left_subset
+@[deprecated (since := "today")] alias J := setOf_sublevelLeft_subset
 
 include ne_X kX hfx hfx' cY hfy hfy' in
-/-- Under suitable inequalities, `setOf_sublevel_left_subset` is closed -/
-theorem isClosed_setOf_sublevel_left_subset
+/-- Under suitable inequalities, `setOf_sublevelLeft_subset` is closed -/
+theorem isClosed_setOf_sublevelLeft_subset
     (a : E) (b b' : β) (y y' : Y)
     (ha : ∀ x ∈ X, f a y ⊔ f a y' ≤ f x y ⊔ f x y')
     (hb : ∀ y ∈ Y, ∃ x ∈ X, f x y ≤ b)
     (hb' : b' < f a y ⊔ f a y')
     (hbb' : b < b') :
-    IsClosed (setOf_sublevel_left_subset X Y f b b' y y') := by
-  set J := setOf_sublevel_left_subset X Y f b b' y y'
-  -- Write `J` for `setOf_sublevel_left_subset X Y f b b' y y'`.
+    IsClosed (setOf_sublevelLeft_subset X Y f b b' y y') := by
+  set J := setOf_sublevelLeft_subset X Y f b b' y y'
+  -- Write `J` for `setOf_sublevelLeft_subset X Y f b b' y y'`.
   rw [isClosed_iff_clusterPt]
   /- Let `z in segment ℝ y y'` be a cluster point of `J`;
-     we have to show that `z ∈ J`, i.e `sublevel_left t z ⊆ sublevel_left t' y1`.
-     Let `x ∈ sublevel_left t z` and let us prove that `x ∈ sublevel_left X f b' y`. -/
+     we have to show that `z ∈ J`, i.e `sublevelLeft t z ⊆ sublevelLeft t' y1`.
+     Let `x ∈ sublevelLeft t z` and let us prove that `x ∈ sublevelLeft X f b' y`. -/
   intro z hz x hx
-  suffices ∃ z' ∈ setOf_sublevel_left_subset X Y f b b' y y', x ∈ sublevel_left X f b' (z' : F) by
+  suffices ∃ z' ∈ setOf_sublevelLeft_subset X Y f b b' y y', x ∈ sublevelLeft X f b' (z' : F) by
     obtain ⟨z', hz', hxz'⟩ := this
-    /- We need to prove `x ∈ sublevel_left X f b' y`.
-       Assume that there is `z' ∈ J` such that `x ∈ sublevel_left b' z'`.
-       It suffices to prove that `sublevel_left X f b' z' ⊆ sublevel_left X f b' y`.` -/
-    suffices sublevel_left X f b' z' ⊆ sublevel_left X f b' y from this hxz'
-    /- Otherwise, using `sublevel_left_subset_or`, we see that
-       `sublevel_left X f b' z' ⊆ sublevel_left t' y'`
-       hence `x ∈ sublevel_left t' y ∩ sublevel_left t' y' = ∅`, a contradiction. -/
-    apply (sublevel_left_subset_or hfx' hfy hfy' cY a b' y y' ha hb' z').resolve_right
+    /- We need to prove `x ∈ sublevelLeft X f b' y`.
+       Assume that there is `z' ∈ J` such that `x ∈ sublevelLeft b' z'`.
+       It suffices to prove that `sublevelLeft X f b' z' ⊆ sublevelLeft X f b' y`.` -/
+    suffices sublevelLeft X f b' z' ⊆ sublevelLeft X f b' y from this hxz'
+    /- Otherwise, using `sublevelLeft_subset_or`, we see that
+       `sublevelLeft X f b' z' ⊆ sublevelLeft t' y'`
+       hence `x ∈ sublevelLeft t' y ∩ sublevelLeft t' y' = ∅`, a contradiction. -/
+    apply (sublevelLeft_subset_or hfx' hfy hfy' cY a b' y y' ha hb' z').resolve_right
     intro hz'2
     have hz'Y : (z' : F) ∈ Y := (convex_iff_segment_subset.mp cY) y.prop y'.prop z'.prop
-    apply (nonempty_sublevel_left ne_X kX hfy ⟨z', hz'Y⟩ hb).not_subset_empty
-    simp only [← disjoint_iff_inter_eq_empty.mp (disjoint_sublevel_left ha hb')]
+    apply (nonempty_sublevelLeft ne_X kX hfy ⟨z', hz'Y⟩ hb).not_subset_empty
+    simp only [← disjoint_iff_inter_eq_empty.mp (disjoint_sublevelLeft ha hb')]
     apply Set.subset_inter hz'
-    apply subset_trans (monotone_sublevel_left _ hbb'.le) hz'2
+    apply subset_trans (monotone_sublevelLeft _ hbb'.le) hz'2
   /- In sequential language, pretend that `z = lim z n`, with `z n ∈ J`.
-     Since `x ∈ sublevel_left X f b z`, we have `f x z ≤ b < b'`.
+     Since `x ∈ sublevelLeft X f b z`, we have `f x z ≤ b < b'`.
      Since `f x ·` is upper semicontinuous, we would have `f x (z n) < b'` for `n` large enough,
-     hence `x ∈ sublevel_left X f b' (z n)` for `n` large enough. -/
+     hence `x ∈ sublevelLeft X f b' (z n)` for `n` large enough. -/
   -- The first step is to rewrite `hfy` (lower semicontinuity of `f (⬝, y)`) into an `∀ᶠ`-form
   simp_rw [upperSemicontinuousOn_iff, upperSemicontinuousWithinAt_iff] at hfx
   specialize hfx x.val x.prop z (cY.segment_subset y.prop y'.prop z.prop) b' (hx.trans_lt hbb')
@@ -242,14 +242,14 @@ theorem isClosed_setOf_sublevel_left_subset
   rw [clusterPt_principal_subtype_iff_frequently (cY.segment_subset y.prop y'.prop)] at hz
   suffices ∀ᶠ z' : F in nhdsWithin z Y,
     (∃ hz' : z' ∈ segment ℝ y.val y'.val,
-      (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevel_left_subset X Y f b b' y y') →
-      ∃ hz' : z' ∈ segment ℝ y.val y'.val, x ∈ sublevel_left X f b' z'
-        ∧ (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevel_left_subset X Y f b b' y y' by
+      (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevelLeft_subset X Y f b b' y y') →
+      ∃ hz' : z' ∈ segment ℝ y.val y'.val, x ∈ sublevelLeft X f b' z'
+        ∧ (⟨z', hz'⟩ : segment ℝ y.val y'.val) ∈ setOf_sublevelLeft_subset X Y f b b' y y' by
     obtain ⟨z', hz', hxz'1, hxz'2⟩ := hz.mp this |>.exists
     exact ⟨⟨z', hz'⟩, ⟨hxz'2, hxz'1⟩⟩
   exact hfx.mp <| .of_forall fun z hzt' ⟨hz, hz'⟩ ↦ ⟨hz, ⟨hzt'.le, hz'⟩⟩
 
-@[deprecated (since := "today")] alias isClosed_J := isClosed_setOf_sublevel_left_subset
+@[deprecated (since := "today")] alias isClosed_J := isClosed_setOf_sublevelLeft_subset
 
 variable [DenselyOrdered β]
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
@@ -264,38 +264,38 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
   obtain ⟨t', htt', ht'⟩ := exists_between (ht a ha)
   lift y1 to Y using hy1
   lift y2 to Y using hy2
-  let J1 := setOf_sublevel_left_subset X Y f t t' y1 y2
+  let J1 := setOf_sublevelLeft_subset X Y f t t' y1 y2
   have mem_J1_iff (z : segment ℝ (y1 : F) y2) :
-      z ∈ J1 ↔ sublevel_left X f t z ⊆ sublevel_left X f t' y1 := by
-    simp [J1, setOf_sublevel_left_subset]
+      z ∈ J1 ↔ sublevelLeft X f t z ⊆ sublevelLeft X f t' y1 := by
+    simp [J1, setOf_sublevelLeft_subset]
   let φ : segment ℝ (y1 : F) y2 ≃ₜ segment ℝ (y2 : F) y1 := .setCongr (segment_symm ℝ (y1 : F) y2)
-  let J2 := φ ⁻¹' (setOf_sublevel_left_subset X Y f t t' y2 y1)
+  let J2 := φ ⁻¹' (setOf_sublevelLeft_subset X Y f t t' y2 y1)
   have mem_J2_iff (z : segment ℝ (y1 : F) y2) :
-      z ∈ J2 ↔ sublevel_left X f t z ⊆ sublevel_left X f t' y2 := by
-    simp [J2, setOf_sublevel_left_subset, φ, Homeomorph.setCongr]
+      z ∈ J2 ↔ sublevelLeft X f t z ⊆ sublevelLeft X f t' y2 := by
+    simp [J2, setOf_sublevelLeft_subset, φ, Homeomorph.setCongr]
   have h_mem_Y (z : segment ℝ (y1 : F) y2) : (z : F) ∈ Y := cY.segment_subset y1.2 y2.2 z.prop
   have hJ1J2 : J1 ∩ J2 = ∅ := by
     rw [Set.eq_empty_iff_forall_notMem]
     simp only [mem_inter_iff, mem_J1_iff, mem_J2_iff]
     intro z ⟨hz1, hz2⟩
-    apply (nonempty_sublevel_left ne_X kX hfy ⟨z, h_mem_Y z⟩ hinfi_le).not_subset_empty
-    simpa using Set.disjoint_of_subset hz1 hz2 (disjoint_sublevel_left ha' ht')
+    apply (nonempty_sublevelLeft ne_X kX hfy ⟨z, h_mem_Y z⟩ hinfi_le).not_subset_empty
+    simpa using Set.disjoint_of_subset hz1 hz2 (disjoint_sublevelLeft ha' ht')
   have hJ1_union_J2 : J1 ∪ J2 = segment ℝ (y1 : F) y2 := by
     refine subset_antisymm (by simp) fun z hz ↦ ?_
     lift z to segment ℝ (y1 : F) y2 using hz
     refine ⟨z, ?_, rfl⟩
-    apply sublevel_left_subset_or hfx' hfy hfy' cY a t' y1 y2 ha' ht' z |>.imp
+    apply sublevelLeft_subset_or hfx' hfy hfy' cY a t' y1 y2 ha' ht' z |>.imp
       (fun h1 ↦ ?_) (fun h2 ↦ ?_)
-    · grw [mem_J1_iff, (monotone_sublevel_left ⟨(z : F), h_mem_Y z⟩ htt'.le), h1]
-    · grw [mem_J2_iff, (monotone_sublevel_left ⟨(z : F), h_mem_Y z⟩ htt'.le), h2]
+    · grw [mem_J1_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h1]
+    · grw [mem_J2_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h2]
   have this : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
     simpa [← Topology.IsInducing.subtypeVal.isPreconnected_image] using
       (convex_segment (y1 : F) y2).isPreconnected
-  have hJ1 : IsClosed J1 := isClosed_setOf_sublevel_left_subset ne_X kX hfy hfy'
+  have hJ1 : IsClosed J1 := isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'
     cY hfx hfx' a t t' y1 y2 ha' hinfi_le ht' htt'
   have hJ2 : IsClosed J2 := by
     simp only [sup_comm (f _ y1)] at ha' ht'
-    simpa [J2, sup_comm] using isClosed_setOf_sublevel_left_subset ne_X kX hfy hfy'
+    simpa [J2, sup_comm] using isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'
       cY hfx hfx' a t t' y2 y1 ha' hinfi_le ht' htt'
   have h_univ : univ ⊆ J1 ∪ J2 :=
     image_subset_image_iff Subtype.val_injective |>.mp <| by simp [hJ1_union_J2]
@@ -304,9 +304,9 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
   rw [eq_empty_iff_forall_notMem] at hJ1J2
   obtain (h1 | h2) := this J1 J2 hJ1 hJ2 h_univ h_inter
   · refine hJ1J2 ⟨y2, right_mem_segment ℝ (y1 : F) y2⟩ ⟨h1 (Set.mem_univ _), ?_⟩
-    grw [mem_J2_iff, monotone_sublevel_left y2 htt'.le]
+    grw [mem_J2_iff, monotone_sublevelLeft y2 htt'.le]
   · refine hJ1J2 ⟨y1, left_mem_segment ℝ (y1 : F) y2⟩ ⟨?_, h2 (Set.mem_univ _)⟩
-    grw [mem_J1_iff, monotone_sublevel_left y1 htt'.le]
+    grw [mem_J1_iff, monotone_sublevelLeft y1 htt'.le]
 
 variable (cX : Convex ℝ X)
 
