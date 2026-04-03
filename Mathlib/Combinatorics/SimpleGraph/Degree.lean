@@ -86,6 +86,9 @@ variable {G v} in
 theorem edegree_ne_top_iff_finite_neighborSet : G.edegree v ≠ ⊤ ↔ (G.neighborSet v).Finite :=
   Set.encard_ne_top_iff
 
+theorem edegree_ne_top_of_finite [Finite V] : G.edegree v ≠ ⊤ :=
+  edegree_ne_top_iff_finite_neighborSet.mpr <| Set.toFinite _
+
 theorem edegree_eq_toNat_edegree_of_finite_neighborSet (h : G.neighborSet v |>.Finite) :
     G.edegree v = (G.edegree v).toNat :=
   h.encard_eq_coe
@@ -96,6 +99,9 @@ theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.deg
 
 theorem edegree_le_card : G.edegree v ≤ ENat.card V := by
   grw [← encard_neighborSet, Set.encard_le_card]
+
+theorem edegree_lt_card_of_ne_top (h : G.edegree v ≠ ⊤) : G.edegree v < ENat.card V :=
+  edegree_ne_top_iff_finite_neighborSet.mp h |>.encard_lt_card <| G.neighborSet_ne_univ v
 
 @[simp]
 theorem encard_incidenceSet : (G.incidenceSet v).encard = G.edegree v := by
@@ -109,9 +115,14 @@ variable {G H} in
 theorem Copy.edegree_le (f : Copy G H) (v : V) : G.edegree v ≤ H.edegree (f v) :=
   f.mapNeighborSet v |>.encard_le
 
+@[simp]
+theorem Iso.edegree_eq (f : G ≃g H) (v : V) : G.edegree v = H.edegree (f v) := by
+  rw [← encard_neighborSet, ← encard_neighborSet, Set.encard_congr <| f.mapNeighborSet v]
+
 variable {G G'} in
-lemma edegree_le_of_le (hle : G ≤ G') (v : V) : G.edegree v ≤ G'.edegree v :=
-  Set.encard_le_encard fun _ hadj ↦ hle hadj
+@[gcongr]
+theorem edegree_mono (hle : G ≤ G') (v : V) : G.edegree v ≤ G'.edegree v :=
+  Set.encard_le_encard <| neighborSet_mono hle v
 
 variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :

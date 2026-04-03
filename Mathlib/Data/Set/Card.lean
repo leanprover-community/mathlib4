@@ -262,6 +262,9 @@ theorem Finite.eq_of_subset_of_encard_le (hs : s.Finite) (hst : s ⊆ t)
 theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.encard :=
   (encard_mono h.subset).lt_of_ne fun he ↦ h.ne (hs.eq_of_subset_of_encard_le h.subset he.symm.le)
 
+theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
+  encard_univ α ▸ hfin.encard_lt_encard (ssubset_univ_iff.mpr hne)
+
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
 

@@ -776,6 +776,20 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
+variable (v) in
+theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
+  simp
+
+variable (v) in
+theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
+  Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
+variable {G} in
+@[gcongr]
+theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
+    G.neighborSet v ⊆ G'.neighborSet v :=
+  fun _ hadj ↦ hle hadj
+
 @[simp]
 theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
