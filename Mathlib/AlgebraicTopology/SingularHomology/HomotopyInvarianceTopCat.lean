@@ -73,7 +73,7 @@ singular homology groups. -/
 def singularHomologyFunctorHomotopyEquiv (H : X ≃ₕ Y) (R : C) (n : ℕ) :
     ((singularHomologyFunctor C n).obj R).obj X ≅ ((singularHomologyFunctor C n).obj R).obj Y where
   hom := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.toFun)
-  inv := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.invFun)
+  inv := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.symm.toFun)
   hom_inv_id := by
     rw [← Functor.map_comp, ← TopCat.ofHom_comp,
       singularHomologyFunctor_obj_map_eq (g := 𝟙 X) (by exact H.left_inv.some)]
