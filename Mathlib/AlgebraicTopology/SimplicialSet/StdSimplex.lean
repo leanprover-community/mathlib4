@@ -177,6 +177,7 @@ lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
   yonedaEquiv.symm_apply_eq.mpr rfl
 
 open Finset Opposite SimplexCategory
+
 lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
     (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
     dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =
