@@ -41,7 +41,6 @@ variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 /-- The set `M = {x ∈ Module.End K V | ∀ b ∈ B, ⁅x, b⁆ ∈ A}`. -/
 abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) := {x | ∀ b ∈ B, ⁅x, b⁆ ∈ A}
 
-
 lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
