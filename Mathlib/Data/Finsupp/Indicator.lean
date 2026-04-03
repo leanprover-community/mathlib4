@@ -81,7 +81,7 @@ theorem indicator_eq_set_indicator (s : Finset ι) (g : ι → α) :
     ⇑(indicator s (fun i _ => g i)) = Set.indicator ↑s g := by
   classical
   ext i
-  simp [indicator_apply, Set.indicator_apply, Finset.mem_coe]
+  simp [indicator_apply, Set.indicator_apply]
 
 theorem indicator_indicator [DecidableEq ι] :
     indicator t (fun i _ ↦ indicator s f i) =
