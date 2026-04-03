@@ -144,8 +144,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     have had_y_adx : ad K _ y = aeval (ad K _ x) (r.comp p) := by
       rw [had_y_eq, hp_ad_s, ← aeval_comp]
     obtain ⟨q', hq'⟩ : X ∣ r.comp p := by
-      simpa using dvd_iff_isRoot.mpr
-        (show eval 0 (r.comp p) = 0 by simp [eval_comp, hp_zero, hr_zero])
+      rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
     intro b hb
     change (ad K _ y) b ∈ A
     rw [had_y_adx, hq', map_mul, aeval_X, Module.End.mul_apply]
