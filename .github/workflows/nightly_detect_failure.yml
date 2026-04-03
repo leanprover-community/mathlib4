@@ -6,9 +6,6 @@ on:
     types:
       - completed
 
-env:
-  MATHLIB_CI_REF: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
-
 jobs:
   handle_failure:
 
@@ -36,16 +33,22 @@ jobs:
             github.event.workflow_run.conclusion == 'success' &&
             github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
     - name: Generate app token
       id: app-token
-      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
         app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
-        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+    # This token is masked by the token minting action and will not be logged accidentally.
     - name: Checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
@@ -93,7 +96,7 @@ jobs:
         sudo rm -rf -- *
     - name: Generate lean-pr-testing app token
       id: lean-pr-testing-token
-      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
       with:
         app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
         private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
@@ -334,10 +337,13 @@ jobs:
     - name: Regenerate app token for Mathlib4 checkout
       if: steps.check_branch.outputs.result == 'false'
       id: app-token-2
-      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
         app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
-        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
@@ -346,18 +352,18 @@ jobs:
         fetch-depth: 0 # checkout all branches
         token: ${{ steps.app-token-2.outputs.token }}
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       if: steps.check_branch.outputs.result == 'false'
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: ${{ env.MATHLIB_CI_REF }}
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      id: get_mathlib_ci
       if: steps.check_branch.outputs.result == 'false'
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -425,8 +431,8 @@ jobs:
             bump_branch_suffix = bump_branch.replace('bump/', '')
             failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
             payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
-            payload += "To do so semi-automatically from a mathlib checkout, run:\n\n"
-            payload += f"```bash\ntmp=$(mktemp)\nwget -qO \"$tmp\" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/{os.getenv('MATHLIB_CI_REF')}/scripts/nightly/create-adaptation-pr.sh\nchmod +x \"$tmp\"\n\"$tmp\" --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
+            payload += "To do so semi-automatically, run:\n\n"
+            payload += f"```bash\ntmpscript=$(mktemp)\nwget -qO \"$tmpscript\" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/create-adaptation-pr.sh\nchmod +x \"$tmpscript\"\ntmpdir=$(mktemp -d)\ngit clone --filter=blob:none https://github.com/leanprover-community/mathlib4 \"$tmpdir\"\ncd \"$tmpdir\"\n\"$tmpscript\" --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Check if we already posted a message for this nightly date and bump branch.
             # We extract these fields from the last bot message rather than comparing substrings,
             # since the message also contains a run ID that differs between workflow runs.

@@ -143,7 +143,7 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-instance : AddCommMonoid ℝ≥0∞ :=
+noncomputable instance : AddCommMonoid ℝ≥0∞ :=
   inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrder ℝ≥0∞ :=
@@ -687,11 +687,7 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithT
 
 end CompleteLattice
 
-section Bit
-
 -- TODO: add lemmas about `OfNat.ofNat`
-
-end Bit
 
 end ENNReal
 

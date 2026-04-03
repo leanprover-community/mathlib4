@@ -58,7 +58,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       apply h₁g.continuousOn.norm.log
       simp_all
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_Icc inf_le_sup)] at t₀
-    push_neg at t₀
+    push Not at t₀
     have : (log ‖f ·‖) =ᶠ[Filter.codiscreteWithin (Ι a b)] 0 := by
       apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
@@ -117,7 +117,6 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {c : ℂ} {R : ℝ} {f : ℂ → E}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
 integrable over that circle.
@@ -148,7 +147,7 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
         apply h₂g ⟨circleMap c R x, circleMap_mem_sphere' c R x⟩
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_sphere (by simp) c
       (abs_nonneg R))] at t₀
-    push_neg at t₀
+    push Not at t₀
     have : (log ‖f ·‖) =ᶠ[codiscreteWithin (sphere c |R|)] 0 := by
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         self_mem_codiscreteWithin (sphere c |R|)] with x h₁x h₂x
