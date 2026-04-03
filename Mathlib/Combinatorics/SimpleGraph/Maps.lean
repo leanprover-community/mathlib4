@@ -45,7 +45,7 @@ open Function
 
 namespace SimpleGraph
 
-variable {V W X : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
+variable {V W X Y : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 
 /-! ## Map and comap -/
 
@@ -621,7 +621,10 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
+
+/-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
+def homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
 
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=

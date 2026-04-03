@@ -128,7 +128,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
   C.isIndepSet_colorClass c
 
 /-- Coloring induced from a homomorphism to a colored graph. -/
-def Coloring.of_hom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
+def Coloring.ofHom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
     (f : G →g G') : G.Coloring α :=
   C.comp f
 
@@ -287,7 +287,7 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
 
 theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ}
     (h : G'.Colorable n) (f : G →g G') : G.Colorable n :=
-  ⟨h.some.of_hom f⟩
+  ⟨h.some.ofHom f⟩
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
@@ -615,6 +615,12 @@ theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free 
   exact hc.of_hom hc'.some.toHom
 
 /-! ### Isomorphisms -/
+
+/-- Equivalence of colorings induced by isomorphisms of graphs. -/
+def Iso.coloringEquiv (f : G ≃g H) : G.Coloring α ≃ H.Coloring α := homCongr f refl
+
+lemma Iso.colorable_iff (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
+  ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
 
 lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
   le_antisymm f.toHom.chromaticNumber_le f.symm.toHom.chromaticNumber_le
