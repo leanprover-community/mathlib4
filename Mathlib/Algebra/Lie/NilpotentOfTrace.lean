@@ -52,6 +52,17 @@ lemma aeval_ad_maps_to
   rw [map_mul, Polynomial.aeval_X, Module.End.mul_apply]
   exact hxM _ (Polynomial.aeval_apply_smul_mem_of_le_comap hb q' ad_x fun _ h => hAB (hxM _ h))
 
+lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
+    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
+    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
+  apply b.ext; intro k
+  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
+  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
+  by_cases hjk : j = k
+  · subst hjk; simp [hs i, sub_smul]
+  · simp [hjk]
+
 section Lagrange
 
 variable {K : Type*} [Field K] [CharZero K]
@@ -87,17 +98,6 @@ lemma exists_lagrange_polynomial
       simp [show diffs = ∅ from by simp [diffs]]
 
 end Lagrange
-
-lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
-    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
-    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
-  apply b.ext; intro k
-  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
-  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
-  by_cases hjk : j = k
-  · subst hjk; simp [hs i, sub_smul]
-  · simp [hjk]
 
 end NilpotentOfTrace
 
@@ -172,7 +172,8 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have hy_adj : y ∈ Algebra.adjoin K {s} := by
     rw [Algebra.adjoin_singleton_eq_range_aeval]
     let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
-    let g := Lagrange.interpolate (Finset.univ.image a) _root_.id c_val
+    let w : K → K := fun d => d
+    let g := Lagrange.interpolate (Finset.univ.image a) w c_val
     have hg_eval : ∀ i, Polynomial.eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) :=
       fun i => (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
         (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
