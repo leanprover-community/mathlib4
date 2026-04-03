@@ -277,11 +277,10 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
-      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.ofNat_ne_top⟩)⟩)
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
     · refine ⟨n, hn.trans_lt ?_⟩
       by_cases hε_top : ε = ∞
-      · rw [hε_top]
-        exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
+      · simp [hε_top]
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       nth_rw 1 [← mul_one ε]
