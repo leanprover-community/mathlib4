@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Rename
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-!
 # Equivalences between power series rings
@@ -41,17 +43,17 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open PowerSeries Set Function Finsupp AddMonoidAlgebra
+open PowerSeries Set Function Finsupp Filter
 
 universe u v w x
 
-variable {R : Type u} [CommSemiring R] {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
+
+variable {σ τ : Type*} {f : PowerSeries R} (i : σ) (r : R)
 
 section toMvPowerSeries
 
 namespace PowerSeries
-
-variable {σ τ : Type*} {f : PowerSeries R} (i : σ) (r : R)
 
 /-- Given a power series p(X) ∈ R⟦X⟧ and an index i, we may view it as a
 multivariate power series p(X_i) ∈ R⟦X_1, ..., X_n⟧.
@@ -61,9 +63,7 @@ def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
   MvPowerSeries.rename (fun _ => i)
 
 @[simp]
-theorem toMvPowerSeries_apply :
-    f.toMvPowerSeries i = f.rename (fun _ => i) := by
-  rw [toMvPowerSeries]
+theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ => i) := rfl
 
 theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
   have : C r = MvPowerSeries.C r := rfl
@@ -72,24 +72,32 @@ theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
 theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
   rw [toMvPowerSeries_apply, X, MvPowerSeries.rename_X]
 
+theorem toMvPowerSeries_injective (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
+  MvPowerSeries.rename_injective (Embedding.punit i)
+
 section CommRing
 
-variable {R : Type*} [CommRing R] {f : PowerSeries R} (i : σ) (r : R)
+variable {R : Type*} [CommRing R] {f : PowerSeries R} (i : σ) (r : R) (p : R⟦X⟧)
 
 theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
-  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst]
-  rfl
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]
 
 theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
-    MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) := by
-  simp_rw [toMvPowerSeries_apply]
-  refine { const_coeff := ?_, coeff_zero := ?_ }
-  · simp_all [constantCoeff]
-  · intro d
-
-    sorry
-  -- MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by
-  --   rw [toMvPowerSeries_apply, constantCoeff_subst_eq_zero (MvPowerSeries.constantCoeff_X _) _ hf]
+    MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
+  const_coeff := by simp_all [constantCoeff]
+  coeff_zero d := Set.Finite.subset (Finite.of_fintype ↥d.support) fun s => by classical
+    contrapose
+    simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, mem_setOf_eq]
+    have : (MvPowerSeries.subst (MvPowerSeries.X (R := R) ∘ fun x ↦ s) f)
+      = f.subst (MvPowerSeries.X s) := rfl
+    intro hd
+    rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
+      finsum_eq_zero_of_forall_eq_zero]
+    intro n
+    by_cases! hn : n = 0
+    · simp [hn, hf]
+    have : d ≠ single s n := ne_iff.mpr ⟨s, by simp [hd, hn.symm]⟩
+    rw [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, if_neg this, smul_zero]
 
 theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ)
     (ha : MvPowerSeries.HasSubst a) : (f.toMvPowerSeries i).subst a = f.subst (a i) := by
@@ -98,46 +106,20 @@ theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ)
 
 end CommRing
 
-lemma toMvPowerSeries_injective (i : σ) :
-    Function.Injective (toMvPowerSeries (R := R) i) :=
-  MvPowerSeries.rename_injective (Embedding.punit i)
-
--- @[simp]
--- lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
---     (eval f).comp (toMvPolynomial (R := R) i) = Polynomial.evalRingHom (f i) := by
---   ext <;> simp
-
--- @[simp]
--- lemma MvPolynomial.eval_toMvPolynomial (f : σ → R) (i : σ) (p : R[X]) :
---     eval f (p.toMvPolynomial i) = Polynomial.eval (f i) p :=
---   DFunLike.congr_fun (eval_comp_toMvPolynomial ..) p
-
--- @[simp]
--- lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
---     (aeval (R := R) f).comp (toMvPolynomial i) = Polynomial.aeval (f i) := by
---   ext
---   simp
-
--- @[simp]
--- lemma MvPolynomial.aeval_toMvPolynomial (f : σ → S) (i : σ) (p : R[X]) :
---     aeval f (p.toMvPolynomial i) = Polynomial.aeval (f i) p :=
---   DFunLike.congr_fun (aeval_comp_toMvPolynomial ..) p
-
--- @[simp]
--- lemma MvPolynomial.rename_comp_toMvPolynomial (f : σ → τ) (a : σ) :
---     (rename (R := R) f).comp (Polynomial.toMvPolynomial a) = Polynomial.toMvPolynomial (f a) := by
---   ext
---   simp
-
--- @[simp]
--- lemma MvPolynomial.rename_toMvPolynomial (f : σ → τ) (a : σ) (p : R[X]) :
---     (rename (R := R) f) (p.toMvPolynomial a) = p.toMvPolynomial (f a) :=
---   DFunLike.congr_fun (rename_comp_toMvPolynomial ..) p
-
--- #check MvPowerSeries.rename
-
-/- TODO: some API related to rename. -/
-
 end PowerSeries
+
+variable (f : σ → τ) [TendstoCofinite f] (a : σ) (p : R⟦X⟧)
+
+@[simp]
+lemma MvPowerSeries.rename_comp_toMvPowerSeries :
+    (rename (R := R) f).comp (PowerSeries.toMvPowerSeries a)
+      = PowerSeries.toMvPowerSeries (f a) := by
+  ext
+  simp [comp_def]
+
+@[simp]
+lemma MvPowerSeries.rename_toMvPowerSeries :
+    (p.toMvPowerSeries a).rename f = p.toMvPowerSeries (f a) :=
+  DFunLike.congr_fun (rename_comp_toMvPowerSeries ..) p
 
 end toMvPowerSeries
