@@ -182,22 +182,25 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
     (e'.trans <| height_mono (Ideal.le_minimalPrimes h₁)))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
-private lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
-    primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
-  rw [Ideal.primeHeight, Order.height_eq_zero, minimalPrimes, Ideal.minimalPrimes]
-  simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
+lemma Ideal.height_eq_zero_iff {I : Ideal R} [I.IsPrime] : height I = 0 ↔ I ∈ minimalPrimes R := by
+  rw [Ideal.height_eq_primeHeight, Ideal.primeHeight, Order.height_eq_zero, minimalPrimes]
+  simp only [Ideal.minimalPrimes, bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
   refine ⟨fun h ↦ ⟨‹_›, ?_⟩, fun ⟨hI, hI'⟩ b hb ↦ hI' b.isPrime hb⟩
   by_contra! ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩
   exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
 
-lemma Ideal.height_eq_zero_iff {I : Ideal R} [I.IsPrime] : height I = 0 ↔ I ∈ minimalPrimes R := by
-  rw [Ideal.height_eq_primeHeight, Ideal.primeHeight_eq_zero_iff]
+@[deprecated "Use `Ideal.height_eq_zero_iff` instead." (since := "2026-04-02")]
+private lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
+    primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
+  rw [← Ideal.height_eq_primeHeight, Ideal.height_eq_zero_iff]
 
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
-  exact ⟨p, hp, haveI := Ideal.minimalPrimes_isPrime hp; primeHeight_eq_zero_iff.mpr hp⟩
+  refine ⟨p, hp, ?_⟩
+  have := Ideal.minimalPrimes_isPrime hp
+  rw [← Ideal.height_eq_primeHeight, height_eq_zero_iff.mpr hp]
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
