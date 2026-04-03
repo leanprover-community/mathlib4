@@ -139,8 +139,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Me
     unfold s
     grw [ball_subset_ball, ball_infDist_subset_compl]
     grind
-  have resolvent_meas :
-      ∀ᶠ w in nhds a, AEStronglyMeasurable (resolvent w) μ := by
+  have resolvent_meas : ∀ᶠ w in nhds a, AEStronglyMeasurable (resolvent w) μ := by
     filter_upwards with _ using by fun_prop
   have resolvent'_bound : ∀ᵐ x ∂μ, ∀ w ∈ s,
       ‖(fun z x ↦ (resolvent z x) ^ 2) w x‖ ≤
