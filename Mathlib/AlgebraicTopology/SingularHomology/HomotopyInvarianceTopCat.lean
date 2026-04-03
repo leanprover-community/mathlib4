@@ -90,7 +90,7 @@ theorem isZero_singularHomologyFunctor_of_contractibleSpace
     ((ContractibleSpace.hequiv X PUnit.{w + 1}).some) R n).isZero_iff]
   exact isZero_singularHomologyFunctor_of_totallyDisconnectedSpace _ _ _ _ hn
 
--- TODO: relax to `PathConnectedSpace`.
+-- TODO: Relax to `PathConnectedSpace` when `n = 0`.
 instance (X : TopCat.{w}) [ContractibleSpace X] (R : C) (n : ℕ) :
     IsIso (((singularHomologyFunctor C n).obj R).map (terminal.from X)) := by
   convert (singularHomologyFunctorHomotopyEquiv (X := X) (Y := ⊤_ TopCat)
