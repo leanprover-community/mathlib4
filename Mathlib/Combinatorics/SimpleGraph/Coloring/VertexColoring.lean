@@ -599,10 +599,26 @@ theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
 
 end completeMultipartiteGraph
 
+variable {W : Type*} {H : SimpleGraph W}
+
 /-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
-theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
-    (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
+theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
   contrapose! nhc with hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
+
+/-! ### Maps -/
+
+def Hom.coloring (f : G →g H) {α} (C : H.Coloring α) : G.Coloring α where
+  toFun v := C (f.toFun v)
+  map_rel' hadj := C.valid (f.map_adj hadj)
+
+lemma Hom.colorable (f : G →g H) {n : ℕ} (hc : H.Colorable n) : G.Colorable n :=
+  ⟨f.coloring hc.some⟩
+
+lemma Hom.chromaticNumber_le (f : G →g H) : G.chromaticNumber ≤ H.chromaticNumber :=
+  chromaticNumber_le_of_forall_imp fun _ ↦ f.colorable
+
+lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
+  le_antisymm f.toHom.chromaticNumber_le f.symm.toHom.chromaticNumber_le
 
 end SimpleGraph
