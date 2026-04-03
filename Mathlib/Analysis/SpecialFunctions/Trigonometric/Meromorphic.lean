@@ -34,3 +34,6 @@ theorem meromorphicAt_tan (z : ℂ) :
 /-- The function `tan` is meromorphic. -/
 @[fun_prop]
 theorem meromorphic_tan : Meromorphic tan := meromorphicAt_tan
+
+end Complex
+
