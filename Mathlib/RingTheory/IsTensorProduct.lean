@@ -283,6 +283,22 @@ lemma assocOfMapSMul_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
 
 end
 
+section
+
+lemma linearEquiv_compr₂ (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
+    IsTensorProduct (f.compr₂ e.toLinearMap) := by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [TensorProduct.lift_compr₂]
+  exact e.bijective.comp ist
+
+lemma linearEquiv_compl₂ (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
+    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
+  exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)
+
+end
+
 end IsTensorProduct
 
 end IsTensorProduct
