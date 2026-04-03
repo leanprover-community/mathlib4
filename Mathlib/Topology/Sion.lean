@@ -38,7 +38,8 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
   * On the other hand, if the theorem holds for such `β`,
   it must hold for any linear order, for the reason that
   any linear order embeds into a complete dense linear order.
-  However, this result does not seem to be known to Mathlib.
+  Although one can construct such an embedding using the Dedekind-Mac Neille completion,
+  this result does not seem to be known to Mathlib.
 
   * When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
 
@@ -46,9 +47,8 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 
 - Spell out the particular case of von Neumann theorem.
 
-- Once the Dedekind MacNeille completion of a linear order enters Mathlib,
-  the statement of `DMCompletion.exists_isSaddlePointOn` can be simplified,
-  by assigning the variables `γ` and `ι : β ↪o γ` to the Dedekind MacNeille completion of `β`.
+- Use the Dedekind MacNeille completion of a linear order to simplify
+  the statement of `DMCompletion.exists_isSaddlePointOn`.
 
 ## References
 
@@ -76,21 +76,15 @@ variable {E F : Type*} {β : Type*} [LinearOrder β]
 def sublevelLeft (b : β) (z : F) : Set X :=
   (fun x => f x z) ∘ (fun x ↦ ↑x)⁻¹' Iic b
 
-@[deprecated (since := "today")] alias C := sublevelLeft
-
 variable {X Y f}
 
 theorem mem_sublevelLeft_iff {b : β} {y : Y} {x : X} :
     x ∈ sublevelLeft X f b y ↔ f x y ≤ b := by simp [sublevelLeft]
 
-@[deprecated (since := "today")] alias mem_C_iff := mem_sublevelLeft_iff
-
 /-- `sublevelLeft` is parameterwise monotone -/
 theorem monotone_sublevelLeft {u v : β} (y : Y) (h : u ≤ v) :
     sublevelLeft X f u y ⊆ sublevelLeft X f v y :=
   fun _ hxu ↦ le_trans hxu h
-
-@[deprecated (since := "today")] alias monotone_C := monotone_sublevelLeft
 
 /-- Disjointness criterion for two `sublevelLeft` at different values of the parameter -/
 theorem disjoint_sublevelLeft {a : E} {b : β} {y y' : Y}
@@ -102,8 +96,6 @@ theorem disjoint_sublevelLeft {a : E} {b : β} {y y' : Y}
   apply hb.not_ge
   grw [ha x hx]
   simpa using ⟨hx1, hx2⟩
-
-@[deprecated (since := "today")] alias disjoint_C := disjoint_sublevelLeft
 
 /-- From lower semicontinuity of `f(·, y)` and compactness  of `X`,
 deduce that `sublevelLeft` sets are nonempty -/
@@ -117,8 +109,6 @@ theorem nonempty_sublevelLeft [TopologicalSpace E]
   obtain ⟨x', hx', hx'b⟩ := h y hy
   exact ⟨⟨x, hx⟩, le_trans (hx_le hx') hx'b⟩
 
-@[deprecated (since := "today")] alias nonempty_C := nonempty_sublevelLeft
-
 /-- From lower semicontinuity of `f(·, y)`, deduce that `sublevelLeft` sets are closed -/
 theorem isClosed_sublevelLeft [TopologicalSpace E]
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
@@ -128,8 +118,6 @@ theorem isClosed_sublevelLeft [TopologicalSpace E]
   rw [← lowerSemicontinuous_restrict_iff, lowerSemicontinuous_iff_isClosed_preimage] at hfy
   exact hfy b
 
-@[deprecated (since := "today")] alias isClosed_C := isClosed_sublevelLeft
-
 /-- From the quasi-convexity of `f (·, y)`, deduce that `sublevelLeft` is connected -/
 theorem isPreconnected_sublevelLeft [TopologicalSpace E]
     [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E]
@@ -138,8 +126,6 @@ theorem isPreconnected_sublevelLeft [TopologicalSpace E]
     (b : β) (y : Y) :
     IsPreconnected (sublevelLeft X f b y) :=
   (hfy' y.val y.prop).isPreconnected_preimage_subtype
-
-@[deprecated (since := "today")] alias isPreconnected_C := isPreconnected_sublevelLeft
 
 /-- From the quasi-concavity of `f (x, ·)`, deduce an inclusion of `sublevelLeft` sets -/
 theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
@@ -151,8 +137,6 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
     rw [convex_iff_segment_subset] at hfx'
     specialize hfx' ⟨y.prop, inf_le_left⟩ ⟨y'.prop, inf_le_right⟩ z.prop
     exact le_trans hfx'.2 hx
-
-@[deprecated (since := "today")] alias C_subset_union := sublevelLeft_subset_union
 
 /-- `sublevelLeft X f b z` is contained in either
 `sublevelLeft X f b y` or in `sublevelLeft X f b y'`.
@@ -178,8 +162,6 @@ and that the two other are disjoint. -/
     (sublevelLeft_subset_union hfx' b y y' z)
   simp [(disjoint_sublevelLeft ha hb).inter_eq]
 
-@[deprecated (since := "today")] alias C_subset_or := sublevelLeft_subset_or
-
 variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (ne_X : X.Nonempty) (kX : IsCompact X)
@@ -196,8 +178,6 @@ variable (X Y f) in
 def setOf_sublevelLeft_subset [AddCommGroup F] [Module ℝ F]
     (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
-
-@[deprecated (since := "today")] alias J := setOf_sublevelLeft_subset
 
 include ne_X kX hfx hfx' cY hfy hfy' in
 /-- Under suitable inequalities, `setOf_sublevelLeft_subset` is closed -/
@@ -228,9 +208,9 @@ theorem isClosed_setOf_sublevelLeft_subset
     intro hz'2
     have hz'Y : (z' : F) ∈ Y := (convex_iff_segment_subset.mp cY) y.prop y'.prop z'.prop
     apply (nonempty_sublevelLeft ne_X kX hfy ⟨z', hz'Y⟩ hb).not_subset_empty
-    simp only [← disjoint_iff_inter_eq_empty.mp (disjoint_sublevelLeft ha hb')]
-    apply Set.subset_inter hz'
-    apply subset_trans (monotone_sublevelLeft _ hbb'.le) hz'2
+    rw [← (disjoint_sublevelLeft ha hb').inter_eq]
+    apply subset_inter hz'
+    grw [monotone_sublevelLeft _ hbb'.le, hz'2]
   /- In sequential language, pretend that `z = lim z n`, with `z n ∈ J`.
      Since `x ∈ sublevelLeft X f b z`, we have `f x z ≤ b < b'`.
      Since `f x ·` is upper semicontinuous, we would have `f x (z n) < b'` for `n` large enough,
@@ -248,8 +228,6 @@ theorem isClosed_setOf_sublevelLeft_subset
     obtain ⟨z', hz', hxz'1, hxz'2⟩ := hz.mp this |>.exists
     exact ⟨⟨z', hz'⟩, ⟨hxz'2, hxz'1⟩⟩
   exact hfx.mp <| .of_forall fun z hzt' ⟨hz, hz'⟩ ↦ ⟨hz, ⟨hzt'.le, hz'⟩⟩
-
-@[deprecated (since := "today")] alias isClosed_J := isClosed_setOf_sublevelLeft_subset
 
 variable [DenselyOrdered β]
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
