@@ -99,9 +99,6 @@ lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
     ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]
 
-@[deprecated (since := "2025-09-12")]
-alias equiv_on_nat_iff_equiv := exists_nat_rpow_iff_isEquiv
-
 section Non_archimedean
 
 /-!
@@ -327,7 +324,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     _ = n₀ * (Nat.log n₀ m + 1) := by
       rw [List.mapIdx_eq_zipIdx_map, List.eq_replicate_of_mem (a := (n₀ : ℝ)) (l := L.zipIdx.map _),
         List.sum_replicate, List.length_map, List.length_zipIdx, nsmul_eq_mul, mul_comm,
-        Nat.digits_len n₀ m hn₀ (ne_zero_of_lt hm), Nat.cast_add_one]
+        Nat.length_digits n₀ m hn₀ (ne_zero_of_lt hm), Nat.cast_add_one]
       simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
@@ -379,7 +376,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
-        ← Nat.digits_len m n hm (ne_zero_of_lt hn)]
+        ← Nat.length_digits m n hm (ne_zero_of_lt hn)]
     _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]
@@ -479,8 +476,5 @@ lemma not_real_isEquiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
   exact ((padic_le_one p 2).trans_lt <| one_lt_rpow one_lt_two hc₀).ne' hc
-
-@[deprecated (since := "2025-09-12")]
-alias not_real_equiv_padic := not_real_isEquiv_padic
 
 end Rat.AbsoluteValue
