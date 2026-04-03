@@ -97,7 +97,5 @@ end CategoryTheory
 
 lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Nontrivial M]
     [Projective M] : projectiveDimension M = 0 := by
-  apply ((projectiveDimension_le_iff M 0).mpr inferInstance).antisymm
-    ((projectiveDimension_ge_iff M 0).mpr _)
-  rw [hasProjectiveDimensionLT_zero_iff_isZero, ModuleCat.isZero_iff_subsingleton]
-  exact not_subsingleton_iff_nontrivial.mpr ‹_›
+  simpa [projectiveDimension_eq_zero_iff, ModuleCat.isZero_iff_subsingleton,
+    not_subsingleton_iff_nontrivial] using ⟨‹_›, ‹_›⟩
