@@ -38,15 +38,34 @@ variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i) {
 @[simp] theorem fst_prod : (Pi.prod f g c).fst = f c := rfl
 @[simp] theorem snd_prod : (Pi.prod f g c).snd = g c := rfl
 
-lemma prod_fst_snd {α β} : Pi.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
-lemma prod_snd_fst {α β} : Pi.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
+@[simp] theorem prod_fst_snd {α β} : Pi.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
+@[simp] theorem prod_snd_fst {α β} : Pi.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
 
-theorem blahj {ι : Type*} {β γ : ι → Type*} {h : ∀ i, β i × γ i} :
+theorem prod_fst_snd_comp {h : ∀ i, α i × β i} :
   Pi.prod (Prod.fst <| h ·) (Prod.snd <| h ·) = h := rfl
 
---(Pi.prod (fun x1 x2 ↦ (x1 x2).fst) (fun x1 x2 ↦ (x1 x2).snd) h)
-theorem prod_eq_iff : Pi.prod f g = Pi.prod f' g' ↔ f = f' ∧ g = g' := by
+theorem fst_comp_prod {f : ∀ i, α i} {g : ∀ i, β i} : (Prod.fst <| (Pi.prod f g) ·) = f := rfl
+theorem snd_comp_prod {f : ∀ i, α i} {g : ∀ i, β i} : (Prod.snd <| (Pi.prod f g) ·) = g := rfl
+
+@[simp]
+theorem prod_eq_iff {f : ∀ i, α i} {g : ∀ i, β i} :
+    Pi.prod f g = Pi.prod f' g' ↔ f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
+
+theorem prod_ext_iff {h h' : ∀ i, α i × β i} : h = h' ↔
+    (Prod.fst <| h ·) = (Prod.fst <| h' ·) ∧ (Prod.snd <| h ·) = (Prod.snd <| h' ·) := by
   simp [funext_iff, Prod.ext_iff, forall_and]
+
+theorem exists_prod_apply_eq (h : ∀ i, α i × β i) : ∃ f g, Pi.prod f g = h :=
+  ⟨(Prod.fst <| h ·), (Prod.snd <| h ·), prod_fst_snd_comp⟩
+
+theorem exists_fst_comp (f : ∀ i, α i) (g : ∀ i, β i) :
+    ∃ h : ∀ i, α i × β i, (Prod.fst <| h ·) = f := ⟨Pi.prod f g, fst_comp_prod⟩
+theorem exists_snd_comp (f : ∀ i, α i) (g : ∀ i, β i) :
+    ∃ h : ∀ i, α i × β i, (Prod.snd <| h ·) = g := ⟨Pi.prod f g, snd_comp_prod⟩
+
+@[grind =]
+theorem prod_const_const {γ} {α β} {a : α} {b : β} :
+    Pi.prod (Function.const γ a) (Function.const γ b) = Function.const γ (a, b) := rfl
 
 end
 
@@ -65,33 +84,52 @@ variable (f : γ → α) (g : γ → β)
 
 @[grind =] theorem pair_apply (c : γ) : Prod.pair f g c = (f c, g c) := rfl
 
+theorem pair_comp {δ} {h : δ → γ} : Prod.pair f g ∘ h = Prod.pair (f ∘ h) (g ∘ h) := rfl
+
 @[simp] theorem fst_pair {c} : (Prod.pair f g c).fst = f c := rfl
 @[simp] theorem snd_pair {c} : (Prod.pair f g c).snd = g c := rfl
 
-@[simp] theorem fst_comp_pair : fst ∘ Prod.pair f g = f := rfl
-@[simp] theorem snd_comp_pair : snd ∘ Prod.pair f g = g := rfl
 @[simp] theorem pair_fst_snd : @Prod.pair α β _ fst snd = id := rfl
-
-theorem pair_comp {δ} {h : δ → γ} : Prod.pair f g ∘ h = Prod.pair (f ∘ h) (g ∘ h) := rfl
+@[simp] theorem pair_snd_fst : @Prod.pair α β _ snd fst = .swap := rfl
 
 @[simp] theorem pair_fst_snd_comp {f : γ → α × β} : Prod.pair (fst ∘ f) (snd ∘ f) = f := rfl
+
+@[simp] theorem fst_comp_pair {f : γ → α} {g : γ → β} : fst ∘ Prod.pair f g = f := rfl
+@[simp] theorem snd_comp_pair {f : γ → α} {g : γ → β} : snd ∘ Prod.pair f g = g := rfl
 
 theorem pair_eq_iff {f f' : γ → α} {g g' : γ → β} : Prod.pair f g = Prod.pair f' g' ↔
     f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
 
-theorem injective_uncurry_pair : Function.Injective <|
-    (Prod.pair (α := α) (β := β) (γ := δ)).uncurry := by
-  simp [Function.Injective, funext_iff, Prod.ext_iff]; grind
+theorem pair_ext_iff {h h' : γ → α × β} : h = h' ↔
+    (Prod.fst ∘ h) = (Prod.fst ∘ h') ∧ (Prod.snd ∘ h) = (Prod.snd ∘ h') := by
+  simp [funext_iff, Prod.ext_iff, forall_and]
+
+theorem exists_prod_apply_eq (h : γ → α × β) : ∃ f g, Prod.pair f g = h :=
+  ⟨Prod.fst ∘ h, Prod.snd ∘ h, pair_fst_snd_comp⟩
+
+theorem exists_fst_comp (f : γ → α) (g : γ → β) :
+    ∃ h : γ → α × β, Prod.fst ∘ h = f := ⟨Pi.prod f g, fst_comp_pair⟩
+theorem exists_snd_comp (f : γ → α) (g : γ → β) :
+    ∃ h : γ → α × β, Prod.snd ∘ h = g := ⟨Pi.prod f g, snd_comp_pair⟩
+
+theorem leftInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.LeftInverse
+    (Prod.pair (α := α) (β := β) (γ := δ)).uncurry (Prod.pair (fst ∘ ·) (snd ∘ ·)) := fun _ => rfl
+
+theorem rightInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.RightInverse
+    (Prod.pair (α := α) (β := β) (γ := δ)).uncurry (Prod.pair (fst ∘ ·) (snd ∘ ·)) := fun _ => rfl
 
 @[grind =]
 theorem pair_const_const (a : α) (b : β) :
     Prod.pair (Function.const γ a) (Function.const γ b) = Function.const γ (a, b) := rfl
 
+theorem const_prod {γ} {α β} {p : α × β} :
+    Function.const γ p = Prod.pair (Function.const γ p.1) (Function.const γ p.2) := rfl
+
 end
 
 section
 
-/- We can define `Prod.map` in terms of `Prod.pair`. -/
+/- We can define `Prod.map` in terms of `Prod.pair` (TODO: and we should). -/
 theorem map_eq_pair {f : α → β} {g : δ → ε} : Prod.map f g =
     Prod.pair (f ∘ fst) (g ∘ snd) := rfl
 
