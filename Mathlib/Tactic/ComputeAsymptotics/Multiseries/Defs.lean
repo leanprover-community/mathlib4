@@ -241,22 +241,25 @@ theorem FriendlyOperationClass.FriendlyOperation {basis_hd basis_tl} {γ : Type*
     FriendlyOperation (op c) :=
   h.friend c
 
-theorem FriendlyOperation.destruct {basis_hd basis_tl}
+/-- Decomposes a friendly operation by the head of the input sequence. Returns `none` if the output
+is `nil`, or `some (exp, coef, op')` where `(exp, coef)` is the head of the output and
+`op'` is a friendly operation mapping the tail of the input to the tail of the output. See
+`destruct_apply_eq_unfold` for the correctness statement. -/
+def FriendlyOperation.unfold {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h : FriendlyOperation op) :
-    ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
-      Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendlyOperation),
-      ∀ ms, destruct (op ms) = (T ms.head).map
+    (h : FriendlyOperation op) (hd? : Option (ℝ × MultiseriesExpansion basis_tl)) :
+    Option (ℝ × MultiseriesExpansion basis_tl × Subtype (
+      @Multiseries.FriendlyOperation basis_hd basis_tl)) :=
+  Seq.FriendlyOperation.unfold h hd? |>.map (fun ((exp, coef), op') ↦ (exp, coef, op'))
+
+theorem FriendlyOperation.destruct_apply_eq_unfold {basis_hd basis_tl}
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    (h : FriendlyOperation op) (ms : Multiseries basis_hd basis_tl) :
+      destruct (op ms) = (h.unfold ms.head).map
         (fun (exp, coef, op') ↦ (exp, coef, op'.val ms.tail)) := by
-  have h' := Seq.FriendlyOperation.destruct h
-  obtain ⟨T, hT⟩ := h'
-  use fun hd? ↦ (T hd?).map (fun ((exp, coef), op') ↦ (exp, coef, op'))
-  intro ms
-  specialize hT ms
   unfold Multiseries.destruct
-  simp [hT]
-  simp [head, tail]
-  cases T (Seq.head ms) <;> simp
+  simp [Seq.FriendlyOperation.destruct_apply_eq_unfold h, FriendlyOperation.unfold, head]
+  cases Seq.FriendlyOperation.unfold h (Seq.head ms) <;> rfl
 
 theorem FriendlyOperation.head_eq_head {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
@@ -829,11 +832,11 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
           apply Sorted.cons_nil
           grind
         apply h_preserves' at this
-        obtain ⟨T, hT⟩ := FriendlyOperation.destruct h_friend'
+        have hT := FriendlyOperation.destruct_apply_eq_unfold h_friend'
         have h1 := hT (.cons y_exp y_coef .nil)
         have h2 := hT (.cons y_exp y_coef y_tl)
         simp only [tail_cons, head_cons] at h1 h2
-        cases hT_head : T (some (y_exp, y_coef)) with
+        cases hT_head : h_friend'.unfold (some (y_exp, y_coef)) with
         | none =>
           simp [hT_head, ← hx_tl] at h2
         | some v =>
@@ -846,11 +849,11 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
         obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
         assumption
   apply h_preserves at this
-  obtain ⟨T, hT⟩ := FriendlyOperation.destruct h_friend
+  have hT := FriendlyOperation.destruct_apply_eq_unfold h_friend
   have h1 := hT (.cons x_exp x_coef x_tl')
   have h2 := hT (.cons x_exp x_coef x_tl)
   simp only [tail_cons, head_cons] at h1 h2
-  cases hT_head : T (some (x_exp, x_coef)) with
+  cases hT_head : h_friend.unfold (some (x_exp, x_coef)) with
   | none => simp [← h_eq, hT_head] at h2
   | some v =>
   obtain ⟨exp', coef', op'', h_friend''⟩ := v
