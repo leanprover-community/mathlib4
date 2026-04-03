@@ -58,11 +58,11 @@ noncomputable def topExteriorLinearEquiv (b : Module.Basis (Fin n) R M) : ⋀[R]
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   If `Mₘ ≃ Rₘ` for any maximal ideal `m` of `R`, then `M` is free. -/
 theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.Finite R M]
-    (h : IsStablyFree R M) (hlo : ∀ (m : Ideal R) [m.IsMaximal],
+    [IsStablyFree R M] (hlo : ∀ (m : Ideal R) [m.IsMaximal],
       LocalizedModule.AtPrime m M ≃ₗ[Localization.AtPrime m] Localization.AtPrime m) :
     Module.Free R M := by
-  have : Module.Projective R M := h.projective
-  obtain ⟨N, _, _, _, _, _⟩ := h
+  have : Module.Projective R M := IsStablyFree.projective R M
+  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.out R M
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
   have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simpa using (hlo 𝔪).finrank_eq
   let n := Module.finrank R N
