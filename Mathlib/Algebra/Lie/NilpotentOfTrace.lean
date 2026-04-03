@@ -177,10 +177,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
       apply_fun E.subtype using Subtype.val_injective
       simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
       exact (Finset.sum_congr rfl fun i _ => by rw [smul_def, mul_comm]).trans htr_sum
-    have := congr_arg f h_sum_E
-    simp only [map_sum, map_smul, smul_eq_mul, map_zero] at this
-    convert this using 1
-    exact Finset.sum_congr rfl fun i _ => by ring
+    have h := congr_arg f h_sum_E
+    simp only [map_sum, map_smul, smul_eq_mul, map_zero] at h
+    simpa [sq] using h
   have h_each_zero : ∀ i, f ⟨a i, ha i⟩ = 0 := fun i =>
     eq_zero_of_pow_eq_zero ((Finset.sum_eq_zero_iff_of_nonneg
       (fun j _ => sq_nonneg _)).mp h_sum_sq i (Finset.mem_univ _))
