@@ -78,11 +78,11 @@ def Hom.sum (f : G →g G') (g : H →g H') : G ⊕g H →g G' ⊕g H' where
   toFun := Sum.map f g
   map_rel' {u v} := by cases u <;> cases v <;> simp_all [f.map_rel, g.map_rel]
 
-lemma Hom.sum_comm_sumComm (f : G →g G') (g : H →g H') :
+lemma Hom.sum_comp_sumComm (f : G →g G') (g : H →g H') :
     comp (sum f g) Iso.sumComm.toHom = comp Iso.sumComm.toHom (sum g f) := by
   ext (v | w) <;> simp
 
-lemma Hom.sum_assoc_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') :
+lemma Hom.sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') :
     comp Iso.sumAssoc.toHom (sum (sum f g) h) = comp (sum f (sum g h)) Iso.sumAssoc.toHom := by
   ext ((v | w) | u) <;> simp
 
@@ -97,11 +97,11 @@ def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' whe
 lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
   (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
 
-lemma Embedding.sum_comm_sumComm (f : G ↪g G') (g : H ↪g H') :
+lemma Embedding.sum_comp_sumComm (f : G ↪g G') (g : H ↪g H') :
     comp Iso.sumComm.toEmbedding (sum f g) = comp (sum g f) Iso.sumComm.toEmbedding := by
   ext (v | w) <;> simp
 
-lemma Embedding.sum_assoc_sumAssoc (f : G ↪g G') (g : H ↪g H') (h : I ↪g I') :
+lemma Embedding.sum_comp_sumAssoc (f : G ↪g G') (g : H ↪g H') (h : I ↪g I') :
     comp Iso.sumAssoc.toEmbedding (sum (sum f g) h) =
       comp (sum f (sum g h)) Iso.sumAssoc.toEmbedding := by
   ext ((v | w) | u) <;> simp
@@ -119,11 +119,11 @@ lemma Iso.toHom_sumCongr (f : G ≃g G') (g : H ≃g H') :
 lemma Iso.toEmbedding_sumCongr (f : G ≃g G') (g : H ≃g H') :
   (Iso.sumCongr f g).toEmbedding = Embedding.sum f.toEmbedding g.toEmbedding := rfl
 
-lemma Iso.sumCongr_comm_sumComm (f : G ≃g G') (g : H ≃g H') :
+lemma Iso.sumCongr_comp_sumComm (f : G ≃g G') (g : H ≃g H') :
     comp sumComm (sumCongr f g) = comp (sumCongr g f) sumComm := by
   ext (v | w) <;> simp
 
-lemma Iso.sumCongr_assoc_sumAssoc (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
+lemma Iso.sumCongr_comp_sumAssoc (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
     comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
   ext ((v | w) | u) <;> simp
 
