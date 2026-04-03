@@ -310,6 +310,7 @@ scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
 
 section
 
+open scoped IsMulCommutative in
 /-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
 is constant. -/
 @[to_additive]
