@@ -28,14 +28,20 @@ namespace Module
   finite free module `N` over `R` such that `M ⊕ N` is free. -/
 @[stacks 0BC3 "(2)"]
 class IsStablyFree (R : Type u) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] : Prop where
-  out (R M) : ∃ (N : Type u) (_ : AddCommMonoid N) (_ : Module R N)
+  out' (R M) : ∃ (N : Type u) (_ : AddCommMonoid N) (_ : Module R N)
     (_ : Module.Finite R N) (_ : Free R N), Free R (M × N)
+
+theorem IsStablyFree.out (R : Type u) [Ring R] (M : Type*) [AddCommMonoid M] [Module R M]
+    [IsStablyFree R M] : ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N)
+    (_ : Module.Finite R N) (_ : Free R N), Free R (M × N) := by
+  obtain ⟨N, _, hPm, hPfin, hPfree, hfp⟩ := IsStablyFree.out' R M
+  exact ⟨N, addCommMonoidToAddCommGroup R, hPm, hPfin, hPfree, hfp⟩
 
 variable {R : Type u} [Semiring R] {M N : Type*} [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N]
 
 theorem IsStablyFree.equiv (e : M ≃ₗ[R] N) [IsStablyFree R M] : IsStablyFree R N := by
-  obtain ⟨P, hPc, hPm, hPfin, hPfree, _⟩ := IsStablyFree.out R M
+  obtain ⟨P, hPc, hPm, hPfin, hPfree, _⟩ := IsStablyFree.out' R M
   exact ⟨P, hPc, hPm, hPfin, hPfree, Free.of_equiv ((e.prodCongr (LinearEquiv.refl R P)))⟩
 
 theorem IsStablyFree.equiv_iff (e : M ≃ₗ[R] N) : IsStablyFree R M ↔ IsStablyFree R N :=
@@ -44,7 +50,7 @@ theorem IsStablyFree.equiv_iff (e : M ≃ₗ[R] N) : IsStablyFree R M ↔ IsStab
 variable (R M N)
 
 instance [Free R M] : IsStablyFree R M where
-  out := ⟨PUnit, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance⟩
+  out' := ⟨PUnit, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance⟩
 
 theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N)] :
     IsStablyFree R M := by
@@ -54,7 +60,7 @@ theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N
     Free.of_equiv eN, Free.of_equiv ((LinearEquiv.refl R M).prodCongr eN)⟩
 
 theorem IsStablyFree.projective [IsStablyFree R M] : Module.Projective R M := by
-  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.out R M
+  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.out' R M
   exact Module.Projective.of_split (LinearMap.inl R M N) (LinearMap.fst R M N)
     (LinearMap.ext fun _ ↦ rfl)
 
