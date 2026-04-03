@@ -119,7 +119,7 @@ theorem single_injective (a : α) : Function.Injective (single a : M → α →�
   rwa [single_eq_same, single_eq_same] at this
 
 theorem single_apply_eq_zero {a x : α} {b : M} : single a b x = 0 ↔ x = a → b = 0 := by
-  simp [single_eq_set_indicator]
+  classical simp [single_apply, eq_comm]
 
 theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
   simp [single_apply_eq_zero]
@@ -168,7 +168,7 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 
 @[simp]
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
-  simp [DFunLike.ext_iff, single_eq_set_indicator]
+  classical simp [DFunLike.ext_iff, single_apply]
 
 theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
   single_eq_zero.not
