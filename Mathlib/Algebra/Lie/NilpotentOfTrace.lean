@@ -5,17 +5,12 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
-public import Mathlib.Algebra.Lie.Nilpotent
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Trace-nilpotency criterion in gl(V)
