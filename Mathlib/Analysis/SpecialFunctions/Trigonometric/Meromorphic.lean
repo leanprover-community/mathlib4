@@ -36,4 +36,3 @@ theorem meromorphicAt_tan (z : ℂ) :
 theorem meromorphic_tan : Meromorphic tan := meromorphicAt_tan
 
 end Complex
-
