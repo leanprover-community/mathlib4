@@ -290,7 +290,7 @@ lemma Module.length_eq_finrank
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
 
-theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R] [Module A M]
+theorem Submodule.length_le_length_restrictScalar (A : Type*) [Ring A] [SMul A R] [Module A M]
     [IsScalarTower A R M] (p : Submodule R M) :
       Module.length R p ≤ Module.length A (p.restrictScalars A) := by
   rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
