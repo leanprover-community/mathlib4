@@ -55,7 +55,7 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinrat pairing.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinear pairing.
   * `LinearMap.eval_nondegenerate` says that `Dual.eval` is nondegenerate.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
@@ -797,7 +797,7 @@ theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRig
 theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
   ⟨id_separatingLeft, id_separatingRight⟩
 
-@[deprecated  (since := "2026-04-02")]
+@[deprecated (since := "2026-04-02")]
 alias dualPairing_nondegenerate := id_nondegenerate
 
 theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
