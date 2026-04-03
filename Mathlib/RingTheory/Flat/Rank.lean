@@ -78,8 +78,6 @@ omit [Module.Flat R S] in
 lemma Module.Free.bijective_algebraMap_of_finrank_eq_one [Nontrivial R] [Free R S]
     (h : finrank R S = 1) :
     Function.Bijective (algebraMap R S) := by
-  refine ⟨Module.rankAtStalk_pos_iff_algebraMap_injective.mp
-    (fun p ↦ by simp [Module.rankAtStalk_eq_finrank_of_free, h]), ?_⟩
   have : Free R (Module.End R S) := .of_equiv (dualTensorHomEquiv R S S)
   let f : S →ₐ[R] (S →ₗ[R] S) := Algebra.lmul R S
   have h1 : LinearMap.trace R S ∘ₗ f ∘ₗ Algebra.linearMap R S = LinearMap.id := by ext; simp [h]
