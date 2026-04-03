@@ -63,8 +63,10 @@ variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 @[ext]
-structure Language α where ofSet ::
-  /-- The set of all words in this language -/
+structure Language α where
+  /-- Construct a language from the set of words it accepts. -/
+  ofSet ::
+  /-- The set of all words in a language -/
   toSet : Set (List α)
 deriving Inhabited
 

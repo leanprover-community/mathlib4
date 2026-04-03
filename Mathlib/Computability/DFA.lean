@@ -214,7 +214,7 @@ theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval
   simp [eval]
 
 @[simp]
-theorem accepts_comap (f : α' → α) : (M.comap f).accepts = ⟨List.map f ⁻¹' M.accepts.toSet⟩ := by
+theorem toSet_accepts_comap (f : α' → α) : (M.comap f).accepts.toSet = List.map f ⁻¹' M.accepts.toSet := by
   ext x
   conv =>
     rhs
