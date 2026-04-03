@@ -42,15 +42,6 @@ variable {X V : Type*} {mX : MeasurableSpace X}
   [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 @[simp]
-theorem ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
-    MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  ext s; simp [VectorMeasure.ennrealToMeasure]
-
-@[simp]
-lemma preVariation_zero_eq_zero :
-    preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
-  ext s; simp [preVariation_apply]
-@[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
@@ -67,20 +58,11 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
   set Q' := Q.ofSubset (filter_subset MeasurableSet Q.parts) rfl with defQ'
   have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by simp [Q', Q]; grind
   calc
-    ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ := by
-      by_cases hbot : ⊥ ∈ P
-      · simp only [Finpartition.ofPairwiseDisjoint, Set.bot_eq_empty, Q]
-        rw [← erase_union_eq ⊥ P hbot, union_comm, sum_union_eq_right (by simp)]
-        simp
-      · have : P = Q.parts := by
-          ext p
-          simpa [Q, Finpartition.ofPairwiseDisjoint] using fun hp => ne_of_mem_of_not_mem hp hbot
-        simp_rw [this]
-    _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := by
-        refine (Finset.sum_subset (by simp [Q']) ?_).symm
-        simp_all [μ.not_measurable]
+    ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ :=
+      (Finpartition.sum_ofPairwiseDisjoint_eq_sum _ _ _ (by simp)).symm
+    _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := (Q.sum_ofSubset_eq_sum _ _ _ (by simp_all)).symm
     _ ≤ ∑ p ∈ (Q'.extendOfLE (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
-        sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
+      sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
     _ ≤ μ.variation s := by
       simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
         ennrealPreVariation_apply]

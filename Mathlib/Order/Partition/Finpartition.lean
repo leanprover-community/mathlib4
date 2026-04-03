@@ -41,6 +41,8 @@ We provide many ways to build finpartitions:
   by adding `b \ a` as a new part (if nonempty).
 * `Finpartition.restrict`: Restricts a finpartition of `a` to `b` where `b ≤ a` by intersecting
   each part with `b`.
+* `Finpartition.ofPairwiseDisjoint`: Builds a finpartition from a finset `parts` of pairwise
+  disjoint elements.
 * `Finpartition.combine`: Combines a family of partitions of pairwise disjoint elements into a
   partition of their sup.
 * `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
@@ -114,6 +116,12 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     supIndep := P.supIndep.subset subset
     sup_parts := sup_parts
     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
+
+lemma sum_ofSubset_eq_sum {a b : α} (P : Finpartition a) {parts : Finset α}
+    (subset : parts ⊆ P.parts) (sup_parts : parts.sup id = b)
+    {X : Type*} [AddCommMonoid X] (f : α → X) (hf : ∀ p ∈ P.parts, p ∉ parts → f p = 0) :
+    ∑ p ∈ (P.ofSubset subset sup_parts).parts, f p = ∑ p ∈ P.parts, f p :=
+  Finset.sum_subset subset hf
 
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
@@ -450,6 +458,20 @@ def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).Pairwis
     hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
   sup_parts := Finset.sup_erase_bot parts
   bot_notMem := Finset.notMem_erase _ _
+
+lemma sum_ofPairwiseDisjoint_eq_sum (parts : Finset α)
+    (hdisjoint : (parts : Set α).PairwiseDisjoint id)
+    {X : Type*} [AddCommMonoid X] (f : α → X) (hf : f ⊥ = 0) :
+    ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p := by
+  by_cases hbot : ⊥ ∈ parts
+  · simp only [Finpartition.ofPairwiseDisjoint]
+    rw [← erase_union_eq ⊥ parts hbot, union_comm , sum_union_eq_right]
+    · simp
+    grind
+  · have : (ofPairwiseDisjoint parts hdisjoint).parts = parts := by
+      ext p
+      simpa [Finpartition.ofPairwiseDisjoint] using fun hp => ne_of_mem_of_not_mem hp hbot
+    simp_rw [this]
 
 end DistribLattice
 
