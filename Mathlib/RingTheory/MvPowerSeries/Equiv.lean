@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Rename
-public import Mathlib.RingTheory.MvPowerSeries.Evaluation
-public import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-!
 # Equivalences between power series rings
