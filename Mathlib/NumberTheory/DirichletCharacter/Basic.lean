@@ -337,11 +337,9 @@ theorem conductor_dvd_of_mem_conductorSet {d : ℕ} [NeZero n] (hd : d ∈ χ.co
 
 /-- A divisor `d` of `n` belongs to the conductor set of `χ` if and only if the conductor of `χ`
 divides `d`. -/
-theorem mem_conductorSet_iff_conductor_dvd (hn : n ≠ 0) {d : ℕ} (hd : d ∣ n) :
-    d ∈ χ.conductorSet ↔ χ.conductor ∣ d := by
-  refine ⟨fun h ↦ conductor_dvd_of_mem_conductorSet χ hn h, fun h ↦ ?_⟩
-  have : NeZero n := ⟨hn⟩
-  exact χ.factorsThrough_conductor.mono χ h hd
+theorem mem_conductorSet_iff_conductor_dvd [NeZero n]{d : ℕ} (hd : d ∣ n) :
+    d ∈ χ.conductorSet ↔ χ.conductor ∣ d :=
+  ⟨conductor_dvd_of_mem_conductorSet χ, fun h ↦ χ.factorsThrough_conductor.mono χ h hd⟩
 
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
