@@ -215,9 +215,8 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      rcases (mem_orderedInsert r).mp bm with be | bm
-      · subst b'
-        exact (total_of r _ _).resolve_left h'
+      rcases (mem_orderedInsert r).mp bm with rfl | bm
+      · exact (total_of r _ _).resolve_left h'
       · exact rel_of_pairwise_cons h bm
 
 @[deprecated (since := "2025-10-11")]

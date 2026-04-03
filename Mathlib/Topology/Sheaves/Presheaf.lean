@@ -20,6 +20,7 @@ We define
 * Given `{X Y : TopCat.{w}}` and `f : X ⟶ Y`, we define
   `TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
   with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
+
 and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
@@ -141,6 +142,11 @@ theorem map_restrict
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
+
+@[simp]
+lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
+    x |_ U = x := by
+  simp [restrictOpen, restrict]
 
 open CategoryTheory.Limits
 
