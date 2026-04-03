@@ -60,7 +60,6 @@ noncomputable
 def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
   MvPowerSeries.rename (fun _ => i)
 
-@[simp]
 theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ => i) := rfl
 
 theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
@@ -82,7 +81,7 @@ theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.
 
 theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
     MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
-  const_coeff := by simp_all [constantCoeff]
+  const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
   coeff_zero d := Set.Finite.subset (Finite.of_fintype ↥d.support) fun s => by classical
     contrapose
     simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, mem_setOf_eq]
@@ -113,8 +112,9 @@ lemma MvPowerSeries.rename_comp_toMvPowerSeries :
     (rename (R := R) f).comp (PowerSeries.toMvPowerSeries a)
       = PowerSeries.toMvPowerSeries (f a) := by
   ext
-  simp [comp_def]
+  simp [toMvPowerSeries_apply, comp_def]
 
+@[simp]
 lemma MvPowerSeries.rename_toMvPowerSeries :
     (p.toMvPowerSeries a).rename f = p.toMvPowerSeries (f a) :=
   DFunLike.congr_fun (rename_comp_toMvPowerSeries ..) p
