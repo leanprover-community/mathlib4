@@ -391,7 +391,6 @@ def prodPiEquivSumPi {ι ι'} (π : ι → Type u) (π' : ι' → Type u) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i : ι ⊕ ι', i.elim π π' :=
   sumPiEquivProdPi (Sum.elim π π') |>.symm
 
-
 /-- The equivalence between a pi-type indexed by `i : ι` to products `β i × γ i`
 and a pi-type indexed by `α ⊕ α`. -/
 def piProdEquivSumPi (α : Type*) (β γ : α → Type u) :
