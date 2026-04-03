@@ -115,7 +115,6 @@ lemma MvPowerSeries.rename_comp_toMvPowerSeries :
   ext
   simp [comp_def]
 
-@[simp]
 lemma MvPowerSeries.rename_toMvPowerSeries :
     (p.toMvPowerSeries a).rename f = p.toMvPowerSeries (f a) :=
   DFunLike.congr_fun (rename_comp_toMvPowerSeries ..) p
