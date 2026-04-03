@@ -72,7 +72,7 @@ namespace PontryaginDual
 open ContinuousMonoidHom
 
 #adaptation_note /-- nightly-2026-03-31
-This `set_option` is necessary because of a compiler bug.
+Without this `set_option` we get a PANIC!
 -/
 set_option backward.inferInstanceAs.wrap.data false in
 instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
