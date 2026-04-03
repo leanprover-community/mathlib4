@@ -291,21 +291,29 @@ theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
   (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
 
+@[deprecated (since := "2026-04-04")] alias ciSup_subtype' := cbiSup_eq_ciSup_subtype
+
 theorem cbiInf_eq_ciInf_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     (hf : BddBelow (Set.range (fun i : Subtype p ↦ f i i.prop)))
     (hf' : ⨅ (i : Subtype p), f i i.prop ≤ sInf ∅) :
     ⨅ (i) (h), f i h = ⨅ x : Subtype p, f x x.property :=
   (ciInf_subtype (f := fun x => f x.val x.property) hf hf').symm
 
+@[deprecated (since := "2026-04-04")] alias ciInf_subtype' := cbiInf_eq_ciInf_subtype
+
 theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   ciSup_subtype hf hf'
 
+@[deprecated (since := "2026-04-04")] alias ciSup_subtype'' := ciSup_subtype_fun
+
 theorem ciInf_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddBelow (Set.range fun i : s ↦ f i)) (hf' : ⨅ i : s, f i ≤ sInf ∅) :
     ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
   ciInf_subtype hf hf'
+
+@[deprecated (since := "2026-04-04")] alias ciInf_subtype'' := ciInf_subtype_fun
 
 theorem csSup_image {s : Set β} {f : β → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
@@ -321,6 +329,8 @@ theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
   · convert h
     rw [← sSup_range, Subtype.range_coe]
+
+@[deprecated (since := "2026-04-04")] alias ciSup_image := cbiSup_id
 
 theorem cbiInf_id {s : Set α} (hs : BddBelow s) (h : sInf s ≤ sInf ∅) : ⨅ i ∈ s, i = sInf s := by
   rw [← csInf_image (Subtype.range_coe ▸ hs), Set.image_id']
