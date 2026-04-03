@@ -139,8 +139,8 @@ def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
   sSup_eq' := by simp [← sSup_eq]
 
 @[simp]
-lemma mem_removeBot_iff (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
-  x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
+    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 @[simp]
 lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
@@ -150,10 +150,8 @@ lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
 
 /-- There is a unique partition of `⊥`. -/
 instance : Unique (Partition (⊥ : α)) where
-  default := removeBot {⊥} (sSupIndep_singleton ⊥) sSup_singleton
-  uniq P := by
-    ext x
-    simp
+  default := removeBot (∅ : Set α) sSupIndep_empty sSup_empty
+  uniq P := by ext; simp
 
 lemma ne_bot_of_mem' (hxP : x ∈ P) : s ≠ ⊥ := by
   rintro rfl
@@ -168,33 +166,33 @@ variable [CompleteLattice α] {P Q : Partition s}
 /-- Partitions on `s` are ordered by refinement: `P ≤ Q` if every part of `P` is contained in a part
 of `Q`. -/
 instance : PartialOrder (Partition s) where
-  le P Q := ∀ x ∈ P, ∃ y ∈ Q, x ≤ y
+  le P Q := ∀ ⦃x⦄, x ∈ P → ∃ y ∈ Q, x ≤ y
   lt := _
-  le_refl P x hx := ⟨x,hx,rfl.le⟩
+  le_refl P x hx := ⟨x, hx, le_rfl⟩
   le_trans P Q R hPQ hQR x hxP := by
-    obtain ⟨y, hy, hxy⟩ := hPQ x hxP
-    obtain ⟨z, hz, hyz⟩ := hQR y hy
+    obtain ⟨y, hy, hxy⟩ := hPQ hxP
+    obtain ⟨z, hz, hyz⟩ := hQR hy
     exact ⟨z, hz, hxy.trans hyz⟩
   le_antisymm P Q hp hq := by
     refine Partition.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · obtain ⟨y, hy, hxy⟩ := hp x h
-      obtain ⟨x', hx', hyx'⟩ := hq y hy
+    · obtain ⟨y, hy, hxy⟩ := hp h
+      obtain ⟨x', hx', hyx'⟩ := hq hy
       obtain rfl := P.pairwiseDisjoint.eq_of_le h hx' (P.ne_bot_of_mem h)
         (hxy.trans hyx')
       rwa [hxy.antisymm hyx']
-    obtain ⟨y, hy, hxy⟩ := hq x h
-    obtain ⟨x', hx', hyx'⟩ := hp y hy
+    obtain ⟨y, hy, hxy⟩ := hq h
+    obtain ⟨x', hx', hyx'⟩ := hp hy
     obtain rfl := Q.pairwiseDisjoint.eq_of_le h hx' (Q.ne_bot_of_mem h)
       (hxy.trans hyx')
     rwa [hxy.antisymm hyx']
 
-lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := Iff.rfl
+lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := .rfl
 
-lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y := h x hx
+lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y := h hx
 
-lemma exists_unique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
+lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
     ∃! y ∈ Q, x ≤ y := by
-  obtain ⟨y, hy, hxy⟩ := h x hx
+  obtain ⟨y, hy, hxy⟩ := h hx
   refine ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ => Q.eq_of_not_disjoint hz hy ?_⟩
   have := P.ne_bot_of_mem hx
   contrapose! this
@@ -203,16 +201,15 @@ lemma exists_unique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
 /-- The top partition of `s` is the partition with the single part `s`. -/
 instance : OrderTop (Partition s) where
   top := removeBot {s} (sSupIndep_singleton s) sSup_singleton
-  le_top P x hxP := by
-    simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+  le_top P x hxP := by simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+
+lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup_singleton := rfl
 
 @[simp] lemma parts_top (hs : s ≠ ⊥) : ((⊤ : Partition s) : Set α) = {s} := by
-  change (removeBot {s} (sSupIndep_singleton s) sSup_singleton).parts = _
-  simpa
+  simpa [top_def]
 
 @[simp] lemma mem_top_iff {a : α} : a ∈ (⊤ : Partition s) ↔ a = s ∧ a ≠ ⊥ := by
-  change a ∈ removeBot {s} (sSupIndep_singleton s) sSup_singleton ↔ _
-  rw [mem_removeBot_iff, mem_singleton_iff]
+  rw [top_def, mem_removeBot, mem_singleton_iff]
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by
   simp
