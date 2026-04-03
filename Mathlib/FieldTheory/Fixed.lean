@@ -28,7 +28,7 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 ## Main Definitions
 
 - `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
-element of `G`, where `G` is a group that acts on `F`.
+  element of `G`, where `G` is a group that acts on `F`.
 
 -/
 

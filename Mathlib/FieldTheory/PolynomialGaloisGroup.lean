@@ -26,14 +26,14 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.galActionHom_injective`: `gal p` acting on the roots of `p` in `E` is faithful.
 - `Polynomial.Gal.restrictProd_injective`: `gal (p * q)` embeds as a subgroup of `gal p × gal q`.
 - `Polynomial.Gal.card_of_separable`: For a separable polynomial, its Galois group has cardinality
-equal to the dimension of its splitting field over `F`.
+  equal to the dimension of its splitting field over `F`.
 - `Polynomial.Gal.galActionHom_bijective_of_prime_degree`:
-An irreducible polynomial of prime degree with two non-real roots has full Galois group.
+  An irreducible polynomial of prime degree with two non-real roots has full Galois group.
 
 ## Other results
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
-equals the number of real roots plus the number of roots not fixed by complex conjugation
-(i.e. with some imaginary component).
+  equals the number of real roots plus the number of roots not fixed by complex conjugation
+  (i.e. with some imaginary component).
 
 -/
 
