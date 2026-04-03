@@ -125,7 +125,7 @@ instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
 instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
-  fintypeSetWalkLength G u v n
+  inferInstanceAs <| Fintype {p : G.Walk u v | p.length = n}
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
@@ -143,7 +143,7 @@ instance fintypeSetWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | 
     rw [← Finset.mem_coe, coe_finsetWalkLengthLT_eq]
 
 instance fintypeSubtypeWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length < n} :=
-  fintypeSetWalkLengthLT G u v n
+  inferInstanceAs <| Fintype {p : G.Walk u v | p.length < n}
 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
@@ -152,7 +152,7 @@ instance fintypeSetPathLength (u v : V) (n : ℕ) :
 
 instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length = n} :=
-  fintypeSetPathLength G u v n
+  inferInstanceAs <| Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n}
 
 instance fintypeSetPathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n} :=
@@ -161,7 +161,7 @@ instance fintypeSetPathLengthLT (u v : V) (n : ℕ) :
 
 instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length < n} :=
-  fintypeSetPathLengthLT G u v n
+  inferInstanceAs <| Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n}
 
 end LocallyFinite
 
