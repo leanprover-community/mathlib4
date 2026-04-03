@@ -103,8 +103,7 @@ abbrev LatinRectangle.row (A : LatinRectangle m n α) : m → n → α := Matrix
 
 /-- Construct a `LatinSquare` given that both the rows and columns are bijective -/
 @[reducible]
-def LatinSquare.fromOncePerColumn
-    (M : Matrix n n α)
+def LatinSquare.fromOncePerColumn (M : Matrix n n α)
     (card_eq : Fintype.card α = Fintype.card n)
     (row_bijective : ∀ i, Function.Bijective (M.row i))
     (col_bijective : ∀ j, Function.Bijective (M.col j)) : LatinSquare n α := {
@@ -134,8 +133,7 @@ section Equivalence
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
 @[reducible]
-def LatinRectangle.relabel
-    (A : LatinRectangle m n α)
+def LatinRectangle.relabel (A : LatinRectangle m n α)
     (f : m ≃ m')
     (g : n ≃ n')
     (h : α ≃ β) :
@@ -181,10 +179,7 @@ def LatinRectangle.EquivRelation (A : LatinRectangle m n α) (A' : LatinRectangl
 /-- Notation for two `LatinRectangle`s to be equivalent. -/
 infixl:25 " ≃ " => LatinRectangle.EquivRelation
 
-lemma LatinRectangle.equiv_relabel
-    (f : m ≃ m')
-    (g : n ≃ n')
-    (h : α ≃ β)
+lemma LatinRectangle.equiv_relabel (f : m ≃ m') (g : n ≃ n') (h : α ≃ β)
     (A : LatinRectangle m n α) : A ≃ (LatinRectangle.relabel A f g h) :=
   ⟨f, g, h, by rfl⟩
 
@@ -196,8 +191,7 @@ instance {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
   addGroupToCayleyTable (ZMod n)
 
 /-- For any positive natural number n, there exists an n × n Latin square. -/
-noncomputable instance n_nonempty
-    {n : Type*} [Fintype n]
+noncomputable instance n_nonempty {n : Type*} [Fintype n]
     [nezero_n : NeZero (Fintype.card n)]
     [h : Fact (Fintype.card n = Fintype.card α)] :
     Nonempty (LatinSquare n α) := by
@@ -230,8 +224,7 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
     Then, $\sum_i |B_i| = \sum_x |C_x|$.
     This is abstracted in PR #37190 and will be removed
 -/
-lemma sum_card_eq_sum_card_fiber_biUnion
-    {α : Type*} [DecidableEq α]
+lemma sum_card_eq_sum_card_fiber_biUnion {α : Type*} [DecidableEq α]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (B : ι → Finset α)
     (s : Finset ι) :
@@ -253,8 +246,7 @@ lemma sum_card_eq_sum_card_fiber_biUnion
 
     This is abstracted in PR #37190 and will be removed.
 -/
-lemma exists_larger_subset
-    {n : Type*} [DecidableEq n] [Fintype n]
+lemma exists_larger_subset {n : Type*} [DecidableEq n] [Fintype n]
     {α : Type*} [DecidableEq α]
     {B : n → Finset α}
     {s : Finset n}
@@ -271,8 +263,7 @@ lemma exists_larger_subset
   simp at hc'
   simpa [← sum_card_eq_sum_card_fiber_biUnion B s, h₁] using Nat.lt_of_le_of_lt hc' this
 
-lemma latin_rect_hall_property
-    {α : Type*} [DecidableEq α]
+lemma latin_rect_hall_property {α : Type*} [DecidableEq α]
     {n : Type*} [Fintype n] [DecidableEq n]
     {k : Type*} [Fintype k]
     {B : n → Finset α}
@@ -299,30 +290,22 @@ lemma latin_rect_hall_property
   lia
 
 /-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
-lemma col_card
-    {k : Type*} [Fintype k]
-    {n : Type*} [Fintype n]
-    (A : LatinRectangle k n α) :
+lemma col_card {k n : Type*} [Fintype k] [Fintype n] (A : LatinRectangle k n α) :
     ∀ j, (Finset.image (LatinRectangle.col A j) Finset.univ).card = Fintype.card k := by
   intro j
   have h_inj := A.col_injective
   exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
-lemma card_symbols_not_in
-    {k : Type*} [Fintype k]
-    {n : Type*} [Fintype n]
-    (A : LatinRectangle k n α) :
+lemma card_symbols_not_in {k n : Type*} [Fintype k] [Fintype n] (A : LatinRectangle k n α) :
     ∀ j, Finset.card (symbolsNotIn A j) = Fintype.card n - Fintype.card k := by
   simp [symbolsNotIn,
         Finset.card_sdiff,
         A.card_eq,
         col_card A]
 
-lemma row_entry_to_column_entry
-    {n : Type*} [Fintype n]
-    {k : Type*} [Fintype k]
-    (A : LatinRectangle k n α)
-    (x : α) :
+lemma row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintype n]
+      (A : LatinRectangle k n α)
+      (x : α) :
     ∃ f : k → n,
     ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
   have hrow := A.row_injective
@@ -340,9 +323,8 @@ lemma row_entry_to_column_entry
     This needs to be moved out of this file also. Probably to
     Mathlib.Data.Fintype.Card in the Function.Embedding.
 -/
-lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ
-    {k : Type*} [Fintype k]
-    {k' : Type*} [Fintype k'] [DecidableEq k']
+lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ {k k' : Type*} [Fintype k]
+    [Fintype k'] [DecidableEq k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃! x, x ∉ Finset.image ι Finset.univ := by
@@ -358,9 +340,8 @@ lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ
     exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
 
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
-theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one
-    {n : Type*} [Fintype n]
-    {k : Type*} [Fintype k] [Nonempty k]
+theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k < Fintype.card n := by lia)
     {k' : Type*} [Fintype k']
@@ -598,8 +579,7 @@ lemma IsSubrect.trans {m'' : Type*} [Fintype m'']
   rw [h₂, h₁]
 
 /-- Any two row relabeled `LatinRectangle`s are subrectangles of each other. -/
-lemma IsSubrect.refl
-    {n : Type*} [Fintype n]
+lemma IsSubrect.refl {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α}
     (f : m ≃ m')
@@ -621,9 +601,8 @@ lemma IsSubrect.refl
 /-- A Latin rectangle `LatinRectangle m n α` extends to a Latin square `LatinSquare n α`.
     In other words, there always exists a Latin square that contains a given Latin rectangle
     as a substructure. -/
-theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle
-    {n : Type*} [Fintype n]
-    {k : Type*} [Fintype k] [Nonempty k]
+theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by lia) :
     ∃ (A' : LatinRectangle n n α), IsSubrect A A' := by
