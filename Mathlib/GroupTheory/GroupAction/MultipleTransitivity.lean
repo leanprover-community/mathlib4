@@ -520,11 +520,19 @@ open Equiv MulAction
 
 variable {α : Type*}
 
+/-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
+other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
+theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
+    (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
+  obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
+<<<<<<< J-Simplicity
   classical
   intro x y
   have (x : Fin n ↪ α) : Cardinal.mk (range x) = n := by
@@ -589,6 +597,9 @@ theorem isMultiplyPretransitive (n : ℕ) :
   use Equiv.ofBijective f this
   ext i
   simp [f, x.injective.extend_apply]
+=======
+  exact fun x y => exists_smul_eq_embedding x y
+>>>>>>> master
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
