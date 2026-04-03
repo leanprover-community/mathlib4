@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 # Results for the rank of a finite flat algebra
 
-In this file we study a finite, flat `R`-algebra `S` and relate injectivity and bijective of `R → S`
-with the rank of `S` over `R`.
+In this file we study a finite, flat `R`-algebra `S` and relate injectivity and
+bijectivity of `R → S` with the rank of `S` over `R`.
 
 ## Main results
 
