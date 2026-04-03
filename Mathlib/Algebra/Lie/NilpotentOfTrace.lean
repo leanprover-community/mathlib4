@@ -68,7 +68,7 @@ lemma exists_lagrange_polynomial
   haveI : Fintype ι := Fintype.ofFinite ι
   let diffs := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
-  let v : K → K := fun x => x
+  let v : K → K := fun d => d
   have hinj : Set.InjOn v ↑diffs := fun _ _ _ _ h => h
   have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
   have hmem : ∀ i j, a i - a j ∈ diffs :=
@@ -88,11 +88,7 @@ lemma exists_lagrange_polynomial
 
 end Lagrange
 
-end NilpotentOfTrace
-
-open Classical in
-lemma LieAlgebra.ad_diag_basis {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-    {ι : Type*} [Fintype ι]
+lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
@@ -103,11 +99,13 @@ lemma LieAlgebra.ad_diag_basis {K V : Type*} [Field K] [AddCommGroup V] [Module 
   · subst hjk; simp [hs i, sub_smul]
   · simp [hjk]
 
+end NilpotentOfTrace
+
 variable {K : Type*} [Field K] [IsAlgClosed K] [CharZero K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 open LinearMap Module.End NilpotentOfTrace in
-/-- If `x ∈ M(A, B)` is trace-orthogonal to all of `M(A, B)`, then `x` is nilpotent. -/
+/-- If `x ∈ M A B` is trace-orthogonal to all of `M A B`, then `x` is nilpotent. -/
 theorem isNilpotent_of_trace_orthogonal_algClosed
     (A B : Submodule K (Module.End K V))
     (hAB : A ≤ B)
@@ -139,15 +137,12 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
   haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
     v.fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
-  let c : _ → K := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
+  let c := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y := Matrix.toLin v v (Matrix.diagonal c)
   have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
-  have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ =
-      (a i - a j) • v.end (i, j) := LieAlgebra.ad_diag_basis v a s hv_diag
-  have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ =
-      (c i - c j) • v.end (i, j) :=
-    LieAlgebra.ad_diag_basis v _ y hy_diag
+  have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (a i - a j) • v.end (i, j) := ad_diag_basis v a s hv_diag
+  have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v _ y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
   have had_y_eq : LieAlgebra.ad K (Module.End K V) y = Polynomial.aeval ad_s r := by
