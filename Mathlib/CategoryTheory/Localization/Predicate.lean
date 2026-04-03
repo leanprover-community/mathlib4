@@ -291,8 +291,6 @@ class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso (L W F F') : L ⋙ F' ≅ F
 
-@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
-
 variable {W}
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C` and
