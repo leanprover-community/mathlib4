@@ -127,6 +127,11 @@ theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   C.isIndepSet_colorClass c
 
+def Coloring.of_hom {V' : Type*} {G' : SimpleGraph V'} {α : Type*}
+    (C : G'.Coloring α) (f : G →g G') : G.Coloring α where
+  toFun v := C (f.toFun v)
+  map_rel' hadj := C.valid (f.map_adj hadj)
+
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
@@ -280,9 +285,9 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
   rw [← Fintype.card_fin n] at hn
   exact G.recolorOfCardLE hn hc.some
 
-theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n : ℕ}
-    (h : G'.Colorable n) : G.Colorable n :=
-  ⟨(h.toColoring (by simp)).comp f⟩
+theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ}
+    (h : G'.Colorable n) (f : G →g G') : G.Colorable n :=
+  ⟨h.some.of_hom f⟩
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
@@ -402,9 +407,12 @@ theorem chromaticNumber_mono (G' : SimpleGraph V)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 
-theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'}
-    (f : G →g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ => Colorable.of_hom f
+theorem Hom.chromaticNumber_le {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') :
+    G.chromaticNumber ≤ G'.chromaticNumber :=
+  chromaticNumber_le_of_forall_imp fun _ hc => hc.of_hom f
+
+@[deprecated Hom.chromaticNumber_le (since := "2026-04-03")]
+alias chromaticNumber_mono_of_hom := Hom.chromaticNumber_le
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -473,7 +481,7 @@ theorem chromaticNumber_eq_card_iff [Fintype V] :
 
 theorem chromaticNumber_le_card [Fintype V] : G.chromaticNumber ≤ Fintype.card V := by
   rw [← chromaticNumber_top]
-  exact chromaticNumber_mono_of_hom G.selfColoring
+  exact G.selfColoring.chromaticNumber_le
 
 theorem two_le_chromaticNumber_of_adj {u v : V} (hadj : G.Adj u v) : 2 ≤ G.chromaticNumber := by
   refine le_of_not_gt fun h ↦ ?_
@@ -606,17 +614,7 @@ theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free 
   contrapose! nhc with hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
 
-/-! ### Maps -/
-
-def Hom.coloring (f : G →g H) {α} (C : H.Coloring α) : G.Coloring α where
-  toFun v := C (f.toFun v)
-  map_rel' hadj := C.valid (f.map_adj hadj)
-
-lemma Hom.colorable (f : G →g H) {n : ℕ} (hc : H.Colorable n) : G.Colorable n :=
-  ⟨f.coloring hc.some⟩
-
-lemma Hom.chromaticNumber_le (f : G →g H) : G.chromaticNumber ≤ H.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ ↦ f.colorable
+/-! ### Isomorphisms -/
 
 lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
   le_antisymm f.toHom.chromaticNumber_le f.symm.toHom.chromaticNumber_le
