@@ -52,20 +52,24 @@ variable (R) in
 @[ext]
 structure FormalGroup where
   /-- The underlying power series $F(X, Y)$ in two variables. -/
-  toFun : MvPowerSeries (Fin 2) R
+  toPowerSeries : MvPowerSeries (Fin 2) R
   /-- The constant coefficient of the formal group law is zero. -/
-  zero_constantCoeff : constantCoeff toFun = 0
+  zero_constantCoeff : toPowerSeries.constantCoeff = 0
   /-- The coefficient of $X$ in $F(X, Y)$ is 1. -/
-  lin_coeff_X : coeff (single 0 1) toFun = 1
+  lin_coeff_X : toPowerSeries.coeff (single 0 1) = 1
   /-- The coefficient of $Y$ in $F(X, Y)$ is 1. -/
-  lin_coeff_Y : coeff (single 1 1) toFun = 1
+  lin_coeff_Y : toPowerSeries.coeff (single 1 1) = 1
   /-- Associativity condition: $F(F(X, Y), Z) = F(X, F(Y, Z))$. -/
-  assoc : subst ![subst ![Y₀, Y₁] toFun, Y₂] toFun
-    = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
+  assoc : toPowerSeries.subst ![toPowerSeries.subst ![Y₀, Y₁], Y₂]
+    = toPowerSeries.subst ![Y₀, toPowerSeries.subst ![Y₁, Y₂]] (S := R)
+
+/-- The natural inclusion from formal group law into formal power series. -/
+instance FormalGroup.coeToPowerSeries : Coe (FormalGroup R) (MvPowerSeries (Fin 2) R) :=
+  ⟨toPowerSeries⟩
 
 /-- Given a formal group `F`, `F.IsComm` is a proposition that $F(X,Y) = F(Y,X)$. -/
 class FormalGroup.IsComm (F : FormalGroup R) : Prop where
-  comm : F.toFun = F.toFun.subst ![X₁, X₀]
+  comm : F = (F : MvPowerSeries (Fin 2) R).subst ![X₁, X₀]
 
 section Lemma
 
@@ -74,18 +78,14 @@ namespace MvPowerSeries
 variable {F : MvPowerSeries (Fin 2) R}
 
 lemma HasSubst.cons_subst_zero_left (hF : constantCoeff F = 0) :
-    HasSubst (![subst ![Y₀, Y₁] F, Y₂]) (S := R) := by
-  refine hasSubst_of_constantCoeff_zero ?_
-  intro s; fin_cases s
-  · simpa using constantCoeff_subst_eq_zero .X_X (by simp) hF
-  · simp
+    HasSubst (![subst ![Y₀, Y₁] F, Y₂]) (S := R) :=
+  hasSubst_of_constantCoeff_zero fun s => by
+    fin_cases s <;> simp_all [constantCoeff_subst_eq_zero .X_X]
 
 lemma HasSubst.cons_subst_zero_right (hF : constantCoeff F = 0) :
-    HasSubst ![Y₀, subst ![Y₁, Y₂] F] (S := R) := by
-  refine hasSubst_of_constantCoeff_zero ?_
-  intro s; fin_cases s
-  · simp
-  · simpa using constantCoeff_subst_eq_zero .X_X (by simp) hF
+    HasSubst ![Y₀, subst ![Y₁, Y₂] F] (S := R) :=
+  hasSubst_of_constantCoeff_zero fun s => by
+    fin_cases s <;> simp_all [constantCoeff_subst_eq_zero .X_X]
 
 end MvPowerSeries
 
@@ -101,13 +101,13 @@ set_option linter.unusedVariables false in
 def Point (F : FormalGroup R) (σ : Type) := MvPowerSeries σ R
 
 instance : Add (F.Point σ) where
-  add x y := subst ![x, y] F.toFun
+  add x y := (F : MvPowerSeries (Fin 2) R).subst ![x, y]
 
 /- TODO : Zero, SMul, Inv instance. -/
 
 /-- Additive formal group law `Gₐ(X,Y) = X + Y`. -/
 def 𝔾ₐ : FormalGroup R where
-  toFun := X₀ + X₁
+  toPowerSeries := X₀ + X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by simp [coeff_index_single_X]
   lin_coeff_Y := by simp [coeff_index_single_X]
@@ -118,14 +118,14 @@ def 𝔾ₐ : FormalGroup R where
     simp [subst_add .X_X, subst_X .X_X, add_assoc]
 
 @[simp]
-lemma 𝔾ₐ_apply : 𝔾ₐ.toFun = X₀ + X₁ := rfl
+lemma 𝔾ₐ_apply : 𝔾ₐ.toPowerSeries = X₀ + X₁ := rfl
 
 instance : (𝔾ₐ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_X .X_X, add_comm]
 
 /-- Multiplicative formal group law `Gₘ(X,Y) = X + Y + XY`. -/
 def 𝔾ₘ : FormalGroup R where
-  toFun := X₀ + X₁ + X₀ * X₁
+  toPowerSeries := X₀ + X₁ + X₀ * X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by
     simp [X, monomial_mul_monomial, coeff_monomial, single_left_inj (one_ne_zero : (1 : ℕ) ≠ 0)]
@@ -141,7 +141,7 @@ def 𝔾ₘ : FormalGroup R where
     ring
 
 @[simp]
-lemma 𝔾ₘ_apply : 𝔾ₘ.toFun = X₀ + X₁ + X₀ * X₁ := rfl
+lemma 𝔾ₘ_apply : 𝔾ₘ.toPowerSeries = X₀ + X₁ + X₀ * X₁ := rfl
 
 instance : (𝔾ₘ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_mul .X_X, subst_X .X_X, add_comm, mul_comm]
@@ -151,7 +151,7 @@ omit [Algebra R S] in
 formal group law formal group law over `S`. This is constructed by applying `f` to all coefficients
 of the underlying power series. -/
 def map (f : R →+* S) : FormalGroup S where
-  toFun := F.toFun.map f
+  toPowerSeries := (F : MvPowerSeries (Fin 2) R).map f
   zero_constantCoeff := by simp [constantCoeff_map, F.zero_constantCoeff, map_zero]
   lin_coeff_X := by simp [F.lin_coeff_X]
   lin_coeff_Y := by simp [F.lin_coeff_Y]
@@ -163,7 +163,6 @@ def map (f : R →+* S) : FormalGroup S where
       ← map_subst (HasSubst.cons_subst_zero_right F.zero_constantCoeff)]
 
 omit [Algebra R S] in
-@[simp]
-lemma map_apply (f : R →+* S) : (F.map f).toFun = F.toFun.map f := rfl
+@[simp] lemma map_apply (f : R →+* S) : (F.map f) = (F : MvPowerSeries (Fin 2) R).map f := rfl
 
 end FormalGroup
