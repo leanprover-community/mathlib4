@@ -736,6 +736,9 @@ end Sub
 section Inv
 
 @[simp]
+theorem inv_mk {r : ℝ} (hr : 0 ≤ r) : (NNReal.mk r hr)⁻¹  = .mk (r⁻¹) (inv_nonneg.2 hr) := rfl
+
+@[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
   rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
