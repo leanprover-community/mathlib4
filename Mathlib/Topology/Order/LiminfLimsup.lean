@@ -221,7 +221,7 @@ theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
   ClusterPt.limsSup (α := αᵒᵈ) hc hb
 
 /-- Every cluster point `x` of a filter `f` is less than or equal to `f.limsSup`. -/
-theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
+theorem ClusterPt.le_limsSup {f : Filter α} {x : α} (hx : ClusterPt x f)
     (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
     x ≤ f.limsSup := by
   simp only [ClusterPt] at hx
@@ -229,9 +229,8 @@ theorem ClusterPt.le_limsSup {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt 
   refine this ▸ limsSup_le_limsSup_of_le inf_le_right ?_ hb
   exact (IsBounded.mono inf_le_left (isBounded_ge_nhds x)).isCobounded_le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every cluster point `x` of a filter `f` is greater than or equal to `f.limsInf`. -/
-theorem ClusterPt.limsInf_le {f : Filter α} [NeBot f] {x : α} (hx : ClusterPt x f)
+theorem ClusterPt.limsInf_le {f : Filter α} {x : α} (hx : ClusterPt x f)
     (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
     f.limsInf ≤ x :=
   hx.le_limsSup (α := αᵒᵈ)
@@ -267,14 +266,14 @@ theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
 
 /-- Every cluster point `x` of a function `u` along a filter `f` is less than or equal to
 `limsup u f`. -/
-theorem MapClusterPt.le_limsup {u : β → α} {f : Filter β} [NeBot f]
+theorem MapClusterPt.le_limsup {u : β → α} {f : Filter β}
     {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     x ≤ f.limsup u :=
   hx.le_limsSup
 
 /-- Every cluster point `x` of a function `u` along a filter `f` is greater than or equal to
 `liminf u f`. -/
-theorem MapClusterPt.liminf_le {u : β → α} {f : Filter β} [NeBot f]
+theorem MapClusterPt.liminf_le {u : β → α} {f : Filter β}
     {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     f.liminf u ≤ x :=
   hx.limsInf_le
