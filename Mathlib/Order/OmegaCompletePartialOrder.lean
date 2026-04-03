@@ -300,9 +300,6 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
   · rw [ωSup_le_iff]
     apply h.1
 
-lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c₁ = ωSup c₂ :=
-  congr_arg _ <| DFunLike.ext _ _ hc
-
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
 @[implicit_reducible]
@@ -572,10 +569,12 @@ lemma ωScottContinuous_elim
     simp only [Chain.ext_iff, coe_map, OrderHom.coe_mk, funext_iff, Function.comp_apply] at hc'
     cases c' using sum_cases
     · simp only [ωSup_inl, elim_inl, hf.map_ωSup₂]
-      apply ωSup_congr fun _ ↦ ?_
+      congr 1
+      ext n
       simp [hc']
     · simp only [ωSup_inr, elim_inr, hg.map_ωSup₂]
-      apply ωSup_congr fun _ ↦ ?_
+      congr 1
+      ext n
       simp [hc']
 
 @[fun_prop]
