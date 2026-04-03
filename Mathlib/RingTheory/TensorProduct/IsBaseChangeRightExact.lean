@@ -60,23 +60,3 @@ lemma IsBaseChange.of_right_exact (comm₁ : h₂.comp f = (f'.restrictScalars R
     simpa using congr(s • ($comm₂ m)).symm
   · exact lTensor_exact S exact₁ surj₁
   · exact LinearMap.lTensor_surjective S surj₁
-
-lemma IsBaseChange.of_equiv_left (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
-    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
-    (isb1 : IsBaseChange S h₁) : IsBaseChange S h₂ :=
-  IsBaseChange.of_right_exact S (f := (0 : Unit →ₗ[R] M₁)) (f' := (0 : Unit →ₗ[S] N₁))
-    (g := f) (g' := f') 0 h₁ h₂ (by simp) comm1 (show Function.Bijective _ from by simp) isb1
-      (fun y ↦ (by simpa using eq_comm)) f.bijective.2 (fun y ↦ (by simpa using eq_comm))
-        f'.bijective.2
-
-lemma IsBaseChange.of_equiv_right (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
-    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
-    (isb2 : IsBaseChange S h₂) : IsBaseChange S h₁ := by
-  refine IsBaseChange.of_equiv_left S h₂ h₁ f.symm f'.symm (LinearMap.ext fun y ↦ ?_) isb2
-  obtain ⟨y, rfl⟩ := f.surjective y
-  exact f'.injective (by simpa using congr($comm1 y).symm)
-
-lemma IsBaseChange.comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
-    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
-    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) :=
-  IsBaseChange.of_equiv_right S (f.comp e.toLinearMap) f e 1 (LinearMap.ext fun y ↦ by simp) isb
