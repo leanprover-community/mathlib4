@@ -15,9 +15,15 @@ This file defines the intersection and union of graphs.
 
 ## Main definitions
 
-- `Graph.iInter` : the intersection of a nonempty family of pairwise compatible graphs
-- `Graph.sInter` : the intersection of a nonempty set of pairwise compatible graphs
+- `Graph.iInter` : the intersection of a nonempty family of graphs
+- `Graph.sInter` : the intersection of a nonempty set of graphs
 - `Graph.inter` : the intersection of two graphs
+
+## Implementation notes
+
+Intersections are defined here as the maximal mutual subgraph of the given graphs.
+This has the effect of, when taking the intersection of non-compatible graphs,
+**any non-compatible edges are removed**.
 
 -/
 
@@ -32,7 +38,7 @@ namespace Graph
 section iInter
 
 /-- The intersection of a nonempty family of pairwise compatible graphs.
-Remove any disagreeing edges. -/
+Remove any non-compatible edges. -/
 @[simps (attr := grind =)]
 protected def iInter [Nonempty ι] (G : ι → Graph α β) : Graph α β where
   vertexSet := ⋂ i, V(G i)
@@ -63,7 +69,8 @@ end iInter
 
 section sInter
 
-/-- The intersection of a nonempty set of pairwise compatible graphs. -/
+/-- The intersection of a nonempty set of pairwise compatible graphs.
+Remove any non-compatible edges. -/
 @[simps! (attr := grind =)]
 protected def sInter (s : Set (Graph α β)) (hne : s.Nonempty) : Graph α β :=
   @Graph.iInter _ _ _ hne.to_subtype (fun G : s ↦ G.1)
@@ -82,8 +89,7 @@ end sInter
 
 section inter
 
-/-- The intersection of two graphs `G` and `H`. There seems to be no good way to define the junk
-values so that this has the right edge and vertex set, so the edges are precisely those on which `G`
+/-- The intersection of two graphs `G` and `H`. The edges are precisely those on which `G`
 and `H` agree, and the edge set is a subset of `E(G) ∩ E(H)`, with equality if `G` and `H` are
 compatible. -/
 protected def inter (G H : Graph α β) : Graph α β where
