@@ -162,11 +162,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
       exact h.trans (dif_pos (ha i))
     change (aeval s g) (v i) = y (v i)
     rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg, hy_diag i]
-  have hny_comm : Commute n y :=
-    commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
+  have hny_comm : Commute n y := commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K V (n * y) = 0 :=
-    (LinearMap.isNilpotent_trace_of_isNilpotent
-      (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
+    (LinearMap.isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
   have htr_sy : trace K V (s * y) = ∑ i, a i * c i := by
     have : s * y = Matrix.toLin v v (Matrix.diagonal (fun i => a i * c i)) :=
       v.ext fun i => by
