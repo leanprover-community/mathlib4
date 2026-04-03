@@ -1320,7 +1320,7 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
 namespace FiniteDimensional
 variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
 
-variable (ι v) in
+variable (ι 𝕜 v) in
 /-- In an inner product space with dimension 1, a set `{v}` is an orthonormal basis for
 `‖v‖ = 1`. -/
 def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
@@ -1328,21 +1328,22 @@ def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
 
 @[simp]
 theorem orthonormalBasisSingleton_apply (i : ι) :
-    FiniteDimensional.orthonormalBasisSingleton ι h v hv i = v := by
+    FiniteDimensional.orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
   simp [orthonormalBasisSingleton]
 
 @[simp]
-theorem toBasis_orthonormalBasisSingleton : (orthonormalBasisSingleton ι h v hv).toBasis =
+theorem toBasis_orthonormalBasisSingleton : (orthonormalBasisSingleton ι 𝕜 h v hv).toBasis =
     basisSingleton ι h v (fun h ↦ by simp [h] at hv) := by
   simp [orthonormalBasisSingleton]
 
 @[simp]
 theorem orthonormalBasisSingleton_repr_apply (w : E) :
-    (orthonormalBasisSingleton ι h v hv).repr w = WithLp.toLp 2 (Pi.single default ⟪v, w⟫) := by
+    (orthonormalBasisSingleton ι 𝕜 h v hv).repr w = WithLp.toLp 2 (Pi.single default ⟪v, w⟫) := by
   ext
   simp [OrthonormalBasis.repr_apply_apply, Pi.single_apply, Unique.eq_default]
 
-theorem range_orthonormalBasisSingleton : Set.range (orthonormalBasisSingleton ι h v hv) = {v} := by
+theorem range_orthonormalBasisSingleton :
+    Set.range (orthonormalBasisSingleton ι 𝕜 h v hv) = {v} := by
   simp
 
 end FiniteDimensional
