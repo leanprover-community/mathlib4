@@ -99,6 +99,19 @@ end Lagrange
 
 end NilpotentOfTrace
 
+open Classical in
+lemma LieAlgebra.ad_diag_basis {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+    {ι : Type*} [Fintype ι]
+    (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
+    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
+    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
+  apply b.ext; intro k
+  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
+  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
+  by_cases hjk : j = k
+  · subst hjk; simp [hs i, sub_smul]
+  · simp [hjk]
+
 variable {K : Type*} [Field K] [IsAlgClosed K] [CharZero K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
@@ -21,7 +20,6 @@ Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 * `LieAlgebra.commute_ad_of_commute`: commuting elements have commuting adjoints.
 * `LieAlgebra.ad_nilpotent_of_nilpotent`: the adjoint of a nilpotent element is nilpotent.
 * `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
-* `LieAlgebra.ad_diag_basis`: `ad(s)` acts on matrix units with eigenvalue `a i - a j`.
 -/
 
 @[expose] public section
@@ -82,22 +80,3 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.
   exact hl.sub_of_commute (LinearMap.commute_mulLeft_right a a) hr
 
 end Field
-
-section DiagBasis
-
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-
-open Classical in
-/-- `ad(s)` acts on the matrix unit `b.end (i, j)` with eigenvalue `a i - a j`. -/
-theorem LieAlgebra.ad_diag_basis {ι : Type*} [Fintype ι]
-    (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
-    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
-    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
-  apply b.ext; intro k
-  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
-  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
-  by_cases hjk : j = k
-  · subst hjk; simp [hs i, sub_smul]
-  · simp [hjk]
-
-end DiagBasis
