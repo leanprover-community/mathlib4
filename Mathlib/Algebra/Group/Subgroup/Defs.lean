@@ -657,26 +657,12 @@ variable (H : Subgroup G)
 
 section Normalizer
 
-/-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/
+/-- The `normalizer` of `S` is the subgroup of `G` whose elements satisfy `g * S * g⁻¹ = S`.
+When `S` is a subgroup, this is the largest subgroup of `G` inside which `S` is normal. -/
 @[to_additive
-/-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/]
-def normalizer : Subgroup G where
-  carrier := { g : G | ∀ n, n ∈ H ↔ g * n * g⁻¹ ∈ H }
-  one_mem' := by simp
-  mul_mem' {a b} (ha : ∀ n, n ∈ H ↔ a * n * a⁻¹ ∈ H) (hb : ∀ n, n ∈ H ↔ b * n * b⁻¹ ∈ H) n := by
-    rw [hb, ha]
-    simp only [mul_assoc, mul_inv_rev]
-  inv_mem' {a} (ha : ∀ n, n ∈ H ↔ a * n * a⁻¹ ∈ H) n := by
-    rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
-    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-
--- variant for sets.
--- TODO should this replace `normalizer`?
-/-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy `g*S*g⁻¹=S` -/
-@[to_additive
-      /-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy
-      `g+S-g=S`. -/]
-def setNormalizer (S : Set G) : Subgroup G where
+/-- The `normalizer` of `S` is the subgroup of `G` whose elements satisfy `g + S - g = S`.
+When `S` is a subgroup, this is the largest subgroup of `G` inside which `S` is normal. -/]
+def normalizer (S : Set G) : Subgroup G where
   carrier := { g : G | ∀ n, n ∈ S ↔ g * n * g⁻¹ ∈ S }
   one_mem' := by simp
   mul_mem' {a b} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) (hb : ∀ n, n ∈ S ↔ b * n * b⁻¹ ∈ S) n := by
@@ -686,24 +672,27 @@ def setNormalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
+@[deprecated (since := "2026-03-19")] alias setNormalizer := normalizer
+
 variable {H}
 
 @[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+theorem mem_normalizer_iff {g : G} : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
   Iff.rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
+theorem mem_normalizer_iff'' {g : G} : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
   rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
-  ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
-    rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+theorem mem_normalizer_iff' {g : G} : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+  ⟨fun h n ↦ by rw [← SetLike.mem_coe, ← SetLike.mem_coe, h, mul_assoc, mul_inv_cancel_right],
+    fun h n ↦ by rw [SetLike.mem_coe, SetLike.mem_coe, mul_assoc, ← h, inv_mul_cancel_right]⟩
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
-  rw [H.mul_mem_cancel_right (H.inv_mem xH), H.mul_mem_cancel_left xH]
+  rw [SetLike.mem_coe, SetLike.mem_coe, H.mul_mem_cancel_right <| H.inv_mem xH,
+    H.mul_mem_cancel_left xH]
 
 end Normalizer
 
@@ -713,10 +702,10 @@ instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
-@[to_additive]
+@[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a := by
-  simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
+    a * b = b * a :=
+  setLike_mul_comm ha hb
 
 end Subgroup
 

@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Lemma
+import Mathlib.Init
 
 set_option linter.docPrime true
 

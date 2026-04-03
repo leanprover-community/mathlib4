@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Constructor
 
 structure Foo where
