@@ -65,7 +65,7 @@ lemma exists_polynomial_eval_sub
         algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
   classical
   have : Fintype ι := Fintype.ofFinite ι
-  let diffs := insert 0 (Finset.univ.image (fun p : ι × ι => a p.1 - a p.2))
+  let diffs := insert 0 (Finset.univ.image fun (i, j) => a i - a j)
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
   let v : K → K := fun d => d
   have hinj : Set.InjOn v diffs := fun _ _ _ _ h => h
