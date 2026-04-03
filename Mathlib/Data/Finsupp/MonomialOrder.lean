@@ -82,7 +82,7 @@ namespace MonomialOrder
 variable {σ : Type*} (m : MonomialOrder σ)
 
 /-- A `WithBot m.syn` version of `m.toSyn`. -/
-def toWithBotSyn : WithBot (σ →₀ ℕ) ≃+ WithBot m.syn := m.toSyn.withBotCongr
+noncomputable def toWithBotSyn : WithBot (σ →₀ ℕ) ≃+ WithBot m.syn := m.toSyn.withBotCongr
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by

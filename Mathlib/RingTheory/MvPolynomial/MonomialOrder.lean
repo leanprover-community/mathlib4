@@ -837,7 +837,7 @@ variable (f g : MvPolynomial σ R)
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
 `0` has degree `⊥`, which is not equal to `0`. -/
-def withBotDegree : WithBot (σ →₀ ℕ) :=
+noncomputable def withBotDegree : WithBot (σ →₀ ℕ) :=
   f.support.image m.toSyn |>.max.map m.toSyn.symm
 
 lemma withBotDegree_eq [Decidable (f = 0)] :
@@ -889,12 +889,12 @@ variable {f g} in
 lemma withBotDegree_mul_of_left_mem_nonZeroDivisors (hf : m.leadingCoeff f ∈ nonZeroDivisors _) :
     m.withBotDegree (f * g) = m.withBotDegree f + m.withBotDegree g := by
   classical
-  wlog! +distrib h0 : f ≠ 0 ∧ g ≠ 0
+  by_cases! h0 : f = 0 ∨ g = 0
   · rcases h0 with h0 | h0 <;> simp [h0]
-  have : f * g ≠ 0 := not_imp_not.mpr
-    ((mem_nonZeroDivisors_iff.mp (mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors hf)).1 _)
-    h0.2
-  simp [m.withBotDegree_eq, h0, m.degree_mul_of_left_mem_nonZeroDivisors hf, this]
+  suffices f * g ≠ 0 by simp [withBotDegree_eq, m.degree_mul_of_left_mem_nonZeroDivisors hf, *]
+  apply mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors at hf
+  rw [mem_nonZeroDivisors_iff_left] at hf
+  tauto
 
 variable {f g} in
 lemma withBotDegree_mul_of_right_mem_nonZeroDivisors (hf : m.leadingCoeff g ∈ nonZeroDivisors _) :
@@ -904,42 +904,41 @@ lemma withBotDegree_mul_of_right_mem_nonZeroDivisors (hf : m.leadingCoeff g ∈ 
 @[simp]
 lemma withBotDegree_mul [NoZeroDivisors R] :
     m.withBotDegree (f * g) = m.withBotDegree f + m.withBotDegree g := by
-  wlog! trivial : Nontrivial R
-  · simp [Subsingleton.eq_zero (α := MvPolynomial σ R)]
-  wlog! hf : f ≠ 0
+  nontriviality R using Subsingleton.eq_zero (α := MvPolynomial σ R)
+  by_cases! hf : f = 0
   · simp [hf]
   rw [← m.leadingCoeff_ne_zero_iff] at hf
   exact m.withBotDegree_mul_of_left_mem_nonZeroDivisors (mem_nonZeroDivisors_iff_ne_zero.mpr hf)
 
 lemma withBotDegree_mul_le :
     m.withBotDegree (f * g) ≼'[m] m.withBotDegree f + m.withBotDegree g := by
-  wlog! +distrib h0 : f * g ≠ 0
+  by_cases! h0 : f * g = 0
   · simp [h0]
   simp only [m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0, toWithBotSyn_apply_coe,
-    m.withBotDegree_eq_coe_degree_iff f |>.mpr (by aesop),
-    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by aesop), ← WithBot.coe_add, WithBot.coe_le_coe,
+    m.withBotDegree_eq_coe_degree_iff f |>.mpr (by grind),
+    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by grind), ← WithBot.coe_add, WithBot.coe_le_coe,
     m.degree_mul_le]
 
-lemma withBotDegree_mul_le' :
+lemma toWithBotSyn_withBotDegree_mul_le :
     m.toWithBotSyn (m.withBotDegree (f * g)) ≤
       m.toWithBotSyn (m.withBotDegree f) + m.toWithBotSyn (m.withBotDegree g) := by
-  wlog! +distrib h0 : f * g ≠ 0
+  by_cases h0 : f * g = 0
   · simp [h0]
-  simp [m.withBotDegree_eq_coe_degree_iff f |>.mpr (by aesop),
-    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by aesop),
+  simp [m.withBotDegree_eq_coe_degree_iff f |>.mpr (by grind),
+    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by grind),
     m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0, ← WithBot.coe_add,
-    m.degree_mul_le']
+    m.toSyn_degree_mul_le]
 
 lemma withBotDegree_le_withBotDegree_iff :
     m.withBotDegree f ≼'[m] m.withBotDegree g ↔
       (m.degree f ≼[m] m.degree g ∧ (g = 0 → f = 0)) := by
   classical
-  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
-  · rcases h with h | h
-    · simp [h, m.toWithBotSyn_apply]
-    · simp_rw [m.toWithBotSyn_apply]
-      aesop
-  simp [m.withBotDegree_eq, h, m.toWithBotSyn_apply]
+  by_cases! +distrib h : f ≠ 0 ∧ g ≠ 0
+  · simp [m.withBotDegree_eq, h, m.toWithBotSyn_apply]
+  rcases h with h | h
+  · simp [h, m.toWithBotSyn_apply]
+  · simp_rw [m.toWithBotSyn_apply]
+    aesop
 
 variable {g} in
 lemma withBotDegree_le_withBotDegree_iff_of_ne_zero (hg : g ≠ 0) :
@@ -964,34 +963,33 @@ lemma withBotDegree_lt_withBotDegree_iff_of_ne_zero (hf : f ≠ 0) :
 lemma withBotDegree_eq_withBotDegree_iff :
     m.withBotDegree f = m.withBotDegree g ↔ (m.degree f = m.degree g ∧ (f = 0 ↔ g = 0)) := by
   classical
-  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
-  · rcases h with h | h
-    all_goals
-      simp_rw [h]
-      revert f g
-      simp [m.withBotDegree_eq, m.degree_zero]
-  simp [h, m.withBotDegree_eq]
+  by_cases! +distrib h : f ≠ 0 ∧ g ≠ 0
+  · simp [h, m.withBotDegree_eq]
+  rcases h with h | h
+  all_goals
+    simp_rw [h]
+    revert f g
+    simp [m.withBotDegree_eq, m.degree_zero]
 
 lemma withBotDegree_add_le :
     (m.toWithBotSyn <| m.withBotDegree (f + g)) ≤
       (m.toWithBotSyn <| m.withBotDegree f) ⊔ (m.toWithBotSyn <| m.withBotDegree g) := by
-  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
+  by_cases! h : f = 0 ∨ g = 0
   · rcases h with h | h <;> simp [h, m.toWithBotSyn_apply]
   simpa [withBotDegree_le_withBotDegree_iff, h] using degree_add_le (R := R)
 
 lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) :
     m.withBotDegree (f + g) = m.withBotDegree f := by
-  wlog! hg : g ≠ 0
+  by_cases hg : g = 0
   · simp [hg]
   simp? [withBotDegree_lt_withBotDegree_iff, hg] at h says
     simp only [withBotDegree_lt_withBotDegree_iff, hg, ne_eq, false_and, or_false] at h
   simp? [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h]] says
     simp only [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h], iff_false]
-  rw [← and_imp_iff_and]
-  refine ⟨m.degree_add_of_lt h, ?_⟩
+  apply (show ∀ {p q}, p → (p → q) → (p ∧ q) by tauto) (m.degree_add_of_lt h)
   intro h'
   contrapose! h
-  simp [← h ▸ h']
+  simp [← h', h]
 
 lemma withBotDegree_add_of_right_lt (h : m.withBotDegree f ≺'[m] m.withBotDegree g) :
     m.withBotDegree (f + g) = m.withBotDegree g := by
@@ -1015,7 +1013,7 @@ lemma le_withBotDegree {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f
 lemma withBotDegree_le_withBotDegree_of_support_subset
     {p q : MvPolynomial σ R} (h : p.support ⊆ q.support) :
     m.withBotDegree p ≼'[m] m.withBotDegree q := by
-  wlog! hq : q ≠ 0
+  by_cases hq : q = 0
   · simpa [hq] using h
   rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hq]
   exact m.degree_le_degree_of_support_subset h
