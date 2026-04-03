@@ -431,6 +431,12 @@ theorem IntegrableOn.of_forall_diff_eq_zero {f : α → ε'}
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
+theorem integrableOn_of_integrableOn_inter_support {f : α → ε'}
+    (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
+    IntegrableOn f s μ := by
+  apply IntegrableOn.of_forall_diff_eq_zero hf hs
+  simp
+
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
