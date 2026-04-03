@@ -216,7 +216,7 @@ structure IsAffineMap (f : M → N) : Prop where
   map_sConvexCombo (s : StdSimplex R M) : f s.sConvexCombo = (s.map f).sConvexCombo
 
 @[fun_prop]
-lemma IsAffineMap.id : IsAffineMap R (id : M → M) where
+protected lemma IsAffineMap.id : IsAffineMap R (id : M → M) where
   map_sConvexCombo s := by simp
 
 @[fun_prop]
@@ -242,16 +242,16 @@ export Convexity (iConvexCombo)
 end StdSimplex
 
 @[simp] lemma iConvexCombo_const (s : StdSimplex R I) (m : M) :
-    (s.iConvexCombo fun _ ↦ m) = m := by simp [iConvexCombo]
+    s.iConvexCombo (fun _ ↦ m) = m := by simp [iConvexCombo]
 
 @[simp] lemma iConvexCombo_single (i : I) (f : I → M) :
-    ((single (R := R) i).iConvexCombo f) = f i := by simp [iConvexCombo]
+    (single (R := R) i).iConvexCombo f = f i := by simp [iConvexCombo]
 
 @[simp] lemma iConvexCombo_id (s : StdSimplex R M) :
     s.iConvexCombo id = s.sConvexCombo := by simp [iConvexCombo]
 
 @[simp] lemma iConvexCombo_id' (s : StdSimplex R M) :
-    (s.iConvexCombo fun x ↦ x) = s.sConvexCombo := iConvexCombo_id s
+    s.iConvexCombo (fun x ↦ x) = s.sConvexCombo := iConvexCombo_id s
 
 lemma iConvexCombo_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
   (s.map f).iConvexCombo g = s.iConvexCombo (g ∘ f) := by
@@ -293,7 +293,7 @@ lemma IsAffineMap.map_iConvexCombo {f : M → N} (hf : IsAffineMap R f)
 lemma map_iConvexCombo {f : J → K}
     (s : StdSimplex R I) (g : I → StdSimplex R J) :
     (s.iConvexCombo g).map f = s.iConvexCombo (map f ∘ g) :=
-  (StdSimplex.isAffineMap_map R f).map_iConvexCombo s g
+  (isAffineMap_map R f).map_iConvexCombo s g
 
 end iConvexCombo
 
