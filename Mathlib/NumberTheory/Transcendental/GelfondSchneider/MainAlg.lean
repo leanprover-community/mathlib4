@@ -207,7 +207,6 @@ def b : ℕ := (finProdFinEquiv.symm.toFun t).2 + 1
   `(a + bβ) log α,  1 ≤ a ≤ q, 1 ≤ b ≤ q.` -/
 def ρ : ℂ := (a q t + (b q t • β)) * Complex.log α
 
-
 /-!
 We introduce the integral function
   `R(x) = η₁ e^(ρ₁ x) + … + ηₜ e^(ρₜ x)`
