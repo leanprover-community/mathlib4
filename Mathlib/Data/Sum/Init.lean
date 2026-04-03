@@ -7,6 +7,8 @@ module
 
 /-!
 
+This file defines `Sum.get`, the operation that extracts a term of type `α` from `α ⊕ α`.
+
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries or the Lean standard library easily.
 
@@ -44,7 +46,7 @@ theorem get_apply_of_isLeft (h : x.isLeft) :
 theorem get_apply_of_isRight (h : x.isRight) :
     x.get = x.getRight h := by grind
 
-theorem get_apply : Sum.get x = if h : x.isLeft then x.getLeft h else x.getRight (by grind) := by grind
+theorem get_apply : Sum.get x = if h : x.isLeft then x.getLeft h else x.getRight (by grind) := by   grind
 
 @[simp, grind =] theorem get_map {f : β → α} {g : δ → α} {y : β ⊕ δ} :
     (y.map f g).get = y.elim f g := by cases y <;> rfl

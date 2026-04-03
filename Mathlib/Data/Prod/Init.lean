@@ -7,6 +7,13 @@ module
 
 /-!
 
+This file defines `Prod.pair f g`, the operation that pairs two functions `f : γ → α` and
+`g : γ → β` into a function `γ → α × β`.
+
+It also defines the special case when `f = g = id`, `Prod.diag`. This is the canonical injection
+of a type into its prouduct with itself onto its diagonal.
+
+
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries or the Lean standard library easily.
 
