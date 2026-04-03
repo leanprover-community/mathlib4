@@ -40,9 +40,7 @@ def SSet.singularChainComplexFunctor :
   (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
     (sigmaConst ⋙ SimplicialObject.whiskering _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (SSet.singularChainComplexFunctor C).Additive := by
-  have : (Functor.whiskeringRight SimplexCategoryᵒᵖ (Type w) C).Additive := inferInstance -- why?
   dsimp [SSet.singularChainComplexFunctor, SimplicialObject.whiskering]
   infer_instance
 
@@ -55,7 +53,6 @@ instance : (singularChainComplexFunctor C).Additive := by
   delta singularChainComplexFunctor
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
@@ -92,7 +89,6 @@ def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ 
   ((SSet.singularChainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
     ((evaluation TopCat C).mapIso (SSet.toTopSimplex.app _))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
     (singularChainComplexFunctorAdjunction C n).unit.app R =
       Sigma.ι (fun _ ↦ R) ((stdSimplexToTop.app ⦋n⦌).app (.op ⦋n⦌)
