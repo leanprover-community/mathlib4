@@ -217,7 +217,7 @@ meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
 /-- Delaborator for `Continuous[_, _]`. -/
 @[scoped app_delab Continuous]
 meta def delabContinuous : Delab :=
-  delabBinary 4 2 3 (fun x y ↦ `(Continuous[$x, $y])) (some `(_))
+  delabBinary 4 2 3 (fun x y ↦ `(Continuous[$x, $y]))
 
 end Topology
 

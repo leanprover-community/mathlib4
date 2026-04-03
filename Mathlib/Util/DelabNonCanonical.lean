@@ -32,7 +32,7 @@ iff instance synthesis succeeds and produces a defeq instance; otherwise returns
 def delabCheckingCanonical : DelabM (Bool × Term) := do
   let inst ← getExpr
   if ← isCanonicalInstance inst then
-    return (true, ← annotateTermInfo <| ← `(_))
+    return (true, ← withAnnotateTermInfo `(_))
   else
     return (false, ← delab)
 namespace Delab.Noncanonical
