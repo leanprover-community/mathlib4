@@ -22,6 +22,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
   dimension less than `n`.
 * `HasSmallInductiveDimensionLE X n` : Provides an abbrev for
   `HasSmallInductiveDimensionLT X (n + 1)`.
+* `smallInductiveDimension X` : The small inductive dimension of `X`, with values in `WithBot ℕ∞`.
 
 ## References
 
@@ -47,6 +48,10 @@ variable (X : Type) [TopologicalSpace X]
 /-- A topological space has dimension `≤ n` if it has dimension `< n + 1`. -/
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
+
+/-- The small inductive dimension of a topological space. -/
+noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
+  sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
 
 lemma HasSmallInductiveDimensionLT_zero_iff :
     HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
