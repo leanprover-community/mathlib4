@@ -69,7 +69,7 @@ lemma cases {motive : X.N → Prop}
   · exact notMem (.mk' s (by simpa using hs))
 
 lemma eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
-    x = y ↔ S.mk x.1.1.2 = S.mk y.1.1.2 := by
+    x = y ↔ S.mk x.simplex = S.mk y.simplex := by
   rw [N.ext_iff, SSet.N.ext_iff]
 
 instance : PartialOrder A.N :=
