@@ -100,12 +100,12 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hxns⟩ :=
     x.exists_isNilpotent_isSemisimple
   classical
-  let hI := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+  let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
-  let v := hI.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
+  let v := eigenDecomp.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
   let a : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
   have hv_diag : ∀ i, s (v i) = a i • v i := fun i =>
-    mem_eigenspace_iff.mp (hI.collectedBasis_mem _ i)
+    mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
   suffices hs_zero : s = 0 by rw [hxns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
@@ -157,7 +157,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     let g := Lagrange.interpolate (Finset.univ.image a) (fun d : K => d)
       (fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0)
     have hg_eval : ∀ i, eval (a i) g = c i := fun i =>
-      (Lagrange.eval_interpolate_at_node _ (fun _ _ _ _ h => h)
+      (Lagrange.eval_interpolate_at_node _ (Set.injOn_of_injective Function.injective_id)
         (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
     exact ⟨g, v.ext fun i => by
       change (aeval s g) (v i) = y (v i)
@@ -176,13 +176,12 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     rw [this, Matrix.trace_toLin_eq, Matrix.trace_diagonal]
   have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
-  have h_sum_E : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
-      (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
-    apply_fun E.subtype using Subtype.val_injective
-    simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
-    convert htr_sum using 1; congr 1; ext i; rw [smul_def, mul_comm]
   have h_sum_sq : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
       f ⟨a i, ha i⟩ ^ 2 = (0 : ℚ) := by
+    have h_sum_E : ∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
+      apply_fun E.subtype using Subtype.val_injective
+      simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
+      convert htr_sum using 1; congr 1; ext i; rw [smul_def, mul_comm]
     have := congr_arg f h_sum_E
     simp only [map_sum, map_smul, smul_eq_mul, map_zero] at this
     convert this using 1; congr 1; ext i; ring
