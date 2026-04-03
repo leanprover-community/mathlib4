@@ -373,17 +373,21 @@ variable [FunLike 𝓕 E F]
 
 section NNNorm
 
+@[no_expose]
+instance (priority := 100) SeminormedAddGroup.toNNNorm {E : Type*} [SeminormedAddGroup E] :
+    NNNorm E :=
+  ⟨fun a => ⟨‖a‖, norm_nonneg a⟩⟩
+
 -- See note [lower instance priority]
-@[to_additive]
+@[no_expose, to_additive existing]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
-theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
+theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := by rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]
-theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
-  rfl
+theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm := by rfl
 
 @[to_additive (attr := simp) norm_toNNReal]
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
@@ -527,7 +531,7 @@ lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y�
 /-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm. -/]
-theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := by rfl
 
 open scoped symmDiff in
 @[to_additive]
