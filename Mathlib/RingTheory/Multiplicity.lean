@@ -311,6 +311,12 @@ theorem emultiplicity_eq_zero :
     simp
   · simpa [emultiplicity_eq_top.2 hf] using FiniteMultiplicity.not_iff_forall.1 hf 1
 
+theorem emultiplicity_eq_zero_of_irreducible_ne {R : Type*} [CommMonoidWithZero R]
+    [Subsingleton Rˣ] {a b : R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b) :
+    emultiplicity a b = 0 :=
+  emultiplicity_eq_zero.2 ((ha.dvd_irreducible_iff_associated hb).not.2 fun ⟨u, _⟩ ↦ by
+    simp_all [Subsingleton.elim u 1])
+
 theorem multiplicity_eq_zero :
     multiplicity a b = 0 ↔ ¬a ∣ b :=
   (emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one).symm.trans emultiplicity_eq_zero
@@ -576,7 +582,6 @@ theorem multiplicity_sub_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     (hfin : FiniteMultiplicity p b) : multiplicity p (a - b) = multiplicity p b := by
   rw [sub_eq_add_neg, hfin.neg.multiplicity_add_of_gt] <;> rw [multiplicity_neg]; assumption
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_add_eq_min {p a b : α}
     (h : emultiplicity p a ≠ emultiplicity p b) :
     emultiplicity p (a + b) = min (emultiplicity p a) (emultiplicity p b) := by

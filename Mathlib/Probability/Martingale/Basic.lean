@@ -101,6 +101,12 @@ theorem setIntegral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ)
   refine setIntegral_congr_ae (ℱ.le i s hs) ?_
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 
+lemma congr (hf : Martingale f ℱ μ) (hg : StronglyAdapted ℱ g) (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Martingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_⟩
+  calc μ[g j | ℱ i] =ᵐ[μ] μ[f j | ℱ i] := (condExp_congr_ae (h_eq j)).symm
+    _ =ᵐ[μ] g i := (hf.2 i j hij).trans (h_eq i)
+
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
   refine ⟨hf.stronglyAdapted.add hg.stronglyAdapted, fun i j hij => ?_⟩
   exact (condExp_add (hf.integrable j) (hg.integrable j) _).trans
@@ -158,6 +164,13 @@ theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule 
   refine setIntegral_mono_ae integrable_condExp.integrableOn (hf.integrable i).integrableOn ?_
   filter_upwards [hf.2.1 i j hij] with _ heq using heq
 
+lemma congr [LE E] (hf : Supermartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
+    (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Supermartingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
+  filter_upwards [condExp_ae_le hf hij, condExp_congr_ae (h_eq j), h_eq i] with ω h_le hcond h_eq
+  rwa [← hcond, ← h_eq]
+
 theorem add [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
@@ -194,6 +207,12 @@ protected theorem integrable [LE E] (hf : Submartingale f ℱ μ) (i : ι) : Int
 theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     f i ≤ᵐ[μ] μ[f j | ℱ i] :=
   hf.2.1 i j hij
+
+lemma congr [LE E] (hf : Submartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
+    (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Submartingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
+  exact (Filter.eventuallyLE_congr (h_eq i) (condExp_congr_ae (h_eq j))).mp (ae_le_condExp hf hij)
 
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
@@ -253,7 +272,6 @@ end Submartingale
 
 section Submartingale
 
-set_option backward.isDefEq.respectTransparency false in
 theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
     {f : ι → Ω → ℝ} (hadp : StronglyAdapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
