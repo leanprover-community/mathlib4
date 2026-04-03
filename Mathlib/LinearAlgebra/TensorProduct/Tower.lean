@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
-public import Mathlib.Tactic.Algebraize
-public import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`
@@ -851,14 +849,22 @@ lemma toBaseChange_surjective' {y : A ⊗[R] M} (hy : y ∈ p.baseChange A) :
   obtain ⟨x, hx⟩ := toBaseChange_surjective A p ⟨y, hy⟩
   exact ⟨x, congr($hx)⟩
 
-open AlgebraTensorModule in
-lemma baseChange_mkQ_surjective {B : Type _} [CommSemiring A] [Algebra R A] [CommSemiring B] [Algebra R B] (N : Submodule A (A ⊗[R] M)) :
-    Function.Surjective (N.mkQ.baseChange B ∘ₗ
-      (cancelBaseChange R A B B M).symm.toLinearMap) := by
-  algebraize [f.toRingHom]
-  apply ((cancelBaseChange R A B B M).symm.surjective_comp (LinearMap.baseChange B N.mkQ)).mpr
-  rw [LinearMap.baseChange_eq_ltensor]
-  exact LinearMap.lTensor_surjective _ <| Submodule.mkQ_surjective N.toSubmodule
-
-
 end Submodule
+
+namespace TensorProduct.AlgebraTensorModule
+
+variable {R A M N : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module A N]
+
+lemma baseChange_comp_cancelBaseChange_symm_self (f : (A ⊗[R] M) →ₗ[A] N) :
+    f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm = (TensorProduct.lid A N).symm ∘ₗ f := by
+  rw [cancelBaseChange_self_eq_lid]
+  ext x
+  simp
+
+lemma ker_baseChange_comp_cancelBaseChange_symm (f : (A ⊗[R] M) →ₗ[A] N) :
+    (f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm).ker = f.ker := by
+  rw [baseChange_comp_cancelBaseChange_symm_self, LinearMap.ker_comp,
+    LinearEquiv.ker, Submodule.comap_bot]
+
+end TensorProduct.AlgebraTensorModule

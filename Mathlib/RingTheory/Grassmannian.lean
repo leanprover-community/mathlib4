@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Grassmannians
@@ -92,7 +93,6 @@ variable {A : Type w} [CommRing A] [Algebra R A]
 variable {B : Type w} [CommRing B] [Algebra R B]
 variable (f : A →ₐ[R] B)
 
-
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
 B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
@@ -100,7 +100,7 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
   letI f' := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
-  haveI equiv := f'.quotKerEquivOfSurjective (baseChange_mkQ_surjective f N.toSubmodule)
+  haveI equiv := f'.quotKerEquivOfSurjective N.toSubmodule.baseChange_mkQ_surjective
   { toSubmodule := f'.ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
@@ -115,26 +115,11 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
 
 variable (k)
 
-lemma baseChange_comp_cancelBaseChange_symm_self
-    {P : Type*} [AddCommGroup P] [Module A P]
-    (f : (A ⊗[R] M) →ₗ[A] P) :
-    f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm =
-    (TensorProduct.lid A P).symm ∘ₗ f := by
-  rw [cancelBaseChange_self_eq_lid]
-  ext x
-  simp
-
-lemma ker_baseChange_comp_cancelBaseChange_symm
-    {P : Type*} [AddCommGroup P] [Module A P] (f : (A ⊗[R] M) →ₗ[A] P) :
-    (f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm).ker = f.ker := by
-  rw [baseChange_comp_cancelBaseChange_symm_self, LinearMap.ker_comp,
-    LinearEquiv.ker, Submodule.comap_bot]
-
 theorem map_id (A : CommAlgCat R) : map (.id R A) = 𝟙 G(k, A ⊗[R] M; A)  := by
   ext1 N
   rw [types_id_apply]
   ext1
-  exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans (Submodule.ker_mkQ N.toSubmodule)
+  exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans N.toSubmodule.ker_mkQ
 
 variable {C : Type w} [CommRing C] [Algebra R C]
 variable (g : B →ₐ[R] C)
@@ -142,11 +127,7 @@ variable (g : B →ₐ[R] C)
 theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     map (g.comp f) N = map g (map f N) := by
   algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
-  letI : IsScalarTower A B C := by
-    apply IsScalarTower.of_algebraMap_eq'
-    ext a
-    change g (f a) = (g.comp f) a
-    simp [AlgHom.comp_apply]
+  letI : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
   ext x
   let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ
     (cancelBaseChange _ _ _ _ _).symm.toLinearMap
@@ -155,7 +136,7 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
   let fBC := fAB.ker.mkQ.baseChange C ∘ₗ
     (cancelBaseChange _ _ _ _ _).symm.toLinearMap
   let e := (fAB.quotKerEquivOfSurjective
-    (baseChange_mkQ_surjective f N)).baseChange _ _ ≪≫ₗ
+    N.toSubmodule.baseChange_mkQ_surjective).baseChange _ _ ≪≫ₗ
     cancelBaseChange _ _ _ C _
   have hcomp : e.toLinearMap.comp fBC = fAC := by
     apply LinearMap.ext
@@ -171,8 +152,9 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
       simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
         Function.comp_apply, map_add] at *
       rw [hx, hy]
-  change x ∈ fAC.ker ↔ x ∈ fBC.ker
-  rw [show fAC = e.toLinearMap.comp fBC from hcomp.symm, LinearEquiv.ker_comp]
+  rw [show (map (g.comp f) N).toSubmodule = fAC.ker from rfl,
+    show (map g (map f N)).toSubmodule = fBC.ker from rfl,
+    show fAC = e.toLinearMap.comp fBC from hcomp.symm, LinearEquiv.ker_comp]
 
 /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where

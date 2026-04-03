@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, Jujian Zhang
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -327,3 +328,21 @@ lemma ker_mapOfCompatibleSMul :
     exact (mapOfCompatibleSMul A R A M N).ker_le_ker_comp F
 
 end TensorProduct.AlgebraTensorModule
+
+namespace Submodule
+
+open TensorProduct AlgebraTensorModule
+
+variable {R A B M : Type*}
+variable [CommRing R] [CommRing A] [Algebra R A]
+variable [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable [AddCommGroup M] [Module R M]
+
+lemma baseChange_mkQ_surjective (N : Submodule A (A ⊗[R] M)) :
+    Function.Surjective (N.mkQ.baseChange B ∘ₗ
+      (cancelBaseChange R A B B M).symm.toLinearMap) := by
+  apply ((cancelBaseChange R A B B M).symm.surjective_comp (N.mkQ.baseChange B)).mpr
+  rw [LinearMap.baseChange_eq_ltensor]
+  exact LinearMap.lTensor_surjective _ <| Submodule.mkQ_surjective N
+
+end Submodule
