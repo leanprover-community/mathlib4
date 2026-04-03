@@ -126,22 +126,24 @@ lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
 /--
 Join operation for standard simplices (monadic join).
 Given a distribution over distributions, flattens it to a single distribution.
+
+Use `ConvexSpace.sConvexCombo` instead.
 -/
 @[simps weights]
-def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
+private def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
   weights := f.weights.sum (fun d r => r • d.weights)
   nonneg := f.weights.sum_nonneg fun d _ ↦ smul_nonneg (f.nonneg d) d.nonneg
   total := by simp [sum_sum_index, sum_smul_index, ← mul_sum]
 
-lemma join_assoc (f : StdSimplex R (StdSimplex R (StdSimplex R M))) :
+private lemma join_join (f : StdSimplex R (StdSimplex R (StdSimplex R M))) :
     f.join.join = (f.map (·.join)).join := by
   ext1; simp [mapDomain, add_smul, sum_sum_index, sum_smul_index, smul_sum, mul_smul]
 
-lemma map_join (f : StdSimplex R (StdSimplex R M)) (g : M → N) :
+private lemma map_join (f : StdSimplex R (StdSimplex R M)) (g : M → N) :
     f.join.map g = (f.map (·.map g)).join := by
   ext1; simp [mapDomain, add_smul, sum_sum_index, sum_smul_index, smul_sum]
 
-@[simp] lemma join_single (x : StdSimplex R M) : join (.single x) = x := by
+@[simp] private lemma join_single (x : StdSimplex R M) : join (.single x) = x := by
   ext; simp [join, ← mk_single]
 
 end StdSimplex
@@ -151,14 +153,14 @@ A set equipped with an operation of finite convex combinations,
 where the coefficients must be non-negative and sum to 1.
 -/
 class ConvexSpace (R : Type u) (M : Type v)
-    [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] where
-  /-- The convex combination operator. Use `StdSimplex.sConvexCombo` instead. -/
-  convexCombination (f : StdSimplex R M) : M
+    [inst₁ : PartialOrder R] [inst₂ : Semiring R] [inst₃ : IsStrictOrderedRing R] where
+  /-- Take a convex combination with the given probability distribution over points. -/
+  sConvexCombo [inst₁] [inst₂] [inst₃] (f : StdSimplex R M) : M
   /-- Associativity of convex combination (monadic join law). -/
-  assoc (f : StdSimplex R (StdSimplex R M)) :
-    convexCombination (f.map convexCombination) = convexCombination f.join
+  private assoc (f : StdSimplex R (StdSimplex R M)) :
+    sConvexCombo (f.map sConvexCombo) = sConvexCombo f.join
   /-- A convex combination of a single point is that point. -/
-  single (x : M) : convexCombination (.single x) = x
+  single (x : M) : sConvexCombo (.single x) = x
 
 open ConvexSpace
 
@@ -169,21 +171,22 @@ namespace StdSimplex
 
 section sConvexCombo
 
-/-- Take a convex combination with the given weight distribution over points. -/
-abbrev sConvexCombo (I : StdSimplex R M) : M := ConvexSpace.convexCombination I
+export ConvexSpace (sConvexCombo)
 
+@[no_expose]
 instance : ConvexSpace R (StdSimplex R I) where
-  convexCombination σ := σ.join
-  assoc f := (join_assoc f).symm
+  sConvexCombo σ := σ.join
+  assoc f := (join_join f).symm
   single := join_single
 
-lemma sConvexCombo_eq_join (f : StdSimplex R (StdSimplex R I)) :
-    f.sConvexCombo = f.join := rfl
+@[simp] lemma weights_sConvexCombo (f : StdSimplex R (StdSimplex R I)) :
+    f.sConvexCombo.weights = f.weights.sum (fun d r => r • d.weights) :=
+  StdSimplex.join_weights _
 
 @[simp] lemma sConvexCombo_single (x : M) : (single (R := R) x).sConvexCombo = x :=
   ConvexSpace.single x
 
-lemma sConvexCombo_assoc (f : StdSimplex R (StdSimplex R M)) :
+lemma sConvexCombo_sConvexCombo (f : StdSimplex R (StdSimplex R M)) :
     f.sConvexCombo.sConvexCombo = (f.map sConvexCombo).sConvexCombo :=
   (ConvexSpace.assoc f).symm
 
@@ -245,10 +248,9 @@ lemma iConvexCombo_iConvexCombo
     s.iConvexCombo (fun i ↦ (f i).iConvexCombo (g i)) =
       (s.iConvexCombo fun i ↦ (f i).map (⟨i, ·⟩)).iConvexCombo (Sigma.uncurry g) := by
   simp only [iConvexCombo]
-  rw [← map_map, ← sConvexCombo_assoc]
+  rw [← map_map, ← sConvexCombo_sConvexCombo]
   congr 1
-  simp only [sConvexCombo_eq_join , map_join, map_map]
-  rfl
+  simp [map_sConvexCombo, map_map, Sigma.uncurry]
 
 lemma iConvexCombo_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
   (s.map f).iConvexCombo g = s.iConvexCombo (g ∘ f) := by
@@ -294,7 +296,7 @@ variable {s'' t'' : R} (hs'' : 0 ≤ s'') (ht'' : 0 ≤ t'') (h'' : s'' + t'' = 
 
 /-- Take a convex combination of two points. -/
 def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
-  convexCombination (.duple x y hs ht h)
+  sConvexCombo (.duple x y hs ht h)
 
 lemma convexComboPair_def (p q : M) :
     convexComboPair s t hs ht h p q = (StdSimplex.duple 0 1 hs ht h).iConvexCombo ![p, q] := by
@@ -388,7 +390,7 @@ lemma convexComboPair_convexComboPair_assoc_left (H : t * s'' = s * t' * t'') (m
   congr 1
   ext1
   have : s * (t' * t'') + t * t'' = t := by rw [← mul_assoc, ← H, ← mul_add, h'', mul_one]
-  simp [convexComboPair, convexCombination, Finsupp.sum_add_index, add_smul, ← Finsupp.single_add,
+  simp [convexComboPair, Finsupp.sum_add_index, add_smul, ← Finsupp.single_add,
     H, mul_assoc, ← mul_add, h'', add_assoc, this]
 
 lemma convexComboPair_convexComboPair_assoc_right (H : s * t'' = t * s' * s'') (m₁ m₂ m₃ : M) :
