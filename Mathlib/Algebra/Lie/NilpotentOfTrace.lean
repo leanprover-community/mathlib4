@@ -67,18 +67,17 @@ lemma exists_polynomial_eval_sub
   have : Fintype ι := Fintype.ofFinite ι
   let diffs := insert 0 (Finset.univ.image fun (i, j) => a i - a j)
   let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
-  let v : K → K := fun d => d
-  have hinj : Set.InjOn v diffs := fun _ _ _ _ h => h
+  have hinj : Set.InjOn (fun d : K => d) diffs := Set.injOn_of_injective Function.injective_id
   have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
   have hmem : ∀ i j, a i - a j ∈ diffs :=
     fun i j => Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩)
-  refine ⟨Lagrange.interpolate diffs v g, fun i j => ?_, ?_⟩
-  · rw [Lagrange.eval_interpolate_at_node g hinj (hmem i j),
-      hg _ (E.sub_mem (ha i) (ha j)),
-      show (⟨a i - a j, E.sub_mem (ha i) (ha j)⟩ : E) = ⟨a i, ha i⟩ - ⟨a j, ha j⟩ from rfl,
-      map_sub, map_sub]
-  · rw [Lagrange.eval_interpolate_at_node g hinj (Finset.mem_insert_self 0 _),
-      hg _ E.zero_mem, show (⟨(0 : K), E.zero_mem⟩ : E) = 0 from rfl, map_zero, map_zero]
+  refine ⟨Lagrange.interpolate diffs (fun d : K => d) g, fun i j => ?_, ?_⟩
+  · rw [Lagrange.eval_interpolate_at_node g hinj (hmem i j), hg _ (E.sub_mem (ha i) (ha j))]
+    change algebraMap ℚ K (f (⟨a i, ha i⟩ - ⟨a j, ha j⟩)) = _
+    rw [map_sub, map_sub]
+  · rw [Lagrange.eval_interpolate_at_node g hinj (Finset.mem_insert_self 0 _), hg _ E.zero_mem]
+    change algebraMap ℚ K (f 0) = 0
+    rw [map_zero, map_zero]
 
 end Lagrange
 
