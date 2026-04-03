@@ -263,7 +263,7 @@ lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s 
     preVariation f hf hf' s = (ennrealPreVariation f hf hf').ennrealToMeasure s := rfl
 
 @[simp]
-lemma preVariation_zero_eq_zero :
+lemma preVariation_zero :
     preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
   ext s; simp [preVariation_apply]
 

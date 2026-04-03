@@ -459,19 +459,16 @@ def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).Pairwis
   sup_parts := Finset.sup_erase_bot parts
   bot_notMem := Finset.notMem_erase _ _
 
-lemma sum_ofPairwiseDisjoint_eq_sum (parts : Finset α)
+lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
     (hdisjoint : (parts : Set α).PairwiseDisjoint id)
-    {X : Type*} [AddCommMonoid X] (f : α → X) (hf : f ⊥ = 0) :
+    {X : Type*} [AddCommMonoid X] {f : α → X} (hf : f ⊥ = 0) :
     ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p := by
   by_cases hbot : ⊥ ∈ parts
   · simp only [Finpartition.ofPairwiseDisjoint]
-    rw [← erase_union_eq ⊥ parts hbot, union_comm , sum_union_eq_right]
+    rw [← erase_union_eq ⊥ parts hbot, union_comm, sum_union_eq_right]
     · simp
     grind
-  · have : (ofPairwiseDisjoint parts hdisjoint).parts = parts := by
-      ext p
-      simpa [Finpartition.ofPairwiseDisjoint] using fun hp => ne_of_mem_of_not_mem hp hbot
-    simp_rw [this]
+  · simp_all
 
 end DistribLattice
 
