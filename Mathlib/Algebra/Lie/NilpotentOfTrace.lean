@@ -34,7 +34,7 @@ of `M` is nilpotent. This is the key technical lemma behind Cartan's criterion f
 
 namespace NilpotentOfTrace
 
-open LinearMap Module.End
+open LinearMap Module.End Polynomial
 
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 
@@ -43,14 +43,14 @@ abbrev M (A B : Submodule K (Module.End K V)) : Set (Module.End K V) := {x | ∀
 
 lemma aeval_ad_maps_to
     (A B : Submodule K (Module.End K V)) (hAB : A ≤ B)
-    (x : Module.End K V) (hxM : ∀ b ∈ B, ⁅x, b⁆ ∈ A)
-    (q : Polynomial K) (hq : Polynomial.eval 0 q = 0) :
-    ∀ b ∈ B, (Polynomial.aeval (LieAlgebra.ad K (Module.End K V) x) q) b ∈ A := by
+    (x : Module.End K V) (hxM : x ∈ M A B)
+    (q : Polynomial K) (hq : eval 0 q = 0) :
+    ∀ b ∈ B, (aeval (LieAlgebra.ad K (Module.End K V) x) q) b ∈ A := by
   set ad_x := LieAlgebra.ad K (Module.End K V) x
-  obtain ⟨q', rfl⟩ : Polynomial.X ∣ q := by simpa using Polynomial.dvd_iff_isRoot.mpr hq
+  obtain ⟨q', rfl⟩ : X ∣ q := by simpa using dvd_iff_isRoot.mpr hq
   intro b hb
-  rw [map_mul, Polynomial.aeval_X, Module.End.mul_apply]
-  exact hxM _ (Polynomial.aeval_apply_smul_mem_of_le_comap hb q' ad_x fun _ h => hAB (hxM _ h))
+  rw [map_mul, aeval_X, Module.End.mul_apply]
+  exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' ad_x fun _ h => hAB (hxM _ h))
 
 lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
@@ -72,9 +72,9 @@ lemma exists_lagrange_polynomial
     (a : ι → K) (E : Submodule ℚ K) (f : E →ₗ[ℚ] ℚ)
     (ha : ∀ i, a i ∈ E) :
     ∃ r : Polynomial K,
-      (∀ i j, Polynomial.eval (a i - a j) r =
+      (∀ i j, eval (a i - a j) r =
         algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧
-      Polynomial.eval 0 r = 0 := by
+      eval 0 r = 0 := by
   classical
   haveI : Fintype ι := Fintype.ofFinite ι
   let diffs := Finset.univ.image (fun p : ι × ι => a p.1 - a p.2)
@@ -104,7 +104,7 @@ end NilpotentOfTrace
 variable {K : Type*} [Field K] [IsAlgClosed K] [CharZero K]
   {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
-open LinearMap Module.End NilpotentOfTrace in
+open LinearMap Module.End Polynomial NilpotentOfTrace in
 /-- If `x ∈ M A B` is trace-orthogonal to all of `M A B`, then `x` is nilpotent. -/
 theorem isNilpotent_of_trace_orthogonal_algClosed
     (A B : Submodule K (Module.End K V))
@@ -145,9 +145,9 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v _ y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
-  have had_y_eq : LieAlgebra.ad K (Module.End K V) y = Polynomial.aeval ad_s r := by
+  have had_y_eq : LieAlgebra.ad K (Module.End K V) y = aeval ad_s r := by
     apply v.end.ext; intro ⟨i, j⟩
-    change ⁅y, v.end (i, j)⁆ = (Polynomial.aeval ad_s r) (v.end (i, j))
+    change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
     rw [Module.End.aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
     Algebra.commute_of_mem_adjoin_singleton_of_commute hs_adj
@@ -156,29 +156,26 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     rw [hxns]; exact LieAlgebra.ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h_ad_s_mem
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
-  have hp_zero : Polynomial.eval 0 p = 0 :=
-    LieAlgebra.eval_zero_of_aeval_ad_eq hx
-      (Algebra.commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
+  have hp_zero : eval 0 p = 0 := LieAlgebra.eval_zero_of_aeval_ad_eq hx
+    (Algebra.commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
   have hyM : y ∈ M A B := by
-    have had_y_adx : LieAlgebra.ad K _ y =
-        Polynomial.aeval (LieAlgebra.ad K _ x) (r.comp p) := by
-      rw [had_y_eq, show ad_s = Polynomial.aeval (LieAlgebra.ad K _ x) p from hp_eq.symm,
-        ← Polynomial.aeval_comp]
+    have had_y_adx : LieAlgebra.ad K _ y = aeval (LieAlgebra.ad K _ x) (r.comp p) := by
+      rw [had_y_eq, show ad_s = aeval (LieAlgebra.ad K _ x) p from hp_eq.symm, ← aeval_comp]
     intro b hb
     change (LieAlgebra.ad K _ y) b ∈ A
     rw [had_y_adx]
-    exact aeval_ad_maps_to A B hAB x hxM _ (by simp [Polynomial.eval_comp, hp_zero, hr_zero]) b hb
+    exact aeval_ad_maps_to A B hAB x hxM _ (by simp [eval_comp, hp_zero, hr_zero]) b hb
   have htr_xy : trace K V (x * y) = 0 := htr y hyM
   have hy_adj : y ∈ Algebra.adjoin K {s} := by
     rw [Algebra.adjoin_singleton_eq_range_aeval]
     let c_val : K → K := fun μ => if hμ : μ ∈ E then algebraMap ℚ K (f ⟨μ, hμ⟩) else 0
     let w : K → K := fun d => d
     let g := Lagrange.interpolate (Finset.univ.image a) w c_val
-    have hg_eval : ∀ i, Polynomial.eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) :=
+    have hg_eval : ∀ i, eval (a i) g = algebraMap ℚ K (f ⟨a i, ha i⟩) :=
       fun i => (Lagrange.eval_interpolate_at_node c_val (fun _ _ _ _ h => h)
         (Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩)).trans (dif_pos (ha i))
     exact ⟨g, v.ext fun i => by
-      change (Polynomial.aeval s g) (v i) = y (v i)
+      change (aeval s g) (v i) = y (v i)
       rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg_eval i, hy_diag i]⟩
   have hny_comm : Commute n y :=
     Algebra.commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
@@ -192,8 +189,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
           ← mem_eigenspace_iff.mp
             (hasEigenvector_toLin_diagonal (fun i => a i * c i) i v).1]
     rw [this, Matrix.trace_toLin_eq, Matrix.trace_diagonal]
-  have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
-      a i * c i = 0 := by
+  have htr_sum : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hxns, add_mul, map_add, htr_ny, zero_add]
   have h_sum_E : ∑ i : (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))),
       (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
