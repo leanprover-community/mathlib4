@@ -58,7 +58,7 @@ theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N
   exact ⟨Shrink.{u} N, inferInstance, inferInstance, Module.Finite.equiv eN,
     Free.of_equiv eN, Free.of_equiv ((LinearEquiv.refl R M).prodCongr eN)⟩
 
-theorem IsStablyFree.projective [IsStablyFree R M] : Module.Projective R M := by
+instance (priority := low) IsStablyFree.projective [IsStablyFree R M] : Module.Projective R M := by
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.out' R M
   exact Module.Projective.of_split (LinearMap.inl R M N) (LinearMap.fst R M N)
     (LinearMap.ext fun _ ↦ rfl)
