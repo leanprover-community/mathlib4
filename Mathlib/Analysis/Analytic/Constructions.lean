@@ -887,12 +887,7 @@ lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
     AnalyticAt 𝕜 (fun x : A ↦ (1 - x)⁻¹ʳ) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
-end Geometric
-
-section Geometric
-variable (𝕜 A)
-
-/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
+/-- The alternating geometric series `1 - x + x ^ 2 - ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric_alternating : FormalMultilinearSeries 𝕜 A A :=
   .ofScalars A fun n ↦ (-1 : 𝕜) ^ n
 
