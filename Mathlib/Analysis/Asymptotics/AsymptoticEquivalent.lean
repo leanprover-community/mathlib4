@@ -322,9 +322,9 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 theorem IsEquivalent.eventually_pos [ClosedIicTopology β] (h : u ~[l] v)
     (hv : ∀ᶠ t in l, 0 < v t) : ∀ᶠ x in l, 0 < u x := by
   obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (by grind)
-  refine ((h_eq.and hφ).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp [h_eq]
+  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
+  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
+  simp only [h_eq, Pi.mul_apply]
   nlinarith
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
