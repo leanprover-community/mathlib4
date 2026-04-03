@@ -55,7 +55,7 @@ lemma mk_surjective (x : X.N) :
 
 /-- Induction principle for the type `X.N` of nondegenerate simplices of
 a simplicial set `X`. -/
-@[elab_as_elim]
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 def induction {motive : X.N → Sort*}
     (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) (s : X.N) :
     motive s :=
