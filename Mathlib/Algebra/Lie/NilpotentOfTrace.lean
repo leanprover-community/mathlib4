@@ -108,15 +108,16 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
   suffices hs_zero : s = 0 by rw [hxns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
+    have : Subsingleton E :=
+      (Module.subsingleton_dual_iff ℚ).mp ⟨fun a b => by rw [h_f_zero a, h_f_zero b]⟩
     refine hs_ss.eq_zero_iff_forall_eigenvalue.mpr fun μ hμ => ?_
     have : Nontrivial (s.eigenspace μ) :=
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hμ)
     have hμ_E : μ ∈ E := Submodule.subset_span ⟨⟨μ, ⟨0, Module.finrank_pos⟩⟩, rfl⟩
-    exact congr_arg Subtype.val <|
-      (Module.forall_dual_apply_eq_zero_iff ℚ ⟨μ, hμ_E⟩).mp fun φ => by simp [h_f_zero φ]
+    simpa using Subsingleton.elim (⟨μ, hμ_E⟩ : E) 0
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
-  haveI : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
+  have : Fintype (Σ μ : K, Fin (Module.finrank K (s.eigenspace μ))) :=
     v.fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K V)
   let c := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y := Matrix.toLin v v (Matrix.diagonal c)
