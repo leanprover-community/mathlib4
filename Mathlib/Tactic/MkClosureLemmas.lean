@@ -28,7 +28,7 @@ the `mk_iff` attribute.
 
 public meta section
 
-namespace Mathlib.Tactic.MkIff
+namespace Mathlib.Tactic.AddClosureThms
 
 open Lean Meta Elab
 
@@ -295,8 +295,8 @@ def toInductive (mvar : MVarId) (cs : List Name)
 
 /-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.
 -/
-def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
-  let .inductInfo inductVal ← getConstInfo ind |
+def mkIffOfInductivePropImpl (input : Name) (output : Name) (stx : Syntax) : MetaM Unit := do
+  let .inductInfo inductVal ← getConstInfo input |
     throwError "mk_iff only applies to inductive declarations"
   let constrs := inductVal.ctors
   let params := inductVal.numParams
@@ -309,7 +309,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
 
   let (thmTy, shape) ← Meta.forallTelescope type fun fvars ty ↦ do
     if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
-    let lhs := mkAppN (mkConst ind univs) fvars
+    let lhs := mkAppN (mkConst input univs) fvars
     let fvars' := fvars.toList
     let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
     let (shape, rhss) := shape_rhss.unzip
@@ -326,13 +326,13 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
   toInductive mpr' constrs ((fvars.toList.take params).map .fvar) shape mprFvar
 
   addDecl <| .thmDecl {
-    name := rel
+    name := output
     levelParams := univNames
-    type := thmTy
+    type := mkConst input univs
     value := ← instantiateMVars mvar
   }
-  addDeclarationRangesFromSyntax rel (← getRef) relStx
-  Term.addTermInfo' relStx (← mkConstWithLevelParams rel) (isBinder := true) |>.run'
+  addDeclarationRangesFromSyntax output (← getRef) stx
+  Term.addTermInfo' stx (← mkConstWithLevelParams output) (isBinder := true) |>.run'
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
@@ -376,7 +376,7 @@ bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 
 See also the user command `mk_iff_of_inductive_prop`.
 -/
-syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
+syntax (name := addClosureThms) "add_closure_thms" (ppSpace ident)? : attr
 
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
@@ -400,31 +400,38 @@ For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 See also the `mk_iff` user attribute.
 -/
-syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace ident : command
+syntax (name := addClosureThmsManual) "add_closure_thms_manual " ident ppSpace ident : command
 
 elab_rules : command
-| `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
+| `(command| add_closure_thms_manual $i:ident $r:ident) =>
     Command.liftCoreM <| MetaM.run' do
       mkIffOfInductivePropImpl i.getId r.getId r
 
 initialize Lean.registerBuiltinAttribute {
-  name := `mkIff
-  descr := "Generate an `iff` lemma for an inductive `Prop`."
+  name := `addClosureThms
+  descr := "Generate closure theorems."
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
     let (tgt, idStx) ← match stx with
       | `(attr| mk_iff $tgt:ident) =>
         pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
       | `(attr| mk_iff) => pure (decl.decapitalize.appendAfter "_iff", stx)
       | _ => throwError "unrecognized syntax"
+    addDecl <| .thmDecl {
+      name := tgt
+      levelParams := univNames
+      type := thmTy
+      value := ← instantiateMVars mvar
+    }
     mkIffOfInductivePropImpl decl tgt idStx
 }
 
-end Mathlib.Tactic.MkIff
+end Mathlib.Tactic.AddClosureThms
 
+@[add_closure_thms]
 inductive IsSumNonzeroSq {R : Type*} [Mul R] [Add R] [Zero R] : R → Prop
   | sq {a : R} (ha : a ≠ 0) : IsSumNonzeroSq (a * a)
   | sq_add {a s : R} (ha : a ≠ 0) (hs : IsSumNonzeroSq s) : IsSumNonzeroSq (a * a + s)
 
-mk_iff_of_inductive_prop IsSumNonzeroSq foo
+add_closure_thms_manual IsSumNonzeroSq foo
 
 #check foo
