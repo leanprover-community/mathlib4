@@ -100,7 +100,7 @@ instance (X : TopCat.{w}) [ContractibleSpace X] (R : C) (n : ℕ) :
   exact terminal.hom_ext _ _
 
 -- TODO: relax to `PathConnectedSpace`.
-/-- The `H₀(X, R) = R` for contractible spaces `X`. -/
+/-- The isomorphism `H₀(X, R) ≅ R` for a contractible space `X`. -/
 noncomputable def singularHomologyFunctorZeroOfContractibleSpace
     (X : TopCat.{w}) [ContractibleSpace X] (R : C) :
     ((singularHomologyFunctor C 0).obj R).obj X ≅ R :=
