@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.Probability.Moments.Variance
 
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
@@ -19,6 +20,11 @@ measure which to `{n}` associates `exp (-r) * r ^ n / (n)!`.
 ## Main definition
 
 * `poissonMeasure r`: a Poisson measure on `ℕ`, parametrized by its rate `r : ℝ≥0`.
+
+## Main results
+
+* `poissonMeasure_mean`: the mean of `poissonMeasure r` is `r`.
+* `poissonMeasure_variance`: the variance of `poissonMeasure r` is `r`.
 -/
 
 @[expose] public section
@@ -160,5 +166,99 @@ lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (pois
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 
 end PoissonPMF
+
+section Moments
+
+/-- The weighted sum for the mean of the Poisson distribution. -/
+lemma hasSum_poissonMeasure_nat (r : ℝ≥0) :
+    HasSum (fun a : ℕ => rexp (-(r:ℝ)) * (r:ℝ) ^ a / (a !) * (a : ℝ)) (r : ℝ) := by
+  have h := (hasSum_one_poissonMeasure r).mul_left (r : ℝ)
+  simp_rw [mul_one] at h
+  set f := fun a : ℕ => rexp (-(r:ℝ)) * (r:ℝ) ^ a / (a !) * (a : ℝ)
+  have hshift : HasSum (fun n : ℕ => f (n + 1)) (r : ℝ) := by
+    refine h.congr_fun fun n => ?_
+    simp only [f, Nat.factorial_succ, Nat.cast_mul, pow_succ]
+    push_cast; field_simp
+  simp only [hasSum_nat_add_iff, Finset.sum_range_one, show f 0 = 0 by simp [f], add_zero] at hshift
+  exact hshift
+
+/-- The weighted sum for the descending factorial moment of order 2. -/
+lemma hasSum_poissonMeasure_descFactorial_two (r : ℝ≥0) :
+    HasSum (fun a : ℕ => rexp (-(r:ℝ)) * (r:ℝ) ^ a / a ! * ((a : ℝ) * ((a : ℝ) - 1))) (r ^ 2) := by
+  set f := fun a : ℕ => rexp (-(r:ℝ)) * (r:ℝ) ^ a / a ! * ((a : ℝ) * ((a : ℝ) - 1))
+  have hshift : HasSum (fun n : ℕ => f (n + 2)) ((r : ℝ) ^ 2) := by
+    have h := (hasSum_one_poissonMeasure r).mul_left ((r : ℝ) ^ 2)
+    simp_rw [mul_one] at h
+    refine h.congr_fun fun n => ?_
+    simp only [f, Nat.factorial_succ, Nat.cast_mul, pow_succ]
+    push_cast; field_simp; ring
+  simp only [hasSum_nat_add_iff, Finset.sum_range_succ, Finset.sum_range_zero, add_zero,
+             show f 0 = 0 by simp [f], show f 1 = 0 by simp [f]] at hshift
+  exact hshift
+
+/-- The weighted sum for the second moment of the Poisson distribution. -/
+lemma hasSum_poissonMeasure_sq (r : ℝ≥0) :
+    HasSum (fun n : ℕ ↦ rexp (-(r : ℝ)) * (r : ℝ) ^ n / (n)! * (n : ℝ) ^ 2)
+    ((r : ℝ) ^ 2 + (r : ℝ)) := by
+  have h1 := hasSum_poissonMeasure_nat r
+  have h2 := hasSum_poissonMeasure_descFactorial_two r
+  convert h2.add h1 using 1
+  ext n; ring
+
+lemma lintegral_sq_nat_poissonMeasure (r : ℝ≥0) :
+    ∫⁻ n, ‖(n : ℝ)‖ₑ ^ 2 ∂poissonMeasure r = ENNReal.ofReal ((r : ℝ) ^ 2 + (r : ℝ)) := by
+  have hint : Integrable (fun n : ℕ ↦ (n : ℝ) ^ 2) (poissonMeasure r) := by
+    rw [integrable_poissonMeasure_iff]
+    have heq : (fun n : ℕ ↦ rexp (-↑r) * ↑r ^ n / (n !) * ‖(n : ℝ) ^ 2‖) =
+        (fun n : ℕ ↦ rexp (-↑r) * ↑r ^ n / (n !) * (n : ℝ) ^ 2) := by
+      ext n
+      congr 1
+      rw [Real.norm_eq_abs, abs_of_nonneg (sq_nonneg _)]
+    rw [heq]
+    exact (hasSum_poissonMeasure_sq r).summable
+  have h : ∀ n : ℕ, ‖(n : ℝ)‖ₑ ^ 2 = ENNReal.ofReal ((n : ℝ) ^ 2) := fun n ↦ by
+    rw [← enorm_pow, Real.enorm_of_nonneg (sq_nonneg _)]
+  simp_rw [h]
+  rw [← ofReal_integral_eq_lintegral_ofReal hint (ae_of_all _ (fun _ ↦ sq_nonneg _))]
+  congr 1
+  rw [integral_poissonMeasure]
+  simp only [smul_eq_mul]
+  exact (hasSum_poissonMeasure_sq r).tsum_eq
+
+lemma memLp_two_nat_poissonMeasure (r : ℝ≥0) :
+    MemLp (fun n : ℕ ↦ (n : ℝ)) 2 (poissonMeasure r) := by
+  refine ⟨by fun_prop, ?_⟩
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
+  simp only [ENNReal.toReal_ofNat, one_div, ENNReal.rpow_two]
+  rw [lintegral_sq_nat_poissonMeasure]
+  exact ENNReal.rpow_lt_top_of_nonneg (by norm_num) ENNReal.ofReal_ne_top
+
+end Moments
+
+section MeanVariance
+
+@[simp]
+theorem poissonMeasure_mean (r : ℝ≥0) :
+    ∫ n : ℕ, (n : ℝ) ∂poissonMeasure r = r := by
+  rw [integral_poissonMeasure]
+  simp only [smul_eq_mul]
+  exact (hasSum_poissonMeasure_nat r).tsum_eq
+
+@[simp]
+theorem poissonMeasure_moment_two (r : ℝ≥0) :
+    ∫ n : ℕ, (n : ℝ) ^ 2 ∂poissonMeasure r = (r : ℝ) ^ 2 + (r : ℝ) := by
+  rw [integral_poissonMeasure]
+  simp only [smul_eq_mul]
+  exact (hasSum_poissonMeasure_sq r).tsum_eq
+
+@[simp]
+theorem poissonMeasure_variance (r : ℝ≥0) :
+    Var[fun n : ℕ ↦ (n : ℝ); poissonMeasure r] = r := by
+  rw [variance_eq_sub (memLp_two_nat_poissonMeasure r)]
+  simp only [Pi.pow_apply]
+  rw [poissonMeasure_moment_two, poissonMeasure_mean]
+  ring
+
+end MeanVariance
 
 end ProbabilityTheory
