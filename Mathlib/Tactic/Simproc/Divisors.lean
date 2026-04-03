@@ -5,7 +5,7 @@ Authors: Paul Lezeau, Bhavik Mehta
 -/
 module
 
-public meta import Mathlib.NumberTheory.Divisors -- TODO: check if `meta` is still needed after https://github.com/leanprover/lean4/pull/13043
+public meta import Mathlib.NumberTheory.Divisors -- Ideally this wouldn't need to be a `meta` import: someone could investigate?
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
 
