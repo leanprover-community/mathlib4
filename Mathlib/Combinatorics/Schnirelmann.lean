@@ -310,9 +310,10 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
     exact ⟨a, by simp [hy], b, by simp [hx], by lia⟩
   | Sum.inr b, Sum.inr b' => grind [inr_mem_disjSum]
 
-/-- A version of 'zero_union_add_eq_univ_of_schirelmannDensity_ge_one' which assumes that `0` is an element of both `A` and `B`. -/
-theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ} [DecidablePred (· ∈ A)]
-    [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
+/-- A version of 'zero_union_add_eq_univ_of_schirelmannDensity_ge_one' which assumes that `0`
+is an element of both `A` and `B`. -/
+theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ}
+    [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
     (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = Set.univ := by
   have := zero_union_add_eq_univ_of_schirelmannDensity_ge_one h
   rw [Set.union_eq_right.mpr (Set.singleton_subset_iff.mpr hA),
