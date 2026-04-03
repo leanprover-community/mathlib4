@@ -320,11 +320,11 @@ theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
   ext; apply SemilatticeSup.ext_sup H
 
 @[to_dual]
-instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
-  sup := @SemilatticeInf.inf α _
-  le_sup_left := @SemilatticeInf.inf_le_left α _
-  le_sup_right := @SemilatticeInf.inf_le_right α _
-  sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
+instance OrderDual.instSemilatticeSup (α) [h : SemilatticeInf α] : SemilatticeSup αᵒᵈ where
+  sup a b := h.inf a b
+  le_sup_left := h.inf_le_left
+  le_sup_right := h.inf_le_right
+  sup_le _ _ _ := h.le_inf _ _ _
 
 @[to_dual]
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
@@ -500,7 +500,7 @@ theorem inf_sup_le {x y z : α} : x ⊓ (y ⊔ z) ≤ (x ⊓ y) ⊔ (x ⊓ z) :=
   rw [inf_sup_left]
 
 instance OrderDual.instDistribLattice (α : Type*) [DistribLattice α] : DistribLattice αᵒᵈ where
-  le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
+  le_sup_inf _ _ _ := inf_sup_le
 
 @[to_dual existing]
 theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by

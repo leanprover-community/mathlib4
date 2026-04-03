@@ -610,14 +610,20 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
 
-/-- If `f : X → Y` is a quotient map,
-then its restriction to the preimage of an open set is a quotient map too. -/
-theorem Topology.IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
-    {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) := by
-  refine isQuotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+lemma Topology.IsCoinducing.restrictPreimage_of_isOpen {f : X → Y} (hf : IsCoinducing f)
+    {s : Set Y} (hs : IsOpen s) :
+    IsCoinducing (s.restrictPreimage f) := by
+  refine .of_isOpen_preimage_iff_isOpen fun _ ↦ ?_
   rw [hs.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen, ← hf.isOpen_preimage,
     (hs.preimage hf.continuous).isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
     image_val_preimage_restrictPreimage]
+
+/-- If `f : X → Y` is a quotient map,
+then its restriction to the preimage of an open set is a quotient map too. -/
+theorem Topology.IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) :=
+  (isQuotientMap_iff _).2
+    ⟨.restrictPreimage_of_isOpen hf.isCoinducing hs, hf.surjective.restrictPreimage _⟩
 
 open scoped Set.Notation in
 lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
@@ -678,7 +684,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y]
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem isQuotientMap_quot_mk : IsQuotientMap (@Quot.mk X r) :=
-  ⟨Quot.exists_rep, rfl⟩
+  ⟨⟨rfl⟩, Quot.exists_rep⟩
 
 @[continuity, fun_prop]
 theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
@@ -913,6 +919,7 @@ theorem ContinuousAt.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.su
     ContinuousAt (fun a => Fin.cons (f a) (g a)) x :=
   hf.tendsto.finCons hg
 
+@[fun_prop]
 theorem Continuous.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.succ j)}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun a => Fin.cons (f a) (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.finCons hg.continuousAt

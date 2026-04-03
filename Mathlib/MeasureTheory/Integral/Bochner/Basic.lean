@@ -1183,11 +1183,11 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae,
     integral_eq_lintegral_of_nonneg_ae]
   rotate_left
-  · exact Eventually.of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact (hg.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
-  · exact Eventually.of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact (hf.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
-  · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) (norm_nonneg _)
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact hf.1.norm.mul hg.1.norm
   rw [ENNReal.toReal_rpow, ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
   -- replace norms by nnnorm
