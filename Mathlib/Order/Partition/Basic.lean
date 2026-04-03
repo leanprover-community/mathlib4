@@ -530,7 +530,7 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
   · simp only [hfdef, ha, ↓reduceDIte]
     split_ifs with h
     · exact h.choose_spec.trans <| h_mem h.choose h.choose_spec.right_mem
-    push_neg at h
+    push Not at h
     exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
   · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
     split_ifs with h₁ h₂ h₂
