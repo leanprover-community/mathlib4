@@ -23,7 +23,7 @@ of `M` is nilpotent. This is the key technical lemma behind Cartan's criterion f
 
 * `isNilpotent_of_trace_orthogonal_algClosed`: if `K` is an algebraically closed field of
   characteristic zero and `V` is finite-dimensional, then any `x ∈ M` satisfying
-  `LinearMap.trace K V (x * z) = 0` for all `z ∈ M` is nilpotent.
+  `LinearMap.trace K V (x * y) = 0` for all `y ∈ M` is nilpotent.
 
 ## References
 
