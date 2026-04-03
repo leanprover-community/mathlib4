@@ -56,12 +56,13 @@ section Lagrange
 
 variable {K : Type*} [Field K] [CharZero K]
 
-lemma exists_lagrange_polynomial
+lemma exists_polynomial_eval_sub
     {ι : Type*} [Finite ι]
     (a : ι → K) (E : Submodule ℚ K) (f : E →ₗ[ℚ] ℚ)
     (ha : ∀ i, a i ∈ E) :
-    ∃ r : Polynomial K, (∀ i j, eval (a i - a j) r =
-      algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
+    ∃ r : Polynomial K,
+      (∀ i j, eval (a i - a j) r =
+        algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
   classical
   have : Fintype ι := Fintype.ofFinite ι
   let diffs := insert 0 (Finset.univ.image (fun p : ι × ι => a p.1 - a p.2))
@@ -125,7 +126,7 @@ theorem isNilpotent_of_trace_orthogonal_algClosed
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (a i - a j) • v.end (i, j) := ad_diag_basis v a s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v _ y hy_diag
-  obtain ⟨r, hr_eval, hr_zero⟩ := exists_lagrange_polynomial a E f ha
+  obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub a E f ha
   let ad_s := LieAlgebra.ad K (Module.End K V) s
   have had_y_eq : LieAlgebra.ad K (Module.End K V) y = aeval ad_s r := by
     apply v.end.ext; intro ⟨i, j⟩
