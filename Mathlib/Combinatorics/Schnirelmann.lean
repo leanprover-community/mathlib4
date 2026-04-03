@@ -299,16 +299,9 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
       nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
         @schnirelmannDensity_mul_le_card_filter B _ n]
     _ = (disjSum sA sB).card := (card_disjSum sA sB).symm
-  obtain ⟨x, hx, y, hy, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc
-  match x, y with
-  | .inl a, .inl a' => grind
-  | .inl a, .inr b =>
-    simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
-    exact ⟨a, by simp [hx], b, by simp [hy], by lia⟩
-  | .inr b, .inl a =>
-    simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at hx hy
-    exact ⟨a, by simp [hy], b, by simp [hx], by lia⟩
-  | .inr b, .inr b' => grind [inr_mem_disjSum]
+  obtain ⟨a | b, ha, a | b, hb, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc <;>
+  simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at ha hb <;>
+  first | grind [inr_mem_disjSum] | exact ⟨a, by simp [*], b, by simp [*], by grind⟩
 
 /-- A version of 'zero_union_add_eq_univ_of_schirelmannDensity_ge_one' which assumes that `0`
 is an element of both `A` and `B`. -/
