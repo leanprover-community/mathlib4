@@ -291,36 +291,4 @@ theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
 
 end CommSemiring
 
-section CommRing
-
-variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R)
-
-lemma HasSubst.Rename : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
-  const_coeff := by simp
-  coeff_zero d := by
-    classical
-    refine Set.Finite.subset (d.support.finite_toSet.biUnion'
-      (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun (x : σ) => ?_)
-    contrapose
-    intro _ _
-    simp_all [coeff_X]
-
-theorem rename_eq_subst :
-    rename f p = p.subst (X ∘ f) := by
-  classical
-  ext n
-  rw [coeff_rename, coeff_subst (HasSubst.Rename _) p n, finsum_eq_sum _
-    (coeff_subst_finite (HasSubst.Rename _) p n)]
-  have (d : σ →₀ ℕ) (hd : ¬(coeff d) p * (coeff n) (d.prod fun s e ↦ X (f s) ^ e) = 0) :
-      mapDomain f d = n := by
-    simp_rw [← monomial_mapDomain_eq_prod] at hd
-    exact (eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hd)).symm
-  refine (Finset.sum_subset_zero_on_sdiff ?_ ?_ (fun x hx => ?_)).symm
-  · exact Set.Finite.toFinset_mono this
-  · simp +contextual [← monomial_mapDomain_eq_prod]
-  · simp only [Set.Finite.mem_toFinset] at hx
-    simp [← this _ hx, ← monomial_mapDomain_eq_prod, coeff_monomial_same]
-
-end CommRing
-
 end MvPowerSeries
