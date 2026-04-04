@@ -49,7 +49,7 @@ theorem enumOrd_le_of_forall_lt (ha : a ∈ s) (H : ∀ b < o, enumOrd s b < a) 
 private theorem enumOrd_nonempty (hs : ¬ BddAbove s) (o : Ordinal) :
     (s ∩ { b | ∀ c, c < o → enumOrd s c < b }).Nonempty := by
   rw [not_bddAbove_iff] at hs
-  obtain ⟨a, ha⟩ := bddAbove_of_small (enumOrd s '' Iio o)
+  obtain ⟨a, ha⟩ := bddAbove_of_small (s := enumOrd s '' Iio o)
   obtain ⟨b, hb, hba⟩ := hs a
   exact ⟨b, hb, fun c hc ↦ (ha (mem_image_of_mem _ hc)).trans_lt hba⟩
 
