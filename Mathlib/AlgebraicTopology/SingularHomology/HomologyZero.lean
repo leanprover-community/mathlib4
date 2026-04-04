@@ -29,28 +29,6 @@ section
 
 variable [HasCoproducts.{w} C] {R : C}
 
--- TODO: make the proof in `Algebra/Category/ModuleCat/Sheaf/Free.lean`
--- a particular case of this
-set_option backward.isDefEq.respectTransparency false in
-instance : PreservesColimitsOfSize.{v', u'} (sigmaConst.obj R) where
-  preservesColimitsOfShape {J _} := ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
-    replace hc := (Types.isColimit_iff_coconeTypesIsColimit ..).1 ⟨hc⟩
-    let coconeTypes (s : Cocone (K ⋙ sigmaConst.obj R)) : K.CoconeTypes :=
-      { pt := R ⟶ s.pt
-        ι j k := Sigma.ι (fun _ ↦ R) k ≫ s.ι.app j
-        ι_naturality g := by ext; simp [← s.w g] }
-    exact {
-      desc s := Sigma.desc (hc.desc (coconeTypes s))
-      fac s j := by
-        dsimp
-        ext k
-        simpa using congr_fun (hc.fac (coconeTypes s) j) k
-      uniq s m hm := by
-        dsimp
-        ext x
-        obtain ⟨j, k, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
-        simpa [coconeTypes, ← hm] using congr_fun (hc.fac (coconeTypes s) j).symm k }⟩⟩⟩
-
 instance : PreservesFiniteColimits (sigmaConst.obj R) :=
   PreservesColimitsOfSize.preservesFiniteColimits.{0, 0} _
 
