@@ -83,7 +83,7 @@ theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
   have ⟨x, hx⟩ := Algebra.Transcendental.transcendental (R := R) (A := A)
-  zero_lt_one.trans_le <| le_ciSup_of_le (Cardinal.bddAbove_range _)
+  zero_lt_one.trans_le <| le_ciSup_of_le Cardinal.bddAbove_of_small
     ⟨{x}, algebraicIndependent_unique_type_iff.mpr hx⟩ (by simp)
 
 theorem trdeg_eq_zero_iff : trdeg R A = 0 ↔ Algebra.IsAlgebraic R A := by
