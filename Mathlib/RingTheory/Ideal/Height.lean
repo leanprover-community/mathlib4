@@ -102,19 +102,26 @@ lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.Finite
   rw [hn]
   exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
 
-lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
-    I.primeHeight ≤ J.primeHeight := by
-  unfold primeHeight
+private lemma Ideal.height_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
+    I.height ≤ J.height := by
+  simp only [Ideal.height_eq_order_height_of_isPrime]
   gcongr
   exact h
 
-private lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
-    (h : I < J) : I.primeHeight + 1 ≤ J.primeHeight :=
-  Order.height_add_one_le h
+@[deprecated "Use `Ideal.height_mono_of_isPrime` instead." (since := "2026-04-04")]
+lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
+    I.primeHeight ≤ J.primeHeight := by
+  simpa [Ideal.height_eq_primeHeight] using Ideal.height_mono_of_isPrime h
 
 lemma Ideal.height_add_one_le_of_lt_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J) :
     I.height + 1 ≤ J.height := by
-  simpa [Ideal.height_eq_primeHeight] using Ideal.primeHeight_add_one_le_of_lt h
+  simp only [Ideal.height_eq_order_height_of_isPrime]
+  exact Order.height_add_one_le h
+
+@[deprecated "Use `Ideal.height_add_one_le_of_lt_of_isPrime` instead." (since := "2026-04-04")]
+lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
+    (h : I < J) : I.primeHeight + 1 ≤ J.primeHeight := by
+  simpa [Ideal.height_eq_primeHeight] using Ideal.height_add_one_le_of_lt_of_isPrime h
 
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
@@ -122,12 +129,12 @@ theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
 
 @[gcongr]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
-  simp only [height]
+  simp only [I.height_eq_inf_minimalPrimes, J.height_eq_inf_minimalPrimes]
   refine le_iInf₂ (fun p hp ↦ ?_)
   have := Ideal.minimalPrimes_isPrime hp
   obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans (Ideal.le_minimalPrimes hp))
-  haveI := Ideal.minimalPrimes_isPrime hq
-  exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
+  have := Ideal.minimalPrimes_isPrime hq
+  exact (iInf₂_le q hq).trans (Ideal.height_mono_of_isPrime e)
 
 @[gcongr]
 lemma Ideal.height_strict_mono_of_isPrime {I J : Ideal R} [I.IsPrime]
@@ -135,11 +142,11 @@ lemma Ideal.height_strict_mono_of_isPrime {I J : Ideal R} [I.IsPrime]
   by_cases hJ : J = ⊤
   · grw [hJ, height_top]
     exact I.height_lt_top IsPrime.ne_top'
-  · rw [← ENat.add_one_le_iff (I.height_ne_top IsPrime.ne_top'), I.height_eq_primeHeight]
+  · rw [← ENat.add_one_le_iff (I.height_ne_top IsPrime.ne_top'), J.height_eq_inf_minimalPrimes]
     refine le_iInf₂ (fun K hK ↦ ?_)
     have := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h (Ideal.le_minimalPrimes hK)
-    exact Ideal.primeHeight_add_one_le_of_lt this
+    exact Ideal.height_add_one_le_of_lt_of_isPrime this
 
 lemma Ideal.height_strict_mono_of_isPrime_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     (h : I < J) [J.FiniteHeight] : I.height < J.height := by
