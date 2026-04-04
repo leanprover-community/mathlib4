@@ -214,7 +214,6 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 @[simp]
 theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by simp [← val_pos_iff]
 
-@[simp]
 lemma castSucc_eq_zero {n : ℕ} {i : Fin n} : i.castSucc = 0 ↔ i.1 = 0 := by
   simp [← Fin.val_eq_zero_iff]
 
@@ -700,7 +699,7 @@ simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 
 @[simp]
 lemma succAbove_eq_zero {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
-    i.succAbove j = 0 ↔ i ≠ 0 ∧ j.1 = 0 := by
+    i.succAbove j = 0 ↔ i ≠ 0 ∧ j.castSucc = 0 := by
   delta Fin.succAbove
   split_ifs
   · simp; grind
