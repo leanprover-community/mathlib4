@@ -495,7 +495,6 @@ protected abbrev Arrow.forget : P.Arrow Q W ⥤ Arrow T := Comma.forget (𝟭 T)
 instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
-
 /-- Occasionally useful for rewriting in the backwards direction. -/
 lemma Over.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
     (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.leftFunc).map f = f.left := rfl
@@ -514,7 +513,6 @@ def Arrow.Hom.mk {A B : P.Arrow Q W} (f : A.toComma ⟶ B.toComma)
   prop_hom_left := hfl
   prop_hom_right := hfr
 
-variable (Q) in
 /-- Make an object of `P.Arrow Q X` from a morphism `f : A ⟶ B` and a proof of `P f`. -/
 @[simps hom left]
 protected def Arrow.mk {A B : T} (f : A ⟶ B) (hf : P f) : P.Arrow Q W where
@@ -549,8 +547,7 @@ lemma Arrow.Hom.ext {A B : P.Arrow Q W} {f g : A ⟶ B}
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Arrow.w {A B : P.Arrow Q W} (f : A ⟶ B) :
-    f.left ≫ B.hom = A.hom ≫ f.right := by
-  simp
+    f.left ≫ B.hom = A.hom ≫ f.right := f.w
 
 section
 
