@@ -90,7 +90,7 @@ lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
 
 theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
     IsRegularRing R[X] := by
-  apply (isRegularRing_iff _).mpr (fun p hp ↦ ?_)
+  apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   let q := p.comap C
   let S := (Localization.AtPrime q)[X]
   let pc := Submonoid.map Polynomial.C.toMonoidHom q.primeCompl
@@ -148,7 +148,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
     exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
-  let _ := (isRegularRing_iff R).mp ‹_› q (comap_isPrime C p)
+  let _ := isRegularRing_iff.mp ‹_› q (comap_isPrime C p)
   have eq : comap C pS = maximalIdeal (Localization.AtPrime q) := by
     rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
       ← IsLocalization.map_comap q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
