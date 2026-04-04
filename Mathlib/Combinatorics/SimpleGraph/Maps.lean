@@ -88,11 +88,18 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
+variable {G} in
+theorem apply_mem_neighborSet_map_apply {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
+    f v ∈ (G.map f).neighborSet (f u) := by
+  use hne
+  grind [Relation.Map]
+
 variable (v) in
-theorem neighborSet_map (f : V ↪ W) : (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
-  ext u
-  refine ⟨fun ⟨_, v', u', hadj, hv, hu⟩ ↦ ⟨u', f.injective hv ▸ hadj, hu⟩, fun ⟨u', hadj, hu⟩ ↦ ?_⟩
-  simpa [hu]
+theorem neighborSet_map {f : V → W} (hf : f.Injective) :
+    (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
+  refine Set.ext fun u ↦ ⟨?_, ?_⟩
+  · exact fun ⟨hne, v', u', hadj, hv, hu⟩ ↦ ⟨u', hf hv ▸ hadj, hu⟩
+  · exact fun ⟨u', hadj, hu⟩ ↦ ⟨hu ▸ hf.ne hadj.ne, v, u', hadj, rfl, hu⟩
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
