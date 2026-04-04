@@ -457,7 +457,7 @@ theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s �
     Iff.comm]
 
 theorem not_inseparable_iff_exists_open :
-    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor (x ∈ s) (y ∈ s) := by
   simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
 theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by

@@ -96,7 +96,7 @@ a subgroup is either dense or is cyclic, but not both.
 For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above.
 -/]
 theorem dense_xor'_cyclic (s : Subgroup G) :
-    Xor' (Dense (s : Set G)) (∃ a, s = .zpowers a) := by
+    Xor (Dense (s : Set G)) (∃ a, s = .zpowers a) := by
   if hd : Dense (s : Set G) then
     simp only [hd, xor_true]
     rintro ⟨a, rfl⟩

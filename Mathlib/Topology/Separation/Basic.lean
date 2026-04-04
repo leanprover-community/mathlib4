@@ -133,12 +133,12 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
 theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
+    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
 theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
-    ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
+    ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
   (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
 
 /-- Specialization forms a partial order on a t0 topological space. -/
