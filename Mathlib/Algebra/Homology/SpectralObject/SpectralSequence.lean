@@ -73,17 +73,6 @@ Under the `X.IsFirstQuadrant` assumption, we obtain
 sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
 of `ℤ × ℤ`).
 
-## Spectral objects indexed by `EInt`.
-
-When `X` is a spectral object indexed by the extended integers `EInt`,
-we obtain the `E₂`-cohomological spectral sequence
-`X.E₂SpectralSequence` where the objects of each page are indexed by
-`ℤ × ℤ` (the condition `HasSpectralSequence` is automatically satisfied).
-Under the `X.IsFirstQuadrant` assumption, we obtain
-`X.E₂SpectralSequenceNat` which is a first quadrant `E₂`-spectral
-sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
-of `ℤ × ℤ`).
-
 -/
 
 @[expose] public section
