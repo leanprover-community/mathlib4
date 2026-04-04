@@ -389,7 +389,7 @@ theorem AEMeasurable.coe_real_ereal {f : α → ℝ} {μ : Measure α} (hf : AEM
   measurable_coe_real_ereal.comp_aemeasurable hf
 
 /-- The set of finite `EReal` numbers is `MeasurableEquiv` to `ℝ`. -/
-def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
+noncomputable def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
   EReal.neBotTopHomeomorphReal.toMeasurableEquiv
 
 theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ => f p) :

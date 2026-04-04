@@ -20,6 +20,7 @@ This file proves properties of the Krull dimension of the polynomial ring over a
 
 * `Polynomial.ringKrullDim_le`: the Krull dimension of the polynomial ring over a commutative ring
   `R` is less than `2 * (ringKrullDim R) + 1`.
+
 For noetherian rings:
 * `Polynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X]` is `dim R + 1`.
 * `MvPolynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X₁, ..., Xₙ]` is
@@ -56,7 +57,8 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
   let _ : Field (R ⧸ p) := Quotient.field p
   suffices h : (P.map (Ideal.Quotient.mk (Ideal.map (algebraMap R R[X]) p))).height = 1 by
     rw [height_eq_height_add_of_liesOver_of_hasGoingDown p, h]
-  let e : (R[X] ⧸ (p.map C)) ≃+* (R ⧸ p)[X] := (polynomialQuotientEquivQuotientPolynomial p).symm
+  let e : (R[X] ⧸ (p.map (algebraMap R R[X]))) ≃+* (R ⧸ p)[X] :=
+    (polynomialQuotientEquivQuotientPolynomial p).symm
   let P' : Ideal (R ⧸ p)[X] := Ideal.map e <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))
   have : (P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))).IsMaximal := by
     refine .map_of_surjective_of_ker_le Quotient.mk_surjective ?_
@@ -66,6 +68,7 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
   have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
   rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
 lemma height_map_C (p : Ideal R) [p.IsMaximal] : (p.map C).height = p.height := by
   have : (p.map C).LiesOver p := ⟨IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le_comap_map⟩

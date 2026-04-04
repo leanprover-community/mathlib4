@@ -156,6 +156,7 @@ noncomputable instance : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
     a • K ≤ b • K := by
   rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']

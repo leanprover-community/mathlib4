@@ -122,7 +122,7 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
     (∑ σ : Perm n, ε σ * ∏ x, M (σ x) (p x) * N (p x) x) = 0 := by
   obtain ⟨i, j, hpij, hij⟩ : ∃ i j, p i = p j ∧ i ≠ j := by
     rw [← Finite.injective_iff_bijective, Injective] at H
-    push_neg at H
+    push Not at H
     exact H
   exact
     sum_involution (fun σ _ => σ * Equiv.swap i j)
@@ -778,11 +778,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   rw [← det_permute, det_succ_row_zero]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
-  congr 3
-  · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
-  · ext i' j'
-    rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,
-      Fin.cycleRange_symm_succ]
+  simp
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/
 theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : Fin n.succ) :

@@ -111,9 +111,11 @@ theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     mellin (fun t => c • f t) s = c • mellin f s := by
   simp only [mellin, smul_comm, integral_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
@@ -248,11 +250,11 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
-      · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
+      · rw [dist_eq_norm, sub_zero, norm_of_nonneg ht.1.le]
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg ht.1.le _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel

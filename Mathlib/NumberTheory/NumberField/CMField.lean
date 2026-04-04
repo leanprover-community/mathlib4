@@ -86,6 +86,7 @@ instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
 instance isTotallyComplex : IsTotallyComplex K :=
   IsCMField.to_isTotallyComplex
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_infinitePlace_eq_card_infinitePlace [NumberField K] :
     Fintype.card (InfinitePlace K⁺) = Fintype.card (InfinitePlace K) := by
   rw [card_eq_nrRealPlaces_add_nrComplexPlaces, card_eq_nrRealPlaces_add_nrComplexPlaces,
@@ -204,6 +205,7 @@ theorem complexConj_eq_self_iff (x : K) :
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
@@ -455,6 +457,7 @@ namespace CMExtension
 variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algebra.IsIntegral ℚ K]
   [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
@@ -537,6 +540,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
     rw [IsGaloisGroup.finrank_fixedPoints_eq_card_subgroup, hσ']⟩
   exact IsCMField.ofCMExtension L K
 
+open scoped IsMulCommutative in
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/

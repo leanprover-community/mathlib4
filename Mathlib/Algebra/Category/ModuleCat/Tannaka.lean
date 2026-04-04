@@ -22,6 +22,7 @@ universe u
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] add_smul mul_smul in
 attribute [local ext] End.ext in
 /-- An ingredient of Tannaka duality for rings:

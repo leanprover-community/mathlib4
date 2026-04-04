@@ -148,6 +148,9 @@ theorem eq_zero_rpow_iff {x : ℝ} {a : ℝ} : a = 0 ^ x ↔ x ≠ 0 ∧ a = 0 �
 theorem rpow_one (x : ℝ) : x ^ (1 : ℝ) = x := by simp [rpow_def]
 
 @[simp]
+theorem pi_rpow_one {α : Type*} (f : α → ℝ) : f ^ (1 : ℝ) = f := by ext; simp
+
+@[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ) ^ x = 1 := by simp [rpow_def]
 
 theorem zero_rpow_le_one (x : ℝ) : (0 : ℝ) ^ x ≤ 1 := by
@@ -1107,6 +1110,7 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
 - that `a` is a natural number `m`
 - that `b` is a nonnegative rational number `n / d`
 - that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
+
 prove that `a ^ b = r`.
 -/
 theorem IsNat.rpow_isNNRat {a b : ℝ} {m n d r : ℕ} (ha : IsNat a m) (hb : IsNNRat b n d)
@@ -1135,6 +1139,7 @@ open Lean in
 /-- Given proofs
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
+
 returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;
