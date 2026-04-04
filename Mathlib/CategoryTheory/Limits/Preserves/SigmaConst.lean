@@ -21,6 +21,7 @@ preserves all colimits.
 public section
 
 universe w v' v u' u
+
 namespace CategoryTheory.Limits
 
 set_option backward.isDefEq.respectTransparency false in

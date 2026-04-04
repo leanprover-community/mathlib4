@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Singular homology in degree 0
@@ -21,22 +22,7 @@ universe w v v' u u'
 
 open CategoryTheory Limits AlgebraicTopology Simplicial
 
-variable {C : Type u} [Category.{v} C]
-
-namespace CategoryTheory.Limits
-
-section
-
-variable [HasCoproducts.{w} C] {R : C}
-
-instance : PreservesFiniteColimits (sigmaConst.obj R) :=
-  PreservesColimitsOfSize.preservesFiniteColimits.{0, 0} _
-
-end
-
-end CategoryTheory.Limits
-
-variable [HasCoproducts.{w} C] [Preadditive C]
+variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
 namespace SSet
 
