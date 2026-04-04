@@ -22,12 +22,12 @@ of `M` is nilpotent. This is the key technical lemma behind Cartan's criterion f
 ## Main results
 
 * `isNilpotent_of_trace_orthogonal_algClosed`: if `K` is an algebraically closed field of
-  characteristic zero and `V` is finite-dimensional, then any `x ∈ M` satisfying
-  `LinearMap.trace K V (x * y) = 0` for all `y ∈ M` is nilpotent.
+  characteristic zero and `V` is finite-dimensional, then any `x ∈ M A B` satisfying
+  `tr (x * y) = 0` for all `y ∈ M A B` is nilpotent.
 
 ## References
 
-* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Chapter 4
+* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Section 4.3
 -/
 
 @[expose] public section
