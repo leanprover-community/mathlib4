@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenneth Goodman
 -/
 import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -17,7 +16,9 @@ Euclidean algorithm using the Fibonacci sequence.
 ## Main results
 
 - `Nat.euclidSteps`: counts the number of division steps in the
-  Euclidean algorithm on natural number inputs.
+  Euclidean algorithm on natural number inputs. This is the same
+  recursion as `Nat.gcd` (see `Nat.gcd_euclidSteps`), but
+  counting steps instead of computing the result.
 - `Nat.fib_le_of_euclidSteps`: if the Euclidean algorithm on
   `(a, b)` with `b ≤ a` takes at least `n + 1` steps, then
   `fib (n + 1) ≤ b` and `fib (n + 2) ≤ a`.
@@ -60,16 +61,29 @@ theorem euclidSteps_zero_right (a : ℕ) :
 theorem euclidSteps_succ (a : ℕ) {b : ℕ} (hb : 0 < b) :
     euclidSteps a b = 1 + euclidSteps b (a % b) := by
   rw [euclidSteps]
-  simp [Nat.not_eq_zero_of_lt (Nat.zero_lt_of_lt hb)]
+  simp [Nat.pos_iff_ne_zero.mp hb]
 
 /-- If the Euclidean algorithm takes at least one step, then
 `b > 0`. -/
 theorem euclidSteps_pos {a b : ℕ}
     (h : 0 < euclidSteps a b) : 0 < b := by
   by_contra hb
-  push_neg at hb
-  interval_cases b
+  simp only [not_lt, Nat.le_zero] at hb
+  subst hb
   simp at h
+
+/-- `euclidSteps` counts the number of recursive calls in the
+computation of `Nat.gcd`. They follow the same recursion:
+`gcd` computes the result, `euclidSteps` counts the steps. -/
+theorem gcd_euclidSteps (a b : ℕ) :
+    (euclidSteps a b = 0 ↔ b = 0) ∧
+    (0 < b → euclidSteps a b =
+      1 + euclidSteps b (a % b)) := by
+  refine ⟨⟨fun h => ?_, fun h => by subst h; simp⟩,
+    fun hb => euclidSteps_succ a hb⟩
+  rcases Nat.eq_zero_or_pos b with rfl | hb
+  · rfl
+  · rw [euclidSteps_succ a hb] at h; omega
 
 /-- When `0 < b` and `b ≤ a`, we have `b + a % b ≤ a`. This
 follows from `a / b ≥ 1`. -/
@@ -94,16 +108,9 @@ theorem fib_le_of_euclidSteps {a b : ℕ} (hab : b ≤ a)
     fib (n + 1) ≤ b ∧ fib (n + 2) ≤ a := by
   induction n generalizing a b with
   | zero =>
-    constructor
-    · simp [fib_one]
-      exact euclidSteps_pos
-        (Nat.lt_of_lt_of_le Nat.zero_lt_one hn)
-    · simp [fib_two]
-      exact Nat.le_trans
-        (Nat.one_le_iff_ne_zero.mpr
-          (Nat.not_eq_zero_of_lt (euclidSteps_pos
-            (Nat.lt_of_lt_of_le Nat.zero_lt_one hn))))
-        hab
+    have hb : 0 < b :=
+      euclidSteps_pos (by omega : 0 < euclidSteps a b)
+    exact ⟨hb, Nat.le_trans hb hab⟩
   | succ n ih =>
     have hb : 0 < b :=
       euclidSteps_pos
@@ -132,7 +139,7 @@ theorem euclidSteps_le_of_lt_fib {a b : ℕ} (hab : b ≤ a)
     {n : ℕ} (hb : b < fib (n + 1)) :
     euclidSteps a b ≤ n := by
   by_contra h
-  push_neg at h
+  simp only [not_le] at h
   have ⟨h1, _⟩ := fib_le_of_euclidSteps hab h
   omega
 
@@ -158,7 +165,12 @@ theorem euclidSteps_fib {n : ℕ} (hn : 0 < n) :
   | zero => omega
   | succ n ih =>
     cases n with
-    | zero => native_decide
+    | zero =>
+      change euclidSteps (fib 3) (fib 2) = 1
+      rw [show fib 2 = 1 from rfl,
+        show fib 3 = 2 from rfl]
+      rw [euclidSteps_succ _ (by omega)]
+      simp
     | succ n =>
       have hfib_pos : 0 < fib (n + 2 + 1) := by
         simp [fib_pos]
