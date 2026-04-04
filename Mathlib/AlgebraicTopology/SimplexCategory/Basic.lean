@@ -204,7 +204,7 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
   ext (i : Fin 2)
   match i with | 0 | 1 => simp <;> lia
 
-instance (D : SimplexCategory) : Subsingleton (D ⟶ ⦋0⦌) where
+instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
 
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
@@ -538,7 +538,7 @@ def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
-theorem skeletalFunctor.coe_map {D₁ D₂ : SimplexCategory} (f : D₁ ⟶ D₂) :
+theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
     ↑(skeletalFunctor.map f).hom.hom = f.toOrderHom :=
   rfl
 
@@ -737,9 +737,9 @@ theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 
 set_option backward.isDefEq.respectTransparency false in
-theorem eq_σ_comp_of_not_injective' {n : ℕ} {D' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ D')
+theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
-    ∃ θ' : ⦋n⦌ ⟶ D', θ = σ i ≫ θ' := by
+    ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext x : 3
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
@@ -769,9 +769,9 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {D' : SimplexCategory} (θ : ⦋n
       lia
 
 set_option backward.isDefEq.respectTransparency false in
-theorem eq_σ_comp_of_not_injective {n : ℕ} {D' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ D')
+theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ D'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -789,8 +789,8 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {D' : SimplexCategory} (θ : ⦋n 
   · rw [Fin.castSucc_castPred, h₁]
     exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 
-theorem eq_comp_δ_of_not_surjective' {n : ℕ} {D : SimplexCategory} (θ : D ⟶ ⦋n + 1⦌)
-    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : D ⟶ ⦋n⦌, θ = θ' ≫ δ i := by
+theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
+    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ ⦋n⦌, θ = θ' ≫ δ i := by
   use θ ≫ σ (.predAbove (.last n) i)
   ext x : 3
   suffices ∀ j ≠ i, i.succAbove (((Fin.last n).predAbove i).predAbove j) = j by
@@ -799,9 +799,9 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {D : SimplexCategory} (θ : D �
   intro j hj
   cases i using Fin.lastCases <;> simp [hj]
 
-theorem eq_comp_δ_of_not_surjective {n : ℕ} {D : SimplexCategory} (θ : D ⟶ ⦋n + 1⦌)
+theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2)) (θ' : D ⟶ ⦋n⦌), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ ⦋n⦌), θ = θ' ≫ δ i := by
   obtain ⟨i, hi⟩ := not_forall.mp hθ
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
@@ -836,8 +836,8 @@ theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i
   haveI := CategoryTheory.mono_of_mono θ' (δ i)
   rw [h, eq_id_of_mono θ', Category.id_comp]
 
-theorem len_lt_of_mono {D' D : SimplexCategory} (i : D' ⟶ D) [Mono i] (hi' : D ≠ D') :
-    D'.len < D.len := by
+theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] (hi' : Δ ≠ Δ') :
+    Δ'.len < Δ.len := by
   grind [→ len_le_of_mono, SimplexCategory.ext]
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=
@@ -850,24 +850,24 @@ instance : HasStrongEpiMonoFactorisations SimplexCategory :=
 instance : HasStrongEpiImages SimplexCategory :=
   Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
 
-instance (D D' : SimplexCategory) (θ : D ⟶ D') : Epi (factorThruImage θ) :=
+instance (Δ Δ' : SimplexCategory) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
   StrongEpi.epi
 
-theorem image_eq {D D' D'' : SimplexCategory} {φ : D ⟶ D''} {e : D ⟶ D'} [Epi e] {i : D' ⟶ D''}
-    [Mono i] (fac : e ≫ i = φ) : image φ = D' := by
+theorem image_eq {Δ Δ' Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ Δ'} [Epi e] {i : Δ' ⟶ Δ''}
+    [Mono i] (fac : e ≫ i = φ) : image φ = Δ' := by
   haveI := strongEpi_of_epi e
   let e := image.isoStrongEpiMono e i fac
   ext
   exact le_antisymm (len_le_of_epi e.hom) (len_le_of_mono e.hom)
 
-theorem image_ι_eq {D D'' : SimplexCategory} {φ : D ⟶ D''} {e : D ⟶ image φ} [Epi e]
-    {i : image φ ⟶ D''} [Mono i] (fac : e ≫ i = φ) : image.ι φ = i := by
+theorem image_ι_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ image φ} [Epi e]
+    {i : image φ ⟶ Δ''} [Mono i] (fac : e ≫ i = φ) : image.ι φ = i := by
   haveI := strongEpi_of_epi e
   rw [← image.isoStrongEpiMono_hom_comp_ι e i fac,
     SimplexCategory.eq_id_of_isIso (image.isoStrongEpiMono e i fac).hom, Category.id_comp]
 
-theorem factorThruImage_eq {D D'' : SimplexCategory} {φ : D ⟶ D''} {e : D ⟶ image φ} [Epi e]
-    {i : image φ ⟶ D''} [Mono i] (fac : e ≫ i = φ) : factorThruImage φ = e := by
+theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ image φ} [Epi e]
+    {i : image φ ⟶ Δ''} [Mono i] (fac : e ≫ i = φ) : factorThruImage φ = e := by
   rw [← cancel_mono i, fac, ← image_ι_eq fac, image.fac]
 
 end EpiMono
@@ -882,8 +882,8 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 
 theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
 
-instance uniqueHomToZero {D : SimplexCategory} : Unique (D ⟶ ⦋0⦌) where
-  default := D.const _ 0
+instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
   uniq := eq_const_to_zero
 
 /-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/

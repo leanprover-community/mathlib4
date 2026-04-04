@@ -119,8 +119,8 @@ instance : Inhabited (Modification η η) :=
 
 /-- Vertical composition of modifications. -/
 @[simps]
-def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (D : Modification θ ι) : Modification η ι where
-  app a := Γ.app a ≫ D.app a
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
 
 end Modification
 
@@ -140,7 +140,7 @@ Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace. -
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Hom
   id Γ := ⟨Modification.id Γ⟩
-  comp Γ D := ⟨Modification.vcomp Γ.as D.as⟩
+  comp Γ Δ := ⟨Modification.vcomp Γ.as Δ.as⟩
 
 instance : Inhabited (η ⟶ η) :=
   ⟨𝟙 η⟩

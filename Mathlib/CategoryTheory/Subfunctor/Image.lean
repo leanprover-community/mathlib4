@@ -125,7 +125,7 @@ variable (G : Subfunctor F) (f : F ⟶ F')
 def image : Subfunctor F' where
   obj i := (f.app i) '' (G.obj i)
   map := by
-    rintro D D' φ _ ⟨x, hx, rfl⟩
+    rintro Δ Δ' φ _ ⟨x, hx, rfl⟩
     exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
 
 lemma image_top : (⊤ : Subfunctor F).image f = range f := by aesop
