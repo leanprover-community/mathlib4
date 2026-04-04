@@ -181,6 +181,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
           simp only [if_neg hk, inv_mul_cancel]
           exact map_one ϕ
 
+open scoped IsMulCommutative in
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
@@ -202,6 +203,7 @@ theorem transfer_eq_pow_aux (g : G)
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, Finset.prod_pow_eq_pow_sum, index_eq_sum_minimalPeriod H g] using key
 
+open scoped IsMulCommutative in
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     transfer ϕ g = ϕ ⟨g ^ H.index, transfer_eq_pow_aux g key⟩ := by
@@ -219,6 +221,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     funext
     apply key
 
+open scoped IsMulCommutative in
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
@@ -238,14 +241,14 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
+variable {p : ℕ} (P : Sylow p G) (hP : normalizer (P : Subgroup G) ≤ centralizer (P : Set G))
 include hP
 
+open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
-  @transfer G _ P P
-    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
-      (MonoidHom.id P) _
+  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
@@ -260,6 +263,7 @@ theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
 
 variable [FiniteIndex (P : Subgroup G)]
 
+open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
@@ -305,11 +309,12 @@ open Subgroup
 variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = p) {P : Sylow p G}
 
 include hp in
-theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
+theorem normalizer_le_centralizer (hP : IsCyclic P) :
+    normalizer (P : Subgroup G) ≤ centralizer (P : Set G) := by
   subst hp
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
-    rw [Subsingleton.elim P.normalizer (centralizer P)]
+    rw [Subsingleton.elim (normalizer _) (centralizer P)]
   have := Fact.mk (Nat.minFac_prime hn)
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
   rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
@@ -320,12 +325,12 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
     apply Nat.coprime_one_right
   rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
   refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
-  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_of_le_left P.normalizer P.le_centralizer)
+  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_of_le_left _ P.le_centralizer)
     apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_index_of_le P.le_normalizer)
     rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
     exact P.not_dvd_index
-  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_card (centralizer P) P.normalizer)
-    apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
+  · apply Nat.Coprime.coprime_dvd_left <| relIndex_dvd_card ..
+    apply Nat.Coprime.coprime_dvd_left <| card_subgroup_dvd_card _
     have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
     have h2 := Nat.gcd_le_right (n := (Nat.card G).minFac - 1) (Nat.card G)
       (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
