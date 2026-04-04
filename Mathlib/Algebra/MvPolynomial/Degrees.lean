@@ -285,8 +285,10 @@ lemma le_degreeOf_of_mem_support (i : σ) {s : σ →₀ ℕ} :
   rw [degreeOf_eq_sup, Finset.le_sup_iff si]
   use s
 
-lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} : p.degreeOf i < s i → s ∉ p.support :=
-  fun h ↦ by contrapose! h; exact le_degreeOf_of_mem_support i h
+lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} :
+    p.degreeOf i < s i → s ∉ p.support := fun h ↦ by
+  contrapose! h
+  exact le_degreeOf_of_mem_support i h
 
 /--
 Note that `degreeOf_prod_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
