@@ -20,6 +20,8 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 
 + `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
 + `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
++ `CFC.concaveOn_nnrpow`, `CFC.concaveOn_rpow`: `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`
++ `CFC.concaveOn_sqrt`: `CFC.sqrt` is operator concave
 
 ## TODO
 
