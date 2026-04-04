@@ -15,9 +15,6 @@ We prove basic properties of `variation` for `μ : VectorMeasure X V` in `ENorme
 `∑ᵢ, ‖μ(Eᵢ)‖`. This definition allows one to define the integral against
 such vector-valued measures.
 
-When `μ` is a signed measure, it will be shown that `μ.variation E = μ.totalVariation E`. When `μ`
-is `ℝ≥0∞`-valued measure, `μ.variation` coincides with `μ` on measurable sets.
-
 ## Main results
 
 * `enorm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
