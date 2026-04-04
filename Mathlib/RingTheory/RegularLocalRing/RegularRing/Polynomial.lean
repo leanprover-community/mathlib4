@@ -95,48 +95,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
   let S := (Localization.AtPrime q)[X]
   let pc := Submonoid.map Polynomial.C.toMonoidHom q.primeCompl
   let : Algebra R[X] S := algebra R (Localization.AtPrime q)
-  have : IsLocalization pc S := {
-    map_units x := by
-      rcases x.2 with ⟨y, mem, eq⟩
-      apply IsUnit.of_mul_eq_one (C (Localization.mk 1 ⟨y, mem⟩))
-      simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
-    surj z := by
-      induction z using Polynomial.induction_on' with
-      | add f g hf hg =>
-        rcases hf with ⟨⟨x1, y1⟩, h1⟩
-        rcases hg with ⟨⟨x2, y2⟩, h2⟩
-        use (x2 * y1.1 + x1 * y2.1, y1 * y2)
-        rw [Submonoid.coe_mul, map_mul, add_mul, map_add]
-        nth_rw 4 [mul_comm]
-        simp [← mul_assoc, h1, h2, add_comm]
-      | monomial n a =>
-        rcases Localization.mkHom_surjective a with ⟨⟨x, y⟩, h⟩
-        use ((monomial n) x, ⟨C y.1, by simp [-mem_primeCompl_iff, pc]⟩)
-        simp only [← h, Localization.mkHom_apply, algebraMap_def, coe_mapRingHom, map_C, ←
-          Localization.mk_one_eq_algebraMap, monomial_mul_C, map_monomial, S, Localization.mk_mul]
-        apply congrArg _ (Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq ?_))
-        simp [mul_comm]
-    exists_of_eq {x y} eq := by
-      have eq' (n : ℕ) : (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff x n) =
-        (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff y n) := by
-        simp only [algebraMap_def, coe_mapRingHom, S] at eq
-        have : coeff (map (algebraMap R (Localization.AtPrime q)) x) n =
-          coeff (map (algebraMap R (Localization.AtPrime q)) y) n := by rw [eq]
-        simpa
-      let g : ℕ → q.primeCompl := fun n ↦ Classical.choose (IsLocalization.exists_of_eq (eq' n))
-      have g_spec (n : ℕ) := Classical.choose_spec
-        (IsLocalization.exists_of_eq (M := q.primeCompl) (eq' n))
-      let s := ∏ n ∈ x.1.1 ∪ y.1.1, g n
-      have : s.1 ∉ q := s.2
-      use ⟨C s.1, by simpa [pc]⟩
-      ext n
-      simp only [coeff_C_mul, s]
-      by_cases mem : n ∈ x.1.1 ∪ y.1.1
-      · rcases Finset.dvd_prod_of_mem g mem with ⟨t, ht⟩
-        simp only [ht, Submonoid.coe_mul, mul_comm _ t.1, mul_assoc]
-        rw [g_spec n]
-      · simp only [Finset.mem_union, Finsupp.mem_support_iff, ne_eq, not_or, not_not] at mem
-        simp [← Polynomial.toFinsupp_apply, mem] }
+  have : IsLocalization pc S := Polynomial.isLocalization _ _
   let pS := p.map (algebraMap R[X] S)
   have disj : Disjoint (pc : Set R[X]) (p : Set R[X]) := by
     simpa [pc, q] using Set.disjoint_image_left.mpr
