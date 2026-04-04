@@ -360,7 +360,8 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   cases Subsingleton.elim v w
   simp
 
-theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
+theorem Colorable.chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) :
+    0 < G.chromaticNumber := by
   rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
   intro m hm
@@ -369,6 +370,8 @@ theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.
   obtain ⟨i, hi⟩ := hm.some (Classical.arbitrary V)
   have h₁ : i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
   exact Nat.not_lt_zero _ h₁
+
+@[deprecated (since := "2026-04-01")] alias chromaticNumber_pos := Colorable.chromaticNumber_pos
 
 theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
@@ -446,6 +449,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
   rw [← Finite.injective_iff_surjective]
   exact Hom.injective_of_top_hom C
 
+@[simp]
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
   by_contra hc

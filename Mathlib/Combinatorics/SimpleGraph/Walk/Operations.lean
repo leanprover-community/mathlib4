@@ -367,13 +367,10 @@ theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk 
     t ∈ (p.append p').support.tail ↔ t ∈ p.support.tail ∨ t ∈ p'.support.tail := by
   rw [tail_support_append, List.mem_append]
 
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support ↔ t ∈ p.support ∨ t ∈ p'.support := by
-  simp only [mem_support_iff, mem_tail_support_append_iff]
-  obtain rfl | h := eq_or_ne t v <;> obtain rfl | h' := eq_or_ne t u <;>
-    -- this `have` triggers the unusedHavesSuffices linter:
-    (try have := h'.symm) <;> simp [*]
+  grind [mem_support_iff, mem_tail_support_append_iff, end_mem_tail_support_of_ne]
 
 theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support ⊆ (p.concat hadj).support := by
@@ -601,14 +598,16 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nil_take_iff (p : G.Walk u v) (n : ℕ) : (p.take n).Nil ↔ p.Nil ∨ n = 0 := by
   cases p <;> cases n <;> simp [take]
 
-lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
+lemma support_take {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
+
+@[deprecated (since := "2026-04-04")] alias take_support_eq_support_take_succ := support_take
 
 lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
   apply ext_support
-  simp [take_support_eq_support_take_succ, List.take_take, Nat.min_left_comm]
+  simp [support_take, List.take_take, Nat.min_left_comm]
 
 lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
@@ -623,7 +622,7 @@ lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
 lemma take_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
     (cons h p).take n = cons h ((p.take <| n - 1).copy rfl (p.getVert_cons h hn).symm) := by
   apply ext_support
-  grind [support_copy, take_support_eq_support_take_succ]
+  grind [support_copy, support_take]
 
 lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
@@ -662,7 +661,7 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
   apply ext_support
-  rw [support_append, take_support_eq_support_take_succ, drop_support_eq_support_drop_min,
+  rw [support_append, support_take, drop_support_eq_support_drop_min,
     List.tail_drop]
   by_cases! h : n < p.length
   · simp [min_eq_left_of_lt h]

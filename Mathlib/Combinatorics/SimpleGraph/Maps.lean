@@ -625,26 +625,24 @@ protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding �
   { f with map_rel_iff' := by simp }
 
 @[simp]
-lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
-    SimpleGraph.Iso.comap f G v = f v := rfl
+lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) : Iso.comap f G v = f v := rfl
 
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 @[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
-    (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
+    (Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
   { f with map_rel_iff' := by aesop (add simp map_adj') }
 
 @[simp]
-lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
-    SimpleGraph.Iso.map f G v = f v := rfl
+lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) : Iso.map f G v = f v := rfl
 
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
-    (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
+    (Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
@@ -679,13 +677,12 @@ variable [Fintype V] {n : ℕ}
 
 /-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
 `G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
-def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
-  Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
-  symm x y := by simp_rw [adj_comm, imp_self]
+noncomputable def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) :=
+  G.comap (Fintype.equivFinOfCardEq hc).symm
 
 /-- The isomorphism between `G` and `G.overFin hc`. -/
-noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
-  use Fintype.equivFinOfCardEq hc; simp [overFin]
+noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc :=
+  .symm <| .comap ..
 
 end Finite
 
