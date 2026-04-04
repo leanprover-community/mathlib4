@@ -134,43 +134,16 @@ noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
 
-/- If `C` was in `Type u`, we could show that `freeFunctor` is a left adjoint, and
-deduce that `freeFunctor` preserves all colimits. Instead, we use
-the natural bijection `freeHomEquiv`, which is as close as an adjunction we can get. -/
-instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
-  preservesColimitsOfShape {J} _ := ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
-    replace hc := (Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩
-    let coconeTypes (s : Cocone (K ⋙ freeFunctor (R := R))) :
-        K.CoconeTypes :=
-      { pt := s.pt.sections
-        ι j := freeHomEquiv _ (s.ι.app j)
-        ι_naturality {j j'} f := by
-          funext x
-          dsimp
-          rw [← s.w f]
-          dsimp
-          rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
-            Function.comp_apply, freeHomEquiv_apply] }
-    exact {
-      desc s := (freeHomEquiv _).symm (hc.desc (coconeTypes s))
-      fac s j := (freeHomEquiv _).injective (by
-        funext x
-        dsimp
-        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
-          sectionsMap_freeHomEquiv_symm_freeSection,
-          dsimp% hc.fac_apply (coconeTypes s) j x])
-      uniq s m hm := (freeHomEquiv _).injective (by
-        funext x
-        obtain ⟨j, x, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
-        replace hm := congr_fun ((freeHomEquiv _).congr_arg (hm j)) x
-        dsimp at hm
-        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
-          Function.comp_apply] at hm
-        rw [freeHomEquiv_apply, freeHomEquiv_apply,
-          sectionsMap_freeHomEquiv_symm_freeSection,
-          Functor.coconeTypesEquiv_symm_apply_ι,
-          dsimp% hc.fac_apply (coconeTypes s) j x, hm]) }⟩⟩⟩
+variable (R) in
+/-- `freeFunctor : Type u ⥤ SheafOfModules R` identifies to `sigmaConst.obj (unit R)`. -/
+noncomputable def freeFunctorIsoSigmaConstObj :
+    freeFunctor (R := R) ≅ sigmaConst.obj (unit R) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    (fun f ↦ Sigma.hom_ext _ _
+      (fun x ↦ (ιFree_freeMap_assoc _ _ _ ).trans (by simp [free, ιFree])))
 
+instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
+  preservesColimits_of_natIso (freeFunctorIsoSigmaConstObj R).symm
 
 section
 
