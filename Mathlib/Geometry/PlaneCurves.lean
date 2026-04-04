@@ -78,11 +78,23 @@ end
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-/-- The `normal` vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
-has length 1 (is a unit vector). -/
-theorem norm_normal_eq_one_of_unit_speed (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
-    ‖normal c t‖ = 1 := by
-  simp [normal_eq_of_norm_deriv_eq_one (h:=(hc t ht)), EuclideanSpace.norm_eq, ← hc t ht, add_comm]
+/-- The `normal` vector at point with a non-zero derivative of a plane curve has length 1 (is a unit
+vector). -/
+theorem norm_normal_eq_one_of_non_zero_deriv (h : deriv c t ≠ 0) : ‖normal c t‖ = 1 := by
+  rw [normal_eq, NormSMulClass.norm_smul, norm_inv, norm_norm]
+  simp only [Fin.isValue, EuclideanSpace.norm_eq !₂[-(deriv c t).ofLp 1, (deriv c t).ofLp 0],
+    Real.norm_eq_abs, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero, even_two, Even.neg_pow,
+    Matrix.cons_val_one, Matrix.cons_val_fin_one, add_comm]
+  rw [show √((deriv c t).ofLp 0 ^ 2 + (deriv c t).ofLp 1 ^ 2) = √(∑ i, ‖(deriv c t).ofLp i‖ ^ 2) by
+    simp, ← EuclideanSpace.norm_eq (deriv c t), show ‖deriv c t‖⁻¹ * ‖deriv c t‖ = ‖deriv c t‖ /
+    ‖deriv c t‖ by ring, div_self (norm_ne_zero_iff.mpr h)]
+
+/-- A special useful case, unit speed at a point implies that the normal is a unit vector as well -/
+theorem norm_normal_eq_one_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) : ‖normal c t‖ = 1 :=
+  have h' : deriv c t ≠ 0 := by
+    rw [← norm_ne_zero_iff, h]
+    exact one_ne_zero
+  norm_normal_eq_one_of_non_zero_deriv h'
 
 /-- For every plane curve `c` parametrized by arc-length, the velocity vector `deriv c` and the
 `normal` vector at each point form an orthonormal basis of the plane, which is sometimes called the
@@ -96,7 +108,7 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
       fin_cases i
       <;> simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.mk_one, Fin.isValue]
       · exact hc t ht
-      · exact norm_normal_eq_one_of_unit_speed hc ht
+      · exact norm_normal_eq_one_of_norm_deriv_eq_one (hc t ht)
     · intro i j hinej
       fin_cases i
       · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, ne_eq] at hinej
@@ -210,7 +222,7 @@ theorem inner_of_deriv_normal_normal_of_unit_speed_eq_zero (hI : IsOpen I)
     (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     inner ℝ  (deriv (normal c) t) (normal c t) = 0 :=
   inner_of_deriv_curve_eq_zero_of_const_norm_curve hI (by fun_prop (disch := assumption))
-    (fun _ ht ↦  norm_normal_eq_one_of_unit_speed hc₂ ht) ht
+    (fun _ ht ↦  norm_normal_eq_one_of_norm_deriv_eq_one (hc₂ _ ht)) ht
 
 theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
     (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
@@ -224,7 +236,7 @@ theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
   rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht hc₂)
     (velocity_hasDerivAt_aux hI hc₁ ht) hci, second_deriv_eq_orientedCurvature_times_normal hI hc₁
     hc₂ ht, real_inner_comm, inner_smul_left_eq_smul]
-  simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_unit_speed hc₂ ht,
+  simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_norm_deriv_eq_one (hc₂ t ht),
     RCLike.ofReal_real_eq_id, id_eq, one_pow, smul_eq_mul, mul_one, add_comm, real_inner_comm]
 
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
