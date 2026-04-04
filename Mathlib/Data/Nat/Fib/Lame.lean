@@ -67,12 +67,8 @@ theorem euclidSteps_of_ne_zero (a : ℕ) {b : ℕ}
   simp [hb]
 
 /-- **Lamé's Theorem.** If the Euclidean algorithm on `(a, b)`
-with `b ≤ a` takes at least `n` steps (with `n ≠ 0`), then
-`fib n ≤ b` and `fib (n + 1) ≤ a`.
-
-This is the founding result of computational complexity: it was
-the first theorem to bound an algorithm's running time using a
-mathematical function (Lamé, 1844). -/
+takes at least `n` steps, then `fib n ≤ b` and
+`fib (n + 1) ≤ a`. -/
 theorem fib_le_of_euclidSteps {a b : ℕ} (hab : b ≤ a)
     {n : ℕ} (hn₀ : n ≠ 0) (hn : n ≤ euclidSteps a b) :
     fib n ≤ b ∧ fib (n + 1) ≤ a := by
@@ -87,60 +83,45 @@ theorem fib_le_of_euclidSteps {a b : ℕ} (hab : b ≤ a)
       exact ⟨Nat.pos_of_ne_zero hb,
         Nat.le_trans (Nat.pos_of_ne_zero hb) hab⟩
     | succ n =>
-      have hmod_lt : a % b < b :=
-        Nat.mod_lt a (Nat.pos_of_ne_zero hb)
-      have hmod_le : a % b ≤ b := Nat.le_of_lt hmod_lt
-      have ⟨ih1, ih2⟩ :=
-        ih hmod_le (by omega) (by omega)
-      constructor
-      · exact ih2
-      · change fib (n + 2 + 1) ≤ a
-        rw [show n + 2 + 1 = (n + 1) + 2 from by omega,
-          @fib_add_two (n + 1)]
-        change fib (n + 1) + fib (n + 2) ≤ a
-        calc fib (n + 1) + fib (n + 2)
-            ≤ a % b + b := Nat.add_le_add ih1 ih2
-          _ = b + a % b := by omega
-          _ ≤ a := add_mod_le hab
+      have hmod_le : a % b ≤ b :=
+        le_of_lt (Nat.mod_lt a (Nat.pos_of_ne_zero hb))
+      obtain ⟨ih1, ih2⟩ := ih hmod_le (by omega) (by omega)
+      refine ⟨ih2, ?_⟩
+      calc fib (n + 2 + 1)
+          = fib (n + 1) + fib (n + 2) := by
+            rw [show n + 2 + 1 = (n + 1) + 2 by omega,
+              fib_add_two]
+        _ ≤ a % b + b := Nat.add_le_add ih1 ih2
+        _ = b + a % b := by omega
+        _ ≤ a := add_mod_le hab
 
-/-- **Contrapositive of Lamé's theorem.** If `b < fib (n + 1)`,
-then the Euclidean algorithm on `(a, b)` with `b ≤ a` takes at
-most `n` steps. -/
 theorem euclidSteps_le_of_lt_fib {a b : ℕ} (hab : b ≤ a)
     {n : ℕ} (hb : b < fib (n + 1)) :
     euclidSteps a b ≤ n := by
   by_contra h
   simp only [not_le] at h
-  have ⟨h1, _⟩ := @fib_le_of_euclidSteps a b hab
-    (n + 1) (by omega) (by omega)
-  omega
+  exact absurd hb (not_lt.mpr
+    (fib_le_of_euclidSteps hab (by omega) (by omega)).1)
 
-/-- When `a < b`, one Euclidean step swaps the arguments:
-`euclidSteps a b = euclidSteps b a + 1`. -/
 theorem euclidSteps_of_lt {a b : ℕ} (hab : a < b) :
     euclidSteps a b = euclidSteps b a + 1 := by
   rw [euclidSteps_of_ne_zero a (by omega),
     Nat.mod_eq_of_lt hab]
 
-/-- **Tightness of Lamé's bound.** Consecutive Fibonacci numbers
-are the worst case for the Euclidean algorithm:
-`euclidSteps (fib (n + 2)) (fib (n + 1)) = n` for `n ≠ 0`. -/
+/-- Consecutive Fibonacci numbers achieve the worst case for the
+Euclidean algorithm. -/
 theorem euclidSteps_fib {n : ℕ} (hn : n ≠ 0) :
     euclidSteps (fib (n + 2)) (fib (n + 1)) = n := by
   induction n with
-  | zero => exact absurd rfl hn
+  | zero => contradiction
   | succ n ih =>
     cases n with
     | zero =>
-      change euclidSteps (fib 3) (fib 2) = 1
-      rw [show fib 2 = 1 from rfl,
-        show fib 3 = 2 from rfl]
-      rw [euclidSteps_of_ne_zero _ (by omega)]
+      rw [euclidSteps_of_ne_zero _ (show fib 2 ≠ 0 by simp),
+        show fib 3 % fib 2 = 0 from rfl]
       simp
     | succ n =>
-      have hfib_ne : fib (n + 2 + 1) ≠ 0 := by
-        simp
-      rw [euclidSteps_of_ne_zero _ hfib_ne,
+      rw [euclidSteps_of_ne_zero _ (by simp),
         fib_mod_fib_succ (by omega : 1 < n + 2),
         ih (by omega)]
 
