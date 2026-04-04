@@ -254,7 +254,7 @@ alias principal_add_omega0 := isPrincipal_add_omega0
 
 -- `add_omega0` is proven in the Arithmetic file.
 
-theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
+theorem add_of_omega0_le : a < ω → ω ≤ b → a + b = b :=
   isPrincipal_add_omega0.add_eq_right_of_le
 
 theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ o) := by
