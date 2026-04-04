@@ -70,8 +70,7 @@ variable [data.HasFirstPageComputation] [X.HasSpectralSequence data]
 allows to "compute" the objects on the `r₀`th page of the spectral sequence
 obtained from a spectral object `X` indexed by `i` using data as objects
 of the form `X.H`. See also `spectralSequence_first_page_d_eq` for the relation
-between the differentials of the first page of the spectral sequence and `X.δ`.
--/
+between the differentials of the first page of the spectral sequence and `X.δ`. -/
 noncomputable def spectralSequenceFirstPageXIso (pq : κ)
     (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq)
     (n : ℤ) (hn : n = data.deg pq) :
@@ -97,7 +96,8 @@ lemma spectralSequenceFirstPageXIso_hom (pq : κ)
 @[reassoc]
 lemma spectralSequenceFirstPageXIso_inv (pq : κ)
     (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq)
-    (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
+    (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq)
+    (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequenceFirstPageXIso data pq i₁ i₂ hi₁ hi₂ n₁ hn₁').inv =
       (X.EIsoH _ n₀ n₁ n₂ hn₁ hn₂).inv ≫
       (X.spectralSequencePageXIso data r₀ (by rfl) _ _ _ _ _
@@ -106,25 +106,24 @@ lemma spectralSequenceFirstPageXIso_inv (pq : κ)
   obtain rfl := hn₂
   rfl
 
+@[reassoc]
 lemma spectralSequence_first_page_d_eq (pq pq' : κ)
     (hpq : (c r₀).Rel pq pq') (i j k : ι)
     (hi : i = data.i₁ pq') (hj : j = data.i₁ pq) (hk : k = data.i₂ pq)
-    (n n' : ℤ) (hn : n = data.deg pq) (hn' : n + 1 = n') :
+    (n n' : ℤ) (hn : n = data.deg pq) (hn' : n + 1 = n' := by lia) :
     ((X.spectralSequence data).page r₀).d pq pq' =
       (X.spectralSequenceFirstPageXIso data pq j k hj hk n hn).hom ≫
         X.δ (homOfLE
           (by simpa only [hi, hj, data.hc₁₃ r₀ pq pq' hpq, ← data.hi₂₃ pq']
             using data.le₁₂ pq') : i ⟶ j)
-        (homOfLE (by simpa only [hj, hk] using data.le₁₂ pq) : j ⟶ k) n n' hn'  ≫
-      (X.spectralSequenceFirstPageXIso data pq'
-        i j hi (by rw [hj, ← data.hc₀₂ r₀ pq pq' hpq, data.hi₀₁ pq])
-        n' (by rw [← hn', hn, data.hc r₀ pq pq' hpq])).inv := by
-  simp only [assoc, X.spectralSequenceFirstPageXIso_hom data pq j k hj hk
-    (n - 1) n n' hn, ← X.d_EIsoH_hom_assoc _ _ (n - 1) n n' (n' + 1) (by simp) hn' rfl,
-    X.spectralSequenceFirstPageXIso_inv data pq' i j hi _ n n' _
-    (by rw [← hn', hn, data.hc r₀ pq pq' hpq]) hn' rfl, Iso.hom_inv_id_assoc]
-  apply spectralSequence_page_d_eq
-  exact hpq
+          (homOfLE (by simpa only [hj, hk] using data.le₁₂ pq)) n n' hn' ≫
+      (X.spectralSequenceFirstPageXIso data pq' i j hi
+        (by rw [hj, ← data.hc₀₂ r₀ pq pq' hpq, data.hi₀₁ pq]) n'
+        (by rw [← hn', hn, data.hc r₀ pq pq' hpq])).inv := by
+  simpa [X.spectralSequenceFirstPageXIso_hom data pq j k hj hk (n - 1) n n',
+    ← X.d_EIsoH_hom_assoc _ _ (n - 1) n n' (n' + 1),
+    X.spectralSequenceFirstPageXIso_inv data pq' i j hi _ _ n' _ _ hn' _]
+    using spectralSequence_page_d_eq _ _ _ _ _ _ hpq ..
 
 end SpectralObject
 
