@@ -36,7 +36,7 @@ jobs:
 
       - name: Restore progress cache
         if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: scripts/.rm_set_option_progress.jsonl
           # Use run_id in restore-keys so we always pick up the most recent cache
@@ -69,7 +69,7 @@ jobs:
         # Skip on dry-run (no files are modified) and if the progress file was
         # cleaned up (meaning the run completed fully).
         if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: scripts/.rm_set_option_progress.jsonl
           key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
