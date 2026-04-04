@@ -651,7 +651,7 @@ theorem tendsto_integral_Iio_zero (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
     rw [sub_eq_iff_comm, intervalIntegral.integral_Iio_sub_Iio hfi hi]
   rw [← sub_self (∫ x in Iio b, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| integral_Ico_tendsto_integral_Iio b hfi ha)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Iio b hfi ha)
 
 theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
@@ -687,7 +687,7 @@ theorem tendsto_integral_Ici_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     filter_upwards [ha.eventually_mem (Ici_mem_atTop b)] with i hi
     rw [sub_eq_iff_comm, intervalIntegral.integral_Ici_sub_Ici hfi hi]
   rw [← sub_self (∫ x in Ici b, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| integral_Ico_tendsto_integral_Ici b hfi ha)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Ici b hfi ha)
 
 end IntegralOfIntervalIntegral
 
