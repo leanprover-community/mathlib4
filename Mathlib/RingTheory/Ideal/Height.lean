@@ -72,11 +72,21 @@ lemma Ideal.height_lt_top {I : Ideal R} (hI : I ≠ ⊤) [I.FiniteHeight] :
     I.height < ⊤ :=
   (Ideal.height_ne_top hI).lt_top
 
+lemma Ideal.height_ne_top_of_isPrime {I : Ideal R} [I.FiniteHeight] [I.IsPrime] :
+    I.height ≠ ⊤ :=
+  Ideal.height_ne_top ‹I.IsPrime›.ne_top
+
+@[deprecated "Use `Ideal.height_ne_top_of_isPrime` instead." (since := "2026-04-04")]
 lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
     I.primeHeight ≠ ⊤ := by
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_ne_top ‹I.IsPrime›.ne_top
 
+lemma Ideal.height_lt_top_of_isPrime {I : Ideal R} [I.FiniteHeight] [I.IsPrime] :
+    I.height < ⊤ :=
+  Ideal.height_lt_top ‹I.IsPrime›.ne_top
+
+@[deprecated "Use `Ideal.height_lt_top_of_isPrime` instead." (since := "2026-04-04")]
 lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
     I.primeHeight < ⊤ := by
   rw [← I.height_eq_primeHeight]
@@ -92,7 +102,6 @@ lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.Finite
   rw [hn]
   exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
 
-@[gcongr]
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
     I.primeHeight ≤ J.primeHeight := by
   unfold primeHeight
