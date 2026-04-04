@@ -121,6 +121,26 @@ theorem DirSupInacc.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInacc x) 
     DirSupInacc (⋃₀ s) := by
   simpa using DirSupInaccOn.sUnion fun x hx ↦ (hs x hx).dirSupInaccOn (D := .univ)
 
+theorem DirSupClosedOn.iInter {ι} {f : ι → Set α} (hs : ∀ i, DirSupClosedOn D (f i)) :
+    DirSupClosedOn D (⋂ i, f i) := by
+  rw [← sInter_range f]
+  exact DirSupClosedOn.sInter (by simpa)
+
+theorem DirSupClosed.iInter {ι} {f : ι → Set α} (hs : ∀ i, DirSupClosed (f i)) :
+    DirSupClosed (⋂ i, f i) := by
+  rw [← sInter_range f]
+  exact DirSupClosed.sInter (by simpa)
+
+theorem DirSupInaccOn.iUnion {ι} {f : ι → Set α} (hs : ∀ i, DirSupInaccOn D (f i)) :
+    DirSupInaccOn D (⋃ i, f i) := by
+  rw [← sUnion_range f]
+  exact DirSupInaccOn.sUnion (by simpa)
+
+theorem DirSupInacc.iUnion {ι} {f : ι → Set α} (hs : ∀ i, DirSupInacc (f i)) :
+    DirSupInacc (⋃ i, f i) := by
+  rw [← sUnion_range f]
+  exact DirSupInacc.sUnion (by simpa)
+
 lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) :
     DirSupClosedOn D (s ∩ t) := by
   rw [← sInter_pair]
