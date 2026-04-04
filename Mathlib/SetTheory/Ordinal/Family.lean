@@ -164,7 +164,7 @@ theorem bddAbove_of_small {s : Set Ordinal.{u}} [h : Small.{u} s] : BddAbove s :
   simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
 
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ ↦ small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ ↦ bddAbove_of_small⟩
+  ⟨fun ⟨a, h⟩ ↦ small_subset (s := Iic a) fun _ hx ↦ h hx, fun _ ↦ bddAbove_of_small⟩
 
 theorem bddAbove_image {s : Set Ordinal.{u}} (hf : BddAbove s)
     (f : Ordinal.{u} → Ordinal.{max u v}) : BddAbove (f '' s) := by
