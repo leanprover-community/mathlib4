@@ -67,7 +67,7 @@ section ProdCodomain
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
 
 @[to_additive HasSum.prodMk]
-theorem HasProd.pair {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a L)
+theorem HasFunction.prod {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a L)
     (hg : HasProd g b L) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ L := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 

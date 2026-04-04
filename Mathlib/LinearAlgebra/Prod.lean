@@ -93,11 +93,11 @@ theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
 def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
-  toFun := Pi.prod f g
-  map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
-  map_smul' c x := by simp only [Pi.prod, Prod.smul_mk, map_smul, RingHom.id_apply]
+  toFun := Function.prod f g
+  map_add' x y := by simp only [Pi.prod_apply, Prod.mk_add_mk, map_add]
+  map_smul' c x := by simp only [Pi.prod_apply, Prod.smul_mk, map_smul, RingHom.id_apply]
 
-theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]

@@ -3652,7 +3652,6 @@ public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Bool.Count
-public import Mathlib.Data.Bool.Init
 public import Mathlib.Data.Bool.Set
 public import Mathlib.Data.Bracket
 public import Mathlib.Data.Bundle
@@ -4121,7 +4120,6 @@ public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part
 public import Mathlib.Data.Pi.Interval
 public import Mathlib.Data.Prod.Basic
-public import Mathlib.Data.Prod.Init
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Prod.TProd
@@ -4247,7 +4245,6 @@ public import Mathlib.Data.String.Defs
 public import Mathlib.Data.String.Lemmas
 public import Mathlib.Data.Subtype
 public import Mathlib.Data.Sum.Basic
-public import Mathlib.Data.Sum.Init
 public import Mathlib.Data.Sum.Interval
 public import Mathlib.Data.Sum.Lattice
 public import Mathlib.Data.Sum.Order
@@ -5120,6 +5117,7 @@ public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.DependsOn
 public import Mathlib.Logic.Function.FiberPartition
 public import Mathlib.Logic.Function.FromTypes
+public import Mathlib.Logic.Function.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Function.OfArity
 public import Mathlib.Logic.Function.ULift

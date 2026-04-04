@@ -12,7 +12,7 @@ public import Mathlib.Init
 This file defines `(f △ g)`, the operation that pairs two functions `f : γ → α` and
 `g : γ → β` into a function `γ → α × β`.
 
-It also defines the special case when `f = g = id`, `Prod.diag`. This is the canonical injection
+It also defines the special case when `f = g = id`, `Function.diag`. This is the canonical injection
 of a type into its prouduct with itself onto its diagonal.
 
 
@@ -73,14 +73,14 @@ end
 
 end Pi
 
-namespace Prod
+namespace Function
 
 variable {α β δ ε : Type*} {γ : Sort*}
 
 /-- This is the pairing operation on functions, dual to `Sum.elim`. -/
 protected def pair (f : γ → α) (g : γ → β) : γ → α × β := (f △' g)
 
-@[inherit_doc] infixr:65 " △ " => Prod.pair
+@[inherit_doc] infixr:65 " △ " => Function.pair
 
 section
 
@@ -93,13 +93,13 @@ theorem pair_comp {δ} {h : δ → γ} : (f △ g) ∘ h = (f ∘ h) △ (g ∘ 
 @[simp] theorem fst_pair {c} : ((f △ g) c).fst = f c := rfl
 @[simp] theorem snd_pair {c} : ((f △ g) c).snd = g c := rfl
 
-@[simp] theorem pair_fst_snd : fst (α := α)  △ snd (β := β) = id := rfl
-@[simp] theorem pair_snd_fst : snd (β := β) △ fst (α := α) = .swap := rfl
+@[simp] theorem pair_fst_snd : Prod.fst (α := α) △ Prod.snd (β := β) = id := rfl
+@[simp] theorem pair_snd_fst : Prod.snd (β := β) △ Prod.fst (α := α) = .swap := rfl
 
-@[simp] theorem pair_fst_snd_comp {f : γ → α × β} : (fst ∘ f) △ (snd ∘ f) = f := rfl
+@[simp] theorem pair_fst_snd_comp {f : γ → α × β} : (Prod.fst ∘ f) △ (Prod.snd ∘ f) = f := rfl
 
-@[simp] theorem fst_comp_pair {f : γ → α} {g : γ → β} : fst ∘ (f △ g) = f := rfl
-@[simp] theorem snd_comp_pair {f : γ → α} {g : γ → β} : snd ∘ (f △ g) = g := rfl
+@[simp] theorem fst_comp_pair {f : γ → α} {g : γ → β} : Prod.fst ∘ (f △ g) = f := rfl
+@[simp] theorem snd_comp_pair {f : γ → α} {g : γ → β} : Prod.snd ∘ (f △ g) = g := rfl
 
 theorem pair_eq_iff {f f' : γ → α} {g g' : γ → β} : f △ g = f' △ g' ↔
     f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
@@ -117,10 +117,12 @@ theorem exists_snd_comp (f : γ → α) (g : γ → β) :
     ∃ h : γ → α × β, Prod.snd ∘ h = g := ⟨f △ g, snd_comp_pair⟩
 
 theorem leftInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.LeftInverse
-    (Prod.pair (γ := δ)).uncurry ((fst (α := α) ∘ ·) △ (snd (β := β) ∘ ·)) := fun _ => rfl
+    (Function.pair (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
+  fun _ => rfl
 
 theorem rightInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.RightInverse
-    (Prod.pair (γ := δ)).uncurry ((fst (α := α) ∘ ·) △ (snd (β := β) ∘ ·)) := fun _ => rfl
+    (Function.pair (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
+  fun _ => rfl
 
 @[grind =]
 theorem pair_const_const (a : α) (b : β) :
@@ -133,9 +135,9 @@ end
 
 section
 
-/- We can define `Prod.map` in terms of `Prod.pair` (TODO: and we should). -/
+/- We can define `Prod.map` in terms of `Function.pair` (TODO: and we should). -/
 theorem map_eq_pair {f : α → β} {g : δ → ε} : Prod.map f g =
-    (f ∘ fst) △ (g ∘ snd) := rfl
+    (f ∘ Prod.fst) △ (g ∘ Prod.snd) := rfl
 
 @[grind _=_]
 theorem map_pair {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} {c} :
@@ -149,7 +151,7 @@ end
 /-- The diagonal map into Prod. -/
 @[expose] protected def diag : α → α × α := id △ id
 
-@[inherit_doc] prefix:max "Δ " => Prod.diag
+@[inherit_doc] prefix:max "Δ " => Function.diag
 
 section
 
@@ -163,9 +165,9 @@ variable {a b : α}
 @[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (Δ a) =
     (f △ g) a := rfl
 
-theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Prod.diag = (f △ g) := rfl
+theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = (f △ g) := rfl
 
-theorem injective_diag : Function.Injective (α := α) Prod.diag := fun _ _ => congrArg fst
+theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
 theorem exists_diag_apply_iff (p : α × α) : (∃ a, p = Δ a) ↔ p.1 = p.2 := by
   simp [Prod.ext_iff, eq_comm]
@@ -174,4 +176,4 @@ theorem exists_diag_apply_iff (p : α × α) : (∃ a, p = Δ a) ↔ p.1 = p.2 :
 
 end
 
-end Prod
+end Function

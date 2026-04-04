@@ -369,7 +369,7 @@ theorem comp_const (γ : Type*) [Preorder γ] (f : α →o β) (c : α) :
 `OrderHom`. -/
 @[simps]
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
-  ⟨Prod.pair f g, fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
+  ⟨Function.prod f g, fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
 
 @[mono, to_dual self]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :

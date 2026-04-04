@@ -99,7 +99,7 @@ def prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : L →ₗ⁅R⁆
   toLinearMap := LinearMap.prod f g
   map_lie' := by simp
 
-theorem coe_prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]

@@ -106,7 +106,7 @@ theorem ScottContinuousOn.image_comp {g : β → γ}
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hf : ScottContinuousOn D f) (hg : ScottContinuousOn D g) :
-    ScottContinuousOn D Prod.pair f g := fun d hd₁ hd₂ hd₃ a hda => by
+    ScottContinuousOn D Function.prod f g := fun d hd₁ hd₂ hd₃ a hda => by
   rw [IsLUB, IsLeast, upperBounds]
   constructor
   · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
@@ -172,7 +172,7 @@ lemma ScottContinuous.comp {g : β → γ}
 @[fun_prop]
 lemma ScottContinuous.prodMk {g : α → γ}
     (hf : ScottContinuous f) (hg : ScottContinuous g) :
-    ScottContinuous Prod.pair f g := by
+    ScottContinuous Function.prod f g := by
   rw [← scottContinuousOn_univ] at ⊢ hf hg
   exact ScottContinuousOn.prodMk (by grind) hf hg
 

@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
-public import Mathlib.Data.Prod.Init
-public import Mathlib.Data.Sum.Init
-public import Mathlib.Data.Bool.Init
+public import Mathlib.Logic.Function.Init
 
 /-!
 # Equivalence between product types
@@ -343,8 +341,8 @@ section
 `α → β` and `β → γ`. -/
 @[simps! (attr := grind =)]
 def arrowProdEquivProdArrow (α β γ : Type*) : (α → β × γ) ≃ (α → β) × (α → γ) where
-  toFun := Prod.pair (Prod.fst <| · ·) (Prod.snd <| · ·)
-  invFun := Prod.pair.uncurry
+  toFun := Function.prod (Prod.fst <| · ·) (Prod.snd <| · ·)
+  invFun := Function.prod.uncurry
 
 /-- The type of a pi-type indexed by `i : ι` to products `β i × γ i` is equivalent to product of two
 pi-types `∀ i, β i` and `∀ i, γ i`. This is a dependent version of
@@ -352,7 +350,7 @@ pi-types `∀ i, β i` and `∀ i, γ i`. This is a dependent version of
 @[simps! (attr := grind =)]
 def piProdEquivProdPi (α : Type*) (β γ : α → Type*) :
     (∀ i, β i × γ i) ≃ (∀ i, β i) × (∀ i, γ i) where
-  toFun := Prod.pair (Prod.fst <| · ·) (Prod.snd <| · ·)
+  toFun := Function.prod (Prod.fst <| · ·) (Prod.snd <| · ·)
   invFun := Pi.prod.uncurry
 
 open Sum
@@ -361,7 +359,7 @@ open Sum
 on `α` and on `β`. -/
 @[simps! (attr := grind =)]
 def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → γ) × (β → γ) where
-  toFun := Prod.pair (· <| inl ·) (· <| inr ·)
+  toFun := Function.prod (· <| inl ·) (· <| inr ·)
   invFun := Sum.elim.uncurry
   left_inv f := by ext (i | i) <;> rfl
 
@@ -380,7 +378,7 @@ functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEq
 @[simps (attr := grind =)]
 def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
     (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
-  toFun := Prod.pair (· <| inl ·) (· <| inr ·)
+  toFun := Function.prod (· <| inl ·) (· <| inr ·)
   invFun := Sum.rec.uncurry
   left_inv f := by ext (i | i) <;> rfl
 
@@ -433,14 +431,14 @@ def sigmaProdDistrib {ι : Type*} (α : ι → Type*) (β : Type*) : (Σ i, α i
 @[simps (attr := grind =)]
 def boolProdEquivSum (α : Type*) : Bool × α ≃ α ⊕ α where
   toFun := (cond · inr inl).uncurry
-  invFun := Prod.pair Sum.isRight Sum.get
+  invFun := Function.prod Sum.isRight (Sum.elim id id)
   left_inv := by grind
   right_inv := by grind
 
 /-- The function type `Bool → α` is equivalent to `α × α`. -/
 @[simps (attr := grind =)]
 def boolArrowEquivProd (α : Type*) : (Bool → α) ≃ α × α where
-  toFun := Prod.pair (· false) (· true)
+  toFun := Function.prod (· false) (· true)
   invFun  := flip (cond · Prod.snd Prod.fst ·)
   left_inv _ := by grind [flip]
 

@@ -640,7 +640,7 @@ lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurab
 -- TODO: generalising this to enorms requires defining a product instance for enormed monoids first
 @[fun_prop]
 theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
-    Integrable (Prod.pair f g) μ :=
+    Integrable (Function.prod f g) μ :=
   ⟨by fun_prop,
     (hf.norm.add' hg.norm).mono <|
       Eventually.of_forall fun x =>

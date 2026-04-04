@@ -577,12 +577,12 @@ theorem ContinuousOn.image_closure (hf : ContinuousOn f (closure s)) :
 
 theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {x : α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (Prod.pair f g) s x :=
+    ContinuousWithinAt (Function.prod f g) s x :=
   hf.prodMk_nhds hg
 
 @[fun_prop]
 theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
-    (hg : ContinuousOn g s) : ContinuousOn (Prod.pair f g) s := fun x hx =>
+    (hg : ContinuousOn g s) : ContinuousOn (Function.prod f g) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=

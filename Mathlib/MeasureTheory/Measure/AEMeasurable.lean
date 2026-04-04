@@ -190,7 +190,7 @@ protected theorem snd {f : α → β × γ} (hf : AEMeasurable f μ) :
 
 @[fun_prop]
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (Prod.pair f g) μ :=
+    AEMeasurable (Function.prod f g) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
 

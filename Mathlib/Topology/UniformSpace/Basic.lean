@@ -1073,9 +1073,9 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
 end Uniform
 
 theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (Prod.pair f g) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
+    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (Function.prod f g) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
   Uniform.tendsto_nhds_right.2 <| (Uniform.tendsto_nhds_right.1 hf).uniformity_trans hg
 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hfg : Tendsto (Prod.pair f g) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
+    (hfg : Tendsto (Function.prod f g) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩

@@ -9,7 +9,7 @@ public import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Inhabit
-public import Mathlib.Data.Prod.Init
+public import Mathlib.Logic.Function.Init
 public import Batteries.Tactic.Trans
 
 import Mathlib.Tactic.Attr.Register
@@ -27,8 +27,8 @@ namespace Pi
 
 variable {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) {c}
 
-@[simp] theorem fst_dcomp_pair : Prod.fst ∘' Pi.prod f g = f := rfl
-@[simp] theorem snd_dcomp_pair : Prod.snd ∘' Pi.prod f g = g := rfl
+@[simp] theorem fst_dcomp_pair : Prod.fst ∘' (f △' g) = f := rfl
+@[simp] theorem snd_dcomp_pair : Prod.snd ∘' (f △' g) = g := rfl
 
 end Pi
 
