@@ -412,6 +412,9 @@ lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentati
 theorem isIso_fromTildeΓ_iff_isQuasiCoherent (M : (Spec R).Modules) :
     IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := sorry
 
+instance isQuasicoherent_IsIso_fromTildeΓ (M : (Spec R).Modules) [M.IsQuasicoherent] :
+    IsIso M.fromTildeΓ := (isIso_fromTildeΓ_iff_isQuasiCoherent M).mpr inferInstance
+
 end IsQuasicoherent
 
 end AlgebraicGeometry

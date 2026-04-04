@@ -36,6 +36,20 @@ instance : (isQuasicoherent (Spec R)).IsClosedUnderColimitsOfShape J := by
   rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
   exact instIsClosedUnderColimitsOfShapeEssImageOfHasColimitsOfShapeOfPreservesColimitsOfShapeOfFullOfFaithful (tilde.functor R)
 
+set_option backward.isDefEq.respectTransparency false in
+instance epi_of_epi {M N : (Spec R).Modules} (f : M ⟶ N) [M.IsQuasicoherent] [N.IsQuasicoherent]
+    [Epi f] : Epi (moduleSpecΓFunctor.map f) := by
+  apply (tilde.functor R).epi_of_epi_map
+  haveI : IsIso (tilde.adjunction.counit.app N) := isQuasicoherent_IsIso_fromTildeΓ N
+  rw [← epi_comp_iff_of_isIso _ (tilde.adjunction.counit.app N),
+    tilde.adjunction.counit_naturality f]
+  haveI : Epi (tilde.adjunction.counit.app M) := (isQuasicoherent_IsIso_fromTildeΓ M).epi_of_iso
+  infer_instance
+
+theorem surjective_of_epi {M N : (Spec R).Modules} (f : M ⟶ N) [M.IsQuasicoherent] [N.IsQuasicoherent]
+    [Epi f] : Function.Surjective (f.val.app (Opposite.op ⊤)).hom :=
+  ModuleCat.epi_iff_surjective (moduleSpecΓFunctor.map f) |>.mp (epi_of_epi f)
+
 abbrev QuasicoherentSheaves :=
   (SheafOfModules.isQuasicoherent (R := X.ringCatSheaf)).FullSubcategory
 
