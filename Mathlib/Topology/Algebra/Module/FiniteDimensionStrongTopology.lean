@@ -91,27 +91,6 @@ theorem isUniformEmbedding_coeFn_of_finiteDimensional
 
 /-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
-def flipOfFiniteDimensionalV2 [FiniteDimensional 𝕜 E]
-    (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
-    (h𝔖₂ : ⋃₀ 𝔖 = .univ)
-    (h𝔗₁ : ∀ t ∈ 𝔗, IsVonNBounded 𝕜 t) :
-    (E →Lᵤ[𝕜, 𝔖] F →Lᵤ[𝕜, 𝔗] V) ≃L[𝕜] (F →Lᵤ[𝕜, 𝔗] E →Lᵤ[𝕜, 𝔖] V) :=
-  letI step : (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔗) 𝔖) ≃ₗ[𝕜]
-      (UniformConvergenceCLM (.id 𝕜) (UniformConvergenceCLM (.id 𝕜) V 𝔖) 𝔗) :=
-    { toFun L := sorry
-      invFun L :=
-        have : ContinuousSMul 𝕜 (UniformConvergenceCLM (RingHom.id 𝕜) V 𝔗) :=
-          continuousSMul _ _ _ h𝔗₁
-        suffices E →ₗ[𝕜] (UniformConvergenceCLM (RingHom.id 𝕜) V 𝔗) from this.toContinuousLinearMap
-        sorry
-      map_add' := sorry
-      map_smul' := sorry
-      left_inv := sorry
-      right_inv := sorry }
-  sorry
-
-/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
 noncomputable def flipOfBasis [Fintype ι] (b : Basis ι 𝕜 E)
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ)
