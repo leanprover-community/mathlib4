@@ -248,6 +248,16 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 theorem bot_mul : ⊥ * M = ⊥ :=
   bot_smul _
 
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors A] {M N : Submodule R A} :
+    M * N = ⊥ ↔ M = ⊥ ∨ N = ⊥ :=
+  ⟨fun hij =>
+    or_iff_not_imp_left.mpr fun I_ne_bot =>
+      N.eq_bot_iff.mpr fun j hj =>
+        let ⟨i, hi, ne0⟩ := M.ne_bot_iff.mp I_ne_bot
+        Or.resolve_left (mul_eq_zero.mp ((M * N).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
+    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+
 protected theorem one_mul : (1 : Submodule R A) * M = M :=
   Submodule.one_smul _
 
