@@ -351,6 +351,15 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
 
+theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) :=
+  fun a b h => by rw [← coeff_zero_C a, h, coeff_zero_C]
+
+theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
+  fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using coeff_apply _ _⟩
+
+@[simp]
+theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
+
 /-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
   monomial (single s 1) 1
@@ -540,12 +549,43 @@ theorem map_C (a : R) : map (σ := σ) f (C a) = C (f a) :=
 @[simp]
 theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
+variable {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂]
+
 @[simp]
-theorem map_map {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
-    (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
+theorem map_map (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
     map g (map f p) = map (g.comp f) p := by
   ext n
   simp
+
+theorem map_injective (hf : Function.Injective f) :
+    Function.Injective (map f : MvPowerSeries σ R → MvPowerSeries σ S) := by
+  intro p q h
+  simp only [MvPowerSeries.ext_iff, coeff_map] at h ⊢
+  intro m
+  exact hf (h m)
+
+theorem map_injective_iff : Function.Injective (map (σ := σ) f) ↔ Function.Injective f :=
+  ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
+
+theorem map_surjective (hf : Function.Surjective f) :
+    Function.Surjective (map f : MvPowerSeries σ R → MvPowerSeries σ S) := fun p => by
+  refine ⟨fun n => (Function.surjInv hf) (coeff n p), ?_⟩
+  ext n
+  rw [coeff_map, coeff_apply, Function.surjInv_eq hf]
+
+theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
+    map_surjective f⟩
+
+/-- If `f` is a left-inverse of `g` then `map f` is a left-inverse of `map g`. -/
+theorem map_leftInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.LeftInverse f g) :
+    Function.LeftInverse (map f : MvPowerSeries σ R → MvPowerSeries σ S₁) (map g) := fun X => by
+  simp [map_map, (RingHom.ext hf : f.comp g = RingHom.id _), map_id]
+
+/-- If `f` is a right-inverse of `g` then `map f` is a right-inverse of `map g`. -/
+theorem map_rightInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.RightInverse f g) :
+    Function.RightInverse (map f : MvPowerSeries σ R → MvPowerSeries σ S₁) (map g) :=
+  (map_leftInverse hf.leftInverse).rightInverse
 
 end Map
 
