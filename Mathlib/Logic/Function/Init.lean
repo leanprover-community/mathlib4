@@ -57,6 +57,9 @@ theorem prod_ext_iff {h h' : ∀ i, α i × β i} : h = h' ↔
     (Prod.fst <| h ·) = (Prod.fst <| h' ·) ∧ (Prod.snd <| h ·) = (Prod.snd <| h' ·) := by
   simp [funext_iff, Prod.ext_iff, forall_and]
 
+theorem prod_ext {h h' : ∀ i, α i × β i} (h₁ : (Prod.fst <| h ·) = (Prod.fst <| h' ·))
+    (h₂ : (Prod.snd <| h ·) = (Prod.snd <| h' ·)) : h = h' := prod_ext_iff.mpr ⟨h₁, h₂⟩
+
 theorem exists_prod_apply_eq (h : ∀ i, α i × β i) : ∃ f g, (f ⇊' g) = h :=
   ⟨(Prod.fst <| h ·), (Prod.snd <| h ·), prod_fst_snd_comp⟩
 
@@ -68,6 +71,12 @@ theorem exists_snd_comp (f : ∀ i, α i) (g : ∀ i, β i) :
 @[grind =]
 theorem prod_const_const {ι} {α β} {a : α} {b : β} :
     (Function.const ι a) ⇊' (Function.const ι b) = Function.const ι (a, b) := rfl
+
+theorem eq_prod_iff_fst_comp_snd_comp {f g} {h : ∀ i, α i × β i} :
+    h = f ⇊' g ↔ (Prod.fst <| h ·) = f ∧ (Prod.snd <| h ·) = g := by simp [prod_ext_iff]
+
+theorem eq_prod_of_fst_comp_snd_comp {f g} {h : ∀ i, α i × β i} (h₁ : (Prod.fst <| h ·) = f)
+    (h₂ : (Prod.snd <| h ·) = g) : h = f ⇊' g := eq_prod_iff_fst_comp_snd_comp.mpr ⟨h₁, h₂⟩
 
 end
 
@@ -126,25 +135,18 @@ theorem rightInverse_uncurry_prod_prod_fst_comp_snd_comp : Function.RightInverse
 
 @[grind =]
 theorem prod_const_const (a : α) (b : β) :
-    (Function.const ι a) ⇊  (Function.const ι b) = Function.const ι (a, b) := rfl
+    (Function.const ι a) ⇊ (Function.const ι b) = Function.const ι (a, b) := rfl
 
 theorem const_prod {ι} {α β} {p : α × β} :
     Function.const ι p = (Function.const ι p.1) ⇊ (Function.const ι p.2) := rfl
 
+theorem eq_prod_iff_fst_comp_snd_comp {f g} {h : ι → α × β} :
+    h = f ⇊ g ↔ Prod.fst ∘ h = f ∧ Prod.snd ∘ h = g := by simp [prod_ext_iff]
+
+theorem eq_prod_of_fst_comp_snd_comp {f g} {h : ι → α × β} (h₁ : Prod.fst ∘ h = f)
+    (h₂ : Prod.snd ∘ h = g) : h = f ⇊ g := eq_prod_iff_fst_comp_snd_comp.mpr ⟨h₁, h₂⟩
+
 end
-
-/-- `Function.prodMap` is `Prod.map` in the `Function` namespace. -/
-def prodMap (f : α → β) (g : γ → δ) := (f ∘ Prod.fst) ⇊ (g ∘ Prod.snd)
-
-@[simp, grind =]
-theorem prodMap_eq_prod_map {f : α → β} {g : γ → δ} : f.prodMap g = Prod.map f g := rfl
-
-@[grind _=_]
-theorem map_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} {c} :
-    Prod.map f h ((g ⇊ k) c) = ((f ∘ g) ⇊ (h ∘ k)) c := rfl
-
-theorem map_comp_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} :
-    Prod.map f h ∘ (g ⇊ k) = (f ∘ g) ⇊ (h ∘ k) := rfl
 
 /-- The diagonal map into `Prod`. -/
 protected def diag : α → α × α := id ⇊ id
@@ -176,5 +178,21 @@ theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ 
 
 end
 
+/-- `Function.prodMap` is `Prod.map` in the `Function` namespace. -/
+def prodMap (f : α → β) (g : γ → δ) := (f ∘ Prod.fst) ⇊ (g ∘ Prod.snd)
+
+section
+
+@[simp, grind =]
+theorem prodMap_eq_prod_map {f : α → β} {g : γ → δ} : f.prodMap g = Prod.map f g := rfl
+
+@[grind _=_]
+theorem map_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} {c} :
+    Prod.map f h ((g ⇊ k) c) = ((f ∘ g) ⇊ (h ∘ k)) c := rfl
+
+theorem map_comp_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} :
+    Prod.map f h ∘ (g ⇊ k) = (f ∘ g) ⇊ (h ∘ k) := rfl
+
+end
 
 end Function
