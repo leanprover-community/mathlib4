@@ -482,6 +482,17 @@ theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
     fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
 
+@[simp]
+theorem fderivWithin_apply (hΦ : DifferentiableWithinAt 𝕜 Φ s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) (i : ι) :
+    (proj i).comp (fderivWithin 𝕜 Φ s x) = fderivWithin 𝕜 (fun x => Φ x i) s x :=
+  ((hasFDerivWithinAt_pi'.1 hΦ.hasFDerivWithinAt i).fderivWithin hs).symm
+
+@[simp]
+theorem fderiv_apply (hΦ : DifferentiableAt 𝕜 Φ x) (i : ι) :
+    (proj i).comp (fderiv 𝕜 Φ x) = fderiv 𝕜 (fun x => Φ x i) x :=
+  ((hasFDerivAt_pi'.1 hΦ.hasFDerivAt i).fderiv).symm
+
 end Pi
 
 /-!
