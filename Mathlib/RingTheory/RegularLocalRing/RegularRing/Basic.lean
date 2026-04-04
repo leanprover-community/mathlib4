@@ -42,15 +42,13 @@ lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R')
     [reg : IsRegularRing R] : IsRegularRing R' := by
   have := isNoetherianRing_of_ringEquiv R e
   apply isRegularRing_iff.mpr (fun p' hp' ↦ ?_)
-  let p := p'.comap e
-  have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
-    ext x
-    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ by simpa [← eq],
-      fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
-    simpa only [Ideal.primeCompl, p]
-  let _ := isRegularRing_iff.mp ‹_› p (Ideal.comap_isPrime e p')
-  exact IsRegularLocalRing.of_ringEquiv
-    (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
+  have := isRegularRing_iff.mp ‹_› (p'.comap e) (Ideal.comap_isPrime e p')
+  suffices (p'.comap e).primeCompl.map e = p'.primeCompl from
+    IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
+      (Localization.AtPrime (p'.comap e)) (Localization.AtPrime p') e this
+  ext x
+  simpa using ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
+    fun h ↦ ⟨e.symm x, (e.apply_symm_apply x).symm ▸ h, e.apply_symm_apply x⟩⟩
 
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
