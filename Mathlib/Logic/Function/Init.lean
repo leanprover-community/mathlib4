@@ -149,18 +149,18 @@ theorem map_comp_prod {f : α → β} {g : γ → α} {h : δ → ε} {k : γ �
 /-- The diagonal map into `Prod`. -/
 protected def diag : α → α × α := id △ id
 
-@[inherit_doc] prefix:max "Δ " => Function.diag
+@[inherit_doc] prefix:max "⇗" => Function.diag
 
 section
 
 variable {a b : α}
 
-@[grind =] theorem diag_apply : Δ a = (a, a) := rfl
+@[grind =] theorem diag_apply : ⇗a = (a, a) := rfl
 
-@[simp, grind =] theorem fst_diag : (Δ a).1 = a := rfl
-@[simp, grind =] theorem snd_diag : (Δ a).2 = a := rfl
+@[simp, grind =] theorem fst_diag : (⇗a).1 = a := rfl
+@[simp, grind =] theorem snd_diag : (⇗a).2 = a := rfl
 
-@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (Δ a) =
+@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (⇗a) =
     (f △ g) a := rfl
 
 @[simp] theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = (f △ g) :=
@@ -168,10 +168,10 @@ variable {a b : α}
 
 theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
-@[simp] theorem exists_diag_apply_iff (p : α × α) : (∃ a, Δ a = p) ↔ p.1 = p.2 := by
+@[simp] theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⇗a = p) ↔ p.1 = p.2 := by
   simp [Prod.ext_iff, eq_comm]
 
-@[simp] theorem diag_eq_iff : Δ a = Δ b ↔ a = b := injective_diag.eq_iff
+@[simp] theorem diag_eq_iff : ⇗a = ⇗b ↔ a = b := injective_diag.eq_iff
 
 @[simp] theorem prod_diag_diag : Function.diag △ Function.diag (α := α) =
     Function.diag ∘ Function.diag := rfl
