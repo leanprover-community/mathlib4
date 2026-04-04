@@ -231,7 +231,7 @@ lemma exists_larger_subset {n : Type*} [DecidableEq n] [Fintype n]
     {k : Nat} [nek : NeZero k] (h₁ : ∀ j, Finset.card (B j) = k)
     (h₂ : (s.biUnion B).card < (s.card)) :
     ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by 
+    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by
       simp_rw [h₁, Finset.inf'_const]
     have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
       (by grind [Finset.one_le_card]) (by grind [nek.out]) (by grind)
