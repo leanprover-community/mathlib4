@@ -33,7 +33,7 @@ theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
 theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
 lemma continuous_toSL2R : Continuous toSL2R := by
-  refine continuous_induced_rng.mpr (continuous_matrix fun i j ↦ ?_)
+  apply continuous_induced_rng.mpr
   simp only [Function.comp_def, coe_toSL2R, one_div]
   fun_prop (disch := grind [im_pos])
 
