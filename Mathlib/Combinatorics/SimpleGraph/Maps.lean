@@ -437,6 +437,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
     rw [Subtype.mk_eq_mk] at h ⊢
     exact f.inj' h
 
+/-- A graph embedding induces a graph isomorphism between its domain and its range -/
 noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
   __ := Equiv.ofInjective f f.injective
   map_rel_iff' := by simp
