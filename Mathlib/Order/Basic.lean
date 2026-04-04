@@ -1125,16 +1125,16 @@ variable {α β₁ β₂ : Type*} [LE β₁] [LE β₂]
 
 @[simp]
 lemma pair_le_pair_iff {u₁ v₁ : α → β₁} {u₂ v₂ : α → β₂} :
-   u₁ △ u₂ ≤ v₁ △ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
+   u₁ ⇊ u₂ ≤ v₁ ⇊ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
   simp [Pi.le_def, Prod.le_def, forall_and]
 
 lemma const_le_pair_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    Function.const _ b ≤ v₁ △ v₂ ↔
+    Function.const _ b ≤ v₁ ⇊ v₂ ↔
     Function.const _ b.1 ≤ v₁ ∧ Function.const _ b.2 ≤ v₂ :=
   prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
 
 lemma pair_le_const_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    v₁ △ v₂ ≤ Function.const _ b ↔
+    v₁ ⇊ v₂ ≤ Function.const _ b ↔
     v₁ ≤ Function.const _ b.1 ∧ v₂ ≤ Function.const _ b.2 :=
   prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
 

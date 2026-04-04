@@ -215,7 +215,7 @@ section Prod
 
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
-    MDiffAt[s] (f △ g) x :=
+    MDiffAt[s] (f ⇊ g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
@@ -228,17 +228,17 @@ theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
 
 lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffWithinAt I s x) :
-    mfderiv[s] (f △ g) x = (mfderiv[s] f x).prod (mfderiv[s] g x) :=
+    mfderiv[s] (f ⇊ g) x = (mfderiv[s] f x).prod (mfderiv[s] g x) :=
   (hf.hasMFDerivWithinAt.prodMk hg.hasMFDerivWithinAt).mfderivWithin hs
 
 lemma mfderiv_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    mfderiv% (f △ g) x = (mfderiv% f x).prod (mfderiv% g x) := by
+    mfderiv% (f ⇊ g) x = (mfderiv% f x).prod (mfderiv% g x) := by
   simp_rw [← mfderivWithin_univ]
   exact mfderivWithin_prodMk hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I)
 
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    MDiffAt (f △ g) x :=
+    MDiffAt (f ⇊ g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
@@ -251,27 +251,27 @@ theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
 
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (f △ g) s x :=
+    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (f ⇊ g) s x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    MDifferentiableAt I 𝓘(𝕜, E' × E'') (f △ g) x :=
+    MDifferentiableAt I 𝓘(𝕜, E' × E'') (f ⇊ g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableOn.prodMk {f : M → M'} {g : M → M''} (hf : MDiff[s] f) (hg : MDiff[s] g) :
-    MDiff[s] (f △ g) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
+    MDiff[s] (f ⇊ g) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
 
 theorem MDifferentiable.prodMk {f : M → M'} {g : M → M''} (hf : MDiff f) (hg : MDiff g) :
-    MDiff f △ g := fun x ↦ (hf x).prodMk (hg x)
+    MDiff f ⇊ g := fun x ↦ (hf x).prodMk (hg x)
 
 theorem MDifferentiableOn.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiff[s] f) (hg : MDiff[s] g) :
-    MDifferentiableOn I 𝓘(𝕜, E' × E'') (f △ g) s :=
+    MDifferentiableOn I 𝓘(𝕜, E' × E'') (f ⇊ g) s :=
   fun x hx ↦ (hf x hx).prodMk_space (hg x hx)
 
 theorem MDifferentiable.prodMk_space {f : M → E'} {g : M → E''} (hf : MDiff f) (hg : MDiff g) :
-    MDifferentiable I 𝓘(𝕜, E' × E'') f △ g :=
+    MDifferentiable I 𝓘(𝕜, E' × E'') f ⇊ g :=
 fun x ↦ (hf x).prodMk_space (hg x)
 
 theorem hasMFDerivAt_fst (x : M × M') :

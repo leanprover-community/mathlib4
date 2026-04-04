@@ -484,10 +484,10 @@ open Tree
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
 which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
-Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
+Dyck words. `f(p) = f(x) ⇊ f(y)`, where ⇊ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
 subtrees to a new root node. -/
 def toTree (p : DyckWord) : Tree Unit :=
-  if p = 0 then nil else p.insidePart.toTree △ p.outsidePart.toTree
+  if p = 0 then nil else p.insidePart.toTree ⇊ p.outsidePart.toTree
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_lt ‹_›]
 

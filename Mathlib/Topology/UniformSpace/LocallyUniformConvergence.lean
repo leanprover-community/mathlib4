@@ -200,7 +200,7 @@ end Comp
 
 theorem TendstoLocallyUniformlyOn.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
     (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
-    TendstoLocallyUniformlyOn (fun n x ↦ (F n x, G n x)) (f △ g) p s := by
+    TendstoLocallyUniformlyOn (fun n x ↦ (F n x, G n x)) (f ⇊ g) p s := by
   rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
   intro x hx
   rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff]
@@ -213,7 +213,7 @@ theorem TendstoLocallyUniformlyOn.piProd [UniformSpace γ] {G : ι → α → γ
 
 theorem TendstoLocallyUniformly.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
     (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
-    TendstoLocallyUniformly (fun n x ↦ (F n x, G n x)) (f △ g) p := by
+    TendstoLocallyUniformly (fun n x ↦ (F n x, G n x)) (f ⇊ g) p := by
   rw [← tendstoLocallyUniformlyOn_univ] at *
   exact hF.prodMk hG
 

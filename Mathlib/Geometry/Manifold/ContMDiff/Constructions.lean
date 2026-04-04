@@ -224,15 +224,15 @@ theorem contMDiff_prod_assoc :
 theorem ContMDiffWithinAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t (f x, g x))
     (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
-    (st : MapsTo (f △ g) s t) :
+    (st : MapsTo (f ⇊ g) s t) :
     ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x :=
-  ha.comp (f := f △ g) _ (fa.prodMk ga) st
+  ha.comp (f := f ⇊ g) _ (fa.prodMk ga) st
 
 /-- `ContMDiffWithinAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffWithinAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     {y : M' × N'} {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t y)
     (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
-    (e : (f x, g x) = y) (st : MapsTo (f △ g) s t) :
+    (e : (f x, g x) = y) (st : MapsTo (f ⇊ g) s t) :
     ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x := by
   rw [← e] at ha
   exact ha.comp₂ fa ga st
@@ -241,7 +241,7 @@ theorem ContMDiffWithinAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g :
 theorem ContMDiffAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     (ha : ContMDiffAt (I'.prod J') J n h (f x, g x)) (fa : ContMDiffAt I I' n f x)
     (ga : ContMDiffAt I J' n g x) : ContMDiffAt I J n (fun x ↦ h (f x, g x)) x :=
-  ha.comp (f := f △ g) _ (fa.prodMk ga)
+  ha.comp (f := f ⇊ g) _ (fa.prodMk ga)
 
 /-- `ContMDiffAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M} {y : M' × N'}

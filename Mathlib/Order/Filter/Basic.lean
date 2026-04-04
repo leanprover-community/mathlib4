@@ -976,7 +976,7 @@ instance {l : Filter α} :
   trans := EventuallyEq.trans
 
 theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
-    (Function.prod f g) =ᶠ[l] (f' △ g') := hf.mp <| hg.mono <| by grind
+    (Function.prod f g) =ᶠ[l] (f' ⇊ g') := hf.mp <| hg.mono <| by grind
 
 /-- See `EventuallyEq.comp_tendsto` in Mathlib.Order.Filter.Tendsto for a similar statement w.r.t.
 composition on the right. -/

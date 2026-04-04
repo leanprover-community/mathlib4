@@ -43,8 +43,8 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 /-- Triangle diagrams for (left) extensions.
 ```
   b
-  △ \
-  |   \ extension  △
+  ⇊ \
+  |   \ extension  ⇊
 f |     \          | unit
   |       ◿
   a - - - ▷ c
@@ -92,8 +92,8 @@ def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) : LeftExtension f g :=
 /-- Whisker a 1-morphism to an extension.
 ```
   b
-  △ \
-  |   \ extension  △
+  ⇊ \
+  |   \ extension  ⇊
 f |     \          | unit
   |       ◿
   a - - - ▷ c - - - ▷ x
@@ -164,7 +164,7 @@ end LeftExtension
 ```
             b
           ◹ |
-   lift /   |      △
+   lift /   |      ⇊
       /     | f    | unit
     /       ▽
   c - - - ▷ a
@@ -213,7 +213,7 @@ def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
 ```
                     b
                   ◹ |
-           lift /   |      △
+           lift /   |      ⇊
               /     | f    | unit
             /       ▽
 x - - - ▷ c - - - ▷ a
@@ -285,7 +285,7 @@ end LeftLift
 /-- Triangle diagrams for (right) extensions.
 ```
   b
-  △ \
+  ⇊ \
   |   \ extension  | counit
 f |     \          ▽
   |       ◿

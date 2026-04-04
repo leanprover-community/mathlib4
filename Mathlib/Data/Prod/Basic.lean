@@ -27,8 +27,8 @@ namespace Pi
 
 variable {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) {c}
 
-@[simp] theorem fst_dcomp_pair : Prod.fst ∘' (f △' g) = f := rfl
-@[simp] theorem snd_dcomp_pair : Prod.snd ∘' (f △' g) = g := rfl
+@[simp] theorem fst_dcomp_pair : Prod.fst ∘' (f ⇊' g) = f := rfl
+@[simp] theorem snd_dcomp_pair : Prod.snd ∘' (f ⇊' g) = g := rfl
 
 end Pi
 

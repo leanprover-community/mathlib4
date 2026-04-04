@@ -134,7 +134,7 @@ theorem snd {a : E × F} : ContDiffPointwiseHolderAt k α Prod.snd a :=
 
 theorem prodMk {g : E → G} (hf : ContDiffPointwiseHolderAt k α f a)
     (hg : ContDiffPointwiseHolderAt k α g a) :
-    ContDiffPointwiseHolderAt k α (f △ g) a where
+    ContDiffPointwiseHolderAt k α (f ⇊ g) a where
   contDiffAt := hf.contDiffAt.prodMk hg.contDiffAt
   isBigO := calc
     _ =ᶠ[𝓝 a] (fun x ↦ (iteratedFDeriv ℝ k f x - iteratedFDeriv ℝ k f a).prod

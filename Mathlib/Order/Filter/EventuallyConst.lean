@@ -125,7 +125,7 @@ lemma comp₂ {g : α → γ} (hf : EventuallyConst f l) (op : β → γ → δ)
     (tendsto_map (f := op.uncurry)).comp (tendsto_map.prodMk tendsto_map)
 
 lemma prodMk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
-    EventuallyConst (f △ g) l :=
+    EventuallyConst (f ⇊ g) l :=
   hf.comp₂ Prod.mk hg
 
 @[to_additive]

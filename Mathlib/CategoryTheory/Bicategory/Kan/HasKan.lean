@@ -73,7 +73,7 @@ def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
 /-- `f⁺ g` is the left Kan extension of `g` along `f`.
 ```
   b
-  △ \
+  ⇊ \
   |   \ f⁺ g
 f |     \
   |       ◿
