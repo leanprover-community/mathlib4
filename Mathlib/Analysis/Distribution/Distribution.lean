@@ -6,11 +6,8 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-<<<<<<< HEAD
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionStrongTopology
-=======
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
->>>>>>> AD_embedding_coeFn_of_finiteDimensional
 
 /-!
 # Distributions
