@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenneth Goodman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenneth Goodman
 -/
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Lamé's Theorem
@@ -38,6 +40,8 @@ Euclidean algorithm using the Fibonacci sequence.
 
 euclidean algorithm, fibonacci, lamé, complexity
 -/
+
+@[expose] public section
 
 namespace Nat
 
