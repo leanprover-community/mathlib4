@@ -230,8 +230,8 @@ lemma IsPullback.comp_lift_of_isPullback_of_cartesianMonoidal {A₁ A₂ A₃ B�
 
 section equalizer
 
-lemma IsPullback.equalizer_ι_comp_lift_diag_of_cartesianMonoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g] :
-    IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f)
+lemma IsPullback.equalizer_ι_comp_lift_diag_of_cartesianMonoidal {X Y : C} (f g : X ⟶ Y)
+    [HasEqualizer f g] : IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f)
       (CartesianMonoidalCategory.lift f g) (CartesianMonoidalCategory.lift (𝟙 Y) (𝟙 Y)) :=
   IsPullback.mk' (by apply CartesianMonoidalCategory.hom_ext <;> simp [equalizer.condition f g])
     (by cat_disch)
