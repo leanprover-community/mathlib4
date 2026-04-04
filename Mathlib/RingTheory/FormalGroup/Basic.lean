@@ -131,6 +131,7 @@ omit [Algebra R S] in
 /-- Given an algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
 formal group law formal group law over `S`. This is constructed by applying `f` to all coefficients
 of the underlying power series. -/
+@[simps]
 def map (f : R →+* S) : FormalGroup S where
   toPowerSeries := (F : MvPowerSeries (Fin 2) R).map f
   zero_constantCoeff := by simp [constantCoeff_map, F.zero_constantCoeff, map_zero]
@@ -142,8 +143,5 @@ def map (f : R →+* S) : FormalGroup S where
     simp_rw [(map_X f _).symm, this, ← map_subst .X_X, this, ← map_subst
       (HasSubst.cons_subst_zero_left (0 : Fin 3) 1 2 F.zero_constantCoeff), F.assoc,
       ← map_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2  F.zero_constantCoeff)]
-
-omit [Algebra R S] in
-@[simp] lemma map_apply (f : R →+* S) : (F.map f) = (F : MvPowerSeries (Fin 2) R).map f := rfl
 
 end FormalGroup
