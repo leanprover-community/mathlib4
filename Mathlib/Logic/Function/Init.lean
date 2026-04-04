@@ -35,10 +35,10 @@ section
 
 variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i) {c}
 
-@[grind =] theorem prod_apply : (f ⇊' g) c = (f c, g c) := rfl
+@[simp, grind =] theorem prod_apply : (f ⇊' g) c = (f c, g c) := rfl
 
-@[simp] theorem fst_prod : ((f ⇊' g) c).fst = f c := rfl
-@[simp] theorem snd_prod : ((f ⇊' g) c).snd = g c := rfl
+theorem fst_prod : ((f ⇊' g) c).fst = f c := rfl
+theorem snd_prod : ((f ⇊' g) c).snd = g c := rfl
 
 @[simp] theorem prod_fst_snd {α β} : (Prod.fst : _ → α) ⇊' (Prod.snd : _ → β) = id := rfl
 @[simp] theorem prod_snd_fst {α β} : (Prod.snd : _ → β) ⇊' (Prod.fst : _ → α) = .swap := rfl
@@ -95,12 +95,12 @@ section
 
 variable (f : ι → α) (g : ι → β)
 
-@[grind =] theorem prod_apply (c : ι) : (f.prod g) c = (f c, g c) := rfl
+@[simp, grind =] theorem prod_apply (c : ι) : (f.prod g) c = (f c, g c) := rfl
 
 theorem prod_comp {γ} {h : γ → ι} : (f ⇊ g) ∘ h = (f ∘ h) ⇊ (g ∘ h) := rfl
 
-@[simp] theorem fst_prod {c} : ((f ⇊ g) c).fst = f c := rfl
-@[simp] theorem snd_prod {c} : ((f ⇊ g) c).snd = g c := rfl
+theorem fst_prod {c} : ((f ⇊ g) c).fst = f c := by simp
+theorem snd_prod {c} : ((f ⇊ g) c).snd = g c := by simp
 
 @[simp] theorem prod_fst_snd : Prod.fst (α := α) ⇊ Prod.snd (β := β) = id := rfl
 @[simp] theorem prod_snd_fst : Prod.snd (β := β) ⇊ Prod.fst (α := α) = .swap := rfl
@@ -133,7 +133,7 @@ theorem rightInverse_uncurry_prod_prod_fst_comp_snd_comp : Function.RightInverse
     (Function.prod (ι := γ)).uncurry ((Prod.fst (α := α) ∘ ·) ⇊ (Prod.snd (β := β) ∘ ·)) :=
   fun _ => rfl
 
-@[grind =]
+@[simp, grind =]
 theorem prod_const_const (a : α) (b : β) :
     (Function.const ι a) ⇊ (Function.const ι b) = Function.const ι (a, b) := rfl
 
@@ -157,21 +157,22 @@ section
 
 variable {a b : α}
 
-@[grind =] theorem diag_apply : ⇗a = (a, a) := rfl
+@[simp, grind =] theorem diag_apply : ⇗a = (a, a) := rfl
 
-@[simp, grind =] theorem fst_diag : (⇗a).1 = a := rfl
-@[simp, grind =] theorem snd_diag : (⇗a).2 = a := rfl
+theorem fst_diag : (⇗a).1 = a := rfl
+theorem snd_diag : (⇗a).2 = a := rfl
 
-@[simp, grind =] theorem map_diag {f : α → β} {g : α → γ} : Prod.map f g ⇗a = (f ⇊ g) a := rfl
+theorem map_diag {f : α → β} {g : α → γ} : Prod.map f g ⇗a = (f ⇊ g) a := rfl
 
-@[simp] theorem map_comp_diag {f : α → β} {g : α → γ} : Prod.map f g ∘ Function.diag = f ⇊ g := rfl
+@[simp] theorem map_comp_diag {f : α → β} {g : α → γ} :
+  Prod.map f g ∘ Function.diag = f ⇊ g := rfl
 
 theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
-@[simp] theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⇗a = p) ↔ p.1 = p.2 := by
+theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⇗a = p) ↔ p.1 = p.2 := by
   simp [Prod.ext_iff, eq_comm]
 
-@[simp] theorem diag_eq_iff : ⇗a = ⇗b ↔ a = b := injective_diag.eq_iff
+theorem diag_eq_iff : ⇗a = ⇗b ↔ a = b := injective_diag.eq_iff
 
 @[simp] theorem prod_diag_diag : Function.diag ⇊ Function.diag (α := α) =
     Function.diag ∘ Function.diag := rfl
