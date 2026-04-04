@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Free sheaves of modules
@@ -41,7 +42,6 @@ noncomputable def free (I : Type u) : SheafOfModules.{u} R := ∐ (fun (_ : I) �
 /-- The inclusions `unit R ⟶ free I`. -/
 noncomputable def ιFree {I : Type u} (i : I) : unit R ⟶ free I :=
   Sigma.ι (fun (_ : I) ↦ unit R) i
-
 
 /-- The tautological cofan with point `free I : SheafOfModules R`. -/
 noncomputable def freeCofan (I : Type u) : Cofan (fun (_ : I) ↦ unit R) :=
