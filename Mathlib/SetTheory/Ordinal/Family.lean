@@ -930,20 +930,19 @@ theorem add_sSup (o : Ordinal.{u}) {s : Set Ordinal} [Small.{u} s] (hs : s.Nonem
   (isNormal_add_right o).map_sSup hs (bddAbove_of_small s)
 
 @[simp]
-lemma mul_sSup (o : Ordinal.{u}) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' s) := by
-  rcases s.eq_empty_or_nonempty with (hempty | hnonempty)
-  · rw [hempty, image_empty, csSup_empty, bot_eq_zero, mul_zero]
+lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' s) := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp
   rcases eq_zero_or_pos o with (rfl | ho)
-  · simp only [zero_mul]
-    rw [← bot_eq_zero, hnonempty.image_const, csSup_singleton]
+  · simp [hs.image_const]
   by_cases bdd : BddAbove s
-  · exact (isNormal_mul_right ho).map_sSup hnonempty bdd
+  · exact (isNormal_mul_right ho).map_sSup hs bdd
   · rw [csSup_of_not_bddAbove bdd, csSup_empty, csSup_of_not_bddAbove]
     · simp
     exact fun ⟨u, hu⟩ ↦ bdd ⟨u, fun x hx ↦ (x.le_mul_right ho).trans (hu ⟨x, hx, rfl⟩)⟩
 
 @[simp]
-lemma mul_iSup (o : Ordinal.{u}) {ι} (f : ι → Ordinal) : o * ⨆ i, f i = ⨆ i, o * f i := by
+lemma mul_iSup (o : Ordinal) {ι} (f : ι → Ordinal) : o * ⨆ i, f i = ⨆ i, o * f i := by
   rw [← sSup_range, mul_sSup, ← Set.range_comp', sSup_range]
 
 @[simp]
