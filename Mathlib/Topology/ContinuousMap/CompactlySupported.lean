@@ -244,7 +244,7 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
   map_add' := coe_add
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
-    SMul R C_c(α, β) := fast_instance%
+    SMul R C_c(α, β) :=
   ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
 
 @[simp, norm_cast]
@@ -752,12 +752,32 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
-set_option backward.isDefEq.respectTransparency false in
+
+#synth SMul ℝ≥0 (α →C_c ℝ)
+
+#synth DistribMulAction ℝ≥0 (α →C_c ℝ)
+
+#check instDistribMulActionOfReal
+
+lemma glou : (instSMulOfContinuousConstSMul : SMul ℝ≥0 (α →C_c ℝ)) = SMulZeroClass.toSMul := by
+  with_reducible_and_instances rfl
+
+
+#exit
+
+--set_option backward.isDefEq.respectTransparency false in
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
   map_add' f g := by ext x; simp
-  map_smul' a f := by ext x; simp
+  map_smul' a f := by
+    ext x
+    simp only [toReal_smul, RingHom.id_apply]
+    have : (instSMulOfContinuousConstSMul : SMul ℝ≥0 (α →C_c ℝ) ) = DistribMulAction.toDistribSMul.toSMul := by
+      with_reducible_and_instances rfl
+
+
+#exit
 
 @[simp, norm_cast]
 lemma coe_toRealLinearMap : (toRealLinearMap : C_c(α, ℝ≥0) → C_c(α, ℝ)) = toReal := rfl
