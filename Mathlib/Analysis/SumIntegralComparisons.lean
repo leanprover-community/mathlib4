@@ -294,26 +294,27 @@ open Real MeasureTheory
 
 lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (hc : 0 < c) :
     ∫ x in (0 : ℝ)..M, x ^ k * rexp (- (c * x)) ≤ k ! / c ^ (k + 1) := by
-  have : ∫ x in (0 : ℝ)..M, x ^ k * rexp (- (c * x))
-      = (∫ x in (0 : ℝ)..M, (c * x) ^ k * rexp (- (c * x))) / c ^ k := by
-    rw [← intervalIntegral.integral_div]
-    congr with x
-    field_simp [mul_pow, hc.ne']
-    ring
-  rw [this, intervalIntegral.integral_comp_mul_left (fun x ↦ x ^ k * rexp (-x)) hc.ne']
-  simp only [mul_zero, smul_eq_mul]
-  rw [← div_eq_inv_mul, div_div, ← pow_succ']
-  gcongr
-  rw [intervalIntegral.integral_of_le (by positivity),
-    ← Real.Gamma_nat_eq_factorial, Real.Gamma_eq_integral (by positivity)]
-  simp only [mul_comm, add_sub_cancel_right, Real.rpow_natCast]
-  apply setIntegral_mono_set
-  · simpa [mul_comm] using Real.GammaIntegral_convergent (s := k + 1) (by positivity)
-  · filter_upwards [ae_restrict_mem measurableSet_Ioi] with x (hx : 0 < x)
-    positivity
-  · apply ae_of_all
-    intro x hx
-    exact hx.1
+  have hk : (0 : ℝ) < ↑k + 1 := by positivity
+  have hint : IntegrableOn (fun x ↦ x ^ ((↑k + 1 : ℝ) - 1) * rexp (-(c * x))) (Ioi 0) :=
+    .of_integral_ne_zero (by rw [integral_rpow_mul_exp_neg_mul_Ioi hk hc]; positivity)
+  rw [intervalIntegral.integral_of_le hM]
+  have key := integral_rpow_mul_exp_neg_mul_Ioi hk hc
+  calc ∫ x in Ioc (0 : ℝ) M, x ^ k * rexp (-(c * x))
+    _ = ∫ x in Ioc (0 : ℝ) M, x ^ ((↑k + 1 : ℝ) - 1) * rexp (-(c * x)) :=
+        setIntegral_congr_fun measurableSet_Ioc fun x hx ↦ by
+          simp [add_sub_cancel_right, rpow_natCast]
+    _ ≤ ∫ x in Ioi (0 : ℝ), x ^ ((↑k + 1 : ℝ) - 1) * rexp (-(c * x)) := by
+        apply setIntegral_mono_set hint
+        · filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+          exact mul_nonneg (rpow_nonneg hx.le _) (exp_nonneg _)
+        · apply ae_of_all
+          exact fun x hx ↦ hx.1
+    _ = k ! / c ^ (k + 1) := by
+        simp only [key, Gamma_nat_eq_factorial, mul_comm, div_eq_mul_inv]
+        congr 1
+        rw [mul_one, inv_rpow hc.le]
+        congr 1
+        exact_mod_cast rpow_natCast c (k + 1)
 
 lemma sum_Ico_pow_mul_exp_neg_le {k : ℕ} {M : ℕ} {c : ℝ} (hc : 0 < c) :
     ∑ i ∈ Finset.Ico 0 M, i ^ k * rexp (- (c * i)) ≤
