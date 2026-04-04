@@ -140,9 +140,6 @@ theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
 @[deprecated (since := "2026-04-04")]
 alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
 
-@[deprecated (since := "2026-04-04")]
-alias exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor'_mem
-
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
   (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
