@@ -1324,7 +1324,7 @@ variable (ι 𝕜 v) in
 /-- In an inner product space with dimension 1, a set `{v}` is an orthonormal basis for
 `‖v‖ = 1`. -/
 def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
-  (basisSingleton ι h v (fun h ↦ by simp [h] at hv)).toOrthonormalBasis (by simpa using hv)
+  (basisSingleton ι h v (by aesop)).toOrthonormalBasis (by simpa)
 
 @[simp]
 theorem orthonormalBasisSingleton_apply (i : ι) :
