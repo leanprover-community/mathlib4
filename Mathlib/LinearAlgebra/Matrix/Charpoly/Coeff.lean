@@ -378,7 +378,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
 equals the determinant of the principal submatrix indexed by `s`. -/
 lemma det_piecewise_one_eq_submatrix_det
     (M : Matrix n n R) (s : Finset n) :
-    det (s.piecewise M (1 : Matrix n n R)) =
+    det (Matrix.of <| s.piecewise M (1 : Matrix n n R)) =
     (M.submatrix (↑) (↑) : Matrix s s R).det := by
   let e := Equiv.sumCompl (fun x => x ∈ s)
   let A : Matrix n n R := Matrix.of (s.piecewise M (1 : Matrix n n R))
