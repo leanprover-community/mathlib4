@@ -752,32 +752,11 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
-
-#synth SMul ℝ≥0 (α →C_c ℝ)
-
-#synth DistribMulAction ℝ≥0 (α →C_c ℝ)
-
-#check instDistribMulActionOfReal
-
-lemma glou : (instSMulOfContinuousConstSMul : SMul ℝ≥0 (α →C_c ℝ)) = SMulZeroClass.toSMul := by
-  with_reducible_and_instances rfl
-
-
-#exit
-
---set_option backward.isDefEq.respectTransparency false in
 /-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
   map_add' f g := by ext x; simp
-  map_smul' a f := by
-    ext x
-    simp only [toReal_smul, RingHom.id_apply]
-    have : (instSMulOfContinuousConstSMul : SMul ℝ≥0 (α →C_c ℝ) ) = DistribMulAction.toDistribSMul.toSMul := by
-      with_reducible_and_instances rfl
-
-
-#exit
+  map_smul' a f := by ext x; simp
 
 @[simp, norm_cast]
 lemma coe_toRealLinearMap : (toRealLinearMap : C_c(α, ℝ≥0) → C_c(α, ℝ)) = toReal := rfl
