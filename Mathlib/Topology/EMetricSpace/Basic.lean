@@ -79,16 +79,20 @@ nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
 
-/-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
-and `f y` is controlled in terms of the distance between `x` and `y`.
+/-- If a map between pseudoemetric spaces is a uniform inducing map then the edistance between `f x`
+and `f y` is controlled in terms of the distance between `x` and `y`. -/
+theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : α → β}
+    (h : IsUniformInducing f) :
+    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
 
-In fact, this lemma holds for a `IsUniformInducing` map.
-TODO: generalize? -/
+@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
 theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+  controlled_of_isUniformInducing h.toIsUniformInducing
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter α} :

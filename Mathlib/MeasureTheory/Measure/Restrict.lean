@@ -380,9 +380,6 @@ theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
     simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
     rw [restrict_union_congr, ← hs]
 
-@[deprecated (since := "2025-08-28")]
-alias restrict_finset_biUnion_congr := restrict_biUnion_finset_congr
-
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
   refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩
@@ -726,12 +723,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
   simp only [ae_restrict_eq hs, mem_principal, mem_inf_iff]
   exact ⟨_, univ_mem, s, Subset.rfl, (univ_inter s).symm⟩
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=

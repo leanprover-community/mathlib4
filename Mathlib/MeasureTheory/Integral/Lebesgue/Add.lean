@@ -232,6 +232,11 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
     _ = ⨆ n, (eapprox f n).lintegral μ := by
       congr; ext n; rw [(eapprox f n).lintegral_eq_lintegral]
 
+/-- Generalization of `lintegral_eq_iSup_eapprox_lintegral` to ae-measurable functions. -/
+theorem lintegral_eq_iSup_eapprox_lintegral' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    ∫⁻ a, f a ∂μ = ⨆ n, (eapprox (hf.mk f) n).lintegral μ := by
+  rw [lintegral_congr_ae hf.ae_eq_mk, lintegral_eq_iSup_eapprox_lintegral hf.measurable_mk]
+
 lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (n : ℕ) :
     (eapprox f n).lintegral μ ≤ ∫⁻ x, f x ∂μ := by
   rw [lintegral_eq_iSup_eapprox_lintegral hf]
