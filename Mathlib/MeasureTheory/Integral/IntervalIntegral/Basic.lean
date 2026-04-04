@@ -1157,7 +1157,7 @@ theorem integral_Ici_sub_Ici (hf : IntegrableOn f (Ici a) μ) (hab : a ≤ b) :
   have ha : IntegrableOn f (Ici b) μ := hf.mono_set (Ici_subset_Ici.2 hab)
   have h : IntegrableOn f (Ico a b) μ := hf.mono_set Ico_subset_Ici_self
   rw [sub_eq_iff_eq_add', ← setIntegral_union (by grind) measurableSet_Ico ha h, union_comm,
-      Ico_union_Ici_eq_Ici hab]
+    Ico_union_Ici_eq_Ici hab]
 
 theorem integral_Ici_sub_Ici' [NoAtoms μ] (hf : IntegrableOn f (Ici a) μ)
     (hg : IntegrableOn f (Ici b) μ) :
