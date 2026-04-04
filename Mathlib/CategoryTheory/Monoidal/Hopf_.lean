@@ -463,8 +463,6 @@ theorem antipode_antipode (A : C) [HopfObj A] (comm : (β_ _ _).hom ≫ μ[A] = 
   · rw [Conv.mul_eq, Conv.one_eq]
     simp
 
-end HopfObj
-
 variable (R : Type u₁) [CommRing R]
 
 lemma mul_eq_tensorμ (M : ModuleCat R) [MonObj M] (a b : (M ⊗ M : ModuleCat R)) :
@@ -670,40 +668,41 @@ instance hopfObjOfHopfAlgebra (A : HopfAlgCat R) : HopfObj (ModuleCat.of R A) wh
 
 --set_option pp.notation false
 
-def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R where {}
+def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R := {
+  obj M := HopfAlgCat.of R M.X
 
-
-def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
-  functor := {
-    obj M := HopfAlgCat.of R M.X
-
-    map {M N} f := HopfAlgCat.ofHom {
-      toFun := f.hom.hom.hom
-      map_add' := LinearMap.map_add (ModuleCat.Hom.hom f.hom.hom.hom)
-      map_smul' := LinearMap.map_smul (ModuleCat.Hom.hom f.hom.hom.hom)
-      counit_comp := congr_arg ModuleCat.Hom.hom (
-        congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
-      map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
-        (IsComonHom.hom_comul f.hom.hom))).symm
-      map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
-        1
-      map_mul' := fun x y ↦
-        DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom))
-          (x ⊗ₜ[R] y)
-    }
+  map {M N} f := HopfAlgCat.ofHom {
+    toFun := f.hom.hom.hom
+    map_add' := LinearMap.map_add (ModuleCat.Hom.hom f.hom.hom.hom)
+    map_smul' := LinearMap.map_smul (ModuleCat.Hom.hom f.hom.hom.hom)
+    counit_comp := congr_arg ModuleCat.Hom.hom (
+      congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
+    map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
+      (IsComonHom.hom_comul f.hom.hom))).symm
+    map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
+      1
+    map_mul' := fun x y ↦
+      DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom)) (x ⊗ₜ[R] y)
   }
+}
 
-  inverse := {
-    obj A := ⟨ModuleCat.of R A⟩
-    map {M N} f := ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
+instance isEquivModuleCatToHopfAlgCat : Functor.IsEquivalence (moduleCatToHopfAlgCat R) := {
+  faithful := ⟨by
+    intro _ _ f g hfg
+    simp only [moduleCatToHopfAlgCat] at hfg
+    have h := congr_arg ConcreteCategory.hom hfg
+    cases f
+    cases g
+    congr 1
+    ext x
+    exact DFunLike.congr_fun h x⟩
+  full := ⟨by
+    intro M N f
+    use ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
       (by
         ext
         simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
         convert (show f.toBialgHom'.toLinearMap 1 = 1 from f.toBialgHom.map_one)
-        · change (ModuleCat.ofHom (Algebra.linearMap R M.carrier)) 1 = 1
-          simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
-        · change (ModuleCat.ofHom (Algebra.linearMap R N.carrier)) 1 = 1
-          simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
       )
       (by
         ext t
@@ -717,14 +716,86 @@ def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
       )
       (by ext m; exact DFunLike.congr_fun f.toBialgHom.counit_comp m)
       (by ext m; exact DFunLike.congr_fun f.toBialgHom.map_comp_comul.symm m)
-      ⟩
-  }
+    ⟩
+    rfl
+  ⟩
+  essSurj := ⟨fun M ↦
+    ⟨ ⟨ModuleCat.of R M⟩, by
+      constructor
+      simp only [moduleCatToHopfAlgCat]
+      refine {
+        hom := ⟨⟨CoalgHom.id R M.carrier, ?_, ?_⟩⟩,
+        inv := ⟨⟨CoalgHom.id R M.carrier, ?_, ?_⟩⟩,
+        hom_inv_id := rfl,
+        inv_hom_id := rfl
+      }
+      · simp
+        congr 2
 
-  unitIso := {
-    hom :=
-    inv := _
-  }
-  counitIso := sorry
+      · simp
+        intro x y
+        rfl
+      · simp
+      . simp
+        intro x y
+        rfl
+    ⟩
+  ⟩
+}
 
 
+-- def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
+--   functor := {
+--     obj M := HopfAlgCat.of R M.X
+
+--     map {M N} f := HopfAlgCat.ofHom {
+--       toFun := f.hom.hom.hom
+--       map_add' := LinearMap.map_add (ModuleCat.Hom.hom f.hom.hom.hom)
+--       map_smul' := LinearMap.map_smul (ModuleCat.Hom.hom f.hom.hom.hom)
+--       counit_comp := congr_arg ModuleCat.Hom.hom (
+--         congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
+--       map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
+--         (IsComonHom.hom_comul f.hom.hom))).symm
+--       map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
+--         1
+--       map_mul' := fun x y ↦
+--         DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom))
+--           (x ⊗ₜ[R] y)
+--     }
+--   }
+
+--   inverse := {
+--     obj A := ⟨ModuleCat.of R A⟩
+--     map {M N} f := ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
+--       (by
+--         ext
+--         simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
+--         convert (show f.toBialgHom'.toLinearMap 1 = 1 from f.toBialgHom.map_one)
+--         · change (ModuleCat.ofHom (Algebra.linearMap R M.carrier)) 1 = 1
+--           simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
+--         · change (ModuleCat.ofHom (Algebra.linearMap R N.carrier)) 1 = 1
+--           simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
+--       )
+--       (by
+--         ext t
+--         induction t using TensorProduct.induction_on with
+--         | zero => simp only [ModuleCat.hom_comp, map_zero]
+--         | tmul x y => exact f.toBialgHom.map_mul x y
+--         | add x y hx hy =>
+--             simp only [map_add]
+--             exact congr_arg₂ (· + ·) hx hy
+--       )
+--       )
+--       (by ext m; exact DFunLike.congr_fun f.toBialgHom.counit_comp m)
+--       (by ext m; exact DFunLike.congr_fun f.toBialgHom.map_comp_comul.symm m)
+--       ⟩
+--   }
+
+--   unitIso := {
+--     hom :=
+--     inv := _
+--   }
+--   counitIso := sorry
+
+end HopfObj
 end CategoryTheory
