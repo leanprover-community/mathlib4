@@ -622,6 +622,10 @@ lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
+theorem neighborSet_comap_equiv (e : V ≃ W) (w : W) :
+    e.symm ⁻¹' (G'.comap e).neighborSet (e.symm w) = G'.neighborSet w :=
+  Iso.comap e G' |>.symm.toEmbedding.preimage_neighborSet w
+
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
@@ -635,6 +639,10 @@ lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
+
+theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
+    e.symm ⁻¹' G.neighborSet (e.symm w) = (G.map e).neighborSet w :=
+  Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
