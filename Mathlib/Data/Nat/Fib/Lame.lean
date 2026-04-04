@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2025 Kenneth Goodman. All rights reserved.
+Copyright (c) 2026 Kenneth Goodman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenneth Goodman
 -/
 module
 
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Tactic.IntervalCases
 
@@ -59,26 +60,11 @@ theorem euclidSteps_zero_right (a : ℕ) :
     euclidSteps a 0 = 0 := by
   simp [euclidSteps]
 
-/-- When `b ≠ 0`, one Euclidean step gives
-`euclidSteps a b = euclidSteps b (a % b) + 1`. -/
 theorem euclidSteps_of_ne_zero (a : ℕ) {b : ℕ}
     (hb : b ≠ 0) :
     euclidSteps a b = euclidSteps b (a % b) + 1 := by
   rw [euclidSteps]
   simp [hb]
-
-/-- When `b ≤ a`, we have `b + a % b ≤ a`. -/
-theorem add_mod_le {a b : ℕ} (hab : b ≤ a) :
-    b + a % b ≤ a := by
-  rcases Nat.eq_zero_or_pos b with rfl | hb
-  · simp
-  · have h1 : 1 ≤ a / b := Nat.div_pos hab hb
-    set q := a / b
-    set r := a % b
-    have h2 : q * b + r = a := Nat.div_add_mod' a b
-    have h3 : b ≤ q * b :=
-      Nat.le_mul_of_pos_left b h1
-    omega
 
 /-- **Lamé's Theorem.** If the Euclidean algorithm on `(a, b)`
 with `b ≤ a` takes at least `n` steps (with `n ≠ 0`), then
@@ -91,7 +77,7 @@ theorem fib_le_of_euclidSteps {a b : ℕ} (hab : b ≤ a)
     {n : ℕ} (hn₀ : n ≠ 0) (hn : n ≤ euclidSteps a b) :
     fib n ≤ b ∧ fib (n + 1) ≤ a := by
   induction n generalizing a b with
-  | zero => exact absurd rfl hn₀
+  | zero => contradiction
   | succ n ih =>
     have hb : b ≠ 0 := by
       intro h; subst h; simp at hn

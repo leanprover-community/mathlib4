@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro, Kenneth Goodman
+Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 module
 
@@ -261,8 +261,6 @@ theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n
       _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
       _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
 
-/-- The remainder when dividing consecutive Fibonacci numbers:
-`fib (n + 2) % fib (n + 1) = fib n` for `1 < n`. -/
 theorem fib_mod_fib_succ {n : ℕ} (hn : 1 < n) :
     fib (n + 2) % fib (n + 1) = fib n := by
   rw [fib_add_two, Nat.add_mod_right,
