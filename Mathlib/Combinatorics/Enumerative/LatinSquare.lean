@@ -6,6 +6,7 @@ Authors: Christopher J. R. Lloyd, George H. Seelinger
 module
 
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
@@ -219,27 +220,6 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (LatinRectangle.col A j) Finset.univ
   Finset.univ \ D
 
-/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ and, for every
-    $x \in \bigcup_i B_i$, let $C_x$ be the set of indices of the $B_i$'s that contain $x$.
-    Then, $\sum_i |B_i| = \sum_x |C_x|$.
-    This is abstracted in PR #37190 and will be removed
--/
-lemma sum_card_eq_sum_card_fiber_biUnion {α : Type*} [DecidableEq α]
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (B : ι → Finset α)
-    (s : Finset ι) :
-    ∑ j ∈ s, (Finset.card (B j)) =
-    ∑ x ∈ (s.biUnion B), Finset.card {j | j ∈ s ∧ x ∈ B j} := by
-      let r : ι → α → Prop := fun j x => x ∈ B j
-      have g := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow r (s := s)
-        (t := s.biUnion B)
-      unfold Finset.bipartiteAbove Finset.bipartiteBelow r at g
-      have hB : ∀ j ∈ s, {b ∈ s.biUnion B | b ∈ B j} = B j := by grind
-      have hB' : ∀ b, ({a ∈ s | b ∈ B a} : Finset ι) = ({j | j ∈ s ∧ b ∈ B j} : Finset ι) := by
-        grind
-      rw [Finset.sum_congr rfl (fun j hj => by rw [hB j hj])] at g
-      simp [hB', g]
-
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
     each with cardinality k, if the cardinality of their union is less than r,
     then there exists an element x appearing in strictly more than k of the $B_j$'s.
@@ -247,21 +227,15 @@ lemma sum_card_eq_sum_card_fiber_biUnion {α : Type*} [DecidableEq α]
     This is abstracted in PR #37190 and will be removed.
 -/
 lemma exists_larger_subset {n : Type*} [DecidableEq n] [Fintype n]
-    {α : Type*} [DecidableEq α]
-    {B : n → Finset α}
-    {s : Finset n}
-    {k : Nat} [nek : NeZero k]
-    (h₁ : ∀ j, Finset.card (B j) = k)
+    {α : Type*} [DecidableEq α] {B : n → Finset α} {s : Finset n}
+    {k : Nat} [nek : NeZero k] (h₁ : ∀ j, Finset.card (B j) = k)
     (h₂ : (s.biUnion B).card < (s.card)) :
     ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-  by_contra! hc
-  have hc' := Finset.sum_le_sum  (s := s.biUnion B) (ι := α)
-    (f := fun x => Finset.card {j | j ∈ s ∧ x ∈ B j})
-    (g := fun _ => k) (by grind)
-  have : (Finset.card (s.biUnion B))*k < s.card*k :=
-    Nat.mul_lt_mul_right (Nat.ne_zero_iff_zero_lt.mp nek.out) |>.mpr (by lia)
-  simp at hc'
-  simpa [← sum_card_eq_sum_card_fiber_biUnion B s, h₁] using Nat.lt_of_le_of_lt hc' this
+    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by 
+      simp_rw [h₁, Finset.inf'_const]
+    have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
+      (by grind [Finset.one_le_card]) (by grind [nek.out]) (by grind)
+    grind
 
 lemma latin_rect_hall_property {α : Type*} [DecidableEq α]
     {n : Type*} [Fintype n] [DecidableEq n]
