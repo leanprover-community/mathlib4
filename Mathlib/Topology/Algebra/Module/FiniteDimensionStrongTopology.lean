@@ -228,19 +228,19 @@ theorem ContinuousLinearMap.isUniformEmbedding_coeFn_of_finiteDimensional
   let Φ : (E →L[𝕜] Vᵤ) →ₗ[𝕜] (E → Vᵤ) := LinearMap.ltoFun _ _ _ _ ∘ₗ coeLM _
   AddMonoidHom.isUniformEmbedding_of_isEmbedding (f := Φ) isEmbedding_coeFn_of_finiteDimensional
 
-noncomputable def flipOfFiniteDimensional [FiniteDimensional 𝕜 E] :
+noncomputable def ContinuousLinearMap.flipOfFiniteDimensional [FiniteDimensional 𝕜 E] :
     (E →L[𝕜] F →L[𝕜] V) ≃L[𝕜] (F →L[𝕜] E →L[𝕜] V) :=
   UniformConvergenceCLM.flipOfFiniteDimensional
     (fun _ ↦ id) sUnion_isVonNBounded_eq_univ (fun _ ↦ id)
 
 @[simp]
-lemma flipOfFiniteDimensional_apply [FiniteDimensional 𝕜 E]
+lemma ContinuousLinearMap.flipOfFiniteDimensional_apply [FiniteDimensional 𝕜 E]
     (T : E →L[𝕜] F →L[𝕜] V) (e : E) (f : F) :
     flipOfFiniteDimensional T f e = T e f :=
   rfl
 
 @[simp]
-lemma flipOfFiniteDimensional_symm_apply [FiniteDimensional 𝕜 E]
+lemma ContinuousLinearMap.flipOfFiniteDimensional_symm_apply [FiniteDimensional 𝕜 E]
     (S : F →L[𝕜] E →L[𝕜] V) (e : E) (f : F) :
     flipOfFiniteDimensional.symm S e f = S f e :=
   rfl
