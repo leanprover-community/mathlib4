@@ -526,11 +526,7 @@ instance : OrderClosedTopology A where
 open Unitization in
 lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
     (hf : ConvexOn ℝ (inr (R := ℂ) '' s) (cfc f)) : ConvexOn ℝ s (cfcₙ f) := by
-  let inrl : A →ₗ[ℝ] Unitization ℂ A :=
-  { toFun := inr
-    map_add' := by simp
-    map_smul' := by simp }
-  have inrl_injective : Function.Injective inrl := Unitization.inr_injective
+  let inrl : A →ₗ[ℝ] A⁺¹ := inrHom ℝ ℂ A
   by_cases hf₀ : f 0 = 0
   case neg =>
     have : (cfcₙ f : A → A) = fun _ => 0 := by
@@ -539,29 +535,20 @@ lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
     rw [this]
     refine convexOn_const _ ?_
     have : Convex ℝ (inrl ⁻¹' (inrl '' s)) := Convex.linear_preimage hf.1 _
-    rwa [Set.preimage_image_eq _ inrl_injective] at this
-  refine convexOn_of_convexOn_inr_comp ?_ ?_
-  · grind only [!IsSelfAdjoint.cfcₙ]   -- add grind tag
-  · have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : Unitization ℂ A) := by rfl
-    rw [h₁]
-    have h₂ : (fun x : A => ((cfcₙ f x : A) : Unitization ℂ A))
-        = fun x : A => cfc f (x : Unitization ℂ A) := by
-      ext1
-      rw [real_cfcₙ_eq_cfc_inr ..]
-      rfl
-    rw [h₂]
-    have h₂ : ConvexOn ℝ (inrl ⁻¹' (inrl '' s)) ((cfc f) ∘ inrl) :=
-      ConvexOn.comp_linearMap (g := inrl) hf
-    rwa [Set.preimage_image_eq _ inrl_injective] at h₂
+    rwa [Set.preimage_image_eq _ inrHom_injective] at this
+  refine convexOn_of_convexOn_inr_comp (fun _ => IsSelfAdjoint.cfcₙ) ?_
+  have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : A⁺¹) := rfl
+  have h₂ : (fun x : A => ((cfcₙ f x : A) : A⁺¹))
+      = fun x : A => cfc f (x : A⁺¹) := by ext1; rw [real_cfcₙ_eq_cfc_inr ..]; rfl
+  rw [h₁, h₂]
+  have h₃ : ConvexOn ℝ (inrl ⁻¹' (inrl '' s)) ((cfc f) ∘ inrl) :=
+    ConvexOn.comp_linearMap (g := inrl) hf
+  rwa [Set.preimage_image_eq _ inrHom_injective] at h₃
 
 open Unitization in
 lemma concaveOn_cfcₙ_of_concaveOn_cfc {f : ℝ → ℝ} {s : Set A}
     (hf : ConcaveOn ℝ (inr (R := ℂ) '' s) (cfc f)) : ConcaveOn ℝ s (cfcₙ f) := by
-  let inrl : A →ₗ[ℝ] Unitization ℂ A :=
-  { toFun := inr
-    map_add' := by simp
-    map_smul' := by simp }
-  have inrl_injective : Function.Injective inrl := Unitization.inr_injective
+  let inrl : A →ₗ[ℝ] A⁺¹ := inrHom ℝ ℂ A
   by_cases hf₀ : f 0 = 0
   case neg =>
     have : (cfcₙ f : A → A) = fun _ => 0 := by
@@ -570,21 +557,15 @@ lemma concaveOn_cfcₙ_of_concaveOn_cfc {f : ℝ → ℝ} {s : Set A}
     rw [this]
     refine concaveOn_const _ ?_
     have : Convex ℝ (inrl ⁻¹' (inrl '' s)) := Convex.linear_preimage hf.1 _
-    rwa [Set.preimage_image_eq _ inrl_injective] at this
-  refine concaveOn_of_concaveOn_inr_comp ?_ ?_
-  · grind only [!IsSelfAdjoint.cfcₙ]   -- add grind tag
-  · have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : Unitization ℂ A) := by rfl
-    rw [h₁]
-    have h₂ : (fun x : A => ((cfcₙ f x : A) : Unitization ℂ A))
-        = fun x : A => cfc f (x : Unitization ℂ A) := by
-      ext1
-      rw [real_cfcₙ_eq_cfc_inr ..]
-      rfl
-    rw [h₂]
-    have h₂ : ConcaveOn ℝ (inrl ⁻¹' (inrl '' s)) ((cfc f) ∘ inrl) :=
-      ConcaveOn.comp_linearMap (g := inrl) hf
-    rwa [Set.preimage_image_eq _ inrl_injective] at h₂
-
+    rwa [Set.preimage_image_eq _ inrHom_injective] at this
+  refine concaveOn_of_concaveOn_inr_comp (fun _ => IsSelfAdjoint.cfcₙ) ?_
+  have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : A⁺¹) := rfl
+  have h₂ : (fun x : A => ((cfcₙ f x : A) : A⁺¹))
+      = fun x : A => cfc f (x : A⁺¹) := by ext1; rw [real_cfcₙ_eq_cfc_inr ..]; rfl
+  rw [h₁, h₂]
+  have h₃ : ConcaveOn ℝ (inrl ⁻¹' (inrl '' s)) ((cfc f) ∘ inrl) :=
+    ConcaveOn.comp_linearMap (g := inrl) hf
+  rwa [Set.preimage_image_eq _ inrHom_injective] at h₃
 
 section Icc
 

@@ -405,20 +405,23 @@ theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [
   (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
-variable (S R A)
+variable [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
 
+variable (S R A) in
 /-- The canonical `S`-linear inclusion `A → Unitization R A`. -/
 @[simps apply]
-def inrHom [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
-    [IsScalarTower S R A] : A →ₗ[S] Unitization R A where
+def inrHom : A →ₗ[S] Unitization R A where
   toFun := (↑)
   map_add' := inr_add R
   map_smul' := inr_smul R
 
+omit [SMul R A] in
+lemma inrHom_injective : Function.Injective (inrHom S R A) := Unitization.inr_injective
+
+variable (S R A) in
 /-- The canonical `S`-linear projection `Unitization R A → A`. -/
 @[simps apply]
-def sndHom [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A] :
-    Unitization R A →ₗ[S] A where
+def sndHom : Unitization R A →ₗ[S] A where
   toFun a := a.snd
   map_add' := snd_add
   map_smul' := snd_smul
