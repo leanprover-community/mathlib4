@@ -23,7 +23,6 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 
 ## TODO
 
-+ Show operator concavity of `rpow` over `Icc 0 1`
 + Show that `rpow` over `Icc (-1) 0` is operator antitone and operator convex
 + Show operator convexity of `rpow` over `Icc 1 2`
 
