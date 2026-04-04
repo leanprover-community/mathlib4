@@ -139,10 +139,8 @@ section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive]
-instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) := by
-  constructor
-  rintro ⟨a, ha⟩
-  exact not_le_of_gt ha (isBot_one a)
+instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) :=
+  ⟨fun ⟨a, ha⟩ ↦ not_le_of_gt ha (isBot_one a)⟩
 
 @[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
 
