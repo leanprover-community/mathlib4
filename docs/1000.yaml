@@ -244,6 +244,8 @@ Q226014:
 
 Q230848:
   title: Lamé’s theorem
+  decl: Nat.fib_le_of_euclidSteps
+  authors: Kenneth Goodman
 
 Q240950:
   title: Faltings's theorem
