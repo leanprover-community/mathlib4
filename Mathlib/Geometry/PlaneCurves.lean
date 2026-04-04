@@ -53,16 +53,25 @@ interval I. -/
 def orientedCurvature : ℝ :=
   !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
-/-- Normal vector at a point of a plane curve. This definition is only meaningful when c is
-differentiable at t, and it's supposed to be used for plane curves parametrized by arc-length. -/
-def normal : EuclideanSpace ℝ (Fin 2) := !₂[-(deriv c t 1), deriv c t 0]
+lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1;
+    iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3) := rfl
 
-lemma normal_eq : normal c t = !₂[-(deriv c t 1), deriv c t 0] := rfl
+/-- Normal vector at a point of a plane curve.
+This definition is only meaningful when `c` is differentiable at `t` with non-zero derivative. -/
+def normal : EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]
+
+lemma normal_eq : normal c t = ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0] := rfl
+
+/-- A lemma that gives us a formula for the normal when the derivative has length 1, this is
+useful especially for plane curves parametrized by arc-length (with unit speed). -/
+lemma normal_eq_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
+    normal c t = !₂[-(deriv c t 1), deriv c t 0] := by simp [normal_eq, h]
 
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_of_velocity_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
-  simp [normal_eq, PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
+  rw [normal_eq, real_inner_smul_right]
+  simp [PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
 
 end
 
@@ -72,7 +81,7 @@ variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 has length 1 (is a unit vector). -/
 theorem norm_normal_eq_one_of_unit_speed (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     ‖normal c t‖ = 1 := by
-  simp [normal_eq, EuclideanSpace.norm_eq, ← hc t ht, add_comm]
+  simp [normal_eq_of_norm_deriv_eq_one (h:=(hc t ht)), EuclideanSpace.norm_eq, ← hc t ht, add_comm]
 
 /-- For every plane curve `c` parametrized by arc-length, the velocity vector `deriv c` and the
 `normal` vector at each point form an orthonormal basis of the plane, which is sometimes called the
@@ -107,10 +116,10 @@ set_option backward.isDefEq.respectTransparency false in
 arc-length, or in other words with unit speed. -/
 theorem orientedCurvature_of_unit_speed_curve (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
-  unfold orientedCurvature normal
-  simp only [hc t ht, Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one,
-    EuclideanSpace.inner_eq_star_dotProduct, Fin.isValue, star_trivial, Matrix.cons_dotProduct,
-    neg_mul, Matrix.dotProduct_of_isEmpty, add_zero]
+  simp only [orientedCurvature_eq, normal_eq_of_norm_deriv_eq_one (h:=(hc t ht)), hc t ht,
+    Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one, EuclideanSpace.inner_eq_star_dotProduct,
+    Fin.isValue, star_trivial, Matrix.cons_dotProduct, neg_mul, Matrix.dotProduct_of_isEmpty,
+    add_zero]
   exact sub_eq_neg_add ((deriv c t).ofLp 0 * (iteratedDeriv 2 c t).ofLp 1)
     ((deriv c t).ofLp 1 * (iteratedDeriv 2 c t).ofLp 0)
 
@@ -169,23 +178,26 @@ theorem second_deriv_eq_orientedCurvature_times_normal (hI : IsOpen I) (hc₁ : 
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
-lemma _root_.HasDerivAt.normal (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) (ht : t ∈ I) :
-    HasDerivAt (normal c) (deriv (normal c) t) t := by
-  have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
+protected lemma _root_.HasDerivAt.normal (hI : IsOpen I) (hc₁ : ContDiffOn ℝ 2 c I) (ht : t ∈ I)
+    (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) : HasDerivAt (normal c) (deriv (normal c) t) t := by
+  have hd : ContDiffOn ℝ 1 (deriv c) I := hc₁.deriv_of_isOpen hI (by norm_num)
   have hD : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
   simp only [hasDerivAt_deriv_iff]
-  have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
-    rw [differentiableOn_piLp] at *
+  have h : DifferentiableOn ℝ (fun τ ↦  normal c τ) I := by
+    have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
+      fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+    rw [differentiableOn_congr hn, differentiableOn_piLp] at *
     intro i
     fin_cases i <;> simp [hD]
   exact h.differentiableAt (hI.mem_nhds ht)
 
 @[fun_prop]
-lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve (hI : IsOpen I) (hc : ContDiffOn ℝ 2 c I) :
-    ContDiffOn ℝ 1 (normal c) I := by
-  have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
-  unfold normal
-  rw [contDiffOn_piLp] at *
+lemma _root_.ContDiffOn.normal_of_twice_contDiffOn_curve (hI : IsOpen I) (hc₁ : ContDiffOn ℝ 2 c I)
+    (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) : ContDiffOn ℝ 1 (normal c) I := by
+  have hd : ContDiffOn ℝ 1 (deriv c) I := hc₁.deriv_of_isOpen hI (by norm_num)
+  have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
+    fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+  rw [contDiffOn_congr hn, contDiffOn_piLp] at *
   intro i
   fin_cases i
   · simp [ContDiffOn.neg, hd 1]
@@ -208,7 +220,7 @@ theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
     intro x hx
     simp only
     rw [real_inner_comm, inner_of_velocity_normal_eq_zero c x]
-  rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht)
+  rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht hc₂)
     (velocity_hasDerivAt_aux hI hc₁ ht) hci, second_deriv_eq_orientedCurvature_times_normal hI hc₁
     hc₂ ht, real_inner_comm, inner_smul_left_eq_smul]
   simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_unit_speed hc₂ ht,
