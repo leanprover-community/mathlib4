@@ -29,7 +29,7 @@ variable {α : Type*}
 open Set
 
 section Preorder
-variable [Preorder α] {s t : Set α}
+variable [Preorder α] {s t : Set α} {D D₁ D₂ : Set (Set α)}
 
 /--
 A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
@@ -54,7 +54,7 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
     DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
-lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
+lemma DirSupInaccOn.mono (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
     DirSupInaccOn D₁ s := fun _ a ↦ hf (hD a)
 
 @[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
@@ -67,12 +67,47 @@ lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : D
 alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
 
-lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hds hd hd' _a ha ↦
-    ⟨hs (hds.trans inter_subset_left) hd hd' ha, ht (hds.trans inter_subset_right) hd hd' ha⟩
+@[simp] theorem DirSupClosed.empty : DirSupClosed (∅ : Set α) := by simp [DirSupClosed]
+@[simp] theorem DirSupInacc.empty : DirSupInacc (∅ : Set α) := by simp [DirSupInacc]
+theorem DirSupClosedOn.empty : DirSupClosedOn D ∅ := by simp
+theorem DirSupInaccOn.empty : DirSupInaccOn D ∅ := by simp
 
-lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
-  rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
+@[simp] theorem DirSupClosed.univ : DirSupClosed (univ : Set α) := by simp [DirSupClosed]
+@[simp] theorem DirSupInacc.univ : DirSupInacc (univ : Set α) := by simp [← compl_empty]
+theorem DirSupClosedOn.univ : DirSupClosedOn D univ := by simp
+theorem DirSupInaccOn.univ : DirSupInaccOn D univ := by simp
+
+theorem DirSupClosedOn.sInter {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupClosedOn D x) :
+    DirSupClosedOn D (⋂₀ s) :=
+  fun _d hD hds hd hd' _a ha t ht ↦ hs t ht hD (hds.trans fun _x hx ↦ hx _ ht) hd hd' ha
+
+theorem DirSupClosed.sInter {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupClosed x) :
+    DirSupClosed (⋂₀ s) :=
+  .of_univ (.sInter fun x hx ↦ (hs x hx).to_univ)
+
+theorem DirSupInaccOn.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInaccOn D x) :
+    DirSupInaccOn D (⋃₀ s) := by
+  rw [← dirSupClosedOn_compl, Set.compl_sUnion]
+  apply DirSupClosedOn.sInter
+  rintro x ⟨x, hx, rfl⟩
+  exact (hs x hx).compl
+
+theorem DirSupInacc.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInacc x) :
+    DirSupInacc (⋃₀ s) :=
+  .of_univ (.sUnion fun x hx ↦ (hs x hx).to_univ)
+
+lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) :
+    DirSupClosedOn D (s ∩ t) := by
+  rw [← sInter_pair]
+  refine .sInter ?_
+  simpa [hs]
+
+lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) := by
+  simpa using hs.to_univ.inter ht.to_univ
+
+lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
+    DirSupInaccOn D (s ∪ t) := by
+  rw [← dirSupClosedOn_compl, compl_union]; exact hs.compl.inter ht.compl
 
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
   fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
