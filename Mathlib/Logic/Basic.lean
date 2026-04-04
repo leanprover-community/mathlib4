@@ -223,12 +223,6 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 
 /-! ### Declarations about `Xor` -/
 
-#adaptation_note
-/--
-2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-2025-09-16. The deprecation for `Xor` has been removed.
-Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
--/
 /-- `Xor a b` is the exclusive-or of propositions. -/
 def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
