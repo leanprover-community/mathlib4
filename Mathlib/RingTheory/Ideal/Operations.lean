@@ -395,11 +395,11 @@ protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
 
 end IsTwoSided
 
-@[deprecated (since := "2026-04-03")]
-alias mul_eq_bot := Submodule.mul_eq_bot
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := Submodule.mul_eq_bot
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := Submodule.mul_eq_bot.1
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
