@@ -543,6 +543,8 @@ namespace ContinuousLinearEquiv
 
 /-! ### Continuous linear equivalences -/
 
+open scoped UniformConvergenceCLM
+
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
@@ -563,7 +565,7 @@ spaces of continuous (semi)linear maps. This version is for the type alias
 def uniformConvergenceCLMCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
     (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
     (h : ∀ t, t ∈ 𝔗 ↔ e₁₂ ⁻¹' t ∈ 𝔖) :
-    (UniformConvergenceCLM σ₁₄ H 𝔖) ≃SL[σ₄₃] (UniformConvergenceCLM σ₂₃ G 𝔗) :=
+    (E →SLᵤ[σ₁₄, 𝔖] H) ≃SL[σ₄₃] (F →SLᵤ[σ₂₃, 𝔗] G) :=
   haveI mapsto₁ : MapsTo (e₁₂ '' ·) 𝔖 𝔗 := fun s ↦ by simp [h, preimage_image_eq _ e₁₂.injective]
   haveI mapsto₂ : MapsTo (e₁₂.symm '' ·) 𝔗 𝔖 := fun t ↦ by simp [h, e₁₂.image_symm_eq_preimage]
   { e₁₂.arrowCongrEquivₛₗ e₄₃ with
@@ -583,7 +585,7 @@ the spaces of continuous linear maps. This version is for the type alias
 def uniformConvergenceCLMCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
     (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
     (h : ∀ t, t ∈ 𝔗 ↔ e₁ ⁻¹' t ∈ 𝔖) :
-    (UniformConvergenceCLM (.id 𝕜) H 𝔖) ≃L[𝕜] (UniformConvergenceCLM (.id 𝕜) G 𝔗) :=
+    (E →Lᵤ[𝕜, 𝔖] H) ≃L[𝕜] (F →Lᵤ[𝕜, 𝔗] G) :=
   e₁.uniformConvergenceCLMCongrSL e₂ 𝔖 𝔗 h
 
 end ContinuousLinearEquiv
