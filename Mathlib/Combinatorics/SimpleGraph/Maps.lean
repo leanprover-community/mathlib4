@@ -310,7 +310,7 @@ theorem neighborSet_subset_preimage : G.neighborSet v ⊆ f ⁻¹' G'.neighborSe
 
 variable (v) in
 theorem image_neighborSet_subset : f '' G.neighborSet v ⊆ G'.neighborSet (f v) :=
-  fun _u' ⟨_u, hu, hu'⟩ ↦ hu' ▸ f.apply_mem_neighborSet hu
+  fun _ ⟨_, hmem, heq⟩ ↦ heq ▸ f.apply_mem_neighborSet hmem
 
 /-- The map between edge sets induced by a homomorphism.
 The underlying map on edges is given by `Sym2.map`. -/
