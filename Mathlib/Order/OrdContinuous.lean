@@ -174,6 +174,28 @@ lemma rightOrdContinuous (gc : GaloisConnection f g) : RightOrdContinuous g wher
 
 end GaloisConnection
 
+namespace LeftOrdContinuous
+variable [CompleteLattice α] [CompleteLattice β] {f : α → β}
+
+lemma gc_sSup_preimage_Iic (hf : LeftOrdContinuous f) (hbot : f ⊥ = ⊥) :
+    GaloisConnection f (fun b ↦ sSup (f ⁻¹' Iic b)) := fun _a b ↦
+  ⟨fun h ↦ le_sSup h,
+    fun h ↦ (f ⁻¹' Iic b).eq_empty_or_nonempty.elim
+      (fun hb ↦ bot_unique (h.trans_eq (sSup_eq_bot'.mpr (.inl hb))) ▸ hbot ▸ bot_le)
+      (fun hb ↦ ((hf.mono h).trans_eq (hf.map_sSup' hb)).trans
+        (sSup_le fun _ ⟨_c, hc, heq⟩ ↦ heq ▸ hc))⟩
+
+end LeftOrdContinuous
+
+namespace RightOrdContinuous
+variable [CompleteLattice α] [CompleteLattice β] {f : α → β}
+
+lemma gc_sInf_preimage_Ici (hf : RightOrdContinuous f) (htop : f ⊤ = ⊤) :
+    GaloisConnection (fun b ↦ sInf (f ⁻¹' Ici b)) f :=
+  (hf.orderDual.gc_sSup_preimage_Iic htop).dual
+
+end RightOrdContinuous
+
 namespace OrderIso
 variable [Preorder α] [Preorder β] (e : α ≃o β)
 
