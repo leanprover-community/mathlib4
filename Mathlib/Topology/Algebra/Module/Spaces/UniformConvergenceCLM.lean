@@ -506,17 +506,17 @@ end ContinuousLinearMap
 
 section Pi
 
+open scoped UniformConvergenceCLM
+
 variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
-`Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`, where each `E →L[𝕜] _` is endowed with the
-topology of `𝔖`-convergence. -/
+`Π i, E →Lᵤ[𝕜, 𝔖] F i` and `E →Lᵤ[𝕜, 𝔖] Π i, F i`. -/
 def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
-    (Π i, UniformConvergenceCLM (.id 𝕜) (F i) 𝔖)
-      ≃L[𝕜] UniformConvergenceCLM (.id 𝕜) (Π i, F i) 𝔖 :=
+    (Π i, E →Lᵤ[𝕜, 𝔖] F i) ≃L[𝕜] (E →Lᵤ[𝕜, 𝔖] Π i, F i) :=
   letI : ∀ i, UniformSpace (F i) := fun i ↦ IsTopologicalAddGroup.rightUniformSpace (F i)
   haveI : ∀ i, IsUniformAddGroup (F i) := fun i ↦ isUniformAddGroup_of_addCommGroup
   { toFun F := ContinuousLinearMap.pi F
@@ -531,7 +531,7 @@ def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
       refine continuous_pi fun i ↦ ?_
       exact UniformConvergenceCLM.isEmbedding_coeFn _ _ _ |>.continuous.comp (continuous_apply i)
     continuous_invFun := by
-      apply continuous_pi (A := fun i ↦ UniformConvergenceCLM (.id 𝕜) (F i) 𝔖) fun i ↦ ?_
+      apply continuous_pi (A := fun i ↦ E →Lᵤ[𝕜, 𝔖] F i) fun i ↦ ?_
       exact (ContinuousLinearMap.proj i : (Π j, F j) →L[𝕜] F i).postcompUniformConvergenceCLM 𝔖
         |>.continuous}
 
