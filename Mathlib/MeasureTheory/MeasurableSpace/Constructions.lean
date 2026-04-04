@@ -406,7 +406,7 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
 
 @[fun_prop]
 theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
-    {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
+    {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable (f ⇊ g) :=
   Measurable.prod hf hg
 
 @[fun_prop]

@@ -172,7 +172,7 @@ lemma ScottContinuous.comp {g : β → γ}
 @[fun_prop]
 lemma ScottContinuous.prodMk {g : α → γ}
     (hf : ScottContinuous f) (hg : ScottContinuous g) :
-    ScottContinuous Function.prod f g := by
+    ScottContinuous (f ⇊ g) := by
   rw [← scottContinuousOn_univ] at ⊢ hf hg
   exact ScottContinuousOn.prodMk (by grind) hf hg
 
