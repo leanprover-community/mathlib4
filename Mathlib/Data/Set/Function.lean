@@ -722,6 +722,20 @@ theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) 
 
 protected alias ⟨_, _root_.Function.Bijective.bijOn_univ⟩ := bijOn_univ
 
+lemma _root_.Function.Bijective.bijOn_image (hf : f.Bijective) : BijOn f s (f '' s) :=
+  hf.injective.injOn.bijOn_image
+
+lemma _root_.Function.Bijective.surjOn_preimage (hf : f.Bijective) : SurjOn f (f ⁻¹' t) t := by
+  let f' : β → α := (Equiv.ofBijective f hf).symm
+  intro u hu
+  simp only [mem_image, mem_preimage]
+  use f' u
+  rw [ofBijective_apply_symm_apply f hf]
+  exact ⟨hu, rfl⟩
+
+lemma _root_.Function.Bijective.bijOn_preimage (hf : f.Bijective) : BijOn f (f ⁻¹' t) t :=
+  ⟨fun _ ↦ id, hf.injective.injOn, hf.surjOn_preimage⟩
+
 @[deprecated bijOn_univ (since := "2025-10-31")]
 theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ := bijOn_univ.symm
 
