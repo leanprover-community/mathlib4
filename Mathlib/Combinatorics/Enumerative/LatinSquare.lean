@@ -220,23 +220,6 @@ def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (LatinRectangle.col A j) Finset.univ
   Finset.univ \ D
 
-/-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
-    each with cardinality k, if the cardinality of their union is less than r,
-    then there exists an element x appearing in strictly more than k of the $B_j$'s.
-
-    This is abstracted in PR #37190 and will be removed.
--/
-lemma exists_larger_subset {n : Type*} [DecidableEq n] [Fintype n]
-    {α : Type*} [DecidableEq α] {B : n → Finset α} {s : Finset n}
-    {k : Nat} [nek : NeZero k] (h₁ : ∀ j, Finset.card (B j) = k)
-    (h₂ : (s.biUnion B).card < (s.card)) :
-    ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by
-      simp_rw [h₁, Finset.inf'_const]
-    have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
-      (by grind [Finset.one_le_card]) (by grind [nek.out]) (by grind)
-    grind
-
 lemma latin_rect_hall_property {α : Type*} [DecidableEq α]
     {n : Type*} [Fintype n] [DecidableEq n]
     {k : Type*} [Fintype k]
@@ -258,7 +241,13 @@ lemma latin_rect_hall_property {α : Type*} [DecidableEq α]
   by_contra hc
   simp only [ge_iff_le, not_le] at hc
   have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by lia}
-  have hcount := exists_larger_subset h₂ hc
+  set k := Fintype.card n - Fintype.card k
+  have hcount : ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
+    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by
+      simp_rw [h₂, Finset.inf'_const]
+    have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
+      (by grind [Finset.one_le_card]) (by grind) (by grind)
+    grind
   obtain ⟨ x, hx ⟩ := hcount
   specialize h₃ x s
   lia
