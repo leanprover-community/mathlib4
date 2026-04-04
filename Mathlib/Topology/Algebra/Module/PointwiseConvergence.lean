@@ -180,6 +180,14 @@ def piEquivL :
   invFun f i := (ContinuousLinearMap.proj i).comp f
   __ := UniformConvergenceCLM.piEquivL _ _ _
 
+@[simp]
+lemma piEquivL_apply (T : Π i, E →Lₚₜ[𝕜] F i) (e : E) (i : ι) :
+    piEquivL 𝕜 F T e i = T i e := rfl
+
+@[simp]
+lemma piEquivL_symm_apply (T : E →Lₚₜ[𝕜] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜 F).symm T i e = T e i := rfl
+
 end Pi
 
 end PointwiseConvergenceCLM
