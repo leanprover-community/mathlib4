@@ -89,6 +89,39 @@ lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤
 lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
   monotone_sqrt hab
 
+/-- This is an intermediate result; use the more general `CFC.concaveOn_nnrpow` instead. -/
+private lemma concaveOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
+    ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
+  obtain ⟨μ, hμ⟩ := CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ A hp
+  have h₃' : (Ici 0).EqOn (fun a : A => a ^ p)
+      (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
+    fun a ha => (hμ a ha).2
+  refine ConcaveOn.congr ?_ h₃'.symm
+  refine integral_concaveOn_of_integrand_ae (convex_Ici _) ?_ fun a ha => (hμ a ha).1
+  filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+  exact concaveOn_cfcₙ_rpowIntegrand₀₁ hp ht
+
+/-- `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`. -/
+lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
+    ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
+  have hIcc : Icc (0 : ℝ≥0) 1 = Ioo 0 1 ∪ {0} ∪ {1} := by ext; simp
+  rw [hIcc] at hp
+  obtain (hp | hp) | hp := hp
+  · exact concaveOn_nnrpow_Ioo hp
+  · simp only [mem_singleton_iff] at hp
+    simp only [hp, nnrpow_zero]
+    exact concaveOn_const _ (convex_Ici _)
+  · simp only [mem_singleton_iff] at hp
+    simp only [hp]
+    have : (Ici (0 : A)).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id := fun a ha => CFC.nnrpow_one _ ha
+    exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) this.symm
+
+/-- `CFC.sqrt` is operator concave. -/
+lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
+  have : (sqrt : A → A) = fun a => a ^ (1 / 2 : ℝ≥0) := by ext; rw [sqrt_eq_nnrpow]
+  rw [this]
+  exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
+
 end NonUnitalCStarAlgebra
 
 section UnitalCStarAlgebra
