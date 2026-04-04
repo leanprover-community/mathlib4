@@ -245,35 +245,35 @@ namespace ContinuousMap
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 @[to_additive]
-instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) := fast_instance%
+instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) :=
   coe_injective.semigroup _ coe_mul
 
 @[to_additive]
-instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
+instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) :=
   coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
-instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) := fast_instance%
+instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) :=
   coe_injective.mulOneClass _ coe_one coe_mul
 
-instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) := fast_instance%
+instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) :=
   coe_injective.mulZeroClass _ coe_zero coe_mul
 
-instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) := fast_instance%
+instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) :=
   coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 @[to_additive]
-instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) := fast_instance%
+instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
-instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) := fast_instance%
+instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) :=
   coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
-instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
+instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
+instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) :=
   coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
@@ -326,12 +326,12 @@ theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset �
     (a : α) : (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 
 @[to_additive]
-instance [Group β] [IsTopologicalGroup β] : Group C(α, β) := fast_instance%
+instance [Group β] [IsTopologicalGroup β] : Group C(α, β) :=
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
 instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : CommGroup C(α, β) :=
-  fast_instance% coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
@@ -409,57 +409,56 @@ namespace ContinuousMap
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
-  fast_instance% coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
-    [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) := fast_instance%
+    [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
   coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
-    [ContinuousAdd β] : AddMonoidWithOne C(α, β) := fast_instance%
+    [ContinuousAdd β] : AddMonoidWithOne C(α, β) :=
   coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
-    [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) := fast_instance%
+    [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) :=
   coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
-    [IsTopologicalSemiring β] : Semiring C(α, β) := fast_instance%
+    [IsTopologicalSemiring β] : Semiring C(α, β) :=
   coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocRing β] [IsTopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
-  fast_instance%
   coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
-    [IsTopologicalRing β] : NonUnitalRing C(α, β) := fast_instance%
+    [IsTopologicalRing β] : NonUnitalRing C(α, β) :=
   coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
-    [IsTopologicalRing β] : NonAssocRing C(α, β) := fast_instance%
+    [IsTopologicalRing β] : NonAssocRing C(α, β) :=
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_natCast coe_intCast
 
 instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
-    [IsTopologicalRing β] : Ring C(α, β) := fast_instance%
+    [IsTopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalCommSemiring β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
-  fast_instance% coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
-    [IsTopologicalSemiring β] : CommSemiring C(α, β) := fast_instance%
+    [IsTopologicalSemiring β] : CommSemiring C(α, β) :=
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
-    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) := fast_instance%
+    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) :=
   coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
-    [IsTopologicalRing β] : CommRing C(α, β) := fast_instance%
+    [IsTopologicalRing β] : CommRing C(α, β) :=
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
 
@@ -573,17 +572,17 @@ instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCom
   smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
 
 instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
-  fast_instance% Function.Injective.mulAction _ coe_injective coe_smul
+  Function.Injective.mulAction _ coe_injective coe_smul
 
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
-    [ContinuousConstSMul R M] : DistribMulAction R C(α, M) := fast_instance%
+    [ContinuousConstSMul R M] : DistribMulAction R C(α, M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
-instance module : Module R C(α, M) := fast_instance%
+instance module : Module R C(α, M) :=
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 
 variable (R)
