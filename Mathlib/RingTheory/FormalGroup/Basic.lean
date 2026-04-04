@@ -123,7 +123,7 @@ instance : (𝔾ₘ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_mul .X_X, subst_X .X_X, add_comm, mul_comm]
 
 omit [Algebra R S] in
-/-- Given a algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
+/-- Given an algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
 formal group law formal group law over `S`. This is constructed by applying `f` to all coefficients
 of the underlying power series. -/
 def map (f : R →+* S) : FormalGroup S where
