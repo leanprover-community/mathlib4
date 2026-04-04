@@ -6,7 +6,11 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+<<<<<<< HEAD
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionStrongTopology
+=======
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+>>>>>>> AD_embedding_coeFn_of_finiteDimensional
 
 /-!
 # Distributions
@@ -128,7 +132,7 @@ which we follow here.
 
 Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
 converges pointwise
-(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Théorème XIII][schwartz1950]).
 Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
 gives the same converging sequences as the topology of bounded/compact convergence, this is no
 longer true for general filters.
@@ -268,6 +272,30 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
   rfl
 
 end LineDerivCLM
+
+section DiracDelta
+
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
+def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+  rfl
+
+@[simp]
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
+end DiracDelta
 
 variable [FiniteDimensional ℝ E]
 

@@ -404,6 +404,10 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
 
+instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
+
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
   .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
@@ -611,6 +615,9 @@ noncomputable instance : LineDerivAdd E 𝓓(Ω, F) 𝓓(Ω, F) where
 
 noncomputable instance : LineDerivSMul 𝕜 E 𝓓(Ω, F) 𝓓(Ω, F) where
   lineDerivOp_smul v := map_smul (lineDerivCLM 𝕜 v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_left_smul _ _ f := congr($lineDerivCLM_smul f)
 
 noncomputable instance : ContinuousLineDeriv E 𝓓(Ω, F) 𝓓(Ω, F) where
   continuous_lineDerivOp v := (lineDerivCLM ℝ v).continuous

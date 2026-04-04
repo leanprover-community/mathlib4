@@ -284,34 +284,52 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hittingBtwn_le_iff_of_exists h_exists]
   · simp_rw [hittingBtwn, if_neg h_exists]
-    push_neg at h_exists
+    push Not at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
 @[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
 
-theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
+theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
       by_contra h
       simp_rw [hittingBtwn, if_neg h, ← not_le] at h'
       exact h' hi
-    exact ⟨hittingBtwn u s n m ω, ⟨le_hittingBtwn_of_exists h, h'⟩, hittingBtwn_mem_set h⟩
+    have hni : n < i := (le_hittingBtwn_of_exists h).trans_lt h'
+    have h_le := le_hittingBtwn (u := u) (s := s) (hni.le.trans hi) ω
+    rw [hittingBtwn, if_pos h, csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h
+    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
+    obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
+    exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 
 @[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
-lemma hittingAfter_lt_iff [WellFoundedLT ι] :
+lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
+    have h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s := by
+      rw [ne_eq, hittingAfter_eq_top_iff] at h_top
+      push Not at h_top
+      exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
-    lift (hittingAfter u s n ω) to ι using h_top with i'
-    norm_cast at h' h_le
+    rw [hittingAfter, if_pos h_exists] at h'
+    norm_cast at h'
+    rw [csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h_exists
+    simp only [Set.mem_setOf_eq] at h'
+    obtain ⟨j, hj₁, hj₂⟩ := h'
+    exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
     refine lt_of_le_of_lt ?_ (mod_cast hj₁.2 : (j : WithTop ι) < i)
     exact hittingAfter_le_of_mem hj₁.1 hj₂
