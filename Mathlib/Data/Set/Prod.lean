@@ -431,7 +431,7 @@ theorem preimage_val_val_diagonal (s : Set α) :
 @[deprecated (since := "2026-04-04")]
 alias preimage_coe_coe_diagonal := preimage_val_val_diagonal
 
-theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, Δ x ∈ s := by
+theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, ⇗x ∈ s := by
   simp_rw [← range_diag, range_subset_iff]
 
 @[simp]
