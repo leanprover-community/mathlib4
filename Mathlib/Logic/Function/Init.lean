@@ -78,54 +78,54 @@ namespace Function
 variable {α β δ ε : Type*} {γ : Sort*}
 
 /-- This is the pairing operation on functions, dual to `Sum.elim`. -/
-protected def pair (f : γ → α) (g : γ → β) : γ → α × β := (f △' g)
+protected def prod (f : γ → α) (g : γ → β) : γ → α × β := (f △' g)
 
-@[inherit_doc] infixr:65 " △ " => Function.pair
+@[inherit_doc] infixr:65 " △ " => Function.prod
 
 section
 
 variable (f : γ → α) (g : γ → β)
 
-@[grind =] theorem pair_apply (c : γ) : (f △ g) c = (f c, g c) := rfl
+@[grind =] theorem prod_apply (c : γ) : (f.prod g) c = (f c, g c) := rfl
 
-theorem pair_comp {δ} {h : δ → γ} : (f △ g) ∘ h = (f ∘ h) △ (g ∘ h) := rfl
+theorem prod_comp {δ} {h : δ → γ} : (f △ g) ∘ h = (f ∘ h) △ (g ∘ h) := rfl
 
-@[simp] theorem fst_pair {c} : ((f △ g) c).fst = f c := rfl
-@[simp] theorem snd_pair {c} : ((f △ g) c).snd = g c := rfl
+@[simp] theorem fst_prod {c} : ((f △ g) c).fst = f c := rfl
+@[simp] theorem snd_prod {c} : ((f △ g) c).snd = g c := rfl
 
-@[simp] theorem pair_fst_snd : Prod.fst (α := α) △ Prod.snd (β := β) = id := rfl
-@[simp] theorem pair_snd_fst : Prod.snd (β := β) △ Prod.fst (α := α) = .swap := rfl
+@[simp] theorem prod_fst_snd : Prod.fst (α := α) △ Prod.snd (β := β) = id := rfl
+@[simp] theorem prod_snd_fst : Prod.snd (β := β) △ Prod.fst (α := α) = .swap := rfl
 
-@[simp] theorem pair_fst_snd_comp {f : γ → α × β} : (Prod.fst ∘ f) △ (Prod.snd ∘ f) = f := rfl
+@[simp] theorem prod_fst_snd_comp {f : γ → α × β} : (Prod.fst ∘ f) △ (Prod.snd ∘ f) = f := rfl
 
-@[simp] theorem fst_comp_pair {f : γ → α} {g : γ → β} : Prod.fst ∘ (f △ g) = f := rfl
-@[simp] theorem snd_comp_pair {f : γ → α} {g : γ → β} : Prod.snd ∘ (f △ g) = g := rfl
+@[simp] theorem fst_comp_prod {f : γ → α} {g : γ → β} : Prod.fst ∘ (f △ g) = f := rfl
+@[simp] theorem snd_comp_prod {f : γ → α} {g : γ → β} : Prod.snd ∘ (f △ g) = g := rfl
 
-theorem pair_eq_iff {f f' : γ → α} {g g' : γ → β} : f △ g = f' △ g' ↔
+theorem prod_eq_iff {f f' : γ → α} {g g' : γ → β} : f △ g = f' △ g' ↔
     f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
 
-theorem pair_ext_iff {h h' : γ → α × β} : h = h' ↔
+theorem prod_ext_iff {h h' : γ → α × β} : h = h' ↔
     Prod.fst ∘ h = Prod.fst ∘ h' ∧ Prod.snd ∘ h = (Prod.snd ∘ h') := by
   simp [funext_iff, Prod.ext_iff, forall_and]
 
 theorem exists_prod_apply_eq (h : γ → α × β) : ∃ f g, f △ g = h :=
-  ⟨Prod.fst ∘ h, Prod.snd ∘ h, pair_fst_snd_comp⟩
+  ⟨Prod.fst ∘ h, Prod.snd ∘ h, prod_fst_snd_comp⟩
 
 theorem exists_fst_comp (f : γ → α) (g : γ → β) :
-    ∃ h : γ → α × β, Prod.fst ∘ h = f := ⟨f △ g, fst_comp_pair⟩
+    ∃ h : γ → α × β, Prod.fst ∘ h = f := ⟨f △ g, fst_comp_prod⟩
 theorem exists_snd_comp (f : γ → α) (g : γ → β) :
-    ∃ h : γ → α × β, Prod.snd ∘ h = g := ⟨f △ g, snd_comp_pair⟩
+    ∃ h : γ → α × β, Prod.snd ∘ h = g := ⟨f △ g, snd_comp_prod⟩
 
-theorem leftInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.LeftInverse
-    (Function.pair (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
+theorem leftInverse_uncurry_prod_prod_fst_comp_snd_comp : Function.LeftInverse
+    (Function.prod (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
   fun _ => rfl
 
-theorem rightInverse_uncurry_pair_pair_fst_comp_snd_comp : Function.RightInverse
-    (Function.pair (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
+theorem rightInverse_uncurry_prod_prod_fst_comp_snd_comp : Function.RightInverse
+    (Function.prod (γ := δ)).uncurry ((Prod.fst (α := α) ∘ ·) △ (Prod.snd (β := β) ∘ ·)) :=
   fun _ => rfl
 
 @[grind =]
-theorem pair_const_const (a : α) (b : β) :
+theorem prod_const_const (a : α) (b : β) :
     (Function.const γ a) △  (Function.const γ b) = Function.const γ (a, b) := rfl
 
 theorem const_prod {γ} {α β} {p : α × β} :
@@ -135,20 +135,20 @@ end
 
 section
 
-/- We can define `Prod.map` in terms of `Function.pair` (TODO: and we should). -/
-theorem map_eq_pair {f : α → β} {g : δ → ε} : Prod.map f g =
+/- We can define `Prod.map` in terms of `Function.prod` (TODO: and we should). -/
+theorem map_eq_prod {f : α → β} {g : δ → ε} : Prod.map f g =
     (f ∘ Prod.fst) △ (g ∘ Prod.snd) := rfl
 
 @[grind _=_]
-theorem map_pair {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} {c} :
+theorem map_prod {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} {c} :
     Prod.map f h ((g △ k) c) = ((f ∘ g) △ (h ∘ k)) c := rfl
 
-theorem map_comp_pair {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} :
+theorem map_comp_prod {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} :
     Prod.map f h ∘ (g △ k) = (f ∘ g) △ (h ∘ k) := rfl
 
 end
 
-/-- The diagonal map into Prod. -/
+/-- The diagonal map into `Prod`. -/
 @[expose] protected def diag : α → α × α := id △ id
 
 @[inherit_doc] prefix:max "Δ " => Function.diag
