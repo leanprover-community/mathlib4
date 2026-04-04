@@ -514,7 +514,7 @@ variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
 `Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`, where each `E →L[𝕜] _` is endowed with the
 topology of `𝔖`-convergence. -/
-def _root_.UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
+def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
     (Π i, UniformConvergenceCLM (.id 𝕜) (F i) 𝔖)
       ≃L[𝕜] UniformConvergenceCLM (.id 𝕜) (Π i, F i) 𝔖 :=
   letI : ∀ i, UniformSpace (F i) := fun i ↦ IsTopologicalAddGroup.rightUniformSpace (F i)
