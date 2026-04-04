@@ -168,6 +168,32 @@ theorem Antitone.countable_not_continuousAt (hf : Antitone f) :
 
 end Continuity
 
+section OrdContinuous
+
+variable [TopologicalSpace β] [OrderTopology β]
+
+/-- A monotone left-continuous function is left-continuous in the order-theoretic sense. -/
+theorem Monotone.leftOrdContinuous (hf : Monotone f)
+    (cont : ∀ x, ContinuousWithinAt f (Iic x) x) : LeftOrdContinuous f where
+  isLUB_image s x hs hx := IsLUB.isLUB_of_tendsto (hf.monotoneOn s) hx hs ((cont x).mono hx.1)
+
+/-- A monotone right-continuous function is right-continuous in the order-theoretic sense. -/
+theorem Monotone.rightOrdContinuous (hf : Monotone f)
+    (cont : ∀ x, ContinuousWithinAt f (Ici x) x) : RightOrdContinuous f where
+  isGLB_image s x hs hx := IsGLB.isGLB_of_tendsto (hf.monotoneOn s) hx hs ((cont x).mono hx.1)
+
+/-- A monotone continuous function is left-continuous in the order-theoretic sense. -/
+theorem Continuous.leftOrdContinuous (cont : Continuous f) (hf : Monotone f) :
+    LeftOrdContinuous f :=
+  hf.leftOrdContinuous fun _ ↦ cont.continuousWithinAt
+
+/-- A monotone continuous function is right-continuous in the order-theoretic sense. -/
+theorem Continuous.rightOrdContinuous (cont : Continuous f) (hf : Monotone f) :
+    RightOrdContinuous f :=
+  hf.rightOrdContinuous fun _ ↦ cont.continuousWithinAt
+
+end OrdContinuous
+
 end LinearOrder
 
 section ConditionallyCompleteLinearOrder

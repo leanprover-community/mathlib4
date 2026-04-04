@@ -873,4 +873,9 @@ the function is between conditionally complete linear orders with order topologi
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
     ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
 
+lemma Continuous.ofOrdContinuous (hl : LeftOrdContinuous f) (hr : RightOrdContinuous f) :
+    Continuous f :=
+  continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_iff_continuous_left_right.mpr
+    ⟨hl.continuousWithinAt_Iic, hr.continuousWithinAt_Ici⟩
+
 end ConditionallyCompleteLinearOrder
