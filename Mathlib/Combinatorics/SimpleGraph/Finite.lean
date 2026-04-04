@@ -538,24 +538,14 @@ theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeS
 variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
-  rcases isEmpty_or_nonempty V
-  · simp [f.symm.subsingleton]
-  · have : Nonempty W := f.symm.nonempty
-    apply le_antisymm
-    · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
-      simpa only [hx', ← degree_eq f.symm x'] using minDegree_le_degree G (f.symm x')
-    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
-      simpa only [hx, ← degree_eq f x] using minDegree_le_degree G' (f x)
+  classical
+  rw [minDegree, minDegree, ← show (G'.degree ·) ∘ f = (G.degree ·) from funext (f.degree_eq ·),
+    ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
-  rcases isEmpty_or_nonempty V
-  · simp [f.symm.subsingleton]
-  · have : Nonempty W := f.symm.nonempty
-    apply le_antisymm
-    · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
-      simpa only [hx, ← degree_eq f x] using degree_le_maxDegree G' (f x)
-    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
-      simpa only [hx', ← degree_eq f.symm x'] using degree_le_maxDegree G (f.symm x')
+  classical
+  rw [maxDegree, maxDegree, ← show (G'.degree ·) ∘ f = (G.degree ·) from funext (f.degree_eq ·),
+    ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 end Iso
 
