@@ -451,6 +451,20 @@ alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
     IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
 
+open Module End Submodule in
+theorem orthogonal_mem_invtSubmodule {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    (h : U ∈ invtSubmodule T.adjoint.toLinearMap) :
+    Uᗮ ∈ invtSubmodule T.toLinearMap := by
+  simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal] at h ⊢
+  grind [T.adjoint_inner_left]
+
+open Module End in
+theorem mem_invtSubmodule_adjoint_iff {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] :
+    U ∈ invtSubmodule T.adjoint.toLinearMap ↔ Uᗮ ∈ invtSubmodule T.toLinearMap where
+  mp := orthogonal_mem_invtSubmodule
+  mpr := by simpa using orthogonal_mem_invtSubmodule (T := T.adjoint) (U := Uᗮ)
+
 end ContinuousLinearMap
 
 /-- `U.starProjection` is a star projection. -/
@@ -767,6 +781,14 @@ theorem adjoint_innerₛₗ_apply (x : E) :
 theorem adjoint_toSpanSingleton (x : E) :
     adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
   simp [← adjoint_innerₛₗ_apply]
+
+open Module End in
+/-- The linear map version of `ContinuousLinearMap.mem_invtSubmodule_adjoint_iff`
+in a finite-dimensional space. -/
+theorem _root_.Module.End.mem_invtSubmodule_adjoint_iff {T : E →ₗ[𝕜] E} {U : Submodule 𝕜 E} :
+    U ∈ invtSubmodule T.adjoint ↔ Uᗮ ∈ invtSubmodule T :=
+  have := FiniteDimensional.complete 𝕜 E
+  ContinuousLinearMap.mem_invtSubmodule_adjoint_iff
 
 end LinearMap
 
