@@ -394,11 +394,12 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rw [hv]
   apply h
 
-/-- If there are no vertices then the `minDegree` is zero. -/
 @[simp]
-lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0 := by
-  rw [minDegree, WithTop.untopD_eq_self_iff]
-  simp
+lemma minDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.minDegree = 0 := by
+  cases isEmpty_or_nonempty V <;>
+    simp [minDegree, Finset.image_const]
+
+@[deprecated (since := "2026-04-05")] alias minDegree_of_isEmpty := minDegree_of_subsingleton
 
 variable {G} in
 /-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
@@ -441,8 +442,11 @@ theorem degree_le_maxDegree [DecidableRel G.Adj] (v : V) : G.degree v ≤ G.maxD
   rwa [maxDegree, ht, WithBot.unbotD_coe]
 
 @[simp]
-lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 := by
-  rw [maxDegree, univ_eq_empty, image_empty, max_empty, WithBot.unbotD_bot]
+lemma maxDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.maxDegree = 0 := by
+  cases isEmpty_or_nonempty V <;>
+    simp [maxDegree, Finset.image_const]
+
+@[deprecated (since := "2026-04-05")] alias maxDegree_of_isEmpty := maxDegree_of_subsingleton
 
 /-- In a graph, if `k` is at least the degree of every vertex, then it is at least the maximum
 degree. -/
@@ -535,7 +539,7 @@ variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
   rcases isEmpty_or_nonempty V
-  · simp [f.symm.isEmpty]
+  · simp [f.symm.subsingleton]
   · have : Nonempty W := f.symm.nonempty
     apply le_antisymm
     · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
@@ -545,7 +549,7 @@ theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
   rcases isEmpty_or_nonempty V
-  · simp [f.symm.isEmpty]
+  · simp [f.symm.subsingleton]
   · have : Nonempty W := f.symm.nonempty
     apply le_antisymm
     · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
