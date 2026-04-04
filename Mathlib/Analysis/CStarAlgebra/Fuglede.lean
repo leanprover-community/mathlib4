@@ -20,8 +20,9 @@ if `a` and `b` are normal and `x` intertwines `a` and `b` (i.e., `SemiconjBy x a
 [fuglede1950] was for `a = b` (i.e., if `x` commutes with `a`, then `x` also commutes with
 `star a`), and Putnam [putnam1951] extended it to intertwining elements.
 
-Rosenblum [rosenblum1958] later gave the elementary proof formalized here using Liouville's theorem which proceeds
-as follows. Consider the map `f : ℂ → A` given by `z ↦ exp (z • star b) * x * exp (z • star (-a))`.
+Rosenblum [rosenblum1958] later gave the elementary proof formalized here using Liouville's theorem
+which proceeds as follows. Consider the map `f : ℂ → A` given by
+`z ↦ exp (z • star b) * x * exp (z • star (-a))`.
 When `x` intertwines `a` and `b` (i.e., `SemiconjBy x a b`), then it also intertwines
 `exp (star z • a)` and `exp (star z • b)`. Then the map `f` can be realized as `z ↦ u * x * v` for
 fixed unitaries `u` and `v`. In fact, `u = exp (I • 2 • ℑ (z • star b))` and
