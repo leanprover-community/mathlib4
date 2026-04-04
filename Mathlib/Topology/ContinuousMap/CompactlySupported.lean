@@ -778,7 +778,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
 noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₚ[ℝ] ℝ) :
     C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 where
-  toFun f := ⟨Λ (toRealLinearMap f), Λ.map_nonneg (by simp)⟩
+  toFun f := .mk (Λ (toRealLinearMap f)) (Λ.map_nonneg (by simp))
   map_add' f g := by simp; rfl
   map_smul' a f := by simp [NNReal.smul_def]; rfl
 
