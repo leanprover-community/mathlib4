@@ -15,25 +15,45 @@ import Mathlib.Analysis.Complex.Liouville
 /-! # The Fuglede–Putnam–Rosenblum theorem
 
 Let `A` be a C⋆-algebra, and let `a b x : A`. The Fuglede–Putnam–Rosenblum theorem states that
-if `a` and `b` are normal and `x` intertwines `a` and `b` (i.e., `SemiconjBy x a b`). Then `x` also
-intertwines `star a` and `star b`. Fuglede's original result was for `a = b` (i.e., if `x` commutes
-with `a`, then `x` also commutes with `star a`), and Putnam extended it to intertwining elements.
+if `a` and `b` are normal and `x` intertwines `a` and `b` (i.e., `SemiconjBy x a b`, that is,
+`x * a = b * x`), then `x` also intertwines `star a` and `star b`. Fuglede's original result
+[fuglede1950] was for `a = b` (i.e., if `x` commutes with `a`, then `x` also commutes with
+`star a`), and Putnam [putnam1951] extended it to intertwining elements.
 
-Rosenblum later gave the elementary proof formalized here using Liouville's theorem which proceeds
-as follows. The map `f : ℂ → A` given by `z ↦ exp (z • star b) * x * exp (z • star (-a))`. When
-`x` intertwines `a` and `b` (i.e., `SemiconjBy x a b`), then it also intertwines `exp (star z • a)`
-and `exp (star z • b)`. Then the map `f` can be realized as `z ↦ u * x * v` for fixed unitaries
-`u` and `v`. In fact, `u = exp (I • 2 • ℑ (z • star b))` and `v = exp (I • 2 • ℑ (star z • a))`;
-it is here that normality of `a` and `b` is used to ensure that
+Rosenblum [rosenblum1958] later gave the elementary proof formalized here using Liouville's theorem which proceeds
+as follows. Consider the map `f : ℂ → A` given by `z ↦ exp (z • star b) * x * exp (z • star (-a))`.
+When `x` intertwines `a` and `b` (i.e., `SemiconjBy x a b`), then it also intertwines
+`exp (star z • a)` and `exp (star z • b)`. Then the map `f` can be realized as `z ↦ u * x * v` for
+fixed unitaries `u` and `v`. In fact, `u = exp (I • 2 • ℑ (z • star b))` and
+`v = exp (I • 2 • ℑ (star z • a))`; it is here that normality of `a` and `b` is used to ensure that
 `exp (star z • a) * exp (- star (z • a)) = exp (I • 2 • ℑ (star z • a))` and likewise for `b`.
-There fore `‖f z‖ = ‖x‖` for all `z`, and since `f` is clearly entire, by Liouville's theorem,
+Therefore `‖f z‖ = ‖x‖` for all `z`, and since `f` is clearly entire, by Liouville's theorem,
 `f` is constant. Evaluating at `z = 0` proves that `f z = x` for all `z`. Therefore,
 `exp (z • star b) * x = x * exp (z • star a)`. Differentiating both sides and evaluating at `z = 0`
 proves that `star b * x = x * star a`, as desired.
+
+In a follow-up paper, Cater [cater1961] proved a number of related results using similar techniques.
+We include one of these below, but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
+
+## Main results
+
++ `fuglede_putnam_rosenblum`: If `a` and `b` are normal elements in a C⋆-algebra `A` which
+  are interwined by `x` (i.e., `SemiconjBy x a b`, that is, `x * a = b * x`), then `star a` and
+  `star b` are also intertwined by `x`.
++
+
+## References
+
++ [fuglede1950] Bent Fuglede, "A commutativity theorem for normal operators"
++ [putnam1951] C. R. Putnam, "On normal operators in Hilbert space"
++ [rosenblum1958] M. Rosenblum, "On a theorem of Fuglede and Putnam"
++ [cater1961] S. Cater, "Observations on a paper by Rosenblum"
+
 -/
 
 
-open NormedSpace
+open NormedSpace selfAdjoint Bornology
+open scoped ComplexStarModule
 
 variable {A : Type*} [CStarAlgebra A] {a b x : A} [IsStarNormal a] [IsStarNormal b]
 
@@ -41,32 +61,24 @@ variable {A : Type*} [CStarAlgebra A] {a b x : A} [IsStarNormal a] [IsStarNormal
 fixed `a b x : A`. -/
 noncomputable def expMulMulExp (a b x : A) (z : ℂ) : A := exp (z • star b) * x * exp (z • star (-a))
 
-open scoped ComplexStarModule
-open selfAdjoint
-lemma expMulMulExp_eq_expUnitary_mul_expUnitary (h : SemiconjBy x a b) (z : ℂ) :
+lemma expMulMulExp_eq_expUnitary_mul_mul_expUnitary (h : SemiconjBy x a b) (z : ℂ) :
     expMulMulExp a b x z =
       expUnitary ((2 : ℝ) • ℑ (z • star b)) * x * expUnitary ((2 : ℝ) • ℑ (star z • a)) := by
   let _ : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
-  have : SemiconjBy x (z • a) (z • b) := h.smul_right _
   nth_rw 1 [expMulMulExp, ← (h.smul_right (star z)).exp_neg_mul_mul_exp_eq_self]
   simp_rw [← mul_assoc, mul_assoc (_ * _ * x)]
   congr!
   all_goals
     open Complex in
-    simp only [RCLike.star_def, star_neg, smul_neg, expUnitary_coe, val_smul,
-      imaginaryPart_apply_coe, star_smul, RingHomCompTriple.comp_apply, RingHom.id_apply, neg_smul,
-      smul_comm (2 : ℝ) I, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
-      smul_smul I I, I_mul_I, one_smul, neg_sub, star_star]
-    rw [sub_eq_add_neg, NormedSpace.exp_add_of_commute]
-    by_cases! hz : z = 0 <;> simp [hz, star_comm_self, Commute.symm]
+    simp [imaginaryPart_apply_coe, smul_comm (2 : ℝ) I, smul_smul I I, sub_eq_add_neg]
+    grind [exp_add_of_commute, Commute.smul_right, Commute.neg_right]
 
-open Bornology in
 lemma expMulMulExp_const (h : SemiconjBy x a b) (z : ℂ) : expMulMulExp a b x z = x := by
   have hf : Differentiable ℂ (expMulMulExp a b x : ℂ → A) := by unfold expMulMulExp; fun_prop
   have : IsBounded (Set.range (expMulMulExp a b x)) := by
     apply Metric.isBounded_sphere (x := (0 : A)) (r := ‖x‖) |>.subset
     rintro - ⟨z, hz, rfl⟩
-    rw [mem_sphere_iff_norm, sub_zero, expMulMulExp_eq_expUnitary_mul_expUnitary h z,
+    rw [mem_sphere_iff_norm, sub_zero, expMulMulExp_eq_expUnitary_mul_mul_expUnitary h z,
       CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul]
   simpa [expMulMulExp] using hf.apply_eq_apply_of_bounded this z 0
 
@@ -110,6 +122,7 @@ public lemma IsStarNormal.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A
     Commute (star a) x :=
   ha.commute_star_right h.symm |>.symm
 
+/-- A characterization of normal elements in a C⋆-algebra in terms of exponentials. -/
 public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
     IsStarNormal a ↔ ∀ x : ℝ, exp (x • a) * exp (- x • star a) ∈ unitary A := by
   let _ : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
