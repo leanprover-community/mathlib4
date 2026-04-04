@@ -265,6 +265,6 @@ lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s 
 @[simp]
 lemma preVariation_zero :
     preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
-  ext s; simp [preVariation_apply]
+  ext; simp [preVariation_apply]
 
 end MeasureTheory

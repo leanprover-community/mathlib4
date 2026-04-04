@@ -517,7 +517,7 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
 
 @[simp]
 theorem ennrealToMeasure_zero : ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  simp [VectorMeasure.ennrealToMeasure]
+  simp [ennrealToMeasure]
 
 @[simp]
 theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure

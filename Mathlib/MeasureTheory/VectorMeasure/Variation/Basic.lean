@@ -70,9 +70,8 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
       intro p hp
       rcases Q'.mem_parts_or_eq_sdiff_of_mem_extendOfLE _ hp with h | rfl
       · simp_all
-      apply hs.diff
       simp only [sup_set_eq_biUnion, id_eq]
-      exact MeasurableSet.biUnion (Finset.countable_toSet _) (by simp)
+      exact hs.diff <| .biUnion (Finset.countable_toSet _) (by simp)
 
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
