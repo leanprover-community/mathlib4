@@ -755,7 +755,7 @@ lemma mulHeight_mul_le (x y : ι → K) : mulHeight (x * y) ≤ mulHeight x * mu
   rcases eq_or_ne y 0 with rfl | hy
   · simpa using one_le_mulHeight x
   rw [← mulHeight_fun_mul_eq hx hy,
-    show x * y = (fun a ↦ x a.1 * y a.2) ∘ Prod.diag by ext1; simp]
+    show x * y = (fun a ↦ x a.1 * y a.2) ∘ Function.diag by ext1; simp]
   exact mulHeight_comp_le ..
 
 open Real in

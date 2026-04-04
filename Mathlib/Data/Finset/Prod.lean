@@ -240,7 +240,7 @@ variable (s t : Finset α)
 
 /-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
-def diag : Finset (α × α) := s.map ⟨Prod.diag, Prod.injective_diag⟩
+def diag : Finset (α × α) := s.map ⟨Function.diag, Prod.injective_diag⟩
 
 -- TODO: define `Multiset.offDiag`, provide basic API, use it here
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`

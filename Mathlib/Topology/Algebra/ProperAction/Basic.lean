@@ -139,7 +139,7 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = Prod.diag := by ext x <;> simp [f, g]
+  have : g ∘ f = Function.diag := by ext x <;> simp [f, g]
   have range_gf : range (g ∘ f) = diagonal X := range_diag
   rw [← range_gf]
   exact (proper_g.comp proper_f).isClosed_range

@@ -411,7 +411,7 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s :
 -- That would seem a bit more natural.
 theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
-  have : ∀ f : Filter X, f ⊓ l = comap Prod.diag (f ×ˢ l) := fun f ↦ by
+  have : ∀ f : Filter X, f ⊓ l = comap Function.diag (f ×ˢ l) := fun f ↦ by
     simpa only [comap_prod] using congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
   simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
 

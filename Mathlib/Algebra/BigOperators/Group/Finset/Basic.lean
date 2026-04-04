@@ -283,8 +283,8 @@ end bij
 
 @[to_additive (attr := simp)]
 lemma prod_diag (s : Finset ι) (f : ι × ι → M) :
-    ∏ i ∈ s.diag, f i = ∏ i ∈ s, (f ∘ Prod.diag) i := by
-  simp [diag, Prod.diag_apply]
+    ∏ i ∈ s.diag, f i = ∏ i ∈ s, (f ∘ Function.diag) i := by
+  simp [diag, Function.diag_apply]
 
 @[to_additive]
 theorem prod_image' [DecidableEq ι] {s : Finset κ} {g : κ → ι} (h : κ → M)

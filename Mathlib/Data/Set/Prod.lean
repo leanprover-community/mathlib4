@@ -409,7 +409,7 @@ end Prod
 /-! ### Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`Prod.diag`.
+`Function.diag`.
 -/
 
 
@@ -429,25 +429,25 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : range Prod.diag = diagonal α := by
+theorem range_diag : range Function.diag = diagonal α := by
   ext ⟨x, y⟩
   simp [Prod.ext_iff]
 
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  simp_rw [← range_diag, range_subset_iff, Prod.diag_apply]
+  simp_rw [← range_diag, range_subset_iff, Function.diag_apply]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : Prod.diag ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diag_preimage_prod (s t : Set α) : Function.diag ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : Prod.diag ⁻¹' s ×ˢ s = s :=
+theorem diag_preimage_prod_self (s : Set α) : Function.diag ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : Prod.diag '' s = diagonal α ∩ s ×ˢ s := by
+theorem diag_image (s : Set α) : Function.diag '' s = diagonal α ∩ s ×ˢ s := by
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
