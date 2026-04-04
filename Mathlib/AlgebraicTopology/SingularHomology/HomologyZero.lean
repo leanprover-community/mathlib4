@@ -56,30 +56,6 @@ instance : PreservesFiniteColimits (sigmaConst.obj R) :=
 
 end
 
-namespace Cofork
-
-variable [Preadditive C] {X Y : C} {f g : X ⟶ Y} (c : Cofork f g)
-
-abbrev cokernelCofork : CokernelCofork (f - g) :=
-  CokernelCofork.ofπ c.π (by simp [c.condition])
-
-variable {c} in
-def isColimitCokernelCoforkEquiv :
-    IsColimit c.cokernelCofork ≃ IsColimit c where
-  toFun h := Cofork.IsColimit.mk' _
-    (fun s ↦ ⟨_, Cofork.IsColimit.π_desc' h s.π (by simp [s.condition]), fun {m} hm ↦
-      Cofork.IsColimit.hom_ext h (by
-        simpa [hm] using (Cofork.IsColimit.π_desc' h s.π (by simp [s.condition])).symm)⟩)
-  invFun h :=
-    CokernelCofork.IsColimit.ofπ _ _
-      (fun a ha ↦ Cofork.IsColimit.desc h a (by simpa [sub_eq_zero] using ha))
-      (by simp)
-      (fun a ha m hm ↦ Cofork.IsColimit.hom_ext h (by simpa))
-  left_inv _ := by subsingleton
-  right_inv _ := by subsingleton
-
-end Cofork
-
 end CategoryTheory.Limits
 
 variable [HasCoproducts.{w} C] [Preadditive C]
@@ -144,8 +120,9 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def isColimitCokernelCoforkSingularChainComplexDOneZero :
     IsColimit (CokernelCofork.ofπ _ (π₀.d_fromSingularChainComplexXZero X R 1)) := by
   refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
-    (Cofork.isColimitCokernelCoforkEquiv.2 ((isColimitMapCoconeCoforkEquiv _ _).1
-      (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
+    (Preadditive.isColimitCokernelCoforkOfCofork
+      ((isColimitMapCoconeCoforkEquiv _ _).1
+        (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
   · refine parallelPair.ext (-Iso.refl _) (Iso.refl _) ?_ (by simp)
     simp [singularChainComplex, SSet.singularChainComplexFunctor, sub_eq_neg_add]
   · refine Cofork.ext (Iso.refl _) ?_
