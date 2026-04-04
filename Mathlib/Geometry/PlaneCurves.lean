@@ -65,7 +65,8 @@ lemma normal_eq : normal c t = ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), der
 /-- A lemma that gives us a formula for the normal when the derivative has length 1, this is
 useful especially for plane curves parametrized by arc-length (with unit speed). -/
 lemma normal_eq_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
-    normal c t = !₂[-(deriv c t 1), deriv c t 0] := by simp [normal_eq, h]
+    normal c t = !₂[-(deriv c t 1), deriv c t 0] := by
+  simp [normal_eq, h]
 
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
