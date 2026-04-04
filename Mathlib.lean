@@ -5747,6 +5747,8 @@ public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Category.PartOrdEmb
 public import Mathlib.Order.Category.Preord
 public import Mathlib.Order.Category.Semilat
+public import Mathlib.Order.Causal.Basic
+public import Mathlib.Order.Causal.Defs
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Circular.ZMod
 public import Mathlib.Order.Closure
