@@ -482,7 +482,7 @@ end Comma
 section Arrow
 
 variable {T : Type*} [Category* T]
-    (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
+  (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `T`, this is the
 subcategory of `Arrow T` defined by `P` where morphisms satisfy `Q` and `W` on the left and right,
@@ -496,11 +496,11 @@ instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _
 instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
-lemma Over.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+lemma Arrow.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
     (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.leftFunc).map f = f.left := rfl
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
-lemma Over.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+lemma Arrow.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
     (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.rightFunc).map f = f.right := rfl
 
 variable {P Q W}
@@ -559,10 +559,12 @@ abbrev Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
     P.Arrow Q W ⥤ P'.Arrow Q' W' :=
   Comma.changeProp _ _ hPP' hQQ' hWW'
 
+-- `simps` on `Arrow.changeProp` fails to create this lemma
 @[simp]
 lemma Arrow.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).left = Y.left := rfl
 
+-- `simps` on `Arrow.changeProp` fails to create this lemma
 @[simp]
 lemma Arrow.changeProp_obj_right (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).right = Y.right := rfl
