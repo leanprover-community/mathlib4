@@ -371,7 +371,7 @@ theorem Colorable.chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n
   have h₁ : i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
   exact Nat.not_lt_zero _ h₁
 
-@[deprecated (since := "2026-04-01")] alias chromaticNumber_pos := Colorable.chromaticNumber_pos
+@[deprecated (since := "2026-04-04")] alias chromaticNumber_pos := Colorable.chromaticNumber_pos
 
 theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
