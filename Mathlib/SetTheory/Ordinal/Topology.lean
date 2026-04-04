@@ -152,7 +152,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [h.map_iSup (bddAbove_of_small _)]
+    rw [h.map_iSup bddAbove_of_small]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x

@@ -136,7 +136,7 @@ theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t 
   trans ⨆ b : Iio o, enumOrd s b
   · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
     · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
-      apply H _ _ (range_nonempty _) (bddAbove_of_small _)
+      apply H _ _ (range_nonempty _) bddAbove_of_small
       rintro _ ⟨c, rfl⟩
       exact enumOrd_mem hs c
     · exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)

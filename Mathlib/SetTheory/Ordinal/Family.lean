@@ -157,15 +157,14 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
       (le_ciSup (Cardinal.bddAbove_range _) _)))⟩
 
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+theorem bddAbove_of_small {s : Set Ordinal.{u}} [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range fun x ↦ ((@equivShrink s h).symm x).val
   use a
   intro b hb
   simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
 
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
-    bddAbove_of_small _⟩
+  ⟨fun ⟨a, h⟩ ↦ small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ ↦ bddAbove_of_small⟩
 
 theorem bddAbove_image {s : Set Ordinal.{u}} (hf : BddAbove s)
     (f : Ordinal.{u} → Ordinal.{max u v}) : BddAbove (f '' s) := by
@@ -180,13 +179,13 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbov
 /-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
 fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ ⨆ i, f i :=
-  le_ciSup (bddAbove_of_small _)
+  le_ciSup bddAbove_of_small
 
 /-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
 @[simp]
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     ⨆ i, f i ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (bddAbove_of_small _)
+  ciSup_le_iff' bddAbove_of_small
 
 /-- An alias of `ciSup_le'` for discoverability. -/
 protected theorem iSup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → ⨆ i, f i ≤ a :=
@@ -196,7 +195,7 @@ protected theorem iSup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) →
 @[simp]
 protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < ⨆ i, f i ↔ ∃ i, a < f i :=
-  lt_ciSup_iff' (bddAbove_of_small _)
+  lt_ciSup_iff' bddAbove_of_small
 
 theorem lt_iSup_add_one {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] (i) : f i < ⨆ i, f i + 1 := by
   rw [← add_one_le_iff]
@@ -244,7 +243,7 @@ theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{
     · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
     · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
-    apply csSup_le_csSup' (bddAbove_of_small _)
+    apply csSup_le_csSup' bddAbove_of_small
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
@@ -267,7 +266,7 @@ set_option linter.deprecated false in
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : Ordinal.IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
     f (⨆ i, g i) = ⨆ i, f (g i) :=
-  Order.IsNormal.map_iSup H (bddAbove_of_small _)
+  Order.IsNormal.map_iSup H bddAbove_of_small
 
 set_option linter.deprecated false in
 @[deprecated Order.IsNormal.map_sSup (since := "2025-12-25")]
@@ -279,7 +278,7 @@ set_option linter.deprecated false in
 @[deprecated Order.IsNormal.map_sSup (since := "2025-12-25")]
 theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
-  Order.IsNormal.map_sSup H hn (bddAbove_of_small _)
+  Order.IsNormal.map_sSup H hn bddAbove_of_small
 
 set_option linter.deprecated false in
 @[deprecated Order.IsNormal.apply_of_isSuccLimit (since := "2025-12-25")]
@@ -435,7 +434,7 @@ theorem IsNormal.bsup {f : Ordinal → Ordinal} (H : IsNormal f) {o : Ordinal} :
     ∀ (g : ∀ a < o, Ordinal), o ≠ 0 → f (bsup o g) = bsup o fun a h => f (g a h) :=
   inductionOn o fun α r _ g h => by
     haveI := type_ne_zero_iff_nonempty.1 h
-    rw [← iSup'_eq_bsup r, Order.IsNormal.map_iSup H (bddAbove_of_small _), ← iSup'_eq_bsup r] <;>
+    rw [← iSup'_eq_bsup r, Order.IsNormal.map_iSup H bddAbove_of_small, ← iSup'_eq_bsup r] <;>
       rfl
 
 theorem lt_bsup_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} :
@@ -914,7 +913,7 @@ theorem iSup_natCast : iSup Nat.cast = ω :=
 
 theorem apply_omega0_of_isNormal {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by
-  rw [← iSup_natCast, hf.map_iSup (bddAbove_of_small _)]
+  rw [← iSup_natCast, hf.map_iSup bddAbove_of_small]
 
 @[deprecated (since := "2025-12-25")]
 alias IsNormal.apply_omega0 := apply_omega0_of_isNormal
