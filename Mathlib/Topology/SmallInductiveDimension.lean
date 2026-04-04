@@ -5,7 +5,9 @@ Authors: Fernando Chu, Andrew Yang
 -/
 module
 
-public import Mathlib
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Clopen
 
 /-!
 # Small inductive dimension
