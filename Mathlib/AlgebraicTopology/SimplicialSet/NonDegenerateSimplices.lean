@@ -55,11 +55,16 @@ lemma mk_surjective (x : X.N) :
 
 /-- Induction principle for the type `X.N` of nondegenerate simplices of
 a simplicial set `X`. -/
-@[elab_as_elim]
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 def induction {motive : X.N → Sort*}
-    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) (s : X.N) :
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) (s : X.N) :
     motive s :=
   mk s.dim ⟨_, s.nonDegenerate⟩
+
+@[simp]
+lemma induction_mk {motive : X.N → Sort*}
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) {n : ℕ} (s : X.nonDegenerate n) :
+  induction (motive := motive) mk (N.mk s.val s.property) = mk n s := rfl
 
 lemma ext_iff (x y : X.N) :
     x = y ↔ x.toS = y.toS := by
@@ -182,13 +187,19 @@ lemma eq_iff_ofSimplex_eq {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _�
   · simp only [le_antisymm_iff]
     rfl
 
+lemma subcomplex_map_le (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌)
+    (hf : X.map f.op y.simplex = x.simplex) :
+    x.subcomplex ≤ y.subcomplex := by
+  simp only [Subcomplex.ofSimplex_le_iff]
+  exact ⟨_, hf⟩
+
 lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
     (hf : X.map f.op y.simplex = x.simplex) :
     x.subcomplex = y.subcomplex := by
-  refine le_antisymm ?_ ?_ <;> simp only [Subcomplex.ofSimplex_le_iff]
-  · exact ⟨_, hf⟩
-  · have := isSplitEpi_of_epi f
-    exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  refine le_antisymm (subcomplex_map_le x y f hf) ?_
+  simp only [Subcomplex.ofSimplex_le_iff]
+  have := isSplitEpi_of_epi f
+  exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
 
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
@@ -236,7 +247,7 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
 (epi)morphism `f : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌` such that `x.simplex` is
 `X.map f.op x.toN.simplex` where `x.toN : X.N` is the unique nondegenerate
 simplex of `X` which generates the same subcomplex as `x`. -/
-noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
+@[no_expose] noncomputable def toNπ (x : X.S) : ⦋x.dim⦌ ⟶ ⦋x.toN.dim⦌ :=
   (existsUnique_toNπ rfl).exists.choose
 
 instance (x : X.S) : Epi x.toNπ := (existsUnique_toNπ rfl).exists.choose_spec.1
