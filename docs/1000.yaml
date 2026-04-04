@@ -246,6 +246,7 @@ Q230848:
   title: Lamé’s theorem
   decl: Nat.fib_le_of_euclidSteps
   authors: Kenneth Goodman
+  date: 2026
 
 Q240950:
   title: Faltings's theorem

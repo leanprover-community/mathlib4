@@ -67,15 +67,18 @@ theorem euclidSteps_of_ne_zero (a : ℕ) {b : ℕ}
   rw [euclidSteps]
   simp [hb]
 
-/-- When `0 < b` and `b ≤ a`, we have `b + a % b ≤ a`. -/
-theorem add_mod_le {a b : ℕ} (hab : b ≤ a)
-    (hb : 0 < b) : b + a % b ≤ a := by
-  have h1 : 1 ≤ a / b := Nat.div_pos hab hb
-  set q := a / b
-  set r := a % b
-  have h2 : q * b + r = a := Nat.div_add_mod' a b
-  have h3 : b ≤ q * b := Nat.le_mul_of_pos_left b h1
-  omega
+/-- When `b ≤ a`, we have `b + a % b ≤ a`. -/
+theorem add_mod_le {a b : ℕ} (hab : b ≤ a) :
+    b + a % b ≤ a := by
+  rcases Nat.eq_zero_or_pos b with rfl | hb
+  · simp
+  · have h1 : 1 ≤ a / b := Nat.div_pos hab hb
+    set q := a / b
+    set r := a % b
+    have h2 : q * b + r = a := Nat.div_add_mod' a b
+    have h3 : b ≤ q * b :=
+      Nat.le_mul_of_pos_left b h1
+    omega
 
 /-- **Lamé's Theorem.** If the Euclidean algorithm on `(a, b)`
 with `b ≤ a` takes at least `n` steps (with `n ≠ 0`), then
@@ -113,7 +116,6 @@ theorem fib_le_of_euclidSteps {a b : ℕ} (hab : b ≤ a)
             ≤ a % b + b := Nat.add_le_add ih1 ih2
           _ = b + a % b := by omega
           _ ≤ a := add_mod_le hab
-              (Nat.pos_of_ne_zero hb)
 
 /-- **Contrapositive of Lamé's theorem.** If `b < fib (n + 1)`,
 then the Euclidean algorithm on `(a, b)` with `b ≤ a` takes at
@@ -133,12 +135,6 @@ theorem euclidSteps_of_lt {a b : ℕ} (hab : a < b) :
     euclidSteps a b = euclidSteps b a + 1 := by
   rw [euclidSteps_of_ne_zero a (by omega),
     Nat.mod_eq_of_lt hab]
-
-/-- `fib (n + 2) % fib (n + 1) = fib n` for `1 < n`. -/
-theorem fib_mod_fib_succ {n : ℕ} (hn : 1 < n) :
-    fib (n + 2) % fib (n + 1) = fib n := by
-  rw [fib_add_two, Nat.add_mod_right,
-    Nat.mod_eq_of_lt (fib_lt_fib_succ hn)]
 
 /-- **Tightness of Lamé's bound.** Consecutive Fibonacci numbers
 are the worst case for the Euclidean algorithm:
