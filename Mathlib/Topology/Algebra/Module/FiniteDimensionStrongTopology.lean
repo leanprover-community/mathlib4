@@ -189,15 +189,18 @@ end UniformConvergenceCLM
 
 section ContinuousLinearMap
 
-variable {ι 𝕜 R E F Fᵤ : Type*} [Semiring R] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [AddCommGroup E] [AddCommGroup F] [AddCommGroup Fᵤ] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ]
-  [Module R F] [SMulCommClass 𝕜 R F] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [TopologicalSpace F] [IsTopologicalAddGroup F] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
-  [T2Space E] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 Fᵤ]
-  [ContinuousConstSMul R F]
+variable {ι 𝕜 R E F V Vᵤ : Type*} [Semiring R] [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [AddCommGroup F] [AddCommGroup V] [AddCommGroup Vᵤ]
+  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 V] [Module 𝕜 Vᵤ]
+  [Module R V] [SMulCommClass 𝕜 R V]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace F]
+  [TopologicalSpace V] [IsTopologicalAddGroup V] [UniformSpace Vᵤ] [IsUniformAddGroup Vᵤ]
+  [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 V] [ContinuousSMul 𝕜 Vᵤ]
+  [ContinuousConstSMul R V]
+  [CompleteSpace 𝕜] [T2Space E] -- hypotheses for automatic continuity in finite dimension
 
 theorem Module.Basis.continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
-    Continuous (b.constrL : (ι → F) → (E →L[𝕜] F)) :=
+    Continuous (b.constrL : (ι → V) → (E →L[𝕜] V)) :=
   UniformConvergenceCLM.continuous_constrL b (fun _ ↦ id)
 
 variable (R) in
@@ -205,24 +208,41 @@ variable (R) in
 the topology of bounded convergence. -/
 @[simps! apply symm_apply]
 protected noncomputable def Module.Basis.constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
-    (ι → F) ≃L[R] (E →L[𝕜] F) :=
-  UniformConvergenceCLM.constrCLE R b (fun _ ↦ id) (sUnion_isVonNBounded_eq_univ)
+    (ι → V) ≃L[R] (E →L[𝕜] V) :=
+  UniformConvergenceCLM.constrCLE R b (fun _ ↦ id) sUnion_isVonNBounded_eq_univ
 
 /-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
 theorem ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
-    IsEmbedding ((↑) : (E →L[𝕜] F) → (E → F)) := by
+    IsEmbedding ((↑) : (E →L[𝕜] V) → (E → V)) := by
   let b : Basis _ 𝕜 E := Free.chooseBasis 𝕜 E
-  have : Continuous (fun (f : E → F) i ↦ f (b i)) := continuous_pi fun i ↦ continuous_apply _
+  have : Continuous (fun (f : E → V) i ↦ f (b i)) := continuous_pi fun i ↦ continuous_apply _
   exact .of_comp continuous_coeFun this (b.constrCLE 𝕜).symm.toHomeomorph.isEmbedding
 
 /-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
 identifies with the product topology. -/
 theorem ContinuousLinearMap.isUniformEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
-    IsUniformEmbedding ((↑) : (E →L[𝕜] Fᵤ) → (E → Fᵤ)) :=
-  let Φ : (E →L[𝕜] Fᵤ) →ₗ[𝕜] (E → Fᵤ) := LinearMap.ltoFun _ _ _ _ ∘ₗ coeLM _
+    IsUniformEmbedding ((↑) : (E →L[𝕜] Vᵤ) → (E → Vᵤ)) :=
+  let Φ : (E →L[𝕜] Vᵤ) →ₗ[𝕜] (E → Vᵤ) := LinearMap.ltoFun _ _ _ _ ∘ₗ coeLM _
   AddMonoidHom.isUniformEmbedding_of_isEmbedding (f := Φ) isEmbedding_coeFn_of_finiteDimensional
+
+noncomputable def flipOfFiniteDimensional [FiniteDimensional 𝕜 E] :
+    (E →L[𝕜] F →L[𝕜] V) ≃L[𝕜] (F →L[𝕜] E →L[𝕜] V) :=
+  UniformConvergenceCLM.flipOfFiniteDimensional
+    (fun _ ↦ id) sUnion_isVonNBounded_eq_univ (fun _ ↦ id)
+
+@[simp]
+lemma flipOfFiniteDimensional_apply [FiniteDimensional 𝕜 E]
+    (T : E →L[𝕜] F →L[𝕜] V) (e : E) (f : F) :
+    flipOfFiniteDimensional T f e = T e f :=
+  rfl
+
+@[simp]
+lemma flipOfFiniteDimensional_symm_apply [FiniteDimensional 𝕜 E]
+    (S : F →L[𝕜] E →L[𝕜] V) (e : E) (f : F) :
+    flipOfFiniteDimensional.symm S e f = S f e :=
+  rfl
 
 end ContinuousLinearMap
