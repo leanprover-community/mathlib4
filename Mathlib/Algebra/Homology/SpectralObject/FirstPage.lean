@@ -75,7 +75,7 @@ noncomputable def spectralSequenceFirstPageXIso (pq : κ)
     (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq)
     (n : ℤ) (hn : n = data.deg pq) :
     ((X.spectralSequence data).page r₀).X pq ≅
-      (X.H n).obj (mk₁ (homOfLE  (by grind [data.le₁₂ pq]) : i₁ ⟶ i₂)) :=
+      (X.H n).obj (mk₁ (homOfLE (data.le₁₂' pq hi₁ hi₂))) :=
   X.spectralSequencePageXIso data _ (by rfl) _ _ _ _ _
     (by rw [hi₁, ← data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃]) _ _ _ hn ≪≫
       X.EIsoH (homOfLE _) (n - 1) n (n + 1)
@@ -113,10 +113,11 @@ lemma spectralSequence_first_page_d_eq (pq pq' : κ)
     (n n' : ℤ) (hn : n = data.deg pq) (hn' : n + 1 = n' := by lia) :
     ((X.spectralSequence data).page r₀).d pq pq' =
       (X.spectralSequenceFirstPageXIso data pq j k hj hk n hn).hom ≫
-        X.δ (homOfLE
+      X.δ
+        (homOfLE
           (by simpa only [hi, hj, data.hc₁₃ r₀ pq pq' hpq, ← data.hi₂₃ pq']
-            using data.le₁₂ pq') : i ⟶ j)
-          (homOfLE (by simpa only [hj, hk] using data.le₁₂ pq)) n n' hn' ≫
+            using data.le₁₂ pq'))
+        (homOfLE (by simpa only [hj, hk] using data.le₁₂ pq)) n n' hn' ≫
       (X.spectralSequenceFirstPageXIso data pq' i j hi
         (by rw [hj, ← data.hc₀₂ r₀ pq pq' hpq, data.hi₀₁ pq]) n'
         (by rw [← hn', hn, data.hc r₀ pq pq' hpq])).inv := by
