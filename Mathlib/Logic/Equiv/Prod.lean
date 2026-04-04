@@ -97,17 +97,19 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
 
+open Prod in
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
-def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
-  ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
-    fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
+def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ where
+  toFun := (fst ∘ fst) ⇊ ((snd ∘ fst) ⇊ snd)
+  invFun := (fst ⇊ (fst ∘ snd)) ⇊ (snd ∘ snd)
 
+open Prod in
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps (attr := grind =) apply]
 def prodProdProdComm (α β γ δ) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
-  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
-  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  toFun := ((fst ∘ fst) ⇊ (fst ∘ snd)) ⇊ ((snd ∘ fst) ⇊ (snd ∘ snd))
+  invFun := ((fst ∘ fst) ⇊ (fst ∘ snd)) ⇊ ((snd ∘ fst) ⇊ (snd ∘ snd))
 
 @[simp, grind =]
 theorem prodProdProdComm_symm (α β γ δ) :
@@ -118,17 +120,15 @@ theorem prodProdProdComm_symm (α β γ δ) :
 @[simps (attr := grind =) -fullyApplied]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
-  invFun := uncurry
-  left_inv := uncurry_curry
-  right_inv := curry_uncurry
+  invFun := Function.uncurry
 
 section
 
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
 @[simps (attr := grind =)]
 def prodPUnit (α) : α × PUnit ≃ α where
-  toFun := fun p => p.1
-  invFun := fun a => (a, PUnit.unit)
+  toFun := Prod.fst
+  invFun := id ⇊ Function.const α ()
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
 @[simps! (attr := grind =)]
@@ -140,7 +140,7 @@ def punitProd (α) : PUnit × α ≃ α :=
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
 @[simps (attr := grind =)]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α where
-  toFun := fun p => p.1
+  toFun := Sigma.fst
   invFun := fun a => ⟨a, PUnit.unit⟩
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
@@ -439,7 +439,7 @@ def boolProdEquivSum (α : Type*) : Bool × α ≃ α ⊕ α where
 @[simps (attr := grind =)]
 def boolArrowEquivProd (α : Type*) : (Bool → α) ≃ α × α where
   toFun := Function.prod (· false) (· true)
-  invFun  := flip (cond · Prod.snd Prod.fst ·)
+  invFun := flip (cond · Prod.snd Prod.fst ·)
   left_inv _ := by grind [flip]
 
 end

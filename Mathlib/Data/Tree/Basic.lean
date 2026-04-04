@@ -125,11 +125,11 @@ scoped infixr:65 " △ " => Tree.node ()
 /-- Induction principle for `Tree Unit`s -/
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
-    (ind : ∀ x y, motive x → motive y → motive (x ⇊ y)) : motive t :=
+    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
 
-theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left ⇊ x.right = x
+theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
-  | node _ _ _, _ => rfl  -- Porting note: `a ⇊ b` no longer works in pattern matching
+  | node _ _ _, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 
 end Tree

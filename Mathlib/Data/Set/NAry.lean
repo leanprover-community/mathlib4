@@ -69,30 +69,28 @@ theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => 
 
 variable (f)
 
-@[simp]
-lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
-  ext fun _ ↦ by simp [and_assoc]
-
 @[simp] lemma image_uncurry_prod (s : Set α) (t : Set β) : uncurry f '' s ×ˢ t = image2 f s t :=
-  image_prod _
+  ext fun _ ↦ by simp [and_assoc]
 
 @[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext <| by simp
 
 @[simp]
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
-    image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
-  simp [← image_uncurry_prod, uncurry]
+    image2 f.curry s t = f '' s ×ˢ t := by simp [← image_uncurry_prod]
 
-theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
-  grind
+theorem image2_flip (s : Set α) (t : Set β) : image2 (flip f) t s = image2 f s t := by
+  grind [flip]
+
+theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun b x ↦ f x b) t s :=
+  (image2_flip f s t).symm
 
 variable {f}
 
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
-  simp_rw [← image_prod, union_prod, image_union]
+  simp_rw [← image_uncurry_prod, union_prod, image_union]
 
 theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s t' := by
-  rw [← image2_swap, image2_union_left, image2_swap f, image2_swap f]
+  rw [← image2_flip, image2_union_left, image2_flip f, image2_flip f]
 
 lemma image2_inter_left (hf : Injective2 f) :
     image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t := by
@@ -130,7 +128,7 @@ theorem image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
 
 theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α → β → γ) :
     (image2 f s t).Subsingleton := by
-  rw [← image_prod]
+  rw [← image_uncurry_prod]
   apply (hs.prod ht).image
 
 theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t :=
@@ -176,16 +174,16 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
   image2_congr fun a _ b _ => h a b
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
-    g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
-  simp only [← image_prod, image_image]
+    g '' image2 f s t = g ∘ uncurry f '' s ×ˢ t := by
+  simp only [← image_uncurry_prod, image_comp]
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
-    image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
-  ext; simp
-
+    image2 f (g '' s) t = uncurry f ∘ Prod.map g id '' s ×ˢ t := by
+  ext; aesop
+--fun a b => f (g a) b
 theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
-    image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
-  ext; simp
+    image2 f s (g '' t) = uncurry f ∘ Prod.map id g '' s ×ˢ t := by
+  ext; aesop
 
 @[simp]
 theorem image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
@@ -196,8 +194,8 @@ theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
   simp [nonempty_def.mp h, Set.ext_iff]
 
 lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :
-    image2 f (range g) (range h) = range fun x : α × β ↦ f (g x.1) (h x.2) := by
-  simp_rw [← image_univ, image2_image_left, image2_image_right, ← image_prod, univ_prod_univ]
+    image2 f (range g) (range h) = range (f.uncurry ∘ Prod.map g h) := by
+  ext; aesop
 
 theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
@@ -205,18 +203,18 @@ theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → 
   eq_of_forall_subset_iff fun _ ↦ by simp only [image2_subset_iff, forall_mem_image2, h_assoc]
 
 theorem image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
-  (image2_swap _ _ _).trans <| by simp_rw [h_comm]
+  (image2_flip _ _ _).trans <| by simp_rw [h_comm]
 
 theorem image2_left_comm {f : α → δ → ε} {g : β → γ → δ} {f' : α → γ → δ'} {g' : β → δ' → ε}
     (h_left_comm : ∀ a b c, f a (g b c) = g' b (f' a c)) :
     image2 f s (image2 g t u) = image2 g' t (image2 f' s u) := by
-  rw [image2_swap f', image2_swap f]
+  rw [← image2_flip f', ← image2_flip f]
   exact image2_assoc fun _ _ _ => h_left_comm _ _ _
 
 theorem image2_right_comm {f : δ → γ → ε} {g : α → β → δ} {f' : α → γ → δ'} {g' : δ' → β → ε}
     (h_right_comm : ∀ a b c, f (g a b) c = g' (f' a c) b) :
     image2 f (image2 g s t) u = image2 g' (image2 f' s u) t := by
-  rw [image2_swap g, image2_swap g']
+  rw [← image2_flip g, ← image2_flip g']
   exact image2_assoc fun _ _ _ => h_right_comm _ _ _
 
 theorem image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ} {f' : ε' → ζ' → ν}
@@ -227,8 +225,7 @@ theorem image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} 
 
 theorem image_image2_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' (g₁ a) (g₂ b)) :
-    (image2 f s t).image g = image2 f' (s.image g₁) (t.image g₂) := by
-  simp_rw [image_image2, image2_image_left, image2_image_right, h_distrib]
+    (image2 f s t).image g = image2 f' (s.image g₁) (t.image g₂) := by aesop
 
 /-- Symmetric statement to `Set.image2_image_left_comm`. -/
 theorem image_image2_distrib_left {g : γ → δ} {f' : α' → β → δ} {g' : α → α'}
@@ -269,7 +266,7 @@ theorem image2_distrib_subset_right {f : δ → γ → ε} {g : α → β → δ
 theorem image_image2_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁ : β → β'} {g₂ : α → α'}
     (h_antidistrib : ∀ a b, g (f a b) = f' (g₁ b) (g₂ a)) :
     (image2 f s t).image g = image2 f' (t.image g₁) (s.image g₂) := by
-  rw [image2_swap f]
+  rw [← image2_flip f]
   exact image_image2_distrib fun _ _ => h_antidistrib _ _
 
 /-- Symmetric statement to `Set.image2_image_left_anticomm`. -/

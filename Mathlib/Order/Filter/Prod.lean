@@ -136,12 +136,12 @@ theorem Tendsto.snd {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×
     Tendsto (fun a ↦ (m a).2) f h :=
   tendsto_snd.comp H
 
-theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
-    (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
+theorem Tendsto.prod {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
+    (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (m₁ ⇊ m₂) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
 theorem tendsto_prod_swap : Tendsto (Prod.swap : α × β → β × α) (f ×ˢ g) (g ×ˢ f) :=
-  tendsto_snd.prodMk tendsto_fst
+  tendsto_snd.prod tendsto_fst
 
 theorem Eventually.prod_inl {la : Filter α} {p : α → Prop} (h : ∀ᶠ x in la, p x) (lb : Filter β) :
     ∀ᶠ x in la ×ˢ lb, p (x : α × β).1 :=
@@ -293,13 +293,16 @@ lemma Eventually.trans_prod {h : Filter γ}
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
-  simp_rw [← comap_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
-    Function.comp_def, Equiv.prodAssoc_symm_apply]
+  unfold Equiv.prodAssoc
+  simp only [prod_eq_inf, comap_inf, comap_comap, inf_assoc, map_inf (Equiv.injective _),
+    ← comap_equiv_symm, comap_comap, Equiv.coe_fn_symm_mk, Function.comp_assoc,
+    Function.fst_comp_prod, Function.snd_comp_prod]
 
 theorem prod_assoc_symm (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ).symm (f ×ˢ (g ×ˢ h)) = (f ×ˢ g) ×ˢ h := by
-  simp_rw [map_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
-    Function.comp_def, Equiv.prodAssoc_apply]
+  unfold Equiv.prodAssoc
+  simp only [map_equiv_symm, Equiv.coe_fn_mk, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
+    Function.comp_assoc, Function.fst_comp_prod, Function.snd_comp_prod]
 
 theorem tendsto_prodAssoc {h : Filter γ} :
     Tendsto (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) (f ×ˢ (g ×ˢ h)) :=
@@ -328,7 +331,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
       let ⟨s₁, hs₁, s₂, hs₂, h⟩ := mem_prod_iff.mp hs
       mem_of_superset (prod_mem_prod (image_mem_map hs₁) (image_mem_map hs₂)) <|
         by rwa [prod_image_image_eq, image_subset_iff])
-    ((tendsto_map.comp tendsto_fst).prodMk (tendsto_map.comp tendsto_snd))
+    ((tendsto_map.comp tendsto_fst).prod (tendsto_map.comp tendsto_snd))
 
 theorem prod_map_map_eq' {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*} (f : α₁ → α₂)
     (g : β₁ → β₂) (F : Filter α₁) (G : Filter β₁) :

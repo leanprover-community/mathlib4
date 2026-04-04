@@ -926,7 +926,8 @@ variable {α β γ δ : Type*} {s : Set α} {f : α → β}
 section graphOn
 variable {x : α × β}
 
-@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by
+  simp [graphOn, Prod.ext_iff]
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 @[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
@@ -956,8 +957,12 @@ lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s =
 lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
-    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
-  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+    s.graphOn (g ∘ f) = Prod.map id g '' s.graphOn f := by
+  simpa using image_comp (Prod.map id g) (id ⇊ f) _
+
+lemma graphOn_prod (s : Set α) (f : α → β) (g : α → γ) :
+    s.graphOn (f ⇊ g) = {x | x.1 ∈ s ∧ f x.1 = x.2.1 ∧ g x.1 = x.2.2} := by
+  simp [graphOn, Set.ext_iff, Prod.ext_iff]
 
 lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
 
@@ -966,11 +971,11 @@ lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image
 
 lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by
-  aesop
+  simp [Set.ext_iff, Prod.ext_iff, and_and_and_comm]
 
 lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
-  aesop
+  simp [Set.ext_iff, Prod.ext_iff, and_and_and_comm]
 
 end graphOn
 

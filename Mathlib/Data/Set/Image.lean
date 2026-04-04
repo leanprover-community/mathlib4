@@ -140,6 +140,9 @@ theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
 theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 
+theorem preimage_prod {f : α → β} {g : α → γ} {s : Set (β × γ)} :
+    (f ⇊ g) ⁻¹' s = {x | (f x, g x) ∈ s} := rfl
+
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
   induction n with
   | zero => simp
@@ -218,6 +221,14 @@ lemma monotone_image : Monotone (image f) := fun _ _ => image_mono
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
+
+theorem image_prodMap {δ} (f : α → β) (g : γ → δ) (s : Set (α × γ)) :
+    (Prod.map f g) '' s = {q | ∃ a b, (a, b) ∈ s ∧ f a = q.1 ∧ g b = q.2} := by
+  simp [Set.ext_iff, Prod.ext_iff]
+
+theorem image_prod (f : α → β) (g : α → γ) (s : Set α) : (f ⇊ g) '' s =
+    {x | ∃ y ∈ s, f y = x.1 ∧ g y = x.2} := by
+  simp [Set.ext_iff, Prod.ext_iff]
 
 /-- A variant of `image_comp`, useful for rewriting -/
 @[grind =]

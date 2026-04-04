@@ -776,7 +776,7 @@ theorem biSup_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
 @[to_dual]
 theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
     ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
-  rw [← image_prod, iSup_image, biSup_prod]
+  simp_rw [← image_uncurry_prod, iSup_image, biSup_prod, uncurry_apply]
 
 @[to_dual]
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
@@ -807,7 +807,8 @@ theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i 
 
 @[to_dual]
 theorem sSup_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
-    sSup (image2 f s t) = ⨆ (a ∈ s) (b ∈ t), f a b := by rw [← image_prod, sSup_image, biSup_prod]
+    sSup (image2 f s t) = ⨆ (a ∈ s) (b ∈ t), f a b := by
+  simp_rw [← image_uncurry_prod, sSup_image, biSup_prod, uncurry_apply]
 
 end
 

@@ -515,15 +515,15 @@ theorem iUnion_image_left : ⋃ a ∈ s, f a '' t = image2 f s t := by
   simp only [image2_eq_iUnion, image_eq_iUnion]
 
 theorem iUnion_image_right : ⋃ b ∈ t, (f · b) '' s = image2 f s t := by
-  rw [image2_swap, iUnion_image_left]
+  rw [iUnion_image_left, image2_swap f s t]
 
 theorem image2_iUnion_left (s : ι → Set α) (t : Set β) :
     image2 f (⋃ i, s i) t = ⋃ i, image2 f (s i) t := by
-  simp only [← image_prod, iUnion_prod_const, image_iUnion]
+  simp only [← image_uncurry_prod, iUnion_prod_const, image_iUnion]
 
 theorem image2_iUnion_right (s : Set α) (t : ι → Set β) :
     image2 f s (⋃ i, t i) = ⋃ i, image2 f s (t i) := by
-  simp only [← image_prod, prod_iUnion, image_iUnion]
+  simp only [← image_uncurry_prod, prod_iUnion, image_iUnion]
 
 theorem image2_sUnion_left (S : Set (Set α)) (t : Set β) :
     image2 f (⋃₀ S) t = ⋃ s ∈ S, image2 f s t := by
@@ -598,23 +598,19 @@ theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : 
   image2_singleton_right
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
-    seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq_eq_image2, image2_image_left]
-  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
+    seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by ext; aesop
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
-    f '' seq s t = seq ((f ∘ ·) '' s) t := by
-  simp only [seq, image_image2, image2_image_left, comp_apply]
+    f '' seq s t = seq ((f ∘ ·) '' s) t := by ext; aesop
 
-theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
-  rw [seq_eq_image2, image2_image_left, image2_mk_eq_prod]
+theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by ext; aesop
 
 theorem prod_image_seq_comm (s : Set α) (t : Set β) :
     (Prod.mk '' s).seq t = seq ((fun b a => (a, b)) '' t) s := by
   rw [← prod_eq_seq, ← image_swap_prod, prod_eq_seq, image_seq, ← image_comp]; rfl
 
 theorem image2_eq_seq (f : α → β → γ) (s : Set α) (t : Set β) : image2 f s t = seq (f '' s) t := by
-  rw [seq_eq_image2, image2_image_left]
+  ext; aesop
 
 end Seq
 

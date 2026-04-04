@@ -500,7 +500,7 @@ theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β →
 
 /-- Relation `fun f g ↦ Tendsto (f ⇊ g) l (𝓤 α)` is symmetric. -/
 theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : Tendsto f l (𝓤 α)) :
-    Tendsto (Prod.swap ∘ Function.diag ∘ f) l (𝓤 α) :=
+    Tendsto (Prod.swap ∘ f) l (𝓤 α) :=
   tendsto_swap_uniformity.comp h
 
 /-- Relation `fun f g ↦ Tendsto (f ⇊ g) l (𝓤 α)` is reflexive. -/
@@ -831,9 +831,9 @@ theorem uniformContinuousOn_univ {f : α → β} :
 
 theorem uniformContinuous_of_const {c : α → β} (h : ∀ a b, c a = c b) :
     UniformContinuous c :=
-  have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' SetRel.id = univ :=
-    eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
-  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
+  have H : Prod.map.uncurry ⇗c ⁻¹' SetRel.id = univ := eq_univ_iff_forall.2 (by simpa using h)
+  (le_principal_iff.mpr <| mem_map.mpr <| Set.mem_of_eq_of_mem H Filter.univ_mem).trans
+    refl_le_uniformity
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 
@@ -856,7 +856,8 @@ theorem Filter.HasBasis.uniformContinuous_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
     UniformContinuous f ↔ ∀ i, q i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ t i :=
-  (ha.tendsto_iff hb).trans <| by simp only [Prod.forall]
+  (ha.tendsto_iff hb).trans <| by simp only [Function.uncurry_apply, Function.fst_diag,
+    Function.snd_diag, Prod.forall, Prod.map_apply]
 
 theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
@@ -864,7 +865,8 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
     UniformContinuousOn f S ↔
       ∀ i, q i → ∃ j, p j ∧ ∀ x, x ∈ S → ∀ y, y ∈ S → (x, y) ∈ s j → (f x, f y) ∈ t i :=
   ((ha.inf_principal (S ×ˢ S)).tendsto_iff hb).trans <| by
-    simp_rw [Prod.forall, Set.inter_comm (s _), forall_mem_comm, mem_inter_iff, mem_prod, and_imp]
+    simp_rw [Set.inter_comm (s _), mem_inter_iff, mem_prod, Function.uncurry_apply,
+      Function.fst_diag, Function.snd_diag, and_imp, Prod.forall, Prod.map_apply, forall_mem_comm]
 
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated

@@ -11,6 +11,7 @@ public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Logic.Function.Init
 
 import Mathlib.Tactic.Attr.Register
 import Aesop.BuiltinRules
@@ -225,11 +226,11 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
 theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
-    (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
+    (f '' s) ×ˢ t = Prod.map f id '' s ×ˢ t := by
   aesop
 
 theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
-    t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
+    t ×ˢ (f '' s) = Prod.map id f '' t ×ˢ s := by
   aesop
 
 end Prod
@@ -294,7 +295,7 @@ def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
 
 /-- The graph of a function `f : α → β` on a set `s`. -/
-def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
+def graphOn (f : α → β) (s : Set α) : Set (α × β) := (id ⇊ f) '' s
 
 /-- `f` is surjective from `s` to `t` if `t` is contained in the image of `s`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
