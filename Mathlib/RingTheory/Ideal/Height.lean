@@ -346,11 +346,11 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   norm_cast
   exact Ideal.height_mono hle
 
-private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A]
+private theorem IsLocalization.height_comap_eq_of_isPrime (S : Submonoid R) {A : Type*} [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
-    (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
-  rw [eq_comm, Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj,
-    Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
+    (J.comap (algebraMap R A)).height = J.height := by
+  rw [eq_comm, Ideal.height_eq_order_height_of_isPrime, Ideal.height_eq_order_height_of_isPrime,
+    ← WithBot.coe_inj, Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
   let e := IsLocalization.orderIsoOfPrime S A
   have H (p : Ideal R) (hp : p ≤ J.comap (algebraMap R A)) : Disjoint (S : Set R) p :=
     Set.disjoint_of_subset_right hp (e ⟨_, ‹J.IsPrime›⟩).2.2
@@ -363,11 +363,19 @@ private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [
         congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
       map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
+@[deprecated "Use `Ideal.height_ne_top_of_isPrime` instead." (since := "2026-04-04")]
+private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
+    (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
+  simpa [Ideal.height_eq_primeHeight] using IsLocalization.height_comap_eq_of_isPrime S J
+
 theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
-  rw [Ideal.height, Ideal.height]
-  simp_rw [← IsLocalization.primeHeight_comap S, IsLocalization.minimalPrimes_comap S A,
-    ← Ideal.height_eq_primeHeight, iInf_image]
+  rw [(J.comap _).height_eq_inf_minimalPrimes, J.height_eq_inf_minimalPrimes]
+  simp only [IsLocalization.minimalPrimes_comap S A, iInf_image]
+  apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
+  have := Ideal.minimalPrimes_isPrime hp
+  exact IsLocalization.height_comap_eq_of_isPrime S _
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
     [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
