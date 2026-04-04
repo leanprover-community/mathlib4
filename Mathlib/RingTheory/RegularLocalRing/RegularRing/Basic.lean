@@ -32,26 +32,27 @@ class IsRegularRing : Prop extends IsNoetherianRing R where
   localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
 
-lemma isRegularRing_iff (R : Type u_1) [CommRing R] [IsNoetherianRing R] : IsRegularRing R ↔
+variable {R} in
+lemma isRegularRing_iff [IsNoetherianRing R] : IsRegularRing R ↔
     ∀ (p : Ideal R) (_ : p.IsPrime), IsRegularLocalRing (Localization.AtPrime p) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [IsNoetherianRing R] [CommRing R']
     (e : R ≃+* R') [reg : IsRegularRing R] : IsRegularRing R' := by
   let := isNoetherianRing_of_ringEquiv R e
-  apply (isRegularRing_iff R').mpr (fun p' hp' ↦ ?_)
+  apply isRegularRing_iff.mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
   have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
     ext x
     have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ by simpa [← eq],
       fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
     simpa only [Ideal.primeCompl, p]
-  let _ := (isRegularRing_iff R).mp ‹_› p (Ideal.comap_isPrime e p')
+  let _ := isRegularRing_iff.mp ‹_› p (Ideal.comap_isPrime e p')
   exact IsRegularLocalRing.of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
-  refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
+  refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
   by_cases eqbot : p = ⊥
   · let : Field (Localization.AtPrime p) := IsField.toField (by
       simp [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal, eqbot])
