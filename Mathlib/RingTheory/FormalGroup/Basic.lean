@@ -76,7 +76,12 @@ namespace FormalGroup
 variable {σ : Type} (F : FormalGroup R)
 
 set_option linter.unusedVariables false in
-/-- This is a synonym of multivariate power series. -/
+/-- `Point F σ` represents the mathematical space of points of a formal group $F$
+taking values in the formal power series ring `R⟦X_σ⟧`.
+
+Mathematically, a 1-dimensional formal group law $F$ over a ring $R$ defines a group
+structure on the elements of a complete local $R$-algebra (specifically, its maximal ideal)
+via the substitution operation $x +_F y = F(x, y)$. -/
 @[nolint unusedArguments]
 def Point (F : FormalGroup R) (σ : Type) := MvPowerSeries σ R
 
@@ -85,7 +90,7 @@ instance : Add (F.Point σ) where
 
 /- TODO : Zero, SMul, Inv instance. -/
 
-/-- Additive formal group law `Gₐ(X,Y) = X + Y`. -/
+/-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
 def 𝔾ₐ : FormalGroup R where
   toPowerSeries := X₀ + X₁
@@ -101,7 +106,7 @@ def 𝔾ₐ : FormalGroup R where
 instance : (𝔾ₐ (R := R)).IsComm where
   comm := by simp [subst_add .X_X, subst_X .X_X, add_comm]
 
-/-- Multiplicative formal group law `Gₘ(X,Y) = X + Y + XY`. -/
+/-- Multiplicative formal group law `𝔾ₘ(X,Y) = X + Y + XY`. -/
 @[simps]
 def 𝔾ₘ : FormalGroup R where
   toPowerSeries := X₀ + X₁ + X₀ * X₁
