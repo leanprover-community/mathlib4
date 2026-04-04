@@ -534,12 +534,12 @@ lemma lift_tensorObjProdIso_inv {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     prod.lift f g ≫ (tensorObjProdIso Y Z).inv = lift f g := by
   ext <;> simp [prod.lift_fst, prod.lift_snd]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_hom_map {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (tensorObjProdIso X₁ Y₁).hom ≫ prod.map f g = (f ⊗ₘ g) ≫ (tensorObjProdIso _ _).hom := by
   ext <;> simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_inv_tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (tensorObjProdIso _ _).inv ≫ (f ⊗ₘ g) = prod.map f g ≫ (tensorObjProdIso X₂ Y₂).inv := by
   ext <;> simp
@@ -554,12 +554,12 @@ lemma tensorObjProdIso_hom_whiskerLeft {X Y Z : C} (f : X ⟶ Z) :
     (Y ◁ f) ≫ (tensorObjProdIso _ _).hom = (tensorObjProdIso _ _).hom ≫ prod.map (𝟙 Y) f := by
   ext <;> simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_inv_whiskerRight {X Y Z : C} (f : X ⟶ Z) :
     (tensorObjProdIso _ _).inv ≫ (f ▷ Y) = prod.map f (𝟙 Y) ≫ (tensorObjProdIso _ _).inv := by
   ext <;> simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_inv_whiskerLeft {X Y Z : C} (f : X ⟶ Z) :
     (tensorObjProdIso _ _).inv ≫ (Y ◁ f) = prod.map (𝟙 Y) f ≫ (tensorObjProdIso _ _).inv := by
   ext <;> simp
@@ -570,15 +570,13 @@ lemma tensorObjProdIso_hom_braiding_hom [BraidedCategory C] {X Y : C} :
       (β_ X Y).hom ≫ (tensorObjProdIso Y X).hom := by
   ext <;> simp [prod.lift_fst, prod.lift_snd]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma tensorObjProdIso_inv_braiding_hom [BraidedCategory C] {X Y : C} :
     (tensorObjProdIso X Y).inv ≫ (β_ X Y).hom =
       (prod.braiding _ _).hom ≫ (tensorObjProdIso Y X).inv := by
   ext <;> simp
 
-
 end
-
 
 section CartesianMonoidalCategoryComparison
 

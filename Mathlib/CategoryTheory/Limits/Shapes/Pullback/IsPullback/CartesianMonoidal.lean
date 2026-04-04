@@ -17,21 +17,21 @@ the setting of a category with chosen finite products, i.e. where we have
 ## Main results
 In a `[CartesianMonoidalCategory C]`,
 
+- `IsPullback.fst_snd_toUnit_toUnit` shows that the product is the pullback of morphisms into the
+  terminal object.
 - `IsPullback.whiskerRight_horiz` shows a concrete pullback square for
   the pullback along the left projection.
-- `IsPullback.tensor` shows that given two pullback squares, we can take the pointwise product.
-- `IsPullback.pullback_monoidal` shows that given a pullback `W` of morphisms
+- `IsPullback.whiskerLeft_horiz` shows a concrete pullback square for
+  the pullback along the right projection.
+- `IsPullback.tensor` shows that given two pullback squares, the pointwise product is a pullback.
+- `IsPullback.comp_lift_diag_tensorHom` shows that given a pullback `W` of morphisms
   `f : X ⟶ Z` and `g : Y ⟶ Z`, we find that `W` is also the pullback of `lift (𝟙 Z) (𝟙 Z)`
   along `f ⊗ₘ g`.
-- `IsPullback.of_pullback_monoidal` shows that given a pullback `W` of `lift (𝟙 Z) (𝟙 Z)`
+- `IsPullback.of_isPullback_diag_tensorHom` shows that given a pullback `W` of `lift (𝟙 Z) (𝟙 Z)`
   along `f ⊗ₘ g`, we find that `W` is also the pullback of `f` along `g`.
-
-- `IsPullback.pullback_fst_monoidal` shows that given two pullback squares with morphisms `fᵢ` and
-  `gᵢ` (indexed in the order top-left-right-bottom),
-  the pullback of `f₁` and `g₁` is the pullback of `f₄ ⊗ₘ g₄` along `lift f₃ g₃`.
-- `IsPullback.pullback_snd_monoidal` shows the same, but with the `fᵢ`, `gᵢ`, and resulting pullback
-  squares flipped.
-
+- `IsPullback.comp_lift_of_isPullback` shows that given two pullback squares that share a top-right
+  corner with morphisms `fᵢ` and `gᵢ` (indexed in the order top-left-right-bottom), the pullback
+  of `f₁` and `g₁` is the pullback of `f₄ ⊗ₘ g₄` along `lift f₃ g₃`.
 - `IsPullback.equalizer_monoidal` shows that for `f g : X ⟶ Z`, `equalizer f g` is also the pullback
   of `lift (𝟙 Z) (𝟙 Z)` along `lift f g : X ⟶ Z ⊗ Z`.
 - `HasEqualizer.of_isPullback_monoidal` shows that given a pullback `W` of `lift (𝟙 Z) (𝟙 Z)`
@@ -98,15 +98,15 @@ lemma IsPullback.whiskerLeft_horiz {X Y : C} (f : X ⟶ Y) (Z : C) :
 In a cartesian monoidal category, given two pullback squares:
 ```
 X₁ -f₁→ X₂
-
-↓f₂     ↓f₃
-
+|       |
+f₂      f₃
+↓       ↓
 X₃ -f₄→ X₄
 
 Y₁ -g₁→ Y₂
-
-↓g₂     ↓g₃
-
+|       |
+g₂      g₃
+↓       ↓
 Y₃ -g₄→ Y₄
 ```
 we get a new pullback square
@@ -140,9 +140,9 @@ lemma IsPullback.tensor
 In a cartesian monoidal category, if we have a pullback square,
 ```
 X₁ -f₁→ X₂
-
-↓f₂     ↓f₃
-
+|       |
+f₂      f₃
+↓       ↓
 X₃ -f₄→ X₄
 ```
 then the following is a pullback square:
@@ -156,7 +156,7 @@ X₂ ⊗ X₃ → X₄ ⊗ X₄
     (f₃ ⊗ f₄)
 ```
 -/
-lemma IsPullback.pullback_monoidal {X₁ X₂ X₃ X₄ : C}
+lemma IsPullback.comp_lift_diag_tensorHom {X₁ X₂ X₃ X₄ : C}
     {f₁ : X₁ ⟶ X₂} {f₂ : X₁ ⟶ X₃}
     {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄} (hf : IsPullback f₁ f₂ f₃ f₄) :
     IsPullback (f₁ ≫ f₃)
@@ -193,7 +193,7 @@ then the following is too:
    Y   -g→   Z
 ```
 -/
-lemma IsPullback.of_pullback_monoidal {W X Y Z : C}
+lemma IsPullback.of_isPullback_diag_tensorHom {W X Y Z : C}
     {d : W ⟶ Z} {ι : W ⟶ X ⊗ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (hpb : IsPullback d
       ι (CartesianMonoidalCategory.lift (𝟙 Z) (𝟙 _))
@@ -213,7 +213,12 @@ lemma IsPullback.of_pullback_monoidal {W X Y Z : C}
       use hpb.lift (a ≫ f) (CartesianMonoidalCategory.lift a b) (by cat_disch)
       simp)
 
-lemma IsPullback.pullback_fst_monoidal {A₁ A₂ A₃ B₁ B₂ B₃ Z₁ Z₂ : C}
+/--
+Given two pullback squares that share a top-right corner with morphisms `fᵢ` and `gᵢ` (indexed in
+the order top-left-right-bottom), the pullback of `f₁` and `g₁` is the pullback of `f₄ ⊗ₘ g₄` along
+`lift f₃ g₃`.
+-/
+lemma IsPullback.comp_lift_of_isPullback_of_cartesianMonoidal {A₁ A₂ A₃ B₁ B₂ B₃ Z₁ Z₂ : C}
     {f₁ : A₁ ⟶ Z₁} {f₂ : A₁ ⟶ A₂} {f₃ : Z₁ ⟶ A₃} {f₄ : A₂ ⟶ A₃} (hf : IsPullback f₁ f₂ f₃ f₄)
     {g₁ : B₁ ⟶ Z₁} {g₂ : B₁ ⟶ B₂} {g₃ : Z₁ ⟶ B₃} {g₄ : B₂ ⟶ B₃} (hg : IsPullback g₁ g₂ g₃ g₄)
     {f' : Z₂ ⟶ A₁} {g' : Z₂ ⟶ B₁} (hf' : IsPullback f' g' f₁ g₁) :
@@ -221,20 +226,11 @@ lemma IsPullback.pullback_fst_monoidal {A₁ A₂ A₃ B₁ B₂ B₃ Z₁ Z₂ 
       (CartesianMonoidalCategory.lift (f' ≫ f₂) (g' ≫ g₂))
       (CartesianMonoidalCategory.lift f₃ g₃)
       (f₄ ⊗ₘ g₄) := by
-  simpa using hf'.pullback_monoidal.paste_vert (hf.tensor hg)
-
-lemma IsPullback.pullback_snd_monoidal {A₁ A₂ A₃ B₁ B₂ B₃ Z₁ Z₂ : C}
-    {f₁ : A₁ ⟶ A₂} {f₂ : A₁ ⟶ Z₁} {f₃ : A₂ ⟶ A₃} {f₄ : Z₁ ⟶ A₃} (hf : IsPullback f₁ f₂ f₃ f₄)
-    {g₁ : B₁ ⟶ B₂} {g₂ : B₁ ⟶ Z₁} {g₃ : B₂ ⟶ B₃} {g₄ : Z₁ ⟶ B₃} (hg : IsPullback g₁ g₂ g₃ g₄)
-    {f' : Z₂ ⟶ A₁} {g' : Z₂ ⟶ B₁} (hf' : IsPullback f' g' f₂ g₂) :
-    IsPullback (CartesianMonoidalCategory.lift (f' ≫ f₁) (g' ≫ g₁))
-      (f' ≫ f₂) (f₃ ⊗ₘ g₃)
-      (CartesianMonoidalCategory.lift f₄ g₄) := by
-  exact (hf.flip.pullback_fst_monoidal hg.flip hf').flip
+  simpa using hf'.comp_lift_diag_tensorHom.paste_vert (hf.tensor hg)
 
 section equalizer
 
-lemma IsPullback.equalizer_monoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g] :
+lemma IsPullback.equalizer_ι_comp_lift_diag_of_cartesianMonoidal {X Y : C} (f g : X ⟶ Y) [HasEqualizer f g] :
     IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f)
       (CartesianMonoidalCategory.lift f g) (CartesianMonoidalCategory.lift (𝟙 Y) (𝟙 Y)) :=
   IsPullback.mk' (by apply CartesianMonoidalCategory.hom_ext <;> simp [equalizer.condition f g])
@@ -256,7 +252,7 @@ Y -Δ→ Y ⊗ Y
 ```
 Then there is an equalizer of f and g.
 -/
-lemma HasEqualizer.of_isPullback_monoidal {X Y : C} (f g : X ⟶ Y)
+lemma HasEqualizer.of_isPullback_lift_diag_of_cartesianMonoidal {X Y : C} (f g : X ⟶ Y)
     {W : C} (ι : W ⟶ X) (d : W ⟶ Y) (hpb : IsPullback ι d (lift f g) (lift (𝟙 _) (𝟙 _))) :
     HasEqualizer f g :=
   ⟨⟨⟨Limits.Fork.ofι ι
