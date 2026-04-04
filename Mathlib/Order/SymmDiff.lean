@@ -82,7 +82,7 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
-theorem symmDiff_eq_Xor (p q : Prop) : p ∆ q = Xor p q :=
+theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
 
 @[simp]
