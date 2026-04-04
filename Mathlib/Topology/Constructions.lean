@@ -919,6 +919,7 @@ theorem ContinuousAt.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.su
     ContinuousAt (fun a => Fin.cons (f a) (g a)) x :=
   hf.tendsto.finCons hg
 
+@[fun_prop]
 theorem Continuous.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.succ j)}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun a => Fin.cons (f a) (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.finCons hg.continuousAt
