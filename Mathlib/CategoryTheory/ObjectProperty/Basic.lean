@@ -157,10 +157,10 @@ lemma prop_inverseImage_iff (P : ObjectProperty D) (F : C ⥤ D) (X : C) :
 
 /-- The essential image of a property of objects by a functor. -/
 def map (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D :=
-  fun Y ↦ ∃ (X : C), P X ∧ _root_.Nonempty (F.obj X ≅ Y)
+  fun Y ↦ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y)
 
 lemma prop_map_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
-    P.map F Y ↔ ∃ (X : C), P X ∧ _root_.Nonempty (F.obj X ≅ Y) := Iff.rfl
+    P.map F Y ↔ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y) := Iff.rfl
 
 lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=

@@ -73,7 +73,7 @@ lemma limitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
   le_antisymm (limitsClosure_le (le_refl P)) (P.le_limitsClosure J)
 
 @[simp]
-lemma limitsClosure_bot [∀ (a : α), _root_.Nonempty (J a)] :
+lemma limitsClosure_bot [∀ (a : α), Nonempty (J a)] :
     limitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
   limitsClosure_eq_self _ _
 

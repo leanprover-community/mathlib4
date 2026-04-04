@@ -242,13 +242,13 @@ lemma preservesEpimorphisms : L.PreservesEpimorphisms where
 set_option backward.isDefEq.respectTransparency false in
 lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
-      _root_.Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
+      Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
   have := preservesMonomorphisms L P
   have := Localization.essSurj_mapArrow L P.isoModSerre
   refine ⟨fun _ ↦ ?_, ?_⟩
   · suffices ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : Mono (L.map f)),
       ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
-          _root_.Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
+          Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
         let e := L.mapArrow.objObjPreimageIso (Arrow.mk f)
         obtain ⟨X', Y', f', _, ⟨e'⟩⟩ := this _
           (((MorphismProperty.monomorphisms D).arrow_iso_iff e).2 (.infer_property f))
@@ -266,13 +266,13 @@ lemma mono_iff {X Y : D} (f : X ⟶ Y) :
 set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
-      _root_.Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
+      Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
   have := preservesEpimorphisms L P
   have := Localization.essSurj_mapArrow L P.isoModSerre
   refine ⟨fun _ ↦ ?_, ?_⟩
   · suffices ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : Epi (L.map f)),
       ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
-          _root_.Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
+          Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
         let e := L.mapArrow.objObjPreimageIso (Arrow.mk f)
         obtain ⟨X', Y', f', _, ⟨e'⟩⟩ := this _
           (((MorphismProperty.epimorphisms D).arrow_iso_iff e).2 (.infer_property f))

@@ -46,10 +46,10 @@ lemma prop_iff_of_isIso [IsClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [I
   prop_iff_of_iso P (asIso f)
 
 /-- The closure by isomorphisms of a predicate on objects in a category. -/
-def isoClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), _root_.Nonempty (X ≅ Y)
+def isoClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
 lemma prop_isoClosure_iff (X : C) :
-    isoClosure P X ↔ ∃ (Y : C) (_ : P Y), _root_.Nonempty (X ≅ Y) := by rfl
+    isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
 
 variable {P} in
 lemma prop_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
