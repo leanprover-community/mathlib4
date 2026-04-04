@@ -253,7 +253,7 @@ end BoundedConvergence
 
 section Pi
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
+variable (𝕜 : Type*) [NormedField 𝕜] (E : Type*) {ι : Type*} (F : ι → Type*)
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]

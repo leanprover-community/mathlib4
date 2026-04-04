@@ -171,7 +171,7 @@ variable {ι : Type*} (F : ι → Type*)
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
-variable (𝕜) in
+variable (𝕜 E) in
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
 `Π i, E →Lₚₜ[𝕜] F i` and `E →Lₚₜ[𝕜] Π i, F i`. -/
 def piEquivL :
@@ -182,11 +182,11 @@ def piEquivL :
 
 @[simp]
 lemma piEquivL_apply (T : Π i, E →Lₚₜ[𝕜] F i) (e : E) (i : ι) :
-    piEquivL 𝕜 F T e i = T i e := rfl
+    piEquivL 𝕜 E F T e i = T i e := rfl
 
 @[simp]
 lemma piEquivL_symm_apply (T : E →Lₚₜ[𝕜] Π i, F i) (e : E) (i : ι) :
-    (piEquivL 𝕜 F).symm T i e = T e i := rfl
+    (piEquivL 𝕜 E F).symm T i e = T e i := rfl
 
 end Pi
 

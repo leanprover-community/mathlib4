@@ -142,7 +142,7 @@ variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜₁ (F i)]
 
-variable (𝕜₁) in
+variable (𝕜₁ E) in
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
 `Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`. -/
 def CompactConvergenceCLM.piEquivL :
@@ -154,13 +154,13 @@ def CompactConvergenceCLM.piEquivL :
 @[simp]
 lemma CompactConvergenceCLM.piEquivL_apply
     (T : Π i, E →L_c[𝕜₁] F i) (e : E) (i : ι) :
-    piEquivL 𝕜₁ F T e i = T i e :=
+    piEquivL 𝕜₁ E F T e i = T i e :=
   rfl
 
 @[simp]
 lemma CompactConvergenceCLM.piEquivL_symm_apply
     (T : E →L_c[𝕜₁] Π i, F i) (e : E) (i : ι) :
-    (piEquivL 𝕜₁ F).symm T i e = T e i :=
+    (piEquivL 𝕜₁ E F).symm T i e = T e i :=
   rfl
 
 end Pi
