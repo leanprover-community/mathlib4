@@ -382,8 +382,8 @@ lemma det_piecewise_one_eq_submatrix_det
     (M.submatrix (↑) (↑) : Matrix s s R).det := by
   let e := Equiv.sumCompl (fun x => x ∈ s)
   let A : Matrix n n R := Matrix.of (s.piecewise M (1 : Matrix n n R))
-  have hdet : det (s.piecewise M (1 : Matrix n n R)) = A.det := rfl
-  rw [hdet, ← Matrix.det_submatrix_equiv_self e A]
+  change A.det = _
+  rw [← Matrix.det_submatrix_equiv_self e A]
   have h_blocks : A.submatrix e e =
       Matrix.fromBlocks
         (M.submatrix Subtype.val Subtype.val)
@@ -407,9 +407,8 @@ and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). 
 theorem coeff_det_one_add_X_smul_eq_sum_minors
     (M : Matrix n n R) (k : ℕ) :
     (det (1 + (X : R[X]) • M.map C)).coeff k =
-    ∑ s ∈ Finset.univ.filter
-        (fun s : Finset n => s.card = k),
-      (M.submatrix (↑) (↑) : Matrix s s R).det := by
+    ∑ s ∈ Finset.powersetCard k Finset.univ,
+      (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
   simp only [det]
   let D := (detRowAlternating : (n → R[X]) [⋀^n]→ₗ[R[X]] R[X]).toMultilinearMap
   rw [add_comm]
@@ -451,12 +450,14 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
         simp only [Polynomial.finset_sum_coeff]
       _ = _ := by
-        simp_rw [h_det, smul_eq_mul,
-          mul_comm (X ^ _) (C _),
-          C_mul_X_pow_eq_monomial, coeff_monomial,
-          Finset.sum_filter,
-          det_piecewise_one_eq_submatrix_det]
-        rfl
+        simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
+        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
+        rw [← Finset.sum_filter]
+        have h_set : Finset.univ.filter (fun s : Finset n => s.card = k) =
+            Finset.powersetCard k Finset.univ := by
+          ext s; simp [Finset.mem_powersetCard]
+        rw [h_set]
+        exact Finset.sum_congr rfl fun s _ => det_piecewise_one_eq_submatrix_det M s
 
 /-- The coefficients of the characteristic polynomial are signed sums of principal minors.
 Specifically, the (n-k)-th coefficient of the characteristic polynomial of M equals
