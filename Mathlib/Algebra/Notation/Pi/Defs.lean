@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Logic.Function.Init
 
 /-!
 # Notation for algebraic operators on pi types
