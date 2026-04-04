@@ -319,14 +319,6 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atTop ↔ Tendsto v l atTop :=
   ⟨huv.tendsto_atTop, huv.symm.tendsto_atTop⟩
 
-theorem IsEquivalent.eventually_pos [ClosedIicTopology β] (h : u ~[l] v)
-    (hv : ∀ᶠ t in l, 0 < v t) : ∀ᶠ x in l, 0 < u x := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
-  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp only [h_eq, Pi.mul_apply]
-  nlinarith
-
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
     Tendsto v l atBot := by
   convert tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
@@ -336,6 +328,44 @@ theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Ten
 theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atBot ↔ Tendsto v l atBot :=
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
+
+section pos
+
+variable [ClosedIicTopology β]
+
+theorem IsEquivalent.eventually_nonneg (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 ≤ v t) :
+    ∀ᶠ x in l, 0 ≤ u x := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
+  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
+  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
+  simp only [h_eq, Pi.mul_apply]
+  nlinarith
+
+theorem IsEquivalent.eventually_pos (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 < v t) :
+    ∀ᶠ x in l, 0 < u x := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
+  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
+  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
+  simp only [h_eq, Pi.mul_apply]
+  nlinarith
+
+theorem IsEquivalent.eventually_nonpos (h : u ~[l] v) (hv : ∀ᶠ t in l, v t ≤ 0) :
+    ∀ᶠ x in l, u x ≤ 0 := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
+  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
+  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
+  simp only [h_eq, Pi.mul_apply]
+  nlinarith
+
+theorem IsEquivalent.eventually_neg (h : u ~[l] v) (hv : ∀ᶠ t in l, v t < 0) :
+    ∀ᶠ x in l, u x < 0 := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
+  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
+  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
+  simp only [h_eq, Pi.mul_apply]
+  nlinarith
+
+end pos
 
 end NormedLinearOrderedField
 
