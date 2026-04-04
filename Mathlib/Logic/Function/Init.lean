@@ -26,8 +26,8 @@ upstreamed to Batteries or the Lean standard library easily.
 namespace Pi
 
 /-- The mapping into a product type built from maps into each component. -/
-protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) : ∀ i, α i × β i :=
-    fun i ↦ (f i, g i)
+protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) : α i × β i :=
+    Prod.mk (f i) (g i)
 
 @[inherit_doc] infixr:65 " ⇊' " => Pi.prod
 
@@ -78,7 +78,7 @@ namespace Function
 variable {α β γ δ : Type*} {ι : Sort*}
 
 /-- This is the pairing operation on functions, dual to `Sum.elim`. -/
-protected def prod (f : ι → α) (g : ι → β) : ι → α × β := f ⇊' g
+protected def prod : (ι → α) → (ι → β) → ι → α × β := (· ⇊' ·)
 
 @[inherit_doc] infixr:65 " ⇊ " => Function.prod
 
@@ -175,5 +175,6 @@ theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ 
     Function.diag ∘ Function.diag := rfl
 
 end
+
 
 end Function
