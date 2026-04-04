@@ -61,7 +61,7 @@ theorem exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
   rcases W.2.1.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
     (U x ×ˢ V x).2.isOpen.mem_nhds ⟨hxU x hx, hxV x hx⟩) with ⟨I, hIW, hWI⟩
   classical
-  use I.image fun x ↦ (U x, V x)
+  use I.image U ⇊ V
   rw [Finset.sup_image]
   refine le_antisymm (fun x hx ↦ ?_) (Finset.sup_le fun x hx ↦ ?_)
   · rcases Set.mem_iUnion₂.1 (hWI hx) with ⟨i, hi, hxi⟩

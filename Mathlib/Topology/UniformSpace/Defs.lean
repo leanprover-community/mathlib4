@@ -493,19 +493,19 @@ theorem comp_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) : ∃ t
 
 /-- Relation `fun f g ↦ Tendsto (f ⇊ g) l (𝓤 α)` is transitive. -/
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
-    (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
-    (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
+    (h₁₂ : Tendsto (f₁ ⇊ f₂) l (𝓤 α))
+    (h₂₃ : Tendsto (f₂ ⇊ f₃) l (𝓤 α)) : Tendsto (f₁ ⇊ f₃) l (𝓤 α) := by
   refine le_trans (le_lift'.2 fun s hs => mem_map.2 ?_) comp_le_uniformity
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 
 /-- Relation `fun f g ↦ Tendsto (f ⇊ g) l (𝓤 α)` is symmetric. -/
 theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : Tendsto f l (𝓤 α)) :
-    Tendsto (fun x => ((f x).2, (f x).1)) l (𝓤 α) :=
+    Tendsto (Prod.swap ∘ Function.diag ∘ f) l (𝓤 α) :=
   tendsto_swap_uniformity.comp h
 
 /-- Relation `fun f g ↦ Tendsto (f ⇊ g) l (𝓤 α)` is reflexive. -/
 theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
-    Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
+    Tendsto (Function.diag ∘ f) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs
 
 theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a, a)) f (𝓤 α) :=
@@ -805,7 +805,7 @@ variable [UniformSpace β]
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
 `f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
 def UniformContinuous (f : α → β) :=
-  Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
+  Tendsto (Prod.map.uncurry ⇗f) (𝓤 α) (𝓤 β)
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
 scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
@@ -815,7 +815,7 @@ the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
 `f y` no matter where `x` and `y` are located in `s`. -/
 def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
-  Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
+  Tendsto (Prod.map.uncurry ⇗f) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 
 theorem uniformContinuous_def {f : α → β} :
     UniformContinuous f ↔ ∀ r ∈ 𝓤 β, { x : α × α | (f x.1, f x.2) ∈ r } ∈ 𝓤 α :=

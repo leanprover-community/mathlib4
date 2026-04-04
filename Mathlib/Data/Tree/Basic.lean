@@ -120,7 +120,7 @@ def right : Tree α → Tree α
   | node _ _l r => r
 
 /-- A node with `Unit` data -/
-scoped infixr:65 " ⇊ " => Tree.node ()
+scoped infixr:65 " △ " => Tree.node ()
 
 /-- Induction principle for `Tree Unit`s -/
 @[elab_as_elim]

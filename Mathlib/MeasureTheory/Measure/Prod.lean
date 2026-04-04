@@ -1115,19 +1115,19 @@ lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
 theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
+    (hY : AEMeasurable Y μ) : (μ.map (X ⇊ Y)).fst = μ.map X := by
   by_cases hX : AEMeasurable X μ
   · ext1 s hs
     rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prodMk hY) (measurable_fst hs),
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
-  · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
+  · have : ¬AEMeasurable (X ⇊ Y) μ := by
       contrapose! hX
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
 theorem fst_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
+    (hY : Measurable Y) : (μ.map (X ⇊ Y)).fst = μ.map X :=
   fst_map_prodMk₀ hY.aemeasurable
 
 @[simp]
@@ -1177,19 +1177,19 @@ lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
 theorem snd_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ) :
-    (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
+    (μ.map (X ⇊ Y)).snd = μ.map Y := by
   by_cases hY : AEMeasurable Y μ
   · ext1 s hs
     rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prodMk hY) (measurable_snd hs),
       Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
       univ_inter]
-  · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
+  · have : ¬AEMeasurable (X ⇊ Y) μ := by
       contrapose! hY
       exact measurable_snd.comp_aemeasurable hY
     simp [map_of_not_aemeasurable, hY, this]
 
 theorem snd_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
-    (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
+    (μ.map (X ⇊ Y)).snd = μ.map Y :=
   snd_map_prodMk₀ hX.aemeasurable
 
 @[simp]

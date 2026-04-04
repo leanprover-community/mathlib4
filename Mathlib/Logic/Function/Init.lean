@@ -78,7 +78,7 @@ namespace Function
 variable {α β δ ε : Type*} {γ : Sort*}
 
 /-- This is the pairing operation on functions, dual to `Sum.elim`. -/
-protected def prod (f : γ → α) (g : γ → β) : γ → α × β := (f ⇊' g)
+protected def prod (f : γ → α) (g : γ → β) : γ → α × β := f ⇊' g
 
 @[inherit_doc] infixr:65 " ⇊ " => Function.prod
 
@@ -160,11 +160,9 @@ variable {a b : α}
 @[simp, grind =] theorem fst_diag : (⇗a).1 = a := rfl
 @[simp, grind =] theorem snd_diag : (⇗a).2 = a := rfl
 
-@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (⇗a) =
-    (f ⇊ g) a := rfl
+@[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g ⇗a = (f ⇊ g) a := rfl
 
-@[simp] theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = (f ⇊ g) :=
-  rfl
+@[simp] theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = f ⇊ g := rfl
 
 theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
