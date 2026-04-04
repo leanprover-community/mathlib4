@@ -236,11 +236,15 @@ def toRealHom : ℝ≥0 →+* ℝ where
 
 section Actions
 
+/-- A scalar multiplication over `ℝ` restricts to a scalar multiplication over `ℝ≥0`. -/
+instance {M : Type*} [SMul ℝ M] : SMul ℝ≥0 M :=
+  ⟨fun c m ↦ (c : ℝ) • m⟩
+
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
 instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M toRealHom.toMonoidHom
+  fast_instance% MulAction.compHom M toRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
+theorem smul_def {M : Type*} [SMul ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 
 instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
@@ -254,11 +258,11 @@ instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCom
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
-  DistribMulAction.compHom M toRealHom.toMonoidHom
+  fast_instance% DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
-  Module.compHom M toRealHom
+  fast_instance% Module.compHom M toRealHom
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
@@ -339,7 +343,7 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
   NNReal.eq <| max_eq_left r.2
 
 @[simp]
-theorem mk_natCast (n : ℕ) : (NNReal.mk (n : ℝ) (n.cast_nonneg)) = n :=
+theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) (n.cast_nonneg) = n :=
   NNReal.eq (NNReal.coe_natCast n).symm
 
 @[simp]
@@ -377,7 +381,6 @@ example : Semiring ℝ≥0 := by infer_instance
 example : CommMonoid ℝ≥0 := by infer_instance
 
 example : IsOrderedMonoid ℝ≥0 := instLinearOrderedCommGroupWithZero.toIsOrderedMonoid
-
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
