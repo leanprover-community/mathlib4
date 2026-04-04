@@ -31,6 +31,14 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+@[simp] protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+    α i × β i := (f i, g i)
+
+lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
+  rfl
+lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
+  rfl
+
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/

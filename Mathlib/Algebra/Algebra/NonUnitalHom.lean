@@ -371,13 +371,13 @@ variable [DistribMulAction R C]
 /-- The prod of two morphisms is a morphism. -/
 @[simps]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
-  toFun := Pi.prod f g
-  map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
-  map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
-  map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, Prod.smul_mk]
+  toFun := Function.prod f g
+  map_zero' := by simp only [Function.prod_apply, Prod.mk_zero_zero, map_zero]
+  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_mul' x y := by simp only [Function.prod_apply, Prod.mk_mul_mk, map_mul]
+  map_smul' c x := by simp only [Function.prod_apply, map_smul, MonoidHom.id_apply, Prod.smul_mk]
 
-theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -390,7 +390,7 @@ theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  coe_injective Pi.prod_fst_snd
+  coe_injective Function.fst_prod_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
