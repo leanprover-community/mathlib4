@@ -1334,7 +1334,7 @@ theorem orthonormalBasisSingleton_apply (i : ι) :
 @[simp]
 theorem toBasis_orthonormalBasisSingleton :
     (orthonormalBasisSingleton ι 𝕜 h v hv).toBasis =
-      basisSingleton ι h v (fun h ↦ by simp [h] at hv) := by
+      basisSingleton ι h v (by aesop) := by
   simp [orthonormalBasisSingleton]
 
 @[simp]
