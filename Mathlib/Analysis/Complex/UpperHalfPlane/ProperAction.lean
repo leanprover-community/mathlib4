@@ -34,12 +34,8 @@ theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
 lemma continuous_toSL2R : Continuous toSL2R := by
   refine continuous_induced_rng.mpr (continuous_matrix fun i j ↦ ?_)
-  fin_cases i <;> fin_cases j
-  all_goals
-    simp only [Fin.zero_eta, Fin.isValue, Function.comp_apply, coe_toSL2R, one_div,
-      Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, Fin.mk_one,
-      Matrix.cons_val_one]
-    fun_prop (disch := grind [im_pos])
+  simp only [Function.comp_def, coe_toSL2R, one_div]
+  fun_prop (disch := grind [im_pos])
 
 /-- The action of `SL(2, ℝ)` on `ℍ` is jointly continuous. -/
 instance instContinuousSMulSL2R : ContinuousSMul SL(2, ℝ) ℍ where
