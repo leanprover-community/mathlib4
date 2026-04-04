@@ -49,7 +49,7 @@ theorem continuous_constrL [Finite ι] (b : Basis ι 𝕜 E)
 
 variable (R) in
 /-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, between `ι → V`
-and `E →L[𝕜] V` with the topology of `𝔖`-convergence. -/
+and `E →Lᵤ[𝕜, 𝔖] V`. -/
 @[simps]
 protected noncomputable def constrCLE [Finite ι] (b : Basis ι 𝕜 E)
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
