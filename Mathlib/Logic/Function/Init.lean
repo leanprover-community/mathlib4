@@ -136,8 +136,6 @@ end
 /-- `Function.prodMap` is `Prod.map` in the `Function` namespace. -/
 def prodMap (f : α → β) (g : δ → ε) := (f ∘ Prod.fst) △ (g ∘ Prod.snd)
 
-section
-
 @[simp, grind =]
 theorem prodMap_eq_prod_map {f : α → β} {g : δ → ε} : f.prodMap g = Prod.map f g := rfl
 
@@ -147,8 +145,6 @@ theorem map_prod {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ}
 
 theorem map_comp_prod {f : α → β} {g : γ → α} {h : δ → ε} {k : γ → δ} :
     Prod.map f h ∘ (g △ k) = (f ∘ g) △ (h ∘ k) := rfl
-
-end
 
 /-- The diagonal map into `Prod`. -/
 protected def diag : α → α × α := id △ id
