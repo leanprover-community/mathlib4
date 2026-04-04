@@ -91,7 +91,7 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
 variable (v) in
 theorem neighborSet_map (f : V ↪ W) : (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
   ext u
-  refine ⟨fun ⟨v', u', hadj, hv, hu⟩ ↦ ⟨u', f.injective hv ▸ hadj, hu⟩, fun ⟨u', hadj, hu⟩ ↦ ?_⟩
+  refine ⟨fun ⟨_, v', u', hadj, hv, hu⟩ ↦ ⟨u', f.injective hv ▸ hadj, hu⟩, fun ⟨u', hadj, hu⟩ ↦ ?_⟩
   simpa [hu]
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
