@@ -88,12 +88,6 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
-variable {G} in
-theorem apply_mem_neighborSet_map_apply {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
-    f v ∈ (G.map f).neighborSet (f u) := by
-  use hne
-  grind [Relation.Map]
-
 variable (v) in
 theorem neighborSet_map {f : V → W} (hf : f.Injective) :
     (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
@@ -103,6 +97,11 @@ theorem neighborSet_map {f : V → W} (hf : f.Injective) :
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
+
+variable {G} in
+theorem map_adj_apply' {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
+    (G.map f).Adj (f u) (f v) :=
+  ⟨hne, u, v, hadj, rfl, rfl⟩
 
 theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
