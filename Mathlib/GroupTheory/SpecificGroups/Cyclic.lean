@@ -127,7 +127,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
     _ ≤ ∑ m ∈ c.divisors.erase d, φ m := by
-      refine sum_le_sum fun m hm => ?_
+      gcongr with m hm
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
         tauto

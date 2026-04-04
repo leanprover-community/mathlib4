@@ -307,8 +307,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp +instances only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
-    refine Finset.sum_le_sum ?_
-    intro m _
+    gcongr with m _
     specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
     grw [IH]
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
