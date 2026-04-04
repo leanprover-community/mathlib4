@@ -795,7 +795,7 @@ protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M�
         f.comp (LinearMap.fst R M M₃)) with
     invFun := fun p : M₂ × M₄ => (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
     left_inv := fun p => by simp
-    right_inv := fun p => by simp }
+    right_inv := fun p => by simp [Prod.ext_iff] }
 
 @[simp]
 theorem skewProd_apply (f : M →ₗ[R] M₄) (x) : e₁.skewProd e₂ f x = (e₁ x.1, e₂ x.2 + f x.1) :=
