@@ -29,7 +29,7 @@ namespace Pi
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) : α i × β i :=
     Prod.mk (f i) (g i)
 
-@[inherit_doc] infixr:65 " ▽' " => Pi.prod
+@[inherit_doc] infixr:95 " ▽' " => Pi.prod
 
 section
 
@@ -89,7 +89,7 @@ variable {α β γ δ : Type*} {ι : Sort*}
 /-- The map into a product type built from maps into each component. -/
 protected def prod : (ι → α) → (ι → β) → ι → α × β := (· ▽' ·)
 
-@[inherit_doc] infixr:65 " ▽ " => Function.prod
+@[inherit_doc] infixr:95 " ▽ " => Function.prod
 
 section
 
@@ -109,6 +109,15 @@ theorem snd_prod {c} : ((f ▽ g) c).snd = g c := by simp
 
 @[simp] theorem fst_comp_prod {f : ι → α} {g : ι → β} : Prod.fst ∘ (f ▽ g) = f := rfl
 @[simp] theorem snd_comp_prod {f : ι → α} {g : ι → β} : Prod.snd ∘ (f ▽ g) = g := rfl
+
+theorem prod_comp_prod {f : ι → α} {g : ι → β} {h : α × β → γ} {k : α × β → δ} :
+    (h ▽ k) ∘ (f ▽ g) = (h ∘ (f ▽ g)) ▽ (k ∘ (f ▽ g)) := rfl
+
+theorem comp_prod_comp {f : ι → α} {g : ι → β} {h : α → γ} {k : β → δ} :
+    (h ∘ f) ▽ (k ∘ g) = (h ∘ Prod.fst) ▽ (k ∘ Prod.snd) ∘ f ▽ g := rfl
+
+theorem map_comp_prod {f : ι → α} {g : ι → β} {h : α → γ} {k : β → δ} :
+    Prod.map h k ∘ f ▽ g = (h ∘ f) ▽ (k ∘ g) := rfl
 
 theorem prod_eq_iff {f f' : ι → α} {g g' : ι → β} : f ▽ g = f' ▽ g' ↔
     f = f' ∧ g = g' := by simp [funext_iff, Prod.ext_iff, forall_and]
@@ -174,7 +183,7 @@ theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⟋a = p) ↔ p.1 = p.2 :
 
 theorem diag_eq_iff : ⟋a = ⟋b ↔ a = b := injective_diag.eq_iff
 
-@[simp] theorem prod_diag_diag : Function.diag ▽ Function.diag (α := α) =
+@[simp] theorem diag_prod_diag : Function.diag ▽ Function.diag (α := α) =
     Function.diag ∘ Function.diag := rfl
 
 end
@@ -186,13 +195,6 @@ section
 
 @[simp, grind =]
 theorem prodMap_eq_prod_map {f : α → β} {g : γ → δ} : f.prodMap g = Prod.map f g := rfl
-
-@[grind _=_]
-theorem map_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} {c} :
-    Prod.map f h ((g ▽ k) c) = ((f ∘ g) ▽ (h ∘ k)) c := rfl
-
-theorem map_comp_prod {f : α → β} {g : ι → α} {h : γ → δ} {k : ι → γ} :
-    Prod.map f h ∘ (g ▽ k) = (f ∘ g) ▽ (h ∘ k) := rfl
 
 end
 
