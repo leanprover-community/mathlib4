@@ -178,7 +178,6 @@ theorem HasFTaylorSeriesUpToOn.continuousOn (h : HasFTaylorSeriesUpToOn n f p s)
   have := (h.cont 0 bot_le).congr fun x hx => (h.zero_eq' hx).symm
   rwa [← (continuousMultilinearCurryFin0 𝕜 E F).symm.comp_continuousOn_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasFTaylorSeriesUpToOn_zero_iff :
     HasFTaylorSeriesUpToOn 0 f p s ↔ ContinuousOn f s ∧ ∀ x ∈ s, (p x 0).curry0 = f x := by
   refine ⟨fun H => ⟨H.continuousOn, H.zero_eq⟩, fun H =>
@@ -189,7 +188,6 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
   exact H.1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn (n + k : ℕ) f p s := by
   constructor
@@ -258,7 +256,6 @@ theorem HasFTaylorSeriesUpToOn.differentiableAt (h : HasFTaylorSeriesUpToOn n f 
     (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
   (h.hasFDerivAt hn hx).differentiableAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p` is a Taylor series up to `n`, and
 `p (n + 1)` is a derivative of `p n`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
@@ -285,7 +282,6 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         rw [this]
         exact h.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
     (HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
@@ -311,7 +307,6 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     rw [Nat.cast_le] at hm ⊢
     exact Nat.succ_le_succ hm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
 theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
@@ -543,9 +538,19 @@ theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (
     refine this.mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
 
+variable (𝕜) in
+/-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ s =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f s :=
   h.iteratedFDerivWithin' Subset.rfl n
+
+variable (𝕜) in
+/-- If two functions agree in a neighborhood within `s`, then so do their Taylor series. -/
+protected theorem Filter.EventuallyEq.ftaylorSeriesWithin (h : f₁ =ᶠ[𝓝[s] x] f) :
+    ftaylorSeriesWithin 𝕜 f₁ s =ᶠ[𝓝[s] x] ftaylorSeriesWithin 𝕜 f s := by
+  filter_upwards [eventually_eventually_nhdsWithin.2 h, self_mem_nhdsWithin] with x₁ h₁x₁ h₂x₁
+  ext n : 1
+  apply (Filter.EventuallyEq.iteratedFDerivWithin (𝕜 := 𝕜) h₁x₁ n).eq_of_nhdsWithin h₂x₁
 
 /-- If two functions coincide in a neighborhood of `x` within a set `s` and at `x`, then their
 iterated differentials within this set at `x` coincide. -/
@@ -624,7 +629,6 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
     iteratedFDerivWithin 𝕜 n f (s ∩ u) x = iteratedFDerivWithin 𝕜 n f s x :=
   iteratedFDerivWithin_inter (hu.mem_nhds hx)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
 theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
@@ -782,7 +786,6 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasFTaylorSeriesUpTo.tsupport_mono {k m : ℕ} (h : k ≤ m) (h2 : m ≤ n)
     (hf : HasFTaylorSeriesUpTo n f p) :
     tsupport (p · m) ⊆ tsupport (p · k) := by
@@ -893,6 +896,14 @@ theorem Filter.EventuallyEq.iteratedFDeriv
     iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
   simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
     Filter.EventuallyEq.iteratedFDerivWithin]
+
+variable (𝕜) in
+/-- If two functions agree in a neighborhood, then so do their Taylor series. -/
+protected theorem Filter.EventuallyEq.ftaylorSeries (h : f₁ =ᶠ[𝓝 x] f) :
+    ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f := by
+  filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
+  ext n : 1
+  exact (Filter.EventuallyEq.iteratedFDeriv 𝕜 he₁ n).eq_of_nhds
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :
