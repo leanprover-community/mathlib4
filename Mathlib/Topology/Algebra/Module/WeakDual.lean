@@ -64,31 +64,64 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
+namespace StrongDual
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakDual : StrongDual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
+  LinearEquiv.refl 𝕜 (StrongDual 𝕜 E)
+
+theorem coe_toWeakDual (x' : StrongDual 𝕜 E) : (toWeakDual x' : E → 𝕜) = x' := rfl
+
+@[simp]
+theorem toWeakDual_apply (x' : StrongDual 𝕜 E) (y : E) : (toWeakDual x') y = x' y := rfl
+
+theorem toWeakDual_inj (x' y' : StrongDual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toWeakDual).eq_iff
+
+end StrongDual
+
 namespace WeakDual
 
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
+equivalence `StrongDual.toWeakDual` in the other direction. -/
+def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
+  StrongDual.toWeakDual.symm
+
+@[simp]
+theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
+
+theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
+
+theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toStrongDual).eq_iff
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
 instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
-  ContinuousLinearMap.mulAction
+  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
 instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
-  ContinuousLinearMap.distribMulAction
+  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
 
 /-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
 multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
 instance instModule' (R) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
     Module R (WeakDual 𝕜 E) :=
-  ContinuousLinearMap.module
+  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
 
 instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
@@ -123,7 +156,7 @@ variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [C
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
-  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E)
+  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
@@ -148,7 +181,7 @@ variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 namespace WeakSpace
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
-  WeakBilin.instModule' (topDualPairing 𝕜 E).flip
+  inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
@@ -224,7 +257,7 @@ variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [C
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
-  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E).flip
+  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip

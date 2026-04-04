@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
@@ -26,8 +26,8 @@ properties to computational properties of the matrix.
   (2) `A` is symmetric,
   (3) every diagonal entry of `A` is `0`.
 
-* `Matrix.IsAdjMatrix.to_graph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
-  `h.to_graph` is the simple graph induced by `A`.
+* `Matrix.IsAdjMatrix.toGraph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
+  `h.toGraph` is the simple graph induced by `A`.
 
 * `Matrix.compl`: for `A : Matrix V V α`, `A.compl` is supposed to be
   the adjacency matrix of the complement graph of the graph induced by `A`.
@@ -171,6 +171,17 @@ theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
   rfl
 
 @[simp]
+theorem adjMatrix_bot [Zero α] [One α] :
+    (⊥ : SimpleGraph V).adjMatrix α = 0 := by
+  ext; simp
+
+@[simp]
+theorem adjMatrix_top [DecidableEq V] [Ring α] :
+    (⊤ : SimpleGraph V).adjMatrix α = .of (fun i j ↦ if i = j then 0 else 1) := by
+  ext i j
+  cases eq_or_ne i j <;> simp [‹_›]
+
+@[simp]
 theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
   ext
   simp [adj_comm]
@@ -198,7 +209,6 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
     (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
 
-set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
     [One α] {H : SimpleGraph V} [DecidableRel H.Adj] (h : IsCompl G H) :

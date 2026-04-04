@@ -76,11 +76,11 @@ variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 
 @[simp]
 theorem monotone_comp_ofDual_iff : Monotone (f ∘ ofDual) ↔ Antitone f :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem antitone_comp_ofDual_iff : Antitone (f ∘ ofDual) ↔ Monotone f :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
@@ -92,11 +92,11 @@ theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
 
 @[simp]
 theorem monotoneOn_comp_ofDual_iff : MonotoneOn (f ∘ ofDual) s ↔ AntitoneOn f s :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem antitoneOn_comp_ofDual_iff : AntitoneOn (f ∘ ofDual) s ↔ MonotoneOn f s :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f) s ↔ AntitoneOn f s :=
@@ -108,11 +108,11 @@ theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f) s ↔ MonotoneOn 
 
 @[simp]
 theorem strictMono_comp_ofDual_iff : StrictMono (f ∘ ofDual) ↔ StrictAnti f :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem strictAnti_comp_ofDual_iff : StrictAnti (f ∘ ofDual) ↔ StrictMono f :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem strictMono_toDual_comp_iff : StrictMono (toDual ∘ f : α → βᵒᵈ) ↔ StrictAnti f :=
@@ -124,11 +124,11 @@ theorem strictAnti_toDual_comp_iff : StrictAnti (toDual ∘ f : α → βᵒᵈ)
 
 @[simp]
 theorem strictMonoOn_comp_ofDual_iff : StrictMonoOn (f ∘ ofDual) s ↔ StrictAntiOn f s :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem strictAntiOn_comp_ofDual_iff : StrictAntiOn (f ∘ ofDual) s ↔ StrictMonoOn f s :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem strictMonoOn_toDual_comp_iff : StrictMonoOn (toDual ∘ f : α → βᵒᵈ) s ↔ StrictAntiOn f s :=
