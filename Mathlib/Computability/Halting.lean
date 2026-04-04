@@ -174,11 +174,9 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace Computable
 
-/--
-If `P` is computable, and if for every `x` there exists an `n` such that `P x n` holds,
+/-- If `P` is computable, and if for every `x` there exists an `n` such that `P x n` holds,
 then the function mapping `x` to the minimal such `n` (using `Nat.find`) is computable.
-This formally bridges `Partrec.rfind` with total unbounded search.
--/
+This formally bridges `Partrec.rfind` with total unbounded search. -/
 lemma find {α : Type*} [Primcodable α] {P : α → ℕ → Prop} [DecidableRel P]
     (hP_comp : ComputablePred (fun p : α × ℕ => P p.1 p.2)) (hP_ex : ∀ x, ∃ n, P x n) :
     Computable (fun x => Nat.find (hP_ex x)) := by
