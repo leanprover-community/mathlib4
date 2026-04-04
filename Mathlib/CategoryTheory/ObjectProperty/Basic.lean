@@ -60,16 +60,14 @@ lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
 
 /-- `Nonempty P` is a typeclass saying there exists an object `X : C` that satisfies `P`. -/
-class Nonempty (P : ObjectProperty C) : Prop where
+@[mk_iff]
+protected class Nonempty (P : ObjectProperty C) : Prop where
   exists_prop : ∃ X, P X
 
 lemma exists_prop_of_nonempty (P : ObjectProperty C) [P.Nonempty] : ∃ X, P X :=
   Nonempty.exists_prop
 
 lemma nonempty_of_prop {P : ObjectProperty C} {X : C} (h : P X) : P.Nonempty := ⟨X, h⟩
-
-lemma nonempty_iff_exists {P : ObjectProperty C} : P.Nonempty ↔ ∃ X, P X :=
-  ⟨fun _ ↦ exists_prop_of_nonempty P, Nonempty.mk⟩
 
 /-- Using `Classical.choice`, extracts an object from a `Nonempty` object property. -/
 noncomputable def arbitrary (P : ObjectProperty C) [P.Nonempty] : C :=
@@ -107,7 +105,7 @@ lemma ofObj_le_iff (P : ObjectProperty C) :
     ofObj X ≤ P ↔ ∀ i, P (X i) :=
   ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
 
-instance [_root_.Nonempty ι] : (ofObj X).Nonempty :=
+instance [Nonempty ι] : (ofObj X).Nonempty :=
   nonempty_of_prop (ofObj_apply X (Classical.arbitrary ι))
 
 end
