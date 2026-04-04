@@ -790,8 +790,8 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx
 
-lemma cfc_ringInverse_id (a : A) (ha_unit : IsUnit a) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ʳ := by
+lemma cfc_ringInverse_id (ha_unit : IsUnit a) (ha : p a := by cfc_tac) :
+    cfc (fun x ↦ x⁻¹ : R → R) a = a⁻¹ʳ := by
   rw [Ring.inverse_of_isUnit ha_unit]
   change cfc (fun x ↦ x⁻¹ : R → R) (ha_unit.unit : A) = ha_unit.unit⁻¹
   exact cfc_inv_id _ ha

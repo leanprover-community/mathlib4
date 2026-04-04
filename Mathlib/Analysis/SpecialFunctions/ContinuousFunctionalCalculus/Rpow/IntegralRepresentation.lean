@@ -430,11 +430,16 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
 
 end NonUnitalCFC
 
-section UnitalCStarAlgebra
+end CFC
+
+namespace CStarAlgebra
+open CFC Real
+
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-/-- `rpowIntegrand₀₁ p 1` is operator concave for all `p ∈ Ioo 0 1` -/
+/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` -/
 lemma concaveOn_cfc_rpowIntegrand₀₁ {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     ConcaveOn ℝ (Ici (0 : A)) (cfc (rpowIntegrand₀₁ p t)) := by
   have h₁ : (Ici (0 : A)).EqOn (cfc (rpowIntegrand₀₁ p t))
@@ -443,19 +448,15 @@ lemma concaveOn_cfc_rpowIntegrand₀₁ {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0
     rw [rpowIntegrand₀₁_eq_sub (by grind) ht]
     have hg : ContinuousOn (fun z : ℝ => (t + z)⁻¹) (spectrum ℝ x) := by
       fun_prop (disch := grind -abstractProof)
-    have := cfc_sub (fun _ : ℝ => t ^ (p - 1)) (fun z : ℝ => t ^ p * (t + z)⁻¹) x
     have hf : ContinuousOn (fun z : ℝ => (1 + z)) (spectrum ℝ x) := by fun_prop
-    rw [this, cfc_const ..]
-    dsimp
-    congr
-    rw [cfc_const_mul ..]
-    congr  -- define `cfc_ringInverse` properly
-    sorry
+    have hspectrum :  ∀ r ∈ spectrum ℝ x, t + r ≠ 0 := by grind
+    have := cfc_sub (fun _ : ℝ => t ^ (p - 1)) (fun z : ℝ => t ^ p * (t + z)⁻¹) x
+    rw [this, cfc_const .., cfc_const_mul .., cfc_inv _ _ hspectrum .., cfc_const_add ..,
+        cfc_id' ..]
   refine ConcaveOn.congr ?_ h₁.symm
   refine ConcaveOn.sub (concaveOn_const _ (convex_Ici 0)) ?_
   refine ConvexOn.smul (by positivity) ?_
   have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind
-  --add lemmas for ConvexOn, this is BS
   let addl : A →ᵃ[ℝ] A :=
   { toFun := fun x => algebraMap ℝ A t + x
     linear := LinearMap.id
@@ -471,13 +472,13 @@ lemma concaveOn_cfc_rpowIntegrand₀₁ {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0
     addl]
   exact fun x hx  => IsStrictlyPositive.of_le (by grind) hx
 
-end UnitalCStarAlgebra
+end Unital
 
-section NonUnitalCStarAlgebra
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-/-- `rpowIntegrand₀₁ p t` is monotone for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
+/-- `rpowIntegrand₀₁ p t` is operator monotone for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
 lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     MonotoneOn (cfcₙ (rpowIntegrand₀₁ p t)) (Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
@@ -495,13 +496,13 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
 
 open CStarAlgebra in
-/-- `rpowIntegrand₀₁ p t` is concave for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
+/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
 lemma concaveOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     ConcaveOn ℝ (Ici (0 : A)) (cfcₙ (rpowIntegrand₀₁ p t)) := by
   apply concaveOn_cfcₙ_of_concaveOn_cfc
-  refine ConcaveOn.subset (concaveOn_cfc_rpowIntegrand₀₁ hp ht) (Unitization.inr_map_Ici_zero) ?_
+  refine ConcaveOn.subset (concaveOn_cfc_rpowIntegrand₀₁ hp ht) inr_map_Ici_zero ?_
   exact Convex.linear_image (convex_Ici _) (Unitization.inrHom ℝ ℂ A)
 
-end NonUnitalCStarAlgebra
+end NonUnital
 
-end CFC
+end CStarAlgebra
