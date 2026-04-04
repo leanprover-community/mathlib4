@@ -223,7 +223,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   msgs := msgs.append #[m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
-  let deletionDate := (log'.lines.first?).get!
+  let deletionDate := log'.lines.first?.get!
   let deprecation ← mkDeprecationWithDate deletionDate.toString comment
   msgs := msgs.push ""
   -- Retrieve the final version of the file, before it was deleted.
