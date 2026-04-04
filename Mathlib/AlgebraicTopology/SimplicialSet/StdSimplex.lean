@@ -93,6 +93,20 @@ lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
 lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (objEquiv.{u}.symm f : Δ[n] _⦋m⦌) i = f.toOrderHom i := rfl
 
+@[simp]
+lemma δ_objEquiv_symm_apply
+    {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
+    dsimp% (stdSimplex.obj _).δ i (objEquiv.symm f) =
+      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := by
+  rfl
+
+@[simp]
+lemma σ_objEquiv_symm_apply
+    {n : ℕ} {m : SimplexCategory} (f : .mk n ⟶ m) (i : Fin (n + 1)) :
+    dsimp% (stdSimplex.obj _).σ i (objEquiv.symm f) =
+      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := by
+  rfl
+
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
@@ -118,8 +132,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
     (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
   rfl
 
+end stdSimplex
+
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
-def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
+def yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   uliftYonedaEquiv
 
@@ -145,8 +161,30 @@ lemma _root_.SSet.yonedaEquiv_symm_zero {X : SSet.{u}} (x : X _⦋0⦌) :
   simp [yonedaEquiv_const]
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
-    yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
+    yonedaEquiv.{u} (stdSimplex.map f) = stdSimplex.objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
+
+@[deprecated (since := "2026-03-21")] alias stdSimplex.yonedaEquiv_map := yonedaEquiv_map
+
+@[simp]
+lemma yonedaEquiv_symm_app {S : SSet} (n : SimplexCategory) (x : S.obj (op n))
+    (α : (stdSimplex.obj n).obj (op n)) :
+    (yonedaEquiv.symm x).app (op n) α = S.map (SSet.stdSimplex.objEquiv α).op x := rfl
+
+@[simp]
+lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
+    yonedaEquiv.symm (SSet.stdSimplex.objEquiv.symm (β := n ⟶ _) (𝟙 n)) = 𝟙 (stdSimplex.obj n) :=
+  yonedaEquiv.symm_apply_eq.mpr rfl
+
+open Finset Opposite SimplexCategory
+
+lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
+    (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
+    dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =
+      X.map f.op x :=
+  rfl
+
+namespace stdSimplex
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=

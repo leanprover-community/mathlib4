@@ -444,10 +444,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
   rw [chromaticNumber_eq_card_iff_forall_surjective (selfColoring _).colorable]
   intro C
   rw [← Finite.injective_iff_surjective]
-  intro v w
-  contrapose
-  intro h
-  exact C.valid h
+  exact Hom.injective_of_top_hom C
 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
@@ -561,8 +558,8 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   simpa using hc
 
 /--
-Given a colouring `α` of `G`, and a clique of size at least the number of colours, the clique
-contains a vertex of each colour.
+Given a coloring `α` of `G`, and a clique of size at least the number of colors, the clique
+contains a vertex of each color.
 -/
 lemma Coloring.surjOn_of_card_le_isClique [Fintype α] {s : Finset V} (h : G.IsClique s)
     (hc : Fintype.card α ≤ s.card) (C : G.Coloring α) : Set.SurjOn C s Set.univ := by

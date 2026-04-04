@@ -64,7 +64,6 @@ inductive Rel : TensorAlgebra R M → TensorAlgebra R M → Prop
 
 end CliffordAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
 def CliffordAlgebra :=
@@ -262,6 +261,13 @@ theorem ι_mul_ι_comm (a b : M) :
     ι Q a * ι Q b = algebraMap R _ (QuadraticMap.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
 
+/-- A version of `mul_mul_mul_comm` for `ι`. -/
+theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) =
+      algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm,  mul_assoc,
+    mul_assoc]
+
 section isOrtho
 
 @[simp] theorem ι_mul_ι_add_swap_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
@@ -280,6 +286,11 @@ theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrth
 theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
     ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
   rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
+
+theorem mul_ι_mul_ι_mul_comm_of_isOrtho
+    (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) = - ((x * ι Q b) * (ι Q a * y)) := by
+  rw [mul_ι_mul_ι_mul_comm, h.polar_eq_zero, map_zero, zero_mul, zero_sub]
 
 end isOrtho
 
