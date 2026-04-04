@@ -37,6 +37,7 @@ rather than the simpler `SimpleGraph` approach.
 
 ## References
 
+* [Y. Vorobets, *Notes on the Schreier graphs of the Grigorchuk group*][Vorobets2012]
 * [Lean 3 PR #18693](https://github.com/leanprover-community/mathlib3/pull/18693)
 -/
 
@@ -62,8 +63,7 @@ variable (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 
 /-- Equivalence between the original vertex type and the Schreier graph type. -/
 @[simps]
-def equiv (V : Type*) {M : Type*} [SMul M V] {S : Type*} (ι : S → M) :
-    V ≃ SchreierGraph V ι where
+def equiv : V ≃ SchreierGraph V ι where
   toFun := SchreierGraph.ofVertex
   invFun := SchreierGraph.toVertex
   left_inv _ := rfl
@@ -87,6 +87,21 @@ def labelling : SchreierGraph V ι ⥤q SingleObj S where
 
 end Basic
 
+section MulAction
+
+variable (V : Type*) {M : Type*} [Monoid M] [MulAction M V] {S : Type*} (ι : S → M)
+
+/-- The monoid acts on the vertices of the Schreier graph. -/
+instance : MulAction M (SchreierGraph V ι) where
+  one_smul x := by
+    ext
+    exact one_smul M x.toVertex
+  mul_smul a b x := by
+    ext
+    exact mul_smul a b x.toVertex
+
+end MulAction
+
 section GroupAction
 
 /-!
@@ -95,16 +110,7 @@ section GroupAction
 When we have a group action, the labelling becomes a covering.
 -/
 
-variable (V : Type*) {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S → M)
-
-/-- The group acts on the vertices of the Schreier graph. -/
-instance instMulAction : MulAction M (SchreierGraph V ι) where
-  one_smul x := by
-    ext
-    exact one_smul M x.toVertex
-  mul_smul a b x := by
-    ext
-    exact mul_smul a b x.toVertex
+variable {V : Type*} {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S → M)
 
 /-- The star map of the labelling prefunctor as an equivalence. -/
 @[simps]
@@ -130,8 +136,8 @@ def labelling_costarEquiv (x : SchreierGraph V ι) :
 
 /-- The labelling prefunctor is a covering for Schreier graphs with group actions. -/
 theorem labelling_isCovering : (labelling V ι).IsCovering where
-  star_bijective u := (labelling_starEquiv V ι u).bijective
-  costar_bijective u := (labelling_costarEquiv V ι u).bijective
+  star_bijective u := (labelling_starEquiv ι u).bijective
+  costar_bijective u := (labelling_costarEquiv ι u).bijective
 
 /-- If a prefunctor φ on a Schreier graph commutes with the labelling (i.e., labels are preserved),
 then φ commutes with the group action. In other words, morphisms that preserve edge labels also
