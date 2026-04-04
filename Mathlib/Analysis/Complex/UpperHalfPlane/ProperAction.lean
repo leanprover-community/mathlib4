@@ -34,7 +34,7 @@ theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
 lemma continuous_toSL2R : Continuous toSL2R := by
   apply continuous_induced_rng.mpr
-  simp only [Function.comp_def, coe_toSL2R, one_div]
+  simp only [Function.comp_def, coe_toSL2R]
   fun_prop (disch := grind [im_pos])
 
 /-- The action of `SL(2, ℝ)` on `ℍ` is jointly continuous. -/
