@@ -372,13 +372,13 @@ lemma gaussianReal_sub_const (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
 lemma gaussianReal_const_mul (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
-    HasLaw (fun ω ↦ c * X ω) (gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v)) P :=
+    HasLaw (fun ω ↦ c * X ω) (gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v)) P :=
   HasLaw.comp ⟨by fun_prop, gaussianReal_map_const_mul c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
 has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
 lemma gaussianReal_mul_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
-    HasLaw (fun ω ↦ X ω * c) (gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v)) P :=
+    HasLaw (fun ω ↦ X ω * c) (gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v)) P :=
   HasLaw.comp ⟨by fun_prop, gaussianReal_map_mul_const c⟩ hX
 
 lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
@@ -389,7 +389,7 @@ lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
 has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
 lemma gaussianReal_div_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
-    HasLaw (fun ω ↦ X ω / c) (gaussianReal (μ / c) (v / ⟨c ^ 2, sq_nonneg _⟩)) P :=
+    HasLaw (fun ω ↦ X ω / c) (gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _))) P :=
   HasLaw.comp ⟨by fun_prop, gaussianReal_map_div_const c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
