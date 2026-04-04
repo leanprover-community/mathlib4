@@ -494,14 +494,6 @@ instance coalgebraOfComonObj (M : ModuleCat R) [ComonObj M] : Coalgebra R M := {
   lTensor_counit_comp_comul := congr_arg ModuleCat.Hom.hom (ComonObj.comul_counit M)
 }
 
--- instance comonObjOfCoalgebra (M : ModuleCat R) [Coalgebra R M] : ComonObj M := {
---   counit := ModuleCat.ofHom (CoalgebraStruct.counit)
---   comul := ModuleCat.ofHom (CoalgebraStruct.comul)
---   counit_comul := congr_arg ModuleCat.ofHom (Coalgebra.rTensor_counit_comp_comul)
---   comul_counit := congr_arg ModuleCat.ofHom (Coalgebra.lTensor_counit_comp_comul)
---   comul_assoc := congr_arg ModuleCat.ofHom (Coalgebra.coassoc).symm
--- }
-
 instance bialgebraOfBimonObj (M : ModuleCat R) [BimonObj M] : Bialgebra R M := by
   refine Bialgebra.mk' R M ?_ ?_ ?_ ?_
   · exact DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (BimonObj.one_counit M)) (1: R)
@@ -511,60 +503,6 @@ instance bialgebraOfBimonObj (M : ModuleCat R) [BimonObj M] : Bialgebra R M := b
   · intro a b
     simpa only [mul_eq_tensorμ] using DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom
       (BimonObj.mul_comul M)) (a ⊗ₜ b)
-
-
--- instance monObjOfAlgebra (A : ModuleCat R) [Semiring A] [Algebra R A] : MonObj A := {
---   one := ModuleCat.ofHom (Algebra.linearMap R A)
---   mul := ModuleCat.ofHom (LinearMap.mul' _ _)
---   one_mul := by
---     change ModuleCat.ofHom ((Algebra.linearMap R A).rTensor A) ≫
---       ModuleCat.ofHom (LinearMap.mul' R A) =
---       (λ_ (ModuleCat.of R A)).hom
---     rw [← ModuleCat.ofHom_comp]
---     ext m
---     simp [ModuleCat.hom_hom_leftUnitor]
---   mul_one := by
---     change ModuleCat.ofHom ((Algebra.linearMap R A).lTensor A) ≫
---       ModuleCat.ofHom (LinearMap.mul' R A) =
---       (ρ_ (ModuleCat.of R A)).hom
---     rw [← ModuleCat.ofHom_comp]
---     ext m
---     simp [ModuleCat.hom_hom_rightUnitor]
---   mul_assoc := by
---     change ModuleCat.ofHom ((LinearMap.mul' R ↑(ModuleCat.of R A)).rTensor A) ≫
---       ModuleCat.ofHom (LinearMap.mul' R ↑(ModuleCat.of R A)) =
---       (α_ (ModuleCat.of R A) (ModuleCat.of R A) (ModuleCat.of R A)).hom ≫
---       ModuleCat.ofHom ((LinearMap.mul' R ↑(ModuleCat.of R A)).lTensor A) ≫
---       ModuleCat.ofHom (LinearMap.mul' R ↑(ModuleCat.of R A))
---     ext a b c
---     simp [ModuleCat.hom_hom_associator]
---     erw [LinearEquiv.coe_coe]
---     simp only [TensorProduct.assoc_tmul]
---     erw [LinearMap.lTensor_tmul A (LinearMap.mul' R A) a (b ⊗ₜ[R] c)]
---     simp only [LinearMap.mul'_apply, mul_assoc]
--- }
-
--- instance bimonObjOfBialgebra (M : ModuleCat R) [MonObj M] [Algebra R M] [Coalgebra R M] [Bialgebra R M]
---   : BimonObj M := {
---   toComonObj := comonObjOfCoalgebra R M
-  -- mul_comul := by
-  --   ext t
-  --   simp
-  --   induction t using TensorProduct.induction_on with
-  --   | zero => simp
-  --   | tmul a b =>
-  --     simp
-  --     have := @Bialgebra.comul_mul R M _ _ _ a b
-  --     rw [this]
-  --   | add x y _ _ => sorry
-
-
---   mul_counit := sorry
---   one_comul := sorry
---   one_counit := sorry
--- }
-
-open HopfObj
 
 instance hopfAlgebraOfHopfObj (M : ModuleCat R) [HopfObj M] : HopfAlgebra R M := by
   have mul'_eq : LinearMap.mul' R M = μ[M].hom := by
@@ -666,8 +604,6 @@ instance hopfObjOfHopfAlgebra (A : HopfAlgCat R) : HopfObj (ModuleCat.of R A) wh
   antipode_right := congr_arg ModuleCat.ofHom
     (@HopfAlgebra.mul_antipode_lTensor_comul R A _ _ _)
 
---set_option pp.notation false
-
 def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R := {
   obj M := HopfAlgCat.of R M.X
 
@@ -720,82 +656,18 @@ instance isEquivModuleCatToHopfAlgCat : Functor.IsEquivalence (moduleCatToHopfAl
     rfl
   ⟩
   essSurj := ⟨fun M ↦
-    ⟨ ⟨ModuleCat.of R M⟩, by
-      constructor
-      simp only [moduleCatToHopfAlgCat]
-      refine {
-        hom := ⟨⟨CoalgHom.id R M.carrier, ?_, ?_⟩⟩,
-        inv := ⟨⟨CoalgHom.id R M.carrier, ?_, ?_⟩⟩,
-        hom_inv_id := rfl,
-        inv_hom_id := rfl
-      }
-      · simp
-        congr 2
-
-      · simp
-        intro x y
-        rfl
-      · simp
-      . simp
-        intro x y
-        rfl
-    ⟩
+    ⟨⟨ModuleCat.of R M⟩, ⟨{
+      hom := ⟨⟨CoalgHom.id R M.carrier, map_one (algebraMap R M.carrier), by intro x y; rfl⟩⟩,
+      inv := ⟨⟨
+        CoalgHom.id R M.carrier,
+        (map_one (algebraMap R M.carrier)).symm,
+        by intro x y; rfl
+      ⟩⟩,
+      hom_inv_id := rfl,
+      inv_hom_id := rfl
+    }⟩⟩
   ⟩
 }
-
-
--- def moduleCatEquivHopfAlgCat : Hopf (ModuleCat R) ≌ HopfAlgCat R where
---   functor := {
---     obj M := HopfAlgCat.of R M.X
-
---     map {M N} f := HopfAlgCat.ofHom {
---       toFun := f.hom.hom.hom
---       map_add' := LinearMap.map_add (ModuleCat.Hom.hom f.hom.hom.hom)
---       map_smul' := LinearMap.map_smul (ModuleCat.Hom.hom f.hom.hom.hom)
---       counit_comp := congr_arg ModuleCat.Hom.hom (
---         congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
---       map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
---         (IsComonHom.hom_comul f.hom.hom))).symm
---       map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
---         1
---       map_mul' := fun x y ↦
---         DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom))
---           (x ⊗ₜ[R] y)
---     }
---   }
-
---   inverse := {
---     obj A := ⟨ModuleCat.of R A⟩
---     map {M N} f := ⟨Comon.Hom.mk' (Mon.Hom.mk' (ModuleCat.ofHom f.toBialgHom'.toLinearMap)
---       (by
---         ext
---         simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
---         convert (show f.toBialgHom'.toLinearMap 1 = 1 from f.toBialgHom.map_one)
---         · change (ModuleCat.ofHom (Algebra.linearMap R M.carrier)) 1 = 1
---           simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
---         · change (ModuleCat.ofHom (Algebra.linearMap R N.carrier)) 1 = 1
---           simp only [ModuleCat.hom_ofHom, Algebra.linearMap_apply, map_one]
---       )
---       (by
---         ext t
---         induction t using TensorProduct.induction_on with
---         | zero => simp only [ModuleCat.hom_comp, map_zero]
---         | tmul x y => exact f.toBialgHom.map_mul x y
---         | add x y hx hy =>
---             simp only [map_add]
---             exact congr_arg₂ (· + ·) hx hy
---       )
---       )
---       (by ext m; exact DFunLike.congr_fun f.toBialgHom.counit_comp m)
---       (by ext m; exact DFunLike.congr_fun f.toBialgHom.map_comp_comul.symm m)
---       ⟩
---   }
-
---   unitIso := {
---     hom :=
---     inv := _
---   }
---   counitIso := sorry
 
 end HopfObj
 end CategoryTheory
