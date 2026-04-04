@@ -207,7 +207,7 @@ theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y)
 
 theorem Filter.Tendsto.inseparable_iff_uniformity {β} {l : Filter β} [NeBot l] {f g : β → α}
     {a b : α} (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
-    Inseparable a b ↔ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α) := by
+    Inseparable a b ↔ Tendsto (f △ g) l (𝓤 α) := by
   refine ⟨fun h ↦ (ha.prodMk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
   rw [inseparable_iff_clusterPt_uniformity]
   exact (ClusterPt.of_le_nhds (ha.prodMk_nhds hb)).mono h

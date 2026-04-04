@@ -163,7 +163,8 @@ variable {a b : α}
 @[simp, grind =] theorem map_diag {f : α → β} {g : α → δ} : Prod.map f g (Δ a) =
     (f △ g) a := rfl
 
-theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = (f △ g) := rfl
+@[simp] theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Function.diag = (f △ g) :=
+  rfl
 
 theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
@@ -171,6 +172,9 @@ theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ 
   simp [Prod.ext_iff, eq_comm]
 
 @[simp] theorem diag_eq_iff : Δ a = Δ b ↔ a = b := injective_diag.eq_iff
+
+@[simp] theorem prod_diag_diag : Function.diag △ Function.diag (α := α) =
+    Function.diag ∘ Function.diag := rfl
 
 end
 

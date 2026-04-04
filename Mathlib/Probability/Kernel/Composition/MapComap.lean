@@ -450,13 +450,13 @@ instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : Kernel α 
   simp
 
 lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Measurable g) :
-    fst (map κ (fun x ↦ (f x, g x))) = map κ f := by
+    fst (map κ (f △ g)) = map κ f := by
   by_cases hf : Measurable f
   · ext x s hs
     rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
     · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_fst hs
-  · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
+  · have : ¬ Measurable (f △ g) := by
       contrapose! hf; exact hf.fst
     simp [map_of_not_measurable _ hf, map_of_not_measurable _ this]
 
@@ -512,13 +512,13 @@ instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : Kernel α 
   simp
 
 lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Measurable f) :
-    snd (map κ (fun x ↦ (f x, g x))) = map κ g := by
+    snd (map κ (f △ g)) = map κ g := by
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
     · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_snd hs
-  · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
+  · have : ¬ Measurable (f △ g) := by
       contrapose! hg; exact hg.snd
     simp [map_of_not_measurable _ hg, map_of_not_measurable _ this]
 

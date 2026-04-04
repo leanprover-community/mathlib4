@@ -464,7 +464,7 @@ lemma IsLittleOTVS.bot : f =o[𝕜; ⊥] g :=
   ⟨fun u hU ↦ ⟨univ, by simp [EventuallyLE]⟩⟩
 
 theorem IsLittleOTVS.prodMk [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G}
-    (hf : f =o[𝕜; l] k) (hg : g =o[𝕜; l] k) : (fun x ↦ (f x, g x)) =o[𝕜; l] k := by
+    (hf : f =o[𝕜; l] k) (hg : g =o[𝕜; l] k) : (f △ g) =o[𝕜; l] k := by
   rw [((nhds_basis_balanced 𝕜 E).prod_nhds (nhds_basis_balanced 𝕜 F)).isLittleOTVS_iff
     (basis_sets _)]
   rintro ⟨U, V⟩ ⟨⟨hU, hUb⟩, hV, hVb⟩
@@ -484,11 +484,11 @@ protected theorem IsLittleOTVS.snd {f : α → E × F} {g : α → G} (h : f =o[
 
 @[simp]
 theorem isLittleOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G} :
-    (fun x ↦ (f x, g x)) =o[𝕜; l] k ↔ f =o[𝕜; l] k ∧ g =o[𝕜; l] k :=
+    (f △ g) =o[𝕜; l] k ↔ f =o[𝕜; l] k ∧ g =o[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
 theorem IsBigOTVS.prodMk [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G}
-    (hf : f =O[𝕜; l] k) (hg : g =O[𝕜; l] k) : (fun x ↦ (f x, g x)) =O[𝕜; l] k := by
+    (hf : f =O[𝕜; l] k) (hg : g =O[𝕜; l] k) : (f △ g) =O[𝕜; l] k := by
   rw [((nhds_basis_balanced 𝕜 E).prod_nhds (nhds_basis_balanced 𝕜 F)).isBigOTVS_iff (basis_sets _)]
   rintro ⟨U, V⟩ ⟨⟨hU, hUb⟩, hV, hVb⟩
   rcases ((hf.eventually_smallSets U hU).and (hg.eventually_smallSets V hV)).exists_mem_of_smallSets
@@ -507,7 +507,7 @@ protected theorem IsBigOTVS.snd {f : α → E × F} {g : α → G} (h : f =O[�
 
 @[simp]
 theorem isBigOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G} :
-    (fun x ↦ (f x, g x)) =O[𝕜; l] k ↔ f =O[𝕜; l] k ∧ g =O[𝕜; l] k :=
+    (f △ g) =O[𝕜; l] k ↔ f =O[𝕜; l] k ∧ g =O[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
 @[to_fun]

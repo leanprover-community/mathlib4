@@ -290,7 +290,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
 lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞} {t : Set E}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFPowerSeriesWithinOnBall f p t e r) (hg : HasFPowerSeriesWithinOnBall g q t e s) :
-    HasFPowerSeriesWithinOnBall (fun x ↦ (f x, g x)) (p.prod q) t e (min r s) where
+    HasFPowerSeriesWithinOnBall (f △ g) (p.prod q) t e (min r s) where
   r_le := by
     rw [p.radius_prod_eq_min]
     exact min_le_min hf.r_le hg.r_le
@@ -305,14 +305,14 @@ lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {r s 
 lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFPowerSeriesOnBall f p e r) (hg : HasFPowerSeriesOnBall g q e s) :
-    HasFPowerSeriesOnBall (fun x ↦ (f x, g x)) (p.prod q) e (min r s) := by
+    HasFPowerSeriesOnBall (f △ g) (p.prod q) e (min r s) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf hg ⊢
   exact hf.prod hg
 
 lemma HasFPowerSeriesWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFPowerSeriesWithinAt f p s e) (hg : HasFPowerSeriesWithinAt g q s e) :
-    HasFPowerSeriesWithinAt (fun x ↦ (f x, g x)) (p.prod q) s e := by
+    HasFPowerSeriesWithinAt (f △ g) (p.prod q) s e := by
   rcases hf with ⟨_, hf⟩
   rcases hg with ⟨_, hg⟩
   exact ⟨_, hf.prod hg⟩
@@ -320,7 +320,7 @@ lemma HasFPowerSeriesWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set 
 lemma HasFPowerSeriesAt.prod {e : E} {f : E → F} {g : E → G}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFPowerSeriesAt f p e) (hg : HasFPowerSeriesAt g q e) :
-    HasFPowerSeriesAt (fun x ↦ (f x, g x)) (p.prod q) e := by
+    HasFPowerSeriesAt (f △ g) (p.prod q) e := by
   rcases hf with ⟨_, hf⟩
   rcases hg with ⟨_, hg⟩
   exact ⟨_, hf.prod hg⟩
@@ -328,7 +328,7 @@ lemma HasFPowerSeriesAt.prod {e : E} {f : E → F} {g : E → G}
 /-- The Cartesian product of analytic functions is analytic. -/
 lemma AnalyticWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
     (hf : AnalyticWithinAt 𝕜 f s e) (hg : AnalyticWithinAt 𝕜 g s e) :
-    AnalyticWithinAt 𝕜 (fun x ↦ (f x, g x)) s e := by
+    AnalyticWithinAt 𝕜 (f △ g) s e := by
   rcases hf with ⟨_, hf⟩
   rcases hg with ⟨_, hg⟩
   exact ⟨_, hf.prod hg⟩
@@ -337,7 +337,7 @@ lemma AnalyticWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
 @[fun_prop]
 lemma AnalyticAt.prod {e : E} {f : E → F} {g : E → G}
     (hf : AnalyticAt 𝕜 f e) (hg : AnalyticAt 𝕜 g e) :
-    AnalyticAt 𝕜 (fun x ↦ (f x, g x)) e := by
+    AnalyticAt 𝕜 (f △ g) e := by
   rcases hf with ⟨_, hf⟩
   rcases hg with ⟨_, hg⟩
   exact ⟨_, hf.prod hg⟩
@@ -345,13 +345,13 @@ lemma AnalyticAt.prod {e : E} {f : E → F} {g : E → G}
 /-- The Cartesian product of analytic functions within a set is analytic. -/
 lemma AnalyticOn.prod {f : E → F} {g : E → G} {s : Set E}
     (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (fun x ↦ (f x, g x)) s :=
+    AnalyticOn 𝕜 (f △ g) s :=
   fun x hx ↦ (hf x hx).prod (hg x hx)
 
 /-- The Cartesian product of analytic functions is analytic. -/
 lemma AnalyticOnNhd.prod {f : E → F} {g : E → G} {s : Set E}
     (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
-    AnalyticOnNhd 𝕜 (fun x ↦ (f x, g x)) s :=
+    AnalyticOnNhd 𝕜 (f △ g) s :=
   fun x hx ↦ (hf x hx).prod (hg x hx)
 
 /-- `AnalyticAt.comp` for functions on product spaces -/

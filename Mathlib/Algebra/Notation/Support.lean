@@ -173,7 +173,7 @@ lemma mulSupport_comp_eq_preimage (g : κ → M) (f : ι → κ) :
 
 @[to_additive support_prodMk]
 lemma mulSupport_prodMk (f : ι → M) (g : ι → N) :
-    mulSupport (fun x ↦ (f x, g x)) = mulSupport f ∪ mulSupport g :=
+    mulSupport (f △ g) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x ↦ by
     simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 
