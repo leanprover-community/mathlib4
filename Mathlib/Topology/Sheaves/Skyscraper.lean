@@ -249,9 +249,9 @@ sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U
 -/
 def skyscraperSheafFunctor : C ⥤ Sheaf C X where
   obj c := skyscraperSheaf p₀ c
-  map f := Sheaf.Hom.mk <| (skyscraperPresheafFunctor p₀).map f
-  map_id _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_id _
-  map_comp _ _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
+  map f := ObjectProperty.homMk <| (skyscraperPresheafFunctor p₀).map f
+  map_id _ := Sheaf.hom_ext <| (skyscraperPresheafFunctor p₀).map_id _
+  map_comp _ _ := Sheaf.hom_ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
 
 namespace StalkSkyscraperPresheafAdjunctionAuxs
 
@@ -298,15 +298,13 @@ lemma germ_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresh
     𝓕.germ U p₀ hU ≫ fromStalk p₀ f = f.app (op U) ≫ eqToHom (if_pos hU) :=
   colimit.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem to_skyscraper_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) :
     toSkyscraperPresheaf p₀ (fromStalk _ f) = f := by
   apply NatTrans.ext
   ext U
   dsimp
   split_ifs with h
-  · rw [← Category.assoc, germ_fromStalk, Category.assoc, eqToHom_trans, eqToHom_refl,
-      Category.comp_id]
+  · simp
   · exact ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext ..
 
 theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ c) :
@@ -367,7 +365,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   right_triangle_components Y := by
     ext
     simp only [skyscraperPresheafFunctor_obj, Functor.id_obj, skyscraperPresheaf_obj,
-      Functor.comp_obj, Presheaf.stalkFunctor_obj, unit_app, counit_app,
+      Presheaf.stalkFunctor_obj, unit_app, counit_app,
       skyscraperPresheafStalkOfSpecializes, skyscraperPresheafFunctor_map, Presheaf.comp_app,
       toSkyscraperPresheaf_app, Category.id_comp, SkyscraperPresheafFunctor.map'_app]
     split_ifs with h
@@ -391,16 +389,26 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `Sheaf.Hom.ext`,
   unit :=
     { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
-      naturality := fun 𝓐 𝓑 f => Sheaf.Hom.ext <| by
+      naturality := fun 𝓐 𝓑 f => Sheaf.hom_ext <| by
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=
-    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.val)
+    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.obj)
   right_triangle_components _ :=
-    Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
+    Sheaf.hom_ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
+
+instance [HasColimits C] : (Sheaf.forget C X ⋙ Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
+  have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
+  (stalkSkyscraperSheafAdjunction p₀).isLeftAdjoint
 
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
+
+/-- Taking stalks is the left adjoint of `skyscraperSheafFunctor ⋙ Sheaf.forget`. Useful
+only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` is relevant. -/
+noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
+    Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
+  skyscraperPresheafStalkAdjunction p₀
 
 end
 

@@ -149,8 +149,7 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le _ a ha _ h := mem_sInf.1 h a ha
-  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
+  isGLB_sInf _ := .of_image toSubmodule_le_toSubmodule isGLB_biInf
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
@@ -288,15 +287,15 @@ instance : SemilatticeSup (ClosedSubmodule R N) where
   sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩
 
 instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
-  le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
-    Submodule.mem_iSup_of_mem ha hx
-  sSup_le s a h x := by
-    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
-    apply closure_mono
-    simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
-    intro y hy
-    simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
-    exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h b hb
+  isLUB_sSup _ := by
+    refine ⟨fun a ha x hx ↦ ?_, fun a h x ↦ ?_⟩
+    · exact subset_closure <| Submodule.mem_iSup_of_mem _ <| Submodule.mem_iSup_of_mem ha hx
+    · rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
+      apply closure_mono
+      simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
+      intro y hy
+      simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
+      exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h hb
 
 instance : Lattice (ClosedSubmodule R N) where
 
@@ -368,7 +367,7 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     Submodule.coe_closure, Set.mem_image]
   have : f = f.toLinearEquiv.toLinearMap := by
     exact LinearMap.ext (congrFun rfl)
-  rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup,  Submodule.map_coe]
+  rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup, Submodule.map_coe]
   simp only [Submodule.coe_closure, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
     ← ContinuousLinearEquiv.image_closure, Set.mem_image]
 

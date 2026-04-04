@@ -29,6 +29,7 @@ zmod, quotient group
 assert_not_exists Ideal TwoSidedIdeal
 
 open QuotientAddGroup Set ZMod
+open scoped IsMulCommutative
 
 variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
 
@@ -56,7 +57,6 @@ open AddSubgroup AddMonoidHom AddEquiv Function
 
 variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod (a +ᵥ ·) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (minimalPeriod (a +ᵥ ·) b) :=
@@ -197,6 +197,7 @@ lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
   rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum of minimal periods over all orbits equals the index `[G:H]`. -/
 lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
     [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :

@@ -32,13 +32,12 @@ variable {a c : ℂ} {R : ℝ}
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
 lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  circleIntegrable_log_norm_meromorphicOn (fun z hz ↦ by fun_prop)
+  MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm smaller than one, then `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -73,7 +72,6 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 -- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
 private lemma circleAverage_log_norm_sub_const₁_integral :
     ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
@@ -102,7 +100,6 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
       (by norm_num : (4 : ℝ) = 2 * 2), log_mul two_ne_zero two_ne_zero]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -156,7 +153,6 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm greater than one, then `circleAverage (log ‖· - a‖) 0 1` equals `log ‖a‖`.
 -/
@@ -231,7 +227,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     simp
   _ = log R + log⁺ (|R|⁻¹ * ‖c - a‖) := by
     rw [← Pi.add_def, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
-      (circleIntegrable_log_norm_meromorphicOn (fun _ _ ↦ by fun_prop)), circleAverage_const]
+      (MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)), circleAverage_const]
     simp
   _ = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
     congr 1
