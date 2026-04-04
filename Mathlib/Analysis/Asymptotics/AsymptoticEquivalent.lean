@@ -333,37 +333,31 @@ section pos
 
 variable [ClosedIicTopology β]
 
+lemma IsEquivalent.exists_pos_eq_mul (h : u ~[l] v) :
+    ∃ φ, (∀ᶠ x in l, 0 < φ x) ∧ (u =ᶠ[l] φ * v) := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_eq_mul
+  exact ⟨φ, hφ.eventually_const_lt (zero_lt_one' β), h_eq⟩
+
 theorem IsEquivalent.eventually_nonneg (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 ≤ v t) :
     ∀ᶠ x in l, 0 ≤ u x := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
-  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp only [h_eq, Pi.mul_apply]
-  nlinarith
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_nonneg hφ.le hv)
 
 theorem IsEquivalent.eventually_pos (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 < v t) :
     ∀ᶠ x in l, 0 < u x := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
-  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp only [h_eq, Pi.mul_apply]
-  nlinarith
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_pos hφ hv)
 
 theorem IsEquivalent.eventually_nonpos (h : u ~[l] v) (hv : ∀ᶠ t in l, v t ≤ 0) :
     ∀ᶠ x in l, u x ≤ 0 := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
-  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp only [h_eq, Pi.mul_apply]
-  nlinarith
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦
+    h_eq ▸ mul_nonpos_of_nonneg_of_nonpos hφ.le hv)
 
 theorem IsEquivalent.eventually_neg (h : u ~[l] v) (hv : ∀ᶠ t in l, v t < 0) :
     ∀ᶠ x in l, u x < 0 := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
-  have hφ : ∀ᶠ x in l, 0 < φ x := hφ_tendsto.eventually_const_lt (zero_lt_one' β)
-  refine ((h_eq.and (hφ)).and hv).mono fun x ⟨⟨h_eq, hφ⟩, hv⟩ ↦ ?_
-  simp only [h_eq, Pi.mul_apply]
-  nlinarith
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_neg_of_pos_of_neg hφ hv)
 
 end pos
 
