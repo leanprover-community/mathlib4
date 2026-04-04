@@ -43,9 +43,16 @@ noncomputable def Ideal.height : ℕ∞ :=
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
-  unfold height primeHeight
-  simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
-  simp
+  simp [height, primeHeight, Ideal.minimalPrimes_eq_subsingleton_self]
+
+lemma Ideal.height_eq_order_height_of_isPrime [I.IsPrime] : I.height =
+    Order.height (⟨I, ‹I.IsPrime›⟩ : PrimeSpectrum R) :=
+  I.height_eq_primeHeight
+
+lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, J.height := by
+  apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
+  have := I.minimalPrimes_isPrime hp
+  exact (Ideal.height_eq_primeHeight _).symm
 
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
 We include the unit ideal in order to have the instance `IsNoetherianRing R → FiniteHeight I`. -/
