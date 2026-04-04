@@ -18,31 +18,23 @@ namespace AlgebraicGeometry.Scheme
 
 open Modules
 
-variable {X : Scheme.{u}}
+variable {X : Scheme.{u}} {R : CommRingCat.{u}}
 
-section
+variable (X) in
+abbrev Modules.isQuasicoherent : ObjectProperty X.Modules :=
+  SheafOfModules.isQuasicoherent (R := X.ringCatSheaf)
 
-variable {Y : Scheme.{u}} (φ : X ≅ Y)
+theorem isQuasicoherent_iff_isIso_fromSpecΓ :
+    (tilde.functor R).essImage = isQuasicoherent (Spec R) := by
+  ext
+  rw [← isIso_fromTildeΓ_iff]
+  exact isIso_fromTildeΓ_iff_isQuasiCoherent _
 
-#check SheafOfModules.unit
+variable {J : Type u} [Category.{v} J] (F : J ⥤ (Spec R).Modules)
 
-noncomputable def modulesEquiv : X.Modules ≌ Y.Modules :=
-  haveI : (Opens.mapMapIso (forgetToTop.mapIso φ)).functor.IsContinuous (Opens.grothendieckTopology Y)
-    (Opens.grothendieckTopology X) := inferInstanceAs ((Opens.map φ.hom.base).IsContinuous _ _)
-  haveI : (Opens.mapMapIso (forgetToTop.mapIso φ)).inverse.IsContinuous (Opens.grothendieckTopology X)
-    (Opens.grothendieckTopology Y) := inferInstanceAs ((Opens.map φ.inv.base).IsContinuous _ _)
-  SheafOfModules.pushforwardPushforwardEquivalence (Opens.mapMapIso (forgetToTop.mapIso φ))
-    φ.hom.toRingCatSheafHom φ.inv.toRingCatSheafHom sorry sorry
-
-@[simp]
-lemma modulesEquiv_functor : (modulesEquiv φ).functor = pushforward φ.hom := rfl
-
-@[simp]
-lemma modulesEquiv_inverse : (modulesEquiv φ).inverse = pushforward φ.inv := rfl
-
-lemma modulesEquiv_inv : (modulesEquiv φ).symm = modulesEquiv φ.symm := rfl
-
-end
+instance : (isQuasicoherent (Spec R)).IsClosedUnderColimitsOfShape J := by
+  rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
+  exact instIsClosedUnderColimitsOfShapeEssImageOfHasColimitsOfShapeOfPreservesColimitsOfShapeOfFullOfFaithful (tilde.functor R)
 
 abbrev QuasicoherentSheaves :=
   (SheafOfModules.isQuasicoherent (R := X.ringCatSheaf)).FullSubcategory
