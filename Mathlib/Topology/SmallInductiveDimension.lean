@@ -36,9 +36,10 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 open Set TopologicalSpace
 
 /--
-The small inductive dimension of a space is inductively defined as follows. Empty spaces have
-small inductive dimension less than 0, and a topological space has dimension less than `n + 1` if
-it has a topological basis whose elements have frontiers of dimension strictly less `n`.
+For a topological space, the property of having small inductive dimension less than `n : ℕ`  is
+inductively defined as follows. Empty spaces have small inductive dimension less than 0, and a
+topological space has dimension less than `n + 1` if it has a topological basis whose elements have
+frontiers of dimension strictly less `n`.
 -/
 class inductive HasSmallInductiveDimensionLT.{u} :
   ∀ (X : Type u) [TopologicalSpace X], ℕ → Prop where
