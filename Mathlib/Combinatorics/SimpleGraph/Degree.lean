@@ -15,6 +15,8 @@ public import Mathlib.Data.ENat.Lattice
 
 * `G.edegree v`: The extended degree of `v` in `G`: the number of vertices adjacent to `v`,
   or `⊤` if there are infinitely many.
+* `G.maxEDegree`: The maximum extended degree of all vertices, or `0` if there are no vertices.
+* `G.minEDegree`: The minimum extended degree of all vertices, or `⊤` if there are no vertices.
 -/
 
 public section
@@ -138,5 +140,123 @@ variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :
     G.edegree v = d :=
   edegree_eq_coe_iff.mpr <| h.degree_eq v
+
+/-- The maximum extended degree of all vertices, or `0` if there are no vertices -/
+noncomputable def maxEDegree : ℕ∞ :=
+  ⨆ v, G.edegree v
+
+/-- The minimum extended degree of all vertices, or `⊤` if there are no vertices -/
+noncomputable def minEDegree : ℕ∞ :=
+  ⨅ v, G.edegree v
+
+theorem maxEDegree_eq_iSup : G.maxEDegree = ⨆ v, G.edegree v := by
+  rfl
+
+theorem minEDegree_eq_iInf : G.minEDegree = ⨅ v, G.edegree v := by
+  rfl
+
+theorem exists_edegree_eq_minEDegree [Nonempty V] : ∃ v, G.edegree v = G.minEDegree :=
+  ciInf_mem G.edegree
+
+theorem edegree_le_maxEDegree : G.edegree v ≤ G.maxEDegree :=
+  le_iSup G.edegree v
+
+theorem minEDegree_le_edegree : G.minEDegree ≤ G.edegree v :=
+  iInf_le G.edegree v
+
+variable {v} in
+theorem maxEDegree_eq_top_of_edegree_eq_top (h : G.edegree v = ⊤) : G.maxEDegree = ⊤ :=
+  eq_top_iff.mpr <| G.edegree_le_maxEDegree v |>.trans_eq' h
+
+variable {v} in
+theorem minEDegree_eq_zero_of_edegree_eq_zero (h : G.edegree v = 0) : G.minEDegree = 0 :=
+  nonpos_iff_eq_zero.mp <| G.minEDegree_le_edegree v |>.trans_eq h
+
+theorem maxEDegree_le_of_forall_edegree_le {n : ℕ∞} (h : ∀ v, G.edegree v ≤ n) : G.maxEDegree ≤ n :=
+  iSup_le h
+
+theorem le_minEDegree_of_forall_le_edegree {n : ℕ∞} (h : ∀ v, n ≤ G.edegree v) : n ≤ G.minEDegree :=
+  le_iInf h
+
+@[simp]
+theorem maxEDegree_of_subsingleton [Subsingleton V] : G.maxEDegree = 0 := by
+  simp [maxEDegree_eq_iSup]
+
+@[simp]
+theorem minEDegree_of_isEmpty [IsEmpty V] : G.minEDegree = ⊤ :=
+  iInf_of_empty G.edegree
+
+@[simp]
+theorem minEDegree_of_subsingleton_of_nonempty [Subsingleton V] [Nonempty V] :
+    G.minEDegree = 0 := by
+  simp [minEDegree_eq_iInf]
+
+theorem minEDegree_ne_top_of_finite [Nonempty V] [Finite V] : G.minEDegree ≠ ⊤ := by
+  rw [minEDegree_eq_iInf, ne_eq, iInf_eq_top, not_forall]
+  have ⟨v⟩ := ‹Nonempty V›
+  exact ⟨v, G.edegree_ne_top_of_finite v⟩
+
+variable {G H} in
+theorem IsContained.maxEDegree_le (h : G ⊑ H) : G.maxEDegree ≤ H.maxEDegree := by
+  refine G.maxEDegree_le_of_forall_edegree_le fun v ↦ ?_
+  grw [h.some.edegree_le, edegree_le_maxEDegree]
+
+variable {G H} in
+theorem Copy.minEDegree_le {f : Copy G H} (hf : Function.Surjective f) :
+    G.minEDegree ≤ H.minEDegree := by
+  refine H.le_minEDegree_of_forall_le_edegree fun w ↦ ?_
+  obtain ⟨v, rfl⟩ := hf w
+  grw [← f.edegree_le, ← minEDegree_le_edegree]
+
+variable {G H} in
+@[gcongr]
+theorem Iso.maxEDegree_eq (f : G ≃g H) : G.maxEDegree = H.maxEDegree :=
+  f.toEquiv.iSup_congr f.edegree_eq
+
+variable {G H} in
+@[gcongr]
+theorem Iso.minEDegree_eq (f : G ≃g H) : G.minEDegree = H.minEDegree :=
+  f.toEquiv.iInf_congr f.edegree_eq
+
+variable {G G'} in
+@[gcongr]
+theorem maxEDegree_mono (hle : G ≤ G') : G.maxEDegree ≤ G'.maxEDegree :=
+  IsContained.of_le hle |>.maxEDegree_le
+
+variable {G G'} in
+@[gcongr]
+theorem minEDegree_mono (hle : G ≤ G') : G.minEDegree ≤ G'.minEDegree :=
+  Copy.minEDegree_le (f := .ofLE G G' hle) Function.surjective_id
+
+theorem maxEDegree_le_card : G.maxEDegree ≤ ENat.card V :=
+  G.maxEDegree_le_of_forall_edegree_le G.edegree_le_card
+
+theorem minEDegree_le_card [Nonempty V] : G.minEDegree ≤ ENat.card V := by
+  have ⟨v⟩ := ‹Nonempty V›
+  grw [G.minEDegree_le_edegree v, edegree_le_card]
+
+variable {G} in
+theorem minEDegree_lt_card_of_ne_top (h : G.minEDegree ≠ ⊤) : G.minEDegree < ENat.card V := by
+  cases isEmpty_or_nonempty V
+  · simp at h
+  have ⟨v, hv⟩ := G.exists_edegree_eq_minEDegree
+  rw [← hv] at h ⊢
+  exact G.edegree_lt_card_of_ne_top v h
+
+theorem minEDegree_le_encard_edgeSet [Nonempty V] : G.minEDegree ≤ G.edgeSet.encard := by
+  have ⟨v, hv⟩ := G.exists_edegree_eq_minEDegree
+  exact hv ▸ G.edegree_le_encard_edgeSet v
+
+theorem minEDegree_le_maxEDegree [Nonempty V] : G.minEDegree ≤ G.maxEDegree := by
+  have ⟨v⟩ := ‹Nonempty V›
+  grw [G.minEDegree_le_edegree v, edegree_le_maxEDegree]
+
+@[simp]
+theorem maxEDegree_bot : (⊥ : SimpleGraph V).maxEDegree = 0 := by
+  simp [maxEDegree_eq_iSup]
+
+@[simp]
+theorem minEDegree_bot [Nonempty V] : (⊥ : SimpleGraph V).minEDegree = 0 := by
+  simp [minEDegree_eq_iInf]
 
 end SimpleGraph
