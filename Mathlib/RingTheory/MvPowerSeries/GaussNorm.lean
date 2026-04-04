@@ -15,10 +15,10 @@ This file defines the Gauss norm for power series. Given a multivariate power se
 function `v : R → ℝ` and a tuple `c` of real numbers, the Gauss norm is defined as the supremum of
 the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`.
 
-## Main Definitions and Results
+## Main definitions and results
 
 * `MvPowerSeries.gaussNormC` is the supremum of the set of all values of
-  `v (coeff t f) * ∏ i : t.support, c i`for all `t : σ →₀ ℕ`, where `f` is a multivariate power
+  `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`, where `f` is a multivariate power
   series, `v : R → ℝ` is a function and `c` is a tuple of real numbers.
 
 * `MvPowerSeries.gaussNormC_nonneg`: if `v` is a non-negative function, then the Gauss norm is
@@ -28,9 +28,9 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
   for all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series
   is zero.
 
-* `Mv.gaussNormC_nonarchimedean`: if `v` is a non-negative non-archimedean function and the set of
-  values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then the
-  Gauss norm is non-archimedean.
+* `MvPowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
+  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then
+  the Gauss norm has the non-archimedean property.
 -/
 
 @[expose] public section
@@ -56,7 +56,7 @@ lemma le_gaussNorm (hbd : HasGaussNorm v c f) (t : σ →₀ ℕ) :
     v (coeff t f) * t.prod (c · ^ ·) ≤ gaussNorm v c f := by
   apply le_ciSup hbd
 
-theorem gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := by
+lemma gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := by
   rw [gaussNorm]
   by_cases h : HasGaussNorm v c f
   · trans v (constantCoeff f)
@@ -65,7 +65,7 @@ theorem gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f :=
       simp
   · simp [h]
 
-theorem gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
+lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
     (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : ∀ i, 0 < c i) (hbd : HasGaussNorm v c f) :
     gaussNorm v c f = 0 ↔ f = 0 := by
   refine ⟨?_, fun hf ↦ by simp [hf, vZero]⟩
@@ -80,7 +80,7 @@ theorem gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n
 
-theorem gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
+lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
     (vNonneg : ∀ a, v a ≥ 0) (hv : ∀ x y, v (x + y) ≤ max (v x) (v y))
     (hbfd : HasGaussNorm v c f) (hbgd : HasGaussNorm v c g) :
     gaussNorm v c (f + g) ≤ max (gaussNorm v c f) (gaussNorm v c g) := by
