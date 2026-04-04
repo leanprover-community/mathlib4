@@ -254,6 +254,7 @@ variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R 
 
 /-- Given a scalar `r` and a vector measure `v`, `smul r v` is the vector measure corresponding to
 the set function `s : Set α => r • (v s)`. -/
+@[implicit_reducible]
 def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
