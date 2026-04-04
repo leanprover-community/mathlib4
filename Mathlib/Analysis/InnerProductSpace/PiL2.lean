@@ -1328,7 +1328,7 @@ def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
 
 @[simp]
 theorem orthonormalBasisSingleton_apply (i : ι) :
-    FiniteDimensional.orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
+   orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
   simp [orthonormalBasisSingleton]
 
 @[simp]
