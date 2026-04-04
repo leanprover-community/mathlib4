@@ -37,9 +37,10 @@ lemma isRegularRing_iff [IsNoetherianRing R] : IsRegularRing R ↔
     ∀ (p : Ideal R) (_ : p.IsPrime), IsRegularLocalRing (Localization.AtPrime p) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [IsNoetherianRing R] [CommRing R']
-    (e : R ≃+* R') [reg : IsRegularRing R] : IsRegularRing R' := by
-  let := isNoetherianRing_of_ringEquiv R e
+variable {R} in
+lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R')
+    [reg : IsRegularRing R] : IsRegularRing R' := by
+  have := isNoetherianRing_of_ringEquiv R e
   apply isRegularRing_iff.mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
   have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
@@ -54,8 +55,8 @@ lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [IsNoetherianRing R
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
   by_cases eqbot : p = ⊥
-  · let : Field (Localization.AtPrime p) := IsField.toField (by
-      simp [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal, eqbot])
+  · let : Field (Localization.AtPrime p) := IsField.toField <| by
+      simp [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal, eqbot]
     infer_instance
   · have := IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain
       R eqbot (Localization.AtPrime p)
