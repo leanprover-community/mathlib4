@@ -105,6 +105,10 @@ theorem dense_xor_cyclic (s : Subgroup G) :
     simp only [hd, xor_false, id, zpowers_eq_closure]
     exact s.dense_or_cyclic.resolve_left hd
 
+@[deprecated (since := "2026-04-04")] alias dense_xor'_cyclic := dense_xor_cyclic
+
+@[deprecated (since := "2026-04-04")] alias dense_xor'_cyclic := dense_xor_cyclic
+
 @[to_additive]
 theorem dense_iff_ne_zpowers {s : Subgroup G} :
     Dense (s : Set G) ↔ ∀ a, s ≠ .zpowers a := by

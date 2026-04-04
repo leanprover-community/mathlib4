@@ -137,9 +137,20 @@ theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
+@[deprecated (since := "2026-04-04")]
+alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
+
+@[deprecated (since := "2026-04-04")]
+alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
+
+@[deprecated (since := "2026-04-04")]
+alias exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor'_mem
+
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
   (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
+
+@[deprecated (since := "2026-04-04")] alias exists_isOpen_xor'_mem := exists_isOpen_xor_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
 @[instance_reducible]
