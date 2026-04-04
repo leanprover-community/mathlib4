@@ -895,6 +895,11 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
+theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂)
+    (_ : xa₁ ^ c₁ * (nat_lit 1).rawCast = c₃) (_ : c₃ * c₂ = d) :
+    (xa₁ ^ ea₁ * a₂ : R) ^ b = d := by
+  subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
+
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
 private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
     MonadLiftT (OptionT m) (OptionT m') where
@@ -927,10 +932,12 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       let ⟨c₁, vc₁, pc₁⟩ ← evalMulProd rcℕ rcℕ vea₁' vb'
       let ⟨c₁', vc₁'⟩ := vc₁.toExProdNat
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
+      let ⟨_, vc₃, pc₃⟩ := vxa₁.toProd rc vc₁'
+      let ⟨_, vd, pd⟩ ← evalMulProd rc rcℕ vc₃ vc₂
       have : $c₁ =Q $c₁' := ⟨⟩
       have : $b =Q $b' := ⟨⟩
       have : $ea₁ =Q $ea₁' := ⟨⟩
-      return ⟨_, .mul vxa₁ vc₁' vc₂, q(mul_pow $pc₁ $pc₂)⟩
+      return ⟨_, vd, q(mul_pow_mul $pc₁ $pc₂ $pc₃ $pd)⟩
   return (← res.run).getD (evalPowProdAtom rc va vb)
 
 /--

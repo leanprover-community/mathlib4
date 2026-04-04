@@ -22,10 +22,10 @@ We define rank one valuations.
 
 ## Main Definitions
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
-`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
-of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
+  `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+  of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
 * `RankOne.restrict_RankOne` is the `RankOne` instance for the restriction of a valuation to its
-image, as defined in
+  image, as defined in
 
 ## Tags
 
@@ -175,8 +175,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
@@ -185,8 +184,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
