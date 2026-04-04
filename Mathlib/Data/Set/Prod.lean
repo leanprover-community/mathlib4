@@ -417,24 +417,22 @@ section Diagonal
 
 variable {α : Type*} {s t : Set α}
 
+@[simp] theorem range_diag : range Function.diag = diagonal α := Set.ext <| by simp
+
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
+  range_diag ▸ (range_nonempty Function.diag)
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 
-theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
+theorem preimage_val_val_diagonal (s : Set α) :
+    Prod.map Subtype.val Subtype.val ⁻¹' diagonal α = diagonal s := Set.ext <| by simp
 
-@[simp]
-theorem range_diag : range Function.diag = diagonal α := by
-  ext ⟨x, y⟩
-  simp [Prod.ext_iff]
+@[deprecated (since := "2026-04-04")]
+alias preimage_coe_coe_diagonal := preimage_val_val_diagonal
 
-theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  simp_rw [← range_diag, range_subset_iff, Function.diag_apply]
+theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, Δ x ∈ s := by
+  simp_rw [← range_diag, range_subset_iff]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=

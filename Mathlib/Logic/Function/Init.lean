@@ -167,7 +167,7 @@ theorem map_comp_diag {f : α → β} {g : α → δ} : Prod.map f g ∘ Functio
 
 theorem injective_diag : Function.Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
-theorem exists_diag_apply_iff (p : α × α) : (∃ a, p = Δ a) ↔ p.1 = p.2 := by
+@[simp] theorem exists_diag_apply_iff (p : α × α) : (∃ a, Δ a = p) ↔ p.1 = p.2 := by
   simp [Prod.ext_iff, eq_comm]
 
 @[simp] theorem diag_eq_iff : Δ a = Δ b ↔ a = b := injective_diag.eq_iff

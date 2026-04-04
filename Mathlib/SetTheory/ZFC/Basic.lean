@@ -457,7 +457,7 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
   | ⟨a, c⟩ => by
     let ⟨b, hb⟩ := αβ a
     induction ea : A a with | _ γ Γ
-    induction eb : B b with | _ δ Δ
+    induction eb : B b with | _ δ D
     rw [ea, eb] at hb
     obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c

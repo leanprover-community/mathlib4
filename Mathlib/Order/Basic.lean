@@ -885,26 +885,6 @@ lemma GCongr.mk_le_mk (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) : (a₁, b₁) �
 @[to_dual (attr := simp) mk_le_swap]
 lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
 
-section
-variable {α β₁ β₂ : Type*} [LE β₁] [LE β₂]
-
-@[simp]
-lemma pair_le_pair_iff {u₁ v₁ : α → β₁} {u₂ v₂ : α → β₂} :
-    Function.prod u₁ u₂ ≤ Function.prod v₁ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
-  simp [Pi.le_def, Prod.le_def, forall_and]
-
-lemma const_le_pair_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    Function.const _ b ≤ Function.prod v₁ v₂ ↔
-    Function.const _ b.1 ≤ v₁ ∧ Function.const _ b.2 ≤ v₂ :=
-  prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
-
-lemma pair_le_const_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
-    Function.prod v₁ v₂ ≤ Function.const _ b ↔
-    v₁ ≤ Function.const _ b.1 ∧ v₂ ≤ Function.const _ b.2 :=
-  prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
-
-end
-
 end LE
 
 section Preorder
@@ -1138,3 +1118,24 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
   __ := (inferInstance : PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   toDecidableLE := Classical.decRel _
+
+namespace Function
+
+variable {α β₁ β₂ : Type*} [LE β₁] [LE β₂]
+
+@[simp]
+lemma pair_le_pair_iff {u₁ v₁ : α → β₁} {u₂ v₂ : α → β₂} :
+   u₁ △ u₂ ≤ v₁ △ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ := by
+  simp [Pi.le_def, Prod.le_def, forall_and]
+
+lemma const_le_pair_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
+    Function.const _ b ≤ v₁ △ v₂ ↔
+    Function.const _ b.1 ≤ v₁ ∧ Function.const _ b.2 ≤ v₂ :=
+  prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
+
+lemma pair_le_const_iff {b : β₁ × β₂} {v₁ : α → β₁} {v₂ : α → β₂} :
+    v₁ △ v₂ ≤ Function.const _ b ↔
+    v₁ ≤ Function.const _ b.1 ∧ v₂ ≤ Function.const _ b.2 :=
+  prod_const_const b.1 b.2 ▸ pair_le_pair_iff ..
+
+end Function
