@@ -134,6 +134,9 @@ lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
     DirSupInaccOn D (s ∪ t) := by
   rw [← dirSupClosedOn_compl, compl_union]; exact hs.compl.inter ht.compl
 
+lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
+  simpa using hs.dirSupInaccOn.union ht.dirSupInaccOn (D := .univ)
+
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
   fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
