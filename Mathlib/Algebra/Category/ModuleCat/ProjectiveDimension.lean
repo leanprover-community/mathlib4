@@ -24,7 +24,7 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian Module
 
-namespace CategoryTheory
+namespace ModuleCat
 
 section
 
@@ -93,9 +93,9 @@ lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
 
 end
 
-end CategoryTheory
-
 lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Nontrivial M]
     [Projective M] : projectiveDimension M = 0 := by
   simpa [projectiveDimension_eq_zero_iff, ModuleCat.isZero_iff_subsingleton,
     not_subsingleton_iff_nontrivial] using ⟨‹_›, ‹_›⟩
+
+end ModuleCat
