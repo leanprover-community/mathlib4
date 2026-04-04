@@ -62,7 +62,6 @@ protected theorem Summable.tsum_mul_right (a) (hf : Summable f L) :
 
 theorem SemiconjBy.tsum_left {a b : α} (h : ∀ (i : ι), SemiconjBy (f i) a b) :
     SemiconjBy (∑'[L] (i : ι), f i) a b := by
-  classical
   by_cases hf : Summable f L
   · rw [SemiconjBy, ← hf.tsum_mul_right a, ← hf.tsum_mul_left b, tsum_congr h]
   · simp [tsum_eq_zero_of_not_summable hf]
@@ -71,7 +70,7 @@ theorem SemiconjBy.tsum_right {f g : ι → α} (a : α) (hf : Summable f L) (hg
     (h : ∀ (i : ι), SemiconjBy a (f i) (g i)) :
     SemiconjBy a (∑'[L] (i : ι), f i) (∑'[L] (i : ι), g i) := by
   rw [SemiconjBy, ← hf.tsum_mul_left a, ← hg.tsum_mul_right a]
-  exact tsum_congr fun i => h i
+  exact tsum_congr h
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑'[L] i, f i) a :=
   SemiconjBy.tsum_left h
