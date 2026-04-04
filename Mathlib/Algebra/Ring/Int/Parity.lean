@@ -47,14 +47,10 @@ lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
 
 @[deprecated (since := "2026-04-04")] alias even_xor'_odd := even_xor_odd
 
-@[deprecated (since := "2026-04-04")] alias even_xor'_odd := even_xor_odd
-
 lemma even_xor_odd' (n : ℤ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;>
   · use k
     grind
-
-@[deprecated (since := "2026-04-04")] alias even_xor'_odd' := even_xor_odd'
 
 @[deprecated (since := "2026-04-04")] alias even_xor'_odd' := even_xor_odd'
 
