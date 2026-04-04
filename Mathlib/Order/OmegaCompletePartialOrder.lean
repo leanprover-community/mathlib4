@@ -201,26 +201,28 @@ lemma toSum_inl (c : Chain α) : toSum (inl c : Chain (α ⊕ β)) = .inl c := r
 @[simp]
 lemma toSum_inr (c : Chain β) : toSum (inr c : Chain (α ⊕ β)) = .inr c := rfl
 
-@[elab_as_elim]
-lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
-    (c : Chain (α ⊕ β)) : p c := by
-  suffices this : c = Sum.elim .inl .inr (toSum c) by
-    rw [this]
-    cases c.toSum with
-    | inl c => exact inl c
-    | inr c => exact inr c
+@[simp]
+lemma elim_toSum (c : Chain (α ⊕ β)) : (toSum c).elim .inl .inr = c := by
   ext n
-  have hc : c 0 ≤ c n := c.monotone (Nat.zero_le n)
+  have hc : c 0 ≤ c n := c.monotone n.zero_le
   generalize h₀ : c 0 = c0 at ⊢ hc
   generalize hₙ : c n = cn at ⊢ hc
   cases hc <;> simp [toSum, h₀, hₙ]
 
+@[elab_as_elim]
+lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
+    (c : Chain (α ⊕ β)) : p c := by
+  rw [←elim_toSum c]
+  cases c.toSum with
+  | inl c => exact inl c
+  | inr c => exact inr c
+
 lemma eq_inl_of_coe_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
-    (hn : c n = .inl x) : c = inl (projL c) := by
+    (hn : c n = .inl x) : inl (projL c) = c := by
   ext; cases c using sum_cases <;> simp_all
 
 lemma eq_inr_of_coe_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
-    (hn : c n = .inr x) : c = inr (projR c) := by
+    (hn : c n = .inr x) : inr (projR c) = c := by
   ext; cases c using sum_cases <;> simp_all
 
 end Chain
