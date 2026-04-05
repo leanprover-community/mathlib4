@@ -1317,6 +1317,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
   rw [lift_lift, lift_univ, univ_umax.{u, v}] at this
   exact this
 
+@[simp]
 theorem aleph0_lt_univ : ℵ₀ < univ.{u, v} := by
   simpa using lift_lt_univ' ℵ₀
 
