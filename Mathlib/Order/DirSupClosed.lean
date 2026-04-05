@@ -108,8 +108,8 @@ theorem DirSupClosedOn.sInter {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupClosed
   fun _d hD hds hd hd' _a ha t ht ↦ hs t ht hD (hds.trans fun _x hx ↦ hx _ ht) hd hd' ha
 
 theorem DirSupClosed.sInter {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupClosed x) :
-    DirSupClosed (⋂₀ s) :=
-  .of_univ (.sInter fun x hx ↦ (hs x hx).to_univ)
+    DirSupClosed (⋂₀ s) := by
+  simpa using DirSupClosedOn.sInter fun x hx ↦ (hs x hx).dirSupClosedOn (D := .univ)
 
 theorem DirSupInaccOn.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInaccOn D x) :
     DirSupInaccOn D (⋃₀ s) := by
@@ -119,8 +119,28 @@ theorem DirSupInaccOn.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInaccOn
   exact (hs x hx).compl
 
 theorem DirSupInacc.sUnion {s : Set (Set α)} (hs : ∀ x ∈ s, DirSupInacc x) :
-    DirSupInacc (⋃₀ s) :=
-  .of_univ (.sUnion fun x hx ↦ (hs x hx).to_univ)
+    DirSupInacc (⋃₀ s) := by
+  simpa using DirSupInaccOn.sUnion fun x hx ↦ (hs x hx).dirSupInaccOn (D := .univ)
+
+theorem DirSupClosedOn.iInter {ι} {f : ι → Set α} (hs : ∀ i, DirSupClosedOn D (f i)) :
+    DirSupClosedOn D (⋂ i, f i) := by
+  rw [← sInter_range f]
+  exact DirSupClosedOn.sInter (by simpa)
+
+theorem DirSupClosed.iInter {ι} {f : ι → Set α} (hs : ∀ i, DirSupClosed (f i)) :
+    DirSupClosed (⋂ i, f i) := by
+  rw [← sInter_range f]
+  exact DirSupClosed.sInter (by simpa)
+
+theorem DirSupInaccOn.iUnion {ι} {f : ι → Set α} (hs : ∀ i, DirSupInaccOn D (f i)) :
+    DirSupInaccOn D (⋃ i, f i) := by
+  rw [← sUnion_range f]
+  exact DirSupInaccOn.sUnion (by simpa)
+
+theorem DirSupInacc.iUnion {ι} {f : ι → Set α} (hs : ∀ i, DirSupInacc (f i)) :
+    DirSupInacc (⋃ i, f i) := by
+  rw [← sUnion_range f]
+  exact DirSupInacc.sUnion (by simpa)
 
 lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) :
     DirSupClosedOn D (s ∩ t) := by
@@ -129,14 +149,14 @@ lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) :
   simpa [hs]
 
 lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) := by
-  simpa using hs.to_univ.inter ht.to_univ
+  simpa using hs.dirSupClosedOn.inter ht.dirSupClosedOn (D := .univ)
 
 lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
     DirSupInaccOn D (s ∪ t) := by
   rw [← dirSupClosedOn_compl, compl_union]; exact hs.compl.inter ht.compl
 
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
-  rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
+  simpa using hs.dirSupInaccOn.union ht.dirSupInaccOn (D := .univ)
 
 theorem DirSupClosedOn.union (hDL : IsLowerSet D)
     (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
