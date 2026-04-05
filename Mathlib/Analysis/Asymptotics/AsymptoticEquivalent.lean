@@ -329,7 +329,7 @@ theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atBot ↔ Tendsto v l atBot :=
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
 
-section eventually_sign
+section ClosedIicTopology
 
 variable [ClosedIicTopology β]
 
@@ -359,7 +359,7 @@ theorem IsEquivalent.eventually_neg (h : u ~[l] v) (hv : ∀ᶠ t in l, v t < 0)
   obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
   exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_neg_of_pos_of_neg hφ hv)
 
-end eventually_sign
+end ClosedIicTopology
 
 end NormedLinearOrderedField
 
