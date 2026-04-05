@@ -16,10 +16,14 @@ jobs:
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
           source_workflow: Add "ready-to-merge" and "delegated" label
@@ -36,7 +40,7 @@ jobs:
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
         if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@2536c51d3d126276eb39f74d6bc9c72ac6ef30d3 # v16
+        uses: dawidd6/action-download-artifact@8a338493df3d275e4a7a63bcff3b8fe97e51a927 # v19
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
@@ -65,14 +69,21 @@ jobs:
       - name: Select bridge or legacy inputs
         id: inputs
         if: ${{ steps.bridge.outputs.pr_number != '' || steps.legacy.outputs.pr_number != '' }}
+        env:
+          INPUT_AUTHOR: ${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}
+          INPUT_PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}
+          INPUT_BOT: ${{ steps.bridge.outputs.bot }}${{ steps.legacy.outputs.bot }}
+          INPUT_REMOVE_LABELS: ${{ steps.bridge.outputs.removeLabels }}${{ steps.legacy.outputs.removeLabels }}
+          INPUT_MORD: ${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}
+          INPUT_SOURCE: ${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}
         run: |
           {
-            echo "author=${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}"
-            echo "pr_number=${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}"
-            echo "bot=${{ steps.bridge.outputs.bot }}${{ steps.legacy.outputs.bot }}"
-            echo "removeLabels=${{ steps.bridge.outputs.removeLabels }}${{ steps.legacy.outputs.removeLabels }}"
-            echo "mOrD=${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}"
-            echo "input_source=${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}"
+            echo "author=${INPUT_AUTHOR}"
+            echo "pr_number=${INPUT_PR_NUMBER}"
+            echo "bot=${INPUT_BOT}"
+            echo "removeLabels=${INPUT_REMOVE_LABELS}"
+            echo "mOrD=${INPUT_MORD}"
+            echo "input_source=${INPUT_SOURCE}"
           } | tee -a "$GITHUB_OUTPUT"
 
       - name: Note legacy artifact fallback
@@ -84,25 +95,28 @@ jobs:
       - name: Check whether user is a mathlib admin
         id: user_permission
         if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
-        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
+        uses: actions-cool/check-user-permission@c21884f3dda18dafc2f8b402fe807ccc9ec1aa5e # v2.4.0
         with:
           username: ${{ steps.inputs.outputs.author }}
           require: 'admin'
 
       - name: Generate app token
         id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
           app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-triage-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Add ready-to-merge or delegated label
         id: add_label
         if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
-        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
+        uses: octokit/request-action@b91aabaa861c777dcdb14e2387e30eddf04619ae # v3.0.0
         with:
           route: POST /repos/:repository/issues/:issue_number/labels
           # Unexpected input warning from the following is expected:
@@ -111,7 +125,7 @@ jobs:
           issue_number: ${{ steps.inputs.outputs.pr_number }}
           labels: '["${{ steps.inputs.outputs.mOrD }}"]'
         env:
-          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          # This token is masked by the token minting action and will not be logged accidentally
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - if: ${{ ! steps.inputs.outputs.mOrD == '' &&
@@ -175,6 +189,7 @@ jobs:
         if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
+        continue-on-error: true
         env:
           ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com

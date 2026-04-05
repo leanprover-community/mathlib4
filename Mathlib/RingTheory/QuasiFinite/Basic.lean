@@ -41,7 +41,7 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
--- See `Mathib/RingTheory/QuasiFinite/Polynomial.lean`
+-- See `Mathlib/RingTheory/QuasiFinite/Polynomial.lean`
 assert_not_exists RatFunc
 
 open TensorProduct
@@ -51,7 +51,6 @@ attribute [-instance] Module.Free.instFaithfulSMulOfNontrivial Algebra.IsIntegra
 
 namespace Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /--
 We say that an `R`-algebra `S` is quasi-finite
@@ -62,7 +61,7 @@ This is slightly different from the
 which requires `S` to be of finite type over `R`.
 
 Also see `Algebra.QuasiFinite.iff_finite_comap_preimage_singleton` that
-this is equivalent to having finite fibers for finite-type algebas.
+this is equivalent to having finite fibers for finite-type algebras.
 -/
 @[mk_iff, stacks 00PL]
 class QuasiFinite : Prop where
@@ -75,11 +74,9 @@ namespace QuasiFinite
 
 attribute [instance] finite_fiber
 
-set_option backward.isDefEq.respectTransparency false in
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] : IsArtinianRing (P.Fiber S) :=
   .of_finite P.ResidueField _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finite_comap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
     (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {P}).Finite :=
   (PrimeSpectrum.preimageEquivFiber R S P).finite_iff.mpr finite_of_compact_of_discrete
@@ -97,7 +94,6 @@ lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : 
     (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ finite_comap_preimage_singleton _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isDiscrete_comap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
     IsDiscrete (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {P}) :=
   ⟨(PrimeSpectrum.preimageHomeomorphFiber R S P).symm.discreteTopology⟩
@@ -108,10 +104,8 @@ lemma isDiscrete_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)}
   hs.preimage' (PrimeSpectrum.continuous_comap _).continuousOn
     fun _ ↦ isDiscrete_comap_preimage_singleton _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) [Module.Finite R S] : QuasiFinite R S where
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00PP "(3)"]
 instance baseChange [QuasiFinite R S] {A : Type*} [CommRing A] [Algebra R A] :
     QuasiFinite A (A ⊗[R] S) := by
@@ -122,7 +116,6 @@ instance baseChange [QuasiFinite R S] {A : Type*} [CommRing A] [Algebra R A] :
       (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm
   exact .of_surjective e.symm.toLinearMap e.symm.surjective
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 -- See `Module.Finite.of_quasiFinite` instead
 private lemma finite_of_isArtinianRing_of_isLocalRing
@@ -168,7 +161,6 @@ lemma iff_of_isArtinianRing [IsArtinianRing R] :
     QuasiFinite R S ↔ Module.Finite R S :=
   ⟨fun _ ↦ .of_quasiFinite, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra in
 variable (R S T) in
 @[stacks 00PO]
@@ -206,7 +198,6 @@ lemma iff_of_algEquiv (e : S ≃ₐ[R] T) :
   ⟨fun _ ↦ .of_surjective_algHom e.toAlgHom e.surjective,
     fun _ ↦ .of_surjective_algHom e.symm.toAlgHom e.symm.surjective⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isLocalization (M : Submonoid S) [IsLocalization M T] [QuasiFinite R S] :
     QuasiFinite R T :=
   letI : QuasiFinite S T := by
@@ -233,7 +224,6 @@ instance (priority := low) [IsFractionRing R S] : QuasiFinite R S :=
 instance (P : Ideal S) [P.IsPrime] [QuasiFinite R S] : QuasiFinite R P.ResidueField :=
   .trans _ (S ⧸ P) _
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S T) in
 lemma of_restrictScalars [QuasiFinite R T] : QuasiFinite S T := by
   refine ⟨fun P hP ↦ ?_⟩
@@ -287,7 +277,6 @@ instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [
 
 section Finite
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iff_finite_comap_preimage_singleton [FiniteType R S] :
     QuasiFinite R S ↔ ∀ x, (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {x}).Finite := by
   refine ⟨fun H _ ↦ finite_comap_preimage_singleton _, fun H ↦ ⟨fun P _ ↦ ?_⟩⟩
@@ -309,7 +298,6 @@ lemma iff_finite_primesOver [FiniteType R S] :
   simp [(PrimeSpectrum.equivSubtype S).exists_congr_left, PrimeSpectrum.ext_iff, eq_comm,
     PrimeSpectrum.equivSubtype, Ideal.primesOver, and_comm, Ideal.liesOver_iff, Ideal.under]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra
 (away from an element), then `T` is quasi-finite over `R` -/
 lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R T]
@@ -428,7 +416,6 @@ lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
   rw [← Localization.AtPrime.comap_maximalIdeal (I := Q), ← H,
     IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P] :
     Module.Finite p.ResidueField P.ResidueField := by
   let m := IsLocalRing.maximalIdeal (Localization.AtPrime P)
@@ -518,7 +505,6 @@ lemma QuasiFiniteAt.of_isOpen_singleton
   exact QuasiFinite.iff_finite_comap_preimage_singleton.mpr fun _ ↦
     Set.subsingleton_of_subsingleton.finite
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] RingHom.ker_isPrime in
 lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
@@ -551,7 +537,6 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
   · simpa
   · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
     Function.Surjective (Algebra.TensorProduct.lift (Algebra.ofId _ _)
