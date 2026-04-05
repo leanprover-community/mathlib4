@@ -149,18 +149,14 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
-/-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨(iSup (succ ∘ card ∘ f)).ord, by
-    rintro a ⟨i, rfl⟩
-    exact le_of_lt (Cardinal.lt_ord.2 <| (lt_succ _).trans_le (le_ciSup bddAbove_of_small _))⟩
-
 theorem bddAbove_of_small {s : Set Ordinal.{u}} [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range fun x ↦ ((@equivShrink s h).symm x).val
-  use a
-  intro b hb
-  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
+  obtain ⟨a, ha⟩ := Cardinal.bddAbove_of_small (s := (succ ∘ card) '' s)
+  refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
+  simpa [lt_ord] using ha (mem_image_of_mem _ hb)
+
+@[deprecated bddAbove_of_small (since := "2026-04-04")]
+theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
+  bddAbove_of_small
 
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ ↦ small_subset (s := Iic a) fun _ hx ↦ h hx, fun _ ↦ bddAbove_of_small⟩
@@ -594,8 +590,7 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
 
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  csSup_le_csSup' (bddAbove_range.{v, max u w} _)
-    (by convert Set.image_mono h <;> apply Set.range_comp)
+  csSup_le_csSup' bddAbove_of_small (by convert Set.image_mono h <;> apply Set.range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
