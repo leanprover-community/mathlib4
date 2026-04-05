@@ -92,9 +92,9 @@ set_option backward.privateInPublic.warn false in
 instance : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
-    rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
+    unfold instHMul
+    rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
     have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
-    simp only [Mul.mul_eq_hMul]
     grind
   one := one
   one_mul := by
