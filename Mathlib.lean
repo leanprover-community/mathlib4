@@ -6880,6 +6880,7 @@ public import Mathlib.SetTheory.Ordinal.Notation
 public import Mathlib.SetTheory.Ordinal.Principal
 public import Mathlib.SetTheory.Ordinal.Rank
 public import Mathlib.SetTheory.Ordinal.Topology
+public import Mathlib.SetTheory.Ordinal.Univ
 public import Mathlib.SetTheory.Ordinal.Veblen
 public import Mathlib.SetTheory.ZFC.Basic
 public import Mathlib.SetTheory.ZFC.Cardinal
