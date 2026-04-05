@@ -25,7 +25,6 @@ lemma tsum_measureReal_restrict_preimage_singleton_eq {Ω : Type*} [MeasurableSp
   · intro k
     finiteness
 
-
 lemma coupling_term_bound {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     {Y Z : Ω → ℕ} (hY : Measurable Y) (hZ : Measurable Z) (k : ℕ) :
     |(μ.map Y).real {k} - (μ.map Z).real {k}| ≤
