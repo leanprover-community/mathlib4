@@ -451,22 +451,7 @@ lemma concaveOn_cfc_rpowIntegrand₀₁ {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0
         cfc_id' ..]
   refine ConcaveOn.congr ?_ h₁.symm
   refine ConcaveOn.sub (concaveOn_const _ (convex_Ici 0)) ?_
-  refine ConvexOn.smul (by positivity) ?_
-  have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind
-  let addl : A →ᵃ[ℝ] A :=
-  { toFun := fun x => algebraMap ℝ A t + x
-    linear := LinearMap.id
-    map_vadd' p v := by simp; grind only }
-  have haddl : Function.Injective addl := by intro _ _; simp [addl]
-  have hici : Ici (0 : A) = addl ⁻¹' (addl '' (Ici 0)) := by
-    rw [Set.preimage_image_eq _ haddl]
-  change ConvexOn ℝ (Ici 0) (Ring.inverse ∘ addl)
-  rw [hici]
-  apply ConvexOn.comp_affineMap
-  refine ConvexOn.subset CStarAlgebra.convexOn_ringInverse ?_ (Convex.affine_image _ (convex_Ici _))
-  simp only [AffineMap.coe_mk, image_add_left, preimage_const_add_Ici, sub_neg_eq_add, zero_add,
-    addl]
-  exact fun x hx  => IsStrictlyPositive.of_le (by grind) hx
+  exact ConvexOn.smul (by positivity) <| CStarAlgebra.convexOn_ringInverse_algebraMap_add ht
 
 end UnitalCStarAlgebra
 
