@@ -695,6 +695,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < �
       have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
+set_option linter.deprecated false in
 @[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-27")]
 theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
     iSup (typein ((· < ·) : o.ToType → o.ToType → Prop)) = o := by
