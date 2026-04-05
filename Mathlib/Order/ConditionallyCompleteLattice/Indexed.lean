@@ -416,13 +416,24 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 theorem ciInf_eq_bot_of_bot_mem [OrderBot α] {f : ι → α} (hs : ⊥ ∈ range f) : iInf f = ⊥ :=
   csInf_eq_bot_of_bot_mem hs
 
-theorem ciInf_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
+theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
+
+@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
+
+lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
+    ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+  have : OrderBot α := WellFoundedLT.toOrderBot α
+  constructor
+  · rintro rfl
+    exact ⟨ciInf_mem f, ciInf_le (OrderBot.bddBelow ..)⟩
+  · rintro ⟨⟨i, rfl⟩, h⟩
+    exact le_antisymm (ciInf_le (OrderBot.bddBelow ..) _) (le_ciInf h)
 
 end ConditionallyCompleteLinearOrder
 

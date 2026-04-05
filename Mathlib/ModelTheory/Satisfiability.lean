@@ -329,8 +329,6 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
   refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
     fun h => models_formula_iff.2 (fun M v => ?_)⟩
   · letI := (L.lhomWithConstants α).reduct M
-    have : (L.lhomWithConstants α).IsExpansionOn M := LHom.isExpansionOn_reduct _ _
-      -- why doesn't that instance just work?
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M

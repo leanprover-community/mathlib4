@@ -358,6 +358,7 @@ lemma extension_eq_zero_iff {x : hat K} : extension x = 0 ↔ x = 0 := by
     simpa only [extensionValuation_toFun, map_eq_zero]
   rw [Valuation.zero_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   rcases eq_or_ne x 0 with (rfl | h)
   · exact ⟨0, extensionValuation_apply_coe 0⟩
@@ -371,7 +372,11 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
       simp_rw [← hr, ← Valuation.restrict_def, h]
       convert valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
       simp_rw [eq_comm (a := extension _)]
-      grind
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was: `grind` -/
+      ext; simp
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :

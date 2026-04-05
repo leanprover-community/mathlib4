@@ -411,6 +411,17 @@ lemma _root_.isStrictlyPositive_add {a b : A}
     IsStrictlyPositive (a + b) := by
   grind [IsStrictlyPositive.add_nonneg, IsStrictlyPositive.nonneg_add]
 
+lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositive a} := by
+  intro a (apos : IsStrictlyPositive a) b (bpos : IsStrictlyPositive b) hab
+  rw [Ring.inverse_of_isUnit (by grind), Ring.inverse_of_isUnit (by grind)]
+  exact CStarAlgebra.inv_le_inv (Units.isStrictlyPositive_iff.mp apos) hab
+
+open Ring in
+@[gcongr]
+lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
+    b⁻¹ʳ ≤ a⁻¹ʳ :=
+  antitoneOn_ringInverse ha (IsStrictlyPositive.of_le ha hab) hab
+
 end CStarAlgebra
 
 end Inv
