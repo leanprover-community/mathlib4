@@ -343,13 +343,9 @@ instance : OrderBot Ordinal where
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
-instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
-  simp [← bot_eq_zero]
-
 @[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
-
 
 @[deprecated not_neg (since := "2025-11-21")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
