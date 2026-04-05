@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -22,13 +23,15 @@ to the identity localizer morphism.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C]
-  [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C]
+  [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
 
 namespace LocalizerMorphism
 
@@ -48,11 +51,11 @@ noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
   Iso.homCongr ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
     ((Φ.localizedFunctor L₁ L₂).map f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homMap_map (f : X ⟶ Y) :
     Φ.homMap L₁ L₂ (L₁.map f) = L₂.map (Φ.functor.map f) := by
   dsimp [homMap]
-  erw [← NatTrans.naturality_assoc]
   simp
 
 variable (X) in
@@ -61,11 +64,13 @@ lemma homMap_id :
     Φ.homMap L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj (Φ.functor.obj X)) := by
   simpa using Φ.homMap_map L₁ L₂ (𝟙 X)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homMap_comp (f : L₁.obj X ⟶ L₁.obj Y) (g : L₁.obj Y ⟶ L₁.obj Z) :
     Φ.homMap L₁ L₂ (f ≫ g) = Φ.homMap L₁ L₂ f ≫ Φ.homMap L₁ L₂ g := by
   simp [homMap]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) (f : L₁.obj X ⟶ L₁.obj Y) :
     Φ.homMap L₁ L₂ f = e.hom.app X ≫ G.map f ≫ e.inv.app Y := by
@@ -75,12 +80,8 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
   have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
-    ext X
-    dsimp [α]
-    rw [Localization.liftNatTrans_app]
-    erw [id_comp]
-    rw [Iso.hom_inv_id_app_assoc]
-    rfl
+    ext
+    simp [α, this]
   simp [this]
 
 @[simp]
@@ -111,6 +112,7 @@ variable (W : MorphismProperty C) (L₁ : C ⥤ D₁) [L₁.IsLocalization W]
   (L₂ : C ⥤ D₂) [L₂.IsLocalization W] (L₃ : C ⥤ D₃) [L₃.IsLocalization W]
   {X Y Z : C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bijection between types of morphisms in two localized categories
 for the same class of morphisms `W`. -/
 @[simps -isSimp apply]
@@ -129,6 +131,7 @@ noncomputable def homEquiv :
 lemma homEquiv_symm_apply (g : L₂.obj X ⟶ L₂.obj Y) :
     (homEquiv W L₁ L₂).symm g = homEquiv W L₂ L₁ g := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homEquiv_eq (G : D₁ ⥤ D₂) (e : L₁ ⋙ G ≅ L₂) (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₁ L₂ f = e.inv.app X ≫ G.map f ≫ e.hom.app Y := by
   rw [homEquiv_apply, LocalizerMorphism.homMap_apply (LocalizerMorphism.id W) L₁ L₂ G e.symm,

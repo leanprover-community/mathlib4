@@ -3,16 +3,20 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Some results about the topology of ℂ
 -/
+
+public section
 
 
 section ComplexSubfield
@@ -43,6 +47,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
   simp only [image_univ]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/
@@ -103,14 +108,14 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         ext1 z
         convert RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
-  · let j : { x // x ∈ closure (id '' { x | (K : Set ℂ) x }) } → (K.topologicalClosure : Set ℂ) :=
+  · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
         convert x.prop
         simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
-      (IsDenseEmbedding.id.subtype (K : Set ℂ)).dense (by continuity : Continuous j)
+      (IsDenseEmbedding.id.subtype (· ∈ K)).dense (by fun_prop : Continuous j)
     rintro ⟨y, hy⟩
     use
       ⟨y, by

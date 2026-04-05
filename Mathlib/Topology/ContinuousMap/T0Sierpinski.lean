@@ -3,9 +3,11 @@ Copyright (c) 2022 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
-import Mathlib.Topology.Order
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.Order
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -18,12 +20,15 @@ The map `productOfMemOpens` is always inducing. Whenever `X` is T0, `productOfMe
 also injective and therefore an embedding.
 -/
 
+@[expose] public section
+
 open Topology
 
 noncomputable section
 
 namespace TopologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
@@ -48,9 +53,6 @@ theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
   convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 
-@[deprecated (since := "2024-10-28")]
-alias productOfMemOpens_inducing := productOfMemOpens_isInducing
-
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq
@@ -58,8 +60,5 @@ theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfM
 
 theorem productOfMemOpens_isEmbedding [T0Space X] : IsEmbedding (productOfMemOpens X) :=
   .mk (productOfMemOpens_isInducing X) (productOfMemOpens_injective X)
-
-@[deprecated (since := "2024-10-26")]
-alias productOfMemOpens_embedding := productOfMemOpens_isEmbedding
 
 end TopologicalSpace

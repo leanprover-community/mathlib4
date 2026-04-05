@@ -3,12 +3,16 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Instances.ZMultiples
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.Instances.ZMultiples
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -27,17 +31,17 @@ The standard (closed) fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, 
 The standard open fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, denoted `𝒟ᵒ`:
 `fdo := {z | 1 < (z : ℂ).normSq ∧ |z.re| < (1 : ℝ) / 2}`
 
-These notations are localized in the `Modular` locale and can be enabled via `open scoped Modular`.
+These notations are localized in the `Modular` scope and can be enabled via `open scoped Modular`.
 
 ## Main results
 
-Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`:
-`exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2,ℤ), g • z ∈ 𝒟`
+* `ModularGroup.exists_smul_mem_fd`: Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`.
+* `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`:
+  If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`.
+* `ModularGroup.fdo_eq_interior_fd` and `ModularGroup.fd_eq_closure_fdo`: topological relations
+  between `fd` and `fdo`.
 
-If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`:
-`eq_smul_self_of_mem_fdo_mem_fdo {z : ℍ} {g : SL(2,ℤ)} (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z`
-
-# Discussion
+## Discussion
 
 Standard proofs make use of the identity
 
@@ -59,8 +63,10 @@ existence of `g` maximizing `(g•z).im` (see `ModularGroup.exists_max_im`), and
 those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_re`).
 -/
 
+@[expose] public section
 
-open Complex hiding abs_two
+
+open Complex
 
 open Matrix hiding mul_smul
 
@@ -76,14 +82,12 @@ variable {g : SL(2, ℤ)} (z : ℍ)
 
 section BottomRow
 
-/-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
+/-- The two numbers `c`, `d` in the "bottom row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
-    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) := by
-  use -(↑g : Matrix (Fin 2) (Fin 2) R) 0 1, (↑g : Matrix (Fin 2) (Fin 2) R) 0 0
-  rw [add_comm, neg_mul, ← sub_eq_add_neg, ← det_fin_two]
-  exact g.det_coe
+    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) :=
+  isCoprime_row g 1
 
-/-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
+/-- Every pair `![c, d]` of coprime integers is the "bottom row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
 theorem bottom_row_surj {R : Type*} [CommRing R] :
     Set.SurjOn (fun g : SL(2, R) => (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
@@ -105,6 +109,7 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -143,7 +148,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
     · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
-      rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
+      rw [f_def, map_add, map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
@@ -233,15 +238,15 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
   have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero z this
-  simp only [coe_specialLinearGroup_apply, hg, algebraMap_int_eq, Int.coe_castRingHom,
-    Complex.ofReal_intCast]
-  field_simp [nonZ1, nonZ2, denom_ne_zero]
-  rw [(by simp :
-    (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
-  rw [← hg, det_fin_two]
-  simp only [Int.cast_sub, Int.cast_mul]
-  ring
+  subst hg
+  rw [coe_specialLinearGroup_apply]
+  replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert nonZ2 using 1; ring
+  have H := congr(Int.cast (R := ℂ) $(det_fin_two g))
+  simp at H
+  simp [field]
+  linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
       (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
@@ -325,7 +330,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; omega
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; lia
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use g 0 1
     suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
@@ -339,7 +344,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; omega
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; lia
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
   simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
@@ -450,12 +455,12 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
-    replace this : c' ^ 2 ≤ 1 ^ 2 := by omega
+    replace this : c' ^ 2 ≤ 1 ^ 2 := by lia
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · rw [hc]; norm_num
-    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
+    · rw [hc]; simp
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith
   intro hc
@@ -505,6 +510,182 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
   simp [eq_zero_of_mem_fdo_of_T_zpow_mem_fdo hz hg, one_smul]
 
 end UniqueRepresentative
+
+section Topology
+
+lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.le⟩
+
+lemma isClosed_fd : IsClosed 𝒟 := by
+  refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
+  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+
+lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
+  refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
+  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+
+/-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
+lemma coe_fdo : (↑) '' 𝒟ᵒ = {z : ℂ | 0 < z.im ∧ 1 < ‖z‖ ∧ |z.re| < 1/2} := by
+  ext x
+  refine ⟨?_, fun ⟨hxim, hxnorm, hxre⟩ ↦ ⟨⟨x, hxim⟩, ⟨one_lt_normSq_iff.mpr hxnorm, hxre⟩, rfl⟩⟩
+  rintro ⟨τ, hτ, rfl⟩
+  exact ⟨τ.im_pos, one_lt_normSq_iff.mp hτ.1, hτ.2⟩
+
+/-- Explicit formula for the image of `ModularGroup.fd` in `ℂ`. -/
+lemma coe_fd : (↑) '' 𝒟 = {z : ℂ | 0 < z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
+  ext x
+  refine ⟨?_, fun ⟨hxim, hxnorm, hxre⟩ ↦ ⟨⟨x, hxim⟩, ⟨one_le_normSq_iff.mpr hxnorm, hxre⟩, rfl⟩⟩
+  rintro ⟨τ, hτ, rfl⟩
+  exact ⟨τ.im_pos, one_le_normSq_iff.mp hτ.1, hτ.2⟩
+
+/--
+The image of the fundamental domain `𝒟` in `ℂ` is closed.
+This is not immediate (unlike the analogous statement for `𝒟ᵒ`),
+since the inclusion of `ℍ` in `ℂ` is an open but not a closed map.
+-/
+lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
+  rw [coe_fd]
+  have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
+    refine .inter ?_ (.inter ?_ ?_)
+    · exact isClosed_le continuous_const Complex.continuous_im
+    · exact isClosed_le continuous_const continuous_norm
+    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
+  convert this using 1
+  ext x
+  refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
+  exact him.lt_of_ne' <| by grind [abs_re_eq_norm]
+
+/--
+The points on the fundamental domain that aren't on the bottom "arc"
+are in the closure of the open fundamental domain.
+-/
+private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖) (hxre : |x.re| ≤ 1 / 2) :
+    x ∈ closure 𝒟ᵒ := by
+  -- Need to show that any `x` in this set is a limit of points in `𝒟ᵒ`.
+  -- Idea is to use a line segment through the origin and `x`, and show that points
+  -- a little below `x` are in `𝒟ᵒ`. There are some annoyances due
+  -- to subtypes, etc.
+  apply mem_closure_of_frequently_of_tendsto (α := ℝ)
+      (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
+  · apply Filter.Eventually.frequently
+    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
+    · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
+        refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))
+        simpa [ofComplex] using x.coe_im_pos
+      simpa [ofComplex_apply_of_im_pos x.coe_im_pos] using this.tendsto.norm
+    · simp only [eventually_nhdsWithin_iff]
+      filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
+      rw [← coe_re, ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
+      suffices a * |x.re| < 1 / 2 by simpa [abs_of_pos ha]
+      nlinarith [Set.mem_Iio.mp ha']
+  · refine .mono_left ?_ nhdsWithin_le_nhds
+    rw [isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
+    have : Filter.Tendsto (fun t : ℝ ↦ t * (x : ℂ)) (𝓝 1) (𝓝 (x : ℂ)) := by
+      rw [show 𝓝 (x : ℂ) = 𝓝 ((1 : ℝ) * (x : ℂ)) by simp]
+      exact Continuous.tendsto (by fun_prop) _
+    refine this.congr' ?_
+    filter_upwards [eventually_gt_nhds zero_lt_one] with a ha
+    rw [ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
+
+open scoped NNReal in
+/-- The points on the bottom "arc" of the fundamental domain are in the closure
+of the open fundamental domain. -/
+private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre : |x.re| ≤ 1 / 2) :
+    x ∈ closure 𝒟ᵒ := by
+  -- We show that `x` is a limit of points known to be in the closure.
+  rw [← closure_closure]
+  -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
+  apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
+    (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
+      simpa using add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
+  · apply Filter.Eventually.frequently
+    filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
+    refine mem_closure_of_one_lt_norm ?_ (by simpa using hxre)
+    suffices 1 < ‖(x : ℂ)‖ ^ 2 + a ^ 2 + 2 * a * x.im by
+      rw [← one_lt_normSq_iff]
+      convert this
+      simp [← normSq_eq_norm_sq, normSq_apply]
+      ring
+    rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]
+    positivity
+  · refine .mono_left ?_ nhdsWithin_le_nhds
+    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
+      isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
+
+lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
+  refine subset_antisymm ?_ (isClosed_fd.closure_subset_iff.mpr fdo_subset_fd)
+  intro x ⟨hx, hx'⟩
+  rw [one_le_normSq_iff] at hx
+  rcases lt_or_eq_of_le hx with hx | hx
+  · exact mem_closure_of_one_lt_norm hx hx'
+  · exact mem_closure_of_arc hx.symm hx'
+
+lemma fdo_eq_interior_fd : 𝒟ᵒ = interior 𝒟 := by
+  refine subset_antisymm (isOpen_fdo.subset_interior_iff.mpr fdo_subset_fd) ?_
+  have ho1 := isOpenMap_re.image_interior_subset 𝒟
+  have ho2 := isOpenMap_norm.image_interior_subset 𝒟
+  intro x hx
+  rw [Set.image_subset_iff] at *
+  constructor
+  · rw [one_lt_normSq_iff, ← Set.mem_Ioi, ← interior_Ici]
+    apply Set.mem_of_mem_of_subset (Set.mem_preimage.mp (ho2 hx)) (interior_mono ?_)
+    rw [Set.image_subset_iff]
+    intro ξ hξ
+    simpa [Set.mem_preimage, Set.mem_Ici, one_le_normSq_iff] using hξ.1
+  · rw [abs_lt, ← Set.mem_Ioo, ← interior_Icc]
+    apply Set.mem_of_mem_of_subset ((Set.mem_preimage.mp (ho1 hx))) (interior_mono ?_)
+    rw [Set.image_subset_iff]
+    intro ξ hξ
+    simpa [Set.mem_preimage, Set.mem_Icc, abs_le] using hξ.2
+
+end Topology
+
+section Truncated
+
+/-- The standard fundamental domain truncated at height `y`. -/
+def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.im ≤ y }
+
+/-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
+obviously closed conditions. -/
+lemma coe_truncatedFundamentalDomain (y : ℝ) :
+    UpperHalfPlane.coe '' truncatedFundamentalDomain y =
+    {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
+  ext z
+  constructor
+  · rintro ⟨⟨z, hz⟩, h, rfl⟩
+    exact ⟨hz.le, h.2, h.1.2, by simpa [Complex.normSq_eq_norm_sq] using h.1.1⟩
+  · rintro ⟨hz, h1, h2, h3⟩
+    have hz' : 0 < z.im := by
+      apply hz.lt_of_ne
+      contrapose! h3
+      simpa [← sq_lt_one_iff₀ (norm_nonneg _), ← Complex.normSq_eq_norm_sq, Complex.normSq,
+        ← h3, ← sq] using h2.trans_lt (by norm_num)
+    exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
+
+/-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
+lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
+    IsCompact (truncatedFundamentalDomain y) := by
+  rw [isEmbedding_coe.isCompact_iff, coe_truncatedFundamentalDomain,
+    Metric.isCompact_iff_isClosed_bounded]
+  constructor
+  · -- show closed
+    apply (isClosed_le continuous_const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im continuous_const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
+    exact isClosed_le continuous_const continuous_norm
+  · -- show bounded
+    refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
+    simp only [mem_closedBall_zero_iff]
+    refine le_of_sq_le_sq ?_ (by positivity)
+    rw [Real.sq_sqrt (by positivity), Complex.norm_eq_sqrt_sq_add_sq, Real.sq_sqrt (by positivity)]
+    apply add_le_add
+    · rw [sq_le_sq, abs_of_pos <| one_half_pos (α := ℝ)]
+      exact hz.2.2.1
+    · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
+      exact hz.2.1
+
+
+end Truncated
 
 end FundamentalDomain
 

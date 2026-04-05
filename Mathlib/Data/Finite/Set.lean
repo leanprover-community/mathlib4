@@ -3,7 +3,9 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Lemmas about `Finite` and `Set`s
@@ -14,6 +16,8 @@ In this file we prove two lemmas about `Finite` and `Set`s.
 
 finiteness, finite sets
 -/
+
+public section
 
 
 open Set

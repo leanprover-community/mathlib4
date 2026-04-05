@@ -3,12 +3,14 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Ring
 
 /-!
 # Boolean rings
@@ -40,13 +42,15 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+@[expose] public section
+
 open scoped symmDiff
 
 variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -153,16 +157,17 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
+@[instance_reducible]
 def sup : Max α :=
   ⟨fun x y => x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
+@[instance_reducible]
 def inf : Min α :=
   ⟨(· * ·)⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -211,6 +216,7 @@ The data is defined so that:
 * `aᶜ` unfolds to `1 + a`
 * `a \ b` unfolds to `a * (1 + b)`
 -/
+@[instance_reducible]
 def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
@@ -221,7 +227,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
+      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
@@ -229,8 +235,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
 
@@ -365,7 +370,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -523,7 +528,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc

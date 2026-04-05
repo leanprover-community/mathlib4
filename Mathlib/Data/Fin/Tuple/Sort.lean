@@ -3,11 +3,13 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Prod.Lex
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Data.Fintype.Fin
 
 /-!
 
@@ -24,6 +26,8 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 * `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
 
 -/
+
+@[expose] public section
 
 
 namespace Tuple
@@ -42,6 +46,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
@@ -101,51 +106,45 @@ open List
 
 variable {n : ℕ} {α : Type*}
 
-/-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
-`a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
-theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
-    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
-    j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
-  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
-    refine ⟨h1 j, fun h ↦ ?_⟩
-    by_contra! hc
-    let p : Fin m → Prop := fun x ↦ f x ≤ a
-    let q : Fin m → Prop := fun x ↦ x < Fintype.card {i // f i ≤ a}
-    let q' : {i // f i ≤ a} → Prop := fun x ↦ q x
-    have hw : 0 < Fintype.card {j : {x : Fin m // f x ≤ a} // ¬ q' j} :=
-      Fintype.card_pos_iff.2 ⟨⟨⟨j, h⟩, not_lt.2 hc⟩⟩
-    apply hw.ne'
-    have he := Fintype.card_congr <| Equiv.sumCompl <| q'
-    have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
-      conv_rhs => rw [← Fintype.card_fin m]
-      exact Fintype.card_subtype_le _
-    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
-  intro _ h
-  contrapose! h
-  rw [← Fin.card_Iio, Fintype.card_subtype]
-  refine Finset.card_mono (fun i => Function.mtr ?_)
-  rw [Finset.mem_filter_univ, Finset.mem_Iio]
-  exact fun hij hia ↦ h ((h_sorted (le_of_not_gt hij)).trans hia)
+section
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
-    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
-    j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
-  lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
+open Finset
+
+variable {j : Fin n} {f : Fin n → α} [Preorder α] {a : α}
+
+/-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `n`-tuple of elements of `α`, then for any `j : Fin n` and
+`a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
+theorem lt_card_le_iff_apply_le_of_monotone [DecidableLE α] (h_sorted : Monotone f) :
+    j < #{i | f i ≤ a} ↔ f j ≤ a :=
+  Fin.lt_card_filter_univ_iff_apply_of_imp (f · ≤ a) (by grind [Monotone])
+
+theorem lt_card_ge_iff_apply_ge_of_antitone [DecidableLE α] (h_sorted : Antitone f) :
+    j < #{i | a ≤ f i} ↔ a ≤ f j :=
+  Fin.lt_card_filter_univ_iff_apply_of_imp (a ≤ f ·) (by grind [Antitone])
+
+theorem lt_card_lt_iff_apply_lt_of_monotone [DecidableLT α] (h_sorted : Monotone f) :
+    j < #{i | f i < a} ↔ f j < a :=
+  Fin.lt_card_filter_univ_iff_apply_of_imp (f · < a) (by grind [Monotone])
+
+theorem lt_card_gt_iff_apply_gt_of_antitone [DecidableLT α] (h_sorted : Antitone f) :
+    j < #{i | a < f i} ↔ a < f j :=
+  Fin.lt_card_filter_univ_iff_apply_of_imp (a < f ·) (by grind [Antitone])
+
+end
 
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
-      hfσ.ofFn_sorted hfτ.ofFn_sorted
+    ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm).eq_of_pairwise'
+      hfσ.sortedLE_ofFn.pairwise hfτ.sortedLE_ofFn.pairwise
 
 /-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
 theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
-      hfσ.ofFn_sorted hfτ.ofFn_sorted
+    ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm).eq_of_pairwise'
+      hfσ.sortedGE_ofFn.pairwise hfτ.sortedGE_ofFn.pairwise
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
 
@@ -197,4 +196,17 @@ entries. -/
 theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j ∧ f j < f i :=
   antitone_pair_of_not_sorted' (id h : f ∘ Equiv.refl _ ≠ _)
 
+/-- The sorted version of a permutation `σ` is its inverse `σ⁻¹`. -/
+@[simp]
+theorem sort_perm (σ : Equiv.Perm (Fin n)) :
+    sort σ = σ⁻¹ := by
+  apply (eq_sort_iff.2 ⟨?_ , ?_⟩).symm
+  · simpa using monotone_id
+  · intro _ _ hij h
+    exact (hij.ne (by simpa using h)).elim
+
 end Tuple
+
+theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
+    Monotone σ ↔ σ = 1 := by
+  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]

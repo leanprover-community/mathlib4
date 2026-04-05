@@ -3,9 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.Matrix.Integer
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Integer
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Congruence subgroups
@@ -16,6 +17,8 @@ natural number.
 It also contains basic results about congruence subgroups.
 
 -/
+
+@[expose] public section
 
 open Matrix.SpecialLinearGroup Matrix
 
@@ -210,19 +213,11 @@ open Pointwise ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
-  ((toConjAct g⁻¹) • (Γ.map (SpecialLinearGroup.toGL.comp
-    <| SpecialLinearGroup.map (Int.castRingHom ℝ)))).comap
-    (SpecialLinearGroup.toGL.comp <| SpecialLinearGroup.map (Int.castRingHom ℝ))
+  ((toConjAct g⁻¹) • (Γ.map <| mapGL ℝ)).comap (mapGL ℝ)
 
 @[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
-  simp [conjGL, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
-
-lemma mem_conjGL' {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
-    x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
-  rw [mem_conjGL]
-  refine exists_congr fun y ↦ and_congr_right fun hy ↦ ?_
-  rw [eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul]
+  simp [conjGL, mapGL, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
 @[simp]
 lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
@@ -230,11 +225,6 @@ lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
   ext x
   simp_rw [mem_conjGL, ← map_inv, ← map_mul, toGL_injective.eq_iff, map_intCast_injective.eq_iff,
     exists_eq_right, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
-
-@[deprecated (since := "2025-05-15")] alias conjGLPos := conjGL
-@[deprecated (since := "2025-05-15")] alias conjGLPos_coe := conjGL_coe
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos := mem_conjGL
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos' := mem_conjGL'
 
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
@@ -246,11 +236,11 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
 `x ∈ Γ(N)`. -/
 theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
-    ∃ N ≠ 0, ∀ x ∈ Gamma N, g * (x.map (Int.castRingHom ℚ)).toGL * g⁻¹ ∈
-      (fun x : SL(2, ℤ) ↦ (x.map (Int.castRingHom ℚ)).toGL) '' (Gamma M) := by
+    ∃ N ≠ 0, ∀ x ∈ Gamma N, g * (mapGL ℚ x) * g⁻¹ ∈ (Gamma M).map (mapGL ℚ) := by
   -- Give names to the numerators and denominators of `g` and `g⁻¹`
   let A₁ := g.1
   let A₂ := (g⁻¹).1
@@ -283,7 +273,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
     simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
       Matrix.map_mul_intCast]
-    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← MulAction.mul_smul, ← MulAction.mul_smul,
+    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← SemigroupAction.mul_smul, ← SemigroupAction.mul_smul,
       mul_comm a₁ a₂, Nat.cast_mul, Nat.cast_mul, mul_assoc _ _ (M : ℚ), mul_comm _ (M : ℚ),
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
@@ -316,28 +306,38 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
 open Subgroup in
 /-- If `Γ` has finite index in `SL(2, ℤ)`, then so does `g⁻¹ Γ g ∩ SL(2, ℤ)` for any
 `g ∈ GL(2, ℚ)`. -/
-lemma finiteIndex_conjGL (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] (g : GL (Fin 2) ℚ) :
-    (conjGL Γ (g.map <| Rat.castHom ℝ)).FiniteIndex := by
+lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHom ℝ)).FiniteIndex := by
   constructor
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
-  let G := Γ.map (mapGL ℝ)
-  let A := MonoidHom.range (mapGL ℝ : SL(2, ℤ) →* _)
-  suffices (t • G ⊓ A).relindex A ≠ 0 by rwa [conjGL, index_comap, ← inf_relindex_right]
-  apply relindex_ne_zero_trans (K := t • A ⊓ A)
-  · -- Show that `[ (t • A ⊓ A) : (t • G ⊓ A)] < ∞`.
-    apply relindex_inter_ne_zero
-    rw [relindex_pointwise_smul, ← index_comap,
-      comap_map_eq_self_of_injective mapGL_injective]
-    exact FiniteIndex.index_ne_zero
-  · -- Show that `[A : (t • A ⊓ A)] < ∞` (note this is independent of `Γ`)
-    obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
-    rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
-    suffices Γ(N) ≤ (t • A ⊓ A).comap (mapGL ℝ) by
-      haveI _ : NeZero N := ⟨hN⟩
-      simpa only [index_comap] using (finiteIndex_of_le this).index_ne_zero
-    intro k hk
-    simpa [mem_pointwise_smul_iff_inv_smul_mem, A] using
-      hN' <| smul_mem_pointwise_smul _ _ _ ⟨k, hk, rfl⟩
+  suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relIndex 𝒮ℒ ≠ 0 by
+    rwa [conjGL, index_comap, ← inf_relIndex_right, ← MonoidHom.range_eq_map]
+  obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
+  rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
+  suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
+    haveI _ : NeZero N := ⟨hN⟩
+    simpa only [index_comap] using (finiteIndex_of_le this).index_ne_zero
+  intro k hk
+  simpa [mem_pointwise_smul_iff_inv_smul_mem] using
+    hN' <| smul_mem_pointwise_smul _ _ _ ⟨k, hk, rfl⟩
+
+/-- Conjugates of `SL(2, ℤ)` by `GL(2, ℚ)` are arithmetic subgroups. -/
+lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
+    (toConjAct (g.map (Rat.castHom ℝ)) • 𝒮ℒ).IsArithmetic := by
+  constructor
+  rw [MonoidHom.range_eq_map]
+  constructor
+  · rw [← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
+    exact (finiteIndex_conjGL g⁻¹).index_ne_zero
+  · rw [← Subgroup.relIndex_pointwise_smul (toConjAct (g.map (Rat.castHom ℝ)))⁻¹,
+      inv_smul_smul, ← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
+    exact (finiteIndex_conjGL g).index_ne_zero
+
+/-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
+lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
+    (g : GL (Fin 2) ℚ) :
+    (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
+  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
+    (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
 lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)

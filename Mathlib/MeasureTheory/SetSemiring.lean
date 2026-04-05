@@ -3,10 +3,14 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Order.SupClosed
 
 /-! # Semirings and rings of sets
 
@@ -48,6 +52,8 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 -/
 
+@[expose] public section
+
 open Finset Set
 
 namespace MeasureTheory
@@ -62,9 +68,82 @@ structure IsSetSemiring (C : Set (Set α)) : Prop where
   diff_eq_sUnion' : ∀ s ∈ C, ∀ t ∈ C,
     ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I
 
+/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
+It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
+structure IsSetRing (C : Set (Set α)) : Prop where
+  empty_mem : ∅ ∈ C
+  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+
 namespace IsSetSemiring
 
 lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
+
+theorem exists_finpartition_diff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    ∃ P : Finpartition (s \ t), ↑P.parts ⊆ C := by
+  classical
+  obtain ⟨I, hIC, hI, hst⟩ := hC.diff_eq_sUnion' s hs t ht
+  refine ⟨.ofErase I (supIndep_iff_pairwiseDisjoint.mpr hI) ?_, ?_⟩
+  · rw [sup_id_eq_sSup, sSup_eq_sUnion, hst]
+  · grw [Finpartition.ofErase_parts, Finset.erase_subset, hIC]
+
+theorem mem_supClosure_iff (hC : IsSetSemiring C) :
+    s ∈ supClosure C ↔ ∃ P : Finpartition s, ↑P.parts ⊆ C where
+  mp := by
+    classical
+    rintro ⟨S, hS, hSC, rfl⟩
+    rw [sup'_eq_sup]
+    clear hS
+    induction S using Finset.induction with
+    | empty =>
+      rw [sup_empty]
+      exact ⟨.empty _, hSC⟩
+    | insert s S _ ih =>
+      rw [coe_insert, insert_subset_iff] at hSC
+      obtain ⟨hsC, hSC⟩ := hSC
+      obtain ⟨P, hP⟩ := ih hSC
+      rw [sup_insert, sup_comm, id]
+      rcases eq_or_ne s ⊥ with rfl | hs
+      · rw [sup_bot_eq]; exact ⟨P, hP⟩
+      choose Q hQ using show ∀ t ∈ (P.avoid s).parts, ∃ Q : Finpartition t, ↑Q.parts ⊆ C by
+        simp_rw [Finpartition.mem_avoid]
+        rintro _ ⟨t, ht, -, rfl⟩
+        exact hC.exists_finpartition_diff (hP ht) hsC
+      exists P.avoid s |>.bind Q |>.extend hs disjoint_sdiff_left (sdiff_sup_self _ _)
+      rw [Finpartition.extend_parts, coe_insert, insert_subset_iff, Finpartition.bind_parts,
+        coe_biUnion, iUnion₂_subset_iff, Subtype.forall]
+      exact ⟨hsC, fun t ht _ => hQ t ht⟩
+  mpr := by
+    intro ⟨P, hP⟩
+    rw [← P.sup_parts, sup_id_set_eq_sUnion]
+    exact supClosed_supClosure.sSup_mem
+      (Finset.finite_toSet _)
+      (subset_supClosure hC.empty_mem)
+      (hP.trans subset_supClosure)
+
+theorem diff_mem_supClosure (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    s \ t ∈ supClosure C :=
+  hC.mem_supClosure_iff.mpr <| hC.exists_finpartition_diff hs ht
+
+theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) where
+  empty_mem := subset_supClosure hC.empty_mem
+  union_mem _ _ h₁ h₂ := supClosed_supClosure h₁ h₂
+  diff_mem := by
+    classical
+    rintro s _ hs ⟨T, hT, hTC, rfl⟩
+    rw [sup'_eq_sup]
+    clear hT
+    induction T using Finset.induction generalizing s with
+    | empty => simpa
+    | insert t T _ ih =>
+      simp_rw [sup_insert, id, sup_eq_union, ← diff_diff]
+      rw [coe_insert, insert_subset_iff] at hTC
+      obtain ⟨htC, hTC⟩ := hTC
+      refine ih ?_ hTC
+      obtain ⟨S, hS, hSC, rfl⟩ := hs
+      rw [sup'_eq_sup, ← Finset.sup_sdiff_right]
+      refine supClosed_supClosure.finsetSup_mem hS fun s hs => ?_
+      exact hC.diff_mem_supClosure (hSC hs) htC
 
 section disjointOfDiff
 
@@ -83,8 +162,6 @@ lemma empty_notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t 
   classical
   simp only [disjointOfDiff, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
-
-@[deprecated (since := "2025-05-24")] alias empty_nmem_disjointOfDiff := empty_notMem_disjointOfDiff
 
 lemma subset_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.disjointOfDiff hs ht) ⊆ C := by
@@ -117,8 +194,6 @@ lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     rwa [← h]
   rw [← hC.sUnion_disjointOfDiff hs ht]
   exact subset_sUnion_of_mem hs_mem
-
-@[deprecated (since := "2025-05-24")] alias nmem_disjointOfDiff := notMem_disjointOfDiff
 
 lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
@@ -180,7 +255,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
-    simp only [J' ,univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
+    simp only [J', univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
       mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
@@ -219,8 +294,8 @@ open scoped Classical in
 `s \ ⋃₀ I = ⋃₀ (hC.disjointOfDiffUnion hs I hI)`.
 `disjointOfDiff` is a special case of `disjointOfDiffUnion` where `I` is a
 singleton. -/
-noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
-  (hI : ↑I ⊆ C) : Finset (Set α) :=
+noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
+    Finset (Set α) :=
   (hC.exists_disjoint_finset_diff_eq hs hI).choose \ {∅}
 
 lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
@@ -229,9 +304,6 @@ lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
   classical
   simp only [disjointOfDiffUnion, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
-
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfDiffUnion := empty_notMem_disjointOfDiffUnion
 
 lemma disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ↑(hC.disjointOfDiffUnion hs hI) ⊆ C := by
@@ -304,7 +376,7 @@ lemma sUnion_union_sUnion_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
 lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ ↑(I ∪ hC.disjointOfDiffUnion hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_disjointOfDiffUnion_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
@@ -345,7 +417,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     have ht1' : ∀ x ∈ J, K1 x = K x := fun x hx ↦ hK1_of_ne _ (fun h_eq ↦ hJ (h_eq ▸ hx))
     have ht2 : (⋃ x ∈ J, (K1 x : Set (Set α))) = ⋃ x ∈ J, ((K x : Set (Set α))) := by
       apply iUnion₂_congr
-      intros x hx
+      intro x hx
       exact_mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
     simp only [hK1s]
     refine ⟨?_, ⟨hC.disjointOfDiffUnion_subset h1.1 h1.2, ?_⟩, ?_,
@@ -369,7 +441,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
           rw [Set.disjoint_iff_inter_eq_empty] at h7
           exact_mod_cast h7
         exact ⟨h8, Disjoint.symm h8⟩
-    · intros i hi
+    · intro i hi
       rw [ht1' i hi]
       exact hK1 i hi
     · simp only [iUnion_iUnion_eq_or_left]
@@ -378,19 +450,19 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         exact hC.pairwiseDisjoint_disjointOfDiffUnion h1.1 h1.2
       · simpa [ht2]
       · simp only [mem_coe, mem_iUnion, exists_prop, ne_eq, id_eq, forall_exists_index, and_imp]
-        intros i hi j x hx h3 h4
+        intro i hi j x hx h3 h4
         obtain ki : i ⊆ s \ ⋃₀ J := hC.subset_of_diffUnion_disjointOfDiffUnion h1.1 h1.2 _
           (hK1s ▸ hi)
         obtain hx2 : j ⊆ x := subset_trans (subset_sUnion_of_mem (ht1' x hx ▸ h3)) (hK3 x hx)
         obtain kj : j ⊆ ⋃₀ J := hx2.trans <| subset_sUnion_of_mem hx
         exact disjoint_of_subset ki kj disjoint_sdiff_left
-    · intros a ha
+    · intro a ha
       simp_rw [hK1_of_ne _ (ne_of_mem_of_not_mem ha hJ)]
       change ∀ t' ∈ (K a : Set (Set α)), t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
     · refine ⟨hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
-      intros a ha
+      intro a ha
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, sUnion_union, ht2, K1]
@@ -435,23 +507,44 @@ lemma empty_notMem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj 
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfUnion := empty_notMem_disjointOfUnion
-
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
 
-end IsSetSemiring
+private lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
+    Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
+  ⟨u, max u v, by grind, by grind⟩
 
-/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
-It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
-structure IsSetRing (C : Set (Set α)) : Prop where
-  empty_mem : ∅ ∈ C
-  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+/-- The set of open-closed intervals is a semi-ring of sets. -/
+protected lemma Ioc [LinearOrder α] [Nonempty α] :
+    IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  empty_mem := by
+    inhabit α
+    exact ⟨default, default, le_rfl, by simp⟩
+  inter_mem := by
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rw [Set.Ioc_inter_Ioc]
+    apply Ioc_mem_setOf_Ioc_le
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rcases le_or_gt u' u with hu | hu
+    · rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rcases le_or_gt v v' with hv | hv
+    · rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
+    refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
+    intro a ha b hb hab
+    simp [Function.onFun]
+    grind
+
+end IsSetSemiring
 
 namespace IsSetRing
 
@@ -494,12 +587,7 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
 lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
     (hs : ∀ i ∈ t, s i ∈ C) :
     t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
+  simpa using biUnion_mem hC _ hs
 
 lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
@@ -524,7 +612,7 @@ theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
 theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
+    accumulate s n ∈ C := by
   induction n with
   | zero => simp [hs 0]
   | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)

@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centers of subgroups
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Multiset
 
@@ -21,8 +25,8 @@ variable (G)
 
 /-- The center of a group `G` is the set of elements that commute with everything in `G` -/
 @[to_additive
-      "The center of an additive group `G` is the set of elements that commute with
-      everything in `G`"]
+      /-- The center of an additive group `G` is the set of elements that commute with
+      everything in `G` -/]
 def center : Subgroup G :=
   { Submonoid.center G with
     carrier := Set.center G
@@ -39,16 +43,14 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
-@[deprecated (since := "2025-04-09")] alias center.isCommutative := Subgroup.center.isMulCommutative
-
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
-@[to_additive (attr := simps!) "The center of isomorphic additive groups are isomorphic."]
+@[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
 def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
-"The center of an additive group is isomorphic to the center of its opposite."]
+/-- The center of an additive group is isomorphic to the center of its opposite. -/]
 def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
 
 variable {G}
@@ -77,6 +79,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   exact mul_comm y x
 
 /-- A group is commutative if the center is the whole group -/
+@[implicit_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -95,7 +98,7 @@ instance instNormalCenter : (center G).Normal :=
   ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
 
 @[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
+theorem center_le_normalizer : center G ≤ normalizer H := fun x hx y => by
   simp [← mem_center_iff.mp hx y, mul_assoc]
 
 end Normalizer

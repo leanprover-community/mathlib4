@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Vanishing
-import Mathlib.Algebra.Module.FinitePresentation
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
+public import Mathlib.RingTheory.Flat.Tensor
 
 /-! # The equational criterion for flatness
 
@@ -26,9 +28,9 @@ The equational criterion for flatness can be stated in the following form
 conditions are equivalent:
 * $M$ is flat.
 * For finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 
 Of course, the module $R^l$ in this statement can be replaced by an arbitrary free module
 (`Module.Flat.exists_factorization_of_apply_eq_zero_of_free`).
@@ -51,6 +53,8 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 * [Stacks: Characterizing flatness](https://stacks.math.columbia.edu/tag/058C)
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
@@ -105,9 +109,9 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
 * For all finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 -/
 @[stacks 00HK, stacks 058D "(1) ↔ (2)"]
 theorem tfae_equational_criterion : List.TFAE [
@@ -156,7 +160,7 @@ theorem tfae_equational_criterion : List.TFAE [
         LinearMap.congr_fun ha'y' (Finsupp.single i 1)
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
-        ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
+        ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using DFunLike.congr_fun ha' j
   tfae_finish
 
@@ -223,9 +227,6 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
     (f := e.symm f) (x := x ∘ₗ e) (by simpa using h)
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], haf⟩
 
-@[deprecated (since := "2025-01-03")] alias exists_factorization_of_apply_eq_zero :=
-  exists_factorization_of_apply_eq_zero_of_free
-
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
     [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
     {x : (Fin n →₀ R) →ₗ[R] M} (h : x ∘ₗ f = 0) :
@@ -272,7 +273,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
       ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
-  haveI : Module.Finite R K := Module.Finite.iff_fg.mpr hK
+  haveI : Module.Finite R K := .of_fg hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
     simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨k, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this

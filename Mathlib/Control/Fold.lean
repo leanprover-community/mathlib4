@@ -3,14 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Sean Leather
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Control.Traversable.Instances
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 
@@ -51,6 +53,8 @@ A special class could be defined for `foldable`, similarly to Haskell,
 but the author cannot think of instances of `foldable` that are not also
 `Traversable`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -240,6 +244,7 @@ variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldMap_hom [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
     f (foldMap g x) = foldMap (f ∘ g) x :=
   calc
@@ -288,6 +293,7 @@ theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α
   ext
   simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
   Eq.symm <|
     calc
@@ -306,6 +312,7 @@ theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
     foldMap g (f <$> xs) = foldMap (g ∘ f) xs := by
   simp only [foldMap, traverse_map, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
     foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (toList xs), ← foldl.unop_ofFreeMonoid]
@@ -351,6 +358,7 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
   calc foldlm f x xs

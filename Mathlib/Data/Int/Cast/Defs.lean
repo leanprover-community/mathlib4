@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Data.Nat.Cast.Defs
+module
+
+public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Cast of integers
@@ -20,6 +22,8 @@ Preferentially, the homomorphism is written as a coercion.
 * `Int.cast`: Canonical homomorphism `ℤ → R`.
 * `AddGroupWithOne`: Type class for `Int.cast`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -40,7 +44,7 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n := by intros; rfl
   /-- The canonical homomorphism `ℤ → R` for negative values is just the negation of the values
   of the canonical homomorphism `ℕ → R`. -/
-  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) := by intros; rfl
+  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = -Nat.cast (n + 1) := by intros; rfl
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)

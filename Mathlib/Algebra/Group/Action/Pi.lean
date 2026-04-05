@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions
@@ -20,6 +22,8 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
@@ -29,7 +33,7 @@ namespace Pi
 @[to_additive]
 instance smul' [∀ i, SMul (α i) (β i)] : SMul (∀ i, α i) (∀ i, β i) where smul s x i := s i • x i
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : s • x = fun i ↦ s i • x i :=
   rfl
 
@@ -75,8 +79,8 @@ instance isCentralScalar [∀ i, SMul M (α i)] [∀ i, SMul Mᵐᵒᵖ (α i)] 
 /-- If `α i` has a faithful scalar action for a given `i`, then so does `Π i, α i`. This is
 not an instance as `i` cannot be inferred. -/
 @[to_additive
-"If `α i` has a faithful additive action for a given `i`, then
-so does `Π i, α i`. This is not an instance as `i` cannot be inferred"]
+/-- If `α i` has a faithful additive action for a given `i`, then
+so does `Π i, α i`. This is not an instance as `i` cannot be inferred -/]
 lemma faithfulSMul_at [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)] (i : ι) [FaithfulSMul M (α i)] :
     FaithfulSMul M (∀ i, α i) where
   eq_of_smul_eq_smul h := eq_of_smul_eq_smul fun a : α i => by
@@ -92,7 +96,6 @@ instance faithfulSMul [Nonempty ι] [∀ i, SMul M (α i)] [∀ i, Nonempty (α 
 
 @[to_additive]
 instance mulAction (M) {m : Monoid M} [∀ i, MulAction M (α i)] : @MulAction M (∀ i, α i) m where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 
@@ -100,7 +103,6 @@ instance mulAction (M) {m : Monoid M} [∀ i, MulAction M (α i)] : @MulAction M
 instance mulAction' {m : ∀ i, Monoid (α i)} [∀ i, MulAction (α i) (β i)] :
     @MulAction (∀ i, α i) (∀ i, β i)
       (@Pi.monoid ι α m) where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 
@@ -111,15 +113,15 @@ namespace Function
 /-- Non-dependent version of `Pi.smul`. Lean gets confused by the dependent instance if this
 is not present. -/
 @[to_additive
-"Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
-if this is not present."]
+/-- Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
+if this is not present. -/]
 instance hasSMul {α : Type*} [SMul M α] : SMul M (ι → α) := Pi.instSMul
 
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
 @[to_additive
-  "Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
-  instance if this is not present."]
+  /-- Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
+  instance if this is not present. -/]
 instance smulCommClass {α : Type*} [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M N (ι → α) := Pi.smulCommClass
 

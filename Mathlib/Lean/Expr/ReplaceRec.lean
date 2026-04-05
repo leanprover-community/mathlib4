@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers
 -/
-import Lean.Expr
-import Mathlib.Util.MemoFix
+module -- shake: keep-all
+
+public import Lean.Expr
+public import Mathlib.Util.MemoFix
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # ReplaceRec
@@ -13,6 +16,12 @@ import Mathlib.Util.MemoFix
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`.
 -/
+
+deprecated_module (since := "2026-01-26")
+
+set_option linter.deprecated false
+
+@[expose] public section
 
 namespace Lean.Expr
 
@@ -25,6 +34,7 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
+@[deprecated "use `MonadCacheT`  and `checkCache`" (since := "2026-01-24")]
 def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :=
   memoFix fun r e ↦
     match f? r e with

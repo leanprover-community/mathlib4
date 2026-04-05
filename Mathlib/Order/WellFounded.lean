@@ -3,8 +3,10 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations
@@ -18,6 +20,38 @@ and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `We
 and an induction principle `WellFounded.induction_bot`.
 -/
 
+@[expose] public section
+
+theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b a → Acc r b where
+  mp h := h.rec fun _ h _ ↦ h
+  mpr := .intro a
+
+theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
+  rw [acc_def] at h
+  push Not at h
+  simpa only [and_comm]
+
+theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
+    ¬Acc r x ↔ ∃ f : ℕ → α, f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) where
+  mp hx := let f : ℕ → {a : α // ¬Acc r a} :=
+      Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.2).choose_spec.1⟩
+    ⟨(f · |>.1), rfl, fun n ↦ (exists_not_acc_lt_of_not_acc (f n).2).choose_spec.2⟩
+  mpr h acc := acc.rec
+    (fun _x _ ih ⟨f, hf⟩ ↦ ih (f 1) (hf.1 ▸ hf.2 0) ⟨(f <| · + 1), rfl, fun _ ↦ hf.2 _⟩) h
+
+theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} :
+    Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
+  contrapose!
+  rw [nonempty_subtype]
+  exact not_acc_iff_exists_descending_chain
+
+/-- A relation is well-founded iff it doesn't have any infinite descending chain.
+
+See `RelEmbedding.wellFounded_iff_isEmpty` for a version in terms of relation embeddings. -/
+theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
+    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
+  mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
+  mpr h := ⟨fun _ ↦ acc_iff_isEmpty_descending_chain.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
 
 variable {α β γ : Type*}
 
@@ -25,14 +59,16 @@ namespace WellFounded
 
 variable {r r' : α → α → Prop}
 
-protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
+protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := WellFounded.asymm
 
-instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
-  WellFoundedRelation.wf.isAsymm
+protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl α r h.asymm
 
-instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := WellFounded.irrefl
+
+instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.asymm
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr
@@ -64,10 +100,27 @@ theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
   h
 
-theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
-    (hx : x ∈ s) : ¬r x (H.min s h) :=
-  let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
+theorem prop_min {r : α → α → Prop} (H : WellFounded r) {p : α → Prop} (h : ∃ a, p a) :
+    p (H.min {a | p a} h) :=
+  H.min_mem {a | p a} h
+
+theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) {x} (hx : x ∈ s) :
+    ¬r x (H.min s ⟨x, hx⟩) :=
+  let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s ⟨x, hx⟩)
   h' _ hx
+
+/-- The minimal element of a trichotomous well-founded order is unique -/
+theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : Set α} {m : α}
+    (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
+  Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s hms)
+
+theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x : α}
+    (hx : r x (wf.min s hs)) : x ∉ s :=
+  (wf.not_lt_min s · hx)
+
+theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
+    (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
+  Set.notMem_compl_iff.mp <| notMem_of_lt_min hx
 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
@@ -78,25 +131,9 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
-/-- A relation is well-founded iff it doesn't have any infinite decreasing sequence.
-
-See `RelEmbedding.wellFounded_iff_no_descending_seq` for a version on strict orders. -/
-theorem wellFounded_iff_no_descending_seq :
-    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } := by
-  rw [WellFounded.wellFounded_iff_has_min]
-  refine ⟨fun hr ↦ ⟨fun ⟨f, hf⟩ ↦ ?_⟩, ?_⟩
-  · obtain ⟨_, ⟨n, rfl⟩, hn⟩ := hr _ (Set.range_nonempty f)
-    exact hn _ (Set.mem_range_self (n + 1)) (hf n)
-  · contrapose!
-    rw [not_isEmpty_iff]
-    rintro ⟨s, hs, hs'⟩
-    let f : ℕ → s := Nat.rec (Classical.indefiniteDescription _ hs) fun n IH ↦
-      ⟨(hs' _ IH.2).choose, (hs' _ IH.2).choose_spec.1⟩
-    exact ⟨⟨Subtype.val ∘ f, fun n ↦ (hs' _ (f n).2).choose_spec.2⟩⟩
-
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
-  exact (wellFounded_iff_no_descending_seq.1 h.wf).elim ⟨f, hf⟩
+  exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
 
 open Set
 
@@ -109,54 +146,17 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 
-section deprecated
-
-open Classical in
-set_option linter.deprecated false in
-/-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
-`x < y` if one exists. Otherwise it is `x` itself. -/
-@[deprecated "If you have a linear order, consider defining a `SuccOrder` instance through
-`ConditionallyCompleteLinearOrder.toSuccOrder`." (since := "2024-10-25")]
-protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
-  if h : ∃ y, r x y then wf.min { y | r x y } h else x
-
-set_option linter.deprecated false in
-@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
-protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
-    r x (wf.succ x) := by
-  rw [WellFounded.succ, dif_pos h]
-  apply min_mem
-
-set_option linter.deprecated false in
-@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
-protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
-    (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
-  constructor
-  · intro h'
-    have : ¬r x y := by
-      intro hy
-      rw [WellFounded.succ, dif_pos] at h'
-      exact wo.wf.not_lt_min _ h hy h'
-    rcases trichotomous_of r x y with (hy | hy | hy)
-    · exfalso
-      exact this hy
-    · right
-      exact hy.symm
-    left
-    exact hy
-  rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
-
-end deprecated
-
 end WellFounded
 
 section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
+@[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
-    {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
-  not_lt.1 <| h.not_lt_min _ _ hx
+    {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
+  not_lt.1 <| h.not_lt_min _ hx
 
 theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
@@ -191,7 +191,7 @@ theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
-  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
+  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min {i | f i < i} H
   exact hm' _ (hf hm) hm
 
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
@@ -222,29 +222,34 @@ variable (f : α → β)
 
 section LT
 
-variable [LT β] [h : WellFoundedLT β]
+variable [LT β] [WellFoundedLT β]
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
-whose image under `f` is minimal in the sense of `Function.not_lt_argmin`. -/
+whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
 noncomputable def argmin [Nonempty α] : α :=
-  WellFounded.min (InvImage.wf f h.wf) Set.univ Set.univ_nonempty
+  WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
-  WellFounded.not_lt_min (InvImage.wf f h.wf) _ _ (Set.mem_univ a)
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
-`Function.not_lt_argminOn`. -/
+`Function.not_lt_argminOn`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
+
+TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
-  WellFounded.min (InvImage.wf f h.wf) s hs
+  WellFounded.min (InvImage.wf f wellFounded_lt) s hs
 
 @[simp]
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
-theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
-    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f h.wf) s hs ha
+theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s) : ¬f a < f (argminOn f s ⟨a, ha⟩) :=
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s ha
 
 end LT
 
@@ -255,9 +260,17 @@ variable [LinearOrder β] [WellFoundedLT β]
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
-theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
-    f (argminOn f s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argminOn f s ha hs
+theorem isMinimalFor_argmin [Nonempty α] :
+    MinimalFor (fun _ ↦ True) f (argmin f) :=
+  ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
+
+theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) :
+    f (argminOn f s ⟨a, ha⟩) ≤ f a :=
+  not_lt.mp <| not_lt_argminOn f s ha
+
+theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
+    MinimalFor (· ∈ s) f (argminOn f s hs) :=
+  ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h⟩
 
 end LinearOrder
 
@@ -310,13 +323,13 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
+@[to_dual (attr := implicit_reducible)
+/-- A nonempty linear order with well-founded `>` has a top element. -/]
+noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
   bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
-/-- A nonempty linear order with well-founded `>` has a top element. -/
-noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
-    OrderTop α :=
-  have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
-  inferInstanceAs (OrderTop αᵒᵈᵒᵈ)
+@[to_dual]
+instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
+  wf := InvImage.wf ULift.down h.wf

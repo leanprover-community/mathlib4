@@ -3,15 +3,22 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Types
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+module
+
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.Types
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Types
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta
@@ -22,32 +29,32 @@ namespace Meta.FunProp
 /-- Tag for one of the 5 basic lambda theorems, that also hold extra data for composition theorem
 -/
 inductive LambdaTheoremArgs
-  /-- Identity theorem e.g. `Continuous fun x => x` -/
+  /-- Identity theorem e.g. `Continuous fun x ↦ x` -/
   | id
-  /-- Constant theorem e.g. `Continuous fun x => y` -/
+  /-- Constant theorem e.g. `Continuous fun x ↦ y` -/
   | const
-  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
+  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
-  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)`
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)`
 
   The numbers `fArgId` and `gArgId` store the argument index for `f` and `g` in the composition
   theorem. -/
   | comp (fArgId gArgId : Nat)
-  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
+  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y ↦ f x y` -/
   | pi
   deriving Inhabited, BEq, Repr, Hashable
 
 /-- Tag for one of the 5 basic lambda theorems -/
 inductive LambdaTheoremType
-  /-- Identity theorem e.g. `Continuous fun x => x` -/
+  /-- Identity theorem e.g. `Continuous fun x ↦ x` -/
   | id
-  /-- Constant theorem e.g. `Continuous fun x => y` -/
+  /-- Constant theorem e.g. `Continuous fun x ↦ y` -/
   | const
-  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
+  /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x ↦ f x)` -/
   | apply
-  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)` -/
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x ↦ f (g x)` -/
   | comp
-  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
+  /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y ↦ f x y` -/
   | pi
   deriving Inhabited, BEq, Repr, Hashable
 
@@ -70,17 +77,17 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam _ _ xBody _ =>
-    unless xBody.hasLooseBVars do return .some .const
+    unless xBody.hasLooseBVars do return some .const
     match xBody with
-    | .bvar 0 => return .some .id
-    | .app (.bvar 0) (.fvar _) =>  return .some .apply
+    | .bvar 0 => return some .id
+    | .app (.bvar 0) (.fvar _) =>  return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
-      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
-      return .some <| .comp argId_f argId_g
+      let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
+      let some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      return some <| .comp argId_f argId_g
     | .lam _ _ (.app (.app (.fvar _) (.bvar 1)) (.bvar 0)) _ =>
-      return .some .pi
+      return some .pi
     | _ => return none
   | _ => return none
 
@@ -132,12 +139,12 @@ def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
 
 uncurried
 ```
-theorem Continuous_add : Continuous (fun x => x.1 + x.2)
+theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
 ```
 
 compositional
 ```
-theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x => (f x) + (g x))
+theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) + (g x))
 ```
 -/
 inductive TheoremForm where
@@ -166,14 +173,12 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
-private local instance : Ord Name := ⟨Name.quickCmp⟩
-
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
   theorems :
-    TreeMap Name (TreeMap Name (Array FunctionTheorem) compare) compare := {}
+    TreeMap Name (TreeMap Name (Array FunctionTheorem) Name.quickCmp) Name.quickCmp := {}
   deriving Inhabited
 
 
@@ -183,7 +188,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -202,7 +207,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
@@ -216,7 +221,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- Extendions for transition or morphism theorems -/
+/-- Extensions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- Environment extension for transition theorems. -/
@@ -232,13 +237,13 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 /-- Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite dimensional spaces or differentiability. -/
+from linearity over finite-dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -260,7 +265,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 
 --------------------------------------------------------------------------------
@@ -275,20 +280,20 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 Examples:
 - lam
 ```
-  theorem Continuous_id : Continuous fun x => x
-  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f (g x)
+  theorem Continuous_id : Continuous fun x ↦ x
+  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f (g x)
 ```
 - function
 ```
-  theorem Continuous_add : Continuous (fun x => x.1 + x.2)
+  theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
-      Continuous (fun x => (f x) + (g x))
+      Continuous (fun x ↦ (f x) + (g x))
 ```
-- mor - the head of function body has to be ``DFunLike.code
+- mor - the head of function body has to be `DFunLike.coe`
 ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
-      ContDiff 𝕜 n fun x => (f x) (g x)
+      ContDiff 𝕜 n fun x ↦ (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
 ```
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable
@@ -309,12 +314,12 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-    let .some (decl,f) ← getFunProp? b
+    let some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
     let fData? ←
       withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
-    if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
+    if let some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
         thmName := declName

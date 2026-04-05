@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.SpecialFunctions.Arsinh
-import Mathlib.Geometry.Euclidean.Inversion.Basic
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
 
 /-!
 # Metric on the upper half-plane
@@ -21,6 +23,8 @@ We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euc
 ball/sphere with another center and radius.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -105,6 +109,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
+@[implicit_reducible]
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
@@ -117,7 +122,7 @@ open Complex
 
 theorem cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
-  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
+  simp [field, cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/
@@ -133,8 +138,8 @@ theorem center_im (z r) : (center z r).im = z.im * Real.cosh r :=
   rfl
 
 @[simp]
-theorem center_zero (z : ℍ) : center z 0 = z :=
-  ext' rfl <| by rw [center_im, Real.cosh_zero, mul_one]
+theorem center_zero (z : ℍ) : center z 0 = z := by
+  apply ext_re_im <;> simp
 
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
@@ -157,10 +162,8 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we need to give Lean the hint `(y := w.im * Real.sinh r)`. -/
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
-    ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
+    ← (pow_left_strictMonoOn₀ (M₀ := ℝ) two_ne_zero).cmp_map_eq dist_nonneg hr₀',
     dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
@@ -205,8 +208,8 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
   nth_rw 4 [← abs_of_pos w.im_pos]
   simp only [← _root_.abs_mul, Real.dist_eq]
   congr 1
-  field_simp
-  ring
+  field
+
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
@@ -217,7 +220,7 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simp_rw [dist_eq]
       dsimp only [coe_mk, mk_im]
       gcongr
-      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_norm (z - w)
+      simpa [sqrt_sq_eq_abs, ← dist_eq_norm] using Complex.abs_im_le_norm (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
   rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
@@ -271,7 +274,8 @@ theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     0 < z.im * (Real.cosh r - Real.sinh r) := mul_pos z.im_pos (sub_pos.2 <| sinh_lt_cosh _)
     _ = (z.center r).im - z.im * Real.sinh r := mul_sub _ _ _
     _ ≤ (z.center r).im - dist (z.center r : ℂ) w := sub_le_sub_left (by rwa [dist_comm]) _
-    _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_norm <| z.center r - w)
+    _ ≤ w.im := sub_le_comm.1 <|
+      (le_abs_self _).trans ((abs_im_le_norm <| z.center r - w).trans_eq (dist_eq_norm _ _).symm)
 
 theorem image_coe_closedBall (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' closedBall (α := ℍ) z r = closedBall ↑(z.center r) (z.im * Real.sinh r) := by
@@ -302,7 +306,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 
 instance : ProperSpace ℍ := by
   refine ⟨fun z r => ?_⟩
-  rw [IsInducing.subtypeVal.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
+  rw [isEmbedding_coe.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
@@ -313,6 +317,7 @@ theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (
 theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
   Isometry.of_dist_eq fun y₁ y₂ => by simp only [dist_eq, coe_vadd, vadd_im, dist_add_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
@@ -325,9 +330,9 @@ instance : IsIsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by
-        have h₁ : 0 ≤ im y₁ * im y₂ := mul_nonneg y₁.property.le y₂.property.le
+        have h₁ : 0 ≤ im y₁ * im y₂ := by positivity
         have h₂ : ‖(y₁ * y₂ : ℂ)‖ ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
-        simp_rw [modular_S_smul, inv_neg, dist_eq, coe_mk, dist_neg_neg,
+        simp_rw [modular_S_smul, inv_neg, dist_eq, dist_neg_neg,
           dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, mk_im, neg_im, inv_im, coe_im, neg_div, neg_neg,
           div_mul_div_comm, ← normSq_mul, Real.sqrt_div h₁, ← norm_def, mul_div (2 : ℝ)]
         rw [div_div_div_comm, ← norm_mul, div_self h₂, div_one]

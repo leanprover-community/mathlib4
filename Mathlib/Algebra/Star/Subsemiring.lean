@@ -3,14 +3,18 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Star.NonUnitalSubsemiring
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Star subrings
 
 A *-subring is a subring of a *-ring which is closed under *.
 -/
+
+@[expose] public section
 
 universe v
 
@@ -32,6 +36,9 @@ instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
     SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+
+instance {R : Type v} [NonAssocSemiring R] [Star R] : PartialOrder (StarSubsemiring R) :=
+  .ofSetLike (StarSubsemiring R) R
 
 initialize_simps_projections StarSubsemiring (carrier → coe, as_prefix coe)
 
@@ -114,7 +121,7 @@ protected def copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : StarSub
   toSubsemiring := Subsemiring.copy S.toSubsemiring s hs
   star_mem' := @fun a ha => hs ▸ (S.star_mem' (by simpa [hs] using ha) : star a ∈ (S : Set R))
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
   rfl
 

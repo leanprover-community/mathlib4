@@ -3,32 +3,39 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jiedong Jiang
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
+
 In this file we define the canonical quotient linear map from
 `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` and canonical quotient ring map from
 `R ⧸ I ^ m` to `R ⧸ I ^ n`. These definitions will be used in theorems
 related to `IsAdicComplete` to find a lift element from compatible sequences in the quotients.
 We also include results about the relation between quotients of submodules and quotients of
 ideals here.
+
 ## Main definitions
 - `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
-the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
+  the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
-to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+  to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+
 ## Main results
 -/
+
+@[expose] public section
 
 /- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
 `Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
 imports both of them is `Mathlib/RingTheory/Ideal/Quotient/Operations.lean`, which has already
-established the first isomophism theorem and Chinese remainder theorem, we put these pure technical
+established the first isomorphism theorem and Chinese remainder theorem, we put these pure technical
 lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file. -/
 
 open Ideal Quotient
@@ -46,6 +53,27 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     exact Ideal.mem_map_of_mem _ h
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
+
+lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
+    (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
+    {m n : ℕ} (g : m ≤ n) : x m = factor (hp g) (x n) := by
+  have : n = m + (n - m) := (Nat.add_sub_of_le g).symm
+  induction hmn : n - m generalizing m n with
+  | zero =>
+    rw [hmn, Nat.add_zero] at this
+    subst this
+    simp
+  | succ k ih =>
+    rw [hmn, ← add_assoc] at this
+    subst this
+    rw [ih (m.le_add_right k) (by simp), h]
+    · simp
+    · lia
+
+lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
+    (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
+    {m n : ℕ} (g : m ≤ n) : x m = factor (hI g) (x n) :=
+  Submodule.eq_factor_of_eq_factor_succ hI x h g
 
 lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (hJK : K ≤ J) :
     (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by
@@ -69,6 +97,10 @@ section
 @[simp]
 theorem mapQ_eq_factor (h : I ≤ J) (x : R ⧸ I) :
     mapQ I J LinearMap.id h x = factor h x := rfl
+
+@[simp]
+theorem factor_eq_factor [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) (x : R ⧸ I) :
+    Submodule.factor h x = Ideal.Quotient.factor h x := rfl
 
 end
 
@@ -139,12 +171,50 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
   rw [factor_ker (pow_le_pow_right n.le_succ)] at hb
   rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ (n + 1)))
     Ideal.Quotient.mk_surjective hb with ⟨c, hc, eq⟩
-  apply isUnit_of_mul_eq_one _ (b' * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)))
+  refine .of_mul_eq_one (b' * (1 - Ideal.Quotient.mk (I ^ (n + 1)) c)) ?_
   calc
-    _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) +
-        (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) := by ring
+    _ = (a * b' - 1) * (1 - Ideal.Quotient.mk (I ^ (n + 1)) c) +
+        (1 - Ideal.Quotient.mk (I ^ (n + 1)) c) := by ring
     _ = 1 := by
       rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
         Ideal.Quotient.eq_zero_iff_mem, pow_add]
       apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
       simpa only [← pow_add, Nat.sub_add_cancel npos] using hc
+
+section powSMulQuotInclusion
+
+variable {M : Type*} [AddCommGroup M] [Module R M] {a b c : ℕ}
+
+namespace Submodule
+
+variable (M) in
+/-- The canonical inclusion from `I ^ a • N ⧸ I ^ b • (I ^ a • N)` to `M ⧸ I ^ c • N`
+when `c = b + a`. -/
+def powSMulQuotInclusion (h : c = b + a) (N : Submodule R M) :
+    ↑(I ^ a • N) ⧸ (I ^ b • ⊤ : Submodule R ↑(I ^ a • N)) →ₗ[R] M ⧸ (I ^ c • N) :=
+  mapQ _ _ (I ^ a • N).subtype <| by simp [← map_le_iff_le_comap, h, pow_add, mul_smul]
+
+@[simp]
+theorem powSMulQuotInclusion_mk (h : c = b + a) (N : Submodule R M)
+    (x : ↑(I ^ a • N)) : powSMulQuotInclusion I M h N (Quotient.mk x) = Quotient.mk (x : M) := rfl
+
+theorem powSMulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+    Function.Injective (powSMulQuotInclusion I M h N) := by
+  rw [← LinearMap.ker_eq_bot]
+  simp [powSMulQuotInclusion, mapQ, ← le_bot_iff, ker_liftQ, LinearMap.ker_comp, pow_add, mul_smul,
+    map_le_iff_le_comap, ← Submodule.map_le_map_iff_of_injective (I ^ a • N).subtype_injective, h]
+
+theorem factorPow_comp_powSMulQuotInclusion {d e : ℕ} (h : c = b + a) (h' : e = d + c) :
+    factorPow I M (show c ≤ e by lia) ∘ₗ
+      powSMulQuotInclusion I M (show e = (b + d) + a by lia) ⊤ =
+    powSMulQuotInclusion I M h ⊤ ∘ₗ
+      factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d) := by
+  ext; rfl
+
+theorem range_powSMulQuotInclusion (h : c = b + a) (N : Submodule R M) :
+    (powSMulQuotInclusion I M h N).range = (I ^ a • N).map (mkQ (I ^ c • N)) := by
+  simp [powSMulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
+
+end Submodule
+
+end powSMulQuotInclusion

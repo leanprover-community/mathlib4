@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Compactness.SigmaCompact
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Separation properties of topological spaces.
@@ -23,6 +24,8 @@ Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 

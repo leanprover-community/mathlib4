@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Lagrange's four square theorem
@@ -15,6 +17,8 @@ a proof that every natural number is the sum of four square numbers.
 
 The proof used is close to Lagrange's original proof.
 -/
+
+public section
 
 
 open Finset Polynomial FiniteField Equiv
@@ -196,10 +200,10 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
   -- The proof is by induction on prime factorization. The case of prime `n` was proved above,
   -- the inductive step follows from `Nat.euler_four_squares`.
   induction n using Nat.recOnMul with
-  | h0 => exact ⟨0, 0, 0, 0, rfl⟩
-  | h1 => exact ⟨1, 0, 0, 0, rfl⟩
-  | hp p hp => exact hp.sum_four_squares
-  | h m n hm hn =>
+  | zero => exact ⟨0, 0, 0, 0, rfl⟩
+  | one => exact ⟨1, 0, 0, 0, rfl⟩
+  | prime p hp => exact hp.sum_four_squares
+  | mul m n hm hn =>
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩

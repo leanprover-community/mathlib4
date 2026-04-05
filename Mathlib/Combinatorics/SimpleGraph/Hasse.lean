@@ -3,11 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SimpleGraph.Prod
-import Mathlib.Data.Fin.SuccPred
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.Relation
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.Prod
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.SuccPred.Relation
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The Hasse diagram as a graph
@@ -20,6 +23,8 @@ path graph on `n` vertices.
 * `SimpleGraph.hasse`: Hasse diagram of an order.
 * `SimpleGraph.pathGraph`: Path graph on `n` vertices.
 -/
+
+@[expose] public section
 
 
 open Order OrderDual Relation
@@ -36,7 +41,7 @@ variable [Preorder α]
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
   symm _a _b := Or.symm
-  loopless _a h := h.elim (irrefl _) (irrefl _)
+  loopless := ⟨fun _a h ↦ h.elim (irrefl _) (irrefl _)⟩
 
 variable {α β} {a b : α}
 
@@ -95,9 +100,7 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
   hasse _
 
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
-    (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by
-  simp only [pathGraph, hasse]
-  simp_rw [← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+    (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp [pathGraph, hasse]
 
 theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
   hasse_preconnected_of_succ _
@@ -107,6 +110,47 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
-  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+  fin_cases u <;> fin_cases v <;> simp [pathGraph]
+
+namespace Walk
+
+variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
+
+/-- The subgraph of a walk contains the path graph with the same number of vertices -/
+def pathGraphHomToSubgraph : pathGraph (w.length + 1) →g w.toSubgraph.coe where
+  toFun n := ⟨w.support[n], w.mem_verts_toSubgraph.mpr <| List.getElem_mem _⟩
+  map_rel' {a b} h := by
+    grind [support_getElem_eq_getVert, Subgraph.coe_adj, pathGraph_adj, toSubgraph_adj_getVert,
+      Subgraph.Adj.symm]
+
+/-- A walk induces a homomorphism from a path graph to the graph -/
+def pathGraphHom : pathGraph (w.length + 1) →g G :=
+  w.toSubgraph.hom.comp w.pathGraphHomToSubgraph
+
+variable {w} in
+/-- The subgraph of a path is isomorphic to the path graph with the same number of vertices -/
+def IsPath.pathGraphIsoToSubgraph (hw : w.IsPath) :
+    pathGraph (w.length + 1) ≃g w.toSubgraph.coe where
+  toFun := w.pathGraphHomToSubgraph
+  invFun v := ⟨w.support.idxOf v.val, by grind [w.mem_verts_toSubgraph]⟩
+  left_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup]
+  right_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk]
+  map_rel_iff' := by
+    refine ⟨fun hadj ↦ ?_, w.pathGraphHomToSubgraph.map_rel'⟩
+    grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support,
+      pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
+
+variable {w} in
+/-- A path induces an injective homomorphism from a path graph to the graph -/
+def IsPath.pathGraphCopy (hw : w.IsPath) : Copy (pathGraph <| w.length + 1) G :=
+  w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
+
+variable {w} in
+omit [DecidableEq V] in
+theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph (w.length + 1) ⊑ G := by
+  classical
+  exact ⟨hw.pathGraphCopy⟩
+
+end Walk
 
 end SimpleGraph

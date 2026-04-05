@@ -3,11 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.Algebra.DirectSum.Algebra
+module
+
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.IntUnitsPower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Graded tensor products over graded algebras
@@ -43,6 +45,8 @@ multiplication follows trivially from this after some point-free nonsense.
 
 -/
 
+@[expose] public section
+
 open scoped TensorProduct DirectSum
 
 variable {R ι : Type*}
@@ -68,19 +72,19 @@ section gradedComm
 local notation "𝒜ℬ" => (fun i : ι × ι => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
 local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
 
-/-- Auxliary construction used to build `TensorProduct.gradedComm`.
+/-- Auxiliary construction used to build `TensorProduct.gradedComm`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
-def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
-  refine DirectSum.toModule R _ _ fun i => ?_
-  have o := DirectSum.lof R _ ℬ𝒜 i.swap
-  have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ι) : ℤˣ)
-  exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
+def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 :=
+  DirectSum.toModule R _ _ fun i =>
+    have o := DirectSum.lof R _ ℬ𝒜 (i.2, i.1)
+    have s : ℤˣ := ((-1 : ℤˣ) ^ (i.1 * i.2 : ι) : ℤˣ)
+    (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
 
 @[simp]
 theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedCommAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i, j) (a ⊗ₜ b)) =
-      (-1 : ℤˣ)^(j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
+      (-1 : ℤˣ) ^ (j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
   rw [gradedCommAux]
   simp [mul_comm i j]
 
@@ -104,13 +108,11 @@ def gradedComm :
 /-- The braiding is symmetric. -/
 @[simp]
 theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
-  rw [gradedComm, gradedComm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-  ext
   rfl
 
 theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
-      (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
+      (-1 : ℤˣ) ^ (j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
   dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
@@ -186,7 +188,7 @@ noncomputable irreducible_def gradedMul :
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     (a₁ : ⨁ i, 𝒜 i) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ⨁ i, ℬ i) :
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
+      (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
   dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
     map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
@@ -195,14 +197,14 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, ← Int.cast_smul_eq_zsmul R, ← Int.cast_smul_eq_zsmul R]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, LinearMap.map_smul]
+  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, map_smul]
   dsimp
 
 variable {R}
 
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
-  suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
+  suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
     exact DFunLike.congr_fun this x
   ext ia a ib b
   dsimp
@@ -217,7 +219,7 @@ theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
 
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
-  suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
+  suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
     exact DFunLike.congr_fun this x
   ext
   dsimp
@@ -236,12 +238,13 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   let mA := gradedMul R 𝒜 ℬ
     -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
+        LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
-    LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, mul_assoc]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
@@ -259,7 +262,7 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, LinearMap.map_smul,
+  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     LinearMap.smul_apply]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
