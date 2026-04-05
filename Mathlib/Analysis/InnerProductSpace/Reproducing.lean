@@ -145,10 +145,10 @@ lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * 
     Real.sqrt_mul (norm_nonneg _)]
   exact norm_kernel_le _ _
 
-theorem norm_kernel_eq_zero_iff (x) : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H x y‖ = 0 :=
+theorem norm_kernel_eq_zero_iff {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H x y‖ = 0 :=
   ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _).trans (by simp [h]), fun h ↦ h x⟩
 
-theorem norm_kernel_eq_zero_iff' (x) : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H y x‖ = 0 :=
+theorem norm_kernel_eq_zero_iff' {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H y x‖ = 0 :=
   ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _).trans (by simp [h]), fun h ↦ h x⟩
 
 /-- The span of the kernel functions is dense. -/
