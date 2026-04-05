@@ -648,8 +648,7 @@ instance isEquivModuleCatToHopfAlgCat : Functor.IsEquivalence (moduleCatToHopfAl
         | add x y hx hy =>
             simp only [map_add]
             exact congr_arg₂ (· + ·) hx hy
-      )
-      )
+      ))
       (by ext m; exact DFunLike.congr_fun f.toBialgHom.counit_comp m)
       (by ext m; exact DFunLike.congr_fun f.toBialgHom.map_comp_comul.symm m)
     ⟩
