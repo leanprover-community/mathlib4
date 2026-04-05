@@ -506,14 +506,16 @@ theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Car
 
 -- TODO: use `⨆ i, f i + 1` instead of `lsub`
 
-private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
-  ⟨_, _, lsub_typein o, mk_toType o⟩
-
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
+@[deprecated "to build an increasing function with limit o, use the fundamental sequence API."
+(since := "2026-03-27")]
 theorem cof_lsub_def_nonempty (o) :
     { a : Cardinal | ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a }.Nonempty :=
-  ⟨_, card_mem_cof⟩
+  ⟨_, ⟨_, _, lsub_typein o, mk_toType o⟩⟩
 
+set_option linter.deprecated false in
+@[deprecated "to build an increasing function with limit o, use the fundamental sequence API."
+(since := "2026-03-27")]
 theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
   refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
@@ -529,6 +531,9 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     rw [← not_lt, ← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 
+set_option linter.deprecated false in
+@[deprecated "to build an increasing function with limit o, use the fundamental sequence API."
+(since := "2026-03-27")]
 theorem exists_lsub_cof (o : Ordinal) :
     ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = cof o := by
   rw [cof_eq_sInf_lsub]
@@ -544,6 +549,7 @@ theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
   rw [← lift_id'.{u} (lsub f), ← Cardinal.lift_umax.{u, v}]
   exact cof_lift_iSup_add_one_le _
 
+set_option linter.deprecated false in
 @[deprecated le_cof_iff (since := "2026-03-21")]
 theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
     a ≤ cof o ↔ ∀ {ι} (f : ι → Ordinal), lsub.{u, u} f = o → a ≤ #ι := by
@@ -618,6 +624,7 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
     a < c → nfp f a < c :=
   nfpFamily_lt_ord_lift hc (by simpa using Cardinal.one_lt_aleph0.trans hc) fun _ => hf
 
+set_option linter.deprecated false in
 @[deprecated exists_lsub_cof (since := "2026-03-21")]
 theorem exists_blsub_cof (o : Ordinal) :
     ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
