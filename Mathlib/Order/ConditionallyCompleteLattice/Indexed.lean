@@ -146,6 +146,20 @@ theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSu
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
+/-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
+theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+    (H : BddAbove <| ⋃ i, range (f i)) : BddAbove <| range fun i ↦ ⨆ j, f i j := by
+  have ⟨a, h⟩ := H
+  refine ⟨a ⊔ (sSup ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
+  cases isEmpty_or_nonempty <| κ i
+  · exact iSup_of_empty' (f i) ▸ le_sup_right
+  exact ciSup_le fun j ↦ le_sup_of_le_left <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
+
+theorem le_ciSup₂ {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddAbove <| ⋃ i, range (f i)) (i : ι)
+    (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
+  le_ciSup_of_le H.range_iSup_of_iUnion_range i <|
+    le_ciSup (H.mono <| subset_iUnion (range <| f ·) i) j
+
 /-- The indexed suprema of two functions are comparable if the functions are pointwise comparable -/
 @[gcongr low]
 theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
@@ -173,6 +187,20 @@ theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ 
 
 theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
   le_ciSup_of_le (α := αᵒᵈ) H c h
+
+/-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
+theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+    (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
+  have ⟨a, h⟩ := H
+  refine ⟨a ⊓ (sInf ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
+  cases isEmpty_or_nonempty <| κ i
+  · exact iInf_of_isEmpty (f i) ▸ inf_le_right
+  exact le_ciInf fun j ↦ inf_le_of_left_le <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
+
+theorem ciInf₂_le {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddBelow <| ⋃ i, range (f i)) (i : ι)
+    (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
+  ciInf_le_of_le H.range_iInf_of_iUnion_range i <|
+    ciInf_le (H.mono <| subset_iUnion (range <| f ·) i) j
 
 theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : β} (hc : c ∈ s) :
     ⨅ i : s, f i ≤ f c :=
@@ -388,13 +416,24 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 theorem ciInf_eq_bot_of_bot_mem [OrderBot α] {f : ι → α} (hs : ⊥ ∈ range f) : iInf f = ⊥ :=
   csInf_eq_bot_of_bot_mem hs
 
-theorem ciInf_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
+theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
+
+@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
+
+lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
+    ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+  have : OrderBot α := WellFoundedLT.toOrderBot α
+  constructor
+  · rintro rfl
+    exact ⟨ciInf_mem f, ciInf_le (OrderBot.bddBelow ..)⟩
+  · rintro ⟨⟨i, rfl⟩, h⟩
+    exact le_antisymm (ciInf_le (OrderBot.bddBelow ..) _) (le_ciInf h)
 
 end ConditionallyCompleteLinearOrder
 
