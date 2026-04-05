@@ -38,8 +38,8 @@ lemma isRegularRing_iff [IsNoetherianRing R] : IsRegularRing R ↔
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 variable {R} in
-lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R')
-    [reg : IsRegularRing R] : IsRegularRing R' := by
+lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [IsRegularRing R] :
+    IsRegularRing R' := by
   have := isNoetherianRing_of_ringEquiv R e
   apply isRegularRing_iff.mpr (fun p' hp' ↦ ?_)
   have := isRegularRing_iff.mp ‹_› (p'.comap e) (Ideal.comap_isPrime e p')
