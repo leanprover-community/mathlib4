@@ -139,6 +139,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints (hab : a ≤ b)
   · exact apply_lfpApprox_le_lfpApprox_of_lt f hi'
   · simp [IH i hi hi', hf]
 
+variable (x) in
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
 theorem exists_lfpApprox_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
@@ -165,7 +166,7 @@ lemma lfpApprox_mem_fixedPoints_of_eq (hx : x ≤ f x) (hab : a < b) (hac : a �
 /-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 theorem lfpApprox_ord_mem_fixedPoint (hx : x ≤ f x) :
     lfpApprox f x (ord <| succ #α) ∈ fixedPoints f := by
-  let ⟨a, ha, b, hb, hne, hf⟩ := exists_lfpApprox_eq_lfpApprox f (x := x)
+  let ⟨a, ha, b, hb, hne, hf⟩ := exists_lfpApprox_eq_lfpApprox f x
   cases le_total a b with
   | inl hab => exact lfpApprox_mem_fixedPoints_of_eq f hx (hne.lt_of_le hab) ha.le hf
   | inr hba => exact lfpApprox_mem_fixedPoints_of_eq f hx (hne.symm.lt_of_le hba) hb.le hf.symm
@@ -250,7 +251,7 @@ theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_ab : a ≤ b)
 yielding the same value -/
 theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
     a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
-  exists_lfpApprox_eq_lfpApprox f.dual
+  exists_lfpApprox_eq_lfpApprox f.dual x
 
 /-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 lemma gfpApprox_ord_mem_fixedPoint (hx : f x ≤ x) :
