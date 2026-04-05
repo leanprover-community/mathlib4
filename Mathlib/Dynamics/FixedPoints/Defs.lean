@@ -34,10 +34,10 @@ instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
 
 @[simp]
 theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
-  Iff.rfl
+  .rfl
 
-theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
-  rfl
+theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x :=
+  .rfl
 
 @[simp]
 theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
