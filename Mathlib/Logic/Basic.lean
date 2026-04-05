@@ -677,7 +677,7 @@ lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_
   forall_prop_of_true _
 
 @[simp]
-lemma Subsingleton.forall₂ {ι : Type*} [Subsingleton ι] (P : ι → ι → Prop) :
+lemma Subsingleton.forall₂_iff {ι : Sort*} [Subsingleton ι] (P : ι → ι → Prop) :
     (∀ i j, P i j) ↔ (∀ i, P i i) := by
   refine forall_congr' fun i ↦ ?_
   have : Nonempty ι := ⟨i⟩
