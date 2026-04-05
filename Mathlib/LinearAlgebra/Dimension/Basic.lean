@@ -358,13 +358,13 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range _)]
+  rw [Cardinal.lift_iSup Cardinal.bddAbove_of_small]
   apply ciSup_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine le_ciSup (Cardinal.bddAbove_range _) ⟨rangeSplitting f '' s, ?_⟩
+    refine le_ciSup Cardinal.bddAbove_of_small ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -451,7 +451,7 @@ lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
     [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
     Module.rank R' M ≤ Module.rank R M := by
   rw [Module.rank, Module.rank]
-  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le Cardinal.bddAbove_of_small
     ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
 
 variable (R R') in

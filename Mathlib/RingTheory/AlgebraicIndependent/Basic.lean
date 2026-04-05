@@ -164,7 +164,7 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
 @[nontriviality] theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
   have := Module.subsingleton R A
   (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
-    (Cardinal.bddAbove_range _) ⟨{0}, .of_subsingleton⟩ (by simp)
+    Cardinal.bddAbove_of_small ⟨{0}, .of_subsingleton⟩ (by simp)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
