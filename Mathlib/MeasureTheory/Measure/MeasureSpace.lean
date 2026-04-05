@@ -1105,17 +1105,7 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
-  isGLB_sInf m := by
-    constructor
-    case left =>
-      intro μ hμ
-      have : sInf (toOuterMeasure '' m) ≤ μ.toOuterMeasure := sInf_le (mem_image_of_mem _ hμ)
-      exact le_iff.2 fun s hs => sInf_apply hs ▸ this s
-    case right =>
-      intro μ hμ
-      have : μ.toOuterMeasure ≤ sInf (toOuterMeasure '' m) :=
-        le_sInf <| forall_mem_image.2 fun _ hμ' ↦ toOuterMeasure_le.2 <| hμ hμ'
-      exact le_iff.2 fun s hs => sInf_apply hs ▸ this s
+  isGLB_sInf m := by exact ⟨fun x ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
