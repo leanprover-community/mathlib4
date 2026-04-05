@@ -10,12 +10,7 @@ public import Mathlib.SetTheory.Ordinal.Arithmetic
 /-!
 # Arithmetic on families of ordinals
 
-## Main definitions and results
-
-* `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
-  `Type u`, as an ordinal in `Type u`.
-* `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
-  less than a given ordinal `o`.
+This file proves basic results about the suprema of families of ordinals.
 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
