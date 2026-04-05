@@ -117,7 +117,7 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
     have : (Ici (0 : A)).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id := fun a ha => CFC.nnrpow_one _ ha
     exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) this.symm
 
-/-- `CFC.sqrt` is operator concave. -/
+/-- The square root is operator concave. -/
 lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
   have : (sqrt : A → A) = fun a => a ^ (1 / 2 : ℝ≥0) := by ext; rw [sqrt_eq_nnrpow]
   rw [this]

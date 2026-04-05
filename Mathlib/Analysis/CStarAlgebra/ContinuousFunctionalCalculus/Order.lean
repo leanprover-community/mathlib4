@@ -116,8 +116,7 @@ lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
   rw [← Unitization.inr_le_iff _ _]
-  have := hf₂.2
-  grind [Unitization.inr_add, Unitization.inr_smul]
+  simpa using hf₂.2 hx hy ha hb hab
 
 lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
     (hf : ∀ x, IsSelfAdjoint (f x))
@@ -125,8 +124,7 @@ lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
   rw [← Unitization.inr_le_iff _ _]
-  have := hf₂.2
-  grind [Unitization.inr_add, Unitization.inr_smul]
+  simpa using hf₂.2 hx hy ha hb hab
 
 alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
