@@ -400,11 +400,9 @@ lemma det_piecewise_one_eq_submatrix_det
         Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
-/-- The k-th coefficient of `det (1 + X • M)` equals the sum
-of all k×k principal minors of M. This generalizes
-`coeff_det_one_add_X_smul_one` (the k = 1 case, giving the
-trace) and `det_eq_sign_charpoly_coeff` (the k = n case,
-giving the determinant). -/
+/-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
+This generalizes `coeff_det_one_add_X_smul_one` (the k = 1 case, which gives the trace)
+and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). -/
 theorem coeff_det_one_add_X_smul_eq_sum_minors
     (M : Matrix n n R) (k : ℕ) :
     (det (1 + (X : R[X]) • M.map C)).coeff k =
@@ -460,37 +458,26 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         rw [h_set]
         exact Finset.sum_congr rfl fun s _ => det_piecewise_one_eq_submatrix_det M s
 
-/-- The coefficients of the characteristic polynomial are
-signed sums of principal minors. Specifically, the (n-k)-th
-coefficient of the characteristic polynomial of M equals
+/-- The coefficients of the characteristic polynomial are signed sums of principal minors.
+Specifically, the (n-k)-th coefficient of the characteristic polynomial of M equals
 `(-1)^k` times the sum of all k×k principal minors of M. -/
 theorem charpoly_coeff_eq_sum_minors
-    [Nontrivial R] (M : Matrix n n R) (k : ℕ)
-    (hk : k ≤ Fintype.card n) :
+    [Nontrivial R] (M : Matrix n n R) (k : ℕ) (hk : k ≤ Fintype.card n) :
     M.charpoly.coeff (Fintype.card n - k) =
-    (-1) ^ k *
-      ∑ s ∈ Finset.univ.filter
-          (fun s : Finset n => s.card = k),
-        (M.submatrix (↑) (↑) :
-          Matrix s s R).det := by
+    (-1) ^ k * ∑ s ∈ Finset.univ.filter (fun s : Finset n => s.card = k),
+      (M.submatrix (↑) (↑) : Matrix s s R).det := by
   have hnd := M.charpoly_natDegree_eq_dim
-  have hrev :
-      M.charpoly.coeff (Fintype.card n - k) =
-      M.charpoly.reverse.coeff k := by
+  have hrev : M.charpoly.coeff (Fintype.card n - k) = M.charpoly.reverse.coeff k := by
     simp [Polynomial.coeff_reverse, hnd, hk]
   rw [hrev, M.reverse_charpoly]
-  have hcharpolyRev :
-      M.charpolyRev =
-      det (1 + (X : R[X]) • (-M).map C) := by
+  have hcharpolyRev : M.charpolyRev = det (1 + (X : R[X]) • (-M).map C) := by
     simp only [charpolyRev, sub_eq_add_neg]
     congr 2; ext i j
     simp [Matrix.smul_apply, Matrix.map_apply]
-  rw [hcharpolyRev,
-    coeff_det_one_add_X_smul_eq_sum_minors]
-  simp only [univ_filter_card_eq, submatrix_neg, Pi.neg_apply, det_neg, Fintype.card_coe, mul_sum]
-  · apply Finset.sum_congr rfl
-    intro s hs
-    rw [(Finset.mem_powersetCard.mp hs).2]
+  rw [hcharpolyRev, coeff_det_one_add_X_smul_eq_sum_minors]
+  simp only [univ_filter_card_eq, submatrix_neg, Pi.neg_apply, det_neg,
+    Fintype.card_coe, mul_sum]
+  exact Finset.sum_congr rfl fun s hs => by rw [(Finset.mem_powersetCard.mp hs).2]
 
 end reverse
 
