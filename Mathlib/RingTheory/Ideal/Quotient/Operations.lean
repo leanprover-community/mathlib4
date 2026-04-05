@@ -190,6 +190,14 @@ theorem mem_quotient_iff_mem {I J : Ideal R} [I.IsTwoSided] (hIJ : I ≤ J) {x :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J := by
   rw [mem_quotient_iff_mem_sup, sup_eq_left.mpr hIJ]
 
+/-- The bijection between ring homomorphisms `φ : R →+* S` with two-sided ideal `I ≤ ker(φ)` and
+ring homomorphisms `R/I →+* S`. -/
+@[simps]
+def Quotient.liftEquiv (I : Ideal R) [I.IsTwoSided] :
+    (R ⧸ I →+* S) ≃ {φ : R →+* S // I ≤ RingHom.ker φ} where
+  toFun f := ⟨f.comp <| Quotient.mk I, fun _ h ↦ by simp [eq_zero_iff_mem.mpr h]⟩
+  invFun f := lift _ _ fun _ h ↦ f.prop h
+
 section ChineseRemainder
 open Function Quotient Finset
 
@@ -486,6 +494,15 @@ theorem Quotient.liftₐ_comp (I : Ideal A) [I.IsTwoSided]
     (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     (Ideal.Quotient.liftₐ I f hI).comp (Ideal.Quotient.mkₐ R₁ I) = f :=
   AlgHom.ext fun _ => (Ideal.Quotient.lift_mk I (f : A →+* B) hI :)
+
+/-- The bijection between algebra homomorphisms `φ : A →ₐ[R₁] B` with two-sided ideal `I ≤ ker(φ)`
+and algebra homomorphisms `A/I →ₐ[R₁] B`. -/
+@[simps]
+def Quotient.liftₐEquiv (I : Ideal A) [I.IsTwoSided] :
+    (A ⧸ I →ₐ[R₁] B) ≃ {φ : A →ₐ[R₁] B // I ≤ RingHom.ker φ} where
+  toFun f := ⟨f.comp <| mkₐ R₁ I, fun _ h ↦ by simp [eq_zero_iff_mem.mpr h]⟩
+  invFun f := liftₐ I f.val fun _ h ↦ f.prop h
+  left_inv _ := algHom_ext _ <| liftₐ_comp ..
 
 theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
     Submodule.span A {(1 : A ⧸ I)} = ⊤ := by
