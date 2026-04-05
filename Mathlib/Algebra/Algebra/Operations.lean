@@ -258,6 +258,9 @@ theorem mul_eq_bot [NoZeroDivisors A] {M N : Submodule R A} :
         Or.resolve_left (mul_eq_zero.mp ((M * N).eq_bot_iff.mp hmn _ (mul_mem_mul hm hn))) ne0,
     fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
+instance [NoZeroDivisors A] : NoZeroDivisors (Submodule R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+
 protected theorem one_mul : (1 : Submodule R A) * M = M :=
   Submodule.one_smul _
 
