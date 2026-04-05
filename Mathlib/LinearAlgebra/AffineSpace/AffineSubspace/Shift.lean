@@ -104,8 +104,8 @@ section CommRing
 variable [CommRing k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
 /-- For a unit parameter, shifting is the same as mapping by homothety. -/
-theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k}
-    (hr : IsUnit r) : s.shift c r = s.map (homothety c r) := by
+theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k} (hr : IsUnit r) :
+    s.shift c r = s.map (homothety c r) := by
   obtain ⟨t, ht⟩ := hr.exists_right_inv
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
