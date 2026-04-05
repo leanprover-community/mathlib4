@@ -211,13 +211,12 @@ which form a basis for the upper topology. -/]
 def lowerBasis (α : Type*) [Preorder α] :=
   { s : Set α | ∃ t : Set α, t.Finite ∧ (upperClosure t : Set α)ᶜ = s }
 
-#exit
-
 section Preorder
 
 variable (α)
 variable [Preorder α] [TopologicalSpace α] [IsLower α] {s : Set α}
 
+@[to_dual]
 lemma topology_eq : ‹_› = lower α := topology_eq_lowerTopology
 
 variable {α}
@@ -368,19 +367,9 @@ end IsLower
 
 namespace IsUpper
 
-/-- The complements of the lower closures of finite sets are a collection of upper sets
-which form a basis for the upper topology. -/
-def upperBasis (α : Type*) [Preorder α] :=
-  { s : Set α | ∃ t : Set α, t.Finite ∧ (lowerClosure t : Set α)ᶜ = s }
-
 section Preorder
 
-variable (α)
 variable [Preorder α] [TopologicalSpace α] [IsUpper α] {s : Set α}
-
-lemma topology_eq : ‹_› = upper α := topology_eq_upperTopology
-
-variable {α}
 
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
