@@ -4,7 +4,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.SetLike.Basic
 
-axiom test_sorry : ∀ {α}, α
+private axiom test_sorry : ∀ {α}, α
 universe u v w
 set_option autoImplicit true
 

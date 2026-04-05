@@ -15,8 +15,6 @@ not modulized: MathlibTest/Complex.lean
 not modulized: MathlibTest/Continuity.lean
 not modulized: MathlibTest/CountHeartbeats.lean
 not modulized: MathlibTest/DSimpPercent.lean
-not modulized: MathlibTest/DefEqAbuse.lean
-not modulized: MathlibTest/DefEqTransformations.lean
 not modulized: MathlibTest/Delab/Abs.lean
 not modulized: MathlibTest/Delab/ConcreteCategories.lean
 not modulized: MathlibTest/Delab/FinsetBuilder.lean
@@ -45,7 +43,6 @@ not modulized: MathlibTest/GCongr/GCongr.lean
 not modulized: MathlibTest/GCongr/implications.lean
 not modulized: MathlibTest/GCongr/inequalities.lean
 not modulized: MathlibTest/GCongr/mod.lean
-not modulized: MathlibTest/GRewrite.lean
 not modulized: MathlibTest/GuardGoalNums.lean
 not modulized: MathlibTest/GuardHypNums.lean
 not modulized: MathlibTest/HashCommandLinter.lean
@@ -55,13 +52,10 @@ not modulized: MathlibTest/HeaderFail.lean
 not modulized: MathlibTest/HigherOrder.lean
 not modulized: MathlibTest/ImportHeavyFlexibleLinter.lean
 not modulized: MathlibTest/InferInstanceAsPercent.lean
-not modulized: MathlibTest/InstanceTransparency.lean
 not modulized: MathlibTest/LibraryRewrite.lean
 not modulized: MathlibTest/LibrarySearch/IsCompact.lean
 not modulized: MathlibTest/LibrarySearch/basic.lean
 not modulized: MathlibTest/LibrarySearch/observe.lean
-not modulized: MathlibTest/Linarith/Basic.lean
-not modulized: MathlibTest/Linarith/NNReal.lean
 not modulized: MathlibTest/Lint.lean
 not modulized: MathlibTest/MathlibTestExecutable.lean
 not modulized: MathlibTest/MaxPowDiv.lean
@@ -69,13 +63,11 @@ not modulized: MathlibTest/MfldSetTac.lean
 not modulized: MathlibTest/MinImports.lean
 not modulized: MathlibTest/MkIffOfInductive.lean
 not modulized: MathlibTest/MonCat.lean
-not modulized: MathlibTest/Monotonicity.lean
 not modulized: MathlibTest/Multigoal.lean
 not modulized: MathlibTest/PrivateModuleLinter/nonModule.lean (This test shouldn't be modulized)
 not modulized: MathlibTest/Recall.lean
 not modulized: MathlibTest/RegularMeasure.lean
 not modulized: MathlibTest/Set.lean
-not modulized: MathlibTest/SimpRw.lean
 not modulized: MathlibTest/Simproc/Divisors.lean
 not modulized: MathlibTest/Simproc/ExistsAndEq.lean
 not modulized: MathlibTest/Simproc/ProdUnivMany.lean
@@ -84,7 +76,6 @@ not modulized: MathlibTest/Simps.lean
 not modulized: MathlibTest/SplitIfs.lean (cannot use `#print axioms` in a `module`)
 not modulized: MathlibTest/StacksAttribute.lean
 not modulized: MathlibTest/StringDiagram.lean
-not modulized: MathlibTest/Subsingleton.lean
 not modulized: MathlibTest/TacticAnalysis.lean
 not modulized: MathlibTest/TermReduce.lean
 not modulized: MathlibTest/ToFun.lean
@@ -101,13 +92,7 @@ not modulized: MathlibTest/Variable.lean
 not modulized: MathlibTest/VersoHeader.lean
 not modulized: MathlibTest/aesop_cat.lean
 not modulized: MathlibTest/algebraize.lean
-not modulized: MathlibTest/apply_fun.lean
-not modulized: MathlibTest/cancel_denoms.lean
-not modulized: MathlibTest/congr.lean
-not modulized: MathlibTest/congrm.lean
 not modulized: MathlibTest/conv_widget.lean
-not modulized: MathlibTest/convert.lean
-not modulized: MathlibTest/convert2.lean
 not modulized: MathlibTest/delabLinearIndependent.lean
 not modulized: MathlibTest/delaborators.lean
 not modulized: MathlibTest/depRewrite.lean
@@ -147,23 +132,16 @@ not modulized: MathlibTest/interval_cases.lean
 not modulized: MathlibTest/irreducibleDef.lean
 not modulized: MathlibTest/jacobiSym.lean
 not modulized: MathlibTest/lift.lean
-not modulized: MathlibTest/linear_combination'.lean
-not modulized: MathlibTest/linear_combination.lean
 not modulized: MathlibTest/matrix.lean
 not modulized: MathlibTest/measurability.lean
 not modulized: MathlibTest/meta.lean
-not modulized: MathlibTest/mod_cases.lean
 not modulized: MathlibTest/nontriviality.lean
 not modulized: MathlibTest/norm_cast.lean
-not modulized: MathlibTest/norm_num.lean
-not modulized: MathlibTest/norm_num_abs.lean
 not modulized: MathlibTest/norm_num_ext.lean (meta error!)
 not modulized: MathlibTest/notation3.lean
 not modulized: MathlibTest/observe.lean
 not modulized: MathlibTest/oldObtain.lean
 not modulized: MathlibTest/positivity.lean
-not modulized: MathlibTest/push.lean
-not modulized: MathlibTest/push_neg.lean
 not modulized: MathlibTest/random.lean
 not modulized: MathlibTest/recover.lean
 not modulized: MathlibTest/register_try_tactic.lean

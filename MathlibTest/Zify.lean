@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Int.Units
 
 set_option linter.unusedVariables false
 
-axiom test_sorry : ∀ {α}, α
+private axiom test_sorry : ∀ {α}, α
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
   guard_target =~ (c : ℤ) < (a : ℤ) + 3 * (b : ℤ)

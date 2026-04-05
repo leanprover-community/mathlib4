@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
@@ -9,7 +10,7 @@ set_option linter.unusedVariables false
 set_option autoImplicit false
 
 open Lean.Elab.Tactic in
-def testSorryTac : TacticM Unit := do
+meta def testSorryTac : TacticM Unit := do
   let e ← getMainTarget
   let t ← `(test_sorry)
   closeMainGoalUsing `sorry fun _ _ => elabTerm t e

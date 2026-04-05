@@ -8,7 +8,7 @@ import Mathlib.Tactic.Replace
 
 set_option linter.unusedVariables false
 
-axiom test_sorry : ∀ {α}, α
+private axiom test_sorry : ∀ {α}, α
 
 /-- Test the `:=` syntax works -/
 example {A B : Type} (h : A) (f : A → B) : B := by
