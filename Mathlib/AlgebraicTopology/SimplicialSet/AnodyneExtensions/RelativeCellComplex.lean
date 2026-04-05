@@ -577,8 +577,8 @@ lemma isPushout (j : ι) :
     obtain rfl : s₁ = s₂ := f.isPushout_aux₃ (by
       dsimp
       rw [S.eq_iff_ofSimplex_eq,
-        ← Subcomplex.ofSimplex_map g₁, ← FunctorToTypes.naturality,
-        ← Subcomplex.ofSimplex_map g₂, ← FunctorToTypes.naturality,
+        ← Subcomplex.ofSimplex_map_of_epi g₁, ← FunctorToTypes.naturality,
+        ← Subcomplex.ofSimplex_map_of_epi g₂, ← FunctorToTypes.naturality,
         hg₁, hg₂, h]
       all_goals
       · rw [Subcomplex.mem_nonDegenerate_iff]

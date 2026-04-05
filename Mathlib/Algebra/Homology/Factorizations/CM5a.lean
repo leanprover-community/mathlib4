@@ -39,7 +39,7 @@ induces a monomorphism in homology in degree `n₁`, and we proceed further
 in `step₂`.
 
 As we assume that both `K` and `L` are bounded below, we may find `n₀ : ℤ`
-such that `K` and `L` are striclty `≥ n₀ + 1`: in particular, `f` induces
+such that `K` and `L` are strictly `≥ n₀ + 1`: in particular, `f` induces
 an isomorphism in degrees `≤ n₀`. Iterating the lemma `step`, we construct
 a projective system `ℕᵒᵖ ⥤ CochainComplex C ℤ`
 (see `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.cochainComplexFunctor`).
