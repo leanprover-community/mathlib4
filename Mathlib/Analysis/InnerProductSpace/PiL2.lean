@@ -51,7 +51,7 @@ the last section, various properties of matrices are explored.
 - `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
   finite-dimensional inner product space
 
-- `orthonormalBasisSingleton`: an orthonormal basis formed by a single vector with unit length in a
+- `orthonormalBasisSingleton`: an orthonormal basis formed by a single unit vector in a
   one-dimensional inner product space.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
