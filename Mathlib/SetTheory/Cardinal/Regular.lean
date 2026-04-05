@@ -191,7 +191,7 @@ theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc 
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
   bsup_lt_ord (by rwa [hc.cof_ord])
 
-@[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
+@[deprecated lift_iSup_lt_of_lt_cof_ord (since := "2026-03-22")]
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : iSup f < c := by
   apply lift_iSup_lt_of_lt_cof_ord _ hf
@@ -203,8 +203,9 @@ theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (
   iSup_lt_of_lt_cof_ord (by rwa [hc.cof_ord])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
-  (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι (iSup_lt_lift_of_isRegular hc hι hf)
+    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c := by
+  apply (sum_le_lift_mk_mul_iSup _).trans_lt <| mul_lt_of_lt hc.1 hι _
+  apply lift_iSup_lt_of_lt_cof_ord _ hf
 
 theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
