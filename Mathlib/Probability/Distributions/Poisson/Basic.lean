@@ -1,24 +1,29 @@
 /-
 Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Josha Dekker, Etienne Marion
+Authors: Josha Dekker, Etienne Marion, Hanzhang Cheng
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
-
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
 /-! # Poisson distributions over ℕ
 
 Define the Poisson measure over the natural numbers. For `r : ℝ≥0`, `poissonMeasure r` is the
 measure which to `{n}` associates `exp (-r) * r ^ n / (n)!`.
 
-## Main definition
+## Main definitions
 
 * `poissonMeasure r`: a Poisson measure on `ℕ`, parametrized by its rate `r : ℝ≥0`.
+* `poissonMeasureReal r`: the Poisson distribution on `ℝ`, as the pushforward of `poissonMeasure`.
+
+## Main results
+
+* `poissonMeasure_conv_poissonMeasure`: `Poisson(r₁) ∗ Poisson(r₂) = Poisson(r₁ + r₂)`.
+* `IndepFun.hasLaw_add_poissonMeasure`: the sum of two independent Poisson random variables
+  is again Poisson.
 -/
 
 @[expose] public section
@@ -160,5 +165,69 @@ lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (pois
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 
 end PoissonPMF
+
+/-! ### Notation for Poisson measure -/
+
+/-- The Poisson probability distribution with rate `r`. -/
+scoped notation3 "𝓅𝓸(" r ")" => poissonMeasure r
+
+/-- The Poisson probability distribution with rate `r` valued in the semiring `R`. -/
+scoped notation3 "𝓅𝓸(" R ", " r ")" => (poissonMeasure r).map (Nat.cast : ℕ → R)
+
+instance isProbabilityMeasure_poissonMeasure_map (r : ℝ≥0) {R : Type*} [AddMonoidWithOne R]
+    [MeasurableSpace R] :
+    IsProbabilityMeasure (𝓅𝓸(R, r)) :=
+  Measure.isProbabilityMeasure_map (measurable_of_countable _).aemeasurable
+
+/-- The characteristic function of the Poisson distribution with rate `r` is
+`t ↦ exp(r(exp(it) - 1))`. -/
+lemma poissonMeasure_map_charFun (r : ℝ≥0) (t : ℝ) :
+    charFun (𝓅𝓸(ℝ, r)) t = Complex.exp (r * (Complex.exp (t * Complex.I) - 1)) := by
+  haveI : FiniteDimensional ℝ ℂ := Module.Basis.finiteDimensional_of_finite Complex.basisOneI
+  rw [charFun_apply,
+      integral_map (measurable_of_countable _).aemeasurable (by fun_prop),
+      integral_poissonMeasure r]
+  simp_rw [show ∀ (a : ℕ), inner ℝ (↑a : ℝ) t = ↑a * t from
+           fun a => by change t * ↑a = ↑a * t; ring]
+  change ∑' a, ((rexp (-↑r) * ↑r ^ a / ↑a ! : ℝ) : ℂ) *
+      Complex.exp (↑(↑a * t) * Complex.I) = _
+  have h_term_eq (a : ℕ) :
+      ↑(rexp (-↑r) * ↑r ^ a / ↑a !) * Complex.exp (↑(↑a * t) * Complex.I) =
+      ↑(rexp (-↑r)) * ((↑r * Complex.exp (↑t * Complex.I)) ^ a / ↑a !) := by
+    push_cast; rw [mul_pow, ← Complex.exp_nat_mul]; ring_nf
+  simp_rw [h_term_eq, tsum_mul_left, (NormedSpace.expSeries_div_hasSum_exp
+           (↑r * Complex.exp (↑t * Complex.I))).tsum_eq]
+  rw [Complex.exp_eq_exp_ℂ, Complex.ofReal_exp, Complex.exp_eq_exp_ℂ, ← NormedSpace.exp_add]
+  congr 1; push_cast; ring
+
+/-- Convolution of Poisson distributions on `ℝ`. -/
+theorem poissonMeasure_map_conv (r₁ r₂ : ℝ≥0) :
+    𝓅𝓸(ℝ, r₁) ∗ 𝓅𝓸(ℝ, r₂) = 𝓅𝓸(ℝ, r₁ + r₂) := by
+  apply Measure.ext_of_charFun
+  ext t
+  simp only [charFun_conv, poissonMeasure_map_charFun, ← Complex.exp_add]
+  congr 1; push_cast; ring
+
+/-! ## Convolution of Poisson measures on ℕ -/
+
+section Convolution
+
+theorem poissonMeasure_conv_poissonMeasure (r₁ r₂ : ℝ≥0) :
+    𝓅𝓸(r₁) ∗ 𝓅𝓸(r₂) = 𝓅𝓸(r₁ + r₂) := by
+  apply (MeasurableEmbedding.natCast (α := ℝ)).map_injective
+  rw [← Nat.coe_castAddMonoidHom, Measure.map_conv_addMonoidHom _ (by fun_prop)]
+  exact poissonMeasure_map_conv _ _
+
+/-- The sum of two independent Poisson random variables with rates `r₁, r₂` is a Poisson
+random variable with rate `r₁ + r₂`. -/
+theorem IndepFun.hasLaw_add_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    {P : Measure Ω} {r₁ r₂ : ℝ≥0} {X Y : Ω → ℕ}
+    (hXY : IndepFun X Y P) (hX : HasLaw X (𝓅𝓸(r₁)) P)
+    (hY : HasLaw Y (𝓅𝓸(r₂)) P) :
+    HasLaw (X + Y) (𝓅𝓸(r₁ + r₂)) P := by
+  rw [← poissonMeasure_conv_poissonMeasure]
+  exact hXY.hasLaw_add hX hY
+
+end Convolution
 
 end ProbabilityTheory
