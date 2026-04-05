@@ -136,6 +136,9 @@ theorem edegree_top : edegree ⊤ v = ENat.card V - 1 := by
 theorem edegree_bot : edegree ⊥ v = 0 := by
   simp [← encard_neighborSet]
 
+theorem eq_bot_iff_edegree : G = ⊥ ↔ ∀ v, G.edegree v = 0 := by
+  simp [eq_bot_iff_neighborSet, edegree_eq_zero_iff_neighborSet_eq_empty]
+
 variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :
     G.edegree v = d :=
@@ -154,6 +157,15 @@ theorem maxEDegree_eq_iSup : G.maxEDegree = ⨆ v, G.edegree v := by
 
 theorem minEDegree_eq_iInf : G.minEDegree = ⨅ v, G.edegree v := by
   rfl
+
+variable {G} in
+@[simp]
+theorem maxEDegree_eq_zero_iff_eq_bot : G.maxEDegree = 0 ↔ G = ⊥ := by
+  simp [maxEDegree_eq_iSup, eq_bot_iff_edegree]
+
+variable {G} in
+theorem minEDegree_eq_zero_iff_support_ne : G.minEDegree = 0 ↔ G.support ≠ .univ := by
+  simp [minEDegree_eq_iInf, Set.ne_univ_iff_exists_notMem, edegree_eq_zero_iff_notMem_support]
 
 theorem exists_edegree_eq_minEDegree [Nonempty V] : ∃ v, G.edegree v = G.minEDegree :=
   ciInf_mem G.edegree

@@ -209,6 +209,10 @@ theorem degree_pos_iff_nonempty : 0 < G.degree v ↔ (G.neighborSet v).Nonempty 
   G.degree_pos_iff_exists_adj v
 
 variable {G v} in
+theorem degree_eq_zero_iff_neighborSet_eq_empty : G.degree v = 0 ↔ G.neighborSet v = ∅ := by
+  rw [← ncard_neighborSet, Set.ncard_eq_zero]
+
+variable {G v} in
 theorem Adj.degree_pos_left {w : V} (h : G.Adj v w) : 0 < G.degree v :=
   G.degree_pos_iff_nonempty.mpr ⟨_, h⟩
 
@@ -357,8 +361,11 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 
 @[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
-  exact Finset.card_empty
+  simp [degree_eq_zero_iff_neighborSet_eq_empty]
+
+omit [Fintype V] in
+theorem eq_bot_iff_degree [G.LocallyFinite] : G = ⊥ ↔ ∀ v, G.degree v = 0 := by
+  simp [eq_bot_iff_neighborSet, degree_eq_zero_iff_neighborSet_eq_empty]
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
@@ -461,6 +468,16 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
 lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
   Nat.le_zero.1 <| maxDegree_le_of_forall_degree_le _ _ (by simp)
 
+variable {G} in
+@[simp]
+theorem maxDegree_eq_zero_iff [DecidableRel G.Adj] : G.maxDegree = 0 ↔ G = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [eq_bot_iff_degree]
+    intro v
+    grind [G.degree_le_maxDegree v]
+  · convert maxDegree_bot_eq_zero
+    assumption
+
 @[simp]
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
   by_cases! he : IsEmpty V
@@ -470,6 +487,13 @@ lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
   Nat.le_zero.1 <| (minDegree_le_maxDegree _).trans (by simp)
+
+variable {G} in
+theorem minDegree_eq_zero_iff [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree = 0 ↔ ∃ v, G.degree v = 0 := by
+  refine ⟨fun h ↦ ?_, fun ⟨v, hv⟩ ↦ ?_⟩
+  · grind [G.exists_minimal_degree_vertex]
+  · grind [G.minDegree_le_degree v]
 
 /--
 The maximum degree of a nonempty graph is less than the number of vertices. Note that the assumption
