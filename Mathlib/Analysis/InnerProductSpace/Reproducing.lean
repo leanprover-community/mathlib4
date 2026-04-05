@@ -101,10 +101,9 @@ theorem lipschitzWith_ennnorm (f : H) :
     haveI : PseudoEMetricSpace X := PseudoEMetricSpace.induced (eval (H := H)) inferInstance
     LipschitzWith ‖f‖₊ f := by
   intro x y
-  rw [edist_eq_enorm_sub, ← eval_apply, ← eval_apply, ← sub_apply,
-      mul_comm, ← enorm_eq_nnnorm]
-  have h := (eval (H:=H) x - eval (H:=H) y).le_opENorm f
-  rwa [← edist_eq_enorm_sub] at h
+  grw [edist_eq_enorm_sub, ← eval_apply, ← eval_apply, ← sub_apply, le_opENorm, mul_comm,
+    ← enorm_eq_nnnorm, ← edist_eq_enorm_sub]
+  rfl
 
 end Lipschitz
 
