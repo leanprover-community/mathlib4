@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Algebra.Lie.Semisimple.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 /-!
 
 # The Lie algebra `sl₂` and its representations
@@ -244,4 +247,44 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     congr 1
     ring
 
+section IsAlgClosedIrreducible
+
+variable {L M : Type*}
+(K : Type*) [Field K]
+[LieRing L] [LieAlgebra K L]
+[AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
+variable {h e f : L} {t : IsSl2Triple h e f}
+
+lemma exists_primitiveVector (t : IsSl2Triple h e f)
+    [IsAlgClosed K] [CharZero K] [FiniteDimensional K M] [Nontrivial M] :
+    ∃ (μ : K) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
+  obtain ⟨μ₀, hμ₀⟩ := Module.End.exists_eigenvalue (toEnd K L M h)
+  obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
+  let evals : ℕ → K := fun n ↦ μ₀ + 2 * (n : K)
+  let e_vecs : ℕ → M := fun n ↦ ((toEnd K L M e) ^ n) m₀
+  have h_exists_zero : ∃ (k : ℕ), e_vecs k = 0 := by
+    by_contra! contra
+    have h_inj : Function.Injective evals := fun a b hab ↦ by
+      simpa [evals, add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj] using hab
+    have h_indep := Module.End.eigenvectors_linearIndependent
+      (toEnd K L M h) (Set.range evals) (fun ⟨γ, hγ⟩ ↦ e_vecs (Classical.choose hγ)) (by
+        rintro ⟨γ, hγ⟩
+        let n := Classical.choose hγ
+        refine ⟨?_, contra n⟩
+        rw [Module.End.mem_eigenspace_iff, toEnd_apply_apply]
+        change ⁅h, e_vecs n⁆ = γ • e_vecs n
+        rw [← Classical.choose_spec hγ]
+        exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n)
+    haveI := h_indep.finite
+    exact (Set.infinite_range_of_injective h_inj) (Set.toFinite _)
+  obtain ⟨n, hn_ne, hn_zero⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists hm₀.2 h_exists_zero
+  refine ⟨evals n, e_vecs n, hn_ne, {
+    ne_zero := hn_ne
+    lie_h := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+    lie_e := by
+      rw [lie_e_pow_toEnd_e n]
+      exact hn_zero
+  }⟩
+
+end IsAlgClosedIrreducible
 end IsSl2Triple
