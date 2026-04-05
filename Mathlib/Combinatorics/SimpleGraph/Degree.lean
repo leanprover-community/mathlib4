@@ -264,11 +264,31 @@ theorem minEDegree_le_maxEDegree [Nonempty V] : G.minEDegree ≤ G.maxEDegree :=
   grw [G.minEDegree_le_edegree v, edegree_le_maxEDegree]
 
 @[simp]
+theorem maxEDegree_top : (⊤ : SimpleGraph V).maxEDegree = ENat.card V - 1 := by
+  cases isEmpty_or_nonempty V
+  · simp [ENat.card_eq_zero_iff_empty V |>.mpr ‹_›]
+  simp [maxEDegree_eq_iSup]
+
+@[simp]
+theorem minEDegree_top [Nonempty V] : (⊤ : SimpleGraph V).minEDegree = ENat.card V - 1 := by
+  simp [minEDegree_eq_iInf]
+
+@[simp]
 theorem maxEDegree_bot : (⊥ : SimpleGraph V).maxEDegree = 0 := by
   simp [maxEDegree_eq_iSup]
 
 @[simp]
 theorem minEDegree_bot [Nonempty V] : (⊥ : SimpleGraph V).minEDegree = 0 := by
   simp [minEDegree_eq_iInf]
+
+variable {G} in
+theorem IsRegularOfDegree.maxEDegree_eq [Nonempty V] [G.LocallyFinite] {d : ℕ}
+    (h : G.IsRegularOfDegree d) : G.maxEDegree = d := by
+  simp [maxEDegree_eq_iSup, h.edegree_eq]
+
+variable {G} in
+theorem IsRegularOfDegree.minEDegree_eq [Nonempty V] [G.LocallyFinite] {d : ℕ}
+    (h : G.IsRegularOfDegree d) : G.minEDegree = d := by
+  simp [minEDegree_eq_iInf, h.edegree_eq]
 
 end SimpleGraph
