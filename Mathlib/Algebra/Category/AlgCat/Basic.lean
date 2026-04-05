@@ -155,10 +155,10 @@ lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
   rfl
 
 instance {S : AlgCat.{v} R} : Ring ((forget (AlgCat R)).obj S) :=
-  (inferInstance : Ring S.carrier)
+  inferInstanceAs <| Ring S.carrier
 
 instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
-  (inferInstance : Algebra R S.carrier)
+  inferInstanceAs <| Algebra R S.carrier
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
