@@ -69,7 +69,7 @@ theorem shift_empty (c : P) (r : k) : shift ⊥ c r = ⊥ := by
 /-- `AffineSubspace.shift s c r` can be represented by moving a point in the subspace
 towards `c`. -/
 theorem shift_eq {s : AffineSubspace k P} (p : s) (c : P) (r : k) :
-    shift s c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))).toAffineMap := by
+    s.shift c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))).toAffineMap := by
   have h : Nonempty s := ⟨p⟩
   simp only [shift, h, ↓reduceDIte]
   ext q
@@ -86,13 +86,13 @@ theorem shift_eq {s : AffineSubspace k P} (p : s) (c : P) (r : k) :
 
 @[simp]
 theorem shift_zero (s : AffineSubspace k P) [h : Nonempty s] (c : P) :
-    shift s c 0 = mk' c s.direction := by
+    s.shift c 0 = mk' c s.direction := by
   refine ext_of_direction_eq (by simp) ⟨c, ?_⟩
   suffices ∃ x ∈ s, (c -ᵥ h.some) +ᵥ x = c by simpa [shift, h]
   exact ⟨h.some, by simp⟩
 
 @[simp]
-theorem shift_one (s : AffineSubspace k P) (c : P) : shift s c 1 = s := by
+theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
   have h : Nonempty s := by simpa using h
@@ -105,7 +105,7 @@ variable [CommRing k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
 /-- For a unit parameter, shifting is the same as mapping by homothety. -/
 theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k}
-    (hr : IsUnit r) : shift s c r = s.map (homothety c r) := by
+    (hr : IsUnit r) : s.shift c r = s.map (homothety c r) := by
   obtain ⟨t, ht⟩ := hr.exists_right_inv
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
