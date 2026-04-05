@@ -5,9 +5,8 @@ Authors: Fabian Odermatt, Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 
 /-!
@@ -38,6 +37,8 @@ using the definition `SSet.Homotopy.toSimplicialObjectHomotopy` from the file
 -/
 
 @[expose] public section
+
+assert_not_exists TopologicalSpace
 
 universe v u w
 

@@ -5,7 +5,8 @@ Authors: Joël Riou, Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
 /-!
