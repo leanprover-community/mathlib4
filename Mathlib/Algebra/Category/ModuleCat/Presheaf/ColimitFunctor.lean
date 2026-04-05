@@ -11,12 +11,18 @@ public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
 /-!
-# The colimit module of a presheaf of module on a cofiltered category
+# The colimit module of a presheaf of modules on a cofiltered category
 
 Given a colimit cocone `cR` for a presheaf of rings `R` on a cofiltered category `C`,
 `M` a presheaf of modules over `R`, and a colimit cocone `cM` for the underlying
 functor `Cᵒᵖ ⥤ AddCommGrpCat` of `M`, we define a structure of module over `cR.pt`
-on a type-synonym for `cM.pt`.
+on a type-synonym `PresheafOfModules.ModuleColimit` for `cM.pt`. This extends to
+a functor `PresheafOfModules.colimitFunctor : PresheafOfModules R ⥤ ModuleCat cR.pt`.
+
+## TODO (@joelriou)
+* Define fiber functors on categories of (pre)sheaves of modules
+* Refactor `Mathlib/Algebra/Category/ModuleCat/Stalk.lean` so that it uses
+this slightly more general construction.
 
 -/
 
@@ -275,27 +281,17 @@ section
 variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
   (hcM' : IsColimit cM')
 
-variable (cM') in
-@[simps]
-noncomputable def mapCocone (f : M ⟶ M') : Cocone M.presheaf where
-  pt := cM'.pt
-  ι.app U := (forget₂ _ _).map (f.app U) ≫ cM'.ι.app U
-  ι.naturality U V g := by
-    ext m
-    have h₁ := ConcreteCategory.congr_arg (cM'.ι.app V)
-      (ConcreteCategory.congr_hom (f.naturality g) m)
-    have h₂ := ConcreteCategory.congr_hom (cM'.w g)  (f.app _ m)
-    exact h₁.trans h₂
-
+/-- The linear map between the colimit modules induced by a morphism of modules. -/
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
-  toFun := hcM.desc (mapCocone cM' f)
+  toFun := hcM.desc ((Cocone.precompose ((toPresheaf _).map f)).obj cM')
   map_add' _ _ := map_add _ _ _
   map_smul' r m := by
     obtain ⟨U, r, m, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ r m
-    have h₁ := ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) (r • m)
-    have h₂ := ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) m
-    dsimp at h₁ h₂ ⊢
+    let c := (Cocone.precompose ((toPresheaf _).map f)).obj cM'
+    have h₁ := ConcreteCategory.congr_hom (hcM.fac c U) (r • m)
+    have h₂ := ConcreteCategory.congr_hom (hcM.fac c U) m
+    dsimp [c] at h₁ h₂ ⊢
     rw [ModuleColimit.smul_eq]
     erw [h₁, h₂, ModuleColimit.smul_eq, ← (f.app U).hom.map_smul]
     rfl
@@ -303,7 +299,7 @@ noncomputable def map (f : M ⟶ M') :
 @[simp]
 lemma map_apply (f : M ⟶ M') {U : Cᵒᵖ} (m : M.obj U) :
     dsimp% map hcR hcM hcM' f (ιM m) = ιM (f.app _ m) :=
-  ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) m
+  ConcreteCategory.congr_hom (hcM.fac ((Cocone.precompose ((toPresheaf _).map f)).obj cM') U) m
 
 @[simp]
 lemma map_id : map hcR hcM hcM (𝟙 M) = .id := by
@@ -347,8 +343,10 @@ end ModuleColimit
 
 end
 
-/-- The colimit module of a presheaf of modules over a cofiltered category. -/
-noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
+/-- The colimit module functor from the category of presheaves of modules
+over a presheaf of rings `R` on a cofiltered category to the category
+of modules over a colimit of `R`. -/
+noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat.{w} cR.pt where
   obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
   map f := ModuleCat.ofHom (ModuleColimit.map _ _ _ f)
   map_comp f g := by ext : 1; exact (ModuleColimit.comp_map ..).symm
