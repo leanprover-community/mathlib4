@@ -76,7 +76,7 @@ variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
 functions between manifolds.
-The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, or `∞`, or `ω`
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
 (when the `ContDiff` scope is open), where `C^ω` corresponds to analytic functions.
 -/
 def ContDiffWithinAtProp (n : WithTop ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop :=
@@ -164,7 +164,7 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable within a set at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable in this set around this point, when
 read in the preferred chart at this point.
-The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, or `∞`, or `ω`
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
 (when the `ContDiff` scope is open), where `C^ω` corresponds to analytic functions. -/
 def ContMDiffWithinAt (n : WithTop ℕ∞) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
@@ -173,7 +173,7 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable around this point, when
 read in the preferred chart at this point.
-The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, or `∞`, or `ω`
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
 (when the `ContDiff` scope is open), where `C^ω` corresponds to analytic functions. -/
 def ContMDiffAt (n : WithTop ℕ∞) (f : M → M') (x : M) :=
   ContMDiffWithinAt I I' n f univ x
@@ -189,7 +189,7 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable on this set in the charts
 around these points.
-The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, or `∞`, or `ω`
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
 (when the `ContDiff` scope is open), where `C^ω` corresponds to analytic functions. -/
 def ContMDiffOn (n : WithTop ℕ∞) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
@@ -198,7 +198,7 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable in the charts
 around these points.
-The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, or `∞`, or `ω`
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
 (when the `ContDiff` scope is open), where `C^ω` corresponds to analytic functions. -/
 def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
