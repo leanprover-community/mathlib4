@@ -262,7 +262,7 @@ alias principal_add_omega0 := isPrincipal_add_omega0
 
 -- `add_omega0` is proven in the Arithmetic file.
 
-theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
+theorem add_of_omega0_le : a < ω → ω ≤ b → a + b = b :=
   isPrincipal_add_omega0.add_eq_right_of_le
 
 theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ o) := by
@@ -281,11 +281,11 @@ alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b :=
   (isPrincipal_add_omega0_opow b).add_eq_right h
 
-theorem add_omega0_opow_of_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c :=
+theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c :=
   (isPrincipal_add_omega0_opow b).add_eq_right_of_le h₁ h₂
 
 @[deprecated (since := "2026-03-18")]
-alias add_absorp := add_omega0_opow_of_le
+alias add_absorp := add_of_omega0_opow_le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
