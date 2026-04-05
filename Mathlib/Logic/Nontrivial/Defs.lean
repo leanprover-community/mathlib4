@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Push.Attr
 
 /-!
@@ -133,3 +131,6 @@ instance : Nontrivial Bool :=
   ⟨⟨true, false, nofun⟩⟩
 
 end Bool
+
+theorem NeZero.nontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
+  ⟨⟨a, 0, NeZero.ne a⟩⟩
