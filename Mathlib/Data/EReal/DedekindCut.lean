@@ -24,10 +24,6 @@ open DedekindCut Concept Order
 theorem ratEmbedEReal_apply (x : ℚ) :
   Rat.castOrderEmbedding.trans Real.coeOrderEmbedding x = ((x : ℝ) : EReal) := rfl
 
-theorem factorEmbeddingRat_apply (x : DedekindCut ℚ) :
-  factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding) x =
-  sSup ((fun (a : ℚ) ↦ ((a : ℝ) : EReal)) '' x.extent) := rfl
-
 @[simp]
 theorem upperBounds_setOf_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
@@ -60,18 +56,18 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   left_inv := by
     intro x
     ext z
-    simp only [factorEmbeddingRat_apply, sSup_image, iSup_le_iff, EReal.coe_le_coe_iff, Rat.cast_le,
-      extent_mk, Set.mem_setOf_eq]
+    simp only [factorEmbedding_apply, ratEmbedEReal_apply, sSup_image, iSup_le_iff, extent_mk,
+      Set.mem_setOf_eq]
     constructor
     · intro z_le_sup
       simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
       intro r hr
       simp only [le_iSup_iff, iSup_le_iff] at z_le_sup
-      exact_mod_cast (z_le_sup ((r : ℝ) : EReal) (fun t ht => by exact_mod_cast hr t ht))
+      exact_mod_cast (z_le_sup ((r : ℝ) : EReal) (fun t ht => by simp [hr t ht]))
     · exact fun z_mem_extent ↦ le_iSup₂_of_le z z_mem_extent le_rfl
   right_inv := by
     intro x
-    simp only [factorEmbeddingRat_apply]
+    simp only [factorEmbedding_apply, ratEmbedEReal_apply]
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
     · simp
     · simp only [Set.mem_image, exists_exists_and_eq_and]
@@ -79,5 +75,20 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
       obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
       exact ⟨r, r_lt_x.le, w_lt_r⟩
   map_rel_iff' := by simp
+
+@[simp]
+theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
+  (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} := rfl
+
+@[simp]
+theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
+  (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} := rfl
+
+theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
+  dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) := rfl
+
+theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
+    dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
+  sorry
 
 end EReal
