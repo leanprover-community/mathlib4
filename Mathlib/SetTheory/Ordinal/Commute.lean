@@ -34,7 +34,7 @@ theorem addCommute_omega0_opow_log_add_mod (o : Ordinal) :
   rw [addCommute_iff_eq]
   have hlt := mod_lt o <| opow_ne_zero (log ω o) omega0_ne_zero
   rw [add_assoc, ← add_assoc <| o % _, add_omega0_opow hlt, add_assoc, ← add_assoc <| o % _,
-    add_absorp hlt <| le_mul_left _ <| div_opow_log_pos ω h0, ← add_assoc, ← add_assoc,
+    add_of_omega0_opow_le hlt <| le_mul_left _ <| div_opow_log_pos ω h0, ← add_assoc, ← add_assoc,
     ← mul_add_one, ← mul_one_add]
   rcases lt_omega0.mp <| div_opow_log_lt o one_lt_omega0 with ⟨n, hn⟩
   simp [hn]
@@ -52,9 +52,9 @@ theorem add_lt_add_of_lt_omega0_opow_log_add_mod {a b : Ordinal} (hle : ω ^ log
     refine ⟨hle, lt_omega0_opow_succ.mpr ⟨2, hlt.trans_le ?_⟩⟩
     grw [hr, Nat.cast_two, Ordinal.mul_two]
   have hc' := hlog ▸ div_opow_log_pos ω h0'
-  rw [add_assoc, ← add_assoc <| a % _, add_absorp hr <| le_mul_left _ hc', add_assoc,
-    ← add_assoc <| b % _, add_absorp hr' <| le_mul_left _ <| div_opow_log_pos ω h0, ← add_assoc,
-    ← add_assoc, ← mul_add, ← mul_add]
+  rw [add_assoc, ← add_assoc <| a % _, add_of_omega0_opow_le hr <| le_mul_left _ hc', add_assoc,
+    ← add_assoc <| b % _, add_of_omega0_opow_le hr' <| le_mul_left _ <| div_opow_log_pos ω h0,
+    ← add_assoc, ← add_assoc, ← mul_add, ← mul_add]
   rcases lt_omega0.mp <| div_opow_log_lt a one_lt_omega0 with ⟨n, hn⟩
   rcases lt_omega0.mp <| hlog ▸ div_opow_log_lt b one_lt_omega0 with ⟨n', hn'⟩
   rw [hn, hn', ← Nat.cast_add, add_comm, Nat.cast_add, add_lt_add_iff_left,

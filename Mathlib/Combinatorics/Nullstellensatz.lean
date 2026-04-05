@@ -46,7 +46,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 - [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
 
-- [Rote, *The Generalized Combinatorial Lason-Alon-Zippel-Schwartz
+- [Rote, *The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
   Nullstellensatz Lemma*][Rote_2023]
 
 -/
@@ -195,7 +195,6 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
 
 variable [Finite σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
@@ -242,7 +241,6 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Combinatorial Nullstellensatz**.
 
 Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
