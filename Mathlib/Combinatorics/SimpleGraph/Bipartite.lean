@@ -20,7 +20,7 @@ This file proves results about bipartite simple graphs, including several double
 
 * `SimpleGraph.IsBipartiteWith G s t` is the condition that a simple graph `G` is bipartite in sets
   `s`, `t`, that is, `s` and `t` are disjoint and vertices `v`, `w` being adjacent in `G` implies
-  that `v ∈ s` and `w ∈ t`, or `v ∈ s` and `w ∈ t`.
+  that `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`.
 
   Note that in this implementation, if `G.IsBipartiteWith s t`, `s ∪ t` need not cover the vertices
   of `G`, instead `s ∪ t` is only required to cover the *support* of `G`, that is, the vertices
