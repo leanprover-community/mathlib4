@@ -401,9 +401,11 @@ lemma det_piecewise_one_eq_submatrix_det
         Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
-/-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
-This generalizes `coeff_det_one_add_X_smul_one` (the k = 1 case, which gives the trace)
-and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). -/
+/-- The k-th coefficient of `det (1 + X • M)` equals the sum
+of all k×k principal minors of M. This generalizes
+`coeff_det_one_add_X_smul_one` (the k = 1 case, giving the
+trace) and `det_eq_sign_charpoly_coeff` (the k = n case,
+giving the determinant). -/
 theorem coeff_det_one_add_X_smul_eq_sum_minors
     (M : Matrix n n R) (k : ℕ) :
     (det (1 + (X : R[X]) • M.map C)).coeff k =
@@ -459,9 +461,10 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         rw [h_set]
         exact Finset.sum_congr rfl fun s _ => det_piecewise_one_eq_submatrix_det M s
 
-/-- The coefficients of the characteristic polynomial are signed sums of principal minors.
-Specifically, the (n-k)-th coefficient of the characteristic polynomial of M equals
-(-1)^k times the sum of all k×k principal minors of M. -/
+/-- The coefficients of the characteristic polynomial are
+signed sums of principal minors. Specifically, the (n-k)-th
+coefficient of the characteristic polynomial of M equals
+`(-1)^k` times the sum of all k×k principal minors of M. -/
 theorem charpoly_coeff_eq_sum_minors
     [Nontrivial R] (M : Matrix n n R) (k : ℕ)
     (hk : k ≤ Fintype.card n) :
