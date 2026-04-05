@@ -129,6 +129,7 @@ add_decl_doc NonUnitalSubring.toAddSubgroup
 namespace NonUnitalSubring
 
 /-- The underlying submonoid of a `NonUnitalSubring`. -/
+@[reducible]
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
@@ -329,7 +330,6 @@ instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) 
 /-! ## Partial order -/
 
 
-@[simp]
 theorem mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
