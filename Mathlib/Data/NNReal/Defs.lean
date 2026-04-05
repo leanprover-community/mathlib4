@@ -237,36 +237,39 @@ def toRealHom : ℝ≥0 →+* ℝ where
 section Actions
 
 /-- A scalar multiplication over `ℝ` restricts to a scalar multiplication over `ℝ≥0`. -/
-instance (priority := 99) {M : Type*} [SMul ℝ M] : SMul ℝ≥0 M :=
+instance (priority := 200) {M : Type*} [SMul ℝ M] : SMul ℝ≥0 M :=
   ⟨fun c m ↦ (c : ℝ) • m⟩
 
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
-instance (priority := 99) {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
+instance (priority := 200) {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
   fast_instance% MulAction.compHom M toRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [SMul ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 
-instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
+instance (priority := 200) {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N]
+    [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ)
 
-instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance (priority := 200) smulCommClass_left
+    {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ)
 
-instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance (priority := 200) smulCommClass_right
+    {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ)
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-instance (priority := 99) {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] :
+instance (priority := 200) {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] :
     DistribMulAction ℝ≥0 M :=
   fast_instance% DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
-instance (priority := 99) {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
+instance (priority := 200) {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M toRealHom
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
-instance (priority := 99) {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
+instance (priority := 200) {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
