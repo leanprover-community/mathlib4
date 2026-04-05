@@ -879,6 +879,17 @@ by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
   ShortComplex.homologyMapIso (K.isoSc' i j k hi hk)
 
+@[simp]
+lemma homology_sc'_eq_homology [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    (K.sc' (c.prev j) j (c.next j)).homology = K.homology j := rfl
+
+@[simp]
+lemma homologyIsoSc'_eq_refl
+    [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    dsimp% K.homologyIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext : 1
+  apply ShortComplex.homologyMap_id
+
 @[reassoc (attr := simp)]
 lemma π_homologyIsoSc'_hom :
     K.homologyπ j ≫ (K.homologyIsoSc' i j k hi hk).hom =
