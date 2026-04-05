@@ -158,8 +158,7 @@ theorem measureReal_iUnion_fintype_le [Fintype β] (f : β → Set α) :
 theorem measureReal_iUnion_fintype [Fintype β] {f : β → Set α} (hn : Pairwise (Disjoint on f))
     (h : ∀ i, MeasurableSet (f i)) (h' : ∀ i, μ (f i) ≠ ∞ := by finiteness) :
     μ.real (⋃ b, f b) = ∑ p, μ.real (f p) := by
-  simp_rw [measureReal_def, measure_iUnion hn h, tsum_fintype,
-    toReal_sum (fun i _hi ↦ h' i)]
+  simp_rw [measureReal_def, measure_iUnion hn h, tsum_fintype, toReal_sum (fun i _hi ↦ h' i)]
 
 theorem measureReal_union_null (h₁ : μ.real s₁ = 0) (h₂ : μ.real s₂ = 0) :
     μ.real (s₁ ∪ s₂) = 0 :=
@@ -466,7 +465,7 @@ lemma coupling_term_bound {Ω S : Type*} [MeasurableSpace Ω] [MeasurableSpace S
   have hB : MeasurableSet B := by simpa using hZ (measurableSet_singleton k)
   have hsubset : A ∆ B ⊆ E := by simpa using by grind
   rw [map_measureReal_apply hY (measurableSet_singleton k),
-    map_measureReal_apply hZ (measurableSet_singleton k)]
+      map_measureReal_apply hZ (measurableSet_singleton k)]
   calc
     _ ≤ μ.real (A ∆ B) :=
       abs_measureReal_sub_le_measureReal_symmDiff hA.nullMeasurableSet hB.nullMeasurableSet
@@ -484,12 +483,10 @@ theorem coupling_lemma {Ω S : Type*} [MeasurableSpace Ω] [MeasurableSpace S] [
   let E : Set Ω := {ω | Y ω ≠ Z ω}
   have hsY : Summable (fun k : S => (μ.restrict E).real (Y ⁻¹' ({k} : Set S))) := by
     refine summable_toReal ?_
-    rw [tsum_restrict_preimage_singleton_eq' hY]
-    finiteness
+    simp [tsum_restrict_preimage_singleton_eq' hY]
   have hsZ : Summable (fun k : S => (μ.restrict E).real (Z ⁻¹' ({k} : Set S))) := by
     refine summable_toReal ?_
-    rw [tsum_restrict_preimage_singleton_eq' hZ]
-    finiteness
+    simp [tsum_restrict_preimage_singleton_eq' hZ]
   calc
     _ ≤ ∑' k : S, ((μ.restrict E).real (Y ⁻¹' ({k} : Set S)) +
         (μ.restrict E).real (Z ⁻¹' ({k} : Set S))) := by
