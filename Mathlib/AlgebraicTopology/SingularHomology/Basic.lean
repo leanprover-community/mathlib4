@@ -68,7 +68,7 @@ def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
     (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
 
 /-- `H_[n](X; R)` is the `n`-th singular homology group of `X` with coefficients in `R`. -/
-scoped[SingularHomology] notation3 "H_[" n "](" X "; " R ")" =>
+scoped[AlgebraicTopology.SingularHomology] notation3 "H_[" n "](" X "; " R ")" =>
   Functor.obj (Functor.obj (AlgebraicTopology.singularHomologyFunctor _ n) R) X
 
 open scoped SingularHomology

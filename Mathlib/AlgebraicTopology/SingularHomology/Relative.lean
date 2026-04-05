@@ -75,7 +75,7 @@ def singularHomologyFunctor.δNatTrans (m : ℕ) (e : m + 1 = n) :
   { app f :=
     haveI : Mono (((singularChainComplexFunctor C).obj X).mapArrow.obj f.obj).hom :=
       haveI : Mono f.obj.hom := f.2; by dsimp; infer_instance
-    (Limits.shortExact_cokerShortComplex
+    (ShortComplex.shortExact_cokerFunctor
       (((singularChainComplexFunctor C).obj X).mapArrow.obj f.obj)).δ n m (by simpa)
     naturality {f g} α := (HomologicalComplex.HomologySequence.δ_naturality
       (((relativeSingularShortComplex C).obj X).map _) _ _ _ _ _).symm }
@@ -87,7 +87,7 @@ variable {C}
 
 /-- `H_[n](f; R)` is the `n`-th relative singular homology group of `f : U ⟶ X`
 with coefficients in `R`. -/
-scoped[SingularHomology] notation3 "H_[" n "](" f "; " R ")" =>
+scoped[AlgebraicTopology.SingularHomology] notation3 "H_[" n "](" f "; " R ")" =>
   Functor.obj (Functor.obj (AlgebraicTopology.relativeSingularHomologyFunctor _ n) R) (Arrow.mk f)
 
 open SingularHomology singularHomologyFunctor
