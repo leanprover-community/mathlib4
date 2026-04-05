@@ -149,7 +149,7 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
-theorem bddAbove_of_small {s : Set Ordinal.{u}} [h : Small.{u} s] : BddAbove s := by
+theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := Cardinal.bddAbove_of_small (s := (succ ∘ card) '' s)
   refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
   simpa [lt_ord] using ha (mem_image_of_mem _ hb)
