@@ -261,9 +261,9 @@ end Set
 
 section Rel
 
-/-- Every partition of `s : Set α` induces a transitive, symmetric Binary relation on `α`
+/-- Every partition of `s : Set α` induces a transitive, symmetric binary relation on `α`
   whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
-def Rel (P : Partition u) (a b : α) : Prop :=
+def Rel (P : Partition s) (a b : α) : Prop :=
   ∃ t ∈ P, a ∈ t ∧ b ∈ t
 
 lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
@@ -291,9 +291,6 @@ lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
     exact subset_of_mem ht hxP
   obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
   exact ⟨t, ht, hxt, hxt⟩
-
-lemma rel_symmetric (P : Partition u) : Symmetric P.Rel :=
-  fun _ _ ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
 
 instance (P : Partition u) : Std.Symm P.Rel where
   symm _ _ := fun ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
