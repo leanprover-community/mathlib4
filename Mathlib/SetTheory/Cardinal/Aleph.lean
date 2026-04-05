@@ -274,7 +274,7 @@ theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ I
 
 theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
   rw [← opow_natCast] at ho
-  rw [omega_eq_preOmega, add_absorp _ ho]
+  rw [omega_eq_preOmega, add_of_omega0_opow_le _ ho]
   apply left_lt_opow one_lt_omega0
   simp
 
@@ -523,7 +523,7 @@ theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   rw [← opow_natCast] at ho
-  rw [aleph_eq_preAleph, add_absorp _ ho]
+  rw [aleph_eq_preAleph, add_of_omega0_opow_le _ ho]
   apply left_lt_opow one_lt_omega0
   simp
 
@@ -775,7 +775,7 @@ theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) 
 
 theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = ℶ_ o := by
   rw [← opow_natCast] at ho
-  rw [beth, add_absorp _ ho]
+  rw [beth, add_of_omega0_opow_le _ ho]
   apply left_lt_opow one_lt_omega0
   simp
 
