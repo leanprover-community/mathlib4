@@ -236,21 +236,21 @@ theorem closedInterior_inter_shift_eq_empty (hx : x ∉ Set.Icc 0 1) :
     specialize hzi i
     rw [this] at hzi
     grind
-  obtain hzs := mem_map_of_mem (AffineMap.homothety (s.points i) x⁻¹) hzs
+  obtain hzs := mem_map_of_mem (homothety (s.points i) x⁻¹) hzs
   obtain p := Classical.arbitrary (affineSpan k (Set.range (s.faceOpposite i).points))
-  rw [AffineSubspace.map_map, ← AffineMap.homothety_mul, inv_mul_cancel₀ hx0,
-    AffineMap.homothety_one, AffineSubspace.map_id,
-    Finset.homothety_affineCombination _ _ _ (by simp), ← vsub_right_mem_direction_iff_mem p.prop,
-    ← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by
-      simp [AffineMap.lineMap_apply_module, Finset.sum_add_distrib, ← Finset.mul_sum, hw1]),
-    ← Finset.sum_erase_add _ _ (show i ∈ Finset.univ by simp),
-    Submodule.add_mem_iff_right _ (Submodule.sum_mem _ fun j hj ↦ by
-      apply smul_mem
-      refine vsub_mem_direction (mem_affineSpan _ ?_) p.prop
-      suffices ∃ k, k ≠ i ∧ s.points k = s.points j by simpa
-      exact ⟨j, by simpa using hj⟩), AffineMap.lineMap_apply_module, Pi.add_apply, Pi.smul_apply,
-    Pi.smul_apply, Finset.affineCombinationSingleWeights_apply_self, smul_eq_mul, smul_eq_mul,
-    mul_one, smul_mem_iff _ hxi, vsub_right_mem_direction_iff_mem p.prop] at hzs
-  exact s.points_notMem_affineSpan_faceOpposite i hzs
+  rw [AffineSubspace.map_map, ← homothety_mul, inv_mul_cancel₀ hx0, homothety_one,
+    AffineSubspace.map_id, homothety_affineCombination _ _ _ (by simp),
+    ← vsub_right_mem_direction_iff_mem p.prop,
+    ← sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ ?_,
+    ← sum_erase_add _ _ (show i ∈ Finset.univ by simp), Submodule.add_mem_iff_right _ ?_,
+    lineMap_apply_module, Pi.add_apply, Pi.smul_apply, Pi.smul_apply,
+    affineCombinationSingleWeights_apply_self, smul_eq_mul, smul_eq_mul, mul_one,
+    smul_mem_iff _ hxi, vsub_right_mem_direction_iff_mem p.prop] at hzs
+  · exact s.points_notMem_affineSpan_faceOpposite i hzs
+  · refine Submodule.sum_mem _ fun j hj ↦ ?_
+    refine smul_mem _ _ <| vsub_mem_direction (mem_affineSpan _ ?_) p.prop
+    suffices ∃ k, k ≠ i ∧ s.points k = s.points j by simpa
+    exact ⟨j, by simpa using hj⟩
+  · simp [lineMap_apply_module, sum_add_distrib, ← mul_sum, hw1]
 
 end Affine.Simplex
