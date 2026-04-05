@@ -279,8 +279,7 @@ theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_of_omega0_opow_le
 
-theorem add_absorp_of_lt_omega0_opow_log {o o' : Ordinal} (hlt : o' < ω ^ log ω o) :
-    o' + o = o := by
+theorem add_of_lt_omega0_opow_log (hlt : a < ω ^ log ω o) : a + o = o := by
   rcases eq_or_ne o 0 with (rfl | h0)
   · simpa using hlt
   exact add_of_omega0_opow_le hlt <| opow_log_le_self ω h0
