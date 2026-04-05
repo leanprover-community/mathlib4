@@ -88,7 +88,7 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     -- grind interactive mode
     ``Lean.Parser.Tactic.Grind.grindSeq1Indented,
     ``Lean.Parser.Tactic.Grind.grindSeq,
-    ``Lean.Parser.Tactic.Grind.«grind·._»,
+    ``Lean.Parser.Tactic.Grind.«grind·_»,
     ``Lean.Parser.Tactic.Grind.grindSeqBracketed,
     ``Lean.Parser.Tactic.Grind.«grind_<;>_»,
     ``Lean.Parser.Tactic.Grind.skip,

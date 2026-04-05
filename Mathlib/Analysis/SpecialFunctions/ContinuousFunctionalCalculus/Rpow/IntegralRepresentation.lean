@@ -331,11 +331,8 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     ∃ μ : Measure ℝ, ∀ x ∈ Ici 0,
       (IntegrableOn (fun t => rpowIntegrand₀₁ p t x) (Ioi 0) μ)
       ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrand₀₁ p t x ∂μ := by
-  let C : ℝ≥0 :=
-    { val := (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹
-      property := by
-        rw [inv_nonneg]
-        exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
+  let C : ℝ≥0 := .mk (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹
+    (by rw [inv_nonneg]; exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp)
   refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
   · unfold IntegrableOn
     rw [Measure.restrict_smul]
