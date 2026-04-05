@@ -356,6 +356,12 @@ theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c
 theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
   ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
 
+theorem IsInaccessible.preOmega_ord (hc : IsInaccessible c) : preOmega c.ord = c.ord := by
+  rw [← ord_preAleph, hc.preAleph_ord]
+
+theorem IsInaccessible.omega_ord (hc : IsInaccessible c) : ω_ c.ord = c.ord := by
+  rw [← ord_aleph, hc.aleph_ord]
+
 @[simp]
 theorem preBeth_univ : preBeth Ordinal.univ.{u, v} = univ.{u, v} := by
   simpa using IsInaccessible.univ.preBeth_ord
@@ -374,10 +380,10 @@ theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
 
 @[simp]
 theorem _root_.Ordinal.preOmega_univ : preOmega Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
-  rw [← ord_preAleph, preAleph_univ, ord_univ]
+  simpa using IsInaccessible.univ.preOmega_ord
 
 @[simp]
 theorem _root_.Ordinal.omega_univ : ω_ Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
-  rw [← ord_aleph, aleph_univ, ord_univ]
+  simpa using IsInaccessible.univ.omega_ord
 
 end Cardinal
