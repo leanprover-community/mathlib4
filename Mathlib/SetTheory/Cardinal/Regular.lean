@@ -372,4 +372,12 @@ theorem preAleph_univ : preAleph Ordinal.univ.{u, v} = univ.{u, v} := by
 theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
   simpa using IsInaccessible.univ.aleph_ord
 
+@[simp]
+theorem _root_.Ordinal.preOmega_univ : preOmega Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  rw [← ord_preAleph, preAleph_univ, ord_univ]
+
+@[simp]
+theorem _root_.Ordinal.omega_univ : ω_ Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  rw [← ord_aleph, aleph_univ, ord_univ]
+
 end Cardinal
