@@ -911,16 +911,17 @@ theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :
 protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
   Order.one_le_iff_ne_zero
 
+@[deprecated add_pos_of_right (since := "2026-04-04")]
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
-  bot_lt_succ o
+  add_pos_of_right zero_lt_one o
 
--- TODO: generalize to `SuccAddOrder`
+@[deprecated add_pos_of_right (since := "2026-04-04")]
 theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
-  (succ_pos o).ne'
+  (add_pos_of_right zero_lt_one o).ne'
 
-@[deprecated add_one_ne_zero (since := "2026-02-27")]
+@[deprecated add_pos_of_right (since := "2026-02-27")]
 theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
-  add_one_ne_zero o
+  (add_pos_of_right zero_lt_one o).ne'
 
 @[deprecated Order.lt_one_iff (since := "2026-03-24")]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
