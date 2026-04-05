@@ -3,13 +3,18 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
-# Krull dimension and non zero-divisors
+# Krull dimension and non-zero-divisors
 
 ## Main results
 - `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
@@ -18,24 +23,15 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-open nonZeroDivisors
+public section
+
+open scoped nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
-  let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
-    (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-      Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  let e' : PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
-    { __ := e, map_rel_iff' := fun {a b} ↦ by
-        show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-        rw [← Ideal.map_le_iff_le_comap,
-          Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
-          PrimeSpectrum.asIdeal_le_asIdeal] }
-  rw [ringKrullDim, Order.krullDim_eq_of_orderIso e']
+  rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
@@ -46,7 +42,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
     rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
-  have := Ideal.Quotient.nontrivial hr'
+  have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial
   rw [ringKrullDim_quotient, Order.krullDim_eq_iSup_length, ringKrullDim,
     Order.krullDim_eq_iSup_length, ← WithBot.coe_one, ← WithBot.coe_add,
@@ -60,7 +56,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 
-/-- If `R →+* S` is surjective whose kernel contains a nonzerodivisor, then `dim S + 1 ≤ dim R`. -/
+/-- If `R →+* S` is surjective whose kernel contains a nonzero divisor, then `dim S + 1 ≤ dim R`. -/
 lemma ringKrullDim_succ_le_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     {r : R} (hr : r ∈ R⁰) (hr' : f r = 0) : ringKrullDim S + 1 ≤ ringKrullDim R := by
   refine le_trans ?_ (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr)
@@ -92,9 +88,10 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
   | h_option IH =>
     simp only [Nat.card_eq_fintype_card, Fintype.card_option, Nat.cast_add, Nat.cast_one,
       ← add_assoc] at IH ⊢
-    refine (add_le_add_right IH _).trans (ringKrullDim_succ_le_ringKrullDim_polynomial.trans ?_)
+    grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     ringKrullDim R + ENat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
@@ -104,7 +101,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     push_cast
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
-    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by aesop
+    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
     rw [WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
@@ -122,5 +119,5 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
-  ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
+  ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
     MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X

@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Factoring through subobjects
@@ -13,6 +15,8 @@ The predicate `h : P.Factors f`, for `P : Subobject Y` and `f : X ⟶ Y`
 asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obvious diagram commute.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -35,6 +39,7 @@ Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
   ∃ g : X ⟶ (P : C), g ≫ P.arrow = f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_congr {X : C} {f g : MonoOver X} {Y : C} (h : Y ⟶ X) (e : f ≅ g) :
     f.Factors h ↔ g.Factors h :=
   ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
@@ -49,6 +54,7 @@ end MonoOver
 
 namespace Subobject
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `f : X ⟶ Y` and `P : Subobject Y`,
 `P.Factors f` expresses that there exists a factorisation of `f` through `P`.
 Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
@@ -60,13 +66,13 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.left, by erw [Category.assoc, Over.w h.hom, w]⟩
+        exact ⟨i ≫ h.hom.hom.left, by rw [Category.assoc, Over.w h.hom.hom, w]⟩
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.inv.left, by erw [Category.assoc, Over.w h.inv, w]⟩)
+        exact ⟨i ≫ h.inv.hom.left, by rw [Category.assoc, Over.w h.inv.hom, w]⟩)
 
 @[simp]
 theorem mk_factors_iff {X Y Z : C} (f : Y ⟶ X) [Mono f] (g : Z ⟶ X) :
-    (Subobject.mk f).Factors g ↔ (MonoOver.mk' f).Factors g :=
+    (Subobject.mk f).Factors g ↔ (MonoOver.mk f).Factors g :=
   Iff.rfl
 
 theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
@@ -84,10 +90,11 @@ theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors
 
 theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g : Y ⟶ Z}
     (h : P.Factors g) : P.Factors (f ≫ g) := by
-  induction' P using Quotient.ind' with P
+  induction P using Quotient.ind'
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factors (0 : X ⟶ Y) :=
   (factors_iff _ _).mpr ⟨0, by simp⟩
 
@@ -150,6 +157,16 @@ theorem factorThru_ofLE {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q
     Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLE P Q h := by
   ext
   simp
+
+theorem le_of_factors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ≤ Q :=
+  le_of_comm (Q.factorThru P.arrow h) (Q.factorThru_arrow P.arrow h)
+
+/--
+Given two subobjects `P Q : Subobject Y`, if `P` factors through `Q`, then there is a morphism of
+subobjects from `P` to `Q`.
+-/
+def homOfFactors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ⟶ Q :=
+  homOfLE <| le_of_factors h
 
 section Preadditive
 

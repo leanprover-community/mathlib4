@@ -3,10 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets
@@ -25,11 +26,11 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 `Analysis.InnerProductSpace.projection`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open RCLike Real Filter
-
-open Topology ComplexConjugate Finsupp
+open RCLike Real Filter Module Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
@@ -49,6 +50,16 @@ def Orthonormal (v : ι → E) : Prop :=
   (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
 
 variable {𝕜}
+
+@[simp]
+lemma Orthonormal.of_isEmpty [IsEmpty ι] (v : ι → E) : Orthonormal 𝕜 v :=
+  ⟨IsEmpty.elim ‹_›, Subsingleton.pairwise⟩
+
+@[simp]
+lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
+    Orthonormal 𝕜 (Matrix.vecCons v vs) ↔ ‖v‖ = 1 ∧ (∀ i, ⟪v, vs i⟫ = 0) ∧ Orthonormal 𝕜 vs := by
+  simp_rw [Orthonormal, pairwise_fin_succ_iff_of_isSymm, Fin.forall_fin_succ]
+  tauto
 
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
@@ -76,7 +87,8 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
   · intro h
     constructor
     · intro i
-      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_re_inner 𝕜, h i i]
+      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by
+        rw [@norm_sq_eq_re_inner 𝕜, h i i]; simp
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
@@ -88,20 +100,15 @@ equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
     Orthonormal 𝕜 (Subtype.val : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by
   rw [orthonormal_iff_ite]
-  constructor
-  · intro h v hv w hw
-    convert h ⟨v, hv⟩ ⟨w, hw⟩ using 1
-    simp
-  · rintro h ⟨v, hv⟩ ⟨w, hw⟩
-    convert h v hv w hw using 1
-    simp
+  simp
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
     ⟪v i, linearCombination 𝕜 v l⟫ = l i := by
   classical
-  simpa [linearCombination_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
+  simp [linearCombination_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv, inner_smul_right,
+    eq_comm]
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -139,14 +146,14 @@ theorem Orthonormal.inner_left_fintype [Fintype ι] {v : ι → E} (hv : Orthono
 a sum over the first `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_left {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
     ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
-  simp only [l₁.linearCombination_apply _, Finsupp.sum_inner, hv.inner_right_finsupp, smul_eq_mul]
+  simp [l₁.linearCombination_apply, Finsupp.sum_inner, hv.inner_right_finsupp, inner_smul_left]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the second `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_right {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
     ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
-  simp only [l₂.linearCombination_apply _, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm,
-             smul_eq_mul]
+  simp [l₂.linearCombination_apply, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm,
+    inner_smul_right]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum. -/
@@ -163,7 +170,7 @@ sum of the weights.
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i ∈ s, ∑ j ∈ s, a i j • ⟪v j, v i⟫) = ∑ k ∈ s, a k k := by
   classical
-  simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
+  simp [orthonormal_iff_ite.mp hv]
 
 /-- An orthonormal set is linearly independent. -/
 theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -220,13 +227,13 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
       neg_eq_zero] using hv
 
 /- The material that follows, culminating in the existence of a maximal orthonormal subset, is
-adapted from the corresponding development of the theory of linearly independents sets.  See
+adapted from the corresponding development of the theory of linearly independent sets. See
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
   classical
-  simp [orthonormal_subtype_iff_ite]
+  simp
 
 variable {𝕜 E}
 
@@ -274,7 +281,7 @@ theorem coe_basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι
 theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : v i ≠ 0 := by
   refine ne_of_apply_ne norm ?_
   rw [hv.1 i, norm_zero]
-  norm_num
+  simp
 
 end OrthonormalSets_Seminormed
 
@@ -428,7 +435,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     classical exact hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
-    simp only [mul_conj, normSq_eq_def']
+    simp only [mul_conj]
     norm_cast
   suffices hbf : ‖x - ∑ i ∈ s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 by
     rw [← sub_nonneg, ← hbf]

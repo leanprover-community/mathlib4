@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Ideal
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -27,6 +29,8 @@ is a statement and proof of the universal property of these quotients.
 
 lie algebra, quotient
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -64,8 +68,8 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
@@ -124,28 +128,28 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
   rfl
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
-  add_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  add_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
-  lie_add := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  lie_add x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
-  lie_self := by
-    intro x'; refine Quotient.inductionOn' x' ?_; intro x
+  lie_self x' := by
+    induction x' using Quotient.inductionOn' with | _ x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
-  leibniz_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  leibniz_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -154,8 +158,8 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
     apply congr_arg; apply leibniz_lie
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
-  lie_smul := by
-    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+  lie_smul t x' y' := by
+    induction x', y' using Quotient.inductionOn₂' with | _ x y
     repeat'
       first
       | rw [is_quotient_mk]
@@ -212,6 +216,7 @@ variable {R L L' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
 @[simps]
 noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=

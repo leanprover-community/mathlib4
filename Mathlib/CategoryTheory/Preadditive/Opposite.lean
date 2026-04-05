@@ -3,20 +3,26 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Algebra.Equiv.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
 
 -/
 
+@[expose] public section
+
 
 open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
@@ -34,6 +40,10 @@ theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.uno
   rfl
 
 @[simp]
+theorem unop_sub {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f - g).unop = f.unop - g.unop :=
+  rfl
+
+@[simp]
 theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k • f.unop :=
   rfl
 
@@ -43,6 +53,10 @@ theorem unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
 
 @[simp]
 theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
+  rfl
+
+@[simp]
+theorem op_sub {X Y : C} (f g : X ⟶ Y) : (f - g).op = f.op - g.op :=
   rfl
 
 @[simp]
@@ -79,13 +93,13 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
 @[simps]
 def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
   toFun f := ⟨f⟩
-  map_add' := by aesop_cat
-  map_smul' := by aesop_cat
+  map_add' := by cat_disch
+  map_smul' := by cat_disch
   invFun := fun ⟨f⟩ => f
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
-variable {D : Type*} [Category D] [Preadditive D]
+variable {D : Type*} [Category* D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 

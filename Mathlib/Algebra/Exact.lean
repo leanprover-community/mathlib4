@@ -3,30 +3,35 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
+  `Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
+
+* For two maps `f : M → N` and `g : N → P`, with `One P`,
+  `Function.MulExact f g` says that `Set.range f = Set.preimage g {1}`
 
 * For additive maps `f : M →+ N`  and `g : N →+ P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
+
+* For multiplicative maps `f : M →* N`  and `g : N →* P`,
+  `MulExact f g` says that `range f = ker g`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
 
 ## TODO :
 
 * generalize to `SemilinearMap`, even `SemilinearMapClass`
-
-* add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
 
-
+@[expose] public section
 
 variable {R M M' N N' P P' : Type*}
 
@@ -34,99 +39,122 @@ namespace Function
 
 variable (f : M → N) (g : N → P) (g' : P → P')
 
-/-- The maps `f` and `g` form an exact pair :
-  `g y = 0` iff `y` belongs to the image of `f` -/
-def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
+/-- The maps `f` and `g` form an exact pair: `g y = 1` iff `y` belongs to the image of `f`. -/
+@[to_additive Exact /-- The maps `f` and `g` form an exact pair:
+  `g y = 0` iff `y` belongs to the image of `f`. -/]
+def MulExact [One P] : Prop := ∀ y, g y = 1 ↔ y ∈ Set.range f
 
 variable {f g}
 
-namespace Exact
+namespace MulExact
 
-lemma apply_apply_eq_zero [Zero P] (h : Exact f g) (x : M) :
-    g (f x) = 0 := (h _).mpr <| Set.mem_range_self _
+@[to_additive]
+lemma apply_apply_eq_one [One P] (h : MulExact f g) (x : M) :
+    g (f x) = 1 := (h _).mpr <| Set.mem_range_self _
 
-lemma comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
-  funext h.apply_apply_eq_zero
+@[to_additive]
+lemma comp_eq_one [One P] (h : MulExact f g) : g.comp f = 1 :=
+  funext h.apply_apply_eq_one
 
-lemma of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
-    (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
+@[to_additive]
+lemma of_comp_of_mem_range [One P] (h1 : g ∘ f = 1)
+    (h2 : ∀ x, g x = 1 → x ∈ Set.range f) : MulExact f g :=
   fun y => Iff.intro (h2 y) <|
-    Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
+    Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 1))).mpr (congrFun h1) y)
 
-lemma comp_injective [Zero P] [Zero P'] (exact : Exact f g)
-    (inj : Function.Injective g') (h0 : g' 0 = 0) :
-    Exact f (g' ∘ g) := by
+@[to_additive]
+lemma comp_injective [One P] [One P'] (mulExact : MulExact f g)
+    (inj : Function.Injective g') (h0 : g' 1 = 1) :
+    MulExact f (g' ∘ g) := by
   intro x
-  refine ⟨fun H => exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
+  refine ⟨fun H => mulExact x |>.mp <| inj <| h0 ▸ H, ?_⟩
   intro H
-  rw [Function.comp_apply, exact x |>.mpr H, h0]
+  rw [Function.comp_apply, mulExact x |>.mpr H, h0]
 
-lemma of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
-    (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
-    Exact f g :=
+@[to_additive]
+lemma of_comp_eq_one_of_ker_in_range [One P] (hc : g.comp f = 1)
+    (hr : ∀ y, g y = 1 → y ∈ Set.range f) :
+    MulExact f g :=
   fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
 
 /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
 `Set.range f → N → Set.range g` are exact.
 
+Note that if you already have an instance `[One (Set.range g)]` (which is unlikely) this lemma
+may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`. -/
+@[to_additive /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
+`Set.range f → N → Set.range g` are exact.
+
 Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
-may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/
-lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
-    letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
-    Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  rw [Exact, Exact, Subtype.range_coe]
-  congr! 2
-  rw [Set.rangeFactorization]
-  exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
+may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/]
+lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
+    letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+    MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
+  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+  have : ((1 : Set.range g) : P) = 1 := rfl
+  simp [MulExact, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
 
+Note that if you already have an instance `[One (Set.range g)]` (which is unlikely) this lemma
+may not apply if the one of `Set.range g` is not definitionally equal to `⟨1, hg⟩`. -/
+@[to_additive /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
+`Set.range f → N → Set.range g` are exact.
+
 Note that if you already have an instance `[Zero (Set.range g)]` (which is unlikely) this lemma
-may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/
-lemma rangeFactorization [Zero P] (h : Exact f g) (hg : 0 ∈ Set.range g) :
-    letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
-    Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=
+may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0, hg⟩`. -/]
+lemma rangeFactorization [One P] (h : MulExact f g) (hg : 1 ∈ Set.range g) :
+    letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+    MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=
   (iff_rangeFactorization hg).1 h
 
-end Exact
+end MulExact
 
 end Function
 
-section AddMonoidHom
+section MonoidHom
 
-variable [AddGroup M] [AddGroup N] [AddGroup P] {f : M →+ N} {g : N →+ P}
+variable [Group M] [Group N] [Group P] {f : M →* N} {g : N →* P}
 
-namespace AddMonoidHom
+namespace MonoidHom
 
 open Function
 
-lemma exact_iff :
-    Exact f g ↔ ker g = range f :=
+@[to_additive]
+lemma mulExact_iff :
+    MulExact f g ↔ ker g = range f :=
   Iff.symm SetLike.ext_iff
 
-lemma exact_of_comp_eq_zero_of_ker_le_range
-    (h1 : g.comp f = 0) (h2 : ker g ≤ range f) : Exact f g :=
-  Exact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
+@[to_additive]
+lemma mulExact_of_comp_eq_one_of_ker_le_range
+    (h1 : g.comp f = 1) (h2 : ker g ≤ range f) : MulExact f g :=
+  MulExact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
 
-lemma exact_of_comp_of_mem_range
-    (h1 : g.comp f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
-  exact_of_comp_eq_zero_of_ker_le_range h1 h2
+@[to_additive]
+lemma mulExact_of_comp_of_mem_range
+    (h1 : g.comp f = 1) (h2 : ∀ x, g x = 1 → x ∈ range f) : MulExact f g :=
+  mulExact_of_comp_eq_one_of_ker_le_range h1 h2
 
 /-- When we have a commutative diagram from a sequence of two maps to another,
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
-lemma exact_iff_of_surjective_of_bijective_of_injective
-    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-    [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
-    (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
-    (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
+@[to_additive /-- When we have a commutative diagram from a sequence of two maps to another,
+such that the left vertical map is surjective, the middle vertical map is bijective and the right
+vertical map is injective, then the upper row is exact iff the lower row is.
+See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/]
+lemma mulExact_iff_of_surjective_of_bijective_of_injective
+    {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [CommMonoid M₁] [CommMonoid M₂] [CommMonoid M₃]
+    [CommMonoid N₁] [CommMonoid N₂] [CommMonoid N₃]
+    (f : M₁ →* M₂) (g : M₂ →* M₃) (f' : N₁ →* N₂) (g' : N₂ →* N₃)
+    (τ₁ : M₁ →* N₁) (τ₂ : M₂ →* N₂) (τ₃ : M₃ →* N₃)
     (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
     (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
     (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
-    Exact f g ↔ Exact f' g' := by
+    MulExact f g ↔ MulExact f' g' := by
   replace comm₁₂ := DFunLike.congr_fun comm₁₂
   replace comm₂₃ := DFunLike.congr_fun comm₂₃
   dsimp at comm₁₂ comm₂₃
@@ -135,68 +163,76 @@ lemma exact_iff_of_surjective_of_bijective_of_injective
     obtain ⟨x₂, rfl⟩ := h₂.2 y₂
     constructor
     · intro hx₂
-      obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_zero, comm₂₃] using hx₂))
+      obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_one, comm₂₃] using hx₂))
       exact ⟨τ₁ x₁, by simp only [comm₁₂]⟩
     · rintro ⟨y₁, hy₁⟩
       obtain ⟨x₁, rfl⟩ := h₁ y₁
-      rw [comm₂₃, (h x₂).2 _, map_zero]
+      rw [comm₂₃, (h x₂).2 _, map_one]
       exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
   · intro h x₂
     constructor
     · intro hx₂
-      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_zero])
+      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_one])
       obtain ⟨x₁, rfl⟩ := h₁ y₁
       exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
     · rintro ⟨x₁, rfl⟩
       apply h₃
-      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_zero (τ₁ x₁), map_zero]
+      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_one (τ₁ x₁), map_one]
 
-end AddMonoidHom
+end MonoidHom
 
-namespace Function.Exact
+namespace Function.MulExact
 
-open AddMonoidHom
+open MonoidHom
 
-lemma addMonoidHom_ker_eq (hfg : Exact f g) :
+@[to_additive]
+lemma monoidHom_ker_eq (hfg : MulExact f g) :
     ker g = range f :=
   SetLike.ext hfg
 
-lemma addMonoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
-  DFunLike.coe_injective h.comp_eq_zero
+@[to_additive]
+lemma monoidHom_comp_eq_zero (h : MulExact f g) : g.comp f = 1 :=
+  DFunLike.coe_injective h.comp_eq_one
 
 section
 
-variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂] [AddCommMonoid X₃]
-  [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃]
-  (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
-  {f₁₂ : X₁ →+ X₂} {f₂₃ : X₂ →+ X₃} {g₁₂ : Y₁ →+ Y₂} {g₂₃ : Y₂ →+ Y₃}
+variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [CommMonoid X₁] [CommMonoid X₂] [CommMonoid X₃]
+  [CommMonoid Y₁] [CommMonoid Y₂] [CommMonoid Y₃]
+  (e₁ : X₁ ≃* Y₁) (e₂ : X₂ ≃* Y₂) (e₃ : X₃ ≃* Y₃)
+  {f₁₂ : X₁ →* X₂} {f₂₃ : X₂ →* X₃} {g₁₂ : Y₁ →* Y₂} {g₂₃ : Y₂ →* Y₃}
 
-lemma iff_of_ladder_addEquiv (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
-    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
-  (exact_iff_of_surjective_of_bijective_of_injective _ _ _ _ e₁ e₂ e₃ comm₁₂ comm₂₃
+@[to_additive]
+lemma iff_of_ladder_mulEquiv (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = MonoidHom.comp e₃ f₂₃) : MulExact g₁₂ g₂₃ ↔ MulExact f₁₂ f₂₃ :=
+  (mulExact_iff_of_surjective_of_bijective_of_injective _ _ _ _ e₁ e₂ e₃ comm₁₂ comm₂₃
     e₁.surjective e₂.bijective e₃.injective).symm
 
-lemma of_ladder_addEquiv_of_exact (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
-    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ :=
-  (iff_of_ladder_addEquiv _ _ _ comm₁₂ comm₂₃).2 H
+@[to_additive]
+lemma of_ladder_mulEquiv_of_mulExact (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = MonoidHom.comp e₃ f₂₃) (H : MulExact f₁₂ f₂₃) : MulExact g₁₂ g₂₃ :=
+  (iff_of_ladder_mulEquiv _ _ _ comm₁₂ comm₂₃).2 H
 
-lemma of_ladder_addEquiv_of_exact' (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
-    (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃) (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ :=
-  (iff_of_ladder_addEquiv _ _ _ comm₁₂ comm₂₃).1 H
+@[to_additive]
+lemma of_ladder_mulEquiv_of_mulExact' (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e₂ f₁₂)
+    (comm₂₃ : g₂₃.comp e₂ = MonoidHom.comp e₃ f₂₃) (H : MulExact g₁₂ g₂₃) : MulExact f₁₂ f₂₃ :=
+  (iff_of_ladder_mulEquiv _ _ _ comm₁₂ comm₂₃).1 H
 
 end
 
-/-- Two maps `f : M →+ N` and `g : N →+ P` are exact if and only if the induced maps
-`AddMonoidHom.range f → N → AddMonoidHom.range g` are exact. -/
-lemma iff_addMonoidHom_rangeRestrict :
-    Exact f g ↔ Exact f.range.subtype g.rangeRestrict :=
-  iff_rangeFactorization (zero_mem g.range)
+/-- Two maps `f : M →* N` and `g : N →* P` are exact if and only if the induced maps
+`MonoidHom.range f → N → MonoidHom.range g` are exact. -/
+@[to_additive /-- Two maps `f : M →+ N` and `g : N →+ P` are exact if and only if the induced maps
+`AddMonoidHom.range f → N → AddMonoidHom.range g` are exact. -/]
+lemma iff_monoidHom_rangeRestrict :
+    MulExact f g ↔ MulExact f.range.subtype g.rangeRestrict :=
+  iff_rangeFactorization (one_mem g.range)
 
-alias ⟨addMonoidHom_rangeRestrict, _⟩ := iff_addMonoidHom_rangeRestrict
+@[to_additive]
+alias ⟨monoidHom_rangeRestrict, _⟩ := iff_monoidHom_rangeRestrict
 
-end Function.Exact
+end Function.MulExact
 
-end AddMonoidHom
+end MonoidHom
 
 section LinearMap
 
@@ -260,8 +296,14 @@ end LinearMap
 variable (f g) in
 lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     Function.Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
-  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← e.map_eq_comap, LinearMap.range_comp]
+  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← Submodule.map_equiv_eq_comap_symm,
+    LinearMap.range_comp]
   exact (Submodule.map_injective_of_injective e.injective).eq_iff
+
+variable (f g) in
+lemma LinearEquiv.conj_symm_exact_iff_exact (e : N' ≃ₗ[R] N) :
+    Function.Exact (e.symm ∘ₗ f) (g ∘ₗ (e : N' →ₗ[R] N)) ↔ Exact f g :=
+  LinearEquiv.conj_exact_iff_exact _ _ e.symm
 
 namespace Function
 
@@ -278,9 +320,17 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
   iff_of_eq <| forall_congr fun x =>
     congrArg (g x = 0 ↔ x ∈ ·) (h.range_comp f)
 
+lemma _root_.LinearEquiv.precomp_exact_iff_exact {e : M' ≃ₗ[R] M} :
+    Exact (f ∘ₗ (e : M' →ₗ[R] M)) g ↔ Exact f g :=
+  e.surjective.comp_exact_iff_exact
+
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
-  forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
+  forall_congr' fun _ => iff_congr (map_eq_zero_iff _ h) Iff.rfl
+
+lemma _root_.LinearEquiv.postcomp_exact_iff_exact {e : P ≃ₗ[R] P'} :
+    Exact f ((e : P →ₗ[R] P') ∘ₗ g) ↔ Exact f g :=
+  e.injective.comp_exact_iff_exact
 
 namespace Exact
 
@@ -338,7 +388,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using DFunLike.congr_arg g e
@@ -377,7 +427,7 @@ def Exact.splitInjectiveEquiv
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
       suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
@@ -468,7 +518,7 @@ lemma Exact.exact_mapQ_iff
   dsimp only [mapQ]
   rw [← ker_comp, range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq,
     ker_mkQ, ker_mkQ, ← hfg.linearMap_ker_eq, sup_comm,
-    ← LE.le.le_iff_eq (sup_le hqr (ker_le_comap g)),
+    ← (sup_le hqr (ker_le_comap g)).ge_iff_eq',
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
 end Function
@@ -479,7 +529,7 @@ namespace LinearMap
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
     {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
@@ -524,5 +574,11 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
+
+@[simp]
+lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
+    (hg : Function.Surjective g) (x : N) :
+    (h.linearEquivOfSurjective hg).symm (g x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end Ring

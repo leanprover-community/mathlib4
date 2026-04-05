@@ -3,10 +3,12 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Products
 
 /-!
 # The IPC property
@@ -29,6 +31,8 @@ does the category of Ind-objects of `C`.
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
+
+@[expose] public section
 
 universe w v v₁ v₂ u u₁ u₂
 
@@ -63,6 +67,7 @@ noncomputable def colimitPointwiseProductToProductColimit :
     colimit (pointwiseProduct F) ⟶ ∏ᶜ fun (s : α) => colimit (F s) :=
   colimit.desc (pointwiseProduct F) (coconePointwiseProduct F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) :
     colimit.ι (pointwiseProduct F) k ≫ colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
@@ -89,6 +94,7 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimitPointwiseProductToProductColimit_app (d : D) :
     (colimitPointwiseProductToProductColimit F).app d =
       (colimitObjIsoColimitCompEvaluation _ _).hom ≫
@@ -136,9 +142,9 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     let yk' : (pointwiseProduct F).obj k :=
       (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
-      simp only [k, yk, Types.Colimit.w_apply', hyk₀]
+      simp only [k, yk, Types.Colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
-      simp only [k, yk', Types.Colimit.w_apply', hyk₀']
+      simp only [k, yk', Types.Colimit.w_apply, hyk₀']
     dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =

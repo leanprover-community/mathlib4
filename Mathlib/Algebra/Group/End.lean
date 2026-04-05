@@ -3,11 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -29,9 +32,11 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
-assert_not_exists MonoidWithZero MulAction RelIso
+@[expose] public section
 
-variable {A M G α β : Type*}
+assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
+
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -55,6 +60,8 @@ instance : Inhabited (Function.End α) := ⟨1⟩
 /-! ### Monoid endomorphisms -/
 
 namespace Equiv.Perm
+
+attribute [to_additive_dont_translate] Perm
 
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
@@ -80,12 +87,9 @@ theorem default_eq : (default : Perm α) = 1 :=
 type. -/
 @[simps]
 def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
-  -- Porting note: needed to add `.toFun`.
-  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
+  toFun e := ⟨⇑e, ⇑e.symm, e.self_comp_symm, e.symm_comp_self⟩
   invFun u :=
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
@@ -95,18 +99,10 @@ def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
-  Equiv.trans_apply _ _ _
+  rfl
 
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
-
-@[simp]
-theorem inv_apply_self (f : Perm α) (x) : f⁻¹ (f x) = x :=
-  f.symm_apply_apply x
-
-@[simp]
-theorem apply_inv_self (f : Perm α) (x) : f (f⁻¹ x) = x :=
-  f.apply_symm_apply x
 
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
@@ -116,6 +112,8 @@ theorem mul_def (f g : Perm α) : f * g = g.trans f :=
 
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
+
+@[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
@@ -151,19 +149,19 @@ theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
 
 @[simp]
 theorem one_symm : (1 : Perm α).symm = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
@@ -192,7 +190,7 @@ theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (
 @[simp]
 theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
     (sumCongr e f)⁻¹ = sumCongr e⁻¹ f⁻¹ :=
-  sumCongr_symm e f
+  rfl
 
 @[simp]
 theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
@@ -231,24 +229,24 @@ theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j
 @[simp]
 theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
     (G : ∀ a, Perm (β a)) : sigmaCongrRight F * sigmaCongrRight G = sigmaCongrRight (F * G) :=
-  sigmaCongrRight_trans G F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
-  sigmaCongrRight_symm F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
-  sigmaCongrRight_refl
+  rfl
 
 /-- `Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between fibers. -/
 @[simps]
-def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
+def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σ a, β a) where
   toFun := sigmaCongrRight
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm
@@ -276,7 +274,38 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
 @[simp]
-theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
+    e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
+  permCongr_trans e q p |>.symm
+
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
+
+attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
+extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
+    e.permCongrHom.symm = e.symm.permCongrHom :=
+  rfl
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
+    e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe_equiv (e : α ≃ β) :
+    (↑e.permCongrHom : Perm α ≃ Perm β) = e.permCongr :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe (e : α ≃ β) : ⇑e.permCongrHom = ⇑e.permCongr :=
   rfl
 
 section ExtendDomain
@@ -331,15 +360,15 @@ variable {p : α → Prop} {f : Perm α}
 
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
-def subtypePerm (f : Perm α) (h : ∀ x, p x ↔ p (f x)) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).1 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).2 <| by simpa using x.2⟩
-  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta, Subtype.coe_mk]
-  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta, Subtype.coe_mk]
+def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
+  toFun := fun x => ⟨f x, (h _).2 x.2⟩
+  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 @[simp]
-theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p x ↔ p (f x)) (x : { x // p x }) :
-    subtypePerm f h x = ⟨f x, (h _).1 x.2⟩ :=
+theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
+    subtypePerm f h x = ⟨f x, (h _).2 x.2⟩ :=
   rfl
 
 @[simp]
@@ -349,27 +378,35 @@ theorem subtypePerm_one (p : α → Prop) (h := fun _ => Iff.rfl) : @subtypePerm
 @[simp]
 theorem subtypePerm_mul (f g : Perm α) (hf hg) :
     (f.subtypePerm hf * g.subtypePerm hg : Perm { x // p x }) =
-      (f * g).subtypePerm fun _ => (hg _).trans <| hf _ :=
+      (f * g).subtypePerm fun _ => (hf _).trans <| hg _ :=
   rfl
 
-private theorem inv_aux : (∀ x, p x ↔ p (f x)) ↔ ∀ x, p x ↔ p (f⁻¹ x) :=
-  f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
+set_option backward.privateInPublic true in
+private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
+  f⁻¹.surjective.forall.trans <| by simp [Iff.comm]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
     f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
   rfl
 
-private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x ↔ p ((f ^ n) x)
+set_option backward.privateInPublic true in
+private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (hf _).trans (pow_aux hf _)
+  | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
@@ -377,12 +414,15 @@ theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
   | zero => simp
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
-private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
+set_option backward.privateInPublic true in
+private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((f ^ n) x) ↔ p x
   | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
-    exact inv_aux.1 (pow_aux hf)
+    exact pow_aux (inv_aux.1 hf)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
@@ -399,7 +439,7 @@ def ofSubtype : Perm (Subtype p) →* Perm α where
   map_one' := Equiv.Perm.extendDomain_one _
   map_mul' f g := (Equiv.Perm.extendDomain_mul _ f g).symm
 
-theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h₂ : ∀ x, f x ≠ x → p x) :
+theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p (f x) ↔ p x) (h₂ : ∀ x, f x ≠ x → p x) :
     ofSubtype (subtypePerm f h₁) = f :=
   Equiv.ext fun x => by
     by_cases hx : p x
@@ -418,10 +458,10 @@ theorem ofSubtype_apply_coe (f : Perm (Subtype p)) (x : Subtype p) : ofSubtype f
 theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
   extendDomain_apply_not_subtype _ _ ha
 
-theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
-    p x ↔ p ((ofSubtype f : α → α) x) :=
+theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
+    p ((ofSubtype f : α → α) x) ↔ p x :=
   if h : p x then by
-    simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
@@ -433,16 +473,16 @@ theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) �
 
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
-    subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
+    subtypePerm (ofSubtype f) (ofSubtype_apply_mem_iff_mem f) = f :=
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
 
 theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {g : Perm α} (hg : ∀ (x : α), p (g x) ↔ p x)
     {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
   ofSubtype_apply_of_mem (g.subtypePerm hg) ha
 
 theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {g : Perm α} (hg : ∀ (x : α), p (g x) ↔ p x)
     {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
   ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
 
@@ -453,9 +493,9 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
     Perm (Subtype p) ≃ { f : Perm α // ∀ a, ¬p a → f a = a } where
   toFun f := ⟨ofSubtype f, fun _ => f.ofSubtype_apply_of_not_mem⟩
   invFun f :=
-    (f : Perm α).subtypePerm fun a =>
-      ⟨Decidable.not_imp_not.1 fun hfa => f.val.injective (f.prop _ hfa) ▸ hfa,
-        Decidable.not_imp_not.1 fun ha hfa => ha <| f.prop a ha ▸ hfa⟩
+    (f : Perm α).subtypePerm fun _ =>
+      ⟨Decidable.not_imp_not.1 fun hfa => (f.prop _ hfa).symm ▸ hfa,
+        Decidable.not_imp_not.1 fun hfa ha => hfa <| f.val.injective (f.prop _ hfa).symm ▸ ha⟩
   left_inv := Equiv.Perm.subtypePerm_ofSubtype
   right_inv f :=
     Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
@@ -486,12 +526,10 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [Perm.mul_apply, swap_apply_def]
-    split_ifs <;>
-      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]
+    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [eq_symm_apply]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
-  rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
+  simp [swap_mul_eq_mul_swap]
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
@@ -539,76 +577,43 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
 
 end Swap
 
-section AddGroup
-variable [AddGroup α] (a b : α)
-
-@[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
-
-@[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
-
-@[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-  ext <| add_assoc _ _
-
-@[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
-  ext fun _ ↦ (add_assoc _ _ _).symm
-
-@[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
-
-@[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
-
-@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
-  ext; simp [Perm.coe_pow]
-
-@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
-  ext; simp [Perm.coe_pow]
-
-@[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
-  (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
-    α →+ Additive (Perm α)) _ _).symm
-
-@[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
-  | Int.ofNat n => by simp
-  | Int.negSucc n => by simp
-
-end AddGroup
-
 section Group
 variable [Group α] (a b : α)
 
-@[to_additive existing (attr := simp)]
+@[to_additive (attr := simp)]
 lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 
-@[to_additive existing (attr := simp)]
+@[to_additive (attr := simp)]
 lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[to_additive existing (attr := simp)]
+@[to_additive (attr := simp)]
 lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
   ext <| mul_assoc _ _
 
-@[to_additive existing (attr := simp)]
+@[to_additive (attr := simp)]
 lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
   ext fun _ ↦ (mul_assoc _ _ _).symm
 
-@[to_additive existing (attr := simp) inv_addLeft]
+@[to_additive (attr := simp)]
 lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) inv_addRight]
+@[to_additive (attr := simp)]
 lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) pow_addLeft]
+@[to_additive (attr := simp)]
 lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) pow_addRight]
+@[to_additive (attr := simp)]
 lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) zpow_addLeft]
-lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
-  (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
-              α →* Perm α) _ _).symm
+@[to_additive (attr := simp)]
+lemma zpow_mulLeft : ∀ n : ℤ, Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n)
+  | Int.ofNat n => by simp
+  | Int.negSucc n => by simp
 
-@[to_additive existing (attr := simp) zpow_addRight]
+@[to_additive (attr := simp)]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
@@ -617,13 +622,9 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive "The group of additive automorphisms."]
-def MulAut (M : Type*) [Mul M] :=
+@[to_additive /-- The group of additive automorphisms. -/]
+abbrev MulAut (M : Type*) [Mul M] :=
   M ≃* M
-
--- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
--- so we add the reducible attribute manually.
-attribute [reducible] AddAut
 
 namespace MulAut
 
@@ -652,6 +653,9 @@ theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
 theorem coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 
+@[simp]
+theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
+
 theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
@@ -662,6 +666,16 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
 @[simp]
+theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
+
+@[simp]
+theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+
+@[simp]
+theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
+  rw [inv_def]
+
+@[simp]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
@@ -669,11 +683,9 @@ theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ 
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
@@ -689,16 +701,13 @@ See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct
 where `conj G` acts on `G` by conjugation. -/
 def conj [Group G] : G →* MulAut G where
   toFun g :=
-    { toFun := fun h => g * h * g⁻¹
-      invFun := fun h => g⁻¹ * h * g
-      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
-      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-      map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
-  map_mul' g₁ g₂ := by
-    ext h
-    show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
-    simp only [mul_assoc, mul_inv_rev]
-  map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
+    { toFun h := g * h * g⁻¹
+      invFun h := g⁻¹ * h * g
+      left_inv _ := by simp [mul_assoc]
+      right_inv _ := by simp [mul_assoc]
+      map_mul' := by simp [mul_assoc] }
+  map_mul' _ _ := by ext; simp [mul_assoc]
+  map_one' := by ext; simp
 
 @[simp]
 theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
@@ -708,7 +717,6 @@ theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
 theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
   rfl
 
-@[simp]
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
@@ -731,7 +739,7 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) where
+instance : Group (AddAut A) where
   mul g h := AddEquiv.trans h g
   one := AddEquiv.refl _
   inv := AddEquiv.symm
@@ -751,6 +759,9 @@ theorem coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
 theorem coe_one : ⇑(1 : AddAut A) = id :=
   rfl
 
+@[simp]
+theorem coe_inv (e : AddAut A) : ⇑e⁻¹ = e.symm := rfl
+
 theorem mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
@@ -769,11 +780,18 @@ theorem one_apply (a : A) : (1 : AddAut A) a = a :=
   rfl
 
 @[simp]
-theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
-  AddEquiv.apply_symm_apply _ _
+theorem inv_symm (e : AddAut A) : e⁻¹.symm = e := rfl
 
 @[simp]
-theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
+theorem symm_inv (e : AddAut A) : e.symm⁻¹ = e := rfl
+
+@[simp]
+theorem inv_apply (e : AddAut A) (a : A) : e⁻¹ a = e.symm a := rfl
+
+theorem inv_apply_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
+  AddEquiv.apply_symm_apply _ _
+
+theorem apply_inv_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
   AddEquiv.apply_symm_apply _ _
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
@@ -798,7 +816,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
-    show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
     apply Additive.toMul.injective; ext
@@ -813,7 +831,6 @@ theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=
 theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g :=
   rfl
 
-@[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
 

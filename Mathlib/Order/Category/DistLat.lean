@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
 
 /-!
 # The category of distributive lattices
@@ -14,6 +16,8 @@ Note that [`DistLat`](https://ncatlab.org/nlab/show/DistLat) in the literature d
 correspond to `DistLat` as we don't require bottom or top elements. Instead, this `DistLat`
 corresponds to `BddDistLat`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -40,6 +44,7 @@ attribute [coe] DistLat.carrier
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `DistLat R`. -/
 @[ext]
 structure Hom (X Y : DistLat.{u}) where
@@ -47,11 +52,15 @@ structure Hom (X Y : DistLat.{u}) where
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category DistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory DistLat (LatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -84,7 +93,7 @@ lemma coe_comp {X Y Z : DistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : DistLat} (f : X ⟶ Y) :
-    (forget DistLat).map f = f := rfl
+    (forget DistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : DistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -114,7 +123,8 @@ lemma hom_ext {X Y : DistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [DistribLattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : DistLat} (f : X ⟶ Y) :

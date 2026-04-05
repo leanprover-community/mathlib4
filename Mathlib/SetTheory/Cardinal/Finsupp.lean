@@ -3,11 +3,15 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Junyan Xu
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.Multiset
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
+
+public section
 
 universe u v
 
@@ -30,7 +34,6 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
       _ = #(α × β) := mk_finset_of_infinite _
       _ = max (lift.{v} #α) (lift.{u} #β) := by
         rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
-
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
     · obtain ⟨b, hb⟩ := exists_ne (0 : β)
       exact lift_mk_le.{v}.2 ⟨⟨_, Finsupp.single_left_injective hb⟩⟩
@@ -65,8 +68,6 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
-  classical
-  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+@[deprecated (since := "2025-10-06")] alias mk_multiset_of_countable := mk_eq_aleph0
 
 end Cardinal

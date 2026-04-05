@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Hom.Set
-import Mathlib.Data.Finset.Insert
+module
+
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Hom.Set
+public import Mathlib.Data.Finset.Insert
 
 /-!
 # Order isomorphisms from Fin to finsets
@@ -17,10 +19,12 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 * Do the same for `Set` without too much duplication of code (TODO)
 * Provide a definition which would take as an input an order
-isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
-extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
+  isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
+  extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
 
 -/
+
+@[expose] public section
 
 namespace Fin
 

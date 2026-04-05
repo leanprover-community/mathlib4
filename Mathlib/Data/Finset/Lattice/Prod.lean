@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Prod
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Prod
 
 /-!
 # Lattice operations on finsets of products
@@ -12,7 +14,9 @@ import Mathlib.Data.Finset.Prod
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+public section
+
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -31,7 +35,7 @@ variable [SemilatticeSup α] [OrderBot α]
 /-- See also `Finset.product_biUnion`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a => by simp [@forall_comm _ γ]
 
 theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
@@ -47,7 +51,7 @@ variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] [OrderBot
     obtain ⟨a, ha⟩ := hs
     obtain ⟨b, hb⟩ := ht
     simp only [Prod.map, Finset.sup_le_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
-    exact ⟨fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩, by aesop⟩
+    exact ⟨fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩, by simp_all⟩
 
 end Prod
 
@@ -71,7 +75,7 @@ theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] [OrderTop α] [OrderTop β]
- {s : Finset ι} {t : Finset κ}
+  {s : Finset ι} {t : Finset κ}
 
 @[simp] lemma inf_prodMap (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :
     inf (s ×ˢ t) (Prod.map f g) = (inf s f, inf t g) :=
@@ -115,7 +119,7 @@ variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
 theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = s.sup' h.fst fun i => t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a => by simp [@forall_comm _ γ]
 
 theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
@@ -131,7 +135,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     obtain ⟨a, ha⟩ := hs
     obtain ⟨b, hb⟩ := ht
     simp only [Prod.map, sup'_le_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
-    exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
+    exact ⟨by simp_all, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
 -- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?

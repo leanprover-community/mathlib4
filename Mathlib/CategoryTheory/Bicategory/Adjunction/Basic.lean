@@ -3,27 +3,34 @@ Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # Adjunctions in bicategories
 
 For 1-morphisms `f : a ⟶ b` and `g : b ⟶ a` in a bicategory, an adjunction between `f` and `g`
-consists of a pair of 2-morphism `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
+consists of a pair of 2-morphisms `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
 identities. The 2-morphism `η` is called the unit and `ε` is called the counit.
 
 ## Main definitions
 
 * `Bicategory.Adjunction`: adjunctions between two 1-morphisms.
 * `Bicategory.Equivalence`: adjoint equivalences between two objects.
-* `Bicategory.mkOfAdjointifyCounit`: construct an adjoint equivalence from 2-isomorphisms
+* `Bicategory.Equivalence.mkOfAdjointifyCounit`: construct an adjoint equivalence from
+  2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `ε` to a counit.
 
 ## TODO
 
-* `Bicategory.mkOfAdjointifyUnit`: construct an adjoint equivalence from 2-isomorphisms
+* `Bicategory.Equivalence.mkOfAdjointifyUnit`: construct an adjoint equivalence from
+  2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -71,20 +78,21 @@ theorem rightZigzag_idempotent_of_left_triangle
     _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
       rw [← whisker_exchange]; bicategory
     _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
-      rw [← whisker_exchange,  ← whisker_exchange, leftZigzag]; bicategory
+      rw [← whisker_exchange, ← whisker_exchange, leftZigzag]; bicategory
     _ = g ◁ η ⊗≫ ε ▷ g := by
       rw [h]; bicategory
 
 /-- Adjunction between two 1-morphisms. -/
+@[ext]
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
   /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g
   /-- The counit of an adjunction. -/
   counit : g ≫ f ⟶ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by aesop_cat
+  left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by cat_disch
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  right_triangle : rightZigzag unit counit = (ρ_ _).hom ≫ (λ_ _).inv := by aesop_cat
+  right_triangle : rightZigzag unit counit = (ρ_ _).hom ≫ (λ_ _).inv := by cat_disch
 
 @[inherit_doc] scoped infixr:15 " ⊣ " => Bicategory.Adjunction
 
@@ -106,12 +114,12 @@ section Composition
 
 variable {f₁ : a ⟶ b} {g₁ : b ⟶ a} {f₂ : b ⟶ c} {g₂ : c ⟶ b}
 
-/-- Auxiliary definition for `adjunction.comp`. -/
+/-- Auxiliary definition for `Adjunction.comp`. -/
 @[simp]
 def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f₁ ≫ f₂) ≫ g₂ ≫ g₁ :=
   adj₁.unit ⊗≫ f₁ ◁ adj₂.unit ▷ g₁ ⊗≫ 𝟙 _
 
-/-- Auxiliary definition for `adjunction.comp`. -/
+/-- Auxiliary definition for `Adjunction.comp`. -/
 @[simp]
 def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
   𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
@@ -238,7 +246,7 @@ structure Equivalence (a b : B) where
   /-- The composition `inv ≫ hom` is isomorphic to the identity. -/
   counit : inv ≫ hom ≅ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  left_triangle : leftZigzagIso unit counit = λ_ hom ≪≫ (ρ_ hom).symm := by aesop_cat
+  left_triangle : leftZigzagIso unit counit = λ_ hom ≪≫ (ρ_ hom).symm := by cat_disch
 
 @[inherit_doc] scoped infixr:10 " ≌ " => Bicategory.Equivalence
 
@@ -298,7 +306,7 @@ def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
 def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
-/-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
+/-- Evidence that `rightAdjoint f` is a right adjoint of `f`. -/
 def Adjunction.ofIsLeftAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ rightAdjoint f :=
   (getRightAdjoint f).adj
 
@@ -309,7 +317,7 @@ structure LeftAdjoint (right : b ⟶ a) where
   /-- The adjunction between `left` and `right`. -/
   adj : left ⊣ right
 
-/-- The existence of a left adjoint of `f`. -/
+/-- The existence of a left adjoint of `right`. -/
 class IsRightAdjoint (right : b ⟶ a) : Prop where mk' ::
   nonempty : Nonempty (LeftAdjoint right)
 
@@ -324,7 +332,7 @@ def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
 def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
-/-- Evidence that `f⁺` is a left adjoint of `f`. -/
+/-- Evidence that `leftAdjoint f` is a left adjoint of `f`. -/
 def Adjunction.ofIsRightAdjoint (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f ⊣ f :=
   (getLeftAdjoint f).adj
 

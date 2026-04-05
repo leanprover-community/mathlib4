@@ -3,17 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.CategoryTheory.Abelian.LeftDerived
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Abelian.Projective.Resolution
-import Mathlib.CategoryTheory.Linear.Yoneda
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.CategoryTheory.Abelian.LeftDerived
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
+public import Mathlib.CategoryTheory.Linear.Yoneda
 
 /-!
 # Ext
 
-We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ Module R` for any `R`-linear abelian category `C`
+We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ ModuleCat R` for any `R`-linear abelian category `C`
 by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`.
 
 ## Implementation
@@ -24,28 +26,24 @@ compute `Ext` using both projective or injective resolutions.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory Limits
 
-variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
+variable (R : Type*) [Ring R] (C : Type*) [Category* C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in
 the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 (which is the second argument of `linearYoneda`).
 -/
-
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
-      -- Porting note: if we use dot notation for any of
-      -- `NatTrans.leftOp` / `NatTrans.rightOp` / `NatTrans.leftDerived`
-      -- then `aesop_cat` can not discharge the `map_id` and `map_comp` goals.
-      -- This should be investigated further.
-      map := fun f =>
-        NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
+      map := fun f => ((((linearYoneda R C).map f).rightOp).leftDerived n).leftOp }
 
 open ZeroObject
 

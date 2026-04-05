@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 
@@ -18,6 +20,8 @@ is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the
 the idempotent endomorphism `𝟙 P.X - P.p`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,7 +68,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_f, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
-        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, instZero_zero]
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero]
 
 end Biproducts
 
@@ -72,17 +76,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
   { out := fun n =>
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
-          simp only [hom_ext_iff]
-          refine biproduct.hom_ext' _ _ (fun j => ?_)
-          simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
-            biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
-            idem_assoc, id_f, Biproducts.bicone_pt_p, comp_sum]
-          rw [Finset.sum_eq_single j]
-          · simp only [bicone_ι_π_self_assoc]
-          · intro b _ hb
-            simp only [biproduct.ι_π_ne_assoc _ hb.symm, zero_comp]
-          · intro hj
-            simp only [Finset.mem_univ, not_true] at hj } }
+          simpa using biproduct.map_eq.symm } }
 
 attribute [instance] karoubi_hasFiniteBiproducts
 
@@ -94,6 +88,7 @@ def complement (P : Karoubi C) : Karoubi C where
   p := 𝟙 _ - P.p
   idem := idem_of_id_sub_idem P.p P.idem
 
+set_option backward.isDefEq.respectTransparency false in
 instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
   hasBinaryBiproduct_of_total
     { pt := P.X
@@ -103,19 +98,20 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
       inr := P.complement.decompId_i
       inl_fst := P.decompId.symm
       inl_snd := by
-        simp only [instZero_zero, hom_ext_iff, complement_X, comp_f,
+        simp only [zero_def, hom_ext_iff, complement_X, comp_f,
           decompId_i_f, decompId_p_f, complement_p, comp_sub, comp_id, idem, sub_self]
       inr_fst := by
-        simp only [instZero_zero, hom_ext_iff, complement_X, comp_f,
+        simp only [zero_def, hom_ext_iff, complement_X, comp_f,
           decompId_i_f, complement_p, decompId_p_f, sub_comp, id_comp, idem, sub_self]
       inr_snd := P.complement.decompId.symm }
     (by
       ext
-      simp only [complement_X, comp_f, decompId_i_f, decompId_p_f, complement_p, instAdd_add, idem,
+      simp only [complement_X, comp_f, decompId_i_f, decompId_p_f, complement_p, add_def, idem,
         comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel, id_f])
 
 attribute [-simp] hom_ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formal direct factor `P : Karoubi C` of an object `P.X : C` in a
 preadditive category is actually a direct factor of the image `(toKaroubi C).obj P.X`
 of `P.X` in the category `Karoubi C` -/
@@ -129,16 +125,16 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
       refine (?_ =≫ _).trans zero_comp
       ext
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
-        complement_p, comp_sub, comp_id, idem, sub_self, instZero_zero]
+        complement_p, comp_sub, comp_id, idem, sub_self, zero_def]
     · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_eq_right, ← assoc]
       refine (?_ =≫ _).trans zero_comp
       ext
       simp only [complement_X, comp_f, decompId_i_f, complement_p,
-        decompId_p_f, sub_comp, id_comp, idem, sub_self, instZero_zero]
+        decompId_p_f, sub_comp, id_comp, idem, sub_self, zero_def]
   inv_hom_id := by
     ext
-    simp only [toKaroubi_obj_X, biprod.lift_desc, instAdd_add, comp_f, decompId_p_f, decompId_i_f,
+    simp only [toKaroubi_obj_X, biprod.lift_desc, add_def, comp_f, decompId_p_f, decompId_i_f,
       idem, complement_X, complement_p, comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero,
       add_sub_cancel, id_f, toKaroubi_obj_p]
 

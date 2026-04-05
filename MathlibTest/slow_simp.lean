@@ -6,7 +6,7 @@ This test file serves as a sentinel against bad simp lemmas.
 
 When this test file was first setup,
 the final declaration of this file took 12,000 heartbeats
-with the minimal import of `Mathlib.Topology.Category.TopCat.Basic`,
+with the minimal import of `Mathlib/Topology/Category/TopCat/Basic.lean`,
 but took over 260,000 heartbeats with `import Mathlib`.
 
 After deleting some bad simp lemmas that were being tried everywhere
@@ -15,6 +15,7 @@ After deleting some bad simp lemmas that were being tried everywhere
 * LightProfinite.hasForget_forget_obj
 * CategoryTheory.sum_comp_inl
 * CategoryTheory.sum_comp_inr
+
 it is back down to 19,000 heartbeats even with `import Mathlib`.
 -/
 

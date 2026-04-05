@@ -3,8 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Graded.External
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Graded tensor products over graded algebras
@@ -47,6 +50,8 @@ type.
 * Determine if replacing the synonym with a single-field structure improves performance.
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 open scoped TensorProduct
@@ -70,6 +75,7 @@ def GradedTensorProduct
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
+deriving AddCommGroupWithOne, Module R
 
 namespace GradedTensorProduct
 
@@ -77,10 +83,6 @@ open TensorProduct
 
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
-
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  Algebra.TensorProduct.instAddCommGroupWithOne
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
@@ -111,7 +113,7 @@ variable (R) {𝒜 ℬ} in
 abbrev tmul (a : A) (b : B) : 𝒜 ᵍ⊗[R] ℬ := of R 𝒜 ℬ (a ⊗ₜ b)
 
 @[inherit_doc]
-notation:100 x " ᵍ⊗ₜ" y:100 => tmul _ x y
+notation:100 x " ᵍ⊗ₜ " y:100 => tmul _ x y
 
 @[inherit_doc]
 notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
@@ -171,8 +173,6 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     rw [gradedMul_assoc]
 
 instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
-  __ := instAddCommGroupWithOne 𝒜 ℬ
-  __ := instMonoid 𝒜 ℬ
   right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
   left_distrib x y z := by simp_rw [mul_def, map_add]
   mul_zero x := by simp_rw [mul_def, map_zero]
@@ -181,7 +181,7 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
 /-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
+      (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
   rw [decompose_coe, decompose_coe]
@@ -372,7 +372,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 
 @[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
-    comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
+    comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ) ^ (j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]

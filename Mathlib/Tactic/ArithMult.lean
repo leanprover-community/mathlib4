@@ -3,16 +3,18 @@ Copyright (c) 2023 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ArithMult.Init
+public import Mathlib.Tactic.ArithMult.Init
 
 /-!
 # Multiplicativity
 
-We define the arith_mult tactic using aesop
+We define the `arith_mult` tactic using aesop
 
 -/
+
+public meta section
 
 namespace ArithmeticFunction
 
@@ -32,7 +34,7 @@ macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
       applyHypsTransparency := .default,
       introsTransparency? := some .reducible,
       enableSimp := false } )
-  (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident])})
+      (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident]) })
 
 /--
 `arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`

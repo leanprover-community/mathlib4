@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.FinCases
-import Mathlib.Control.Basic
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Case bash on variables in finite intervals
@@ -23,9 +25,11 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic Term Qq Int
+open Lean Meta Elab Term Qq Int
 
 namespace IntervalCases
 
@@ -159,7 +163,7 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
 
 theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
     (n:α) ≤ lo :=
-  le_trans (le_of_not_le h1) h2
+  le_trans (le_of_not_ge h1) h2
 
 /--
 Given `(z1, e1, p1)` a lower bound on `e` and `(z2, e2, p2)` an upper bound on `e`,
@@ -317,7 +321,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
 
 end IntervalCases
 
-open IntervalCases
+open IntervalCases Tactic
 
 /--
 `interval_cases n` searches for upper and lower bounds on a variable `n`,

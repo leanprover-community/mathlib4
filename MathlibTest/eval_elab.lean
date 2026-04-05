@@ -18,7 +18,7 @@ section from_zulip
 error: failed to synthesize
   Lean.ToExpr (Finset (Finset ℕ))
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 #check eval% Finset.powerset ({1, 2, 3} : Finset ℕ)
@@ -32,11 +32,11 @@ class HasInstance (α : Type u) where
 
 -- this obviously doesn't scale, which is why this is only in the test file
 instance : HasInstance (DecidableEq ℕ) :=
-  ⟨q(inferInstanceAs <| DecidableEq ℕ)⟩
+  ⟨q(_root_.inferInstanceAs <| DecidableEq ℕ)⟩
 instance : HasInstance (DecidableEq (Finset ℕ)) :=
-  ⟨q(inferInstanceAs <| DecidableEq (Finset ℕ))⟩
+  ⟨q(_root_.inferInstanceAs <| DecidableEq (Finset ℕ))⟩
 instance : HasInstance (DecidableEq (Finset (Finset ℕ))) :=
-  ⟨q(inferInstanceAs <| DecidableEq (Finset (Finset ℕ)))⟩
+  ⟨q(_root_.inferInstanceAs <| DecidableEq (Finset (Finset ℕ)))⟩
 
 open Qq Lean
 /-- `Finset α` can be converted to an expr only if there is some way to find `DecidableEq α`. -/

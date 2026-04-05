@@ -3,8 +3,10 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.Digraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.Combinatorics.Digraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ the edge orientations of `Digraph`.
 digraph, simple graph, oriented graphs
 -/
 
+@[expose] public section
+
 variable {V : Type*}
 
 namespace Digraph
@@ -53,23 +57,19 @@ both orientations are present.
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
   symm _ _ h := And.intro h.1.symm h.2.symm
-  loopless _ h := h.1 rfl
+  loopless := ⟨fun _ h ↦ h.1 rfl⟩
 
 lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
     G.toSimpleGraphStrict ≤ G.toSimpleGraphInclusive :=
   fun _ _ h ↦ ⟨h.1, Or.inl h.2.1⟩
 
 @[mono]
-lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → SimpleGraph V) := by
-  intro _ _ h₁ _ _ h₂
-  apply And.intro h₂.1
-  cases h₂.2
-  · exact Or.inl <| h₁ ‹_›
-  · exact Or.inr <| h₁ ‹_›
+lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → SimpleGraph V) :=
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁ _ _) (@h₁ _ _)⟩
 
 @[mono]
 lemma toSimpleGraphStrict_mono : Monotone (toSimpleGraphStrict : _ → SimpleGraph V) :=
-  fun _ _ h₁ _ _ h₂ ↦ And.intro h₂.1 <| And.intro (h₁ h₂.2.1) (h₁ h₂.2.2)
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁ h₂.2.1, h₁ h₂.2.2⟩
 
 @[simp]
 lemma toSimpleGraphInclusive_top : (⊤ : Digraph V).toSimpleGraphInclusive = ⊤ := by

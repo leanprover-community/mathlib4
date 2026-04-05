@@ -3,10 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Order.Filter.Germ.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -14,21 +17,24 @@ In this file, we prove basic properties of germs of functions between topologica
 with respect to the neighbourhood filter `𝓝 x`.
 
 ## Main definitions and results
+
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
-neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
+  neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
-monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
+  monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
-`A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
-`(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-`forall_restrictRermPredicate_iff` is this equivalence.
+  `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
+  `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
+  `forall_restrictGermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
-to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
+  to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
-`f` is constant.
+  `f` is constant.
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -48,7 +54,7 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` into a monoid `E` as a monoid homomorphism -/
-@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism"]
+@[to_additive /-- The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism -/]
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
@@ -166,7 +172,7 @@ theorem eq_of_germ_isConstant [i : PreconnectedSpace X]
 lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant)
     (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s) (x'_in : x' ∈ s) : f x = f x' := by
   let i : s → X := fun x ↦ x
-  show (f ∘ i) (⟨x, x_in⟩ : s) = (f ∘ i) (⟨x', x'_in⟩ : s)
+  change (f ∘ i) (⟨x, x_in⟩ : s) = (f ∘ i) (⟨x', x'_in⟩ : s)
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
   exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
 
