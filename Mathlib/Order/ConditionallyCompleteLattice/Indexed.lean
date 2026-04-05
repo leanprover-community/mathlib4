@@ -416,8 +416,10 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 theorem ciInf_eq_bot_of_bot_mem [OrderBot α] {f : ι → α} (hs : ⊥ ∈ range f) : iInf f = ⊥ :=
   csInf_eq_bot_of_bot_mem hs
 
-theorem ciInf_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
+theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
+
+@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 
