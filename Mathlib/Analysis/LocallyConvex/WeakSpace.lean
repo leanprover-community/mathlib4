@@ -9,7 +9,7 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.LocallyConvex.WeakBilin
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Topology.Algebra.Module.WeakSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakSpace
 
 /-! # Weak topology on normed spaces: seminorm family and convex closures
 
