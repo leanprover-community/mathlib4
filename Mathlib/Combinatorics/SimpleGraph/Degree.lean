@@ -91,9 +91,9 @@ theorem edegree_eq_coe_iff [Fintype <| G.neighborSet v] {n : ℕ} :
     G.edegree v = n ↔ G.degree v = n := by
   simp [← encard_neighborSet, ← Set.coe_fintypeCard]
 
-theorem coe_toNat_edegree_of_finite_neighborSet (h : G.neighborSet v |>.Finite) :
-    (G.edegree v).toNat = G.edegree v :=
-  h.encard_eq_coe.symm
+theorem coe_toNat_edegree_eq_self :
+    (G.edegree v).toNat = G.edegree v ↔ (G.neighborSet v).Finite := by
+  simp [edegree_ne_top_iff_finite_neighborSet]
 
 @[simp]
 theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.degree v := by
@@ -167,6 +167,10 @@ theorem maxEDegree_eq_zero_iff_eq_bot : G.maxEDegree = 0 ↔ G = ⊥ := by
 variable {G} in
 theorem minEDegree_eq_zero_iff_support_ne : G.minEDegree = 0 ↔ G.support ≠ .univ := by
   simp [minEDegree_eq_iInf, Set.ne_univ_iff_exists_notMem, edegree_eq_zero_iff_notMem_support]
+
+variable {G} in
+theorem minEDegree_eq_top_iff : G.minEDegree = ⊤ ↔ ∀ v, G.edegree v = ⊤ :=
+  iInf_eq_top
 
 theorem exists_edegree_eq_minEDegree [Nonempty V] : ∃ v, G.edegree v = G.minEDegree :=
   ciInf_mem G.edegree
