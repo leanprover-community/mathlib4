@@ -37,8 +37,6 @@ attribute [local instance] hasColimitsOfShape_of_finallySmall
 
 namespace PresheafOfModules
 
-section
-
 variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
@@ -374,7 +372,5 @@ lemma colimitAdjunction_homEquiv_symm_apply
         β.app X m := by
   rw [colimitAdjunction_homEquiv]
   apply homEquiv_symm_apply
-
-end
 
 end PresheafOfModules
