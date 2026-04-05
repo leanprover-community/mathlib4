@@ -48,7 +48,7 @@ an object of the category of abelian groups). -/
 noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R : C) :
     _root_.Homotopy (((singularChainComplexFunctor C).obj R).map f)
       (((singularChainComplexFunctor C).obj R).map g) :=
-  H.toSSet.singularChainComplexFunctorObjMap R
+  H.toSSet.chainComplexMap R
 
 open HomologicalComplex in
 /-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
