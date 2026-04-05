@@ -541,6 +541,11 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
   simp [Finset.card_sdiff, h]
 
+omit [Fintype V]
+theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
+    (commonNeighbors ⊤ u v).encard = ENat.card V - 2 := by
+  simp [commonNeighbors_top_eq, Set.encard_diff, Set.encard_pair h]
+
 end Finite
 
 namespace Iso

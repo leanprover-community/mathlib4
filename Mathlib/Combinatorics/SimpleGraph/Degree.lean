@@ -102,6 +102,7 @@ theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.deg
 theorem edegree_le_card : G.edegree v ≤ ENat.card V := by
   grw [← encard_neighborSet, Set.encard_le_card]
 
+variable {v} in
 theorem edegree_lt_card_of_ne_top (h : G.edegree v ≠ ⊤) : G.edegree v < ENat.card V :=
   edegree_ne_top_iff_finite_neighborSet.mp h |>.encard_lt_card <| G.neighborSet_ne_univ v
 
@@ -253,7 +254,7 @@ theorem minEDegree_lt_card_of_ne_top (h : G.minEDegree ≠ ⊤) : G.minEDegree <
   · simp at h
   have ⟨v, hv⟩ := G.exists_edegree_eq_minEDegree
   rw [← hv] at h ⊢
-  exact G.edegree_lt_card_of_ne_top v h
+  exact G.edegree_lt_card_of_ne_top h
 
 theorem minEDegree_le_encard_edgeSet [Nonempty V] : G.minEDegree ≤ G.edgeSet.encard := by
   have ⟨v, hv⟩ := G.exists_edegree_eq_minEDegree
