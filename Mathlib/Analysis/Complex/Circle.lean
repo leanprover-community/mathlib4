@@ -55,9 +55,9 @@ variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-instance : InvolutiveNeg Circle := inferInstanceAs <| InvolutiveNeg (sphere _ _)
-instance : ContinuousNeg Circle := inferInstanceAs <| ContinuousNeg (sphere _ _)
 instance instCommGroup : CommGroup Circle := inferInstanceAs <| CommGroup (sphere _ _)
+instance : HasDistribNeg Circle := inferInstanceAs <| HasDistribNeg (sphere _ _)
+instance : ContinuousNeg Circle := inferInstanceAs <| ContinuousNeg (sphere _ _)
 instance instMetricSpace : MetricSpace Circle := inferInstanceAs <| MetricSpace (sphere _ _)
 
 @[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
