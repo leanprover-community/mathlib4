@@ -881,17 +881,17 @@ theorem blsub_id : ∀ o, (blsub.{u, u} o fun x _ => x) = o :=
   lsub_typein
 
 set_option linter.deprecated false in
-@[deprecated "blsub is deprecated" (since := "2026-03-23")]
+@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-23")]
 theorem bsup_id_limit {o : Ordinal} : (∀ a < o, succ a < o) → (bsup.{u, u} o fun x _ => x) = o :=
   iSup_typein_limit
 
 set_option linter.deprecated false in
-@[deprecated "blsub is deprecated" (since := "2026-03-23")]
+@[deprecated csSup_Iic (since := "2026-03-23")]
 theorem bsup_id_add_one (o) : (bsup.{u, u} (o + 1) fun x _ => x) = o :=
   iSup_typein_succ
 
 set_option linter.deprecated false in
-@[deprecated "blsub is deprecated" (since := "2026-03-23")]
+@[deprecated csSup_Iic (since := "2026-03-23")]
 theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
   iSup_typein_succ
 
