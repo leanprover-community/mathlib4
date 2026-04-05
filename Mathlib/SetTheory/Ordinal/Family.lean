@@ -636,7 +636,6 @@ theorem iSup_typein_succ {o : Ordinal} :
   congr
   simp
 
-#exit
 @[deprecated (since := "2025-10-01")] alias sup_eq_lsub := iSup_eq_lsub
 @[deprecated (since := "2025-10-01")] alias sup_le_lsub := iSup_le_lsub
 @[deprecated (since := "2025-10-01")] alias lsub_le_sup_succ := lsub_le_succ_iSup
