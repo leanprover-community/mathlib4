@@ -33,7 +33,6 @@ variable {M N P : ModuleCat.{v} R} (f : M ⟶ N)
 def kernelCone : KernelFork f :=
   KernelFork.ofι (ofHom (LinearMap.ker f.hom).subtype) <| by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
   Fork.IsLimit.mk _
@@ -72,7 +71,6 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     apply (cancel_epi (ofHom (LinearMap.range f.hom).mkQ)).1
     exact h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct an `IsColimit` structure of cokernels given `Function.Exact`. -/
 noncomputable
 def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)

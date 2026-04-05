@@ -194,7 +194,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
   intro h b
-  push_neg at h
+  push Not at h
   apply IsWellFounded.induction s b
   intro x IH
   obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
@@ -287,6 +287,9 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
 
 theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
   f.mem_range_iff_rel' _
+
+theorem range_eq (f : r ≺i s) : Set.range f = {b | s b f.top} :=
+  Set.ext_iff.2 fun _ ↦ mem_range_iff_rel f
 
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.mem_range_iff_rel.1 ⟨_, rfl⟩
@@ -638,6 +641,9 @@ variable [PartialOrder β] {a a' : α} {b : β}
 
 theorem mem_range_of_le [LT α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
+
+theorem range_eq_Iio [LT α] (f : α <i β) : Set.range f = Set.Iio f.top :=
+  f.range_eq
 
 theorem isLowerSet_range [LT α] (f : α <i β) : IsLowerSet (Set.range f) :=
   (f : α ≤i β).isLowerSet_range
