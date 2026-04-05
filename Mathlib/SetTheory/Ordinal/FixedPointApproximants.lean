@@ -213,8 +213,10 @@ unseal gfpApprox lfpApprox
 theorem gfpApprox_zero : gfpApprox f x 0 = x := by
   exact lfpApprox_zero f.dual
 
-theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
+theorem gfpApprox_anti_right : Antitone (gfpApprox f x) :=
   lfpApprox_mono_right f.dual
+
+@[deprecated (since := "2026-03-30")] alias gfpApprox_antitone := gfpApprox_anti_right
 
 theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual
