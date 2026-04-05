@@ -915,12 +915,12 @@ alias IsNormal.apply_omega0 := apply_omega0_of_isNormal
 @[simp]
 theorem add_iSup (o : Ordinal.{u}) {ι} [Small.{u} ι] [Nonempty ι] (f : ι → Ordinal) :
     o + ⨆ i, f i = ⨆ i, o + f i :=
-  (isNormal_add_right o).map_iSup (bddAbove_of_small _)
+  (isNormal_add_right o).map_iSup bddAbove_of_small
 
 @[simp]
 theorem add_sSup (o : Ordinal.{u}) {s : Set Ordinal} [Small.{u} s] (hs : s.Nonempty) :
     o + sSup s = sSup ((o + ·) '' s) :=
-  (isNormal_add_right o).map_sSup hs (bddAbove_of_small s)
+  (isNormal_add_right o).map_sSup hs bddAbove_of_small
 
 @[simp]
 lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' s) := by
