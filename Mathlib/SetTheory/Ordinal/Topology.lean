@@ -79,7 +79,8 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
     let ⟨y, hyt⟩ := hne
     classical
-      refine ⟨sSup t + 1, add_one_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
+      refine ⟨_, (add_pos_of_right zero_lt_one (sSup t)).ne',
+        fun x _ ↦ if x ∈ t then x else y, fun x _ => ?_, ?_⟩
       · simp only
         split_ifs with h <;> exact hts ‹_›
       · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)

@@ -913,18 +913,41 @@ theorem apply_omega0_of_isNormal {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNorma
 alias IsNormal.apply_omega0 := apply_omega0_of_isNormal
 
 @[simp]
-theorem iSup_add_natCast (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  apply_omega0_of_isNormal (isNormal_add_right o)
+theorem add_iSup (o : Ordinal.{u}) {ι} [Small.{u} ι] [Nonempty ι] (f : ι → Ordinal) :
+    o + ⨆ i, f i = ⨆ i, o + f i :=
+  (isNormal_add_right o).map_iSup (bddAbove_of_small _)
+
+@[simp]
+theorem add_sSup (o : Ordinal.{u}) {s : Set Ordinal} [Small.{u} s] (hs : s.Nonempty) :
+    o + sSup s = sSup ((o + ·) '' s) :=
+  (isNormal_add_right o).map_sSup hs (bddAbove_of_small s)
+
+@[simp]
+lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' s) := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp
+  rcases eq_zero_or_pos o with (rfl | ho)
+  · simp [hs.image_const]
+  by_cases bdd : BddAbove s
+  · exact (isNormal_mul_right ho).map_sSup hs bdd
+  · rw [csSup_of_not_bddAbove bdd, csSup_empty, csSup_of_not_bddAbove]
+    · simp
+    exact fun ⟨u, hu⟩ ↦ bdd ⟨u, fun x hx ↦ (x.le_mul_right ho).trans (hu ⟨x, hx, rfl⟩)⟩
+
+@[simp]
+lemma mul_iSup (o : Ordinal) {ι} (f : ι → Ordinal) : o * ⨆ i, f i = ⨆ i, o * f i := by
+  rw [← sSup_range, mul_sSup, ← Set.range_comp', sSup_range]
+
+@[simp]
+theorem iSup_add_natCast (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω := by
+  rw [← iSup_natCast, Ordinal.add_iSup]
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_add_nat := iSup_add_natCast
 
 @[simp]
 theorem iSup_mul_natCast (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
-  rcases eq_zero_or_pos o with (rfl | ho)
-  · rw [zero_mul]
-    exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact apply_omega0_of_isNormal (isNormal_mul_right ho)
+  rw [← iSup_natCast, Ordinal.mul_iSup]
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_mul_nat := iSup_mul_natCast
