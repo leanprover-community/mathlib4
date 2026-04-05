@@ -145,6 +145,7 @@ lemma homologyMap_comp (n : ℕ) :
 
 attribute [local simp] homologyMap_comp in
 /-- The simplicial homology functor in degree `n` with coefficients in `R : C`. -/
+@[simps]
 noncomputable def homologyFunctor (n : ℕ) : SSet.{w} ⥤ C where
   obj X := X.homology R n
   map f := SSet.homologyMap f R n
