@@ -861,6 +861,20 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
 
 end ContinuousLinearMap
 
+section Complex
+
+variable {f : ℝ → ℂ} {a b : ℝ}
+
+theorem intervalIntegral_re (hf : IntervalIntegrable f volume a b) :
+    (∫ x in a..b, f x).re = ∫ x in a..b, (f x).re :=
+  (Complex.reCLM.intervalIntegral_comp_comm hf).symm
+
+theorem intervalIntegral_im (hf : IntervalIntegrable f volume a b) :
+    (∫ x in a..b, f x).im = ∫ x in a..b, (f x).im :=
+  (Complex.imCLM.intervalIntegral_comp_comm hf).symm
+
+end Complex
+
 /-!
 ## Basic arithmetic
 Includes addition, scalar multiplication and affine transformations.
