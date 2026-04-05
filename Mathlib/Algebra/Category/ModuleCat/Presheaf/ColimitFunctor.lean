@@ -226,7 +226,7 @@ lemma homEquiv'_symm_apply {N : ModuleCat.{w} cR.pt}
 
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     (α : ModuleColimit hcR hcM →+ N) :
-    (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
+    dsimp% (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
         letI m' : N := (homEquiv' hcR hcM α).app U m; letI r' : cR.pt := cR.ι.app U r
         r' • m') ↔
     ∀ (r : cR.pt) (m : ModuleColimit hcR hcM), α (r • m) = r • α m := by
@@ -235,8 +235,7 @@ lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     refine Eq.trans ?_ ((homEquiv'_app_apply ..).symm.trans (h U r m))
     congr 1
     apply smul_eq
-  · dsimp
-    rw [homEquiv'_app_apply, homEquiv'_app_apply, ← h]
+  · rw [homEquiv'_app_apply, homEquiv'_app_apply, ← h]
     congr 1
     exact (smul_eq ..).symm
 
