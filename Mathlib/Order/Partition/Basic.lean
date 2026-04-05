@@ -224,7 +224,7 @@ section Set
 lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty :=
   notMem_singleton_empty.1 <| P.ne_bot_of_mem ht
 
-lemma empty_not_mem : ∅ ∉ P := P.bot_notMem
+lemma empty_notMem : ∅ ∉ P := P.bot_notMem
 
 lemma subset_of_mem (ht : t ∈ P) : t ⊆ u := P.le_of_mem ht
 
