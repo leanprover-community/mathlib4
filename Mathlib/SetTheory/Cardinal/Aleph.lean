@@ -522,10 +522,7 @@ theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #
   rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
-  rw [← opow_natCast] at ho
-  rw [aleph_eq_preAleph, add_of_omega0_opow_le _ ho]
-  apply left_lt_opow one_lt_omega0
-  simp
+  simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
 
 @[deprecated aleph0_lt_lift (since := "2026-03-23")]
 theorem aleph_one_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
