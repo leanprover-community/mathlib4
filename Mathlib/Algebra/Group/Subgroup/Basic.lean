@@ -329,18 +329,17 @@ theorem normalizer_empty : normalizer (∅ : Set G) = ⊤ :=
 theorem _root_.CommGroup.normalizer_eq_top {G : Type*} [CommGroup G] (s : Set G) :
     normalizer s = ⊤ := by
   ext
-  simp [mem_normalizer_iff]
+  simp [mem_set_normalizer_iff]
 
 theorem mem_normalizer_iff_conj_image_eq {s : Set G} {g : G} :
     g ∈ normalizer s ↔ MulAut.conj g '' s = s := by
-  simp_rw [mem_normalizer_iff'', Set.ext_iff, Set.mem_image, MulAut.conj_apply]
+  simp_rw [mem_set_normalizer_iff'', Set.ext_iff, Set.mem_image, MulAut.conj_apply]
   refine forall_congr' fun h ↦ ?_
   simp_rw [mul_inv_eq_iff_eq_mul, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, exists_eq_right, iff_comm]
 
 theorem _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq {G : Type*} [AddGroup G] {s : Set G}
     {g : G} : g ∈ AddSubgroup.normalizer s ↔ AddAut.conj g '' s = s := by
-  simp_rw [AddSubgroup.mem_normalizer_iff'', Set.ext_iff, Set.mem_image,
-    AddAut.conj_apply]
+  simp_rw [AddSubgroup.mem_set_normalizer_iff'', Set.ext_iff, Set.mem_image, AddAut.conj_apply]
   refine forall_congr' fun h ↦ ?_
   simp_rw [add_neg_eq_iff_eq_add, ← eq_neg_add_iff_add_eq, ← add_assoc, exists_eq_right, iff_comm]
 
@@ -706,7 +705,7 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
 theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
     (normalizer H).map f.toMonoidHom = normalizer (H.map f.toMonoidHom) := by
   ext x
-  simp only [mem_normalizer_iff, SetLike.mem_coe, mem_map_equiv]
+  simp only [mem_normalizer_iff, mem_map_equiv]
   rw [f.toEquiv.forall_congr]
   intro
   simp

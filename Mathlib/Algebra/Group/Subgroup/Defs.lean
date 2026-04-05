@@ -677,23 +677,32 @@ alias setNormalizer := normalizer
 @[deprecated (since := "2026-03-19")]
 alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
 
-variable {s : Set G} {g : G}
+variable {H} {S : Set G} {g : G}
 
 @[to_additive]
-theorem mem_normalizer_iff : g ∈ normalizer s ↔ ∀ h, h ∈ s ↔ g * h * g⁻¹ ∈ s :=
+theorem mem_set_normalizer_iff : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g * h * g⁻¹ ∈ S :=
   .rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' : g ∈ normalizer s ↔ ∀ h, h ∈ s ↔ g⁻¹ * h * g ∈ s := by
-  rw [← inv_mem_iff, mem_normalizer_iff, inv_inv]
+theorem mem_set_normalizer_iff'' : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g⁻¹ * h * g ∈ S := by
+  rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]
 
 @[to_additive]
-theorem mem_normalizer_iff' : g ∈ normalizer s ↔ ∀ h, h * g ∈ s ↔ g * h ∈ s := by
-  refine ⟨fun hh h ↦ ?_, fun hh h ↦ ?_⟩
-  · rw [hh, mul_assoc, mul_inv_cancel_right]
-  · rw [mul_assoc, ← hh, inv_mul_cancel_right]
+theorem mem_set_normalizer_iff' : g ∈ normalizer S ↔ ∀ h, h * g ∈ S ↔ g * h ∈ S :=
+  ⟨fun h n ↦ by rw [h, mul_assoc, mul_inv_cancel_right],
+    fun h n ↦ by rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
 
-variable {H}
+@[to_additive]
+theorem mem_normalizer_iff : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+  mem_set_normalizer_iff
+
+@[to_additive]
+theorem mem_normalizer_iff'' : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+  mem_set_normalizer_iff''
+
+@[to_additive]
+theorem mem_normalizer_iff' : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+  mem_set_normalizer_iff'
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
@@ -708,10 +717,10 @@ instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
-@[to_additive]
+@[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a := by
-  simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
+    a * b = b * a :=
+  setLike_mul_comm ha hb
 
 end Subgroup
 

@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.StrongTopology
-public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 /-!
 # Topology of pointwise convergence on continuous linear maps
