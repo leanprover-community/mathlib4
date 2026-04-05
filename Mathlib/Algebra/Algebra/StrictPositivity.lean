@@ -44,7 +44,7 @@ namespace IsStrictlyPositive
 
 section basic
 
-@[grind =]
+@[grind _=_]
 lemma iff_of_unital [LE A] [Monoid A] [Zero A] {a : A} :
     IsStrictlyPositive a ↔ 0 ≤ a ∧ IsUnit a := Iff.rfl
 
@@ -76,6 +76,11 @@ lemma _root_.Units.isStrictlyPositive_iff [LE A] [Monoid A] [Zero A] {a : Aˣ} :
 lemma _root_.Units.isStrictlyPositive_of_le [LE A] [Monoid A] [Zero A] {a : Aˣ}
     (h : (0 : A) ≤ a) : IsStrictlyPositive (a : A) := a.isStrictlyPositive_iff.mpr h
 
+@[nontriviality]
+protected lemma of_subsingleton [PartialOrder A] [Monoid A] [Zero A] [Subsingleton A]
+    {a : A} : IsStrictlyPositive a :=
+  iff_of_unital.mpr ⟨by simp, isUnit_of_subsingleton _⟩
+
 end basic
 
 section StarOrderedRing
@@ -90,6 +95,18 @@ lemma _root_.IsUnit.isStrictlyPositive_star_right_conjugate_iff {u a : A} (hu : 
 lemma _root_.IsUnit.isStrictlyPositive_star_left_conjugate_iff {u a : A} (hu : IsUnit u) :
     IsStrictlyPositive (star u * a * u) ↔ IsStrictlyPositive a := by
   simpa using hu.star.isStrictlyPositive_star_right_conjugate_iff
+
+@[grind =]
+theorem _root_.IsUnit.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint (a b : A) (hb : IsUnit b)
+    (hb₂ : IsSelfAdjoint b := by cfc_tac) :
+    IsStrictlyPositive (b * a * b) ↔ IsStrictlyPositive a := by
+  grind [hb.isStrictlyPositive_star_left_conjugate_iff]
+
+@[aesop safe apply]
+theorem conjugate_of_isUnit_of_isSelfAdjoint (a b : A) (hb : IsUnit b)
+    (hb₂ : IsSelfAdjoint b := by cfc_tac) (ha : IsStrictlyPositive a := by cfc_tac) :
+    IsStrictlyPositive (b * a * b) :=
+  (hb.isStrictlyPositive_iff_conjugate_of_isSelfAdjoint _ _ hb₂).mpr ha
 
 end StarOrderedRing
 
