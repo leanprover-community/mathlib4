@@ -119,17 +119,17 @@ map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
   Z :=
-    { obj := fun f => Subtype (Set.range f.hom)
-      map := fun φ y => ⟨φ.right y.1, by
+    { obj f := Set.range f.hom
+      map φ y := ⟨φ.right y.1, by
         obtain ⟨_, x, rfl⟩ := y
         exact ⟨φ.left x, congr_fun φ.w x⟩ ⟩ }
   i :=
-    { app := fun f x => ⟨f.hom x, ⟨x, rfl⟩⟩
-      naturality := fun f g φ => by
+    { app f x := ⟨f.hom x, ⟨x, rfl⟩⟩
+      naturality f g φ := by
         ext x
         exact congr_fun φ.w x }
   p :=
-    { app := fun _ y => y.1
+    { app _ y := y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

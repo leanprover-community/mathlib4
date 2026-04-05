@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Tactic.SuppressCompilation
@@ -195,7 +195,7 @@ theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
   simp only [setOf_and, setOf_forall]
-  refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> continuity
+  refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> fun_prop
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
@@ -262,6 +262,24 @@ theorem ratio_le_opNorm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
 theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
   mul_one ‖f‖ ▸ f.le_opNorm_of_le
 
+/--
+Continuous linear maps are locally bounded. In other words, they map bounded sets to bounded sets.
+-/
+instance : LocallyBoundedMapClass (E →SL[σ₁₂] F) E F where
+  comap_cobounded_le := by
+    intro ℓ
+    rw [Bornology.comap_cobounded_le_iff]
+    intro s hs
+    obtain ⟨M, hM⟩ := hs.exists_norm_le
+    rw [isBounded_iff_forall_norm_le]
+    use ‖ℓ‖ * M
+    intro y hy
+    obtain ⟨σ, hσ⟩ := (mem_image _ _ _).1 hy
+    calc ‖y‖
+      _ ≤ ‖ℓ σ‖ := by rw [hσ.2]
+      _ ≤ ‖ℓ‖ * ‖σ‖ := ContinuousLinearMap.le_opNorm ℓ σ
+      _ ≤ ‖ℓ‖ * M := mul_le_mul (by rfl) (hM σ hσ.1) (norm_nonneg σ) (opNorm_nonneg ℓ)
+
 theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx
@@ -303,6 +321,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero E
@@ -311,13 +330,6 @@ theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1
 
 instance normOneClass [NontrivialTopology E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
-
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-@[deprecated norm_id (since := "2025-09-03")]
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
-  letI : NontrivialTopology E := .of_exists_norm_ne_zero h
-  norm_id
 
 theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
     [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]

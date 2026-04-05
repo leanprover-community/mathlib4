@@ -240,6 +240,10 @@ theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
 theorem pairwiseDisjoint_singleton (i : ι) (f : ι → α) : PairwiseDisjoint {i} f :=
   pairwise_singleton i _
 
+@[simp]
+lemma pairwiseDisjoint_singleton' (s : Set ι) :
+    s.PairwiseDisjoint (singleton : ι → Set ι) := by intro; grind
+
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧ ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j) :=
@@ -377,7 +381,6 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
     ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ ∃ x : α, x ∈ f i ∩ f j := by
@@ -397,7 +400,6 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
     s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
   simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]

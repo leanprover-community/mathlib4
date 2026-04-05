@@ -30,7 +30,7 @@ space.
 ## TODO
 
 - Explicitly construct a unit norm cyclic vector ζ such that
-  a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) \* ζ, ,ζ⟩ is a state on `A` for both unital and non-unital
+  a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) \* ζ, ζ⟩ is a state on `A` for both unital and non-unital
   cases.
 
 -/
@@ -93,10 +93,8 @@ lemma preGNS_norm_def (a : f.PreGNS) :
 
 lemma preGNS_norm_sq (a : f.PreGNS) :
     ‖a‖ ^ 2 = f (star (f.ofPreGNS a) * f.ofPreGNS a) := by
-  have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := map_nonneg f <| star_mul_self_nonneg _
-  rw [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt]
-  · rw [conj_eq_iff_re.mp this.star_eq]
-  · rwa [re_nonneg_iff_nonneg this.isSelfAdjoint]
+  have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := f.map_nonneg (star_mul_self_nonneg _)
+  simp [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt this.1, conj_eq_iff_re.mp this.star_eq]
 
 /--
 The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
@@ -131,8 +129,18 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
     f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
-set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
+/--
+This proves map_smul' of gnsNonUnitalStarAlgHom so that map_zero' can be proven as a direct
+consequence.
+-/
+@[simp]
+private lemma completion_leftMulMapPreGNS_map_smul (m : ℂ) (x : A) :
+   (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
+  ext a
+  induction a using induction_on with
+  | hp => apply isClosed_eq <;> fun_prop
+  | ih a => simp [smul_mul_assoc]
+
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
 a Hilbert space that is constructed from a positive linear functional `f` on a possibly non-unital
@@ -140,39 +148,29 @@ C⋆-algebra.
 -/
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
   toFun a := (f.leftMulMapPreGNS a).completion
-  map_smul' r a := by
-    ext x
-    induction x using Completion.induction_on with
-    | hp => apply isClosed_eq <;> fun_prop
-    | ih x => simp [smul_mul_assoc]
-  map_zero' := by
-    ext b
-    induction b using Completion.induction_on with
-    | hp => apply isClosed_eq <;> fun_prop
-    | ih b => simp [Completion.coe_zero]
-  map_add' x y := by
+  map_smul' := by simp
+  map_zero' := by simpa using f.completion_leftMulMapPreGNS_map_smul 0 0
+  map_add' _ _ := by
     ext c
-    induction c using Completion.induction_on with
+    induction c using induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c => simp [add_mul, Completion.coe_add]
-  map_mul' a b := by
+  map_mul' _ _ := by
     ext c
-    induction c using Completion.induction_on with
+    induction c using induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c => simp
   map_star' a := by
     refine (eq_adjoint_iff (f.leftMulMapPreGNS (star a)).completion
       (f.leftMulMapPreGNS a).completion).mpr ?_
     intro x y
-    induction x, y using Completion.induction_on₂ with
+    induction x, y using induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
     f.gnsNonUnitalStarAlgHom a = (f.leftMulMapPreGNS a).completion := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
     f.gnsNonUnitalStarAlgHom a b = f.leftMulMapPreGNS a b := by
@@ -184,11 +182,10 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b
-  induction b using Completion.induction_on with
+  induction b using induction_on with
   | hp => apply isClosed_eq <;> fun_prop
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on a Hilbert
 space that is constructed from a positive linear functional `f` on a unital C⋆-algebra.

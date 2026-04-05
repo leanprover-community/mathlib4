@@ -172,7 +172,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -197,7 +197,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -351,6 +351,11 @@ just picking out the `i`-th object. -/
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+/-- The differential as a natural transformation between `eval`. -/
+@[simps] def dNatTrans (i j : ι) :
+    HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
+  app X := X.d i j
+
 end
 
 noncomputable section
@@ -408,7 +413,7 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
       (by
         dsimp [ComplexShape.prev]
         rw [dif_neg]
-        push_neg; intro i hi
+        push Not; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
 
@@ -724,9 +729,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  congr
-  · rw [if_pos (by rfl), id_comp]
-  · simp
+  simp
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/

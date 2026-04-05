@@ -24,11 +24,11 @@ Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
   - and a “remainder” `r : MvPolynomial σ R`
-such that the three properties hold:
-  (1) One has `f = ∑ (g i) * (b i) + r`
-  (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
-  (3) For every `i`, every monomial in the support of `r` is strictly smaller
-    than the leading term of `b i`,
+    such that the three properties hold:
+    1. One has `f = ∑ (g i) * (b i) + r`
+    2. For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
+    3. For every `i`, every monomial in the support of `r` is strictly smaller
+       than the leading term of `b i`,
 
 The proof is done by induction, using two standard constructions
 
@@ -123,7 +123,6 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     rw [H', degree_zero] at K
     exact hf K.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Division by a family of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
@@ -228,7 +227,6 @@ after a `decreasing_by` block with focus dots.
 See https://github.com/leanprover/lean4/issues/12573
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Division by a *set* of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
 theorem div_set {B : Set (MvPolynomial σ R)}

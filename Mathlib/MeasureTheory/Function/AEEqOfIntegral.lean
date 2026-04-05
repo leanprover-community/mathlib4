@@ -26,6 +26,7 @@ This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgu
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
 * `f` and `g` are integrable on all measurable sets with finite measure,
 * for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
+
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 * `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are
@@ -147,7 +148,6 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
       rw [← μ.restrict_toMeasurable mus.ne]
       exact hf_zero _ (measurableSet_toMeasurable ..) (by rwa [measure_toMeasurable])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_le_of_forall_setIntegral_le {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ)
     (hf_le : ∀ s, MeasurableSet s → μ s < ∞ → (∫ x in s, f x ∂μ) ≤ ∫ x in s, g x ∂μ) :
     f ≤ᵐ[μ] g := by
@@ -203,7 +203,6 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
   refine hf_zero (s ∩ t) (hs.inter ht) ?_
   exact (measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμt)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}

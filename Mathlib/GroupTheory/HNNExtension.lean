@@ -254,7 +254,6 @@ def ofGroup (g : G) : NormalWord d :=
 
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
-set_option backward.whnf.reducibleClassField false in
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
     one_smul := by simp +instances [instHSMul]
@@ -501,17 +500,14 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
   simp [ReducedWord.prod, mul_assoc]
 
-set_option backward.whnf.reducibleClassField false in
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
-set_option backward.whnf.reducibleClassField false in
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
-set_option backward.whnf.reducibleClassField false in
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
@@ -539,7 +535,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         -- simp [equiv_symm_eq_conj, mul_assoc].
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
-        grind [equiv_symm_eq_conj, mul_assoc]
+        erw [equiv_symm_eq_conj, mul_assoc, mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
@@ -570,8 +566,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
--- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
-set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
@@ -586,11 +580,8 @@ theorem prod_smul_empty (w : NormalWord d) :
     --   -SetLike.coe_sort_coe]
     -- ext <;> simp [-SetLike.coe_sort_coe]
     simp only [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
-      smul_cons]
-    ext <;> simp [-SetLike.coe_sort_coe]
-    rw [(d.compl _).equiv_snd_eq_inv_mul,
-      (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-    simp
+      (d.compl _).equiv_snd_eq_inv_mul, inv_one, one_mul, mul_inv_cancel, one_smul, smul_cons]
+    ext <;> simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
