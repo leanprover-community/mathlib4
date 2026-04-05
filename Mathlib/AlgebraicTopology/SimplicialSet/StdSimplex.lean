@@ -176,13 +176,13 @@ lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
     yonedaEquiv.symm (SSet.stdSimplex.objEquiv.symm (β := n ⟶ _) (𝟙 n)) = 𝟙 (stdSimplex.obj n) :=
   yonedaEquiv.symm_apply_eq.mpr rfl
 
+open Finset Opposite SimplexCategory
+
 lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
     (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
     dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =
       X.map f.op x :=
   rfl
-
-open Finset Opposite SimplexCategory
 
 namespace stdSimplex
 
@@ -289,6 +289,7 @@ lemma yonedaEquiv_comp {X Y : SSet.{u}} {n : SimplexCategory}
 lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
     (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x := by
   simp
+
 
 namespace Subcomplex
 
