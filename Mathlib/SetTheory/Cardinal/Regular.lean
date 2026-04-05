@@ -21,8 +21,6 @@ This file defines regular and inaccessible cardinals.
 
 ## TODO
 
-* Generalize the universes in the lemmas about `iSup`, by taking a `Small` assumption when necessary
-  instead.
 * Prove more theorems on inaccessible cardinals.
 * Define singular cardinals.
 -/
