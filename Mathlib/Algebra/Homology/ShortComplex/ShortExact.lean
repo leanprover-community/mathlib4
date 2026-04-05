@@ -216,6 +216,32 @@ noncomputable def splittingOfProjective {S : ShortComplex C} (hS : S.ShortExact)
 
 end ShortExact
 
+/-- The functor taking `f : X ⟶ Y` to the short complex `ker f ⟶ X ⟶ Y`. -/
+@[simps] noncomputable
+def kerFunctor (C : Type*) [Category* C] [HasZeroMorphisms C]
+    [HasKernels C] : Arrow C ⥤ ShortComplex C where
+  obj f := ⟨Limits.kernel.ι f.hom, f.hom, kernel.condition ..⟩
+  map f := ⟨(ker _).map f, f.left, f.right, by simp, by simpa using f.w⟩
+
+lemma shortExact_kerFunctor [CategoryWithHomology C] [HasKernels C] (f : Arrow C) [Epi f.hom] :
+    ((kerFunctor C).obj f).ShortExact where
+  exact := exact_of_f_is_kernel _ (kernelIsKernel f.hom)
+  mono_f := by dsimp; infer_instance
+  epi_g := ‹_›
+
+/-- The functor taking `f : X ⟶ Y` to the short complex `X ⟶ Y ⟶ coker f`. -/
+@[simps] noncomputable
+def cokerFunctor (C : Type*) [Category* C] [HasZeroMorphisms C]
+    [HasCokernels C] : Arrow C ⥤ ShortComplex C where
+  obj f := ⟨f.hom, Limits.cokernel.π f.hom, cokernel.condition ..⟩
+  map f := ⟨f.left, f.right, ((coker _).map f), by simpa using f.w, by simp⟩
+
+lemma shortExact_cokerFunctor [CategoryWithHomology C] [HasCokernels C] (f : Arrow C) [Mono f.hom] :
+    ((cokerFunctor C).obj f).ShortExact where
+  exact := exact_of_g_is_cokernel _ (cokernelIsCokernel f.hom)
+  mono_f := ‹_›
+  epi_g := by dsimp; infer_instance
+
 end Preadditive
 
 end ShortComplex
