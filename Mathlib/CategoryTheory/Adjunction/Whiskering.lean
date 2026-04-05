@@ -40,7 +40,6 @@ protected def whiskerRight (adj : F ⊣ G) :
         (associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (rightUnitor _).hom
       naturality := by intros; ext; simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
 @[simps! unit_app_app counit_app_app]
