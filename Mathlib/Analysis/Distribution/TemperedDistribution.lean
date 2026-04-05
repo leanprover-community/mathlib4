@@ -322,12 +322,11 @@ theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
     derivCLM F (f : 𝓢'(ℝ, F)) = SchwartzMap.derivCLM 𝕜 F f := by
   ext1 g
-  simp [integral_smul_deriv_right_eq_neg_left, integral_neg]
+  simpa [integral_neg] using (integral_smul_deriv_right_eq_neg_left g f).symm
 
 end deriv
 
@@ -376,11 +375,10 @@ theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
     ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
   ext1 g
-  simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
+  simpa [integral_neg] using (integral_smul_lineDerivOp_right_eq_neg_left (μ := μ) g f m).symm
 
 end lineDeriv
 
