@@ -10,18 +10,18 @@ public import Mathlib.SetTheory.Ordinal.Basic
 /-!
 # Universal ordinal and cardinal
 
-We define `Cardinal.univ` as the cardinality of the `Cardinal`s themselves. Similarly, we define
-`Ordinal.univ` as the order type of the ordinals. These are related via
-`Cardinal.univ.ord = Ordinal.univ` and `Ordinal.univ.card = Cardinal.univ`.
+`Cardinal.univ` is the cardinality of the cardinals themselves. Likewise, `Ordinal.univ` is the
+order type of the ordinals. These are related via `Cardinal.univ.ord = Ordinal.univ` and
+`Ordinal.univ.card = Cardinal.univ`.
 
 The cardinal `Cardinal.univ` is strongly inaccessible. This reflects the fact that in ZFC, the
-cardinals form a proper class. See `IsStrongInaccessible.univ` for a proof.
+cardinals form a proper class. See `IsInaccessible.univ` for a proof.
 
 ## Implementation notes
 
 We actually define `Cardinal.univ` as the cardinality of `Ordinal`, rather than that of `Cardinal`.
 This makes the basic API easier to set up. See `Cardinal.mk_cardinal` for a proof that
-`Cardinal.univ` is the cardinality of the cardinals.
+`Cardinal.univ = #Cardinal`.
 -/
 
 @[expose] public section
@@ -66,7 +66,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 /-- Principal segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
 `Ordinal.{v}` as a principal segment when `u < v`. -/
 def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
-  ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
+  ⟨liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · obtain ⟨a, e⟩ := h
