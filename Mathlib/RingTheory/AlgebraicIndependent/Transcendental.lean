@@ -246,12 +246,12 @@ end AlgebraicIndependent
 open Cardinal in
 theorem lift_trdeg_add_le [Nontrivial R] [FaithfulSMul R S] [FaithfulSMul S A] :
     lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
-  simp_rw [trdeg, lift_iSup (bddAbove_range _)]
-  simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),
+  simp_rw [trdeg, lift_iSup bddAbove_of_small]
+  simp_rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small,
     add_comm (lift.{v, u} _), ← mk_sum]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   have := hs.sumElim_comp ht
-  refine le_ciSup_of_le (bddAbove_range _) ⟨_, this.to_subtype_range⟩ ?_
+  refine le_ciSup_of_le bddAbove_of_small ⟨_, this.to_subtype_range⟩ ?_
   rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
 
 theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]

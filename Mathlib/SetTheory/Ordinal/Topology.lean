@@ -91,7 +91,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
   tfae_have 6 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
-      (bddAbove_range.{u, u} f)
+      bddAbove_of_small
   tfae_finish
 
 theorem mem_closure_iff_iSup :
