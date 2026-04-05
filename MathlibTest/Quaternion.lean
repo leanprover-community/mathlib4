@@ -1,7 +1,7 @@
 module
-import Mathlib.Algebra.Quaternion
-import Mathlib.Data.Real.Basic
-import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+meta import Mathlib.Algebra.Quaternion
+meta import Mathlib.Data.Real.Basic
+meta import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 open Quaternion
 /--

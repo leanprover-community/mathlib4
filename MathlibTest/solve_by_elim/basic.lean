@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 module
-import Lean.Meta.Tactic.SolveByElim
+meta import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Tactic.Constructor
 import Batteries.Tactic.PermuteGoals
-public import MathlibTest.solve_by_elim.dummy_label_attr
+meta import MathlibTest.solve_by_elim.dummy_label_attr
 
 
 example (h : Nat) : Nat := by solve_by_elim
@@ -156,7 +156,7 @@ end apply_assumption
 
 section «using»
 
-@[dummy_label_attr] axiom foo : 1 = 2
+@[local dummy_label_attr] axiom foo : 1 = 2
 
 example : 1 = 2 := by
   fail_if_success solve_by_elim
@@ -168,7 +168,7 @@ section issue1581
 
 axiom mySorry {α} : α
 
-@[dummy_label_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+@[local dummy_label_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
 
 example : 5 ≤ 7 := by
   apply_rules using dummy_label_attr

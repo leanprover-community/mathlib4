@@ -1,6 +1,6 @@
 module
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.DFinsupp.Notation
+meta import Mathlib.Algebra.Group.Int.Defs
+meta import Mathlib.Data.DFinsupp.Notation
 
 example : (fun₀ | 1 => 3 : Π₀ i, Fin (i + 10)) 1 = 3 := by
   simp

@@ -65,6 +65,7 @@ not modulized: MathlibTest/MkIffOfInductive.lean
 not modulized: MathlibTest/MonCat.lean
 not modulized: MathlibTest/Multigoal.lean
 not modulized: MathlibTest/PrivateModuleLinter/nonModule.lean (This test shouldn't be modulized)
+not modulized: MathlibTest/Real.lean (meta error!)
 not modulized: MathlibTest/Recall.lean
 not modulized: MathlibTest/RegularMeasure.lean
 not modulized: MathlibTest/Set.lean
@@ -169,13 +170,4 @@ not modulized: MathlibTest/zmod.lean (compiler bug!)
 
 modulized: MathlibTest/Split.lean (What test is this?)
 
-modulized but error: MathlibTest/DFinsuppMultiLinear.lean
-modulized but error: MathlibTest/solve_by_elim/basic.lean
-modulized but error: MathlibTest/Nat/log.lean
-modulized but error: MathlibTest/Real.lean
-modulized but error: MathlibTest/dfinsupp_notation.lean
-modulized but error: MathlibTest/vec_notation.lean
 modulized but error: MathlibTest/Quaternion.lean
-modulized but error: MathlibTest/Polynomial.lean
-modulized but error: MathlibTest/Perm.lean
-modulized but error: MathlibTest/antidiagonal.lean
