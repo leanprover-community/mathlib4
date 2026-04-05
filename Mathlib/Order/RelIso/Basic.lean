@@ -772,6 +772,32 @@ def relHomCongr {α₁ β₁ α₂ β₂}
   left_inv f₁ := by ext; simp
   right_inv f₂ := by ext; simp
 
+/-- Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.arrowCongr` for `RelEmbedding`. -/
+@[simps]
+def relEmbeddingCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ↪r s₁) ≃ (r₂ ↪r s₂) where
+  toFun f₁ := (e₁.symm.toRelEmbedding.trans f₁).trans e₂.toRelEmbedding
+  invFun f₂ := (e₁.toRelEmbedding.trans f₂).trans e₂.symm.toRelEmbedding
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
+/-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.arrowCongr` for `RelIso`. -/
+@[simps]
+def relIsoCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ≃r s₁) ≃ (r₂ ≃r s₂) where
+  toFun f₁ := (e₁.symm.trans f₁).trans e₂
+  invFun f₂ := (e₁.trans f₂).trans e₂.symm
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.
 -/
