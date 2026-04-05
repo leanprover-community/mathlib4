@@ -741,6 +741,17 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
     ← not_bddAbove_iff_isCofinal]
   exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
 
+@[simp]
+theorem _root_.Order.cof_ordinal : Order.cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
+  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.subrelIso.{u, u + 1}).lift_cof_congr
+  rw [Cardinal.lift_id'.{_, u + 2}] at this
+  change Order.cof (Iio univ) = _ at this
+  rwa [cof_Iio, ← lift_cof, Cardinal.lift_inj, cof_univ, eq_comm] at this
+
+@[simp]
+theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
+  rw [← preAleph.cof_congr, cof_ordinal]
+
 end Ordinal
 
 namespace Cardinal
