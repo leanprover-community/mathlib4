@@ -20,7 +20,6 @@ uses is `Fintype.card_embedding_eq`.
 namespace Theorems100
 
 local notation "|" x "|" => Finset.card x
-
 local notation "‖" x "‖" => Fintype.card x
 
 /-- **Birthday Problem**: set cardinality interpretation. -/
@@ -44,7 +43,7 @@ theorem Fin.measure_apply {s : Set <| Fin n → Fin m} :
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
-    ℙ ({f | Function.Injective f} : Set (Fin 23 → Fin 365)) < 1 / 2 := by
+    ℙ ({f | f.Injective} : Set (Fin 23 → Fin 365)) < 1 / 2 := by
   rw [Fin.measure_apply]
   generalize_proofs hfin
   have : |hfin.toFinset| = 42200819302092359872395663074908957253749760700776448000000 := by
