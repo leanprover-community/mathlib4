@@ -3483,7 +3483,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.ConcreteColorings
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Constructions
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
