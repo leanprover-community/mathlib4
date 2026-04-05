@@ -145,7 +145,7 @@ protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
 theorem comp_assoc (h : r →r s) (g : s →r t) (f : t →r u) :
-  f.comp (g.comp h) = (f.comp g).comp h := rfl
+  (f.comp g).comp h = f.comp (g.comp h) := rfl
 
 @[simp]
 theorem comp_id (f : r →r s) : f.comp (RelHom.id r) = f := rfl
@@ -287,7 +287,7 @@ theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
   rfl
 
 theorem trans_assoc (f : r ↪r s) (g : s ↪r t) (h : t ↪r u) :
-  f.trans (g.trans h) = (f.trans g).trans h := rfl
+  (f.trans g).trans h = f.trans (g.trans h) := rfl
 
 @[simp]
 theorem trans_refl (f : r ↪r s) : f.trans (.refl s) = f := rfl
