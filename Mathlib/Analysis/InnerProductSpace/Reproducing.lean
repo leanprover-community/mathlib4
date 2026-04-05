@@ -87,10 +87,18 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
+/-- `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after the
+  coercion `H→L[𝕜] (X→V)`. -/
+def eval (x : X) : H →L[𝕜] V :=
+  (ContinuousLinearMap.proj (φ := fun _ : X => V) x).comp (RKHS.coeCLM 𝕜)
+
 @[simp]
-lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
-  simp_rw [← coeCLM_apply]
-  fun_prop
+lemma eval_apply (x : X) (f : H) : eval x f = f x := (congr_fun rfl x).symm
+
+-- @[simp]
+-- lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
+--   simp_rw [← coeCLM_apply]
+--   fun_prop
 
 variable [CompleteSpace H] [CompleteSpace V]
 
@@ -137,6 +145,21 @@ theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) =
   simp only [← kerFun_inner, coe_zero, Pi.zero_apply, inner_zero_right]
   refine inner_right_of_mem_orthogonal (subset_closure ?_) fin
   simp [mem_span_of_mem]
+
+section Lipschitz
+
+#check PseudoEMetricSpace (H→L[𝕜] V)
+
+instance (priority := 100) instPseudoEMetricSpace :
+    PseudoEMetricSpace X := PseudoEMetricSpace.induced eval inferInstance
+
+theorem lipschitzWith_ennnorm (f : H) : LipschitzWith ‖f‖₊ f := by
+  intro x y
+  rw [edist_eq_enorm_sub, <-eval_apply, <-eval_apply, ← sub_apply]
+  -- rewrite `edist x y = ‖eval x - eval y‖ₑ`
+  -- Conclude using continuity of `eval`
+
+end Lipschitz
 
 variable (H) in
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
