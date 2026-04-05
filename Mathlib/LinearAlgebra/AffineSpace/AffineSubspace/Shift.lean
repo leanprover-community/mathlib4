@@ -35,6 +35,8 @@ open Module Submodule Finset AffineMap AffineSubspace
 
 variable {k V P : Type*}
 
+namespace AffineSubspace
+
 section Ring
 variable [Ring k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
@@ -46,14 +48,14 @@ not affect the output (See `AffineSubspace.shift_eq`).
 
 We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_empty`). -/
 noncomputable
-def AffineSubspace.shift (s : AffineSubspace k P) (c : P) (r : k) : AffineSubspace k P :=
+def shift (s : AffineSubspace k P) (c : P) (r : k) : AffineSubspace k P :=
   if h : Nonempty s then
     s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ h.some))).toAffineMap
   else
     ⊥
 
 @[simp]
-theorem AffineSubspace.direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
+theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
     (s.shift c r).direction = s.direction := by
   rcases s.eq_bot_or_nonempty with h | h
   · simp [shift, h]
@@ -61,11 +63,11 @@ theorem AffineSubspace.direction_shift (s : AffineSubspace k P) (c : P) (r : k) 
   simp [shift, h]
 
 @[simp]
-theorem AffineSubspace.shift_empty (c : P) (r : k) : shift ⊥ c r = ⊥ := by
+theorem shift_empty (c : P) (r : k) : shift ⊥ c r = ⊥ := by
   simp [shift]
 
 /-- The arbitrary point chosen in the definition can be replaced by any other point. -/
-theorem AffineSubspace.shift_eq (s : AffineSubspace k P) (p : s) (c : P) (r : k) :
+theorem shift_eq (s : AffineSubspace k P) (p : s) (c : P) (r : k) :
     shift s c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))).toAffineMap := by
   have h : Nonempty s := ⟨p⟩
   simp only [shift, h, ↓reduceDIte]
@@ -82,14 +84,14 @@ theorem AffineSubspace.shift_eq (s : AffineSubspace k P) (p : s) (c : P) (r : k)
     · rw [vadd_vadd, ← smul_add, vsub_add_vsub_cancel]
 
 @[simp]
-theorem AffineSubspace.shift_zero (s : AffineSubspace k P) [h : Nonempty s] (c : P) :
+theorem shift_zero (s : AffineSubspace k P) [h : Nonempty s] (c : P) :
     shift s c 0 = mk' c s.direction := by
   refine ext_of_direction_eq (by simp) ⟨c, ?_⟩
   suffices ∃ x ∈ s, (c -ᵥ h.some) +ᵥ x = c by simpa [shift, h]
   exact ⟨h.some, by simp⟩
 
 @[simp]
-theorem AffineSubspace.shift_one (s : AffineSubspace k P) (c : P) : shift s c 1 = s := by
+theorem shift_one (s : AffineSubspace k P) (c : P) : shift s c 1 = s := by
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
   have h : Nonempty s := by simpa using h
@@ -101,7 +103,7 @@ section CommRing
 variable [CommRing k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
 /-- For a unit parameter, shifting is the same as mapping by homothety. -/
-theorem AffineSubspace.shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k}
+theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k}
     (hr : IsUnit r) : shift s c r = s.map (homothety c r) := by
   obtain ⟨t, ht⟩ := hr.exists_right_inv
   rcases s.eq_bot_or_nonempty with h | h
@@ -128,13 +130,15 @@ theorem AffineSubspace.shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {
 
 end CommRing
 
-section LinearOrderedField
+end AffineSubspace
+
+namespace Affine.Simplex
 variable [Field k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [AddTorsor V P] [Module k V]
   {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1)) {x : k}
 
 /-- Draw a subspace parallel to `Affine.Simplex.faceOpposite`. The cross-section created by it and
 the `Affine.Simplex.closedInterior` is the closed interior of the face transformed by homothety. -/
-theorem Affine.Simplex.closedInterior_inter_shift (hx : x ∈ Set.Icc 0 1) :
+theorem closedInterior_inter_shift (hx : x ∈ Set.Icc 0 1) :
     s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x =
     homothety (s.points i) x '' (s.faceOpposite i).closedInterior := by
   classical
@@ -213,7 +217,7 @@ theorem Affine.Simplex.closedInterior_inter_shift (hx : x ∈ Set.Icc 0 1) :
 
 /-- Draw a subspace parallel to `Affine.Simplex.faceOpposite`. It is disjoint from the closed
 interior of the simplex if the shift parameter is outside $[0, 1]$. -/
-theorem Affine.Simplex.closedInterior_inter_shift_eq_empty (hx : x ∉ Set.Icc 0 1) :
+theorem closedInterior_inter_shift_eq_empty (hx : x ∉ Set.Icc 0 1) :
     s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x =
     ∅ := by
   have hx0 : x ≠ 0 := by
@@ -248,4 +252,4 @@ theorem Affine.Simplex.closedInterior_inter_shift_eq_empty (hx : x ∉ Set.Icc 0
     mul_one, smul_mem_iff _ hxi, vsub_right_mem_direction_iff_mem p.prop] at hzs
   exact s.points_notMem_affineSpan_faceOpposite i hzs
 
-end LinearOrderedField
+end Affine.Simplex
