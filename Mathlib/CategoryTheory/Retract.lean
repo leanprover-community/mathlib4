@@ -104,7 +104,7 @@ namespace RetractArrow
 
 variable {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed for MorphismPropert/Retract.lean
+set_option backward.isDefEq.respectTransparency false in -- This is needed for `MorphismProperty/Retract.lean`
 @[reassoc]
 lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 
