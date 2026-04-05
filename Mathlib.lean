@@ -5778,6 +5778,7 @@ public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Circular.ZMod
 public import Mathlib.Order.Closure
+public import Mathlib.Order.Club
 public import Mathlib.Order.Cofinal
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.CompactlyGenerated.Intervals
