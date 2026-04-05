@@ -721,11 +721,11 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
 
 section findSquares
 
-private abbrev wrapped (z : ℤ) : ℤ := z
+abbrev wrapped (z : ℤ) : ℤ := z
 /-- the `findSquares` preprocessor can look through reducible defeq -/
 example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
 
-private def tightlyWrapped (z : ℤ) : ℤ := z
+def tightlyWrapped (z : ℤ) : ℤ := z
 /--
 error: linarith failed to find a contradiction
 case h
