@@ -21,8 +21,6 @@ variable (R : Type*) [CommRing R]
 
 open IsLocalRing Polynomial Ideal
 
-set_option backward.isDefEq.respectTransparency false in
-open Set in
 lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
     [IsRegularLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsRegularLocalRing (Localization.AtPrime p) := by
@@ -82,14 +80,13 @@ lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
     rw [WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim, WithBot.coe_one, ← reg,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
     have fin : (((algebraMap R R[X]) '' (maximalIdeal R).generators) ∪ {y}).Finite :=
-      Finite.union (Finite.image _ fg') (finite_singleton y)
-    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finite.image _ fin))
+      (fg'.image _).union (Set.finite_singleton y)
+    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (fin.image _))
     apply le_trans (Set.ncard_image_le fin) (le_trans (Set.ncard_union_le _ _) _)
-    rw [ncard_singleton, add_le_add_iff_right]
+    rw [Set.ncard_singleton, add_le_add_iff_right]
     exact le_of_le_of_eq (Set.ncard_image_le fg') (Submodule.FG.generators_ncard fg)
 
-theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
-    IsRegularRing R[X] := by
+theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularRing R[X] := by
   apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   let q := p.comap C
   let S := (Localization.AtPrime q)[X]
