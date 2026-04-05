@@ -66,8 +66,9 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
 theorem shift_empty (c : P) (r : k) : shift ⊥ c r = ⊥ := by
   simp [shift]
 
-/-- The arbitrary point chosen in the definition can be replaced by any other point. -/
-theorem shift_eq (s : AffineSubspace k P) (p : s) (c : P) (r : k) :
+/-- `AffineSubspace.shift s c r` can be represented by moving a point in the subspace
+towards `c`. -/
+theorem shift_eq {s : AffineSubspace k P} (p : s) (c : P) (r : k) :
     shift s c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))).toAffineMap := by
   have h : Nonempty s := ⟨p⟩
   simp only [shift, h, ↓reduceDIte]
