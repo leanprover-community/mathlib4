@@ -221,8 +221,7 @@ section Set
 
 @[simp] protected lemma sUnion_eq (P : Partition s) : ⋃₀ P = s := P.sSup_eq
 
-lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty :=
-  notMem_singleton_empty.1 <| P.ne_bot_of_mem ht
+lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty := notMem_singleton_empty.1 <| P.ne_bot_of_mem ht
 
 lemma empty_notMem : ∅ ∉ P := P.bot_notMem
 
