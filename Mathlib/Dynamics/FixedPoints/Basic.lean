@@ -89,6 +89,11 @@ protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e 
 
 end IsFixedPt
 
+@[simp]
+theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
+    IsFixedPt f (f x) ↔ IsFixedPt f x :=
+  ⟨fun h => hf h.eq, IsFixedPt.apply⟩
+
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
 theorem Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
