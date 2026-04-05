@@ -885,10 +885,12 @@ theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, 
     Tendsto (fun a => update (f a) i (g a)) l (𝓝 <| update x i xi) :=
   tendsto_pi_nhds.2 fun j => by rcases eq_or_ne j i with (rfl | hj) <;> simp [*, hf.apply_nhds]
 
+@[fun_prop]
 theorem ContinuousAt.update [DecidableEq ι] {x : X} (hf : ContinuousAt f x) (i : ι) {g : X → A i}
     (hg : ContinuousAt g x) : ContinuousAt (fun a => update (f a) i (g a)) x :=
   hf.tendsto.update i hg
 
+@[fun_prop]
 theorem Continuous.update [DecidableEq ι] (hf : Continuous f) (i : ι) {g : X → A i}
     (hg : Continuous g) : Continuous fun a => update (f a) i (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.update i hg.continuousAt
@@ -914,11 +916,13 @@ theorem Filter.Tendsto.finCons
     Tendsto (fun a => Fin.cons (f a) (g a)) l (𝓝 <| Fin.cons x y) :=
   tendsto_pi_nhds.2 fun j => Fin.cases (by simpa) (by simpa using tendsto_pi_nhds.1 hg) j
 
+@[fun_prop]
 theorem ContinuousAt.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.succ j)} {x : X}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => Fin.cons (f a) (g a)) x :=
   hf.tendsto.finCons hg
 
+@[fun_prop]
 theorem Continuous.finCons {f : X → A 0} {g : X → ∀ j : Fin n, A (Fin.succ j)}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun a => Fin.cons (f a) (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.finCons hg.continuousAt
@@ -929,11 +933,13 @@ theorem Filter.Tendsto.matrixVecCons
     Tendsto (fun a => Matrix.vecCons (f a) (g a)) l (𝓝 <| Matrix.vecCons x y) :=
   hf.finCons hg
 
+@[fun_prop]
 theorem ContinuousAt.matrixVecCons
     {f : X → Z} {g : X → Fin n → Z} {x : X} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => Matrix.vecCons (f a) (g a)) x :=
   hf.finCons hg
 
+@[fun_prop]
 theorem Continuous.matrixVecCons
     {f : X → Z} {g : X → Fin n → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun a => Matrix.vecCons (f a) (g a) :=
@@ -946,11 +952,13 @@ theorem Filter.Tendsto.finSnoc
     Tendsto (fun a => Fin.snoc (f a) (g a)) l (𝓝 <| Fin.snoc x y) :=
   tendsto_pi_nhds.2 fun j => Fin.lastCases (by simpa) (by simpa using tendsto_pi_nhds.1 hf) j
 
+@[fun_prop]
 theorem ContinuousAt.finSnoc {f : X → ∀ j : Fin n, A j.castSucc} {g : X → A (Fin.last _)} {x : X}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => Fin.snoc (f a) (g a)) x :=
   hf.tendsto.finSnoc hg
 
+@[fun_prop]
 theorem Continuous.finSnoc {f : X → ∀ j : Fin n, A j.castSucc} {g : X → A (Fin.last _)}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun a => Fin.snoc (f a) (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.finSnoc hg.continuousAt
@@ -961,12 +969,14 @@ theorem Filter.Tendsto.finInsertNth
     Tendsto (fun a => i.insertNth (f a) (g a)) l (𝓝 <| i.insertNth x y) :=
   tendsto_pi_nhds.2 fun j => Fin.succAboveCases i (by simpa) (by simpa using tendsto_pi_nhds.1 hg) j
 
+@[fun_prop]
 theorem ContinuousAt.finInsertNth
     (i : Fin (n + 1)) {f : X → A i} {g : X → ∀ j : Fin n, A (i.succAbove j)} {x : X}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => i.insertNth (f a) (g a)) x :=
   hf.tendsto.finInsertNth i hg
 
+@[fun_prop]
 theorem Continuous.finInsertNth
     (i : Fin (n + 1)) {f : X → A i} {g : X → ∀ j : Fin n, A (i.succAbove j)}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun a => i.insertNth (f a) (g a) :=
