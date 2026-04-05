@@ -11,7 +11,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
-# Homology of simplicial sets
+# Simplicial homology
 
 In this file, we define the homology of simplicial sets.
 For any preadditive category `C` with coproducts of size `w` and any
