@@ -340,7 +340,7 @@ theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
 theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
   Sym2.ind (fun _ _ => f.map_rel') e h
 
-theorem edgeSet_subset_preimage : G.edgeSet ⊆ Sym2.map f ⁻¹' G'.edgeSet :=
+theorem subset_preimage_edgeSet : G.edgeSet ⊆ Sym2.map f ⁻¹' G'.edgeSet :=
   fun _ ↦ f.map_mem_edgeSet
 
 theorem image_edgeSet_subset : Sym2.map f '' G.edgeSet ⊆ G'.edgeSet :=
@@ -350,7 +350,7 @@ theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'
   map_adj f h
 
 variable (v) in
-theorem neighborSet_subset_preimage : G.neighborSet v ⊆ f ⁻¹' G'.neighborSet (f v) :=
+theorem subset_preimage_neighborSet : G.neighborSet v ⊆ f ⁻¹' G'.neighborSet (f v) :=
   fun _ ↦ f.apply_mem_neighborSet
 
 variable (v) in
@@ -392,7 +392,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
 @[gcongr]
 theorem _root_.SimpleGraph.neighborSet_mono (hle : G₁ ≤ G₂) (v : V) :
     G₁.neighborSet v ⊆ G₂.neighborSet v :=
-  neighborSet_subset_preimage v <| .ofLE hle
+  subset_preimage_neighborSet v <| .ofLE hle
 
 /-- Every graph homomorphism from a complete graph is injective. -/
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
