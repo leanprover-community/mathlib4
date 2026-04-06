@@ -38,34 +38,44 @@ open Module Set LinearMap
 
 namespace Submodule
 
+-- variable {R : Type*} [CommSemiring R]
+-- variable {M : Type*} [AddCommMonoid M] [Module R M]
+-- variable {N : Type*} [AddCommMonoid N] [Module R N]
+-- variable {p : M →ₗ[R] N →ₗ[R] R}
+-- variable {S T : Submodule R M}
+
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable {p : M →ₗ[R] N →ₗ[R] R}
-variable {S T : Submodule R M}
+variable {R₁ : Type*} [CommSemiring R₁]
+variable {R₂ : Type*} [CommSemiring R₂]
+-- variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
+variable {M₂ : Type*} [AddCommMonoid M₂] [Module R₂ M₂]
+variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
+variable {p : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R}
+variable {S T : Submodule R₁ M₁}
 
 variable (p S) in
 /-- The dual span of a set `s` with respect to a bilinear pairing `p` is the submodule
   consisting of the points `y` such that for all points `x ∈ s` we have `0 = p x y`. -/
-def dual : Submodule R N where
+def dual : Submodule R₂ M₂ where
   carrier := {y | ∀ x ∈ S, p x y = 0}
   zero_mem' := by simp
   add_mem' {u v} hu hv x hx := by rw [map_add, hu _ hx, hv _ hx, add_zero]
-  smul_mem' c y hy x hx := by rw [map_smul, hy _ hx, smul_eq_mul, mul_zero]
+  smul_mem' c y hy x hx := by rw [map_smulₛₗ, hy _ hx, smul_zero]
 
-@[simp] theorem mem_dual {y : N} : y ∈ dual p S ↔ ∀ x ∈ S, p x y = 0 := .rfl
+@[simp] theorem mem_dual {y : M₂} : y ∈ dual p S ↔ ∀ x ∈ S, p x y = 0 := .rfl
 
-@[simp high] theorem mem_dual_span (s : Set M) {y : N} :
-    y ∈ dual p (span R s) ↔ ∀ ⦃x⦄, x ∈ s → p x y = 0 := by
+@[simp high] theorem mem_dual_span (s : Set M₁) {y : M₂} :
+    y ∈ dual p (span R₁ s) ↔ ∀ ⦃x⦄, x ∈ s → p x y = 0 := by
   constructor <;> intro h x hx
   · exact h _ (subset_span hx)
   induction hx using span_induction with
   | mem _ hxs => exact h hxs
   | zero => simp
   | add _ _ _ _ hy hz => rw [map_add, add_apply, hy, hz, add_zero]
-  | smul _ _ _ hy => simp only [map_smul, smul_apply, smul_eq_mul, hy, mul_zero]
+  | smul _ _ _ hy => simp only [map_smulₛₗ, smul_apply, smul_eq_mul, hy, mul_zero]
 
-theorem mem_dual_iff_le_ker_flip {y : N} : y ∈ dual p S ↔ S ≤ ker (p.flip y) := .rfl
+theorem mem_dual_iff_le_ker_flip {y : M₂} : y ∈ dual p S ↔ S ≤ ker (p.flip y) := .rfl
 
 @[simp] theorem dual_zero : dual p ⊥ = ⊤ := by ext; simp
 
@@ -86,9 +96,9 @@ theorem ker_le_dual (S) : ker p.flip ≤ dual p S := by
 theorem ker_le_dual_flip (S) : ker p ≤ dual p.flip S := by
   rw [← flip_flip p]; exact ker_le_dual S
 
-theorem dual_span_singleton (x : M) : dual p (R ∙ x) = ker (p x) := by ext x; simp [Eq.comm]
+theorem dual_span_singleton (x : M₁) : dual p (R₁ ∙ x) = ker (p x) := by ext x; simp [Eq.comm]
 
-theorem dual_sSup (s : Set (Submodule R M)) : dual p (sSup s) = sInf (dual p '' s) := by
+theorem dual_sSup (s : Set (Submodule R₁ M₁)) : dual p (sSup s) = sInf (dual p '' s) := by
   ext y
   simp only [mem_dual, mem_sInf, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   constructor
@@ -99,7 +109,8 @@ theorem dual_sSup (s : Set (Submodule R M)) : dual p (sSup s) = sInf (dual p '' 
     simp only [← mem_dual_iff_le_ker_flip] at hx
     exact hx h
 
-theorem dual_iSup {ι : Sort*} (f : ι → Submodule R M) : dual p (⨆ i, f i) = ⨅ i, dual p (f i) := by
+theorem dual_iSup {ι : Sort*} (f : ι → Submodule R₁ M₁) :
+    dual p (⨆ i, f i) = ⨅ i, dual p (f i) := by
   simpa only [sSup_range, sInf_image, iInf_range] using dual_sSup (Set.range f)
 
 theorem dual_sup (S T) : dual p (S ⊔ T) = dual p S ⊓ dual p T := by
@@ -110,38 +121,45 @@ variable (p) in
 
 /-- The dual submodule of `s` equals the intersection of dual submodules of the points in `s`. -/
 theorem dual_eq_iInf_dual_span_singleton (S) :
-    dual p S = ⨅ x : S, dual p (R ∙ x.val) := by ext; simp
+    dual p S = ⨅ x : S, dual p (R₁ ∙ x.val) := by ext; simp
 
 /-- The dual submodule of `s` equals the intersection of dual submodules of the points in `s`. -/
 theorem dual_eq_Inf_dual_span_singleton (S) :
-    dual p S = ⨅ x ∈ S, dual p (R ∙ x) := by ext; simp
+    dual p S = ⨅ x ∈ S, dual p (R₁ ∙ x) := by ext; simp
 
-theorem dual_span_eq_iInf_dual_span_singleton (s : Set M) :
-    dual p (span R s) = ⨅ x ∈ s, dual p (R ∙ x) := by ext; simp
+theorem dual_span_eq_iInf_dual_span_singleton (s : Set M₁) :
+    dual p (span R₁ s) = ⨅ x ∈ s, dual p (R₁ ∙ x) := by ext; simp
 
-theorem dual_span_eq_Inf_dual_span_singleton (s : Set M) :
-    dual p (span R s) = ⨅ x : s, dual p (R ∙ x.val) := by ext; simp
+theorem dual_span_eq_Inf_dual_span_singleton (s : Set M₁) :
+    dual p (span R₁ s) = ⨅ x : s, dual p (R₁ ∙ x.val) := by ext; simp
+
+section
+
+variable {I₁ : R₁ →+* R₂}
+variable {p : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
 
 /-- The dual is the kernel of a linear map into a free module. -/
 theorem dual_ker_pi (S) : dual p S = ker (.pi fun x : S => p x) := by
   ext; simp [dual_eq_Inf_dual_span_singleton S, ker_pi, dual_span_singleton]
 
 /-- The dual is the kernel of a linear map into a free module. -/
-theorem dual_span_ker_pi (s : Set M) :
-    dual p (span R s) = ker (.pi fun x : s => p x) := by
+theorem dual_span_ker_pi (s : Set M₁) :
+    dual p (span R₁ s) = ker (.pi fun x : s => p x) := by
   ext; simp [dual_span_eq_iInf_dual_span_singleton s, ker_pi, dual_span_singleton]
 
 /-- The dual is the kernel of a linear map into a free module. -/
-theorem dual_span_finset_ker_pi (s : Finset M) :
-    dual p (span R s) = ker (.pi fun x : s => p x) := by simp [dual_span_ker_pi]
+theorem dual_span_finset_ker_pi (s : Finset M₁) :
+    dual p (span R₁ s) = ker (.pi fun x : s => p x) := by simp [dual_span_ker_pi]
+
+end
 
 /-- Any submodule is contained in its double dual submodule. -/
 theorem le_dual_dual : S ≤ dual p.flip (dual p S) := fun _x hx _y hy ↦ hy _ hx
 
-theorem le_dual_of_le_dual {T : Submodule R N} (hST : T ≤ dual p S) :
+theorem le_dual_of_le_dual {T : Submodule R₂ M₂} (hST : T ≤ dual p S) :
     S ≤ dual p.flip T := le_trans le_dual_dual (dual_antitone hST)
 
-theorem le_dual_iff_le_dual {T : Submodule R N} :
+theorem le_dual_iff_le_dual {T : Submodule R₂ M₂} :
     S ≤ dual p.flip T ↔ T ≤ dual p S := ⟨le_dual_of_le_dual, le_dual_of_le_dual⟩
 
 variable (p) in
@@ -157,7 +175,7 @@ theorem dual_dual_monotone : Monotone (dual p.flip ∘ dual p) :=
 @[simp] theorem dual_dual_flip_dual (S) : dual p (dual p.flip (dual p S)) = dual p S :=
   le_antisymm (dual_le_dual le_dual_dual) le_dual_dual
 
-@[simp] theorem dual_flip_dual_dual_flip (S : Submodule R N) :
+@[simp] theorem dual_flip_dual_dual_flip (S : Submodule R₂ M₂) :
     dual p.flip (dual p (dual p.flip S)) = dual p.flip S := dual_dual_flip_dual S
 
 theorem dual_sup_dual_le_dual_inf (S T) : dual p S ⊔ dual p T ≤ dual p (S ⊓ T) := by
@@ -166,47 +184,62 @@ theorem dual_sup_dual_le_dual_inf (S T) : dual p S ⊔ dual p T ≤ dual p (S �
   obtain ⟨_, hx, _, hy, hxy⟩ := h
   simp [← hxy, hx _ hS, hy _ hT]
 
-variable {M' : Type*} [AddCommMonoid M'] [Module R M']
+/-- The dual submodule w.r.t. the standard dual map is the dual annihilator. -/
+theorem dual_dualAnnihilator (S) : dual (Dual.eval R₁ M₁) S = S.dualAnnihilator := by
+  ext x; simp
 
-@[simp] lemma dual_image (S : Submodule R M') (q : M' →ₗ[R] M) :
+/-- The dual submodule w.r.t. the identity map is the dual coannihilator. -/
+theorem dual_dualCoannihilator (S : Submodule R₁ (Dual R₁ M₁)) :
+    dual .id S = S.dualCoannihilator := by ext; simp
+
+variable {R₃ : Type*} [CommSemiring R₃]
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R₃ M₃]
+variable {J₃ : R₃ →+* R₁} {J : R₃ →+* R} [RingHomCompTriple J₃ I₁ J]
+
+variable [RingHomSurjective J₃] in
+@[simp] lemma dual_map (S : Submodule R₃ M₃) (q : M₃ →ₛₗ[J₃] M₁) :
     dual p (S.map q) = dual (p.comp q) S := by ext; simp
 
+variable [RingHomSurjective I₁] in
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
   identity pairing. -/
 lemma dual_eq_dual_id_map (S) : dual p S = dual .id (map p S) := by simp
 
+section
+
+variable {I₂ : R₂ →+* R₁} {p : M₁ →ₗ[R₁] M₂ →ₛₗ[I₂] R₁}
+
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
   standard pairing `Dual.eval`. -/
-lemma dual_eq_comap_dual_eval (S) : dual p S = comap p.flip (dual (Module.Dual.eval R M) S) := by
+lemma dual_eq_comap_dual_eval (S) : dual p S = comap p.flip (dual (Dual.eval R₁ M₁) S) := by
   ext; simp
-
-/-- The dual submodule w.r.t. the standard dual map is the dual annihilator. -/
-theorem dual_dualAnnihilator (S) : dual (Dual.eval R M) S = S.dualAnnihilator := by
-  ext x; simp
 
 variable (p) in
 theorem dual_comap_dualAnnihilator (S) : dual p S = comap p.flip S.dualAnnihilator := by
   rw [← dual_dualAnnihilator, dual_eq_comap_dual_eval]
 
-/-- The dual submodule w.r.t. the identity map is the dual coannihilator. -/
-theorem dual_dualCoannihilator (S : Submodule R (Dual R M)) :
-    dual .id S = S.dualCoannihilator := by ext; simp
+end
 
-variable (p) in
+section
+
+variable {I₁ : R₁ →+* R₂} {p : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
+
+variable (p) [RingHomSurjective I₁] in
 theorem dual_map_dualCoannihilator (S) : dual p S = (map p S).dualCoannihilator := by
   ext x; simp
 
+end
+
 section Map
 
-variable {M' : Type*} [AddCommMonoid M'] [Module R M']
-variable {N' : Type*} [AddCommMonoid N'] [Module R N']
+variable {M₁' : Type*} [AddCommMonoid M₁'] [Module R₁ M₁']
 
-theorem dual_map (f : M →ₗ[R] M') (S : Submodule R M) :
-    dual (Dual.eval R M') (S.map f) = comap f.dualMap (dual (Dual.eval R M) S) := by
+theorem dual_eval_map (q : M₁ →ₗ[R₁] M₁') (S : Submodule R₁ M₁) :
+    dual (Dual.eval R₁ M₁') (S.map q) = comap q.dualMap (dual (Dual.eval R₁ M₁) S) := by
   ext x; simp
 
-theorem dual_map' (f : M →ₗ[R] M') (S : Submodule R (Dual R M')) :
-    dual .id (S.map f.dualMap) = comap f (dual .id S) := by
+theorem dual_map' (q : M₁ →ₗ[R₁] M₁') (S : Submodule R₁ (Dual R₁ M₁')) :
+    dual .id (S.map q.dualMap) = comap q (dual .id S) := by
   ext x; simp
 
 end Map
