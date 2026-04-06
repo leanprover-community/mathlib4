@@ -185,7 +185,6 @@ instance _root_.quasispectrum.instCompactSpace (a : B) :
     CompactSpace (quasispectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| quasispectrum.isCompact a
 
-set_option backward.isDefEq.respectTransparency false in
 instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
     [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
     CompactSpace (quasispectrum ℝ≥0 a) := by
@@ -744,7 +743,6 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
