@@ -1182,7 +1182,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]` -/
+  rw [induce_eq_coe_induce_top]
+  exact (Subgraph.spanningCoe_coe _).symm
 
 section Induce
 
