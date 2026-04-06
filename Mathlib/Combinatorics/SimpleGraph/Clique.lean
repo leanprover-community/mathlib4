@@ -693,7 +693,7 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   · simp [cliqueNum, h]
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
-def IsMaximumClique [Finite α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+def IsMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
   MaximalFor (G.IsClique ∘ (↑)) Finset.card s
 
 theorem isMaximumClique_iff [Finite α] {s : Finset α} :
@@ -952,7 +952,7 @@ lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
   exact exists_isNClique_cliqueNum
 
 /-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
-def IsMaximumIndepSet [Finite α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+def IsMaximumIndepSet (G : SimpleGraph α) (s : Finset α) : Prop :=
   MaximalFor (G.IsIndepSet ∘ (↑)) Finset.card s
 
 theorem isMaximumIndepSet_iff [Finite α] {s : Finset α} :
