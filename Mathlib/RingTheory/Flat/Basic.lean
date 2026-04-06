@@ -410,13 +410,14 @@ theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
 
 /-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
 @[simps! apply]
-noncomputable def toBaseChangeEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
   .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
 
 @[simp]
-theorem toBaseChangeEquiv_symm_apply (a : A) (m : p) :
-    (p.toBaseChangeEquiv A).symm ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
-  (p.toBaseChangeEquiv A).symm_apply_apply (a ⊗ₜ[R] m)
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (p.toBaseChange.toLinearEquiv A).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (p.toBaseChange.toLinearEquiv A).symm_apply_apply (a ⊗ₜ[R] m)
 
 end Submodule
 
