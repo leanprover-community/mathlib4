@@ -623,8 +623,7 @@ lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
 
 lemma ofSimplex_objEquiv_symm_id (n : ℕ) :
     Subcomplex.ofSimplex (objEquiv.{u}.symm (𝟙 ⦋n⦌)) = ⊤ :=
-  le_antisymm (by simp) (by
-    intro _ x _
+  le_antisymm (by simp) (fun _ x _ ↦ by
     obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
     simp only [Subcomplex.mem_ofSimplex_obj_iff, op_unop]
     exact ⟨f, by simp [map_objEquiv_symm.{u}]⟩)
