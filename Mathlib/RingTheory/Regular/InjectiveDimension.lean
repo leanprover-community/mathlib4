@@ -118,9 +118,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
   have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
   have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
-  have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := by
-    ext
-    simp [S]
+  have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := rfl
   simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
   have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
     (IsLocalRing.maximalIdeal_le_jacobson _) hx
