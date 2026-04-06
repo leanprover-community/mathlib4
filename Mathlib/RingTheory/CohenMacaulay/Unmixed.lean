@@ -30,7 +30,7 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
     (unmix : I.IsUnmixed) : associatedPrimes R (R ⧸ I) = I.minimalPrimes := by
   apply le_antisymm
   · intro p hp
-    let _ := hp.1
+    have := IsAssociatedPrime.isPrime hp
     apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix.1 hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
@@ -42,7 +42,7 @@ lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianR
     (ass : associatedPrimes R (R ⧸ Ideal.ofList l) ⊆ (Ideal.ofList l).minimalPrimes) :
     (Ideal.ofList l).IsUnmixed := by
   refine ⟨fun {p} hp ↦ le_antisymm ?_ (Ideal.height_mono (ass hp).1.2)⟩
-  let _ := hp.1
+  have := IsAssociatedPrime.isPrime hp
   rw [h, Ideal.height_le_iff_exists_minimalPrimes]
   use Ideal.ofList l
   have fg : (ofList l).FG := by
@@ -118,7 +118,7 @@ omit [IsNoetherianRing R] in
 lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal R) : J.height ≤ (Ideal.map (algebraMap R A) J).height := by
   apply le_iInf_iff.mpr (fun p ↦ (le_iInf_iff.mpr fun hp ↦ ?_))
-  let _ := hp.1.1
+  have := Ideal.minimalPrimes_isPrime hp
   rw [← Ideal.height_eq_primeHeight, ← IsLocalization.height_comap S p]
   exact Ideal.height_mono (Ideal.le_comap_of_map_le hp.1.2)
 
@@ -128,7 +128,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
   have netop : Ideal.ofList l ≠ ⊤ := by
     by_contra eq
     simp [eq] at ht
-  let _ := hp.1
+  have := IsAssociatedPrime.isPrime hp
   have le : Ideal.ofList l ≤ p := by
     apply le_of_eq_of_le _ (IsAssociatedPrime.annihilator_le hp)
     rw [Submodule.annihilator_top, Ideal.annihilator_quotient]
@@ -139,7 +139,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       ← Ideal.mem_comap, Localization.AtPrime.comap_maximalIdeal]
     intro a ha
-    apply le (Ideal.subset_span ha)
+    exact le (Ideal.subset_span ha)
   have ht_eq_len : (Ideal.ofList (l.map (algebraMap R (Localization.AtPrime p)))).height =
     (List.map (⇑(algebraMap R (Localization.AtPrime p))) l).length := by
     apply le_antisymm (Ideal.ofList_height_le_length' _ mem)
