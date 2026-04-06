@@ -294,7 +294,6 @@ lemma gaussianReal_map_const_add (y : ℝ) :
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v) := by
