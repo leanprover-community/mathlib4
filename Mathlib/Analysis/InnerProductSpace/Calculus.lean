@@ -323,9 +323,7 @@ theorem hasDerivWithinAt_pi_euclidean {f : 𝕜 → EuclideanSpace 𝕜 ι}
     letI : Fintype ι := Fintype.ofFinite ι
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun x ↦  f x i) (f' i) s x := by
   letI : Fintype ι := Fintype.ofFinite ι
-  have hd : HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (ContinuousLinearMap.smulRight
-                 (1 : 𝕜 →L[𝕜] 𝕜) f') s x := hasDerivWithinAt_iff_hasFDerivWithinAt
-  rw [hd]
+  rw [hasDerivWithinAt_iff_hasFDerivWithinAt]
   exact hasFDerivWithinAt_euclidean
 
 end finite
