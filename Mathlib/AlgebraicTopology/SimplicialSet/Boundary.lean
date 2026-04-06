@@ -69,7 +69,7 @@ lemma boundary_lt_top (n : ℕ) :
     boundary.{u} n < ⊤ :=
   lt_of_le_not_ge (by simp) (fun h ↦ not_mem_boundary n (h _ (by simp)))
 
-lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n) :
+lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
     (boundary.{u} n).obj (op ⦋m⦌) = .univ := by
   ext x
   obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
