@@ -148,13 +148,6 @@ lemma hasDerivAt_deriv_of_contDiffOn (hI : IsOpen I) (hγ : ContDiffOn ℝ 2 γ 
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   exact (hd.differentiableOn (by norm_num)).hasDerivAt (hI.mem_nhds ht)
 
-lemma inners_sum_eq_zero_of_const_inner_on_open {α β : ℝ → EuclideanSpace ℝ ι} (hI : IsOpen I)
-    {s : ℝ} (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι} (hdα : HasDerivAt α α' t)
-    (hdβ : HasDerivAt β β' t) (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
-    inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
-  simp [← (HasDerivAt.inner ℝ hdα hdβ).deriv, ← derivWithin_of_isOpen hI ht,
-    derivWithin_congr hci (hci ht)]
-
 /-- Given a continuously differentiable parametrized curve `c` whose position has the same magnitude
 at all time, i.e, at constant radius distance from the origin (the curve `γ` is contained in a
 sphere of radius `r` from the origin), then the velocity vector `deriv γ` is always perpendicular to
