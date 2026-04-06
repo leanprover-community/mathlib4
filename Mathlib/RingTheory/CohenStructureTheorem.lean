@@ -131,7 +131,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     simpa [maxeq'] using Ideal.subset_span (Set.mem_singleton _)
   have dimle := ringKrullDim_le_spanFinrank_maximalIdeal R'
   let _ : IsRegularLocalRing R' :=
-    (isRegularLocalRing_def _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
+    (isRegularLocalRing_iff _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
   let _ : IsDiscreteValuationRing R' :=
     IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one _
       (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
