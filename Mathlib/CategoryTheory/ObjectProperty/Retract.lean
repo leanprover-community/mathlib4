@@ -36,6 +36,12 @@ class IsStableUnderRetracts where
 lemma prop_of_retract [IsStableUnderRetracts P] {X Y : C} (h : Retract X Y) (hY : P Y) : P X :=
   IsStableUnderRetracts.of_retract h hY
 
+instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
+  of_retract _ h := h
+
+instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
+  of_retract _ _ := by trivial
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject
@@ -45,6 +51,11 @@ variable [P.IsStableUnderRetracts]
 instance : P.IsClosedUnderIsomorphisms where
   of_iso i h := IsStableUnderRetracts.of_retract i.symm.retract h
 
+-- see Note [lower instance priority]
+instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
+  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
+
+@[deprecated instContainsZeroOfHasZeroObjectOfNonempty (since := "2026-04-03")]
 lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
 
@@ -87,6 +98,9 @@ lemma prop_retractClosure {X Y : C} (h : P Y) (r : Retract X Y) : retractClosure
 lemma le_retractClosure : P ≤ retractClosure P :=
   fun X hX => ⟨X, hX, ⟨Retract.refl X⟩⟩
 
+instance [P.Nonempty] : P.retractClosure.Nonempty :=
+  .mono P.le_retractClosure
+
 variable {P Q} in
 lemma monotone_retractClosure (h : P ≤ Q) : retractClosure P ≤ retractClosure Q := by
   rintro X ⟨X', hX', ⟨e⟩⟩
@@ -97,6 +111,14 @@ lemma retractClosure_eq_self [IsStableUnderRetracts P] : retractClosure P = P :=
   · intro X ⟨Y, hY, ⟨e⟩⟩
     exact prop_of_retract P e hY
   · exact le_retractClosure P
+
+@[simp]
+lemma retractClosure_bot : retractClosure (⊥ : ObjectProperty C) = ⊥ :=
+  retractClosure_eq_self _
+
+@[simp]
+lemma retractClosure_top : retractClosure (⊤ : ObjectProperty C) = ⊤ :=
+  retractClosure_eq_self _
 
 lemma retractClosure_le_iff (Q : ObjectProperty C) [IsStableUnderRetracts Q] :
     retractClosure P ≤ Q ↔ P ≤ Q :=

@@ -144,7 +144,7 @@ run_cmd
     let mut out : List String := []
     for (a, b) in labelNames.zip constants do
       if a != b then
-        out := s!"expexcted {a} got {b}" :: out
+        out := s!"expected {a} got {b}" :: out
     logWarning m!"The available Labels is out of sync with the labels listed in \
     { .ofConstName ``mathlibLabels }.\n\
     Please keep them sorted and in sync!\n{"\n".intercalate out.reverse}"
@@ -294,7 +294,7 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
 
-/-- Helper function: union of all labels an all their dependent labels -/
+/-- Helper function: union of all labels and all their dependent labels -/
 partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
   labels.flatMap fun label ↦
     (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
@@ -302,8 +302,8 @@ partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
 def dropDependentLabels (labels: Array Label) : Array Label :=
-  let dependentLabels := labels.flatMap fun label ↦
-    (mathlibLabelData label).dependencies
+  let dependentLabels := collectLabelsAndDependentLabels <|
+    labels.flatMap fun label ↦ (mathlibLabelData label).dependencies
   labels.filter (!dependentLabels.contains ·)
 
 /-!
