@@ -29,15 +29,12 @@ open Matrix Finset
 
 variable {n : ℕ} {R : Type*} [CommRing R]
 
-@[simp]
 private lemma succ_cast_succ_ne_zero (j : Fin n) :
     (j.succ.castSucc : Fin (n + 2)) ≠ 0 := by simp
 
-@[simp]
 private lemma succ_cast_succ_ne_last (j : Fin n) :
     (j.succ.castSucc : Fin (n + 2)) ≠ Fin.last (n + 1) := by simp
 
-@[simp]
 private lemma cast_succ_succ_ne_last (j : Fin n) :
     (j.castSucc.succ : Fin (n + 2)) ≠ Fin.last (n + 1) := by simp
 
