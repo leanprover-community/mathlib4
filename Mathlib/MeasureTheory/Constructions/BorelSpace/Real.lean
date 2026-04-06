@@ -194,6 +194,11 @@ theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
 
+@[fun_prop]
+theorem Measurable.nnreal_mk {f : α → ℝ} (hf : Measurable f) {h'f : ∀ x, 0 ≤ f x} :
+    Measurable (fun x ↦ NNReal.mk (f x) (h'f x)) :=
+  measurable_coe_nnreal_real_iff.mp hf
+
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
