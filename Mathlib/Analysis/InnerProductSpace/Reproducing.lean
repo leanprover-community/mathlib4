@@ -93,7 +93,6 @@ variable (H) in
 def eval (x : X) : H →L[𝕜] V :=
   (ContinuousLinearMap.proj (φ := fun _ : X => V) x).comp (RKHS.coeCLM 𝕜)
 
-variable (H) in
 @[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
 
