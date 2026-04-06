@@ -102,6 +102,7 @@ def copy {f g : X.PtSimplex n x} {i : Fin (n + 1)} (r : RelStruct f g i)
   δ_map_of_lt j hj := by rw [δ_map_of_lt _ j hj]
   δ_map_of_gt j hj := by rw [δ_map_of_gt _ j hj]
 
+/-- The `RelStruct f g i` deduced from an equality `f = g`. -/
 @[simps! map]
 def ofEq {f g : X.PtSimplex n x} (h : f = g) (i : Fin (n + 1)) :
     RelStruct f g i :=
