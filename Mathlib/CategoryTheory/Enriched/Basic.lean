@@ -631,7 +631,7 @@ def equalizerArrow₁ : equalizerDom F G ⟶ equalizerCodom F G :=
 
 /-- The second arrow of which `enrichedNatTransObj` is the equalizer,
 representing "for all `f: X ⟶ Y`, the morphism `α X ≫ G f : F X ⟶ G Y`". -/
-def equalizer_arrow₂ : equalizerDom F G ⟶ equalizerCodom F G :=
+def equalizerArrow₂ : equalizerDom F G ⟶ equalizerCodom F G :=
   Pi.lift (fun ⟨X, Y, f⟩ ↦
     (ρ_ _).inv ≫
     (Pi.π _ X ⊗ₘ f ≫ G.map X Y) ≫
@@ -640,7 +640,7 @@ def equalizer_arrow₂ : equalizerDom F G ⟶ equalizerCodom F G :=
 /-- The object representing natural transformations,
 given as the equalizer between `equalizerArrow₁` and `equalizerArrow₂`. -/
 def _root_.CategoryTheory.enrichedNatTransObj : V :=
-  equalizer (equalizerArrow₁ F G) (equalizer_arrow₂ F G)
+  equalizer (equalizerArrow₁ F G) (equalizerArrow₂ F G)
 
 /-- We can turn a global element (i.e. a morphism out of `𝟙_ V`) of `enrichedNatTransObj F G` into
 a natural transformation from `F` to `G`. -/
@@ -660,7 +660,7 @@ def toFun.out (f : 𝟙_ V ⟶ enrichedNatTransObj F G) : F.forget ⟶ G.forget 
     rw [← whiskerLeft_comp_tensorHom_assoc, ← whiskerRight_comp_tensorHom_assoc (equalizer.ι _ _)]
     rw [← leftUnitor_inv_naturality_assoc, ← rightUnitor_inv_naturality_assoc]
     have H : equalizer.ι _ _ ≫ Pi.lift _ = equalizer.ι _ _ ≫ Pi.lift _ :=
-      equalizer.condition (equalizerArrow₁ F G) (equalizer_arrow₂ F G)
+      equalizer.condition (equalizerArrow₁ F G) (equalizerArrow₂ F G)
     rw [Pi.hom_ext_iff] at H
     specialize H ⟨ForgetEnrichment.to _ X₀, ForgetEnrichment.to _ Y₀, ForgetEnrichment.homTo _ g₀⟩
     rw [Category.assoc, Category.assoc] at H
@@ -681,7 +681,7 @@ def invFun (α : EnrichedNatTrans F G) :
     intro X
     apply ForgetEnrichment.homTo
     exact α.out.app (ForgetEnrichment.of _ X)
-  · dsimp [equalizerArrow₁, equalizer_arrow₂]
+  · dsimp [equalizerArrow₁, equalizerArrow₂]
     apply Pi.hom_ext
     rintro ⟨X, Y, f⟩
     change ((_ ≫ _) ≫ _ = (_ ≫ _) ≫ _) -- Not sure why this is needed
