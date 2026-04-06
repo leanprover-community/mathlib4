@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
 # Distributions
@@ -187,5 +188,29 @@ lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω,
     mapCLM A T f = A (T f) := rfl
 
 end mapCLM
+
+section DiracDelta
+
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
+def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+  rfl
+
+@[simp]
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
+end DiracDelta
 
 end Distribution
