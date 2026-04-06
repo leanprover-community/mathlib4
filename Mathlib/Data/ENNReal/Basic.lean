@@ -123,7 +123,7 @@ instance : Bot ℝ≥0∞ := ⟨0⟩
 deriving instance Add, Sub, Top,
   AddCommMonoidWithOne, PartialOrder, DistribLattice, Nontrivial,
   OrderBot, OrderTop, BoundedOrder, CharZero, IsOrderedAddMonoid,
-  OrderedSub, IsOrderedRing, CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered for ENNReal
+  OrderedSub, CanonicallyOrderedAdd, DenselyOrdered for ENNReal
 
 noncomputable section
 
@@ -131,6 +131,8 @@ deriving instance LinearOrder, AddCommMonoid, CommSemiring, CompleteLinearOrder,
   LinearOrderedAddCommMonoidWithTop for ENNReal
 
 end
+
+deriving instance IsOrderedRing, NoZeroDivisors for ENNReal
 
 example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
 
