@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
-public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
@@ -133,7 +132,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
         rw [eq_comm, eq_top_iff]
         intro y hy
         rcases epi y with ⟨z, hz⟩
-        simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
+        simp only [ModuleCat.smulShortComplex, Ext.mk₀_smul,
           Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
         simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
       intro N e
@@ -174,16 +173,6 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
           mem.2 len]
 
-omit [IsLocalRing R] [IsNoetherianRing R] in
-lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projective M]
-    [Nontrivial M] : projectiveDimension M = 0 := by
-  apply le_antisymm
-  · rw [← Nat.cast_zero, projectiveDimension_le_iff M 0]
-    infer_instance
-  · rw [← Nat.cast_zero, projectiveDimension_ge_iff M 0, hasProjectiveDimensionLT_zero_iff_isZero,
-      ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
-    assumption
-
 variable [Small.{v} R]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
@@ -200,4 +189,4 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
     projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
-    projectiveDimension_eq_zero_of_projective, zero_add]
+    ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
