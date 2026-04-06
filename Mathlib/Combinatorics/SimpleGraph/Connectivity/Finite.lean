@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -57,7 +57,7 @@ instance : DecidableRel G.Reachable := fun u v =>
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
 
 instance : Fintype G.ConnectedComponent :=
-  @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
+  fast_instance% @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
 instance : Decidable G.Preconnected :=
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)

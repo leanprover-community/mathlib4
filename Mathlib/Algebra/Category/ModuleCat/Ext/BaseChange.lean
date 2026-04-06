@@ -192,8 +192,8 @@ lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v} R] in
-lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
-    (M N : ModuleCat.{v} R) [Module.Finite R M] :
+lemma ModuleCat.isBaseChange_hom [Module.Flat R S]
+    (M N : ModuleCat.{v} R) [Module.FinitePresentation R M] :
     IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
   let _ : SMulCommClass S R (Shrink.{v', max v u'} (TensorProduct R S N)) :=
     Equiv.smulCommClass S R (equivShrink (TensorProduct R S ↑N)).symm
@@ -213,18 +213,10 @@ lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
     (((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
     ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
     (TensorProduct R S N)) S)).restrictScalars R).toLinearMap.comp
-    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)) := by
-    apply LinearMap.ext
-    intro f
-    rfl
+    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)) := rfl
   rw [this]
-  apply IsBaseChange.comp
-  · apply IsBaseChange.comp
-    · apply IsBaseChange.comp_equiv _ _
-      let _ : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
-      exact Module.FinitePresentation.isBaseChange_map R M N S
-    · exact IsBaseChange.ofEquiv _
-  · exact IsBaseChange.ofEquiv _
+  apply (IsBaseChange.comp _ (IsBaseChange.ofEquiv _)).comp (IsBaseChange.ofEquiv _)
+  exact (Module.FinitePresentation.isBaseChange_map R M N S).comp_equiv _ _
 
 /-- The map between `Ext` induced by `ModuleCat.extendScalars' R S`,
 separated out to avoid some instance in namespace `ModuleCat.Algebra`. -/
@@ -247,8 +239,9 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
   induction n generalizing M N
-  · have isb : IsBaseChange S (extendScalars'_map_LinearMap.{v, v'} S M N) :=
-      CategoryTheory.isBaseChange_hom.{v, v'} S M N
+  · have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
+    have isb : IsBaseChange S (extendScalars'_map_LinearMap.{v, v'} S M N) :=
+      ModuleCat.isBaseChange_hom.{v, v'} S M N
     convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
     ext x

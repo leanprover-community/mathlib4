@@ -283,6 +283,30 @@ lemma assocOfMapSMul_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
 
 end
 
+section
+
+lemma linearEquiv_compr₂ (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
+    IsTensorProduct (f.compr₂ e.toLinearMap) := by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [TensorProduct.lift_compr₂]
+  exact e.bijective.comp ist
+
+lemma linearEquiv_comp_compl₂ (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
+    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
+  exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)
+
+lemma linearEquiv_comp (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) :
+    IsTensorProduct (f.comp e₁.toLinearMap) :=
+  ist.linearEquiv_comp_compl₂ e₁ (LinearEquiv.refl R M₂)
+
+lemma linearEquiv_compl₂ (ist : IsTensorProduct f) (e₂ : N₂ ≃ₗ[R] M₂) :
+    IsTensorProduct (f.compl₂ e₂.toLinearMap) :=
+  ist.linearEquiv_comp_compl₂ (LinearEquiv.refl R M₁) e₂
+
+end
+
 end IsTensorProduct
 
 end IsTensorProduct
@@ -402,6 +426,31 @@ theorem IsBaseChange.linearMap : IsBaseChange S (Algebra.linearMap R S) :=
   of_equiv (AlgebraTensorModule.rid R S S) fun x ↦ by
     simpa using (Algebra.algebraMap_eq_smul_one x).symm
 
+variable {M' N' : Type*} [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
+    [Module S N'] [IsScalarTower R S N'] {f' : M' →ₗ[R] N'}
+
+lemma IsBaseChange.of_equiv_left (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
+    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f)
+    (isb : IsBaseChange S f) : IsBaseChange S f' := by
+  simp only [IsBaseChange] at isb ⊢
+  convert (isb.linearEquiv_compl₂ eM.symm).linearEquiv_compr₂ (eN.restrictScalars R)
+  ext s m'
+  obtain ⟨m, rfl⟩ := eM.surjective m'
+  have : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
+  simp [this]
+
+lemma IsBaseChange.of_equiv_right (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
+    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f)
+    (isb : IsBaseChange S f') : IsBaseChange S f := by
+  refine IsBaseChange.of_equiv_left eM.symm eN.symm (LinearMap.ext fun y ↦ ?_) isb
+  obtain ⟨y, rfl⟩ := eM.surjective y
+  exact eN.injective (by simpa using congr($comm y).symm)
+
+lemma IsBaseChange.comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
+    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
+    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) :=
+  IsBaseChange.of_equiv_right e (LinearEquiv.refl S N) (LinearMap.ext fun y ↦ by simp) isb
+
 section
 
 variable (A : Type*) [CommSemiring A]
@@ -500,11 +549,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
     ⟨fun x y z => by
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
-  have : IsScalarTower R S Q := by
-    refine ⟨fun x y z => ?_⟩
-    change (IsScalarTower.toAlgHom R S T) (x • y) • z = x • algebraMap S T y • z
-    rw [map_smul, smul_assoc]
-    rfl
+  have : IsScalarTower R S Q := IsScalarTower.to₁₂₄ _ _ T _
   refine
     ⟨hg.lift (hf.lift i), by
       ext
@@ -522,8 +567,8 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T h := by
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ r
-  letI : Module R Q := inferInstanceAs (Module R (RestrictScalars R S Q))
-  haveI : IsScalarTower R S Q := IsScalarTower.of_algebraMap_smul fun r ↦ congrFun rfl
+  letI : Module R Q := .restrictScalars R S Q
+  haveI : IsScalarTower R S Q := .restrictScalars R S Q
   haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
     simp [IsScalarTower.algebraMap_apply R S T]
   let r' : M →ₗ[R] Q := r ∘ₗ f

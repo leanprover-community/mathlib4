@@ -26,34 +26,38 @@ variable {M N α : Type*}
 namespace OrderDual
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := ‹MulAction M α›
+instance [Monoid M] [h : MulAction M α] : MulAction Mᵒᵈ α where
+  mul_smul := h.mul_smul
+  one_smul := h.one_smul
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := ‹MulAction M α›
+instance [Monoid M] [h : MulAction M α] : MulAction M αᵒᵈ where
+  mul_smul := h.mul_smul
+  one_smul := h.one_smul
 
 @[to_additive]
-instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
   ‹SMulCommClass M N α›
 
 @[to_additive]
-instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α :=
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α :=
   ‹SMulCommClass M N α›
 
 @[to_additive]
-instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
   ‹SMulCommClass M N α›
 
 @[to_additive]
-instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mᵒᵈ N α := ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower Mᵒᵈ N α :=
+  ‹IsScalarTower M N α›
 
 @[to_additive]
-instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M Nᵒᵈ α := ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M Nᵒᵈ α :=
+  ‹IsScalarTower M N α›
 
 @[to_additive]
-instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N αᵒᵈ := ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M N αᵒᵈ :=
+  ‹IsScalarTower M N α›
 
 end OrderDual
 
