@@ -140,9 +140,6 @@ variable {I : Type u} (U : I → X.Opens)
 
 noncomputable def toCoverSheaf := Pi.lift (fun i => ((restrictAdjunction (U i).ι).unit.app F))
 
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y] (M : X.Modules)
-    [M.IsQuasicoherent] : ((pushforward f).obj M).IsQuasicoherent := sorry
-
 theorem coverSheaf_isQuasicoherent [IsAffine X] [F.IsQuasicoherent] [Finite I]
     [∀ i, IsAffine (U i)] :
     (∏ᶜ fun i ↦ (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F).IsQuasicoherent := by

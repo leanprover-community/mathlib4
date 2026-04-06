@@ -58,7 +58,7 @@ lemma Sheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGr
     (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
     ∃(t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
-    (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
+    (inferInstance : (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
   exact Presheaf.addCommGrpCat_shortExact_app_zero (this S ⟨hS, hf⟩).left h
 
 namespace Sheaf

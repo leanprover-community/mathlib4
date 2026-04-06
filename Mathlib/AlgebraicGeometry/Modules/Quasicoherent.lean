@@ -14,10 +14,6 @@ universe u v w
 
 open CategoryTheory Limits TopologicalSpace Opposite
 
-instance AlgebraicGeometry.Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}}
-    (f : X ⟶ Y) [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
-    (M.restrict f).IsQuasicoherent := sorry
-
 namespace AlgebraicGeometry.Scheme
 
 open Modules
@@ -31,12 +27,29 @@ variable (X) in
 abbrev Modules.isQuasicoherent : ObjectProperty X.Modules :=
   Modules.IsQuasicoherent
 
+section
+
+instance AlgebraicGeometry.Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}}
+    (f : X ⟶ Y) [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
+    (M.restrict f).IsQuasicoherent := sorry
+
+theorem isIso_fromTildeΓ_iff_isQuasiCoherent (M : (Spec R).Modules) :
+    IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := sorry
+
+instance isQuasicoherent_IsIso_fromTildeΓ (M : (Spec R).Modules) [M.IsQuasicoherent] :
+    IsIso M.fromTildeΓ := (isIso_fromTildeΓ_iff_isQuasiCoherent M).mpr inferInstance
+
+end
+
 @[simp]
 lemma isQuasicoherent_def {M : X.Modules} : isQuasicoherent X M ↔ M.IsQuasicoherent := by rfl
 
+theorem isQuasicoherent_of_iso {M N : X.Modules} (φ : M ≅ N) [M.IsQuasicoherent] :
+    N.IsQuasicoherent := SheafOfModules.IsQuasicoherent.of_iso M N φ
+
 instance : (isQuasicoherent X).IsClosedUnderIsomorphisms :=
   ObjectProperty.IsClosedUnderIsomorphisms.mk
-    (fun e _ => SheafOfModules.IsQuasicoherent.of_iso.{u} _ _ e)
+    (fun e _ => isQuasicoherent_of_iso e)
 
 theorem isQuasicoherent_iff_isIso_fromSpecΓ :
     (tilde.functor R).essImage = isQuasicoherent (Spec R) := by
@@ -99,6 +112,12 @@ theorem isQuasicoherent_inverseImage_iso :
   ext
   simp [isQuasicoherent_restrictFunctor_iff]
 
+instance isQuasicoherent_pushforward_of_iso {φ : X ⟶ Y} [IsIso φ] {M : X.Modules}
+    [M.IsQuasicoherent] :
+    ((pushforward φ).obj M).IsQuasicoherent :=
+  (isQuasicoherent_restrictFunctor_iff (asIso φ)).mp
+    ((isQuasicoherent X).prop_of_iso ((restrictFunctorAdjCounitIso φ).app M).symm ‹_›)
+
 end Modules
 
 end restrictEquivalence
@@ -114,10 +133,27 @@ theorem isQuasicoherent_surjective_of_epi {M N : X.Modules} [IsAffine X] (f : M 
   change Function.Surjective (((restrictFunctor (isoSpec X).inv).map f).val.app (op ⊤))
   exact isQuasicoherent_spec_surjective_of_epi ((restrictFunctor (isoSpec X).inv).map f)
 
+instance {R S : CommRingCat.{u}} (φ : R ⟶ S) {M : (Spec S).Modules} [hM : M.IsQuasicoherent] :
+    ((Scheme.Modules.pushforward (Spec.map φ)).obj M).IsQuasicoherent := by
+  rw [← isIso_fromTildeΓ_iff_isQuasiCoherent] at ⊢ hM
+  exact pushforward_isIso_fromTildeΓ φ M
+
+instance isQuasicoherent_of_pushforward {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y]
+    (f : X ⟶ Y) (M : X.Modules) [M.IsQuasicoherent] :
+    ((pushforward f).obj M).IsQuasicoherent := by
+  rw [show f = (X.isoSpec.hom ≫ Spec.map (Hom.appTop f)) ≫ Y.isoSpec.inv by
+    simp [isoSpec_hom_naturality f]]
+  let φ := (pushforward X.isoSpec.hom).isoWhiskerLeft
+      (pushforwardComp (Spec.map (Hom.appTop f)) Y.isoSpec.inv) ≪≫
+      pushforwardComp X.isoSpec.hom (Spec.map (Hom.appTop f) ≫ Y.isoSpec.inv)
+  haveI : ((pushforward X.isoSpec.hom ⋙ pushforward (Spec.map (Hom.appTop f)) ⋙
+      pushforward Y.isoSpec.inv).obj M).IsQuasicoherent := by
+    simp only [Functor.comp_obj]
+    infer_instance
+  exact isQuasicoherent_of_iso (φ.app M)
+
 variable {X : Scheme.{u}} [IsAffine X] {J : Type w} [Category.{v} J] (F : J ⥤ X.Modules)
   [HasColimitsOfShape J AddCommGrpCat]
-
--- ObjectProperty.IsClosedUnderColimitsOfShape.inverseImage
 
 instance : (isQuasicoherent X).IsClosedUnderColimitsOfShape J := by
   rw [← isQuasicoherent_inverseImage_iso (isoSpec X).symm]

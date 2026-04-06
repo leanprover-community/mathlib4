@@ -529,12 +529,6 @@ theorem pushforward_isIso_fromTildeΓ (M : (Spec S).Modules) [h : IsIso M.fromTi
 
 end IsLocalizing
 
-theorem isIso_fromTildeΓ_iff_isQuasiCoherent (M : (Spec R).Modules) :
-    IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := sorry
-
-instance isQuasicoherent_IsIso_fromTildeΓ (M : (Spec R).Modules) [M.IsQuasicoherent] :
-    IsIso M.fromTildeΓ := (isIso_fromTildeΓ_iff_isQuasiCoherent M).mpr inferInstance
-
 end IsQuasicoherent
 
 end AlgebraicGeometry
