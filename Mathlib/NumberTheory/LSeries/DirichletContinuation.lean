@@ -290,7 +290,7 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
   -- facts about `χ` as function
   have h_sum : ∑ j, χ j = 0 := by
     refine χ.sum_eq_zero_of_ne_one (fun h ↦ hN.symm ?_)
-    rwa [IsPrimitive, h, conductor_one (NeZero.ne _)] at hχ
+    rwa [IsPrimitive, h, conductor_one] at hχ
   let ε := I ^ (if χ.Even then 0 else 1)
   -- gather up powers of N
   rw [rootNumber, ← mul_comm_div, ← mul_comm_div, ← cpow_sub _ _ (NeZero.ne _), sub_sub, add_halves]

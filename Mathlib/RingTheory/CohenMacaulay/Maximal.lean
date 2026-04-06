@@ -141,7 +141,7 @@ lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) 
 set_option backward.isDefEq.respectTransparency false in
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
-  rcases exist_nat_eq R with ⟨n, hn⟩
+  rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨n, hn⟩
   induction n generalizing R M with
   | zero =>
     let _ : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
