@@ -677,7 +677,6 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
