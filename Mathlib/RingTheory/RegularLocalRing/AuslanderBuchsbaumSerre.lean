@@ -146,36 +146,13 @@ def QuotSMulTop_map (f : M →ₗ[R] N) :
     exact map_smul _ s m
 
 lemma QuotSMulTop_map_surjective {f : M →ₗ[R] N} (surj : Function.Surjective f) :
-    Function.Surjective (QuotSMulTop_map x f) := by
-  intro y
-  rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
-  rcases surj y' with ⟨z, hz⟩
-  use Submodule.Quotient.mk z
-  simp [QuotSMulTop_map, hz, hy']
+    Function.Surjective (QuotSMulTop_map x f) :=
+  QuotSMulTop.map_surjective x surj
 
 lemma QuotSMulTop_map_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Function.Exact f g)
     (surj : Function.Surjective g) :
-    Function.Exact (QuotSMulTop_map x f) (QuotSMulTop_map x g) := by
-  apply Function.Exact.of_comp_of_mem_range
-  · have : g.comp f = 0 := by exact Function.Exact.linearMap_comp_eq_zero exact
-    simp only [QuotSMulTop_map, LinearMap.coe_mk, LinearMap.coe_toAddHom, ← LinearMap.coe_comp]
-    rw [← Submodule.mapQ_comp]
-    simp only [Function.Exact.linearMap_comp_eq_zero exact, Submodule.mapQ_zero]
-    rfl
-  · intro y hy
-    rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
-    simp only [QuotSMulTop_map, ← hy', LinearMap.coe_mk, LinearMap.coe_toAddHom,
-      Submodule.mapQ_apply, Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
-      Submodule.mem_top, true_and] at hy
-    rcases hy with ⟨l, hl⟩
-    rcases surj l with ⟨y'', hy''⟩
-    rw [← hy'', ← map_smul, ← LinearMap.sub_mem_ker_iff, exact.linearMap_ker_eq] at hl
-    rcases LinearMap.mem_range.mp hl with ⟨m, hm⟩
-    use Submodule.Quotient.mk (- m)
-    simp only [QuotSMulTop_map, Submodule.Quotient.mk_neg, map_neg, LinearMap.coe_mk,
-      LinearMap.coe_toAddHom, Submodule.mapQ_apply, hm, Submodule.Quotient.mk_sub,
-      hy', neg_sub, sub_eq_self]
-    exact (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_pointwise_smul y'' x ⊤ trivial)
+    Function.Exact (QuotSMulTop_map x f) (QuotSMulTop_map x g) :=
+  QuotSMulTop.map_exact x exact surj
 
 end
 
