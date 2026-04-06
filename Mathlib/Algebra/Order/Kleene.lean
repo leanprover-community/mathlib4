@@ -166,7 +166,7 @@ instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α where
+instance (priority := 100) IdemSemiring.toOrderBot : OrderBot α where
   bot := 0
   bot_le := zero_le
 
