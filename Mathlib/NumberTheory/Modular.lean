@@ -467,7 +467,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : |g 1 0| ≤ 1 :
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 ≤ 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · grind
+    · simp [hc]
     · apply le_of_sq_le_sq <;> grind
   intro hc
   have h₁ : 3 * 3 * c ^ 4 ≤ 4 * (g • z).im ^ 2 * (4 * z.im ^ 2) * c ^ 4 := by
