@@ -87,13 +87,8 @@ theorem coeff_uniqueEquiv (p : MvPowerSeries σ R) (n : ℕ) :
     PowerSeries.coeff n (uniqueEquiv σ R p) = p.coeff (single default n) := by
   simp [PowerSeries.coeff, ← coeff_embDomain_rename (Equiv.ofUnique σ Unit).toEmbedding p]
 
-@[simp]
-lemma uniqueEquiv_X : uniqueEquiv σ R (X default) = .X := by
-  ext
-  rw [coeff_uniqueEquiv, coeff_X, PowerSeries.coeff_X]
-  simp
+lemma uniqueEquiv_X : uniqueEquiv σ R (X default) = .X := by simp [PowerSeries.X]
 
-@[simp]
 lemma uniqueEquiv_C (r : R) : uniqueEquiv σ R (C r) = .C r := by simp [PowerSeries.C]
 
 end uniqueEquiv
@@ -104,7 +99,7 @@ variable [CommSemiring S] {f : R →+* S}
 
 variable (σ) in
 /-- If `e : A ≃+* B` is an isomorphism of rings, then so is `map e`. -/
-@[simps!]
+@[simps apply]
 def mapEquiv (e : R ≃+* S) : MvPowerSeries σ R ≃+* MvPowerSeries σ S where
   __ := map (e : R →+* S)
   invFun := map (e.symm : S →+* R)
@@ -128,7 +123,7 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 variable (σ) in
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
-@[simps!]
+@[simps apply]
 def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPowerSeries σ A₁ ≃ₐ[R] MvPowerSeries σ A₂ :=
   { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
 
@@ -325,9 +320,6 @@ lemma commAlgEquiv_C (p : MvPowerSeries τ R) : commAlgEquiv σ τ R (C p) = map
   · simp_rw [← Equiv.coe_toEmbedding, coeff_rename_eq_zero _ _ h]
     rw [mem_range_mapDomain_iff _ (Embedding.injective _)] at h
     simp at h
-
-@[simp]
-lemma commAlgEquiv_C_X (i : τ) : commAlgEquiv σ τ R (C (X i)) = X i := by simp
 
 @[simp]
 lemma commAlgEquiv_X (i : σ) : commAlgEquiv σ τ R (X i) = C (X i) := by
