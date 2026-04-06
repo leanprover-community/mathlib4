@@ -91,3 +91,9 @@ instance : LawfulXor USize where
 lemma xor_right_involutive (a : α) : Function.Involutive (a ^^^ ·) := xor_cancel_left a
 
 lemma xor_left_involutive (a : α) : Function.Involutive (· ^^^ a) := (xor_cancel_right · a)
+
+lemma xor_eq_iff_left_eq (a b c : α) :
+    a ^^^ b = c ↔ a = c ^^^ b := xor_left_involutive _ |>.eq_iff
+
+lemma xor_eq_iff_right_eq (a b c : α) :
+    a ^^^ b = c ↔ b = a ^^^ c := xor_right_involutive _ |>.eq_iff
