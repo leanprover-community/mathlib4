@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 public import Mathlib.CategoryTheory.Monoidal.Center
 public import Mathlib.Tactic.ApplyFun
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Enriched categories
@@ -440,11 +441,293 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
 
 attribute [reassoc] GradedNatTrans.naturality
 
+-- Can we remove the noncomputable part by making a choice of limits?
+noncomputable
+section
+
+open Limits BraidedCategory
+
+-- Is there a way to capture the three assumptions below into one assumption?
+-- Or maybe two assumptions? Is there a way to derive HasProducts.{u₁} from HasProducts.{max u₁ w}?
+variable [HasProducts.{max u₁ w} V]
+variable [HasProducts.{u₁} V]
+variable [HasEqualizers V]
+
+variable [BraidedCategory V]
+
+variable (F G : EnrichedFunctor V C D)
+
+namespace gradedNatTransObj
+
+open MonoidalClosed
+
+variable [MonoidalClosed V]
+
+/-- The domain of which `gradedNatTransObj` is the equalizer,
+representing "for every `X : C`, a morphism `α X : F X ⟶ G X`". -/
+def equalizerDom : V :=
+  ∏ᶜ fun (X : C) ↦ F.obj X ⟶[V] G.obj X
+
+/-- The codomain of which `gradedNatTransObj` is the equalizer,
+representing "for all morphisms `f: X ⟶ Y`, a morphism `F X ⟶ G Y`". -/
+def equalizerCodom : V :=
+  ∏ᶜ fun (⟨X, Y⟩ : C × C) ↦ (ihom (X ⟶[V] Y)).obj (F.obj X ⟶[V] G.obj Y)
+
+/-- The first arrow of which `gradedNatTransObj` is the equalizer,
+representing "for all `f: X ⟶ Y`, the morphism `F f ≫ α Y : F X ⟶ G Y`". -/
+def equalizerArrow₁ : equalizerDom F G ⟶ equalizerCodom F G :=
+  Pi.lift (fun ⟨X, Y⟩ ↦
+    Pi.π _ Y ≫
+    curry (
+      (F.map X Y ▷ _) ≫
+      eComp _ (F.obj X) (F.obj Y) (G.obj Y)))
+
+/-- The second arrow of which `gradedNatTransObj` is the equalizer,
+representing "for all `f: X ⟶ Y`, the morphism `α X ≫ G f : F X ⟶ G Y`". -/
+def equalizerArrow₂ : equalizerDom F G ⟶ equalizerCodom F G :=
+  Pi.lift (fun ⟨X, Y⟩ ↦
+    Pi.π _ X ≫
+    curry (
+      (β_ _ _ ).hom ≫
+      (_ ◁ G.map X Y) ≫
+      eComp _ (F.obj X) (G.obj X) (G.obj Y)))
+
+/-- The object representing graded natural transformations,
+given as the equalizer between `equalizerArrow₁` and `equalizerArrow₂`. -/
+def _root_.CategoryTheory.gradedNatTransObj : V :=
+  equalizer (equalizerArrow₁ F G) (equalizerArrow₂ F G)
+
+-- Without further assumptions on `V`, this probably wouldn't work for other `A : Center V`. Right?
+/-- Lifts `A` to the center of `V`, using the (reverse of the) braiding isomorphism. -/
+abbrev symmetricCenter (A : V) : Center V := ⟨A, {β X := (β_ X A).symm}⟩
+
+variable {A : V}
+
+/-- We can turn a map `A ⟶ gradedNatTransObj F G` into
+an `A`-graded natural transformation from `F` to `G`. -/
+def morphismEquivalence.toFun (f : A ⟶ gradedNatTransObj F G) :
+    GradedNatTrans (symmetricCenter A) F G where
+  app X := f ≫ equalizer.ι _ _ ≫ Pi.π _ X
+  naturality X Y := by
+    dsimp
+    /- Turn the LHS half braids into braiding on the RHS. -/
+    -- rw [← braiding_inv_tensorUnit_right]
+    rw [Iso.inv_comp_eq]
+    /- Factor out f from both sides and remove it from the goal. -/
+    rw [tensorHom_def'_assoc (F.map X Y), tensorHom_def_assoc _ (G.map X Y)]
+    rw [whiskerLeft_comp_assoc, comp_whiskerRight_assoc]
+    -- rw [← HalfBraiding.inv_naturality_assoc]
+    rw [← braiding_naturality_right_assoc (X ⟶[V] Y) f]
+    apply congr_arg
+    /- Introduce currying and expel the left whiskers from the curried term. -/
+    apply curry_injective
+    rw [← braiding_naturality_right_assoc]
+    rw [whiskerLeft_comp_assoc, whiskerLeft_comp_assoc]
+    repeat rw [curry_natural_left]
+    /- Use the universal property of the equalizer, specialized to one factor of the codomain. -/
+    have H : equalizer.ι _ _ ≫ Pi.lift _ = equalizer.ι _ _ ≫ Pi.lift _ :=
+      equalizer.condition (equalizerArrow₁ F G) (equalizerArrow₂ F G)
+    rw [Pi.hom_ext_iff] at H
+    specialize H ⟨X, Y⟩
+    rw [Category.assoc, Category.assoc] at H
+    rw [Pi.lift_π, Pi.lift_π] at H
+    exact H
+
+/-- We can turn an `A`-graded natural transformation from `F` to G` into
+a morphism `A ⟶ gradedNatTransObj F G`. -/
+def morphismEquivalence.invFun (α : GradedNatTrans (symmetricCenter A) F G) :
+    A ⟶ gradedNatTransObj F G := by
+  apply equalizer.lift _ _
+  · apply Pi.lift
+    exact α.app
+  · dsimp [equalizerArrow₁, equalizerArrow₂]
+    apply Pi.hom_ext
+    rintro ⟨X, Y⟩
+    change ((_ ≫ _) ≫ _ = (_ ≫ _) ≫ _) -- Not sure why this is needed
+    rw [Category.assoc, Category.assoc]
+    rw [Pi.lift_π, Pi.lift_π]
+    rw [← Category.assoc, ← Category.assoc]
+    change ((Pi.lift _ ≫ _) ≫ _ = (Pi.lift _ ≫ _) ≫ _) -- Not sure why this is needed
+    rw [Pi.lift_π, Pi.lift_π]
+    rw [← curry_natural_left, ← curry_natural_left]
+    apply congr_arg
+    rw [BraidedCategory.braiding_naturality_right_assoc]
+    rw [← Iso.inv_comp_eq]
+    rw [← tensorHom_def'_assoc, ← tensorHom_def_assoc]
+    exact α.naturality X Y
+
+/-- The morphisms `A ⟶ gradedNatTransObj F G` are equivalent to
+`A`-graded natural transformations from `F` to `G`. -/
+def morphismEquivalence :
+    (A ⟶ gradedNatTransObj F G) ≃ (GradedNatTrans (symmetricCenter A) F G) where
+  toFun := morphismEquivalence.toFun F G
+  invFun := morphismEquivalence.invFun F G
+  left_inv f := by
+    apply equalizer.hom_ext
+    dsimp [morphismEquivalence.toFun, morphismEquivalence.invFun]
+    rw [equalizer.lift_ι]
+    apply Pi.hom_ext
+    intro Y
+    change (_ = (_ ≫ _) ≫ _) -- Not sure why this is needed
+    rw [Category.assoc]
+    rw [Pi.lift_π]
+    rfl
+  right_inv f := by
+    ext X
+    dsimp [morphismEquivalence.toFun, morphismEquivalence.invFun]
+    change (equalizer.lift _ _ ≫ equalizer.ι _ _ ≫ _ = _) -- Not sure why this is needed
+    rw [equalizer.lift_ι_assoc]
+    apply Pi.lift_π
+
+end gradedNatTransObj
+
+end
+
+
 /-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
 transformation. -/
+-- Is this definition indeed equivalent to a `𝟙_ V`-graded natural transformation?
+-- Because I was not able to prove that.
+@[ext]
 structure EnrichedNatTrans (F G : EnrichedFunctor V C D) where
   /-- The underlying natural transformation of an enriched transformation. -/
   out : F.forget ⟶ G.forget
+
+noncomputable
+section
+
+-- Like in the previous section:
+-- Is there a way to capture the three assumptions below into one assumption?
+-- Or maybe two assumptions? Is there a way to derive HasProducts.{u₁} from HasProducts.{max u₁ w}?
+open Limits BraidedCategory
+
+variable [HasProducts.{max u₁ w} V]
+variable [HasProducts.{u₁} V]
+variable [HasEqualizers V]
+
+variable [BraidedCategory V]
+
+variable (F G : EnrichedFunctor V C D)
+
+namespace enrichedNatTransObj
+
+/-- The domain of which `enrichedNatTransObj` is the equalizer,
+representing "for every `X : C`, a morphism `α X : F X ⟶ G X`". -/
+def equalizerDom : V :=
+  ∏ᶜ fun (X : C) ↦ F.obj X ⟶[V] G.obj X
+
+/-- The codomain of which `enrichedNatTransObj` is the equalizer,
+representing "for all morphisms `f: X ⟶ Y`, a morphism `F X ⟶ G Y`". -/
+def equalizerCodom : V :=
+  ∏ᶜ fun (⟨X, Y, _⟩ : Σ (X : C) (Y : C), 𝟙_ V ⟶ X ⟶[V] Y) ↦ F.obj X ⟶[V] G.obj Y
+
+/-- The first arrow of which `enrichedNatTransObj` is the equalizer,
+representing "for all `f: X ⟶ Y`, the morphism `F f ≫ α Y : F X ⟶ G Y`". -/
+def equalizerArrow₁ : equalizerDom F G ⟶ equalizerCodom F G :=
+  Pi.lift (fun ⟨X, Y, f⟩ ↦
+    (λ_ _).inv ≫
+    (f ≫ F.map X Y ⊗ₘ Pi.π _ Y) ≫
+    eComp _ _ (F.obj Y) _)
+
+/-- The second arrow of which `enrichedNatTransObj` is the equalizer,
+representing "for all `f: X ⟶ Y`, the morphism `α X ≫ G f : F X ⟶ G Y`". -/
+def equalizer_arrow₂ : equalizerDom F G ⟶ equalizerCodom F G :=
+  Pi.lift (fun ⟨X, Y, f⟩ ↦
+    (ρ_ _).inv ≫
+    (Pi.π _ X ⊗ₘ f ≫ G.map X Y) ≫
+    eComp _ _ (G.obj X) _)
+
+/-- The object representing natural transformations,
+given as the equalizer between `equalizerArrow₁` and `equalizerArrow₂`. -/
+def _root_.CategoryTheory.enrichedNatTransObj : V :=
+  equalizer (equalizerArrow₁ F G) (equalizer_arrow₂ F G)
+
+/-- We can turn a global element (i.e. a morphism out of `𝟙_ V`) of `enrichedNatTransObj F G` into
+a natural transformation from `F` to `G`. -/
+def toFun.out (f : 𝟙_ V ⟶ enrichedNatTransObj F G) : F.forget ⟶ G.forget where
+  app X₀ := by
+    dsimp;
+    exact ForgetEnrichment.homOf V (f ≫ equalizer.ι _ _ ≫ Pi.π _ (ForgetEnrichment.to _ X₀))
+  naturality X₀ Y₀ g₀ := by
+    dsimp
+    rw [← ForgetEnrichment.homOf_comp, ← ForgetEnrichment.homOf_comp]
+    apply congr_arg
+    nth_rw 2 [unitors_inv_equal]
+    rw [← whiskerLeft_comp_tensorHom_assoc _ f, ← whiskerRight_comp_tensorHom_assoc f]
+    rw [← leftUnitor_inv_naturality_assoc, ← rightUnitor_inv_naturality_assoc]
+    apply congr_arg
+    change (_ = (ρ_ _).inv ≫ ((equalizer.ι _ _ ≫ _) ⊗ₘ _) ≫ _) -- Not sure why this is needed
+    rw [← whiskerLeft_comp_tensorHom_assoc, ← whiskerRight_comp_tensorHom_assoc (equalizer.ι _ _)]
+    rw [← leftUnitor_inv_naturality_assoc, ← rightUnitor_inv_naturality_assoc]
+    have H : equalizer.ι _ _ ≫ Pi.lift _ = equalizer.ι _ _ ≫ Pi.lift _ :=
+      equalizer.condition (equalizerArrow₁ F G) (equalizer_arrow₂ F G)
+    rw [Pi.hom_ext_iff] at H
+    specialize H ⟨ForgetEnrichment.to _ X₀, ForgetEnrichment.to _ Y₀, ForgetEnrichment.homTo _ g₀⟩
+    rw [Category.assoc, Category.assoc] at H
+    rw [Pi.lift_π, Pi.lift_π] at H
+    dsimp at H
+    exact H
+
+/-- We can turn a global element of `enrichedNatTransObj F G` into
+a natural transformation from `F` to `G`. -/
+def toFun (f : 𝟙_ V ⟶ enrichedNatTransObj F G) : EnrichedNatTrans F G := .mk (toFun.out F G f)
+
+/-- We can turn a natural transformation from `F` to G` into
+a global element of `enrichedNatTransObj F G`. -/
+def invFun (α : EnrichedNatTrans F G) :
+    𝟙_ V ⟶ enrichedNatTransObj F G := by
+  apply equalizer.lift _ _
+  · apply Pi.lift
+    intro X
+    apply ForgetEnrichment.homTo
+    exact α.out.app (ForgetEnrichment.of _ X)
+  · dsimp [equalizerArrow₁, equalizer_arrow₂]
+    apply Pi.hom_ext
+    rintro ⟨X, Y, f⟩
+    change ((_ ≫ _) ≫ _ = (_ ≫ _) ≫ _) -- Not sure why this is needed
+    rw [Category.assoc, Category.assoc]
+    rw [Pi.lift_π, Pi.lift_π]
+    dsimp
+    rw [leftUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc]
+    rw [whiskerLeft_comp_tensorHom_assoc, whiskerRight_comp_tensorHom_assoc]
+    change (_ ≫ (_ ⊗ₘ (Pi.lift _ ≫ _)) ≫ _ = _ ≫ ((Pi.lift _ ≫ _) ⊗ₘ _) ≫ _) -- Not sure why
+    rw [Pi.lift_π, Pi.lift_π]
+    rw [← unitors_inv_equal]
+    rw [← ForgetEnrichment.homTo_homOf _ (f ≫ F.map X Y),
+      ← ForgetEnrichment.homTo_homOf _ (f ≫ G.map X Y)]
+    rw [← Category.assoc, ← Category.assoc]
+    apply Eq.trans (ForgetEnrichment.homTo_comp _ _ _).symm
+    apply Eq.trans _ (ForgetEnrichment.homTo_comp _ _ _)
+    apply congr_arg
+    exact α.out.naturality (ForgetEnrichment.homOf _ f)
+
+/-- The global elements of `enrichedNatTransObj F G` are equivalent to
+natural transformations from `F` to `G`. -/
+def globalElementsEquivalence :
+    (𝟙_ V ⟶ enrichedNatTransObj F G) ≃ EnrichedNatTrans F G where
+  toFun := toFun F G
+  invFun := invFun F G
+  left_inv f := by
+    apply equalizer.hom_ext
+    dsimp [toFun, toFun.out, invFun]
+    rw [equalizer.lift_ι]
+    apply Pi.hom_ext
+    intro Y
+    change (_ = (f ≫ _) ≫ _) -- Not sure why this is needed
+    rw [Category.assoc f]
+    rw [Pi.lift_π]
+    rfl
+  right_inv f := by
+    ext X₀
+    dsimp [toFun, toFun.out, invFun]
+    change (equalizer.lift _ _ ≫ equalizer.ι _ _ ≫ Pi.π _ _ = _) -- Not sure why this is needed
+    rw [equalizer.lift_ι_assoc]
+    rw [Pi.lift_π]
+    apply ForgetEnrichment.homOf_homTo
+
+end enrichedNatTransObj
+
+end
 
 namespace EnrichedFunctor
 
@@ -493,8 +776,7 @@ def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max 
           Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p,
           tensorHom_comp_tensorHom_assoc, Category.id_comp] }
 
--- TODO assuming `[HasLimits C]` construct the actual object of natural transformations
--- and show that the functor category is `V`-enriched.
+-- TODO assuming `[HasLimits C]` show that the functor category is `V`-enriched.
 end
 
 section

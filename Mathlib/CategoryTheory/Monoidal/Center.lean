@@ -65,6 +65,14 @@ attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundan
 
 attribute [simp, reassoc] HalfBraiding.naturality
 
+@[reassoc]
+lemma HalfBraiding.inv_naturality {X : C} (B : HalfBraiding X) {Y Z : C} (f : Y ⟶ Z) :
+    f ▷ X ≫ (B.β Z).inv = (B.β Y).inv ≫ X ◁ f := by
+  rw [Iso.comp_inv_eq]
+  rw [Category.assoc]
+  rw [HalfBraiding.naturality]
+  rw [Iso.inv_hom_id_assoc]
+
 variable (C)
 
 /-- The Drinfeld center of a monoidal category `C` has as objects pairs `⟨X, b⟩`, where `X : C`
