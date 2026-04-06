@@ -3,7 +3,10 @@ Copyright (c) 2026 Slava Naprienko. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Slava Naprienko
 -/
-import Mathlib.Tactic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # The Desnanot-Jacobi identity
@@ -19,6 +22,8 @@ The proof proceeds by multiplying `M` by an auxiliary matrix built from the adju
 
 - `desnanot_jacobi`: the Desnanot-Jacobi identity over any commutative ring.
 -/
+
+@[expose] public section
 
 open Matrix Finset
 
