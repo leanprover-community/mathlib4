@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Tactic.DefEqAbuse
