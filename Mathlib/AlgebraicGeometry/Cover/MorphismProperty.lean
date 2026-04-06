@@ -102,7 +102,8 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   f := map
   mem₀ := by
     simp_rw [presieve₀_mem_precoverage_iff, Set.mem_range]
-    grind
+    #adaptation_note /-- This was `grind` before nightly-2026-02-05. -/
+    exact ⟨covers, map_prop⟩
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
 @[simps! I₀ X f]
@@ -208,15 +209,6 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   covers (x : S) : x ∈ Set.range (f (idx x))
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.J := AffineCover.I₀
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.obj := AffineCover.X
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]

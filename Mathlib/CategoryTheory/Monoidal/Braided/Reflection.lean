@@ -41,6 +41,7 @@ variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
@@ -55,6 +56,7 @@ private noncomputable def adjRetraction (c : C) (d : D)
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
@@ -72,6 +74,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Day's reflection theorem.
 
@@ -169,8 +172,8 @@ theorem isIso_tfae : List.TFAE
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
     -- bring the quantifiers out of the `↔`:
-    rw [forall_swap]; apply forall_congr'; intro d
-    rw [forall_swap]; apply forall₂_congr; intro d' c
+    rw [forall_comm]; apply forall_congr'; intro d
+    rw [forall_comm]; apply forall₂_congr; intro d' c
     -- `w₁, w₂,` are the two stacked commutative squares in the proof on nLab:
     have w₁ : ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) =
         (adj.homEquiv _ _).symm ∘
@@ -212,7 +215,9 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   intro d d'
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
+@[implicit_reducible]
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L
   adj := by
@@ -232,6 +237,7 @@ noncomputable def closed (c : C) : Closed c where
 Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
 monoidal closed, then `C` is monoidal closed.
 -/
+@[implicit_reducible]
 noncomputable def monoidalClosed : MonoidalClosed C where
   closed c := closed adj c
 

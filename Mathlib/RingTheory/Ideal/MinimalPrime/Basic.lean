@@ -111,7 +111,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
@@ -157,6 +157,17 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     apply Set.notMem_empty _ hp.1
   · rintro rfl
     exact Ideal.minimalPrimes_top
+
+lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.IsPrime]
+    (hle : I ≤ p) (h : p.map (Ideal.Quotient.mk I) ∈ (J.map (Ideal.Quotient.mk I)).minimalPrimes) :
+    p ∈ (I ⊔ J).minimalPrimes := by
+  refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
+  · rw [sup_le_iff]
+    exact ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.1.2⟩
+  · rw [sup_le_iff] at hq
+    have h2 : p.map (Quotient.mk I) ≤ q.map (Quotient.mk I) :=
+      h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
+    simpa [comap_map_quotientMk, hq.1, sup_le_iff] using comap_mono (f := Ideal.Quotient.mk I) h2
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 

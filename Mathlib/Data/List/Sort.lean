@@ -172,20 +172,7 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
     (xs.erase x).orderedInsert r x = xs := by
-  induction xs generalizing x with
-  | nil => cases hx
-  | cons y ys ih =>
-    rw [pairwise_cons] at hxs
-    obtain rfl | hxy := Decidable.eq_or_ne x y
-    · rw [erase_cons_head]
-      cases ys with
-      | nil => rfl
-      | cons z zs => grind
-    · rw [mem_cons] at hx
-      replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert_cons, ih _ hx hxs.2, if_neg]
-      refine mt (fun hrxy => ?_) hxy
-      exact antisymm hrxy (hxs.1 _ hx)
+  induction xs with grind +splitIndPred
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   induction xs <;> grind
@@ -204,7 +191,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
     | cons b bs =>
       unfold orderedInsert
       cases hs <;> split_ifs with hr
-      · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
+      · exact .cons_cons _ <| .cons _ ‹a :: as <+ bs›
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         simp only [hr, orderedInsert_cons, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
@@ -213,12 +200,12 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         rw [orderedInsert_cons, if_neg hr] at ih
         exact .cons _ ih
-      · simp_all only [pairwise_cons, cons_sublist_cons]
-      · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
+      · simp_all
+      · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
 section TotalAndTransitive
 
-variable [IsTotal α r] [IsTrans α r]
+variable [Std.Total r] [IsTrans α r]
 
 theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l)
   | [], _ => pairwise_singleton _ a
@@ -228,9 +215,8 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      rcases (mem_orderedInsert r).mp bm with be | bm
-      · subst b'
-        exact (total_of r _ _).resolve_left h'
+      rcases (mem_orderedInsert r).mp bm with rfl | bm
+      · exact (total_of r _ _).resolve_left h'
       · exact rel_of_pairwise_cons h bm
 
 @[deprecated (since := "2025-10-11")]
@@ -259,7 +245,7 @@ theorem sublist_insertionSort {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) 
   | cons _ _ ih =>
     cases hc with
     | cons  _ h => exact ih hr h |>.trans (sublist_orderedInsert ..)
-    | cons₂ _ h =>
+    | cons_cons _ h =>
       obtain ⟨hr, hp⟩ := pairwise_cons.mp hr
       exact cons_sublist_orderedInsert (ih hp h) hr
 
@@ -272,12 +258,12 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
     [a, b] <+ insertionSort r l :=
   sublist_insertionSort (pairwise_pair.mpr hab) h
 
-variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
+variable [Std.Antisymm r] [Std.Total r] [IsTrans α r]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
-additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
+additionally requires `Std.Antisymm r`, `Std.Total r` and `IsTrans α r`.
 -/
 theorem sublist_insertionSort' {l c : List α} (hs : c.Pairwise r) (hc : c <+~ l) :
     c <+ insertionSort r l := by
@@ -288,7 +274,7 @@ theorem sublist_insertionSort' {l c : List α} (hs : c.Pairwise r) (hc : c <+~ l
   | cons a _ ih =>
     cases hd with
     | cons  _ h => exact ih hs _ hc h |>.trans (sublist_orderedInsert ..)
-    | cons₂ _ h =>
+    | cons_cons _ h =>
       specialize ih (hs.erase _) _ (erase_cons_head a ‹List _› ▸ hc.erase a) h
       have hm := hc.mem_iff.mp <| mem_cons_self ..
       have he := orderedInsert_erase _ _ hm hs
@@ -358,13 +344,13 @@ end Antisymm
 
 section TotalAndTransitive
 
-variable {r} [IsTotal α r] [IsTrans α r]
+variable {r} [Std.Total r] [IsTrans α r]
 
 theorem Pairwise.merge {l l' : List α} (h : Pairwise r l) (h' : Pairwise r l') :
     Pairwise r (merge l l' (r · ·)) := by
   simpa using pairwise_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+    (fun a b => by simpa using Std.Total.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 @[deprecated (since := "2025-11-27")] alias Sorted.merge := Pairwise.merge
@@ -632,13 +618,17 @@ section OfDual
 variable {l : List αᵒᵈ}
 
 @[simp] theorem sortedLE_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedLE ↔ l.SortedGE := by grind
+    (l.map OrderDual.ofDual).SortedLE ↔ l.SortedGE := by
+  grind [OrderDual.ofDual_le_ofDual]
 @[simp] theorem sortedGE_map_ofDual :
-    (l.map OrderDual.ofDual).SortedGE ↔ l.SortedLE := by grind
+    (l.map OrderDual.ofDual).SortedGE ↔ l.SortedLE := by
+  grind [OrderDual.ofDual_le_ofDual]
 @[simp] theorem sortedLT_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedLT ↔ l.SortedGT := by grind
+    (l.map OrderDual.ofDual).SortedLT ↔ l.SortedGT := by
+  grind [OrderDual.ofDual_lt_ofDual]
 @[simp] theorem sortedGT_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedGT ↔ l.SortedLT := by grind
+    (l.map OrderDual.ofDual).SortedGT ↔ l.SortedLT := by
+  grind [OrderDual.ofDual_lt_ofDual]
 
 protected alias ⟨SortedLE.map_ofDual, SortedGE.of_map_ofDual⟩ := sortedLE_map_ofDual
 protected alias ⟨SortedGE.map_ofDual, SortedLE.of_map_ofDual⟩ := sortedGE_map_ofDual
@@ -652,13 +642,17 @@ section ToDual
 variable {l : List α}
 
 theorem sortedLE_map_toDual {l : List α} :
-    (l.map OrderDual.toDual).SortedLE ↔ l.SortedGE := by grind
+    (l.map OrderDual.toDual).SortedLE ↔ l.SortedGE := by
+  grind [OrderDual.toDual_le_toDual]
 theorem sortedGE_map_toDual {l : List α} :
-    (l.map OrderDual.toDual).SortedGE ↔ l.SortedLE := by grind
+    (l.map OrderDual.toDual).SortedGE ↔ l.SortedLE := by
+  grind [OrderDual.toDual_le_toDual]
 theorem sortedLT_map_toDual {l : List α} :
-    (l.map OrderDual.toDual).SortedLT ↔ l.SortedGT := by grind
+    (l.map OrderDual.toDual).SortedLT ↔ l.SortedGT := by
+  grind [OrderDual.toDual_lt_toDual]
 theorem sortedGT_map_toDual {l : List αᵒᵈ} :
-    (l.map OrderDual.toDual).SortedGT ↔ l.SortedLT := by grind
+    (l.map OrderDual.toDual).SortedGT ↔ l.SortedLT := by
+  grind [OrderDual.toDual_lt_toDual]
 
 protected alias ⟨SortedLE.map_toDual, SortedGE.of_map_toDual⟩ := sortedLE_map_toDual
 protected alias ⟨SortedGE.map_toDual, SortedLE.of_map_toDual⟩ := sortedGE_map_toDual
@@ -889,22 +883,18 @@ variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : Lis
 
 theorem sortedLE_listMap (hf : StrictAnti f) :
     (l.map f).SortedLE ↔ l.SortedGE := by
-  have h := hf.dual_right.sortedGE_listMap (l := l)
-  grind
+  grind [hf.le_iff_ge]
 
 theorem sortedGE_listMap (hf : StrictAnti f) :
     (l.map f).SortedGE ↔ l.SortedLE := by
-  have h := hf.dual_right.sortedLE_listMap (l := l)
-  grind
+  grind [hf.le_iff_ge]
 
 theorem sortedLT_listMap (hf : StrictAnti f) :
     (l.map f).SortedLT ↔ l.SortedGT := by
-  have h := hf.dual_right.sortedGT_listMap (l := l)
-  grind
+  grind [hf.lt_iff_gt]
 
 theorem sortedGT_listMap (hf : StrictAnti f) :
     (l.map f).SortedGT ↔ l.SortedLT := by
-  have h := hf.dual_right.sortedLT_listMap (l := l)
-  grind
+  grind [hf.lt_iff_gt]
 
 end StrictAnti

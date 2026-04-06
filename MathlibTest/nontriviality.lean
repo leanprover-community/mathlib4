@@ -53,11 +53,11 @@ test_sorry
 theorem Subsingleton.set_empty_or_univ' {α} [Subsingleton α] (s : Set α) : EmptyOrUniv s :=
   Subsingleton.set_empty_or_univ s
 
-theorem Set.empty_union (a : Set α) : ∅ ∪ a = a := test_sorry
+theorem MySet.empty_union (a : Set α) : ∅ ∪ a = a := test_sorry
 
 example {α : Type _} (s : Set α) (hs : s = ∅ ∪ Set.univ) : EmptyOrUniv s := by
   fail_if_success nontriviality α
-  rw [Set.empty_union] at hs
+  rw [MySet.empty_union] at hs
   exact Or.inr hs
 
 section
@@ -67,7 +67,7 @@ attribute [local nontriviality] Subsingleton.set_empty_or_univ
 example {α : Type _} (s : Set α) (hs : s = ∅ ∪ Set.univ) : EmptyOrUniv s := by
   fail_if_success nontriviality α
   nontriviality α using Subsingleton.set_empty_or_univ'
-  rw [Set.empty_union] at hs
+  rw [MySet.empty_union] at hs
   exact Or.inr hs
 
 end

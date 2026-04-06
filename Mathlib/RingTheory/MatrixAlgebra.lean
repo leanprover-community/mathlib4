@@ -181,9 +181,7 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom n R A) (invFun n R A M) = M 
   simp only [invFun, map_sum, toFunAlgHom_apply]
   convert Finset.sum_product (β := Matrix n n A) ..
   conv_lhs => rw [matrix_eq_sum_single M]
-  refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
-  dsimp [single]
-  split_ifs <;> aesop
+  simp
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun n R A (toFunAlgHom n R A M) = M := by
   induction M with

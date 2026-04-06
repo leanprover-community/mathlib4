@@ -172,7 +172,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -197,7 +197,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -351,6 +351,11 @@ just picking out the `i`-th object. -/
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+/-- The differential as a natural transformation between `eval`. -/
+@[simps] def dNatTrans (i j : ι) :
+    HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
+  app X := X.d i j
+
 end
 
 noncomputable section
@@ -408,7 +413,7 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
       (by
         dsimp [ComplexShape.prev]
         rw [dif_neg]
-        push_neg; intro i hi
+        push Not; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
 
@@ -634,6 +639,7 @@ theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -646,6 +652,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
@@ -722,9 +729,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  congr
-  · rw [if_pos (by rfl), id_comp]
-  · simp
+  simp
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -736,6 +741,7 @@ def mkXIso (n : ℕ) :
       (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
     rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk_d (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
       (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
@@ -897,6 +903,7 @@ theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -909,6 +916,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.

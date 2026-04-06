@@ -96,7 +96,7 @@ section
 
 open Lean Elab Tactic in
 /-- A helper tactic for `cat_disch` and `Pairwise`. -/
-def pairwiseCases : TacticM Unit := do
+meta def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
@@ -174,7 +174,7 @@ def cocone : Cocone (diagram U) where
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.sSup_le
+      apply sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 

@@ -234,7 +234,7 @@ theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
 a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`. -/
 theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
-  push_neg
+  push Not
   intro s hs contra
   rcases span_le_degreeLE_of_finite hs with ⟨n, hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
@@ -354,96 +354,6 @@ theorem eval₂_restriction {p : R[X]} :
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.coeffs : Set R)))) x p.restriction := by
   simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
     Subring.coe_subtype]
-
-section ToSubring
-
-variable (p : R[X]) (T : Subring R)
-
-/-- Given a polynomial `p` and a subring `T` that contains the coefficients of `p`,
-return the corresponding polynomial whose coefficients are in `T`. -/
-def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
-  ∑ i ∈ p.support,
-    monomial i
-      (⟨p.coeff i,
-        letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs H)⟩ : T)
-
-variable (hp : (↑p.coeffs : Set R) ⊆ T)
-
-@[simp]
-theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
-  classical
-  simp only [toSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, ite_not]
-  split_ifs with h
-  · rw [h]
-    rfl
-  · rfl
-
-theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n := by
-  simp
-
-@[simp]
-theorem support_toSubring : support (toSubring p T hp) = support p := by
-  ext i
-  simp only [mem_support_iff, not_iff_not, Ne]
-  conv_rhs => rw [← coeff_toSubring p T hp]
-  exact ⟨fun H => by rw [H, ZeroMemClass.coe_zero], fun H => Subtype.coe_injective H⟩
-
-@[simp]
-theorem degree_toSubring : (toSubring p T hp).degree = p.degree := by simp [degree]
-
-@[simp]
-theorem natDegree_toSubring : (toSubring p T hp).natDegree = p.natDegree := by simp [natDegree]
-
-@[simp]
-theorem monic_toSubring : Monic (toSubring p T hp) ↔ Monic p := by
-  simp_rw [Monic, leadingCoeff, natDegree_toSubring, ← coeff_toSubring p T hp]
-  exact ⟨fun H => by rw [H, OneMemClass.coe_one], fun H => Subtype.coe_injective H⟩
-
-@[simp]
-theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [coeffs]) = 0 := by
-  ext i
-  simp
-
-@[simp]
-theorem toSubring_one :
-    toSubring (1 : R[X]) T
-        (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
-      1 :=
-  ext fun i => Subtype.ext <| by
-    rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
-      OneMemClass.coe_one]
-
-@[simp]
-theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := by
-  ext n
-  simp [coeff_map]
-
-end ToSubring
-
-variable (T : Subring R)
-
-/-- Given a polynomial whose coefficients are in some subring, return
-the corresponding polynomial whose coefficients are in the ambient ring. -/
-def ofSubring (p : T[X]) : R[X] :=
-  ∑ i ∈ p.support, monomial i (p.coeff i : R)
-
-theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
-  simp only [ofSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, Classical.not_not, ite_eq_left_iff]
-  intro h
-  rw [h, ZeroMemClass.coe_zero]
-
-@[simp]
-theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T := by
-  classical
-  intro i hi
-  simp only [coeffs, Set.mem_image, mem_support_iff, Ne, Finset.mem_coe,
-    (Finset.coe_image)] at hi
-  rcases hi with ⟨n, _, h'n⟩
-  rw [← h'n, coeff_ofSubring]
-  exact Subtype.mem (coeff p n : T)
 
 end Ring
 
@@ -832,7 +742,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
-              refine WellFounded.not_lt_min inst.wf _ _ ?_; exact ⟨k, rfl⟩
+              refine WellFounded.not_lt_min inst.wf _ ?_; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>
@@ -1005,25 +915,6 @@ instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
   exact
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
       (renameEquiv R (Fintype.equivFin σ).symm).toRingEquiv isNoetherianRing_fin
-
-/-- Auxiliary lemma:
-Multivariate polynomials over an integral domain
-with variables indexed by `Fin n` form an integral domain.
-This fact is proven inductively,
-and then used to prove the general case without any finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
-theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
-    ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R) := fun _ ↦ inferInstance
-
-/-- Auxiliary lemma:
-Multivariate polynomials in finitely many variables over an integral domain form an integral domain.
-This fact is proven by transport of structure from the `MvPolynomial.noZeroDivisors_fin`,
-and then used to prove the general case without finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
-theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R]
-    [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := inferInstance
 
 theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
