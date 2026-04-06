@@ -158,12 +158,12 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd : CanonicallyOrd
   le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
-  ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
+instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α where
+  elim a b c hbc := add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
-  ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
+instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α where
+  elim a b c hbc := add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toOrderBot : OrderBot α where
