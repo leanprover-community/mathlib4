@@ -44,24 +44,26 @@ theorem isStarProjection_iff_mem_extremePoints_nonneg_inter_unitClosedBall
     Note that we also get `0 ≤ t • a ≤ t • a + s • b = e` and so `t • e * a * e = t • a` using
     `IsStarProjection.conjugate_of_nonneg_of_le`.
     And so the result then follows. -/
-    have := calc
-      t • (e * (1 - a : A⁺¹) * e) + s • (e * (1 - b) * e) = e - e * (t • a + s • b) * e := by
+    have ⟨ha01, hb01⟩ : (a : A⁺¹) ∈ Icc 0 1 ∧ (b : A⁺¹) ∈ Icc 0 1 := by
+      grind [inr_mem_Icc_iff_norm_le]
+    suffices t • (e * (1 - a : A⁺¹) * e) = 0 by
+      rw [← h0t.ne'.isUnit.smul_left_cancel, ← he.conjugate_of_nonneg_of_le
+          (smul_nonneg h0t.le ha) ?hae]
+      case hae => simpa [hlin] using le_add_of_nonneg_right (a := t • a) (by positivity : 0 ≤ s • b)
+      apply inr_injective (R := ℂ) <| Eq.symm ?_
+      simpa only [mul_one_sub_mul, he.inr.isIdempotentElem.eq, smul_sub, sub_eq_zero,
+        smul_mul_assoc, mul_smul_comm, smul_sub, inr_mul, inr_smul]
+    apply le_antisymm ?_ <| smul_nonneg h0t.le <| he.inr.isSelfAdjoint.conjugate_nonneg <| by
+      simpa using ha01.2
+    calc
+      _ ≤ t • (e * (1 - a : A⁺¹) * e) + s • (e * (1 - b) * e) := by
+        refine le_add_of_nonneg_right <| smul_nonneg h0s.le ?_
+        simpa [mul_one_sub_mul] using he.inr.isSelfAdjoint.conjugate_le_conjugate <|
+          norm_le_one_iff_of_nonneg (b : A⁺¹) (by simpa) |>.mp (by simpa [norm_inr])
+      _ = e - e * (t • a + s • b) * e := by
         simp [smul_sub, sub_add_eq_add_sub, add_sub, ← add_smul, hts, sub_mul, mul_sub,
           he.inr.isIdempotentElem.eq, mul_add, add_mul, sub_sub, mul_assoc]
       _ = 0 := by simp [← inr_smul, ← inr_add, hlin, ← inr_mul, he.isIdempotentElem.eq]
-    have H {q : ℝ} {c : A} (hq : 0 < q) (h0c : 0 ≤ c) (hc1 : ‖c‖ ≤ 1) :
-        0 ≤ q • (e * (1 - c : A⁺¹) * e) := by
-      rw [← smul_zero q, smul_le_smul_iff_of_pos_left hq]
-      exact he.inr.isSelfAdjoint.conjugate_nonneg (sub_nonneg_of_le <|
-        (norm_le_one_iff_of_nonneg (c : A⁺¹) (by simpa)).mp (by simpa [norm_inr]))
-    have := le_add_iff_nonneg_right (t • (e * (1 - a : A⁺¹) * e)) |>.mpr (H h0s hb hb1)
-    have : e * ((1 - a : A⁺¹) * e) = 0 := by rw [← smul_eq_zero_iff_right h0t.ne']; grind
-    have := he.conjugate_of_nonneg_of_le (a := t • a) (by positivity)
-      (by simpa [hlin] using le_add_of_nonneg_right (a := t • a) (by positivity : 0 ≤ s • b))
-    rw [mul_smul_comm, smul_mul_assoc] at this
-    have h : e * (e - a * e) = 0 := by rw [← (inr_injective (R := ℂ)).eq_iff]; simpa [← one_sub_mul]
-    rwa [mul_sub, ← mul_assoc, he.isIdempotentElem.eq, h0t.ne'.isUnit.smul_left_cancel.mp this,
-      sub_eq_zero, eq_comm] at h
   · /- Now suppose `e` is an extreme point of the nonnegative closed unit ball.
     So then it is self-adjoint, and so we only need to show `e * e = e`.
     Note that since `0 ≤ e ≤ 1` in the unitization, we also get `0 ≤ e * (2 - e) = 2 • e - e * e`,
