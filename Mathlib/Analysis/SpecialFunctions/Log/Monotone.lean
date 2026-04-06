@@ -6,6 +6,9 @@ Authors: Bolton Bailey
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Logarithm Tonality
@@ -29,13 +32,39 @@ noncomputable section
 
 namespace Real
 
-theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
-  -- TODO: can be strengthened to exp (-1) ≤ x
-  simp only [MonotoneOn, mem_setOf_eq]
+theorem log_mul_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
+  simp only [StrictMonoOn]
   intro x hex y hey hxy
-  have y_pos : 0 < y := lt_of_lt_of_le zero_lt_one hey
-  gcongr
-  rwa [le_log_iff_exp_le y_pos, Real.exp_zero]
+  obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
+      deriv (fun x ↦ x * Real.log x) c = (y * Real.log y - x * Real.log x) / (y - x) := by
+    apply_rules [exists_deriv_eq_slope]
+    · exact continuousOn_of_forall_continuousAt fun z hz ↦
+        ContinuousAt.mul continuousAt_id
+          (Real.continuousAt_log (by linarith [hz.1, Real.exp_pos (-1), hex.out, hey.out]))
+    · exact DifferentiableOn.mul differentiableOn_id
+        (DifferentiableOn.log differentiableOn_id fun z hz ↦
+          ne_of_gt <| lt_trans (Real.exp_pos _) <| hex.out.trans_lt hz.1)
+  have h_deriv : ∀ x > 0, deriv (fun x ↦ x * Real.log x) x = Real.log x + 1 :=
+    fun x x_pos ↦ by simp [x_pos.ne']
+  have hc_pos : c > Real.exp (-1) := by linarith [hc.1.1, hex.out]
+  rw [h_deriv c (lt_trans (Real.exp_pos _) hc_pos)] at hc
+  rw [eq_div_iff] at hc <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_pos]
+
+theorem log_mul_self_StrictAntiOn :
+    StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
+  simp only [StrictAntiOn]
+  intro x hex y hey hxy
+  obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
+      deriv (fun x : ℝ ↦ x * log x) c =
+        (y * log y - x * log x) / (y - x) := by
+    apply_rules [exists_deriv_eq_slope]
+    · simp_all [Continuous.continuousOn Real.continuous_mul_log]
+    · exact DifferentiableOn.mono Real.differentiableOn_mul_log (by simp_all)
+  have hc_pos : 0 < c := by linarith [hc.1.1, hex.1]
+  norm_num [hc_pos.ne'] at hc
+  rw [eq_div_iff] at hc <;>
+    nlinarith [Real.log_exp (-1),
+      Real.log_lt_log (by positivity) (by linarith [hex.2, hey.2] : c < Real.exp (-1))]
 
 theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | exp 1 ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
