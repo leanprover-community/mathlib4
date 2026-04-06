@@ -4905,6 +4905,7 @@ public import Mathlib.LinearAlgebra.Matrix.Circulant
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.DesnanotJacobi
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -7889,4 +7890,3 @@ public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
 
 set_option linter.style.longLine false
-import Mathlib.LinearAlgebra.Matrix.Determinant.DesnanotJacobi
