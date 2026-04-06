@@ -45,8 +45,8 @@ set_option backward.isDefEq.respectTransparency false in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
-over `cR.pt` to the constant functor `Cᵒᵖ ⥤ AddCommGrpCat` with value
-the underlying abelian group of `M`. -/
+over `cR.pt` to a presheaf of modules whose underlying presheaf of
+abelian groups is the constant functor `Cᵒᵖ ⥤ AddCommGrpCat` with value `M`. -/
 noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R where
   obj M :=
     { obj X := (ModuleCat.restrictScalars (cR.ι.app X).hom).obj M
