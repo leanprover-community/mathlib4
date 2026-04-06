@@ -120,21 +120,8 @@ instance : Zero ℝ≥0∞ := ⟨ofNNReal 0⟩
 instance : One ℝ≥0∞ := ⟨ofNNReal 1⟩
 instance : Bot ℝ≥0∞ := ⟨0⟩
 
-deriving instance Add, Sub, Top, Max, Min,
-  AddCommMonoidWithOne, PartialOrder for ENNReal
-
-/- Declare by hand to make sure that sup and max are defeq at instance transparency -/
-instance : SemilatticeSup ℝ≥0∞ where
-  __ := instPartialOrder
-  sup := max
-  __ := show SemilatticeSup ℝ≥0∞ from inferInstanceAs (SemilatticeSup (WithTop ℝ≥0))
-
-instance : SemilatticeInf ℝ≥0∞ where
-  __ := instPartialOrder
-  inf := min
-  __ := show SemilatticeInf ℝ≥0∞ from inferInstanceAs (SemilatticeInf (WithTop ℝ≥0))
-
-deriving instance DistribLattice, Nontrivial,
+deriving instance Add, Sub, Top,
+  AddCommMonoidWithOne, PartialOrder, DistribLattice, Nontrivial,
   OrderBot, OrderTop, BoundedOrder, CharZero, IsOrderedAddMonoid,
   OrderedSub, IsOrderedRing, CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered for ENNReal
 
@@ -144,9 +131,6 @@ deriving instance LinearOrder, AddCommMonoid, CommSemiring, CompleteLinearOrder,
   LinearOrderedAddCommMonoidWithTop for ENNReal
 
 end
-
-example {a b : ℝ≥0∞} : @max ℝ≥0∞ SemilatticeSup.toMax a b = @max ℝ≥0∞ instMax a b := by
-  with_reducible_and_instances rfl
 
 example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
 
