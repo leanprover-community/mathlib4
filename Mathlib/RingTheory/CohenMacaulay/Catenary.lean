@@ -109,26 +109,26 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
     rw [← WithBot.coe_inj, WithBot.coe_unbot] at hd
     exact hd.symm
   generalize len : d - rs.length = k
-  induction k generalizing rs
-  · have : Ideal.ofList rs ≤ maximalIdeal R := (span_le.mpr mem)
+  induction k generalizing rs with
+  | zero =>
+    have : Ideal.ofList rs ≤ maximalIdeal R := (span_le.mpr mem)
     have netop : Ideal.ofList rs ≠ ⊤ := (lt_of_le_of_lt this IsPrime.ne_top'.lt_top).ne_top
-    have coe_eq : (d : WithBot ℕ∞) = (d : ℕ∞) := rfl
     have le : rs.length ≤ d := by
-      simpa [ht, hd, coe_eq] using Ideal.height_le_ringKrullDim_of_ne_top netop
+      simpa [ht, hd, ← ENat.WithBot.coe_eq_natCast] using
+        Ideal.height_le_ringKrullDim_of_ne_top netop
     rw [Nat.sub_eq_zero_iff_le] at len
     use []
     simp only [List.append_nil, le_antisymm le len, List.length_nil, CharP.cast_eq_zero, add_zero,
       hd, and_true]
     apply Ideal.mem_minimalPrimes_of_height_eq this
     rw [ht, le_antisymm le len, ← WithBot.coe_le_coe]
-    simp [hd, coe_eq]
-  · rename_i k hk
-    classical
+    simp [hd, ← ENat.WithBot.coe_eq_natCast]
+  | succ k hk =>
     have : Ideal.ofList rs ≤ maximalIdeal R := (span_le.mpr mem)
     have netop : Ideal.ofList rs ≠ ⊤ := (lt_of_le_of_lt this IsPrime.ne_top'.lt_top).ne_top
-    have coe_eq : (d : WithBot ℕ∞) = (d : ℕ∞) := rfl
     have le : rs.length ≤ d := by
-      simpa [ht, hd, coe_eq] using Ideal.height_le_ringKrullDim_of_ne_top netop
+      simpa [ht, hd, ← ENat.WithBot.coe_eq_natCast] using
+        Ideal.height_le_ringKrullDim_of_ne_top netop
     obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, ∀ p ∈ (Ideal.ofList rs).minimalPrimes, x ∉ p := by
       have : ¬ (maximalIdeal R : Set R) ⊆ ⋃ p ∈ (Ideal.ofList rs).minimalPrimes, p := by
         by_contra subset
@@ -140,7 +140,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
         rw [← eq] at hp
         rw [IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ hp,
           ← WithBot.coe_inj, IsLocalRing.maximalIdeal_height_eq_ringKrullDim, hd] at ht
-        simp only [coe_eq, WithBot.coe_inj, Nat.cast_inj] at ht
+        simp only [← ENat.WithBot.coe_eq_natCast, WithBot.coe_inj, Nat.cast_inj] at ht
         simp [ht] at len
       rcases Set.not_subset.mp this with ⟨x, hx1, hx2⟩
       simp at hx2
@@ -195,9 +195,9 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
     (dim : rs.length = ringKrullDim R) : IsRegular R rs := by
   refine ⟨?_, by simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' mem.1.2).symm⟩
   generalize len : rs.length = n
-  induction n generalizing R rs
-  · simp [List.length_eq_zero_iff.mp len]
-  · rename_i n hn _ _ _
+  induction n generalizing R rs with
+  | zero => simp [List.length_eq_zero_iff.mp len]
+  | succ n hn =>
     match rs with
     | [] => simp at len
     | x :: rs' =>
