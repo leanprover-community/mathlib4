@@ -40,6 +40,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
     One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
     A going down theorem is now available, which could be applied to
     `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
+
   The second result applied to `S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
@@ -117,7 +118,7 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
   obtain ⟨m, hm⟩ := Hs t
   refine ⟨algebraMap _ _ (s ^ (m + 1) * t), ?_, fun x ↦ ?_⟩
   · simpa using ‹p.IsPrime›.mul_notMem
-      (mt ((inferInstanceAs (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
+      (mt ((inferInstance : (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
   obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
   obtain ⟨k, hk⟩ := Hs a
   refine ⟨k + n, ?_⟩
@@ -138,7 +139,6 @@ section IsStronglyTranscendental
 
 variable (φ : R[X] →ₐ[R] S) (t : S) (p r : R[X])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where
 `p` is monic with `deg p > deg r`, then `t` is also integral over `R`. -/
 lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
@@ -290,7 +290,6 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
   rw [_root_.smul_pow, pow_add, add_comm, pow_add, mul_smul_mul_comm, hi]
   exact Ideal.mul_mem_right _ _ hk
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00PY]
 lemma isStronglyTranscendental_mk_radical_conductor
     (hRS : integralClosure R S = ⊥) -- `IsIntegrallyClosedIn` but without injective assumption
@@ -339,7 +338,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explict `K = Frac(R)`, `L = Frac(S)`,
+/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
@@ -459,7 +458,6 @@ universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
@@ -504,7 +502,6 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
     simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
@@ -550,7 +547,6 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_mvPolynomial
@@ -706,7 +702,6 @@ lemma QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective
   ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective _
     (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ZariskisMainProperty.quasiFiniteAt
     [Algebra.FiniteType R S] (p : Ideal S) [p.IsPrime] (H : ZariskisMainProperty R p) :
     Algebra.QuasiFiniteAt R p := by
@@ -730,7 +725,6 @@ lemma QuasiFiniteAt.of_weaklyQuasiFiniteAt
     Algebra.QuasiFiniteAt R p :=
   ZariskisMainProperty.quasiFiniteAt _ (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
     [FiniteType R S] (p : Ideal R) (q : Ideal S) [q.IsPrime]
     [p.IsPrime] [q.LiesOver p]
@@ -741,7 +735,6 @@ lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
   have : Algebra.WeaklyQuasiFiniteAt R q := .of_quasiFiniteAt_residueField p q Q hQ
   .of_weaklyQuasiFiniteAt _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S)
     (H : IsOpen (X := .comap (algebraMap R S) ⁻¹' {q.comap (algebraMap R S)}) {⟨q, rfl⟩}) :
@@ -754,7 +747,6 @@ lemma QuasiFiniteAt.of_isOpen_singleton_fiber
   refine .of_isOpen_singleton _ ?_
   rwa [← Set.image_singleton, e.isOpen_image]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiFiniteAt_iff_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S) :
     Algebra.QuasiFiniteAt R q.asIdeal ↔

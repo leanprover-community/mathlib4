@@ -36,9 +36,6 @@ lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] (hA : IsHerm
   conv_lhs => rw [hA.spectral_theorem]
   simp [isUnit_coe.posSemidef_star_right_conjugate_iff, posSemidef_diagonal_iff, Pi.le_def]
 
-@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
-  IsHermitian.posSemidef_iff_eigenvalues_nonneg
-
 namespace PosSemidef
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/

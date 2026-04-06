@@ -10,17 +10,23 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+public import Mathlib.NumberTheory.ModularForms.LevelOne
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 /-!
 # Eisenstein series q-expansions
 
 We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular, we prove
 `EisensteinSeries.q_expansion_bernoulli` which says that for even `k` with `3 ≤ k`
-Eisenstein series can we written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
+Eisenstein series can be written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
 `q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of the `(k-1)`-th powers of the divisors of `n`.
 We need `k` to be even so that the Eisenstein series are non-zero and we require `k ≥ 3` so that
 the series converges absolutely.
+
+We also identify the q-expansion coefficients as a `PowerSeries` via
+`EisensteinSeries.E_qExpansion_coeff`, and use this to prove that the normalised Eisenstein series
+is non-zero (`EisensteinSeries.E_ne_zero`).
 
 The proof relies on the identity
 `∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
@@ -295,3 +301,56 @@ lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Eve
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   convert q_expansion_riemannZeta hk hk2 z using 1
   rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]
+
+section NonZero
+
+open ModularFormClass
+
+local notation "𝕢" => Periodic.qParam
+
+/-- Summability of the divisor-sum q-expansion series `∑ σ_{k-1}(n) q^n`. -/
+private lemma summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+    Summable fun n : ℕ ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * z) ^ n := by
+  apply Summable.of_norm_bounded
+    (summable_norm_pow_mul_geometric_of_norm_lt_one k (norm_exp_two_pi_I_lt_one z))
+  intro n
+  simp only [norm_mul, Complex.norm_natCast, norm_pow]
+  gcongr
+  exact_mod_cast (ArithmeticFunction.sigma_le_pow_succ (k - 1) n).trans_eq (by congr 1; omega)
+
+/-- The q-expansion coefficients of the normalised Eisenstein series `E k`: the constant term is
+`1` and for `m ≥ 1` the `m`-th coefficient is `-(2k / B_k) * σ_{k-1}(m)` where `B_k` is the
+`k`-th Bernoulli number. -/
+lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (m : ℕ) :
+    (qExpansion 1 (E hk)).coeff m =
+    if m = 0 then 1 else -(2 * k / bernoulli k : ℂ) * (σ (k - 1) m) := by
+  set β : ℂ := -(2 * k / bernoulli k : ℂ)
+  set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
+  suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
+    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z this m).symm
+  intro τ
+  have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
+    (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)
+  rw [← hasSum_nat_add_iff' 1]
+  simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, smul_eq_mul, Finset.range_one,
+    ite_mul, one_mul, Finset.sum_singleton, pow_zero, c]
+  have hval : E hk τ - 1 = β * ∑' n : ℕ, (σ (k - 1) (n + 1)) * cexp (2 * π * I * τ) ^ (n + 1) := by
+    have := q_expansion_bernoulli hk hk2 τ
+    simp_rw [zpow_natCast] at this
+    rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
+    ring
+  rw [hval]
+  convert (hS.mul_left β).hasSum using 1
+  · grind [Periodic.qParam, ofReal_one, div_one]
+  · rw [tsum_mul_left]
+
+/-- The q-expansion constant coefficient of the normalised Eisenstein series `E k` is `1`. -/
+lemma EisensteinSeries.E_qExpansion_coeff_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) :
+    (qExpansion 1 (E hk)).coeff 0 = 1 := by
+  simpa using E_qExpansion_coeff hk hk2 0
+
+/-- Normalised Eisenstein series of even weight `k ≥ 3` are non-zero. -/
+theorem EisensteinSeries.E_ne_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) : E hk ≠ 0 :=
+  fun h ↦ one_ne_zero <| (E_qExpansion_coeff_zero hk hk2).symm.trans (by simp [h, qExpansion_zero])
+
+end NonZero
