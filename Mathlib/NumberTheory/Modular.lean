@@ -82,12 +82,12 @@ variable {g : SL(2, ℤ)} (z : ℍ)
 
 section BottomRow
 
-/-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
+/-- The two numbers `c`, `d` in the "bottom row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
     IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) :=
   isCoprime_row g 1
 
-/-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
+/-- Every pair `![c, d]` of coprime integers is the "bottom row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
 theorem bottom_row_surj {R : Type*} [CommRing R] :
     Set.SurjOn (fun g : SL(2, R) => (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
@@ -185,7 +185,6 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :

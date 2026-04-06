@@ -289,7 +289,6 @@ theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
@@ -302,7 +301,6 @@ theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :

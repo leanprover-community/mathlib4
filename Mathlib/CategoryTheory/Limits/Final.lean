@@ -126,7 +126,6 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
   { out := fun c =>
@@ -1191,7 +1190,6 @@ section Restriction
 
 variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
 noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
@@ -1206,7 +1204,6 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/
 noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)

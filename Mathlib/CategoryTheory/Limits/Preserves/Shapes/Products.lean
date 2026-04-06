@@ -102,6 +102,11 @@ instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
+instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimitsOfShape I F] :
+    PreservesLimitsOfShape Iᵒᵖ F :=
+  letI : Groupoid I := Groupoid.ofIsGroupoid
+  preservesLimitsOfShape_of_equiv (Groupoid.invEquivalence I) F
+
 end
 
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
@@ -185,5 +190,9 @@ lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
     PreservesColimitsOfShape (Discrete J) F where
   preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
+instance {I : Type w} (F : C ⥤ D) [PreservesColimitsOfShape (Discrete I) F] :
+    PreservesColimitsOfShape (Discrete I)ᵒᵖ F :=
+  preservesColimitsOfShape_of_equiv (Discrete.opposite I).symm F
 
 end CategoryTheory.Limits
