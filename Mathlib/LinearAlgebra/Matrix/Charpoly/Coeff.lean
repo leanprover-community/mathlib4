@@ -377,27 +377,21 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
 equals the determinant of the principal submatrix indexed by `s`. -/
 lemma det_piecewise_one_eq_submatrix_det
     (M : Matrix n n R) (s : Finset n) :
-    det (Matrix.of <| s.piecewise M (1 : Matrix n n R)) =
+    det (Matrix.of <| s.piecewise M.row (1 : Matrix n n R).row) =
     (M.submatrix (↑) (↑) : Matrix s s R).det := by
   let e := Equiv.sumCompl (fun x => x ∈ s)
-  let A : Matrix n n R := Matrix.of (s.piecewise M (1 : Matrix n n R))
-  change A.det = _
+  let +generalize A : Matrix n n R := Matrix.of (s.piecewise M (1 : Matrix n n R))
   rw [← Matrix.det_submatrix_equiv_self e A]
   have h_blocks : A.submatrix e e =
       Matrix.fromBlocks
         (M.submatrix Subtype.val Subtype.val)
         (M.submatrix Subtype.val Subtype.val) 0 1 := by
     ext (i | i) (j | j) <;> dsimp [A, e]
-    · -- i j : ↥s
-      simp only [Finset.piecewise, if_pos i.prop]
-    · -- i : ↥s, j : {a // a ∉ s}
-      simp only [Finset.piecewise, if_pos i.prop]
-    · -- i : {a // a ∉ s}, j : ↥s
-      simp only [Finset.piecewise, if_neg i.prop]
+    · simp only [Finset.piecewise, if_pos i.prop]
+    · simp only [Finset.piecewise, if_pos i.prop]
+    · simp only [Finset.piecewise, if_neg i.prop]
       exact Matrix.one_apply_ne (fun h => i.prop (h ▸ j.prop))
-    · -- i j : {a // a ∉ s}
-      simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply,
-        Subtype.ext_iff]
+    · simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply, Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
 /-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
@@ -406,7 +400,7 @@ and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). 
 theorem coeff_det_one_add_X_smul_eq_sum_minors
     (M : Matrix n n R) (k : ℕ) :
     (det (1 + (X : R[X]) • M.map C)).coeff k =
-    ∑ s ∈ Finset.powersetCard k Finset.univ,
+    ∑ s ∈ Finset.univ.powersetCard k,
       (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
   simp only [det]
   let D := (detRowAlternating : (n → R[X]) [⋀^n]→ₗ[R[X]] R[X]).toMultilinearMap
@@ -433,7 +427,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
       _ = (∑ s : Finset n, (X : R[X]) ^ s.card •
             D (s.piecewise (fun i ↦ (M.map C) i)
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
-        congr 1; apply Finset.sum_congr rfl; intro s _
+        congr 2 with s
         have h_smul : s.piecewise (fun i ↦ ((X : R[X]) • M.map C) i)
             (fun i ↦ (1 : Matrix n n R[X]) i) =
             fun i => (if i ∈ s then (X : R[X]) else 1) •
@@ -453,7 +447,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
         rw [← Finset.sum_filter]
         have h_set : Finset.univ.filter (fun s : Finset n => s.card = k) =
-            Finset.powersetCard k Finset.univ := by
+            Finset.univ.powersetCard k := by
           ext s; simp [Finset.mem_powersetCard]
         rw [h_set]
         exact Finset.sum_congr rfl fun s _ => det_piecewise_one_eq_submatrix_det M s
@@ -462,10 +456,11 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
 Specifically, the (n-k)-th coefficient of the characteristic polynomial of M equals
 `(-1)^k` times the sum of all k×k principal minors of M. -/
 theorem charpoly_coeff_eq_sum_minors
-    [Nontrivial R] (M : Matrix n n R) (k : ℕ) (hk : k ≤ Fintype.card n) :
+    (M : Matrix n n R) (k : ℕ) (hk : k ≤ Fintype.card n) :
     M.charpoly.coeff (Fintype.card n - k) =
-    (-1) ^ k * ∑ s ∈ Finset.univ.filter (fun s : Finset n => s.card = k),
-      (M.submatrix (↑) (↑) : Matrix s s R).det := by
+    (-1) ^ k * ∑ s ∈ Finset.univ.powersetCard k,
+      (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
+  nontriviality R
   have hnd := M.charpoly_natDegree_eq_dim
   have hrev : M.charpoly.coeff (Fintype.card n - k) = M.charpoly.reverse.coeff k := by
     simp [Polynomial.coeff_reverse, hnd, hk]
@@ -475,8 +470,7 @@ theorem charpoly_coeff_eq_sum_minors
     congr 2; ext i j
     simp [Matrix.smul_apply, Matrix.map_apply]
   rw [hcharpolyRev, coeff_det_one_add_X_smul_eq_sum_minors]
-  simp only [univ_filter_card_eq, submatrix_neg, Pi.neg_apply, det_neg,
-    Fintype.card_coe, mul_sum]
+  simp only [submatrix_neg, Pi.neg_apply, det_neg, Fintype.card_coe, mul_sum]
   exact Finset.sum_congr rfl fun s hs => by rw [(Finset.mem_powersetCard.mp hs).2]
 
 end reverse
