@@ -256,7 +256,7 @@ theorem sublistsLen_sublist_of_sublist (n) {l₁ l₂ : List α} (h : l₁ <+ l�
     refine IH.trans ?_
     rw [sublistsLen_succ_cons]
     apply sublist_append_left
-  | cons₂ a s IH => simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
+  | cons_cons a s IH => simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
 
 theorem length_of_sublistsLen :
     ∀ {n} {l l' : List α}, l' ∈ sublistsLen n l → length l' = n
@@ -276,7 +276,7 @@ theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     · simp
     · rw [length, sublistsLen_succ_cons]
       exact mem_append_left _ IH
-  | cons₂ a s IH =>
+  | cons_cons a s IH =>
     rw [length, sublistsLen_succ_cons]
     exact mem_append_right _ (mem_map.2 ⟨_, IH, rfl⟩)
 
@@ -363,7 +363,7 @@ theorem Sublist.sublists' {l₁ l₂ : List α}
   | cons a _ ih =>
     rw [sublists'_cons]
     exact ih.trans (List.sublist_append_left ..)
-  | cons₂ a _ ih =>
+  | cons_cons a _ ih =>
     rw [sublists'_cons, sublists'_cons]
     exact ih.append (ih.map _)
 
