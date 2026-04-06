@@ -105,6 +105,10 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
+theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).prod := by
+  simpa only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
+
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
       ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
@@ -114,12 +118,7 @@ theorem bell_eq (m : Multiset ℕ) :
   · rw [← bell_mul_eq, mul_assoc]
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
-    apply Nat.mul_pos
-    · simp only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂]
-      exact fun _ _ ↦ Nat.factorial_pos _
-    · apply Finset.prod_pos
-      exact fun _ _ ↦ Nat.factorial_pos _
+    exact Nat.mul_pos (map_factorial_prod_pos m) <| Finset.prod_pos fun _ _ ↦ Nat.factorial_pos _
 
 theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
     {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) : ∏ j ∈ m.toFinset.erase 0, (m.count j)! =
@@ -136,19 +135,11 @@ theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
 theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
     ∏ j ∈ ((a ::ₘ m).toFinset.erase 0).erase a, ((a ::ₘ m).count j)! =
     ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)! := by
-  have hset : ((a ::ₘ m).toFinset.erase 0).erase a = (m.toFinset.erase 0).erase a := by
-    ext x
-    by_cases hx : x = a
-    · simp [hx]
-    · simp [Multiset.toFinset_cons, hx]
-  rw [hset]
-  refine Finset.prod_congr rfl ?_
-  intro j hj
-  simp [(Finset.mem_erase.mp hj).1]
-
-theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).prod := by
-  simpa only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
+  refine Finset.prod_congr ?_ ?_
+  · ext x
+    by_cases hx : x = a <;> simp [Multiset.toFinset_cons, hx]
+  · intro j hj
+    simp [(Finset.mem_erase.mp hj).1]
 
 theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = Nat.choose (m.sum + a) a * m.bell := by
