@@ -320,6 +320,12 @@ theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.da
 theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
 
+@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
+  simpa using (rotate_edges c u h).perm.length_eq
+
+@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+  simp [← length_eq_zero_iff]
+
 end WalkDecomp
 
 /-- Given a walk `p` and a node in the support, there exists a natural `n`, such that given node
