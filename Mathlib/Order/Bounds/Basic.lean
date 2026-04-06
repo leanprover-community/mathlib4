@@ -153,8 +153,7 @@ theorem isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) 
   intro hts x hx
   simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
   obtain ⟨y, hy, hys⟩ := hts
-  obtain ⟨z, hz, hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
-  rcases hz with hzs | hzt
+  obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
   · exact (hys z hzs hyz).elim
   · exact ⟨z, hzt, hxz⟩
 
