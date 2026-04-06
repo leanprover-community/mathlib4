@@ -271,21 +271,22 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
 
 open Pointwise
 
-/-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, then every
-natural number is sum of an element of `{0} ∪ A` and `{0} ∪ B`.
-Note that we cannot omit zeroes from this theorem, as shown by the counterexample `A = B = Odd`.
+/-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, and both sets
+contain zero, then every natural number is sum of an element of `A` and an element of `B`.
+Note that we cannot omit the assumption that both sets contain zero, as shown by the
+counterexample `A = B = Odd`.
 -/
-theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [DecidablePred (· ∈ A)]
-    [DecidablePred (· ∈ B)] (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) :
-    ({0} ∪ A) + ({0} ∪ B) = Set.univ := by
+theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ}
+    [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
+    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
   rw [Set.eq_univ_iff_forall]
   rintro (_ | m)
-  · exact ⟨0, by simp, 0, by simp⟩
+  · exact ⟨0, hA, 0, ⟨hB, rfl⟩⟩
   set n := m + 1
   by_cases hnA : n ∈ A
-  · exact ⟨n, by simp [hnA], 0, by simp⟩
+  · exact ⟨n, by simp [hnA], 0, ⟨hB, rfl⟩⟩
   by_cases hnB : n ∈ B
-  · exact ⟨0, by simp, n, by simp [hnB]⟩
+  · exact ⟨0, hA, n, ⟨hnB, by simp⟩⟩
   let f : ℕ ⊕ ℕ → ℕ
     | .inl x => x
     | .inr y => n - y
@@ -302,11 +303,3 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
   obtain ⟨a | b, ha, a | b, hb, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc <;>
   simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at ha hb <;>
   first | grind [inr_mem_disjSum] | exact ⟨a, by simp [*], b, by simp [*], by grind⟩
-
-/-- A version of 'zero_union_add_eq_univ_of_schirelmannDensity_ge_one' which assumes that `0`
-is an element of both `A` and `B`. -/
-theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ}
-    [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
-    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
-  simpa [hA, hB] using zero_union_add_eq_univ_of_schirelmannDensity_ge_one h
-  exact this
