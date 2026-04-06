@@ -1007,55 +1007,36 @@ protected abbrev partialOrder [PartialOrder β] : PartialOrder α := by
   let preorder := e.preorder
   apply e.injective.partialOrder <;> intros <;> rfl
 
-/-- Transfer `PartialOrder` across an `Equiv`. -/
+/-- Transfer `LinearOrder` across an `Equiv`. -/
 protected abbrev linearOrder [LinearOrder β] [DecidableEq α] : LinearOrder α := by
   let max := e.max
   let min := e.min
   let preorder := e.preorder
   let compare := e.ord
-  apply e.injective.linearOrder <;> intros
-  · rfl
-  · rfl
-  · exact e.apply_symm_apply _
-  · exact e.apply_symm_apply _
-  · rfl
+  apply e.injective.linearOrder <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 /-- Transfer `SemilatticeSup` across an `Equiv`. -/
 protected abbrev semilatticeSup [SemilatticeSup β] : SemilatticeSup α := by
   let max := e.max
   let partialOrder := e.partialOrder
-  apply e.injective.semilatticeSup <;> intros
-  · rfl
-  · rfl
-  · exact e.apply_symm_apply _
+  apply e.injective.semilatticeSup <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
-/-- Transfer `SemilatticeSup` across an `Equiv`. -/
+/-- Transfer `SemilatticeInf` across an `Equiv`. -/
 protected abbrev semilatticeInf [SemilatticeInf β] : SemilatticeInf α := by
   let min := e.min
   let partialOrder := e.partialOrder
-  apply e.injective.semilatticeInf <;> intros
-  · rfl
-  · rfl
-  · exact e.apply_symm_apply _
+  apply e.injective.semilatticeInf <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 /-- Transfer `Lattice` across an `Equiv`. -/
 protected abbrev lattice [Lattice β] : Lattice α := by
   let semilatticeSup := e.semilatticeSup
   let semilatticeInf := e.semilatticeInf
-  apply e.injective.lattice <;> intros
-  · rfl
-  · rfl
-  · exact e.apply_symm_apply _
-  · exact e.apply_symm_apply _
+  apply e.injective.lattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 /-- Transfer `DistribLattice` across an `Equiv`. -/
 protected abbrev distribLattice [DistribLattice β] : DistribLattice α := by
   let lattice := e.lattice
-  apply e.injective.distribLattice <;> intros
-  · rfl
-  · rfl
-  · exact e.apply_symm_apply _
-  · exact e.apply_symm_apply _
+  apply e.injective.distribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 end Equiv
 
