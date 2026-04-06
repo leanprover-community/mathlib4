@@ -57,7 +57,6 @@ theorem tensor_ρ {X Y : Action V G} {g : G} :
     @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
@@ -86,7 +85,6 @@ section
 
 variable [BraidedCategory V]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BraidedCategory (Action V G) :=
   .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
@@ -127,8 +125,8 @@ instance FunctorCategoryEquivalence.functorMonoidal :
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
 instance functorCategoryEquivalenceFunctorMonoidal :
-    (functorCategoryEquivalence V G).functor.Monoidal := by
-  dsimp only [functorCategoryEquivalence_functor]; infer_instance
+    (functorCategoryEquivalence V G).functor.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.functor.Monoidal
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
@@ -137,8 +135,8 @@ instance FunctorCategoryEquivalence.inverseMonoidal :
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :
-    (functorCategoryEquivalence V G).inverse.Monoidal := by
-  dsimp only [functorCategoryEquivalence_inverse]; infer_instance
+    (functorCategoryEquivalence V G).inverse.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.inverse.Monoidal
 
 @[simp]
 lemma FunctorCategoryEquivalence.functor_ε :
@@ -266,6 +264,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
       leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
     <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :

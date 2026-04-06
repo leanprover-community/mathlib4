@@ -37,7 +37,6 @@ def PontryaginDual :=
   A →ₜ* Circle
 deriving TopologicalSpace
 
-set_option backward.isDefEq.respectTransparency false in
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle :=
     fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
@@ -72,9 +71,14 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-set_option backward.isDefEq.respectTransparency false in
+#adaptation_note /-- nightly-2026-03-31
+Without this `set_option` we get a PANIC!
+-/
+set_option backward.inferInstanceAs.wrap.data false in
+instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
+
 deriving instance
-  T2Space, CommGroup, IsTopologicalGroup,
+  T2Space, IsTopologicalGroup,
   Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A
