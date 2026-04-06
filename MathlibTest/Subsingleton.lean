@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Subsingleton
 
 private axiom test_sorry : ∀ {α}, α

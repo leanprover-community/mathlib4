@@ -289,7 +289,6 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/
 @[simps] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where

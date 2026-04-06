@@ -312,7 +312,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
     g g' gcont gdiff with ⟨y, hy, h⟩
   use y, hy
   -- The rest is simplifications and trivial calculations
-  grind [smul_eq_mul, taylorWithinEval_self]
+  grind [uIoo, smul_eq_mul, taylorWithinEval_self]
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
