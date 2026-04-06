@@ -38,20 +38,14 @@ open Module Set LinearMap
 
 namespace Submodule
 
--- variable {R : Type*} [CommSemiring R]
--- variable {M : Type*} [AddCommMonoid M] [Module R M]
--- variable {N : Type*} [AddCommMonoid N] [Module R N]
--- variable {p : M →ₗ[R] N →ₗ[R] R}
--- variable {S T : Submodule R M}
-
 variable {R : Type*} [CommSemiring R]
 variable {R₁ : Type*} [CommSemiring R₁]
 variable {R₂ : Type*} [CommSemiring R₂]
--- variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 variable {M₂ : Type*} [AddCommMonoid M₂] [Module R₂ M₂]
 variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
-variable {p : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R}
+variable {p : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 variable {S T : Submodule R₁ M₁}
 
 variable (p S) in
@@ -60,8 +54,8 @@ variable (p S) in
 def dual : Submodule R₂ M₂ where
   carrier := {y | ∀ x ∈ S, p x y = 0}
   zero_mem' := by simp
-  add_mem' {u v} hu hv x hx := by rw [map_add, hu _ hx, hv _ hx, add_zero]
-  smul_mem' c y hy x hx := by rw [map_smulₛₗ, hy _ hx, smul_zero]
+  add_mem' {u v} hu hv x hx := by simp [hu _ hx, hv _ hx]
+  smul_mem' c y hy x hx := by simp [hy _ hx]
 
 @[simp] theorem mem_dual {y : M₂} : y ∈ dual p S ↔ ∀ x ∈ S, p x y = 0 := .rfl
 
@@ -72,8 +66,8 @@ def dual : Submodule R₂ M₂ where
   induction hx using span_induction with
   | mem _ hxs => exact h hxs
   | zero => simp
-  | add _ _ _ _ hy hz => rw [map_add, add_apply, hy, hz, add_zero]
-  | smul _ _ _ hy => simp only [map_smulₛₗ, smul_apply, smul_eq_mul, hy, mul_zero]
+  | add _ _ _ _ hy hz => simp [hy, hz]
+  | smul _ _ _ hy => simp [hy]
 
 theorem mem_dual_iff_le_ker_flip {y : M₂} : y ∈ dual p S ↔ S ≤ ker (p.flip y) := .rfl
 
@@ -135,8 +129,9 @@ theorem dual_span_eq_Inf_dual_span_singleton (s : Set M₁) :
 
 section
 
+variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
 variable {I₁ : R₁ →+* R₂}
-variable {p : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
+variable {p : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] M₂'}
 
 /-- The dual is the kernel of a linear map into a free module. -/
 theorem dual_ker_pi (S) : dual p S = ker (.pi fun x : S => p x) := by
