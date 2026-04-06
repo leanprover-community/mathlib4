@@ -62,11 +62,11 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
   classical
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
-  have hAs : (A.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
-    hA.submatrix Subtype.coe_injective
-  have hBs : (B.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
-    hB.submatrix Subtype.coe_injective
   have hHads : ((A ⊙ B).submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef := by
+    have hAs : (A.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
+      hA.submatrix Subtype.coe_injective
+    have hBs : (B.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
+      hB.submatrix Subtype.coe_injective
     rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
     exact ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy => by
       rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
