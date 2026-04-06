@@ -44,19 +44,17 @@ theorem log_mul_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Se
     · exact DifferentiableOn.mul differentiableOn_id
         (DifferentiableOn.log differentiableOn_id fun z hz ↦
           ne_of_gt <| lt_trans (Real.exp_pos _) <| hex.out.trans_lt hz.1)
-  have h_deriv : ∀ x > 0, deriv (fun x ↦ x * Real.log x) x = Real.log x + 1 :=
-    fun x x_pos ↦ by simp [x_pos.ne']
-  have hc_pos : c > Real.exp (-1) := by linarith [hc.1.1, hex.out]
-  rw [h_deriv c (lt_trans (Real.exp_pos _) hc_pos)] at hc
-  rw [eq_div_iff] at hc <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_pos]
+  have hc_ge_inve : c > Real.exp (-1) := by linarith [hc.1.1, hex.out]
+  have c_ne0 : c ≠ 0 := ne_of_gt <| lt_trans (Real.exp_pos _) hc_ge_inve
+  rw [deriv_mul_log c_ne0, eq_div_iff] at hc
+    <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_ge_inve]
 
 theorem log_mul_self_StrictAntiOn :
     StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
   simp only [StrictAntiOn]
   intro x hex y hey hxy
   obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
-      deriv (fun x : ℝ ↦ x * log x) c =
-        (y * log y - x * log x) / (y - x) := by
+      deriv (fun x : ℝ ↦ x * log x) c = (y * log y - x * log x) / (y - x) := by
     apply_rules [exists_deriv_eq_slope]
     · simp_all [Continuous.continuousOn Real.continuous_mul_log]
     · exact DifferentiableOn.mono Real.differentiableOn_mul_log (by simp_all)
