@@ -612,7 +612,7 @@ theorem lt_subset_interior_le (hf : Continuous f) (hg : Continuous g) :
     { b | f b < g b } ⊆ interior { b | f b ≤ g b } :=
   (interior_maximal fun _ => le_of_lt) <| isOpen_lt hf hg
 
-@[to_dual frontier_ge_subset_eq]
+@[to_dual (reorder := f g, hf hg) frontier_ge_subset_eq]
 theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b ≤ g b } ⊆ { b | f b = g b } := by
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
