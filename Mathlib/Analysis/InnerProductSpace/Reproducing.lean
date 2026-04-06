@@ -126,11 +126,11 @@ lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
   simp [← adjoint_inner_left, kernel]
 
-lemma norm_kerFun_sq_eq_norm_kernel (x) : ‖kerFun H x‖ ^ 2 = ‖kernel H x x‖ := by
+lemma norm_kernel_eq_sq_norm_kerFun (x) : ‖kernel H x x‖ = ‖kerFun H x‖ ^ 2 := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
 
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
-  rw [← norm_kerFun_sq_eq_norm_kernel, Real.sqrt_sq (norm_nonneg _)]
+  rw [norm_kernel_eq_sq_norm_kerFun, Real.sqrt_sq (norm_nonneg _)]
 
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
