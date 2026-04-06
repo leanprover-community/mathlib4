@@ -87,7 +87,7 @@ namespace UniformConvergenceCLM
 
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
-  ContinuousLinearMap.funLike
+  inferInstanceAs <| FunLike (E →SL[σ] F) E F
 
 @[ext]
 theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceCLM σ F 𝔖}
@@ -96,7 +96,7 @@ theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceC
 
 instance instContinuousSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
     ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
-  ContinuousLinearMap.continuousSemilinearMapClass
+  inferInstanceAs <| ContinuousSemilinearMapClass (E →SL[σ] F) σ E F
 
 instance instTopologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
@@ -145,7 +145,8 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
+    AddCommGroup (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
 @[simp]
 theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
@@ -203,7 +204,8 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+    DistribMulAction M (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 @[simp]
 theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -214,7 +216,8 @@ theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    Module R (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
+    Module R (UniformConvergenceCLM σ F 𝔖) :=
+  inferInstanceAs <| Module R (E →SL[σ] F)
 
 theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
@@ -324,7 +327,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
 
 variable {F} in
 theorem isUniformInducing_postcomp
-    {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
@@ -335,7 +338,7 @@ theorem isUniformInducing_postcomp
 
 variable {F} in
 theorem isUniformEmbedding_postcomp
-    {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
     {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformEmbedding g) (𝔖 : Set (Set E)) :
@@ -371,6 +374,38 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   simp_rw [← uniformity_toTopologicalSpace_eq]
   exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
+
+variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E] in
+variable {F} in
+/-- Let `𝔖` be a family of bounded subsets of `F`, and `B : E × F → G` a bilinear map.
+If `B` is (jointly) continuous, then it is `𝔖`-**hypocontinuous**:
+in curried form, it defines a continuous linear map `E →L[𝕜] (UniformConvergenceCLM (.id 𝕜) G 𝔖)`.
+
+Note that, in full generality, the converse is not true.
+See also `ContinuousLinearMap.continuous_of_continuous_uncurry`. -/
+protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
+    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
+    [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+    {𝔖 : Set (Set E)} (h𝔖 : ∀ s ∈ 𝔖, IsVonNBounded 𝕜₁ s)
+    (B : G →ₛₗ[τ] (UniformConvergenceCLM σ F 𝔖))
+    (hB : Continuous (fun p : G × E ↦ B p.1 p.2)) :
+    Continuous B := by
+  apply continuous_of_tendsto_nhds_zero
+  suffices ∀ s ∈ 𝔖, ∀ U ∈ 𝓝 0, ∀ᶠ (g : G) in 𝓝 0, ∀ e ∈ s, B g e ∈ U by
+    simpa [UniformConvergenceCLM.nhds_zero_eq, MapsTo]
+  intro S hS U hU
+  rcases mem_nhds_prod_iff.mp <| hB.tendsto' (0 : G × E) 0 (by simp) hU
+    with ⟨V, hV, W, hW, hVW⟩
+  rcases (h𝔖 S hS) hW |>.eventually_nhdsNE_zero.and eventually_mem_nhdsWithin |>.exists with
+    ⟨c, hc, c_ne : c ≠ 0⟩
+  rcases RingHom.surjective τ (σ c) with ⟨d, hd⟩
+  have d_ne : d ≠ 0 := by rwa [← map_ne_zero τ, hd, map_ne_zero σ]
+  filter_upwards [(set_smul_mem_nhds_zero_iff d_ne).mpr hV]
+  rintro _ ⟨a, ha, rfl⟩ x hx
+  rw [map_smulₛₗ, hd, UniformConvergenceCLM.smul_apply, ← map_smulₛₗ]
+  exact @hVW ⟨_, _⟩ ⟨ha, hc hx⟩
 
 section Equiv
 
@@ -414,7 +449,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 the operator norm when `E` and `F` are normed spaces. -/
 instance topologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
+  fast_instance% UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
 instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
@@ -425,7 +460,7 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
   UniformConvergenceCLM.continuousSMul σ F { S | IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
 instance uniformSpace [UniformSpace F] [IsUniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
+  fast_instance% UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
 instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] :
     IsUniformAddGroup (E →SL[σ] F) :=
@@ -627,6 +662,21 @@ lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
     Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
   continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
+
+/-- A bilinear map `B : E × F → G` which is (jointly) continuous is **hypocontinuous**:
+in curried form, it defines a continuous linear map `E →L[𝕜] F →L[𝕜] G`.
+
+In the normed setting, the converse is true, see `ContinuousLinearMap.continuous₂`.
+In general, however, hypocontinuity is a strictly weaker condition than joint continuity. -/
+theorem continuous_of_continuous_uncurry
+    {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
+    {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
+    [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+    [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
+    (B : G →ₛₗ[τ] (E →SL[σ] F))
+    (hB : Continuous (fun p : G × E ↦ B p.1 p.2)) :
+    Continuous B :=
+  UniformConvergenceCLM.continuous_of_continuous_uncurry (fun _ ↦ id) B hB
 
 end BoundedSets
 
@@ -830,19 +880,8 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modul
 @[simps!]
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   toLinearEquiv := toSpanSingletonLE ..
-  continuous_toFun := by
-    apply continuous_of_tendsto_nhds_zero (toSpanSingletonLE _ _ _)
-    suffices ∀ s : Set 𝕜, IsVonNBounded 𝕜 s → ∀ U ∈ 𝓝 0, ∀ᶠ (a : E) in 𝓝 0, ∀ x ∈ s, x • a ∈ U by
-      simpa [ContinuousLinearMap.nhds_zero_eq, MapsTo]
-    intro s hsb U hU
-    rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
-      with ⟨V, hV, W, hW, hVW⟩
-    rcases (eventually_cobounded_mapsTo <| hsb hV).and (eventually_ne_cobounded 0) |>.exists
-      with ⟨c, hc, hc₀⟩
-    filter_upwards [(set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hW]
-    rintro _ ⟨a, ha, rfl⟩ x hx
-    rw [smul_comm x c⁻¹, ← smul_assoc]
-    exact @hVW (_, _) ⟨hc hx, ha⟩
+  continuous_toFun := continuous_of_continuous_uncurry _ <|
+    continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
 
 end ContinuousLinearMap
