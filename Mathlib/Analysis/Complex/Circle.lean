@@ -84,6 +84,9 @@ lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
 @[simp, norm_cast] lemma coe_zpow (z : Circle) (n : ℤ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
 @[simp, norm_cast] lemma coe_neg (x : Circle) : ↑(-x) = -(x : ℂ) := rfl
 
+lemma neg_ne_self (x : Circle) : -x ≠ x :=
+  fun h ↦ coe_ne_zero x <| neg_eq_self.mp <| coe_neg x ▸ congrArg Subtype.val h
+
 /-- The coercion `Circle → ℂ` as a monoid homomorphism. -/
 @[simps]
 def coeHom : Circle →* ℂ where
