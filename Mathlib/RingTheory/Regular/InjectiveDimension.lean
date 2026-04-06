@@ -49,18 +49,10 @@ lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := 
     (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
 
 variable {R} in
-lemma IsLocalRing.ResidueField.map_injective [IsLocalRing R] {S : Type*} [CommRing S]
-    [IsLocalRing S] (f : R →+* S) [IsLocalHom f] :
-    Function.Injective (ResidueField.map f) := by
-  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
-  intro x hx
-  simpa only [map_eq_zero] using hx
-
-variable {R} in
 lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
     [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
     Function.Bijective (ResidueField.map f) := by
-  refine ⟨ResidueField.map_injective f, ?_⟩
+  refine ⟨RingHom.injective _, ?_⟩
   apply Ideal.Quotient.lift_surjective_of_surjective
   convert Function.Surjective.comp (Ideal.Quotient.mk_surjective (I := (maximalIdeal S))) surj
 
@@ -126,9 +118,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
   have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
   have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
-  have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := by
-    ext
-    simp [S]
+  have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := rfl
   simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
   have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
     (IsLocalRing.maximalIdeal_le_jacobson _) hx
@@ -140,7 +130,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   rw [eq_comm, eq_top_iff]
   intro y hy
   rcases epi y with ⟨z, hz⟩
-  simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
+  simp only [ModuleCat.smulShortComplex, Ext.mk₀_smul,
       Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
@@ -342,7 +332,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)) := by
   let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
   induction n generalizing N
-  · simp only [ModuleCat.smulShortComplex_X₁, Nat.reduceAdd, AddMonoidHom.coe_comp]
+  · simp only [ModuleCat.smulShortComplex, Nat.reduceAdd, AddMonoidHom.coe_comp]
     refine Function.Bijective.comp ?_ ?_
     · apply extClass_postcomp_bijective_of_isSMulRegular regM
       ext u

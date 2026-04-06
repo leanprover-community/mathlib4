@@ -872,9 +872,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
       have exac := Ext.contravariant_sequence_exact₂' S_exact (ModuleCat.of R R) k
       have mono := exac.mono_g ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_src _)
-      have : S.f = x • 𝟙 (ModuleCat.of R (R ⧸ p)) := by
-        ext
-        simp [S]
+      have : S.f = x • 𝟙 (ModuleCat.of R (R ⧸ p)) := rfl
       simp only [S, this, AddCommGrpCat.mono_iff_injective, AddCommGrpCat.hom_ofHom] at mono
       simp only [ModuleCat.smulShortComplex] at mono
       have surjx : Function.Surjective
