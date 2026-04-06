@@ -38,7 +38,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   let Sg := (Shrink.linearEquiv.{v} R (R ⧸ I)).symm.comp
     (I.mkQ.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
   have exac : Function.Exact Sf Sg := by
-    rw [LinearEquiv.fst_comp_exact_iff_exact, LinearEquiv.comp_snd_exact_iff_exact,
+    rw [LinearEquiv.precomp_exact_iff_exact, LinearEquiv.postcomp_exact_iff_exact,
       LinearEquiv.conj_symm_exact_iff_exact, LinearMap.exact_iff, I.ker_mkQ, I.range_subtype]
   have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
   have surj : Function.Surjective Sg := by simpa [Sg] using I.mkQ_surjective

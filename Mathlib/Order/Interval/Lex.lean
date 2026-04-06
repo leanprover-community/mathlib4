@@ -9,6 +9,7 @@ public import Mathlib.Order.Interval.Basic
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Tactic.FastInstance
 meta import Mathlib.Order.Interval.Basic  -- shake: keep (for `#eval` testing)
+meta import Mathlib.Order.Lex  -- shake: keep (for `#eval` testing)
 
 /-!
 # The lexicographic order on intervals
