@@ -6,6 +6,7 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveCodiscrete
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 public import Mathlib.CategoryTheory.CodiscreteCategory
 
@@ -20,9 +21,6 @@ We show that the type of functor from `WalkingIso` into any category is equivale
 isomorphisms in that category.
 
 Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
-Since the morphism types in `WalkingIso` are given by `unit`, the `n`-simplices of `coherentIso` are
-equivalent to `Fin 2`-vectors of length `n + 1`. This shows that the `n`-simplices of `coherentIso`
-have decidable equality.
 Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) has an inverse,
 and `invStructOfEqMapHom` concludes from this that for any simplicial set `X`,
 any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
@@ -137,23 +135,6 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
 end
 
 end WalkingIso
-
-namespace Codiscrete
-
-open Simplicial
-
-/-- Since the morphisms in a codiscrete category do not carry information, an n-simplex of
-coherentIso is equivalent to an X-vector of length (n + 1). -/
-def equivFun {X : Type u} {n : ℕ} : nerve (Codiscrete X) _⦋n⦌ ≃ (Fin (n + 1) → X) where
-  toFun f n := (f.obj n).as
-  invFun f := .mk (fun n ↦ .mk (f n)) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-
-/-- If a type `X` has decidable equality, the nerve of the codiscrete category on `X`
-has decidable equality as well. -/
-instance {X : Type u} [DecidableEq X] {n : ℕ} : DecidableEq (nerve (Codiscrete X) _⦋n⦌) :=
-  fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivFun)
-
-end Codiscrete
 
 end CategoryTheory
 
