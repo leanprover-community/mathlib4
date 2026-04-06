@@ -726,7 +726,18 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
         rcases am with ⟨a₂, am₂, fa₂⟩
         exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `obtain`/`specialize`. It is not yet clear whether this is due to defeq abuse
+    in Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+    proof was:
+    ```
     have := h₁ (Nat.lt_succ_self _)
+    grind [mem_unique, PFun.mem_fix_iff]
+    ```
+    -/
+    obtain ⟨c, hc⟩ := h₁ (Nat.lt_succ_self _)
+    specialize this _ _ hc
     grind [mem_unique, PFun.mem_fix_iff]
   · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
         ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
@@ -740,6 +751,10 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer),
+      the `clear_value F` was not required here. -/
+      clear_value F
       grind
 
 theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
