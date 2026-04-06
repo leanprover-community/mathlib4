@@ -10,10 +10,11 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.Convex.Deriv
 
 /-!
-# The function `x ↦ - x * log x`
+# The functions `x ↦ x * log x` and `x ↦ - x * log x`
 
-The purpose of this file is to record basic analytic properties of the function `x ↦ - x * log x`,
-which is notably used in the theory of Shannon entropy.
+The purpose of this file is to record basic analytic properties of
+- `x ↦ x * log x`, called `mul_log` in theorem statements
+- `x ↦ - x * log x`, named `negMulLog`, which is notably used in the theory of Shannon entropy.
 
 ## Main definitions
 
@@ -26,6 +27,19 @@ which is notably used in the theory of Shannon entropy.
 open scoped Topology
 
 namespace Real
+
+section mulLog
+
+lemma self_sub_one_lt_mul_log {x : ℝ} (h0 : 0 ≤ x) (h1 : x ≠ 1) : x - 1 < x * x.log := by
+  by_cases hx_pos : 0 < x
+  · nlinarith [Real.log_inv x, Real.log_lt_sub_one_of_pos (inv_pos.mpr hx_pos) (by aesop),
+      mul_inv_cancel₀ hx_pos.ne']
+  · cases lt_or_eq_of_le h0 <;> aesop
+
+lemma self_sub_one_le_mul_log {x : ℝ} (h0 : 0 ≤ x) : x - 1 ≤ x * x.log := by
+  rcases eq_or_ne x 1 with rfl | h1
+  · simp
+  · exact le_of_lt (self_sub_one_lt_mul_log h0 h1)
 
 @[fun_prop]
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
@@ -136,6 +150,8 @@ lemma mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
 lemma mul_log_nonpos {x : ℝ} (hx₀ : 0 ≤ x) (hx₁ : x ≤ 1) : x * log x ≤ 0 :=
   mul_nonpos_of_nonneg_of_nonpos hx₀ (log_nonpos hx₀ hx₁)
 
+end mulLog
+
 section negMulLog
 
 /-- The function `x ↦ - x * log x` from `ℝ` to `ℝ`. -/
@@ -204,6 +220,15 @@ lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMul
 
 lemma concaveOn_negMulLog : ConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog :=
   strictConcaveOn_negMulLog.concaveOn
+
+lemma negMulLog_lt_one_sub_self {x : ℝ} (h0 : 0 ≤ x) (h1 : x ≠ 1) : x.negMulLog < 1 - x := by
+  unfold negMulLog
+  linarith [self_sub_one_lt_mul_log h0 h1]
+
+lemma negMulLog_le_one_sub_self {x : ℝ} (h0 : 0 ≤ x) : x.negMulLog ≤ 1 - x :=by
+  rcases eq_or_ne x 1 with rfl | h1
+  · simp
+  · exact le_of_lt (negMulLog_lt_one_sub_self h0 h1)
 
 end negMulLog
 
