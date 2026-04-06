@@ -100,12 +100,12 @@ Lemma for `var_sub` -/
 
 /-- Substitution of var n. -/
 @[simp] public theorem var_sub_elim {n s} : ((𝕧 n).sub) n s = s := by
-  simp_all only [sub, subst, ↓reduceIte, decre_incre_elim] 
+  simp_all only [sub, subst, ↓reduceIte, decre_incre_elim]
 
 /-- Vacuously Substitution of var k to var k. -/
 @[simp] public theorem var_lt_sub {k n s} (hk : k < n) :
     ((𝕧 k).sub) n s = 𝕧 k := by
-  simp_all only [sub, subst, Nat.ne_of_lt hk, ↓reduceIte, decre, Nat.not_lt_of_gt hk] 
+  simp_all only [sub, subst, Nat.ne_of_lt hk, ↓reduceIte, decre, Nat.not_lt_of_gt hk]
 
 /-- Vacuously Substitution of var k to var k - 1. -/
 @[simp] public theorem var_gt_sub {k n s} (hk : k > n) :
