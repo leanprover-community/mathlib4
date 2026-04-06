@@ -84,7 +84,7 @@ is the smallest `r` such that `r • s ∩ L` spans a subspace of dimension stri
 
 While we provide a very general definition, the most common usage is when `L` is a discrete
 submodule (i.e., a copy of `ℤ^r` in `E` for some `r ≤ finrank ℝ E`) and `s` is convex, balanced,
-absorbent, and bounded, which will be our focus later in the file.
+absorbent, and bounded.
 
 Note that the usual definition of successive minimum is that `r • s ∩ L` spans a subspace of
 dimension *at least* `i`. However, this makes the `0`-th successive minimum be `0`, which is
@@ -247,11 +247,12 @@ lemma lt_finrank_span_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
 
 variable (L) in
 /-- A bounded set `s` around the origin admits a directional set with respect to any discrete
-additive subgroup `L`, i.e. a linearly independent subset of the ambient space `E` lying in `L` such
-that spans the subspace `span ℝ L ≤ E` and such that the `i`-th basis element belongs to the dilate
-of `s` by its `i`-th successive minimum.
+additive subgroup `L`, i.e., a linearly independent subset of the ambient space `E` lying in `L`
+that spans over `ℝ` the subspace `span ℝ L ≤ E` and such that the `i`-th basis element belongs to
+the dilate of `s` by its `i`-th successive minimum.
 
 Note that a directional basis does not necessarily span the subgroup `L` with integer coefficients.
+See `exists_directional_set` for a version that concludes the set is `LinearIndependent`.
 -/
 lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0) :
     ∃ v : Fin (finrank ℤ L) → E,
@@ -284,11 +285,16 @@ lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s
     refine Fin.lastCases ?_ ?_ j
     · simpa [Fin.snoc_last] using hw
     · intro i; simp [Fin.snoc_castSucc, hv i]
-  · exact hvli.fin_snoc hwv
+  · exact hvli.finSnoc hwv
 
 variable (L) in
-/-- `exists_directional_set'` with the weaker but perhaps more natural conclusion that the
-spanning set `v` is linearly independent over `ℤ`.
+/-- A bounded set `s` around the origin admits a directional set with respect to any discrete
+additive subgroup `L`, i.e., a linearly independent subset of the ambient space `E` lying in `L`
+that spans over `ℝ` the subspace `span ℝ L ≤ E` and such that the `i`-th basis element belongs to
+the dilate of `s` by its `i`-th successive minimum. Here we provide the weaker conclusion that
+the set is `LinearIndependent` over `ℤ`.
+
+See `exists_directional_set'` for a version that concludes the `ℝ`-span is all of `span ℝ L`.
 -/
 lemma exists_directional_set (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0) :
     ∃ v : Fin (finrank ℤ L) → L,

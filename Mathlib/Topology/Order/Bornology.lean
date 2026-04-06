@@ -100,6 +100,45 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
 
 end Preorder
 
+section LinearOrder
+
+variable [Nonempty α] [LinearOrder α] [NoMaxOrder α] [NoMinOrder α] [IsOrderBornology α]
+
+lemma IsOrderBornology.cobounded_eq : Bornology.cobounded α = Filter.atTop ⊔ Filter.atBot := by
+  refine Filter.ext ?_
+  intro s
+  rw [Filter.mem_sup, Filter.atTop_basis_Ioi.mem_iff, Filter.atBot_basis_Iio.mem_iff,
+    ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+  constructor
+  · rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
+    rw [mem_lowerBounds_iff_subset_Ici, ← compl_compl (Ici a), compl_subset_compl, compl_Ici] at ha
+    rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
+    constructor
+    · use b
+    · use a
+  · rintro ⟨⟨b, _, hb⟩, ⟨a, _, ha⟩⟩
+    obtain ⟨b', hb'⟩ := exists_gt b
+    obtain ⟨a', ha'⟩ := exists_lt a
+    constructor
+    · use a'
+      intro x hx
+      by_contra! hx'
+      have : x ∈ Iio a := hx'.trans ha'
+      exact hx (mem_of_mem_of_subset this ha)
+    · use b'
+      intro x hx
+      by_contra! hx'
+      have : x ∈ Ioi b := hb'.trans hx'
+      exact hx (mem_of_mem_of_subset this hb)
+
+lemma IsOrderBornology.atTop_le_cobounded : .atTop ≤ Bornology.cobounded α := by
+  simp [IsOrderBornology.cobounded_eq]
+
+lemma IsOrderBornology.atBot_le_cobounded : .atTop ≤ Bornology.cobounded α := by
+  simp [IsOrderBornology.cobounded_eq]
+
+end LinearOrder
+
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
 
