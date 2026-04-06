@@ -60,6 +60,7 @@ finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` t
 
 variable (v : K) (n : ℕ)
 
+omit [IsStrictOrderedRing K] in
 nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
     ∃ conts : Pair ℚ, (of v).contsAux n = (conts.map (↑) : Pair K) :=
   Nat.strong_induction_on n
@@ -98,20 +99,24 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           cases ppred_conts; cases pred_conts
           simp [nextConts, nextNum, nextDen])
 
+omit [IsStrictOrderedRing K] in
 theorem exists_gcf_pair_rat_eq_nth_conts :
     ∃ conts : Pair ℚ, (of v).conts n = (conts.map (↑) : Pair K) := by
   rw [nth_cont_eq_succ_nth_contAux]; exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
 
+omit [IsStrictOrderedRing K] in
 theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩
   use a
   simp [num_eq_conts_a, nth_cont_eq]
 
+omit [IsStrictOrderedRing K] in
 theorem exists_rat_eq_nth_den : ∃ q : ℚ, (of v).dens n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨_, b⟩, nth_cont_eq⟩
   use b
   simp [den_eq_conts_b, nth_cont_eq]
 
+omit [IsStrictOrderedRing K] in
 /-- Every finite convergent corresponds to a rational number. -/
 theorem exists_rat_eq_nth_conv : ∃ q : ℚ, (of v).convs n = (q : K) := by
   rcases exists_rat_eq_nth_num v n with ⟨Aₙ, nth_num_eq⟩
@@ -121,6 +126,7 @@ theorem exists_rat_eq_nth_conv : ∃ q : ℚ, (of v).convs n = (q : K) := by
 
 variable {v}
 
+omit [IsStrictOrderedRing K] in
 /-- Every terminating continued fraction corresponds to a rational number. -/
 theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
   obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convs n := of_correctness_of_terminates terminates
