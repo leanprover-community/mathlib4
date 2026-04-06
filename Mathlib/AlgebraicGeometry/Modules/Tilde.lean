@@ -83,9 +83,6 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
   map_preimage f := rfl
   preimage_map f := rfl
 
-instance : (modulesSpecToSheaf (R := R)).ReflectsIsomorphisms :=
-  SpecModulesToSheafFullyFaithful.reflectsIsomorphisms
-
 instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFaithful.faithful
 
 instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
