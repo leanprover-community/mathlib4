@@ -33,6 +33,7 @@ variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 open TopologicalSpace Topology
 
 /-- The topology coinduced by all maps from ℝⁿ into a space. -/
+@[implicit_reducible]
 def TopologicalSpace.deltaGenerated (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   ⨆ f : (n : ℕ) × C(((Fin n) → ℝ), X), coinduced f.2 inferInstance
 
@@ -162,7 +163,7 @@ protected lemma DeltaGeneratedSpace.sup {X : Type*} {t₁ t₂ : TopologicalSpac
 /-- Quotients of delta-generated spaces are delta-generated. -/
 lemma Topology.IsQuotientMap.deltaGeneratedSpace [DeltaGeneratedSpace X]
     {f : X → Y} (h : IsQuotientMap f) : DeltaGeneratedSpace Y :=
-  h.2 ▸ DeltaGeneratedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ DeltaGeneratedSpace.coinduced f
 
 /-- Quotients of delta-generated spaces are delta-generated. -/
 instance Quot.deltaGeneratedSpace [DeltaGeneratedSpace X] {r : X → X → Prop} :

@@ -25,7 +25,6 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
@@ -160,6 +159,21 @@ lemma mem_ofSimplex_obj_iff {n : ℕ} (x : X _⦋n⦌) {m : SimplexCategoryᵒ�
   dsimp [ofSimplex, Subfunctor.ofSection]
   aesop
 
+lemma ofSimplex_map_le {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌)
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) ≤ ofSimplex x := by
+  simp only [Subfunctor.ofSection_le_iff]
+  exact ⟨f.op, by simp⟩
+
+@[simp]
+lemma ofSimplex_map_of_epi {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) = ofSimplex x := by
+  refine le_antisymm (ofSimplex_map_le f x) ?_
+  simp only [Subfunctor.ofSection_le_iff]
+  have := isSplitEpi_of_epi f
+  exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+
 section
 
 variable (f : X ⟶ Y)
@@ -186,7 +200,6 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
@@ -240,6 +253,13 @@ lemma preimage_iSup {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
 @[simp]
 lemma preimage_iInf {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
     (⨅ i, A i).preimage p = ⨅ i, (A i).preimage p := by aesop
+
+lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
 
 end
 
@@ -319,6 +339,13 @@ lemma preimage_eq_top_iff (B : X.Subcomplex) (f : Y ⟶ X) :
 lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
+
+@[simp]
+lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
+    (B.preimage f).image f = B := by
+  apply le_antisymm (B.image_preimage_le f)
+  · intro n y hy
+    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← FunctorToTypes.comp]⟩
 
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism

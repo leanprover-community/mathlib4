@@ -481,6 +481,13 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (�
 
 end Bundle.Trivialization
 
+variable (F E) [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
+/-- A continuous linear equivalence between the fiber at `b` and the model fiber,
+induced by the preferred trivialisation at each `b`. -/
+@[simps!]
+noncomputable def VectorBundle.continuousLinearEquivAt (b : B) : E b ≃L[R] F :=
+  (trivializationAt F E b).continuousLinearEquivAt R b (FiberBundle.mem_baseSet_trivializationAt' b)
+
 /-! ### Constructing vector bundles -/
 
 variable (B F)
@@ -554,13 +561,15 @@ def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
-  Z.toFiberBundleCore.topologicalSpaceFiber x
+  letI : TopologicalSpace (Z.toFiberBundleCore.Fiber x) :=
+    Z.toFiberBundleCore.topologicalSpaceFiber x
+  inferInstanceAs <| TopologicalSpace (Z.toFiberBundleCore.Fiber x)
 
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
-  inferInstanceAs (AddCommGroup F)
+  inferInstanceAs <| AddCommGroup F
 
 instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
-  inferInstanceAs (Module R F)
+  inferInstanceAs <| Module R F
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
 @[reducible, simp, mfld_simps]
@@ -585,7 +594,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 /-- Topological structure on the total space of a vector bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
-  Z.toFiberBundleCore.toTopologicalSpace
+  fast_instance% Z.toFiberBundleCore.toTopologicalSpace
 
 variable (b : B) (a : F)
 
@@ -670,7 +679,7 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 
 instance fiberBundle : FiberBundle F Z.Fiber :=
-  Z.toFiberBundleCore.fiberBundle
+  fast_instance% Z.toFiberBundleCore.fiberBundle
 
 protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
 
@@ -811,6 +820,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
+@[implicit_reducible]
 def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpace F E) :=
   a.toFiberPrebundle.totalSpaceTopology
 
@@ -846,6 +856,7 @@ theorem continuous_totalSpaceMk (b : B) :
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
 `VectorPrebundle.toVectorBundle`. -/
+@[implicit_reducible]
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 

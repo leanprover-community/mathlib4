@@ -418,6 +418,7 @@ theorem mem_extChartAt_ind_source (x : M) (hx : x ∈ s) :
   fs.mem_extChartAt_source_of_eq_one (fs.apply_ind x hx)
 
 /-- The index type of a `SmoothBumpCovering` of a compact manifold is finite. -/
+@[implicit_reducible]
 protected def fintype [CompactSpace M] : Fintype ι :=
   fs.locallyFinite.fintypeOfCompact fun i => (fs i).nonempty_support
 
@@ -695,7 +696,7 @@ theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
-  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι M]
+  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_comm ι M]
     using exists_contMDiffMap_forall_mem_convex_of_local_const I
       Metric.exists_forall_closedEBall_subset_aux₂
       (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
