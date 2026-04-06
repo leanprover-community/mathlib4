@@ -659,25 +659,7 @@ theorem cliqueFreeOn_iff_cliqueFree_subgraph (s : Set α) (n : ℕ) :
 theorem Iso.cliqueFreeOn_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (s : Set α)
     (n : ℕ) : G.CliqueFreeOn s n ↔ G'.CliqueFreeOn (f '' s) n := by
   repeat rw [cliqueFreeOn_iff_cliqueFree_subgraph]
-  sorry
-/-   constructor
-  · intro h' t' hts'
-    let t : Finset α := t'.preimage f f.injective.injOn
-    have htt' : t.map f = t' := by ext x; simp [t]
-    have hts : (t : Set α) ⊆ s := by
-      intro u hu
-      rw [coe_preimage, Set.mem_preimage, SetLike.mem_coe, ← mem_coe] at hu
-      grw [hts'] at hu
-      rw [Set.mem_image] at hu
-      obtain ⟨v, hv, hvf⟩ := hu
-      have hvu : v = u := f.apply_eq_iff_eq.mp hvf
-      exact hvu ▸ hv
-    have := (f.isNClique_iff n t).not.mp (h' hts)
-    exact htt' ▸ (f.isNClique_iff n t).not.mp (h' hts)
-  · intro h t hts
-    let t' : Finset β := t.map f
-    have hts' : (t' : Set β) ⊆ f '' s := Set.subset_image_iff.mpr ⟨t, hts, by simp [t']⟩
-    exact (f.isNClique_iff n t).not.mpr (h hts') -/
+  exact (f.induceIso f.toEquiv.bijOn_image).cliqueFree_iff n
 
 end CliqueFreeOn
 
