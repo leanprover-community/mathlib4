@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 zayn7lie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zayn Wang, Markym Radziwill
+Authors: Zayn Wang, Maksym Radziwill
 -/
 import Mathlib.Data.Nat.Basic
 
