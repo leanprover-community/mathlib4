@@ -31,6 +31,12 @@ variable {n R S : Type*} [Fintype n] [DecidableEq n]
 namespace Matrix.GeneralLinearGroup
 
 @[fun_prop]
+theorem continuous_apply {α : Type*} [TopologicalSpace α]
+    (f : α → GL n R) (hf : Continuous f) (i : n) :
+    Continuous (fun x ↦ f x i) :=
+  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
+
+@[fun_prop]
 lemma _root_.Continuous.generalLinearGroup_map (hf : Continuous f) :
     Continuous (map (n := n) f) :=
   (continuous_id.matrix_map hf).units_map
@@ -75,6 +81,12 @@ local notation "SL" => SpecialLinearGroup
 
 instance : TopologicalSpace (SL n R) :=
   inferInstanceAs <| TopologicalSpace (Subtype _)
+
+@[fun_prop]
+theorem continuous_apply {α : Type*} [TopologicalSpace α]
+    (f : α → SL n R) (hf : Continuous f) (i) :
+    Continuous (fun x ↦ f x i) :=
+  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
 
 /-- The topology on `SL n R` is functorial in `R`. -/
 @[fun_prop]
