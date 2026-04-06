@@ -176,8 +176,9 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
   have aux (n : ℕ): projectiveDimension M ≤ n ↔
     projectiveDimension.{v} (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) ≤ n := by
     simp only [projectiveDimension_le_iff]
-    induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
+    induction n generalizing M with
+    | zero =>
+      simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · have := (free_iff_quotSMulTop_free R M mem reg2).mpr Module.free_of_flat_of_isLocalRing
@@ -190,17 +191,14 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
           IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
         have := (free_iff_quotSMulTop_free R M mem reg2).mp Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
-    · rename_i n ih _
+    | succ n ih =>
       obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R M
       let S := f.shortComplexKer
-      have S_exact' : Function.Exact (LinearMap.ker f).subtype f := by
-        intro x
-        simp
       have S_exact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have reg2'' : IsSMulRegular S.X₂ x := reg1.of_free S.X₂
       have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
-      have Sx_exact' := QuotSMulTop_map_exact x S_exact' surjf
+      have Sx_exact' := QuotSMulTop_map_exact x f.exact_subtype_ker_map surjf
       let Sx := ModuleCat.shortComplexOfCompEqZero (QuotSMulTop_map x (LinearMap.ker f).subtype)
         (QuotSMulTop_map x f) Sx_exact'.linearMap_comp_eq_zero
       have inj : Function.Injective (QuotSMulTop_map x (LinearMap.ker f).subtype) := by
@@ -219,7 +217,7 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         exact Subtype.val_inj.mp hz
       have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
         (QuotSMulTop_map_surjective x surjf)
-      let _ := (free_iff_quotSMulTop_free R N mem reg2'').mpr inferInstance
+      have := (free_iff_quotSMulTop_free R N mem reg2'').mpr inferInstance
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
         (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
