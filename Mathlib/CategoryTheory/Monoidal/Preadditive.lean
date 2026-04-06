@@ -38,6 +38,14 @@ class MonoidalPreadditive : Prop where
   whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by cat_disch
   add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by cat_disch
 
+lemma MonoidalPreadditive.of_functorAdditive
+    [∀ (X : C), (tensorLeft X).Additive] [∀ (X : C), (tensorRight X).Additive] :
+    MonoidalPreadditive C where
+  whiskerLeft_zero := (tensorLeft _).map_zero _ _
+  whiskerLeft_add _ _ := (tensorLeft _).map_add
+  zero_whiskerRight := (tensorRight _).map_zero _ _
+  add_whiskerRight _ _ := (tensorRight _).map_add
+
 attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
 attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
 

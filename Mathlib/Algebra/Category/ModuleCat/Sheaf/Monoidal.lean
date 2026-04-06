@@ -141,10 +141,7 @@ instance : (tensorRight F).Additive :=
 
 end
 
-instance : MonoidalPreadditive (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) where
-  whiskerLeft_zero {F _ _} := by apply (tensorLeft F).map_zero
-  whiskerLeft_add {F _ _} _ _ := by apply (tensorLeft F).map_add
-  zero_whiskerRight {F} := by apply (tensorRight F).map_zero
-  add_whiskerRight {F _ _} _ _ := by apply (tensorRight F).map_add
+instance : MonoidalPreadditive (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) :=
+  .of_functorAdditive _
 
 end SheafOfModules
