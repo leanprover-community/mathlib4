@@ -67,14 +67,14 @@ theorem adjoin_aeval_self (R : Type*) {A : Type*} [CommSemiring R] [Semiring A]
     aeval (x : Algebra.adjoin R {x}) p = (aeval x p : Algebra.adjoin R {x}) := by
   ext; simp
 
-theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
+theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
   simp_all
 
-theorem adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
+theorem adjoin_eq_exists_aeval (a : R[x]) :
     ∃ p : R[X], aeval x p = a := by
-  have : (a : A) ∈ Algebra.adjoin R {x} := by simp
+  have : (a : A) ∈ R[x] := by simp
   set y := (a : A) with h
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
@@ -97,7 +97,7 @@ instance instCommSemiringAdjoinSingleton :
         mul_comm p' q']
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| Algebra.adjoin R {x} where
+    CommRing <| R[x] where
 
 end aeval
 

@@ -327,41 +327,34 @@ theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMa
 
 namespace Subalgebra
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
     IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
     Transcendental R x ↔ Transcendental R x.1 :=
   isAlgebraic_iff_isAlgebraic_val.not
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
     IsAlgebraic R x :=
   halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
     (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
     IsAlgebraic (⊥ : Subalgebra R S) x ↔ IsAlgebraic R x :=
   isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
     Function.injective_id (by rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
     [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
   Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
     (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algebra_isAlgebraic_bot_left_iff (h : Function.Injective (algebraMap R S)) :
     Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
   simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
 
-set_option backward.isDefEq.respectTransparency false in
 instance algebra_isAlgebraic_bot_right [Nontrivial R] :
     Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
   ⟨by rintro ⟨_, x, rfl⟩; exact isAlgebraic_algebraMap _⟩
@@ -415,7 +408,6 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
   because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
@@ -430,7 +422,6 @@ theorem IsAlgebraic.tower_top_of_subalgebra_le
 theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
   because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
@@ -541,6 +532,8 @@ variable {R S : Type*} [CommRing R]
 
 section
 
+open Algebra
+
 variable [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
@@ -553,7 +546,7 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
 theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
-    ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
+    ∃ᵉ (t ∈ R[s]) (r ≠ (0 : R)), s * t = algebraMap R S r := by
   have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
   refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
@@ -573,7 +566,7 @@ theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
   have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
-  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+  ⟨s * a, r, hr, by rw [smul_def, h, mul_assoc]⟩
 
 variable (R)
 
@@ -638,7 +631,6 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
     aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     (x⁻¹ : L) ∈ A := by
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx

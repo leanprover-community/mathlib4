@@ -257,7 +257,6 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
         single_le_sum (f := fun k ↦ x ^ k / k !) (fun k _ ↦ by positivity) (self_mem_range_succ n)
     _ ≤ exp x := sum_le_exp_of_nonneg hx _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by
@@ -671,6 +670,12 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
   calc c * x
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
+
+theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
+    (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
+  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+    fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
+    (exp_sum s f).symm.le
 
 end Real
 
