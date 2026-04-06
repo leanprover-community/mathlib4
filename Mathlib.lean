@@ -2283,6 +2283,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.SpecialFunctions.Log.Inequalities
 public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
@@ -6017,6 +6018,7 @@ public import Mathlib.Probability.BorelCantelli
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.CentralLimitTheorem
 public import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
+public import Mathlib.Probability.Concentration.JohnsonLindenstrauss
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
@@ -6116,6 +6118,7 @@ public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.ChiSquared
 public import Mathlib.Probability.Moments.ComplexMGF
 public import Mathlib.Probability.Moments.Covariance
 public import Mathlib.Probability.Moments.CovarianceBilin
