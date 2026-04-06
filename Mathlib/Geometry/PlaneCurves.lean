@@ -40,7 +40,7 @@ namespace PlaneCurve
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-/-- Oriented curvature of a plane curve `c` at `t`. This is usually called just the curvature of a 
+/-- Oriented curvature of a plane curve `c` at `t`. This is usually called just the curvature of a
 plane curve in most elementary differential geometry texts, but because this definition is slightly
 different from the general definition of the curvature of a general parametrized curve (which is
 always non-negative and only expresses magnitude as opposed to this definition which can also be
