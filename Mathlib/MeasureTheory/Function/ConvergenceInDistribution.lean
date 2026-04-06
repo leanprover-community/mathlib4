@@ -317,4 +317,96 @@ lemma TendstoInDistribution.add_of_tendstoInMeasure_const {X Y : ι → Ω'' →
   hXZ.continuous_comp_prodMk_of_tendstoInMeasure_const
     (g := fun (x : E × E) ↦ x.1 + x.2) (by fun_prop) hY_tendsto hY
 
+/-- **Slutsky's theorem** for a function continuous on a set: if `X n` converges in distribution
+to `Z`, `Y n` converges in probability to a constant `c`, `g` is continuous on a set `s`,
+`(Z ω, c)` lies in `s` for a.e. `ω`, and `(X i ω, Y i ω)` lies in `s` for a.e. `ω` (for each
+`i`), then `g (X n, Y n)` converges in distribution to `g (Z, c)`. -/
+theorem TendstoInDistribution.continuousOn_comp_prodMk_of_tendstoInMeasure_const {E' F : Type*}
+    {mE' : MeasurableSpace E'} [SeminormedAddCommGroup E'] [SecondCountableTopology E']
+    [BorelSpace E'] [TopologicalSpace F] [MeasurableSpace F] [BorelSpace F]
+    {s : Set (E × E')} (hs : IsClosed s) {g : E × E' → F} (hg : ContinuousOn g s)
+    [l.IsCountablyGenerated] {X : ι → Ω'' → E} {Y : ι → Ω'' → E'}
+    {c : E'} (hXZ : TendstoInDistribution X l Z (fun _ ↦ μ'') μ')
+    (hY_tendsto : TendstoInMeasure μ'' Y l (fun _ ↦ c))
+    (hY : ∀ i, AEMeasurable (Y i) μ'')
+    (hs_lim : ∀ᵐ ω ∂μ', (Z ω, c) ∈ s)
+    (hs_seq : ∀ i, ∀ᵐ ω ∂μ'', (X i ω, Y i ω) ∈ s) :
+    TendstoInDistribution (fun n ω ↦ g (X n ω, Y n ω)) l
+      (fun ω ↦ g (Z ω, c)) (fun _ ↦ μ'') μ' := by
+  have hprod := hXZ.prodMk_of_tendstoInMeasure_const X Y Z hY_tendsto hY
+  have hs_ne : s.Nonempty := by
+    rcases hs_lim.exists with ⟨ω, hω⟩; exact ⟨_, hω⟩
+  obtain ⟨p₀, hp₀⟩ := hs_ne
+  classical
+  let pair' : ι → Ω'' → ↑s := fun i ω ↦
+    if h : (X i ω, Y i ω) ∈ s then ⟨(X i ω, Y i ω), h⟩ else ⟨p₀, hp₀⟩
+  let lim' : Ω' → ↑s := fun ω ↦
+    if h : (Z ω, c) ∈ s then ⟨(Z ω, c), h⟩ else ⟨p₀, hp₀⟩
+  have hpair'_ae : ∀ i, (fun ω ↦ (X i ω, Y i ω)) =ᵐ[μ''] Subtype.val ∘ pair' i :=
+    fun i ↦ by filter_upwards [hs_seq i] with ω hω; simp [pair', hω]
+  have hlim'_ae : (fun ω ↦ (Z ω, c)) =ᵐ[μ'] Subtype.val ∘ lim' :=
+    by filter_upwards [hs_lim] with ω hω; simp [lim', hω]
+  have hprod' : TendstoInDistribution pair' l lim' (fun _ ↦ μ'') μ' := by
+    have hAEpair : ∀ i, AEMeasurable (pair' i) μ'' :=
+      fun i ↦ ((hprod.forall_aemeasurable i).congr (hpair'_ae i)).subtype_mk
+    have hAElim: AEMeasurable lim' μ':= (hprod.aemeasurable_limit.congr hlim'_ae).subtype_mk
+    refine ⟨hAEpair, hAElim, ?_⟩
+    · have hemb : Topology.IsClosedEmbedding (Subtype.val (p := (· ∈ s))) :=
+        ⟨⟨⟨rfl⟩, Subtype.val_injective⟩, Subtype.range_val ▸ hs⟩
+      have hmap_eq : ∀ i, (Measure.map (pair' i) μ'').map Subtype.val =
+          Measure.map (fun ω ↦ (X i ω, Y i ω)) μ'' := fun i ↦ by
+        rw [Measure.map_congr (hAEpair i).ae_eq_mk,
+          Measure.map_map measurable_subtype_coe (hAEpair i).measurable_mk]
+        refine (Measure.map_congr ?_).trans (Measure.map_congr (hpair'_ae i).symm)
+        filter_upwards [(hAEpair i).ae_eq_mk] with ω hω
+        simp [hω]
+      have hmap_lim : (Measure.map lim' μ').map Subtype.val =
+          Measure.map (fun ω ↦ (Z ω, c)) μ' := by
+        rw [Measure.map_congr hAElim.ae_eq_mk,
+          Measure.map_map measurable_subtype_coe hAElim.measurable_mk]
+        refine (Measure.map_congr ?_).trans (Measure.map_congr hlim'_ae.symm)
+        filter_upwards [hAElim.ae_eq_mk] with ω hω
+        simp [hω]
+      have hpe :
+          Topology.IsInducing (fun ν : ProbabilityMeasure s ↦
+              ν.map (hemb.continuous.measurable.aemeasurable (μ := ν.toMeasure))) := by
+        rw [Topology.isInducing_iff_nhds]
+        intro ν
+        apply le_antisymm (ProbabilityMeasure.continuous_map hemb.continuous).continuousAt.le_comap
+        change Filter.Tendsto id (Filter.comap (fun ν' : ProbabilityMeasure ↑s ↦
+            ν'.map (hemb.continuous.measurable.aemeasurable (μ := ν'.toMeasure)))
+            (nhds (ν.map (hemb.continuous.measurable.aemeasurable (μ := ν.toMeasure))))) (nhds ν)
+        rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
+        intro f
+        obtain ⟨ψ, _, hψ⟩ :=
+          BoundedContinuousFunction.exists_extension_norm_eq_of_isClosedEmbedding f hemb
+        have hfψ : ∀ ν : ProbabilityMeasure s,
+            ∫ x, f x ∂(ν : Measure s) =
+            ∫ y, ψ y ∂((ν.map (hemb.continuous.measurable.aemeasurable
+              (μ := ν.toMeasure))) : Measure (E × E')) := fun ν ↦ by
+          rw [ProbabilityMeasure.toMeasure_map,
+              integral_map hemb.continuous.measurable.aemeasurable
+                ψ.continuous.aestronglyMeasurable]
+          simp [← hψ]
+        simp_rw [hfψ]
+        exact (ProbabilityMeasure.continuous_integral_boundedContinuousFunction ψ
+          ).continuousAt.tendsto.comp Filter.tendsto_comap
+      rw [hpe.tendsto_nhds_iff]
+      convert hprod.tendsto using 1
+      · ext n
+        congr 1
+        simp [ProbabilityMeasure.map, hmap_eq n]
+      · congr 1
+        simp [ProbabilityMeasure.map, hmap_lim]
+  have hconv := hprod'.continuous_comp hg.restrict
+  refine ⟨fun i ↦ (hconv.forall_aemeasurable i).congr
+      (by filter_upwards [hs_seq i] with ω hω; simp [pair', hω, Set.restrict]),
+      hconv.aemeasurable_limit.congr
+      (by filter_upwards [hs_lim] with ω hω; simp [lim', hω, Set.restrict]), ?_⟩
+  convert hconv.tendsto using 2
+  · expose_names; exact Subtype.ext (Measure.map_congr
+      (by filter_upwards [hs_seq x] with ω hω; simp [pair', hω, Set.restrict]))
+  · exact Subtype.ext (Measure.map_congr
+      (by filter_upwards [hs_lim] with ω hω; simp [lim', hω, Set.restrict]))
+
 end MeasureTheory
