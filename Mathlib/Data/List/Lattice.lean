@@ -202,7 +202,7 @@ theorem bagInter_sublist_left : ∀ {l₁ l₂ : List α}, l₁.bagInter l₂ <+
   | [], _l₂ => by simp
   | a :: l₁, l₂ => by
       by_cases h : a ∈ l₂
-      · rw [cons_bagInter_of_pos _ h]; exact bagInter_sublist_left.cons₂ _
+      · rw [cons_bagInter_of_pos _ h]; exact bagInter_sublist_left.cons_cons _
       · rw [cons_bagInter_of_neg _ h]; exact bagInter_sublist_left.cons _
 
 theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
