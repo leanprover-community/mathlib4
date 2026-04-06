@@ -307,8 +307,6 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
 is an element of both `A` and `B`. -/
 theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ}
     [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
-    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = Set.univ := by
-  have := zero_union_add_eq_univ_of_schirelmannDensity_ge_one h
-  rw [Set.union_eq_right.mpr (Set.singleton_subset_iff.mpr hA),
-  Set.union_eq_right.mpr (Set.singleton_subset_iff.mpr hB)] at this
+    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
+  simpa [hA, hB] using zero_union_add_eq_univ_of_schirelmannDensity_ge_one h
   exact this
