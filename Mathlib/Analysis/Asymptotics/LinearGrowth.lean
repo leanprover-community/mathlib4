@@ -347,8 +347,7 @@ lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (h : a < b) (hb : 0 �
     with x x_0 ⟨m, m_a, m_b⟩
   refine ⟨m.toNat, m_a.trans (Int.cast_le.2 m.self_le_toNat), ?_⟩
   apply le_of_eq_of_le _ (max_le m_b (mul_nonneg hb x_0))
-  norm_cast
-  exact Int.toNat_eq_max m
+  exact_mod_cast Int.toNat_eq_max m
 
 lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 0 ≤ b) :
     ∀ᶠ n : ℕ in atTop, ∃ m : ℕ, a * n ≤ m ∧ m ≤ b * n :=
