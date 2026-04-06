@@ -113,8 +113,7 @@ theorem mahlerMeasure_eq_zero_iff : p.mahlerMeasure = 0 ↔ p = 0 := by
 lemma intervalIntegrable_mahlerMeasure :
     IntervalIntegrable (fun x ↦ log ‖p.eval (circleMap 0 1 x)‖) MeasureTheory.volume 0 (2 * π) := by
   rw [← circleIntegrable_def fun z ↦ log ‖p.eval z‖]
-  exact circleIntegrable_log_norm_meromorphicOn
-    <| (analyticOnNhd_id.aeval_polynomial p).meromorphicOn
+  exact (analyticOnNhd_id.aeval_polynomial p).meromorphicOn.circleIntegrable_log_norm
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
@@ -316,8 +315,7 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
         -- First Jensen's inequality invocation
         refine convexOn_exp.map_average_le continuousOn_exp isClosed_univ (by simp) ?_ ?_
         · rw [Set.uIoc_of_le (by positivity : 0 ≤ 2 * Real.pi)]
-          exact (circleIntegrable_log_norm_meromorphicOn
-            (analyticOnNhd_id.aeval_polynomial p).meromorphicOn).1
+          exact ((analyticOnNhd_id.aeval_polynomial p).meromorphicOn.circleIntegrable_log_norm).1
         · exact (integrable_congr hlogAe).mpr hcont.integrableOn_uIoc
     _ = ⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ := average_congr hlogAe
     _ = √ ((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
