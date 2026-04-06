@@ -115,10 +115,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
       Iso.trans_hom, Functor.isoWhiskerLeft_hom, Iso.symm_hom, Functor.isoWhiskerRight_hom,
       Iso.refl_hom, NatTrans.comp_app, Functor.associator_hom_app, Functor.whiskerLeft_app,
       Functor.associator_inv_app, Functor.whiskerRight_app, NatTrans.id_app, Category.id_comp]
-    --should be able to using `DerivedCategory.Q_obj_single_obj` ?
-    erw [Category.id_comp]
-    simp only [Iso.inv_hom_id_app_assoc]
-    exact Category.comp_id _
+    simp [Q_obj_single_obj, Functor.mapCochainComplexSingleFunctor]
   rw [← (shiftFunctor (DerivedCategory D) 1).map_comp, eq2, ← Category.assoc, eq1]
   generalize_proofs _ _ _ _ _ _ _ h1 _ h2
   let f : ((S.map (CochainComplex.singleFunctor C 0)).map (F.mapHomologicalComplex
