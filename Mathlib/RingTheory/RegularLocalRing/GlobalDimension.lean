@@ -62,6 +62,6 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
 
 lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : ∃ n, HasProjectiveDimensionLE M n := by
-  rcases exist_nat_eq R with ⟨m, hm⟩
+  rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨m, hm⟩
   apply finite_projectiveDimension_of_isRegularLocalRing_aux R M m
   simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
