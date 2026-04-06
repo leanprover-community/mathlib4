@@ -87,18 +87,21 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
+variable (H) in
 /-- `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after the
   coercion `H→L[𝕜] (X→V)`. -/
 def eval (x : X) : H →L[𝕜] V :=
   (ContinuousLinearMap.proj (φ := fun _ : X => V) x).comp (RKHS.coeCLM 𝕜)
 
+variable (H) in
 @[simp]
-lemma eval_apply (x : X) (f : H) : eval x f = f x := (congr_fun rfl x).symm
+lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
 
 section Lipschitz
 
+variable (H) in
 theorem lipschitzWith_ennnorm (f : H) :
-    haveI : PseudoEMetricSpace X := PseudoEMetricSpace.induced (eval (H := H)) inferInstance
+    haveI : PseudoEMetricSpace X := PseudoEMetricSpace.induced (eval H) inferInstance
     LipschitzWith ‖f‖₊ f := by
   intro x y
   grw [edist_eq_enorm_sub, ← eval_apply, ← eval_apply, ← sub_apply, le_opENorm, mul_comm,
