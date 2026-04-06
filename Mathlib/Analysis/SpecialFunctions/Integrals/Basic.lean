@@ -197,6 +197,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
       _ = |b - a| ^ (n + 1) / (n + 1) := by
         simp [integral_comp_neg fun x => x ^ n, abs_of_neg (sub_neg.2 hab)]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[simp]
 theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   have := @integral_pow a b 1
@@ -556,12 +557,14 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
 theorem integral_sin_mul_cos₁ : ∫ x in a..b, sin x * cos x = (sin b ^ 2 - sin a ^ 2) / 2 := by
   simpa using integral_sin_pow_mul_cos_pow_odd 1 0
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[simp]
 theorem integral_sin_sq_mul_cos :
     ∫ x in a..b, sin x ^ 2 * cos x = (sin b ^ 3 - sin a ^ 3) / 3 := by
   have := @integral_sin_pow_mul_cos_pow_odd a b 2 0
   norm_num at this; exact this
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[simp]
 theorem integral_cos_pow_three :
     ∫ x in a..b, cos x ^ 3 = sin b - sin a - (sin b ^ 3 - sin a ^ 3) / 3 := by
@@ -589,12 +592,14 @@ See `integral_sin_mul_cos₁` above for the integral given in terms of sin². -/
 theorem integral_sin_mul_cos₂ : ∫ x in a..b, sin x * cos x = (cos a ^ 2 - cos b ^ 2) / 2 := by
   simpa using integral_sin_pow_odd_mul_cos_pow 0 1
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[simp]
 theorem integral_sin_mul_cos_sq :
     ∫ x in a..b, sin x * cos x ^ 2 = (cos a ^ 3 - cos b ^ 3) / 3 := by
   have := @integral_sin_pow_odd_mul_cos_pow a b 0 2
   norm_num at this; exact this
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[simp]
 theorem integral_sin_pow_three :
     ∫ x in a..b, sin x ^ 3 = cos a - cos b - (cos a ^ 3 - cos b ^ 3) / 3 := by

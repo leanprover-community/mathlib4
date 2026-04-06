@@ -378,6 +378,7 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
       apply intervalIntegrable_one_div_log_sq <;> linarith
   _ ≤ _ := by simp [field]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 /- Explicit integral bound, we expose a BigO version below since the constants and lower order term
 aren't very convenient. -/
 private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :

@@ -32,6 +32,7 @@ open LinearMap (BilinForm)
 variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
   ⟨fun ε hε => by

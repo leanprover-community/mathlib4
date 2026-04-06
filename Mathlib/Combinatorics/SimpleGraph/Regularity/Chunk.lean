@@ -210,6 +210,7 @@ private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
     apply card_le_m_add_one_of_mem_chunk_parts (h𝒜 hx)
   · exact mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5) :
     ↑1 - ε ^ 5 / ↑50 ≤ (m / (m + 1 : ℝ)) ^ 2 := by
@@ -447,7 +448,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
   grind
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
+set_option linter.flexible false in -- TODO: fix non-terminal simp and norm_num
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)

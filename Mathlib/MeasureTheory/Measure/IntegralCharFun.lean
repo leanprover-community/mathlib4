@@ -90,6 +90,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     norm_cast
     rw [← integral_const_mul]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
 the characteristic function, for a probability measure on `ℝ`. -/

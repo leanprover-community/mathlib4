@@ -280,6 +280,7 @@ open CFC
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
     a ^ (-(1 / 2) : ℝ) * a * a ^ (-(1 / 2) : ℝ) = 1 := by
   lift a to Aˣ using ha.isUnit
