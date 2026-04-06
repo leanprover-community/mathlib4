@@ -437,6 +437,7 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
 
 end Hom
 
+open scoped IsMulCommutative in
 /-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
 @[to_additive]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
