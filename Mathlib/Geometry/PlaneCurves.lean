@@ -38,9 +38,7 @@ noncomputable section
 
 namespace PlaneCurve
 
-section
-
-variable (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ)
+variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
 /-- Curvature for plane curves. This is usually called just the curvature function of a plane curve
 in most elementary differential geometry texts, but because this definition is slightly different
@@ -50,7 +48,7 @@ negative and expresses also direction) we call this the oriented curvature, this
 given in the Wikipedia article about curvature in the section about plane curves. This definition is
 meaningful only for regular plane curves which are twice continuously differentiable on an
 interval I. -/
-def orientedCurvature : ℝ :=
+def orientedCurvature (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) : ℝ :=
   !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
 lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1;
@@ -58,7 +56,8 @@ lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1
 
 /-- Normal vector at a point of a plane curve.
 This definition is only meaningful when `c` is differentiable at `t` with non-zero derivative. -/
-def normal : EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]
+def normal (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) :
+    EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]
 
 lemma normal_eq : normal c t = ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0] := rfl
 
@@ -73,10 +72,6 @@ lemma normal_eq_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
 theorem inner_deriv_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
   rw [normal_eq, real_inner_smul_right]
   simp [PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
-
-end
-
-variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
 /-- The `normal` vector at point with a non-zero derivative of a plane curve has length 1 (is a unit
 vector). -/
@@ -114,11 +109,11 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
       · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, ne_eq] at hinej
         have h : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
         simp only [h, Fin.isValue]
-        exact inner_deriv_normal_eq_zero c t
+        exact inner_deriv_normal_eq_zero
       · simp at hinej
         have h : j=0 := by fin_cases j <;> trivial
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue, h, real_inner_comm]
-        exact inner_deriv_normal_eq_zero c t
+        exact inner_deriv_normal_eq_zero
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, top_le_iff]
     apply hBon.linearIndependent.span_eq_top_of_card_eq_finrank; simp
@@ -191,7 +186,7 @@ protected lemma _root_.HasDerivAt.normal (hI : IsOpen I) (hc₁ : ContDiffOn ℝ
   simp only [hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun τ ↦  normal c τ) I := by
     have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
-      fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+      fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one (hc₂ τ hτ)
     rw [differentiableOn_congr hn, differentiableOn_piLp] at *
     intro i
     fin_cases i <;> simp [hD]
@@ -202,7 +197,7 @@ lemma _root_.ContDiffOn.normal_of_twice_contDiffOn (hI : IsOpen I) (hc₁ : Cont
     (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) : ContDiffOn ℝ 1 (normal c) I := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc₁.deriv_of_isOpen hI (by norm_num)
   have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
-    fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+    fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one (hc₂ τ hτ)
   rw [contDiffOn_congr hn, contDiffOn_piLp] at *
   intro i
   fin_cases i
@@ -225,7 +220,7 @@ theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
   have hci : Set.EqOn (fun x ↦ inner ℝ (normal c x) (deriv c x)) (fun x ↦ 0) I := by
     intro x hx
     simp only
-    rw [real_inner_comm, inner_deriv_normal_eq_zero c x]
+    rw [real_inner_comm, inner_deriv_normal_eq_zero]
   rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht hc₂)
     (hasDerivAt_deriv_of_contDiffOn hI hc₁ ht) hci, second_deriv_eq_orientedCurvature_times_normal
     hI hc₁ hc₂ ht, real_inner_comm, inner_smul_left_eq_smul]
