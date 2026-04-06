@@ -121,6 +121,7 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
 
 /-! ### Deprecated material -/
 
+set_option linter.deprecated false in
 /-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
     `a`. We provide `o` explicitly in order to avoid type rewrites. -/
 @[deprecated IsFundamentalSeq (since := "2026-03-23")]
