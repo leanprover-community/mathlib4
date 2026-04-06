@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.NormNum.Ordinal
 
 universe u

@@ -160,7 +160,7 @@ Scott continuous for the ω-complete partial order induced by the complete latti
 theorem coe_scott_continuous :
     OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
-    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    ⟨SetLike.coe_mono, fun _ ↦ coe_iSup_of_chain _⟩
 
 section IsScalarTower
 
@@ -641,7 +641,7 @@ theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : Cov
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_swap (β := ¬_),
+  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_comm (β := ¬_),
     s.smul_mem_iff] using ⟨fun h ↦ h _ one_ne_zero, fun h _ _ ↦ h⟩
 
 theorem disjoint_span_singleton' (hx : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s := by
