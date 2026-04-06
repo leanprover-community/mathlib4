@@ -1105,7 +1105,7 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
-  isGLB_sInf m := by exact ⟨fun x ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩
+  isGLB_sInf _ := private ⟨fun x ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
