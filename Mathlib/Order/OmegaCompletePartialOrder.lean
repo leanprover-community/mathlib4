@@ -188,12 +188,30 @@ then a default value is returned. -/
 def projR [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
   projL (c.map ⟨Sum.swap, Sum.swap_mono⟩)
 
+@[simp]
+lemma projL_inl [Inhabited α] : projL (inl c : Chain (α ⊕ β)) = c := by
+  ext; simp
+
+@[simp]
+lemma projR_inr [Inhabited α] : projR (inr c : Chain (β ⊕ α)) = c := by
+  ext; simp
+
 /-- Splits a chain of sums into a sum of chains. -/
-def toSum (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
-  Sum.map
-    (fun d ↦ let : Inhabited α := ⟨d⟩; projL c)
-    (fun d ↦ let : Inhabited β := ⟨d⟩; projR c)
-    (c 0)
+@[simps symm_apply]
+def toSum : Chain (α ⊕ β) ≃ Chain α ⊕ Chain β where
+  toFun c :=
+    Sum.map
+      (fun d ↦ let : Inhabited α := ⟨d⟩; projL c)
+      (fun d ↦ let : Inhabited β := ⟨d⟩; projR c)
+      (c 0)
+  invFun
+    | .inl c => .inl c
+    | .inr c => .inr c
+  left_inv c := by
+    ext n
+    have h₀ₙ := OrderHomClass.monotone c n.zero_le
+    cases h₀ : c 0 <;> cases hₙ : c n <;> simp_all
+  right_inv c := by cases c <;> simp
 
 @[simp]
 lemma toSum_inl (c : Chain α) : toSum (inl c : Chain (α ⊕ β)) = .inl c := rfl
@@ -203,11 +221,8 @@ lemma toSum_inr (c : Chain β) : toSum (inr c : Chain (α ⊕ β)) = .inr c := r
 
 @[simp]
 lemma elim_toSum (c : Chain (α ⊕ β)) : (toSum c).elim .inl .inr = c := by
-  ext n
-  have hc : c 0 ≤ c n := c.monotone n.zero_le
-  generalize h₀ : c 0 = c0 at ⊢ hc
-  generalize hₙ : c n = cn at ⊢ hc
-  cases hc <;> simp [toSum, h₀, hₙ]
+  apply toSum.injective
+  cases toSum c <;> simp
 
 @[elab_as_elim]
 lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
