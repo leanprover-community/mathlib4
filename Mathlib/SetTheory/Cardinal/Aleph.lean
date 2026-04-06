@@ -513,49 +513,11 @@ theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
-@[deprecated aleph0_lt_lift (since := "2026-03-23")]
-theorem aleph_one_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
-  simp
-
-@[deprecated (since := "2025-12-22")]
-alias aleph1_le_lift := aleph_one_le_lift
-
-@[simp]
-theorem lift_le_aleph_one {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
-  simpa using lift_le (b := ℵ₁)
-
-@[deprecated (since := "2025-12-22")]
-alias lift_le_aleph1 := lift_le_aleph_one
-
-@[simp]
-theorem aleph_one_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
-  simpa using lift_lt (a := ℵ₁)
-
-@[deprecated (since := "2025-12-22")]
-alias aleph1_lt_lift := aleph_one_lt_lift
-
-@[deprecated lift_le_aleph0 (since := "2026-03-23")]
-theorem lift_lt_aleph_one {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
-  simp
-
-@[deprecated (since := "2025-12-22")]
-alias lift_lt_aleph1 := lift_lt_aleph_one
-
-@[simp]
-theorem aleph_one_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
-  simpa using lift_inj (a := ℵ₁)
-
-@[deprecated (since := "2025-12-22")]
-alias aleph1_eq_lift := aleph_one_eq_lift
-
-@[simp]
-theorem lift_eq_aleph_one {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simpa using lift_inj (b := ℵ₁)
-
-@[deprecated (since := "2025-12-22")]
-alias lift_eq_aleph1 := lift_eq_aleph_one
+end Cardinal
 
 /-! ### Beth cardinals -/
+
+namespace Cardinal
 
 /-- The "pre-beth" function is defined so that `preBeth o` is the supremum of `2 ^ preBeth a` for
 `a < o`. This implies `beth 0 = 0`, `beth (succ o) = 2 ^ beth o`, and that for a limit ordinal `o`,
@@ -759,4 +721,221 @@ theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrel
 theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
   rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
 
+/-! ### Simp lemmas with `lift` -/
+
+section lift
+variable {c : Cardinal.{u}} {n : ℕ}
+
+@[deprecated aleph0_lt_lift (since := "2026-03-23")]
+theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
+  simp
+
+@[deprecated (since := "2025-12-22")] alias aleph1_le_lift := aleph_one_le_lift
+
+@[simp]
+theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
+  simpa using lift_le (b := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias lift_le_aleph1 := lift_le_aleph_one
+
+@[simp]
+theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
+  simpa using lift_lt (a := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias aleph1_lt_lift := aleph_one_lt_lift
+
+@[deprecated lift_le_aleph0 (since := "2026-03-23")]
+theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
+  simp
+
+@[deprecated (since := "2025-12-22")] alias lift_lt_aleph1 := lift_lt_aleph_one
+
+@[simp]
+theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  simpa using lift_inj (a := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias aleph1_eq_lift := aleph_one_eq_lift
+
+@[simp]
+theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
+  simpa using lift_inj (b := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
+
+@[simp]
+theorem aleph_natCast_le_lift : ℵ_ n ≤ lift.{v} c ↔ ℵ_ n ≤ c := by
+  simpa using lift_le (a := ℵ_ n)
+
+@[simp]
+theorem lift_le_aleph_natCast : lift.{v} c ≤ ℵ_ n ↔ c ≤ ℵ_ n := by
+  simpa using lift_le (b := ℵ_ n)
+
+@[simp]
+theorem aleph_natCast_lt_lift : ℵ_ n < lift.{v} c ↔ ℵ_ n < c := by
+  simpa using lift_lt (a := ℵ_ n)
+
+@[simp]
+theorem lift_lt_aleph_natCast : lift.{v} c < ℵ_ n ↔ c < ℵ_ n := by
+  simpa using lift_lt (b := ℵ_ n)
+
+@[simp]
+theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
+  simpa using lift_inj (a := ℵ_ n)
+
+@[simp]
+theorem lift_eq_aleph_natCast : lift.{v} c = ℵ_ n ↔ c = ℵ_ n := by
+  simpa using lift_inj (b := ℵ_ n)
+
+@[simp]
+theorem aleph_ofNat_le_lift [n.AtLeastTwo] : ℵ_ ofNat(n) ≤ lift.{v} c ↔ ℵ_ ofNat(n) ≤ c :=
+  aleph_natCast_le_lift
+
+@[simp]
+theorem lift_le_aleph_ofNat [n.AtLeastTwo] : lift.{v} c ≤ ℵ_ ofNat(n) ↔ c ≤ ℵ_ ofNat(n) :=
+  lift_le_aleph_natCast
+
+@[simp]
+theorem aleph_ofNat_lt_lift [n.AtLeastTwo] : ℵ_ ofNat(n) < lift.{v} c ↔ ℵ_ ofNat(n) < c :=
+  aleph_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_aleph_ofNat [n.AtLeastTwo] : lift.{v} c < ℵ_ ofNat(n) ↔ c < ℵ_ ofNat(n) :=
+  lift_lt_aleph_natCast
+
+@[simp]
+theorem aleph_ofNat_eq_lift [n.AtLeastTwo] : ℵ_ ofNat(n) = lift.{v} c ↔ ℵ_ ofNat(n) = c :=
+  aleph_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_aleph_ofNat [n.AtLeastTwo] : lift.{v} c = ℵ_ ofNat(n) ↔ c = ℵ_ ofNat(n) :=
+  lift_eq_aleph_natCast
+
+@[simp]
+theorem beth_natCast_le_lift : ℶ_ n ≤ lift.{v} c ↔ ℶ_ n ≤ c := by
+  simpa using lift_le (a := ℶ_ n)
+
+@[simp]
+theorem lift_le_beth_natCast : lift.{v} c ≤ ℶ_ n ↔ c ≤ ℶ_ n := by
+  simpa using lift_le (b := ℶ_ n)
+
+@[simp]
+theorem beth_natCast_lt_lift : ℶ_ n < lift.{v} c ↔ ℶ_ n < c := by
+  simpa using lift_lt (a := ℶ_ n)
+
+@[simp]
+theorem lift_lt_beth_natCast : lift.{v} c < ℶ_ n ↔ c < ℶ_ n := by
+  simpa using lift_lt (b := ℶ_ n)
+
+@[simp]
+theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
+  simpa using lift_inj (a := ℶ_ n)
+
+@[simp]
+theorem lift_eq_beth_natCast : lift.{v} c = ℶ_ n ↔ c = ℶ_ n := by
+  simpa using lift_inj (b := ℶ_ n)
+
+@[simp]
+theorem beth_ofNat_le_lift [n.AtLeastTwo] : ℶ_ ofNat(n) ≤ lift.{v} c ↔ ℶ_ ofNat(n) ≤ c :=
+  beth_natCast_le_lift
+
+@[simp]
+theorem lift_le_beth_ofNat [n.AtLeastTwo] : lift.{v} c ≤ ℶ_ ofNat(n) ↔ c ≤ ℶ_ ofNat(n) :=
+  lift_le_beth_natCast
+
+@[simp]
+theorem beth_ofNat_lt_lift [n.AtLeastTwo] : ℶ_ ofNat(n) < lift.{v} c ↔ ℶ_ ofNat(n) < c :=
+  beth_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_beth_ofNat [n.AtLeastTwo] : lift.{v} c < ℶ_ ofNat(n) ↔ c < ℶ_ ofNat(n) :=
+  lift_lt_beth_natCast
+
+@[simp]
+theorem beth_ofNat_eq_lift [n.AtLeastTwo] : ℶ_ ofNat(n) = lift.{v} c ↔ ℶ_ ofNat(n) = c :=
+  beth_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_beth_ofNat [n.AtLeastTwo] : lift.{v} c = ℶ_ ofNat(n) ↔ c = ℶ_ ofNat(n) :=
+  lift_eq_beth_natCast
+
+end lift
 end Cardinal
+
+namespace Ordinal
+section lift
+variable {o : Ordinal.{u}} {n : ℕ}
+
+@[simp]
+theorem omega_one_le_lift : ω₁ ≤ lift.{v} o ↔ ω₁ ≤ o := by
+  simpa using lift_le (a := ω₁)
+
+@[simp]
+theorem lift_le_omega_one : lift.{v} o ≤ ω₁ ↔ o ≤ ω₁ := by
+  simpa using lift_le (b := ω₁)
+
+@[simp]
+theorem omega_one_lt_lift : ω₁ < lift.{v} o ↔ ω₁ < o := by
+  simpa using lift_lt (a := ω₁)
+
+@[simp]
+theorem lift_lt_omega_one : lift.{v} o < ω₁ ↔ o < ω₁ := by
+  simpa using lift_lt (b := ω₁)
+
+@[simp]
+theorem omega_one_eq_lift : ω₁ = lift.{v} o ↔ ω₁ = o := by
+  simpa using lift_inj (a := ω₁)
+
+@[simp]
+theorem lift_eq_omega_one : lift.{v} o = ω₁ ↔ o = ω₁ := by
+  simpa using lift_inj (b := ω₁)
+
+@[simp]
+theorem omega_natCast_le_lift : ω_ n ≤ lift.{v} o ↔ ω_ n ≤ o := by
+  simpa using lift_le (a := ω_ n)
+
+@[simp]
+theorem lift_le_omega_natCast : lift.{v} o ≤ ω_ n ↔ o ≤ ω_ n := by
+  simpa using lift_le (b := ω_ n)
+
+@[simp]
+theorem omega_natCast_lt_lift : ω_ n < lift.{v} o ↔ ω_ n < o := by
+  simpa using lift_lt (a := ω_ n)
+
+@[simp]
+theorem lift_lt_omega_natCast : lift.{v} o < ω_ n ↔ o < ω_ n := by
+  simpa using lift_lt (b := ω_ n)
+
+@[simp]
+theorem omega_natCast_eq_lift : ω_ n = lift.{v} o ↔ ω_ n = o := by
+  simpa using lift_inj (a := ω_ n)
+
+@[simp]
+theorem lift_eq_omega_natCast : lift.{v} o = ω_ n ↔ o = ω_ n := by
+  simpa using lift_inj (b := ω_ n)
+
+@[simp]
+theorem omega_ofNat_le_lift [n.AtLeastTwo] : ω_ ofNat(n) ≤ lift.{v} o ↔ ω_ ofNat(n) ≤ o :=
+  omega_natCast_le_lift
+
+@[simp]
+theorem lift_le_omega_ofNat [n.AtLeastTwo] : lift.{v} o ≤ ω_ ofNat(n) ↔ o ≤ ω_ ofNat(n) :=
+  lift_le_omega_natCast
+
+@[simp]
+theorem omega_ofNat_lt_lift [n.AtLeastTwo] : ω_ ofNat(n) < lift.{v} o ↔ ω_ ofNat(n) < o :=
+  omega_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_omega_ofNat [n.AtLeastTwo] : lift.{v} o < ω_ ofNat(n) ↔ o < ω_ ofNat(n) :=
+  lift_lt_omega_natCast
+
+@[simp]
+theorem omega_ofNat_eq_lift [n.AtLeastTwo] : ω_ ofNat(n) = lift.{v} o ↔ ω_ ofNat(n) = o :=
+  omega_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_omega_ofNat [n.AtLeastTwo] : lift.{v} o = ω_ ofNat(n) ↔ o = ω_ ofNat(n) :=
+  lift_eq_omega_natCast
+
+end lift
+end Ordinal
