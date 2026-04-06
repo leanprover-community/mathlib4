@@ -61,15 +61,11 @@ variable {α β ι : Type*} {π : ι → Type*}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
-class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
+class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α, OrderBot α where
   protected sup := (· + ·)
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
-  /-- The bottom element of this idempotent semiring, by default `0`.
-  This is to accommodate a possible non-defeq `[Bot α]` instance. -/
-  protected bot : α := 0
-  protected bot_le (a) : bot ≤ a
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
@@ -98,10 +94,6 @@ class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
   protected kstar_mul_le_kstar (a : α) : a∗ * a ≤ a∗
   protected mul_kstar_le_self (a b : α) : b * a ≤ b → b * a∗ ≤ b
   protected kstar_mul_le_self (a b : α) : a * b ≤ b → a∗ * b ≤ b
-
--- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α where
-  __ := ‹IdemSemiring α›
 
 -- See note [reducible non-instances]
 /-- Construct an idempotent semiring from an idempotent addition. -/
