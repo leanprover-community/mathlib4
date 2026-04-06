@@ -32,7 +32,7 @@ noncomputable section
 
 namespace Real
 
-theorem log_mul_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
+theorem mul_log_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
   simp only [StrictMonoOn]
   intro x hex y hey hxy
   obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
@@ -49,7 +49,7 @@ theorem log_mul_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Se
   rw [deriv_mul_log c_ne0, eq_div_iff] at hc
     <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_ge_inve]
 
-theorem log_mul_self_StrictAntiOn :
+theorem mul_log_self_StrictAntiOn :
     StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
   simp only [StrictAntiOn]
   intro x hex y hey hxy
@@ -64,7 +64,7 @@ theorem log_mul_self_StrictAntiOn :
     nlinarith [Real.log_exp (-1),
       Real.log_lt_log (by positivity) (by linarith [hex.2, hey.2] : c < Real.exp (-1))]
 
-theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | exp 1 ≤ x } := by
+theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / x) { x | exp 1 ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
   intro x hex y hey hxy
   have x_pos : 0 < x := (exp_pos 1).trans_le hex
@@ -79,7 +79,7 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
     _ = log x / x * y - log x := by ring
 
 theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
-    AntitoneOn (fun x : ℝ => log x / x ^ a) { x | exp (1 / a) ≤ x } := by
+    AntitoneOn (fun x : ℝ ↦ log x / x ^ a) { x | exp (1 / a) ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
   intro x hex y _ hxy
   have x_pos : 0 < x := lt_of_lt_of_le (exp_pos (1 / a)) hex
@@ -104,7 +104,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     positivity
   gcongr
 
-theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
+theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / √x) { x | exp 2 ≤ x } := by
   simp_rw [sqrt_eq_rpow]
   convert log_div_self_rpow_antitoneOn one_half_pos
   norm_num
