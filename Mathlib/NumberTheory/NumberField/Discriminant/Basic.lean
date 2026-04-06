@@ -249,10 +249,10 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     simp only [a]
-    gcongr
+    sorry /- was: gcongr
     · exact (one_le_div Real.pi_pos).2 Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
-      exact Nat.le_add_left _ _
+      exact Nat.le_add_left _ _ -/
   intro n hn
   induction n, hn using Nat.le_induction with
   | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field
@@ -425,11 +425,11 @@ theorem finite_of_discr_bdd_of_isReal :
       · refine le_trans ?_ (Nat.le_ceil _)
         rw [show max ↑(max (B : ℝ≥0) 1) (1 : ℝ) = max (B : ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
           NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_natCast]
-        gcongr
+        sorry /- was: gcongr
         · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
         · exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
-            (Nat.choose_le_middle _ _)
+            (Nat.choose_le_middle _ _) -/
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
@@ -474,12 +474,12 @@ theorem finite_of_discr_bdd_of_isComplex :
       · refine le_trans ?_ (Nat.le_ceil _)
         rw [val_eq_coe, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one,
           Real.coe_sqrt, NNReal.coe_add 1, NNReal.coe_one, NNReal.coe_pow]
-        gcongr
+        sorry /- was: gcongr
         · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
         · rw [NNReal.coe_natCast, Nat.cast_le]
           exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
-            (Nat.choose_le_middle _ _)
+            (Nat.choose_le_middle _ _) -/
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
