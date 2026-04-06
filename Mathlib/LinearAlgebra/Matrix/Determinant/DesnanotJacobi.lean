@@ -43,19 +43,19 @@ private lemma last_ne_cast_succ_succ (j : Fin n) :
     Fin.last (n + 1) ≠ (j.castSucc.succ : Fin (n + 2)) :=
   (cast_succ_succ_ne_last j).symm
 
-def M11 (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
+private def M11 (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
   M.submatrix (Fin.succAbove 0) (Fin.succAbove 0)
 
-def Mkk (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
+private def Mkk (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
   M.submatrix (Fin.last (n + 1)).succAbove (Fin.last (n + 1)).succAbove
 
-def M1k (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
+private def M1k (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
   M.submatrix (Fin.succAbove 0) (Fin.last (n + 1)).succAbove
 
-def Mk1 (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
+private def Mk1 (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
   M.submatrix (Fin.last (n + 1)).succAbove (Fin.succAbove 0)
 
-def M1k_1k (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
+private def M1k_1k (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :=
   M.submatrix (Fin.succAbove 0 ∘ Fin.succAbove (Fin.last n))
               (Fin.succAbove 0 ∘ Fin.succAbove (Fin.last n))
 
@@ -188,12 +188,12 @@ private theorem det_desnanot_jacobi_mul
   rw [pow_two, mul_assoc] at h_det_prod
   exact h_det_prod.symm
 
-abbrev UnivRing (n : ℕ) := MvPolynomial (Fin (n + 2) × Fin (n + 2)) ℤ
+private abbrev UnivRing (n : ℕ) := MvPolynomial (Fin (n + 2) × Fin (n + 2)) ℤ
 
-noncomputable def univMatrix (n : ℕ) : Matrix (Fin (n + 2)) (Fin (n + 2)) (UnivRing n) :=
+private noncomputable def univMatrix (n : ℕ) : Matrix (Fin (n + 2)) (Fin (n + 2)) (UnivRing n) :=
   fun i j => MvPolynomial.X (i, j)
 
-lemma univMatrix_det_ne_zero {n : ℕ} : (univMatrix n).det ≠ 0 := by
+private lemma univMatrix_det_ne_zero {n : ℕ} : (univMatrix n).det ≠ 0 := by
   intro h
   let f_eval : Fin (n + 2) × Fin (n + 2) → ℤ := fun p => if p.1 = p.2 then 1 else 0
   let eval_hom : UnivRing n →+* ℤ := MvPolynomial.eval f_eval
@@ -220,7 +220,7 @@ private theorem desnanot_jacobi_univ (n : ℕ) :
     (M1k (univMatrix n)).det * (Mk1 (univMatrix n)).det :=
   desnanot_jacobi_domain (univMatrix n) univMatrix_det_ne_zero
 
-noncomputable def evalMap {R : Type*} [CommRing R] {n : ℕ}
+private noncomputable def evalMap {R : Type*} [CommRing R] {n : ℕ}
     (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) : UnivRing n →+* R :=
   MvPolynomial.eval₂Hom (Int.castRingHom R) (fun p => M p.1 p.2)
 
@@ -229,8 +229,13 @@ for any `(n+2) × (n+2)` matrix `M` over a commutative ring,
 `det(M) · det(M_interior) = det(M₁₁) · det(Mₙₙ) - det(M₁ₙ) · det(Mₙ₁)`. -/
 theorem desnanot_jacobi {R : Type*} [CommRing R] {n : ℕ}
     (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :
-    M.det * (M1k_1k M).det =
-    (M11 M).det * (Mkk M).det - (M1k M).det * (Mk1 M).det := by
+    M.det * (M.submatrix (Fin.succAbove 0 ∘ (Fin.last n).succAbove)
+      (Fin.succAbove 0 ∘ (Fin.last n).succAbove)).det =
+    (M.submatrix (Fin.succAbove 0) (Fin.succAbove 0)).det *
+      (M.submatrix (Fin.last (n + 1)).succAbove (Fin.last (n + 1)).succAbove).det -
+    (M.submatrix (Fin.succAbove 0) (Fin.last (n + 1)).succAbove).det *
+      (M.submatrix (Fin.last (n + 1)).succAbove (Fin.succAbove 0)).det := by
+  change M.det * (M1k_1k M).det = (M11 M).det * (Mkk M).det - (M1k M).det * (Mk1 M).det
   have hu := desnanot_jacobi_univ n
   have h_eval := congrArg (evalMap M) hu
   simp only [map_sub, map_mul] at h_eval
