@@ -52,6 +52,8 @@ example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+example (x y : ℕ) : x • y = y • x := by ring
+example (x y : ℤ) : x • y = y • x := by ring
 
 section Rat
 
@@ -166,6 +168,7 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
+example (a : ℚ) (m n : ℕ) : (a ^ (m + 1)) ^ n = a ^ (n * (m + 1)) := by ring
 
 -- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
@@ -225,6 +228,18 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   trivial
 
 end
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring_nf
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
