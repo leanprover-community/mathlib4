@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.NormNum
 import Mathlib.Data.Real.Basic
 

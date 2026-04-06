@@ -295,6 +295,7 @@ section ae
 predicate holds for almost every `x : β` and
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
+
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 

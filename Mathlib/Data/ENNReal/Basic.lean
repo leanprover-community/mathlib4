@@ -143,7 +143,7 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-instance : AddCommMonoid ℝ≥0∞ :=
+noncomputable instance : AddCommMonoid ℝ≥0∞ :=
   inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrder ℝ≥0∞ :=
@@ -248,7 +248,7 @@ theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [ENNReal.ofReal, Real.toNNReal_coe]
 
 theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
-    ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
+    ENNReal.ofReal x = ofNNReal (NNReal.mk x h) :=
   (coe_nnreal_eq ⟨x, h⟩).symm
 
 theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
@@ -687,11 +687,7 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithT
 
 end CompleteLattice
 
-section Bit
-
 -- TODO: add lemmas about `OfNat.ofNat`
-
-end Bit
 
 end ENNReal
 
