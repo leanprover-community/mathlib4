@@ -270,44 +270,51 @@ def make_process_module(
         traverser.inflight_register(filepath, original_text)
 
         try:
-            # Process errors first-to-last. After each insertion, line numbers
-            # shift, so we track the cumulative offset.
-            offset = 0
-            for error_line in error_lines:
-                adjusted_line = error_line + offset
-                decl_start = find_declaration_start(lines, adjusted_line)
+            # Process errors iteratively. After each fix, re-discover errors
+            # from the latest build output (fixing one error can reveal new
+            # ones as more of the file compiles).
+            while True:
+                ok, build_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
+                if ok:
+                    break
+
+                error_lines = parse_errors_in_file(build_output, rel_path)
+                if not error_lines:
+                    break
+
+                # Try to fix the first error
+                error_line = error_lines[0]
+                decl_start = find_declaration_start(lines, error_line)
 
                 # Check which options are already present
                 present = options_present_at(lines, decl_start)
                 missing = [opt for opt in options if opt not in present]
                 if not missing:
                     already_present += 1
-                    continue
+                    raise UnfixableError(
+                        f"all options already present at line {error_line}",
+                        build_output,
+                    )
 
                 # Try each candidate combination of missing options
                 succeeded = False
-                last_output = output
                 for combo in candidates(missing):
                     insert = [set_option_line(opt) for opt in combo]
                     new_lines = lines[:decl_start] + insert + lines[decl_start:]
                     filepath.write_text("".join(new_lines))
-                    ok, build_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
-                    last_output = build_output
+                    ok, try_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
 
                     if ok:
                         lines = new_lines
-                        offset += len(combo)
                         fixed += 1
                         _set_last(combo)
-                        succeeded = True
                         return FileResult(fixed=fixed, already_present=already_present)
 
-                    # Check if this specific error is gone
-                    new_errors = parse_errors_in_file(build_output, rel_path)
-                    shifted = adjusted_line + len(combo)
+                    # Check if this specific error is gone (line shifted by insertion)
+                    new_errors = parse_errors_in_file(try_output, rel_path)
+                    shifted = error_line + len(combo)
                     if shifted not in new_errors:
                         lines = new_lines
-                        offset += len(combo)
                         fixed += 1
                         _set_last(combo)
                         succeeded = True
@@ -319,7 +326,7 @@ def make_process_module(
                 if not succeeded:
                     raise UnfixableError(
                         f"no option combination fixed error at line {error_line}",
-                        last_output,
+                        build_output,
                     )
 
         except UnfixableError:

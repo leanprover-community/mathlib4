@@ -412,9 +412,6 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  partialHomeomorphCoe := openPartialHomeomorphCoe
-
 end Continuity
 
 /-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → AddCircle p` is
