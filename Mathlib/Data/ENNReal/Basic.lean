@@ -99,7 +99,6 @@ variable {α : Type*}
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -111,53 +110,45 @@ scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
-instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
+@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
 
-instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
+instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
-instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
+/- Declare by hand data instances for good definitional behavior -/
+instance : Zero ℝ≥0∞ := ⟨ofNNReal 0⟩
+instance : One ℝ≥0∞ := ⟨ofNNReal 1⟩
+instance : Bot ℝ≥0∞ := ⟨0⟩
 
-instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+deriving instance Add, Sub, Top, Max, Min,
+  AddCommMonoidWithOne, PartialOrder for ENNReal
 
-instance : Min ℝ≥0∞ := SemilatticeInf.toMin
+/- Declare by hand to make sure that sup and max are defeq at instance transparency -/
+instance : SemilatticeSup ℝ≥0∞ where
+  __ := instPartialOrder
+  sup := max
+  __ := show SemilatticeSup ℝ≥0∞ from inferInstanceAs (SemilatticeSup (WithTop ℝ≥0))
 
-instance : Max ℝ≥0∞ := SemilatticeSup.toMax
+instance : SemilatticeInf ℝ≥0∞ where
+  __ := instPartialOrder
+  inf := min
+  __ := show SemilatticeInf ℝ≥0∞ from inferInstanceAs (SemilatticeInf (WithTop ℝ≥0))
 
-noncomputable instance : CommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CommSemiring (WithTop ℝ≥0))
+deriving instance DistribLattice, Nontrivial,
+  OrderBot, OrderTop, BoundedOrder, CharZero, IsOrderedAddMonoid,
+  OrderedSub, IsOrderedRing, CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered for ENNReal
 
-instance : PartialOrder ℝ≥0∞ :=
-  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
+noncomputable section
 
-instance : IsOrderedRing ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
+deriving instance LinearOrder, AddCommMonoid, CommSemiring, CompleteLinearOrder,
+  LinearOrderedAddCommMonoidWithTop for ENNReal
 
-instance : CanonicallyOrderedAdd ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
+end
 
-instance : NoZeroDivisors ℝ≥0∞ :=
-  inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
+example {a b : ℝ≥0∞} : @max ℝ≥0∞ SemilatticeSup.toMax a b = @max ℝ≥0∞ instMax a b := by
+  with_reducible_and_instances rfl
 
-noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
-
-instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
-noncomputable instance : AddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrder ℝ≥0∞ :=
-  inferInstanceAs (LinearOrder (WithTop ℝ≥0))
-
-instance : IsOrderedAddMonoid ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
-
-instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-
-instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
-  inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
+example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
 
 -- RFC: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
@@ -174,11 +165,6 @@ instance : Unique (AddUnits ℝ≥0∞) where
   uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
-
-/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
-@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
-
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

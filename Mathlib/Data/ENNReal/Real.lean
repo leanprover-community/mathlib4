@@ -388,7 +388,7 @@ end Real
 
 @[deprecated max_eq_zero_iff (since := "2025-10-25")]
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
-  sup_eq_bot_iff
+  sup_eq_bot_iff (α := ℝ≥0∞)
 
 end ENNReal
 
