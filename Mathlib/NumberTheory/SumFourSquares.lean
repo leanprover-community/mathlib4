@@ -175,7 +175,9 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
       w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = ↑(m * r) * ↑(m * p)
     · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p) := by
         refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) ?_
-        conv_rhs => rw [← Nat.cast_pow, ← Nat.cast_mul, sq m, mul_mul_mul_comm, Nat.cast_mul, ← h]
+        conv_rhs =>
+          norm_cast
+          rw [sq m, mul_mul_mul_comm, Nat.cast_mul, ← h]
         simp only [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
       rw [← natAbs_iff] at this
       exact hmin r hrm ⟨hrm.trans hmp, hr₀, _, _, _, _, this⟩
