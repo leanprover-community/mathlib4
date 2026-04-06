@@ -72,6 +72,7 @@ namespace TopCat
   limits library easier.)
 4. An open embedding `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -270,6 +271,7 @@ theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
 2. A bundled topological space `U i` for each `i : J`.
 3. An open set `V i j ⊆ U i` for each `i j : J`.
 4. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `V i i = U i`.
 7. `t i i` is the identity.
