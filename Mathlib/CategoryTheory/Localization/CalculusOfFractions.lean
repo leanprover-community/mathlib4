@@ -542,7 +542,7 @@ lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
     Qinv s hs ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
 
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
-  (inferInstance : IsIso (Qiso s hs).inv)
+  inferInstanceAs <| IsIso (Qiso s hs).inv
 
 section
 
@@ -568,7 +568,7 @@ namespace StrictUniversalPropertyFixedTarget
 variable (W)
 
 lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
-  (inferInstance : IsIso (Qiso s hs).hom)
+  inferInstanceAs <| IsIso (Qiso s hs).hom
 
 variable {W}
 
