@@ -170,7 +170,6 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
     Measure (EuclideanSpace ℝ ι) :=
   (stdGaussian (EuclideanSpace ℝ ι)).map (fun x ↦ μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
   rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
