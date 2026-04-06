@@ -130,14 +130,14 @@ lemma globalDimension_eq_of_small [Small.{v} R] :
     intro M hM
     let := Module.Finite.small.{u} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
-    rw [projectiveDimension_eq_of_linearEquiv e]
+    rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
     let := Module.Finite.small.{v} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{v} M) := (Shrink.linearEquiv R M).symm
-    rw [projectiveDimension_eq_of_linearEquiv e]
+    rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
 
 universe u' in
@@ -154,7 +154,7 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
     let e' : (ModuleCat.of R' (Shrink.{u'} M)) ≃ₛₗ[RingHomClass.toRingHom e.symm] M  := {
       __ := (Shrink.linearEquiv R M)
       map_smul' r m := map_smul (Shrink.linearEquiv R M) (e.symm r) _ }
-    rw [← projectiveDimension_eq_of_semiLinearEquiv e.symm e']
+    rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e.symm e']
     exact le_iSup _ _
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
@@ -165,7 +165,7 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
     let e' : (ModuleCat.of R (Shrink.{u} M)) ≃ₛₗ[RingHomClass.toRingHom e] M  := {
       __ := (Shrink.linearEquiv R' M)
       map_smul' r m := map_smul (Shrink.linearEquiv R' M) (e r) _ }
-    rw [← projectiveDimension_eq_of_semiLinearEquiv e e']
+    rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e e']
     exact le_iSup _ _
 
 variable {R} in
