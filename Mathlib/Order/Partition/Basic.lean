@@ -287,9 +287,7 @@ lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
 
 @[simp]
 lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · obtain ⟨t, ht, hxP, -⟩ := hx
-    exact subset_of_mem ht hxP
+  refine ⟨fun ⟨t, ht, hxP, _⟩ ↦ subset_of_mem ht hxP, fun hx ↦ ?_⟩
   obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
   exact ⟨t, ht, hxt, hxt⟩
 
@@ -345,57 +343,36 @@ lemma apply_mem (hf : IsRepFun P f) (ha : a ∈ u) : f a ∈ u := (hf.rel_apply 
 lemma apply_mem' (hf : IsRepFun P f) (hP : ∀ {x}, x ∈ u ↔ p x) (ha : p a) : p (f a) :=
   hP.mp <| hf.apply_mem <| hP.mpr ha
 
-lemma image_subset_supp (hf : IsRepFun P f) : f '' u ⊆ u := by
-  rintro _ ⟨a, ha, rfl⟩
-  exact hf.apply_mem ha
-
-lemma image_subset {S : Set α} (hf : IsRepFun P f) (hS : u ⊆ S) : f '' S ⊆ S := by
+lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
   rintro _ ⟨a, haS, rfl⟩
   by_cases ha : a ∈ u
-  · exact hS <| hf.apply_mem ha
-  · exact (hf.apply_of_notMem ha).symm ▸ haS
+  · exact hs <| hf.apply_mem ha
+  exact (hf.apply_of_notMem ha).symm ▸ haS
 
-lemma mapsTo_supp (hf : IsRepFun P f) : Set.MapsTo f u u :=
-  fun _ ↦ hf.apply_mem
+lemma mapsTo (hf : IsRepFun P f) (hs : u ⊆ s) : Set.MapsTo f s s :=
+  fun x h ↦ hf.image_subset hs ⟨x, h, rfl⟩
 
-lemma mapsTo {S : Set α} (hf : IsRepFun P f) (hS : u ⊆ S) : Set.MapsTo f S S :=
-  fun x h ↦ hf.image_subset hS ⟨x, h, rfl⟩
-
-lemma apply_mem_iff (hf : IsRepFun P f) : f a ∈ u ↔ a ∈ u := by
-  refine ⟨fun h ↦ ?_, hf.apply_mem⟩
-  by_contra ha
-  exact ha <| hf.apply_of_notMem ha ▸ h
-
-lemma apply_mem_iff_of_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s := by
+lemma apply_mem_iff (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s := by
   obtain ha | ha := em (a ∈ u)
   · simp [hs ha, hs <| hf.apply_mem ha]
   rw [hf.apply_of_notMem ha]
 
-lemma rel_of_apply_eq_apply (hf : IsRepFun P f) (ha : a ∈ u) (hab : f a = f b) : P.Rel a b := by
-  refine (hf.rel_apply ha).trans ?_
+lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ u) : f a = f b ↔ P.Rel a b := by
+  refine ⟨fun hab ↦ (hf.rel_apply ha).trans ?_, (hf.apply_eq_apply ·)⟩
   rw [hab, P.rel_comm]
   refine hf.rel_apply <| by_contra fun hb ↦ ?_
   rw [hf.apply_of_notMem hb] at hab
   exact hab ▸ hb <| hf.apply_mem ha
 
-lemma rel_of_ne_of_apply_eq_apply (hf : IsRepFun P f) (hne : a ≠ b) (hab : f a = f b) :
-    P.Rel a b := by
-  obtain (ha | ha) := em (a ∈ u)
-  · exact hf.rel_of_apply_eq_apply ha hab
-  obtain (hb | hb) := em (b ∈ u)
-  · exact (hf.rel_of_apply_eq_apply hb hab.symm).symm
-  rw [hf.apply_of_notMem ha, hf.apply_of_notMem hb] at hab
-  contradiction
-
-lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ u) : f a = f b ↔ P.Rel a b :=
-  ⟨hf.rel_of_apply_eq_apply ha, (hf.apply_eq_apply ·)⟩
-
-lemma apply_eq_apply_iff_rel_of_ne (hf : IsRepFun P f) (hne : a ≠ b) : f a = f b ↔ P.Rel a b :=
-  ⟨hf.rel_of_ne_of_apply_eq_apply hne, (hf.apply_eq_apply ·)⟩
-
 lemma apply_eq_apply_iff (hf : IsRepFun P f) : f a = f b ↔ a = b ∨ P.Rel a b := by
   simp only [or_iff_not_imp_left, ← ne_eq]
-  refine ⟨fun hab hne ↦ hf.rel_of_ne_of_apply_eq_apply hne hab, fun h ↦ ?_⟩
+  refine ⟨fun hab hne ↦ ?_, fun h ↦ ?_⟩
+  · obtain (ha | ha) := em (a ∈ u)
+    · exact hf.apply_eq_apply_iff_rel ha |>.mp hab
+    obtain (hb | hb) := em (b ∈ u)
+    · exact (hf.apply_eq_apply_iff_rel hb |>.mp hab.symm).symm
+    rw [hf.apply_of_notMem ha, hf.apply_of_notMem hb] at hab
+    contradiction
   obtain rfl | hne := eq_or_ne a b
   · rfl
   exact hf.apply_eq_apply (h hne)
@@ -406,8 +383,7 @@ lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
   · rw [hf.apply_eq_apply_iff_rel ha]
   rw [hf.apply_of_notMem ha]
   constructor <;> rintro rfl
-  · rw [hf.apply_mem_iff] at ha
-    exact hf.apply_of_notMem ha
+  · exact hf.apply_of_notMem <| hf.apply_mem_iff le_rfl |>.not.mp ha
   exact hf.apply_of_notMem ha |>.symm
 
 lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
