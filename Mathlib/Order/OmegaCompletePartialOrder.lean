@@ -117,9 +117,9 @@ def map : Chain β where toOrderHom := f.comp c.toOrderHom
 @[deprecated (since := "2026-03-27")] alias map_coe := coe_map
 
 /-- The constant chain consists of the same element repeated infinitely. -/
-def const (a : α) : Chain α := OrderHom.const ℕ a
+def const (a : α) : Chain α := ⟨OrderHom.const ℕ a⟩
 
-@[simp] theorem const_coe (a : α) : ⇑(const a) = fun _ ↦ a := rfl
+@[simp] theorem coe_const (a : α) : ⇑(const a) = fun _ ↦ a := rfl
 
 variable {f}
 
@@ -184,7 +184,7 @@ def some (n : ℕ) (c : Chain α) : Chain (Option α) where
     · simp
 
 @[simp]
-lemma some_coe (n) (c : Chain α) (i) : some n c i = if i < n then none else c (i - n) := by rfl
+lemma coe_some (n) (c : Chain α) (i) : some n c i = if i < n then none else c (i - n) := by rfl
 
 /-- Lowers a chain of `Option α`s into a chain of `α`s. -/
 noncomputable def dropOption (c : Chain (Option α)) (h : ∃ n, (c n).isSome) : Chain α where
@@ -201,7 +201,7 @@ noncomputable def dropOption (c : Chain (Option α)) (h : ∃ n, (c n).isSome) :
     grind
 
 @[simp]
-lemma dropOption_coe (c : Chain (Option α)) (h : ∃ n, (c n).isSome) (n)
+lemma coe_dropOption (c : Chain (Option α)) (h : ∃ n, (c n).isSome) (n)
     : dropOption c h n
     = have : (c (n + Nat.find h)).isSome := by
         have := Nat.find_spec h
@@ -214,7 +214,7 @@ lemma dropOption_coe (c : Chain (Option α)) (h : ∃ n, (c n).isSome) (n)
 @[simp]
 lemma dropOption_some (n) : dropOption (some n c) ⟨n, by simp⟩ = c := by
   ext i
-  simp only [dropOption_coe, some_coe, Option.isSome_ite', not_lt, Option.get_ite']
+  simp only [coe_dropOption, coe_some, Option.isSome_ite', not_lt, Option.get_ite']
   have h : ∃ m, n ≤ m := by use n
   have : Nat.find h = n := by simp [Nat.find_eq_iff]
   simp only [this, Nat.add_sub_cancel]
@@ -232,7 +232,7 @@ lemma toOption_none : toOption (const none) = (.none : Option (Chain α)) := by
 
 @[simp]
 lemma toOption_some (n) : toOption (some n c) = (.some c : Option (Chain α)) := by
-  simp only [toOption, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
+  simp only [toOption, coe_some, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
     ite_eq_left_iff, not_exists, not_le, reduceCtorEq, imp_false, not_forall]
   use n
 
@@ -338,9 +338,9 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 @[simp]
 lemma ωSup_const (a : α) : ωSup (Chain.const a) = a := by
   apply le_antisymm
-  · simp only [ωSup_le_iff, const_coe, le_refl, implies_true]
+  · simp only [ωSup_le_iff, coe_const, Std.le_refl, implies_true]
   · apply le_ωSup_of_le 0
-    simp only [const_coe, le_refl]
+    simp only [coe_const, Std.le_refl]
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
@@ -580,7 +580,7 @@ noncomputable instance : OmegaCompletePartialOrder (Option α) where
   ωSup c := c.toOption.map ωSup
   le_ωSup c i := by
     cases c using option_cases with
-    | none => simp only [const_coe, toOption_none, map_none, le_refl]
+    | none => simp only [coe_const, toOption_none, map_none, Std.le_refl]
     | some j => by_cases h : i < j <;> simp [h, le_ωSup]
   ωSup_le := by
     intro c x h
@@ -589,7 +589,7 @@ noncomputable instance : OmegaCompletePartialOrder (Option α) where
     | some n c =>
       replace h i := h (i + n)
       have : ∀ i, ¬ (i + n < n) := by grind
-      simp only [some_coe, this, ↓reduceIte, Nat.add_sub_cancel] at h
+      simp only [coe_some, this, ↓reduceIte, Nat.add_sub_cancel] at h
       cases x <;> simp_all
 
 @[simp]
@@ -635,7 +635,8 @@ lemma ωScottContinuous_bind [OmegaCompletePartialOrder β] [OmegaCompletePartia
         have : f (c (i + n)) = some (c' i) := by
           simp [Chain.ext_iff, funext_iff] at hc
           grind
-        simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some]
+        simp only [coe_map, OrderHom.coe_mk, Function.comp_apply, zip_apply,
+          Function.uncurry_apply_pair, this, bind_some, ge_iff_le]
         exact hg.monotone (Prod.GCongr.mk_le_mk (c.monotone (by grind)) le_rfl)
       · apply ωSup_le _ _ fun i ↦ ?_
         apply le_ωSup_of_le i
@@ -647,7 +648,7 @@ lemma ωScottContinuous_bind [OmegaCompletePartialOrder β] [OmegaCompletePartia
         · have : f (c i) = some (c' (i - n)) := by
             simp [Chain.ext_iff, funext_iff] at hc
             grind
-          simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some, zip_coe,
+          simp only [coe_map, OrderHom.coe_mk, Function.comp_apply, this, bind_some, zip_apply,
             Function.uncurry_apply_pair, ge_iff_le]
           exact hg.monotone (Prod.GCongr.mk_le_mk le_rfl (c'.monotone (by grind)))
 
