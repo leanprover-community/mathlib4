@@ -464,7 +464,7 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective (S 
       have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
-    simp only [← (isRegularLocalRing_def S).mp ‹_›, ← Nat.cast_add, Nat.cast_inj]
+    simp only [← (isRegularLocalRing_iff S).mp ‹_›, ← Nat.cast_add, Nat.cast_inj]
     have : RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
       intro x hx
       by_contra nmem
@@ -475,7 +475,7 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective (S 
         rcases Ideal.mem_span_singleton.mp hy with ⟨z, hz⟩
         simp [hz, RingHom.mem_ker.mp hx]
       have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
-      rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp ‹_›,
+      rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp ‹_›,
         ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
       have : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
         rw [← map_maximalIdeal_of_surjective _ surj']
@@ -495,7 +495,7 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective (S 
       simp [hz, RingHom.mem_ker.mp hx]
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ eq0 surj
     have dim' := dim
-    rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp ‹_›,
+    rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp ‹_›,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim'
     have ih' := ih (S ⧸ Ideal.span {x}) _ surj' (by omega)
     rw [← dim, ← add_assoc, ih', add_assoc, add_comm _ 1, ← add_assoc, ← Nat.cast_one,
@@ -583,7 +583,7 @@ lemma epsilon1_add_ringKrullDim_ge :
   apply le_of_eq_of_le _ (add_le_add_left (WithBot.coe_le_coe.mpr
     (Ideal.height_le_spanFinrank _ (RingHom.ker_ne_top f))) (ringKrullDim (S ⧸ RingHom.ker f)))
   rw [Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim _ (RingHom.ker_ne_top f),
-    ← (isRegularLocalRing_def S).mp reg, spanFinrank_eq_of_surjective_of_ker_le f surj le]
+    ← (isRegularLocalRing_iff S).mp reg, spanFinrank_eq_of_surjective_of_ker_le f surj le]
 
 end epsilon1
 
@@ -668,7 +668,7 @@ lemma quotient_isCompleteIntersectionLocalRing_iff (S : Type u) [CommRing S] [Is
       (le_of_eq_of_le (Set.ncard_coe_finset rs.toFinset) rs.toFinset_card_le)
   rw [isCompleteIntersectionLocalRing_def,
     ← ENat.WithBot.add_natCast_cancel (c := (maximalIdeal S).spanFinrank),
-    (isRegularLocalRing_def S).mp ‹_›, add_assoc, add_comm _ (ringKrullDim _), ← add_assoc,
+    (isRegularLocalRing_iff S).mp ‹_›, add_assoc, add_comm _ (ringKrullDim _), ← add_assoc,
     epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank _ _ ne,
     add_assoc, add_comm _ (ringKrullDim (S ⧸ I)), ← add_assoc, eqht,
     Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim _ ne, add_comm]
