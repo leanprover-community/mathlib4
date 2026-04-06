@@ -182,7 +182,6 @@ theorem coe_add (p q : Seminorm 𝕜 E) : ⇑(p + q) = p + q :=
 theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
