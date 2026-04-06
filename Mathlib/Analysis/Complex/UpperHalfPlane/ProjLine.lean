@@ -52,7 +52,7 @@ lemma UpperHalfPlane.smul_ne_self_of_isHyperbolic {g : GL (Fin 2) ℝ} (hg : 0 <
     by_cases hd : g 1 1 = g 0 0
     · contrapose! hgh
       simp only [GeneralLinearGroup.IsHyperbolic, Matrix.IsHyperbolic, discr_fin_two, trace_fin_two,
-        det_fin_two, hc]
+        det_fin_two, hc, hd]
       grind
     rw [sub_eq_zero, mul_comm, ← div_eq_iff_mul_eq] at hτ
     · simp [← hτ, Complex.div_im]
