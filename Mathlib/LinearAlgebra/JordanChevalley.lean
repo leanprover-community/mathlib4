@@ -17,10 +17,10 @@ sufficient condition for there to exist a nilpotent endomorphism `n` and a semis
 `s`, such that `f = n + s` and both `n` and `s` are polynomial expressions in `f`.
 
 The condition is that there exists a separable polynomial `P` such that the endomorphism `P(f)` is
-nilpotent. This condition is always satisfied when the coefficients are a perfect field.
+nilpotent. This condition is always satisfied when the coefficient field is perfect.
 
 The proof given here uses Newton's method and is taken from Chambert-Loir's notes:
-[Algebre](http://webusers.imj-prg.fr/~antoine.chambert-loir/enseignement/2022-23/agreg/algebre.pdf)
+[Algèbre](http://webusers.imj-prg.fr/~antoine.chambert-loir/enseignement/2022-23/agreg/algebre.pdf)
 
 ## Main definitions / results:
 
@@ -42,7 +42,6 @@ namespace Module.End
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
     ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by

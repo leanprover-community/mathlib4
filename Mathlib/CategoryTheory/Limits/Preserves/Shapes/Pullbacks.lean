@@ -205,7 +205,7 @@ def isColimitMapCoconePushoutCoconeEquiv :
           PushoutCocone (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).symm.trans <|
     IsColimit.equivIsoColimit <|
-      Cocones.ext (Iso.refl _) <| by
+      Cocone.ext (Iso.refl _) <| by
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [Category.comp_id, Category.id_comp, ← G.map_comp]
 
@@ -340,7 +340,7 @@ def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
         ((IsLimit.postcomposeHomEquiv
           (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
             (Equiv.trans (IsLimit.equivIsoLimit
-              (by exact Cones.ext (Iso.refl _) (by rintro (_ | _ | _) <;> simp)))
+              (by exact Cone.ext (Iso.refl _) (by rintro (_ | _ | _) <;> simp)))
                 (c.op.isLimitMapConeEquiv (yoneda.obj X))))))
 
 end Pushout

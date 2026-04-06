@@ -145,12 +145,12 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
       · simp
       · dsimp
         ext
-        simp only [leftRes, limit.lift_map, limit.lift_π, Cones.postcompose_obj_π,
+        simp only [leftRes, limit.lift_map, limit.lift_π, Cone.postcompose_obj_π,
           NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
           NatTrans.naturality, limMap_π_assoc]
       · dsimp [diagram]
         ext
-        simp only [rightRes, limit.lift_map, limit.lift_π, Cones.postcompose_obj_π,
+        simp only [rightRes, limit.lift_map, limit.lift_π, Cone.postcompose_obj_π,
           NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
           NatTrans.naturality, limMap_π_assoc]
       · simp)
@@ -162,14 +162,14 @@ is isomorphic to `fork F G` postcomposed with the corresponding isomorphism betw
 sheaf condition diagrams.
 -/
 def fork.isoOfIso (α : F ≅ G) :
-    fork F U ≅ (Cones.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
+    fork F U ≅ (Cone.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
   fapply Fork.ext
   · apply α.app
   · dsimp
     ext
     dsimp only [Fork.ι]
     -- Ugh, `simp` can't unfold abbreviations.
-    simp only [res, diagram.isoOfIso, piOpens.isoOfIso, Cones.postcompose_obj_π,
+    simp only [res, diagram.isoOfIso, piOpens.isoOfIso, Cone.postcompose_obj_π,
       NatTrans.comp_app, fork_π_app_walkingParallelPair_zero, NatIso.ofComponents_inv_app,
       Functor.mapIso_inv, lim_map, limit.lift_map, Category.assoc, limit.lift_π, Fan.mk_π_app,
       Discrete.natIso_inv_app, Iso.app_inv, NatTrans.naturality, Iso.hom_inv_id_app_assoc]

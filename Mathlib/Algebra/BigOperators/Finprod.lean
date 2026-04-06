@@ -602,6 +602,15 @@ lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [Ze
     finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
 
+lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
+    [ZeroLEOneClass M] [PosMulMono M] :
+    ∏ᶠ _ : α, (0 : M) ≤ 1 := by
+  rw [← finprod_one (α := α)]
+  by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
+  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+  · rw [finprod_of_not_hasFiniteMulSupport H]
+    exact finprod_one.symm.le
+
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
 -/
@@ -1333,6 +1342,17 @@ theorem finprod_emb_domain (f : α ↪ β) [DecidablePred (· ∈ Set.range f)] 
 lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
   (Nat.castRingHom R).map_finprod f.mulSupport.toFinite
+
+/-- This version does not assume that `ι` is finite (compare `Nat.cast_finprod`), but instead needs
+to assume characteristic zero to deal with the infinite case. -/
+@[simp, norm_cast]
+lemma Nat.cast_finprod' {R : Type*} [CommSemiring R] [CharZero R] (f : ι → ℕ) :
+    (∏ᶠ (x : ι), f x : ℕ) = ∏ᶠ (x : ι), (f x : R) := by
+  by_cases hf : f.HasFiniteMulSupport
+  · exact map_finprod (Nat.castRingHom R) hf
+  · have H : ¬ (fun i ↦ (f i : R)).HasFiniteMulSupport :=
+      fun h ↦ hf <| h.of_comp cast_one cast_injective
+    rw [finprod_of_not_hasFiniteMulSupport hf, finprod_of_not_hasFiniteMulSupport H, cast_one]
 
 @[simp, norm_cast]
 lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :

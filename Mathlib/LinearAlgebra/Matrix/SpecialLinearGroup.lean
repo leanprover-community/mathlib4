@@ -5,6 +5,7 @@ Authors: Anne Baanen, Wen Yang
 -/
 module
 
+public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -77,6 +78,7 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
+/-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
 instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
@@ -344,7 +346,6 @@ section Neg
 
 variable [Fact (Even (Fintype.card n))]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
 instance instNeg [Fact (Even (Fintype.card n))] : Neg (SpecialLinearGroup n R) :=
@@ -481,6 +482,8 @@ def T : SL(2, ℤ) :=
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
+
+lemma S_inv : S⁻¹ = -S := by decide
 
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
