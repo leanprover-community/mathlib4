@@ -504,8 +504,8 @@ lemma _root_.DifferentiableAt.deriv_initialCurve_of_orientedCurvature (hI : IsOp
 
 lemma eq_euclidean_plane_vectors {u v : EuclideanSpace ℝ (Fin 2)}
     (h₀ : u 0 = v 0) (h₁ : u 1 = v 1) : u = v := by
-    ext i
-    fin_cases i <;> assumption
+  ext i
+  fin_cases i <;> assumption
 
 omit hIoC in
 lemma deriv_fun_proj_deriv_eq_proj_deriv_deriv (i : ι) (hI : IsOpen I) (ht : t ∈ I)
@@ -552,20 +552,20 @@ theorem initialCurve_of_orientedCurvature_is_unique (hI : IsOpen I) (hκ : Conti
     rw [deriv_fun_sub (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption))]
     have hddc₀s : deriv (fun t ↦ (deriv c t) 0) s = - κ s * (deriv c s) 1 := by
       simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 0 hI hs hc₁, PiLp.ext_iff.mp (hcFre₁ hs) 0,
-        normal_eq]
+        normal_eq_of_norm_deriv_eq_one c s (hc₂ s hs)]
     have hddα₀s : deriv (fun t ↦ (deriv α t) 0) s = - κ s * (deriv α s) 1 := by
       simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 0 hI hs hα₁, α, PiLp.ext_iff.mp (hαFre₁ hs) 0,
-        normal_eq]
+        normal_eq_of_norm_deriv_eq_one α s (hα₂ s hs)]
     rw [hddc₀s, hddα₀s]; ring
   have hdg {s : ℝ} (hs : s ∈ I) : deriv g s = κ s * f s := by
     simp only [Fin.isValue, g, f]
     rw [deriv_fun_sub (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption))]
     have hddc₁s : deriv (fun t ↦ (deriv c t) 1) s = κ s * (deriv c s) 0 := by
       simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 1 hI hs hc₁, PiLp.ext_iff.mp (hcFre₁ hs) 1,
-        normal_eq]
+        normal_eq_of_norm_deriv_eq_one c s (hc₂ s hs)]
     have hddα₁s : deriv (fun t ↦ (deriv α t) 1) s = κ s * (deriv α s) 0 := by
       simp [deriv_fun_proj_deriv_eq_proj_deriv_deriv 1 hI hs hα₁, α, PiLp.ext_iff.mp (hαFre₁ hs) 1,
-        normal_eq]
+        normal_eq_of_norm_deriv_eq_one α s (hα₂ s hs)]
     rw [hddc₁s, hddα₁s]; ring
   have hdh : Set.EqOn (deriv h) 0 I := by
     intro s hs
