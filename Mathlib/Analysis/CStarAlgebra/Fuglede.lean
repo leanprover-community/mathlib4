@@ -34,7 +34,7 @@ Therefore `‖f z‖ = ‖x‖` for all `z`, and since `f` is clearly entire, by
 proves that `star b * x = x * star a`, as desired.
 
 In a follow-up paper, Cater [cater1961] proved a number of related results using similar techniques.
-We include one of these below, `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`, 
+We include one of these below, `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`,
 but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 
 ## Main results
@@ -42,7 +42,7 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 + `fuglede_putnam_rosenblum`: If `a` and `b` are normal elements in a C⋆-algebra `A` which
   are interwined by `x` (i.e., `SemiconjBy x a b`, that is, `x * a = b * x`), then `star a` and
   `star b` are also intertwined by `x`.
-+ `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`: A characterization of normal elements in a 
++ `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`: A characterization of normal elements in a
   C⋆-algebra in terms of exponentials.
 
 ## References
@@ -55,7 +55,7 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 -/
 
 
-open NormedSpace selfAdjoint Bornology
+open NormedSpace selfAdjoint Bornology Complex
 open scoped ComplexStarModule
 
 variable {A : Type*} [CStarAlgebra A] {a b x : A} [IsStarNormal a] [IsStarNormal b]
@@ -72,7 +72,6 @@ lemma expMulMulExp_eq_expUnitary_mul_mul_expUnitary (h : SemiconjBy x a b) (z : 
   simp_rw [← mul_assoc, mul_assoc (_ * _ * x)]
   congr!
   all_goals
-    open Complex in
     simp [imaginaryPart_apply_coe, smul_comm (2 : ℝ) I, smul_smul I I, sub_eq_add_neg]
     grind [exp_add_of_commute, Commute.smul_right, Commute.neg_right]
 
@@ -136,7 +135,6 @@ public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
   · convert (selfAdjoint.expUnitary (x • (2 : ℝ) • ℑ a)).2
     have hcomm := star_comm_self (x := a) |>.symm.smul_left x |>.smul_right (-x)
     rw [← exp_add_of_commute hcomm]
-    open Complex in
     simp [imaginaryPart_apply_coe, smul_comm (2 : ℝ) I, smul_comm x I, smul_smul I I, smul_add x,
       sub_eq_add_neg]
   /- Take any `x : ℝ` and suppose `u := exp (x • a) * exp (- x • a)` is unitary. Then
