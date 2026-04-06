@@ -896,11 +896,7 @@ theorem Iso.cliqueFinset_eq {G : SimpleGraph α} [DecidableRel G.Adj]
     (G.cliqueFinset n).map (f : α ≃ β).finsetCongr.toEmbedding = G'.cliqueFinset n := by
   unfold cliqueFinset
   ext s'
-  simp only [f.isNClique_iff, mem_map_equiv, Equiv.finsetCongr_symm, Equiv.finsetCongr_apply,
-    mem_filter, mem_univ, true_and]
-
-
-  sorry
+  simp [f.isNClique_iff, Finset.map_map]
 
 end CliqueFinset
 
