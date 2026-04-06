@@ -376,7 +376,6 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     have : IsLocalRing (R ⧸ Ideal.span {x}) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
-
     let xm' := (Submodule.span (ResidueField R) {(maximalIdeal R).toCotangent ⟨x, mem⟩})
     rcases xm'.exists_isCompl with ⟨J', ⟨inf, sup⟩⟩
     let g : (maximalIdeal R) →ₛₗ[residue R] (maximalIdeal R).Cotangent := {
@@ -515,13 +514,11 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         rw [Ideal.map_le_iff_le_comap, maximalIdeal_comap (Ideal.Quotient.mk (Ideal.span {x}))]
       exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem generate_by_regular [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
     ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = maximalIdeal R :=
   generate_by_regular_aux  h (Submodule.spanFinrank (maximalIdeal R)) rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
@@ -543,7 +540,6 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   simp only [← span, exists_prop, and_true]
   exact fun r hr ↦ Ideal.subset_span hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
   apply IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
