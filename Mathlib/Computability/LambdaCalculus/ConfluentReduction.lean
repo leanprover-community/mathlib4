@@ -3,7 +3,9 @@ Copyright (c) 2026 zayn7lie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zayn Wang
 -/
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Logic.Relation
 
 /-!
 # Confluent Reduction
@@ -31,17 +33,17 @@ open Relation
 
 namespace Lambda
 
-def Diamond {α} (r : α → α → Prop) : Prop :=
+@[simp, expose] public def Diamond {α} (r : α → α → Prop) : Prop :=
   ∀ ⦃a b c⦄, r a b → r a c → ∃ d, r b d ∧ r c d
 
-def Confluent {α} (r : α → α → Prop) : Prop :=
+@[simp, expose] public def Confluent {α} (r : α → α → Prop) : Prop :=
   ∀ ⦃a b c⦄,
     ReflTransGen r a b →
     ReflTransGen r a c →
     ∃ d, ReflTransGen r b d ∧ ReflTransGen r c d
 
 /-- Diamond = confluence of the refl–trans closure. -/
-theorem confluent_of_diamond {α} {r : α → α → Prop}
+public theorem confluent_of_diamond {α} {r : α → α → Prop}
     (hd : Diamond r) : Confluent r := by
   have strip : ∀ ⦃a b c⦄, r a b → ReflTransGen r a c →
       ∃ d, ReflTransGen r b d ∧ r c d := by
@@ -61,7 +63,7 @@ theorem confluent_of_diamond {α} {r : α → α → Prop}
       exact ⟨f, hcf, ReflTransGen.tail hcd hdf⟩
 
 /-- Sandwich: if `r ⊆ p ⊆ r*` then `r* = p*`. -/
-theorem rtc_eq_of_sandwich {α} {r p : α → α → Prop}
+public theorem rtc_eq_of_sandwich {α} {r p : α → α → Prop}
     (h₁ : ∀ ⦃a b⦄, r a b → p a b)
     (h₂ : ∀ ⦃a b⦄, p a b → ReflTransGen r a b) :
     ∀ {a b}, ReflTransGen r a b ↔ ReflTransGen p a b := by

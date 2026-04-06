@@ -3,8 +3,10 @@ Copyright (c) 2026 zayn7lie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zayn Wang
 -/
-import Mathlib.Computability.LambdaCalculus.ConfluentReduction
-import Mathlib.Computability.LambdaCalculus.ParallelReduction
+module
+
+public import Mathlib.Computability.LambdaCalculus.ConfluentReduction
+public import Mathlib.Computability.LambdaCalculus.ParallelReduction
 
 /-!
 # The Church–Rosser theorem for β-reduction
@@ -32,12 +34,12 @@ namespace Lambda
 open Term
 
 /-- Parallel Reduction is Diamond. -/
-lemma diamond_par : Diamond Par := by
+private lemma diamond_par : Diamond Par := by
   intro a b c hab hac
   exact ⟨a.dev, par_to_dev hab, par_to_dev hac⟩
 
 /-- Church–Rosser: β is confluent (on RTC). -/
-theorem churchRosser_beta : Confluent Beta := by
+public theorem churchRosser_beta : Confluent Beta := by
   -- Confluence of Par from diamond
   have hPar : Confluent Par :=
     confluent_of_diamond (r := Par) diamond_par

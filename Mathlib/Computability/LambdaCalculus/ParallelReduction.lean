@@ -3,7 +3,9 @@ Copyright (c) 2026 zayn7lie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zayn Wang
 -/
-import Mathlib.Computability.LambdaCalculus.BetaReduction
+module
+
+public import Mathlib.Computability.LambdaCalculus.BetaReduction
 
 /-!
 # Parallel β-reduction and complete developments
@@ -39,23 +41,23 @@ namespace Lambda
 open Term
 
 /-- Parallel β-reduction (syntax-directed). -/
-inductive Par : Term → Term → Prop
+public inductive Par : Term → Term → Prop
   | var (n) : Par (𝕧 n) (𝕧 n)
   | abs {t t'} : Par t t' → Par (λ.t) (λ.t')
   | app {t t' u u'} : Par t t' → Par u u' → Par (t·u) (t'·u')
   | red {t t' s s'} : Par t t' → Par s s' →
       Par ((λ.t)·s) (t'.sub 0 s')
-abbrev ParStar := Relation.ReflTransGen Par
+public abbrev ParStar := Relation.ReflTransGen Par
 
 /-- reflexivity of Par. -/
-@[simp] theorem par_refl {t} : Par t t := by
+@[simp] public theorem par_refl {t} : Par t t := by
   induction t with
   | var n => exact Par.var n
   | app t u iht ihu => exact Par.app iht ihu
   | abs t iht => exact Par.abs iht
 
 /-- `Beta ⊆ Par`. -/
-theorem beta_subset_par {a b} (h : Beta a b) : Par a b := by
+public theorem beta_subset_par {a b} (h : Beta a b) : Par a b := by
   induction h with
   | appL h ih => exact Par.app ih par_refl
   | appR h ih => exact Par.app par_refl ih
@@ -63,7 +65,7 @@ theorem beta_subset_par {a b} (h : Beta a b) : Par a b := by
   | red t s  => exact Par.red par_refl par_refl
 
 /-- Simulation lemma: `Par ⊆ BetaStar`. -/
-theorem par_subset_betaStar {a b} (h : Par a b) :
+public theorem par_subset_betaStar {a b} (h : Par a b) :
     BetaStar a b := by
   induction h with
   | var n => exact BetaStar.refl (𝕧 n)
@@ -75,7 +77,7 @@ theorem par_subset_betaStar {a b} (h : Par a b) :
       exact BetaStar.trans (BetaStar.appL (BetaStar.abs iht))
         (BetaStar.tail (BetaStar.appR ihs) (Beta.red _ _))
 
-@[simp] theorem incre_par {a b i l} (h : Par a b) :
+@[simp] public theorem incre_par {a b i l} (h : Par a b) :
     Par (incre i l a) (incre i l b) := by
   induction h generalizing l with
   | var n => exact par_refl
@@ -91,7 +93,7 @@ theorem par_subset_betaStar {a b} (h : Par a b) :
       exact Par.red iht ihs
 
 /-- Substitution lemma for `par_to_dev`. -/
-lemma par_subst {t t' u u'} (ht : Par t t') (hu : Par u u')
+private lemma par_subst {t t' u u'} (ht : Par t t') (hu : Par u u')
   (k : Nat) (n : Nat) :
     Par (t.sub n (incre k 0 u)) (t'.sub n (incre k 0 u')) := by
   match t, t' with
@@ -129,14 +131,14 @@ lemma par_subst {t t' u u'} (ht : Par t t') (hu : Par u u')
                 (par_subst ht₁ hu k n) (par_subst ht₂ hu k n)
 
 /-- Complete development (maximal Par) for a term. -/
-def Term.dev : Term → Term
+public def Term.dev : Term → Term
   | 𝕧 n     => 𝕧 n
   | λ.t     => λ.(t.dev)
   | (λ.t)·s => t.dev.sub 0 s.dev
   | t·u     => t.dev·u.dev
 
 /-- t.dev is a par reduction for t. -/
-theorem par_dev (t : Term) : Par t t.dev :=
+public theorem par_dev (t : Term) : Par t t.dev :=
   match t with
   | 𝕧 n     => Par.var n
   | λ.t     => Par.abs (par_dev t)
@@ -147,7 +149,7 @@ theorem par_dev (t : Term) : Par t t.dev :=
       | app t₁ t₂ => Par.app (par_dev (t₁·t₂)) (par_dev u)
 
 /-- t.dev is max par reduction for t. -/
-theorem par_to_dev {t u} (h : Par t u) : Par u (t.dev) := by
+public theorem par_to_dev {t u} (h : Par t u) : Par u (t.dev) := by
   match t, u with
   | var t', var u' =>
       match h with | Par.var t' => exact Par.var t'
