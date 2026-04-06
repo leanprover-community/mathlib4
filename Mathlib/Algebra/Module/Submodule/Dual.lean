@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Martin Winter, Yaël Dillies. All rights reserved.
+Copyright (c) 2026 Martin Winter. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Winter, Yaël Dillies
 -/
@@ -11,19 +11,21 @@ public import Mathlib.LinearAlgebra.Pi
 /-!
 # The algebraic dual of a submodule
 
-Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`Submodule.dual p s` to be the submodule in `N` consisting of all points `y` such that
-`0 = p x y` for all `x ∈ s`.
+Given a bilinear pairing `p` between two modules `M₁` and `M₂` and a submodule `S` in `M₁`, we
+define `Submodule.dual p S` to be the submodule in `M₂` consisting of all points `y` such that
+`0 = p x y` for all `x ∈ S`.
+For reasons of generality, `p` is actually a general sesqui-bilinear map, that is, of the form
+`p : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`.
 
-See also `PointedCone.dual`.
+See `PointedCone.dual` for the analogue for cones.
 
 ## Main declarations
 
-- `Submodule.dual` is the dual submodule of a set `s` w.r.t. a bilinear pairing `p`.
+- `Submodule.dual` is the dual submodule of a submodule `S` w.r.t. a bilinear pairing `p`.
 
 ## Notes
 
-- In case that the pairing is `Dual.eval R M`, the dual of a submodule `S` is identical to the
+- In case that the pairing is `Dual.eval R M₁`, the dual of a submodule `S` is identical to the
   dual annihilator `S` (see `dual_dualAnnihilator`).
 - In case that the pairing is `LinealMap.id`, the dual of a submodule `S` is identical to the
   dual coannihilator `S` (see `dual_dualCoannihilator`).
@@ -49,8 +51,8 @@ variable {p : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 variable {S T : Submodule R₁ M₁}
 
 variable (p S) in
-/-- The dual span of a set `s` with respect to a bilinear pairing `p` is the submodule
-  consisting of the points `y` such that for all points `x ∈ s` we have `0 = p x y`. -/
+/-- The dual span of a submodule `S` with respect to a bilinear pairing `p` is the submodule
+  consisting of the points `y` such that for all points `x ∈ S` we have `0 = p x y`. -/
 def dual : Submodule R₂ M₂ where
   carrier := {y | ∀ x ∈ S, p x y = 0}
   zero_mem' := by simp
@@ -113,11 +115,11 @@ theorem dual_sup (S T) : dual p (S ⊔ T) = dual p S ⊓ dual p T := by
 variable (p) in
 @[simp] theorem dual_sup_ker (S) : dual p (S ⊔ ker p) = dual p S := by simp [dual_sup]
 
-/-- The dual submodule of `s` equals the intersection of dual submodules of the points in `s`. -/
+/-- The dual submodule of `S` equals the intersection of dual submodules of the points in `S`. -/
 theorem dual_eq_iInf_dual_span_singleton (S) :
     dual p S = ⨅ x : S, dual p (R₁ ∙ x.val) := by ext; simp
 
-/-- The dual submodule of `s` equals the intersection of dual submodules of the points in `s`. -/
+/-- The dual submodule of `S` equals the intersection of dual submodules of the points in `S`. -/
 theorem dual_eq_Inf_dual_span_singleton (S) :
     dual p S = ⨅ x ∈ S, dual p (R₁ ∙ x) := by ext; simp
 
