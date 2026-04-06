@@ -338,7 +338,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explict `K = Frac(R)`, `L = Frac(S)`,
+/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
