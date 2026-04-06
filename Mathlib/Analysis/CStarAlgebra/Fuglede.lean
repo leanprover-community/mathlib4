@@ -34,14 +34,16 @@ Therefore `‖f z‖ = ‖x‖` for all `z`, and since `f` is clearly entire, by
 proves that `star b * x = x * star a`, as desired.
 
 In a follow-up paper, Cater [cater1961] proved a number of related results using similar techniques.
-We include one of these below, but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
+We include one of these below, `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`, 
+but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 
 ## Main results
 
 + `fuglede_putnam_rosenblum`: If `a` and `b` are normal elements in a C⋆-algebra `A` which
   are interwined by `x` (i.e., `SemiconjBy x a b`, that is, `x * a = b * x`), then `star a` and
   `star b` are also intertwined by `x`.
-+
++ `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`: A characterization of normal elements in a 
+  C⋆-algebra in terms of exponentials.
 
 ## References
 
@@ -125,7 +127,7 @@ public lemma IsStarNormal.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A
 
 /-- A characterization of normal elements in a C⋆-algebra in terms of exponentials. -/
 public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
-    IsStarNormal a ↔ ∀ x : ℝ, exp (x • a) * exp (- x • star a) ∈ unitary A := by
+    IsStarNormal a ↔ ∀ x : ℝ, exp (x • a) * exp (-x • star a) ∈ unitary A := by
   let _ : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
   have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
   refine ⟨fun ha x ↦ ?_, fun ha ↦ ?_⟩
