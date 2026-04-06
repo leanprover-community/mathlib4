@@ -872,6 +872,24 @@ protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Max α] [Min �
     le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp map_hnot map_sdiff
   __ := hf.booleanAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
 
+namespace Equiv
+
+/-- Transfer `CompleteBooleanAlgebra` across an `Equiv`. -/
+protected abbrev completeBooleanAlgebra (e : α ≃ β) [CompleteBooleanAlgebra β] :
+    CompleteBooleanAlgebra α := by
+  let completeLattice := e.completeLattice
+  let booleanAlgebra := e.booleanAlgebra
+  apply e.injective.completeBooleanAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CompleteAtomicBooleanAlgebra` across an `Equiv`. -/
+protected abbrev completeAtomicBooleanAlgebra (e : α ≃ β) [CompleteAtomicBooleanAlgebra β] :
+    CompleteAtomicBooleanAlgebra α := by
+  let completeBooleanAlgebra := e.completeBooleanAlgebra
+  apply e.injective.completeAtomicBooleanAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+end Equiv
+
 end lift
 
 namespace PUnit

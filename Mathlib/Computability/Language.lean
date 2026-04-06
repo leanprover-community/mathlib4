@@ -93,57 +93,15 @@ lemma mem_singleton_iff (w x : List α) : w ∈ ({x} : Language α) ↔ w = x :=
 instance : Insert (List α) (Language α) where
   insert w l := ⟨insert w l.toSet⟩
 
-instance : Lattice (Language α) where
-  le := (·.toSet ⊆ ·.toSet)
-  le_refl _ := by simp
-  le_trans _ _ _ h₁ h₂ := h₁.trans h₂
-  le_antisymm _ _ h₁ h₂ := by
-    ext1
-    exact subset_antisymm h₁ h₂
-  sup := (⟨·.toSet ∪ ·.toSet⟩)
-  le_sup_left _ _ := by simp
-  le_sup_right _ _ := by simp
-  sup_le _ _ _ := by simp_all
-  inf := (⟨·.toSet ∩ ·.toSet⟩)
-  inf_le_left _ _ := by simp
-  inf_le_right _ _ := by simp
-  le_inf _ _ _ := by simp_all
+instance : CompleteAtomicBooleanAlgebra (Language α) :=
+  equiv.completeAtomicBooleanAlgebra
 
 lemma le_def (l m : Language α) : l ≤ m ↔ l.toSet ⊆ m.toSet := Iff.rfl
 lemma sup_def (l m : Language α) : l ⊔ m = ⟨l.toSet ∪ m.toSet⟩ := rfl
 lemma inf_def (l m : Language α) : l ⊓ m = ⟨l.toSet ∩ m.toSet⟩ := rfl
-
-instance : BooleanAlgebra (Language α) :=
-  le_sup_inf _ _ _ := by
-    simp only [le_def, sup_def, inf_def]
-    exact le_sup_inf
-  compl := (⟨·.toSetᶜ⟩)
-  top := ⟨univ⟩
-  bot := ⟨∅⟩
-  inf_compl_le_bot _ _ _ := by simp_all [inf_def]
-  top_le_sup_compl _ _ _ := by simp_all [sup_def]
-  le_top _ := by simp [le_def]
-  bot_le _ := by simp [le_def]
-
 lemma compl_def (l : Language α) : lᶜ = ⟨l.toSetᶜ⟩ := rfl
 lemma top_def : (⊤ : Language α) = ⟨univ⟩ := rfl
 lemma bot_def : (⊥ : Language α) = ⟨∅⟩ := rfl
-
-instance : CompleteAtomicBooleanAlgebra (Language α) where
-  sSup s := ⟨⨆ l ∈ s, l.toSet⟩
-  isLUB_sSup s := by
-    apply IsLUB.of_image (f := toSet)
-    · simp [le_def]
-    · rw [← sSup_image]
-      exact isLUB_sSup _
-  sInf s := ⟨⨅ l ∈ s, l.toSet⟩
-  isGLB_sInf s := by
-    apply IsGLB.of_image (f := toSet)
-    · simp [le_def]
-    · rw [← sInf_image]
-      exact isGLB_sInf _
-  iInf_iSup_eq {_ _ _} := by simpa [iSup, iInf] using iInf_iSup_eq
-
 lemma sSup_def (s : Set (Language α)) : sSup s = ⟨⨆ l ∈ s, l.toSet⟩ := rfl
 lemma sInf_def (s : Set (Language α)) : sInf s = ⟨⨅ l ∈ s, l.toSet⟩ := rfl
 
