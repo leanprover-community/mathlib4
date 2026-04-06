@@ -34,12 +34,12 @@ open Term
 /-- Parallel Reduction is Diamond. -/
 lemma diamond_par : Diamond Par := by
   intro a b c hab hac
-  exact ⟨a.dev, par_to_dev hab, par_to_dev hac⟩ 
+  exact ⟨a.dev, par_to_dev hab, par_to_dev hac⟩
 
 /-- Church–Rosser: β is confluent (on RTC). -/
 theorem churchRosser_beta : Confluent Beta := by
   -- Confluence of Par from diamond
-  have hPar : Confluent Par := 
+  have hPar : Confluent Par :=
     confluent_of_diamond (r := Par) diamond_par
   -- Identify BetaStar and ParStar via sandwich
   have hEq {a b : Term} : BetaStar a b ↔ ParStar a b :=

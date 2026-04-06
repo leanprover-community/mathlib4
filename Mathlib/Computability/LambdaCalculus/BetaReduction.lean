@@ -48,15 +48,15 @@ namespace BetaStar
 
 theorem refl (t : Term) : BetaStar t t :=
   Relation.ReflTransGen.refl
-theorem head {a b c} (hab : Beta a b) (hbc : BetaStar b c) : 
-    BetaStar a c := 
+theorem head {a b c} (hab : Beta a b) (hbc : BetaStar b c) :
+    BetaStar a c :=
   Relation.ReflTransGen.head hab hbc
-theorem tail {a b c} (hab : BetaStar a b) (hbc : Beta b c) : 
+theorem tail {a b c} (hab : BetaStar a b) (hbc : Beta b c) :
     BetaStar a c :=
   Relation.ReflTransGen.tail hab hbc
 theorem trans {a b c}
     (hab : BetaStar a b) (hbc : BetaStar b c) :
-    BetaStar a c := 
+    BetaStar a c :=
   Relation.ReflTransGen.trans hab hbc
 
 theorem appL {t t' u : Term} (h : BetaStar t t') :
@@ -71,11 +71,11 @@ theorem appR {t u u' : Term} (h : BetaStar u u') :
   | tail hab hbc ih => exact BetaStar.tail ih (Beta.appR hbc)
 theorem app {t t' u u'}
     (ht : BetaStar t t')
-    (hu : BetaStar u u') : 
+    (hu : BetaStar u u') :
     BetaStar (t·u) (t'·u') := by
   induction ht with
   | refl => exact BetaStar.appR hu
-  | tail hab hbc ih => exact BetaStar.tail ih (Beta.appL hbc) 
+  | tail hab hbc ih => exact BetaStar.tail ih (Beta.appL hbc)
 
 theorem abs {t t' : Term} (h : BetaStar t t') :
     BetaStar (λ.t) (λ.t') := by

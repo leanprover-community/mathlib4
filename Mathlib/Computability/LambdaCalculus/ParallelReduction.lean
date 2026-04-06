@@ -43,7 +43,7 @@ inductive Par : Term → Term → Prop
   | var (n) : Par (𝕧 n) (𝕧 n)
   | abs {t t'} : Par t t' → Par (λ.t) (λ.t')
   | app {t t' u u'} : Par t t' → Par u u' → Par (t·u) (t'·u')
-  | red {t t' s s'} : Par t t' → Par s s' → 
+  | red {t t' s s'} : Par t t' → Par s s' →
       Par ((λ.t)·s) (t'.sub 0 s')
 abbrev ParStar := Relation.ReflTransGen Par
 
@@ -63,19 +63,19 @@ theorem beta_subset_par {a b} (h : Beta a b) : Par a b := by
   | red t s  => exact Par.red par_refl par_refl
 
 /-- Simulation lemma: `Par ⊆ BetaStar`. -/
-theorem par_subset_betaStar {a b} (h : Par a b) : 
+theorem par_subset_betaStar {a b} (h : Par a b) :
     BetaStar a b := by
   induction h with
   | var n => exact BetaStar.refl (𝕧 n)
   | app hpt hpu hbt hbu =>
-      exact BetaStar.trans 
+      exact BetaStar.trans
               (BetaStar.appL hbt) (BetaStar.appR hbu)
   | abs h ht => exact BetaStar.abs ht
   | red ht hs iht ihs =>
       exact BetaStar.trans (BetaStar.appL (BetaStar.abs iht))
         (BetaStar.tail (BetaStar.appR ihs) (Beta.red _ _))
 
-@[simp] theorem incre_par {a b i l} (h : Par a b) : 
+@[simp] theorem incre_par {a b i l} (h : Par a b) :
     Par (incre i l a) (incre i l b) := by
   induction h generalizing l with
   | var n => exact par_refl
@@ -95,37 +95,37 @@ lemma par_subst {t t' u u'} (ht : Par t t') (hu : Par u u')
   (k : Nat) (n : Nat) :
     Par (t.sub n (incre k 0 u)) (t'.sub n (incre k 0 u')) := by
   match t, t' with
-  | var t, var t' => match ht with 
+  | var t, var t' => match ht with
       | Par.var t => cases em (t = n) with
           | inl h => simp_all
           | inr h => cases em (t < n) with
               | inl h' => simp_all
               | inr h' =>
-                  simp_all [ (Nat.lt_of_le_of_ne 
+                  simp_all [ (Nat.lt_of_le_of_ne
                       (Nat.le_of_not_gt h') (Ne.symm h))]
   | abs t, abs t' => match ht with
       | Par.abs ht' =>
-          have hp := Par.abs 
+          have hp := Par.abs
             (par_subst ht' hu (1 + k) (n + 1))
           simp_all [← incre_comm_zero]
   | app t₁ t₂, t' => match t₁ with
       | abs t₁ => match ht with
           | Par.app ht₁ ht₂ =>
-              exact Par.app 
+              exact Par.app
                 (par_subst ht₁ hu k n) (par_subst ht₂ hu k n)
           | Par.red ht₁ ht₂ =>
-              have hp := Par.red 
-                (par_subst ht₁ hu (1 + k) (n + 1)) 
+              have hp := Par.red
+                (par_subst ht₁ hu (1 + k) (n + 1))
                 (par_subst ht₂ hu k n)
               rw [sub_sub_incre] at hp
               simp_all [← incre_comm_zero]
       | var t₁ => match ht with
           | Par.app ht₁ ht₂ =>
-              exact Par.app 
+              exact Par.app
                 (par_subst ht₁ hu k n) (par_subst ht₂ hu k n)
       | app t₁ t₁' => match ht with
           | Par.app ht₁ ht₂ =>
-              exact Par.app 
+              exact Par.app
                 (par_subst ht₁ hu k n) (par_subst ht₂ hu k n)
 
 /-- Complete development (maximal Par) for a term. -/
@@ -158,16 +158,16 @@ theorem par_to_dev {t u} (h : Par t u) : Par u (t.dev) := by
       | Par.app ht hu =>
           rename_i u u'
           match t, u with
-          | abs t, abs u => match ht with 
+          | abs t, abs u => match ht with
               | Par.abs ht' =>
-                exact Par.red 
+                exact Par.red
                   (par_to_dev ht') (par_to_dev hu)
-          | var _, _ => 
+          | var _, _ =>
               exact Par.app (par_to_dev ht) (par_to_dev hu)
-          | app _ _, _ => 
+          | app _ _, _ =>
               exact Par.app (par_to_dev ht) (par_to_dev hu)
       | Par.red hu ht =>
-          have hp := par_subst 
+          have hp := par_subst
             (par_to_dev hu) (par_to_dev ht) 0 0
           repeat rw [incre_rfl] at hp
           exact hp

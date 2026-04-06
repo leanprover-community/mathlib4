@@ -8,7 +8,7 @@ import Mathlib.Logic.Relation
 /-!
 # Confluent Reduction
 
-This file contain the definition of the Diamond property and 
+This file contain the definition of the Diamond property and
 Confluent property. Then investigate the relationship between
 these two property.
 
