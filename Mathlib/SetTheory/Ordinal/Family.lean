@@ -10,12 +10,7 @@ public import Mathlib.SetTheory.Ordinal.Arithmetic
 /-!
 # Arithmetic on families of ordinals
 
-## Main definitions and results
-
-* `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
-  `Type u`, as an ordinal in `Type u`.
-* `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
-  less than a given ordinal `o`.
+This file proves basic results about the suprema of families of ordinals.
 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
@@ -499,42 +494,58 @@ theorem iSup_Iio_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2
 
 end bsup
 
--- TODO: bring the lsub API in line with the sSup / iSup API, or deprecate it altogether.
-
 section lsub
 
 /-- The least strict upper bound of a family of ordinals. -/
+@[deprecated "write `⨆ i, f i + 1` instead." (since := "2026-03-27")]
 def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   iSup (succ ∘ f)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem iSup_eq_lsub {ι} (f : ι → Ordinal) : iSup (succ ∘ f) = lsub f :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le_iff {ι} {f : ι → Ordinal} {a} : lsub f ≤ a ↔ ∀ i, f i < a :=
   Ordinal.iSup_add_one_le_iff
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
   lsub_le_iff.2
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lt_lsub {ι} (f : ι → Ordinal) (i) : f i < lsub f :=
   Ordinal.lt_iSup_add_one f i
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lt_lsub_iff {ι} {f : ι → Ordinal} {a} : a < lsub f ↔ ∃ i, a ≤ f i := by
   simpa only [not_forall, not_lt, not_le] using not_congr lsub_le_iff
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem iSup_le_lsub {ι} (f : ι → Ordinal) : iSup f ≤ lsub f :=
   Ordinal.iSup_le fun i => (lt_lsub f i).le
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le_succ_iSup {ι} (f : ι → Ordinal) : lsub f ≤ succ (iSup f) :=
   lsub_le fun i => lt_succ_iff.2 (Ordinal.le_iSup f i)
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem iSup_eq_lsub_or_succ_iSup_eq_lsub {ι} (f : ι → Ordinal) :
     iSup f = lsub f ∨ succ (iSup f) = lsub f := by
   rcases eq_or_lt_of_le (iSup_le_lsub f) with h | h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_succ_iSup f))
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem succ_iSup_le_lsub_iff {ι} (f : ι → Ordinal) :
     succ (iSup f) ≤ lsub f ↔ ∃ i, f i = iSup f := by
   refine ⟨fun h => ?_, ?_⟩
@@ -545,10 +556,14 @@ theorem succ_iSup_le_lsub_iff {ι} (f : ι → Ordinal) :
   rw [succ_le_iff, ← hf]
   exact lt_lsub _ _
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem succ_iSup_eq_lsub_iff {ι} (f : ι → Ordinal) :
     succ (iSup f) = lsub f ↔ ∃ i, f i = iSup f :=
   (lsub_le_succ_iSup f).ge_iff_eq'.symm.trans (succ_iSup_le_lsub_iff f)
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem iSup_eq_lsub_iff {ι} (f : ι → Ordinal) :
     iSup f = lsub f ↔ ∀ a < lsub f, succ a < lsub f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (iSup_le_lsub f) (lsub_le fun i => ?_)⟩
@@ -564,21 +579,27 @@ theorem iSup_eq_lsub_iff {ι} (f : ι → Ordinal) :
   rw [heq] at this
   exact this.false
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem iSup_eq_lsub_iff_lt_iSup {ι} (f : ι → Ordinal) :
     iSup f = lsub f ↔ ∀ i, f i < iSup f :=
   ⟨fun h i => by
     rw [h]
     apply lt_lsub, fun h => le_antisymm (iSup_le_lsub f) (lsub_le h)⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_empty {ι} [h : IsEmpty ι] (f : ι → Ordinal) : lsub f = 0 := by
   rw [← nonpos_iff_eq_zero, lsub_le_iff]
   exact h.elim
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_pos {ι} [h : Nonempty ι] (f : ι → Ordinal) : 0 < lsub f :=
   h.elim fun i => (zero_le _).trans_lt (lt_lsub f i)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_eq_zero_iff {ι} (f : ι → Ordinal) :
     lsub.{_, v} f = 0 ↔ IsEmpty ι := by
   refine ⟨fun h => ⟨fun i => ?_⟩, fun h => @lsub_empty _ h _⟩
@@ -586,37 +607,49 @@ theorem lsub_eq_zero_iff {ι} (f : ι → Ordinal) :
   rw [h] at this
   exact this.false
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_const {ι} [Nonempty ι] (o : Ordinal) : (lsub fun _ : ι => o) = succ o :=
   ciSup_const
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f default) :=
   ciSup_unique
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
   csSup_le_csSup' (bddAbove_range.{v, max u w} _)
     (by convert Set.image_mono h <;> apply Set.range_comp)
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
   (lsub_le_of_range_subset.{u, v, w} h.le).antisymm (lsub_le_of_range_subset.{v, u, w} h.ge)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     lsub.{max u v, w} f =
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
   iSup_sum _
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_notMem_range {ι} (f : ι → Ordinal) :
     lsub f ∉ Set.range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
 
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
   ⟨_, lsub_notMem_range f⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < ·)) = o :=
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
@@ -624,12 +657,14 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < �
       have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
+set_option linter.deprecated false in
+@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-27")]
 theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
     iSup (typein ((· < ·) : o.ToType → o.ToType → Prop)) = o := by
   rw [(iSup_eq_lsub_iff.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]
   assumption
 
-@[simp]
+@[deprecated csSup_Iic (since := "2026-03-27")]
 theorem iSup_typein_succ {o : Ordinal} :
     iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
   rw [← csSup_Iic (a := o), iSup, PrincipalSeg.range_eq]
@@ -840,13 +875,18 @@ set_option linter.deprecated false in
 theorem blsub_id : ∀ o, (blsub.{u, u} o fun x _ => x) = o :=
   lsub_typein
 
+set_option linter.deprecated false in
+@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-23")]
 theorem bsup_id_limit {o : Ordinal} : (∀ a < o, succ a < o) → (bsup.{u, u} o fun x _ => x) = o :=
   iSup_typein_limit
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated csSup_Iic (since := "2026-03-23")]
 theorem bsup_id_add_one (o) : (bsup.{u, u} (o + 1) fun x _ => x) = o :=
   iSup_typein_succ
 
+set_option linter.deprecated false in
+@[deprecated csSup_Iic (since := "2026-03-23")]
 theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
   iSup_typein_succ
 
@@ -887,6 +927,7 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
   @bsup_comp.{u, v, w} o _ (fun a ha => succ (f a ha))
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
+set_option linter.deprecated false in
 @[deprecated IsNormal.apply_of_isSuccLimit (since := "2026-03-23")]
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
