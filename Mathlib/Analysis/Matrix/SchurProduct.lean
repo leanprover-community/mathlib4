@@ -45,9 +45,9 @@ theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
   have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by
     ext ⟨x, hx⟩; simp [hx]
-  have hHads : ((A ⊙ B).submatrix (Subtype.val : x.support → ι) Subtype.val).PosSemidef := by
-    have hAs := hA.submatrix (Subtype.val : x.support → ι)
-    have hBs := hB.submatrix (Subtype.val : x.support → ι)
+  have hHads : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosSemidef := by
+    have hAs := hA.submatrix ((↑) : x.support → ι)
+    have hBs := hB.submatrix ((↑) : x.support → ι)
     rw [submatrix_hadamard, posSemidef_iff_dotProduct_mulVec]
     exact ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y => by
       rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
@@ -62,17 +62,18 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
   classical
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
-  have hHads : ((A ⊙ B).submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef := by
-    have hAs : (A.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
+  have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by
+    ext ⟨x, hx⟩; simp [hx]
+  have hHads : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosDef := by
+    have hAs : (A.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
       hA.submatrix Subtype.coe_injective
-    have hBs : (B.submatrix (Subtype.val : x.support → ι) Subtype.val).PosDef :=
+    have hBs : (B.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
       hB.submatrix Subtype.coe_injective
     rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
     exact ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy => by
       rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
       exact (PosDef.kronecker hAs hBs).dotProduct_mulVec_pos (by
         rwa [ne_eq, vec_eq_zero_iff, diagonal_eq_zero])⟩
-  have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by ext ⟨x, hx⟩; simp [hx]
   simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum, ← Finset.sum_attach x.support, ← hs,
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
   exact hHads.2 (by
