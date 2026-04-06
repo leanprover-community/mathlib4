@@ -447,11 +447,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
-  rw [abs_sub_le_iff] at hrs hpr hqt
-  rw [le_abs] at hst ⊢
-  cases hst
-  · left; linarith
-  · right; linarith
+  grind
 
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/

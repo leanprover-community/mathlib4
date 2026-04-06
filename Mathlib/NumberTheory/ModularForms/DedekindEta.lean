@@ -18,10 +18,10 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 ## Main definitions
 
 * We define the Dedekind eta function as the infinite product
-`η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
-The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-differentiable on the upper half-plane. Lastly, we compute its logarithmic derivative and show that
-it is a multiple of the Eisenstein series `E2`.
+  `η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper
+  half-plane. The product is taken over all non-negative integers `n`. We then show it is
+  non-vanishing and differentiable on the upper half-plane. Lastly, we compute its logarithmic
+  derivative and show that it is a multiple of the Eisenstein series `E2`.
 
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
@@ -62,7 +62,8 @@ lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q 
 /-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 
-local notation "η" => eta
+/-- Notation for the Dedekind eta function. -/
+scoped[ModularForm] notation "η" => eta
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]

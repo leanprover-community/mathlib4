@@ -287,7 +287,7 @@ instance : Nontrivial ℂ :=
 namespace SMul
 
 -- The useless `0` multiplication in `smul` is to make sure that
--- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
+-- `Module.restrictScalars ℝ ℂ ℂ = Complex.module` definitionally.
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in

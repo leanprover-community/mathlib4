@@ -60,7 +60,6 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
   exact (((AlgebraTensorModule.cancelBaseChange P'.Ring S _ _ P'.ker).symm ≪≫ₗ
     P'.cotangentEquiv.baseChange (A := _)).injective_comp _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Jacobian criterion** for smoothness of local algebras.
 Suppose `S` is a local `R`-algebra, and `0 → I → P → S → 0` is a presentation such that

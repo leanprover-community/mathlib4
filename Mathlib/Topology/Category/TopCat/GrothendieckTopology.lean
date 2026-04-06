@@ -64,8 +64,8 @@ instance : isOpenEmbedding.IsStableUnderBaseChange :=
 /-- The precoverage on `TopCat` given by jointly surjective families of open embeddings. -/
 def precoverage : Precoverage TopCat.{u} :=
     Types.jointlySurjectivePrecoverage.comap (forget TopCat) ⊓ isOpenEmbedding.precoverage
-  deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
-    Precoverage.IsStableUnderComposition
+  deriving Precoverage.HasIsos, Precoverage.IsStableUnderComposition,
+    Precoverage.IsStableUnderBaseChange
 
 /-- The Grothendieck topology on the category of topological spaces is the topology given by
 jointly surjective open embeddings. -/

@@ -310,7 +310,6 @@ theorem unit_conjugateEquiv_symm (α : R₁ ⟶ R₂) (c : C) :
     conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
     exact (unit_conjugateEquiv adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) c)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
   ext
@@ -501,7 +500,6 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     comp_id] at vcompb
   simpa [mateEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_associator_hom
     {L₀₁ : A ⥤ B} {R₁₀ : B ⥤ A} {L₁₂ : B ⥤ C} {R₂₁ : C ⥤ B}
     {L₂₃ : C ⥤ D} {R₃₂ : D ⥤ C} (adj₀₁ : L₀₁ ⊣ R₁₀) (adj₁₂ : L₁₂ ⊣ R₂₁)
@@ -514,14 +512,12 @@ lemma conjugateEquiv_associator_hom
     Adjunction.comp_counit_app, Category.id_comp]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_leftUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (id.comp adj) (leftUnitor L).hom =
       (rightUnitor R).inv := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_rightUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (adj.comp id) (rightUnitor L).hom =
@@ -539,7 +535,6 @@ lemma conjugateEquiv_whiskerLeft
   simp only [comp_obj, id_obj, Functor.map_comp] at h₁ h₂
   simp [← reassoc_of% h₁, reassoc_of% h₂]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma conjugateEquiv_whiskerRight
     {L₁ L₂ : A ⥤ B} {R₁ R₂ : B ⥤ A} {L : B ⥤ C} {R : C ⥤ B}
     (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :

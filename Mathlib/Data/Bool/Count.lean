@@ -53,9 +53,6 @@ theorem IsChain.count_not_cons :
   | b, x :: l, h => by
     grind [h.of_cons.count_not_cons]
 
-@[deprecated (since := "2025-09-21")]
-alias Chain.count_not := IsChain.count_not_cons
-
 namespace IsChain
 
 variable {l : List Bool}

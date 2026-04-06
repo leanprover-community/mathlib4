@@ -6,8 +6,10 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ToDual
 public import Batteries.Tactic.Alias
+public import Mathlib.Tactic.ExtendDoc
+
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -48,6 +50,9 @@ abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
+
+lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
+  ⟨(·.trans), .mk⟩
 
 instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
@@ -182,6 +187,7 @@ def Reflexive := ∀ x, x ≺ x
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
+@[deprecated IsTrans (since := "2026-02-20")]
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 /-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
@@ -201,13 +207,17 @@ theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
+theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
+  ⟨fun _ _ _ ↦ h.trans⟩
+
+@[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+theorem InvImage.isTrans (h : IsTrans β r) : IsTrans α (InvImage r f) :=
+  ⟨fun _ _ _ ↦ h.trans _ _ _⟩
+
+@[deprecated (since := "2026-02-20")] alias InvImage.trans := InvImage.isTrans
 
 theorem InvImage.irrefl (h : Std.Irrefl r) : Std.Irrefl (InvImage r f) :=
   ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ h.irrefl (f a) h₁⟩
@@ -409,6 +419,8 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
+set_option linter.deprecated false in
+@[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/

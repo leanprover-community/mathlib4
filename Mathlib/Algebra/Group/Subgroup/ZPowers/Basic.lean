@@ -121,11 +121,8 @@ instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
 theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
   rw [zpowers_eq_closure, closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
 
+@[to_additive]
 alias ⟨_, zpowers_le_of_mem⟩ := zpowers_le
-
-alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples_le
-
-attribute [to_additive existing] zpowers_le_of_mem
 
 @[to_additive (attr := simp)]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]

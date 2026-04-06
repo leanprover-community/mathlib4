@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
 
-/-! # Lemmas for the field_simp tactic
+/-! # Lemmas for the `field_simp` tactic
 
 -/
 

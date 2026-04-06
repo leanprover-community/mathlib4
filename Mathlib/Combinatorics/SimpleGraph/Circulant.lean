@@ -119,7 +119,6 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   match n with
   | 0 | 1 => simp
@@ -138,35 +137,39 @@ theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
 set_option backward.privateInPublic true in
-private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
-    ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
     have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
-    Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+    Walk.cons hadj (cycleGraph.cycleCons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- Eulerian trail of `cycleGraph (n + 3)` -/
-def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+/-- The Eulerian cycle of `cycleGraph (n + 3)` -/
+def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
-  Walk.cons hadj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))
+  Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-private theorem cycleGraph_EulerianCircuit_cons_length (n : ℕ) : ∀ m : Fin (n + 3),
-    (cycleGraph_EulerianCircuit_cons n m).length = m.val
+@[deprecated (since := "2026-02-15")]
+alias cycleGraph_EulerianCircuit := cycleGraph.cycle
+
+private theorem cycleGraph.length_cycle_cons (n : ℕ) :
+    ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
-    unfold cycleGraph_EulerianCircuit_cons
+    unfold cycleGraph.cycleCons
     rfl
   | ⟨m + 1, h⟩ => by
-    unfold cycleGraph_EulerianCircuit_cons
+    unfold cycleGraph.cycleCons
     simp only [Walk.length_cons]
-    rw [cycleGraph_EulerianCircuit_cons_length n]
+    rw [cycleGraph.length_cycle_cons n]
 
-theorem cycleGraph_EulerianCircuit_length {n : ℕ} :
-    (cycleGraph_EulerianCircuit n).length = n + 3 := by
-  unfold cycleGraph_EulerianCircuit
-  simp [cycleGraph_EulerianCircuit_cons_length]
+theorem cycleGraph.length_cycle {n : ℕ} : (cycleGraph.cycle n).length = n + 3 := by
+  unfold cycleGraph.cycle
+  simp [cycleGraph.length_cycle_cons]
+
+@[deprecated (since := "2026-02-15")]
+alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 end SimpleGraph

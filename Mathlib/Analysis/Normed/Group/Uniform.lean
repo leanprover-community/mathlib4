@@ -151,7 +151,7 @@ theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : Antilips
 theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f : 𝓕} :
     (∃ K, AntilipschitzWith K f) ↔ ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
   refine ⟨fun ⟨K, hK⟩ ↦ ⟨(K + 1)⁻¹, by positivity, fun x ↦ ?_⟩, fun ⟨c, hc0, hc⟩ ↦
-    ⟨⟨c⁻¹, by positivity⟩, MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
+    ⟨.mk c⁻¹ (by positivity), MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
   · grw [hK.le_mul_norm' (map_one f), ← mul_assoc]
     exact mul_le_of_le_one_left (norm_nonneg' (f x)) (by simp [field])
   · grw [← hc, NNReal.coe_mk, inv_mul_cancel_left₀ hc0.ne']

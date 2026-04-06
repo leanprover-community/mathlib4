@@ -147,7 +147,13 @@ def mapArrowLeft (sq : f₁ ⟶ f₁') :
   left := sq₁₂.isPushout.desc
     ((F.map sq.right).app f₂.left ≫ sq₁₂'.inl)
     ((F.map sq.left).app f₂.right ≫ sq₁₂'.inr)
-    (by grind [sq.w, sq₁₂'.isPushout.w])
+    (by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal without the `simp only`. It is not yet clear whether this is due to defeq abuse in
+      Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+      proof was: `by grind [sq.w, sq₁₂'.isPushout.w]` -/
+      simp only [Arrow.mk_left]; grind [sq.w, sq₁₂'.isPushout.w])
   right := (F.map sq.right).app f₂.right
   w := by
     apply PushoutObjObj.hom_ext
@@ -187,7 +193,13 @@ def mapArrowRight (sq : f₂ ⟶ f₂') :
   left := sq₁₂.isPushout.desc
     (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
     (((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr)
-    (by grind [sq.w, sq₁₂'.isPushout.w])
+    (by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal without the `simp only`. It is not yet clear whether this is due to defeq abuse in
+      Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+      proof was: `by grind [sq.w, sq₁₂'.isPushout.w]` -/
+      simp only [Arrow.mk_left]; grind [sq.w, sq₁₂'.isPushout.w])
   right := (F.obj f₁.right).map sq.right
   w := by
     apply PushoutObjObj.hom_ext
@@ -318,7 +330,13 @@ def mapArrowLeft (sq : f₁' ⟶ f₁) :
   right := sq₁₃'.isPullback.lift
     (sq₁₃.fst ≫ (G.map sq.left.op).app f₃.left)
     (sq₁₃.snd ≫ (G.map sq.right.op).app f₃.right)
-    (by simp only [id_obj, Category.assoc]; grind [sq.w, sq₁₃.isPullback.w])
+    (by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal without the `simp`. It is not yet clear whether this is due to defeq abuse in
+      Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+      proof was: `by simp only [id_obj, Category.assoc]; grind [sq.w, sq₁₃.isPullback.w]` -/
+      simp [Arrow.mk_right]; grind [sq.w, sq₁₃.isPullback.w])
   w := by
     apply PullbackObjObj.hom_ext
     · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
@@ -359,7 +377,13 @@ def mapArrowRight (sq : f₃ ⟶ f₃') :
   right := sq₁₃'.isPullback.lift
     (sq₁₃.fst ≫ (G.obj (.op f₁.left)).map sq.left)
     (sq₁₃.snd ≫ (G.obj (.op f₁.right)).map sq.right)
-    (by grind [sq.w, sq₁₃.isPullback.w])
+    (by
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal without the `simp`. It is not yet clear whether this is due to defeq abuse in
+      Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+      proof was: `by grind [sq.w, sq₁₃.isPullback.w]` -/
+      simp [Arrow.mk_right]; grind [sq.w, sq₁₃.isPullback.w])
   w := by
     apply PullbackObjObj.hom_ext
     all_goals simp [← Functor.map_comp]

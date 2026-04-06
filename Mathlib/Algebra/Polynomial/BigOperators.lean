@@ -206,7 +206,6 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
   apply natDegree_multiset_prod'
   simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
     t.prod.degree = (t.map degree).sum := by
   have : t.prod ≠ 0 := Monic.ne_zero <| by simpa using monic_multiset_prod_of_monic _ _ h
@@ -329,8 +328,7 @@ variable [Nontrivial R]
 lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
   rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
-  · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
-      mul_one]
+  · simp
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
 
 @[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :

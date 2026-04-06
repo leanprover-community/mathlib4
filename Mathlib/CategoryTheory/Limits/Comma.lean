@@ -45,7 +45,7 @@ variable (F : J ⥤ Comma L R)
 in the comma category. -/
 @[simps!]
 def limitAuxiliaryCone (c₁ : Cone (F ⋙ fst L R)) : Cone ((F ⋙ snd L R) ⋙ R) :=
-  (Cones.postcompose (whiskerLeft F (Comma.natTrans L R) :)).obj (L.mapCone c₁)
+  (Cone.postcompose (whiskerLeft F (Comma.natTrans L R) :)).obj (L.mapCone c₁)
 
 /-- If `R` preserves the appropriate limit, then given a cone for `F ⋙ fst L R : J ⥤ L` and a
 limit cone for `F ⋙ snd L R : J ⥤ R` we can build a cone for `F` which will turn out to be a limit
@@ -92,7 +92,7 @@ noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c�
 in the comma category. -/
 @[simps!]
 def colimitAuxiliaryCocone (c₂ : Cocone (F ⋙ snd L R)) : Cocone ((F ⋙ fst L R) ⋙ L) :=
-  (Cocones.precompose (whiskerLeft F (Comma.natTrans L R) :)).obj (R.mapCocone c₂)
+  (Cocone.precompose (whiskerLeft F (Comma.natTrans L R) :)).obj (R.mapCocone c₂)
 
 /--
 If `L` preserves the appropriate colimit, then given a colimit cocone for `F ⋙ fst L R : J ⥤ L` and
@@ -236,7 +236,7 @@ noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
   createsLimitOfReflectsIso fun _ t =>
     { liftedCone := Comma.coneOfPreserves F punitCone t
       makesLimit := Comma.coneOfPreservesIsLimit _ punitConeIsLimit _
-      validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm }
+      validLift := Cone.ext (Iso.refl _) fun _ => (id_comp _).symm }
 
 noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
     CreatesLimitsOfShape J (proj X G) where
@@ -283,7 +283,7 @@ noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] 
   createsColimitOfReflectsIso fun _ t =>
     { liftedCocone := Comma.coconeOfPreserves F t punitCocone
       makesColimit := Comma.coconeOfPreservesIsColimit _ _ punitCoconeIsColimit
-      validLift := Cocones.ext (Iso.refl _) fun _ => comp_id _ }
+      validLift := Cocone.ext (Iso.refl _) fun _ => comp_id _ }
 
 noncomputable instance createsColimitsOfShape [PreservesColimitsOfShape J G] :
     CreatesColimitsOfShape J (proj G X) where

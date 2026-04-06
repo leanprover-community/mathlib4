@@ -247,7 +247,7 @@ lemma fromCols_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix m n₁ 
   ext
   simp [mul_apply]
 
-/-- A column partitioned matrix multipiled by a block matrix results in a column partitioned
+/-- A column partitioned matrix multiplied by a block matrix results in a column partitioned
 matrix. -/
 lemma fromCols_mul_fromBlocks [Fintype m₁] [Fintype m₂] (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :

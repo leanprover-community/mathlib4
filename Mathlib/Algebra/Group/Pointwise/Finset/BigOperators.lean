@@ -43,7 +43,7 @@ variable [DecidableEq α]
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
-  map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
+  map_prod (coeMonoidHom : Finset α →* Set α) _ _
 
 omit [DecidableEq α]
 variable [DecidableEq ι]

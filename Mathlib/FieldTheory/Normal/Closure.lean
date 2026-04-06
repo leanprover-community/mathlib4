@@ -191,11 +191,9 @@ instance : IsScalarTower F K (normalClosure F K L) := by
   ext x
   exact algebraMap_apply F K L x
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower K (normalClosure F K L) L :=
   of_algebraMap_eq' rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrictScalars_eq :
     (toAlgHom K (normalClosure F K L) L).fieldRange.restrictScalars F = normalClosure F K L :=
   SetLike.ext' Subtype.range_val
@@ -240,7 +238,6 @@ lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K := by
 
 variable [Normal F L]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
   refine (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
   · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)

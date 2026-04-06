@@ -46,7 +46,7 @@ lemma homAux_eq (i' j' : Option ι) (i j : ι) (hi : i' = some i) (hj : j' = som
   subst hi hj
   simp [homAux, extend.XIso, extend.X]
 
-/-- Auxiliary defnition for `Homotopy.extend`. -/
+/-- Auxiliary definition for `Homotopy.extend`. -/
 noncomputable def hom (i' j' : ι') : (K.extend e).X i' ⟶ (L.extend e).X j' :=
   extend.homAux φ (e.r i') (e.r j')
 

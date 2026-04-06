@@ -53,7 +53,6 @@ def single (a : α) (b : M) : α →₀ M where
     Pi.single a b
   mem_support_toFun a' := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
@@ -185,6 +184,13 @@ instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) 
   inhabit α
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
+
+lemma nontrivial_iff : Nontrivial (α →₀ M) ↔ Nonempty α ∧ Nontrivial M where
+  mp := by
+    rintro ⟨f, g, hfg⟩
+    obtain ⟨a, ha⟩ := ne_iff.mp hfg
+    exact ⟨⟨a⟩, _, _, ha⟩
+  mpr | ⟨_, _⟩ => inferInstance
 
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm

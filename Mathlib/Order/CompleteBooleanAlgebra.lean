@@ -86,6 +86,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
+@[to_dual]
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
 /-- `⊔` distributes over `⨅`. -/
@@ -113,6 +114,8 @@ attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalA
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
+
+attribute [to_dual existing] CompleteDistribLattice.toFrame
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -157,6 +160,7 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
+@[implicit_reducible]
 def of [Frame α] : MinimalAxioms α where
   __ := ‹Frame α›
   inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
@@ -196,6 +200,7 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
+@[implicit_reducible]
 def of [Coframe α] : MinimalAxioms α where
   __ := ‹Coframe α›
   iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
@@ -336,10 +341,9 @@ theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ :
   refine le_antisymm
     (iSup₂_le fun i hi ↦ le_iSup₂_of_le (fun _ ↦ i) hi (le_iInf fun _ ↦ le_rfl))
     (iSup₂_le fun I hI ↦ ?_)
-  by_cases H : ∀ k, I k = I j
+  by_cases! H : ∀ k, I k = I j
   · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
-  · push_neg at H
-    rcases H with ⟨k, hk⟩
+  · rcases H with ⟨k, hk⟩
     calc ⨅ l, f (I l)
     _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
     _ = ⊥ := (h hk).eq_bot
@@ -874,17 +878,10 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
-  __ := PUnit.instBooleanAlgebra
-  sSup _ := unit
-  sInf _ := unit
-  le_sSup _ _ _ := trivial
-  sSup_le _ _ _ := trivial
-  sInf_le _ _ _ := trivial
-  le_sInf _ _ _ := trivial
-  iInf_iSup_eq _ := rfl
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit where
 
-instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
+  iInf_iSup_eq _ := rfl
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

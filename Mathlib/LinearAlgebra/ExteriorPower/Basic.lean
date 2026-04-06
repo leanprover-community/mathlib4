@@ -81,7 +81,6 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-set_option backward.isDefEq.respectTransparency false in
 open Set Submodule in
 /-- If a set `s` spans the module `M`, then the set of all elements of the form `x₁ ∧ ⋯ ∧ xₙ`
 where `xᵢ ∈ s` spans `⋀ⁿ M`. -/

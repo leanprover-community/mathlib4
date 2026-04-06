@@ -41,51 +41,36 @@ namespace Cardinal
 section mul
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
-theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
-  refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_right (one_le_aleph0.trans h) c)
-  -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
-  refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
-  -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
-  rcases ord_eq α with ⟨r, wo, e⟩
-  classical
-  letI := linearOrderOfSTO r
-  haveI : IsWellOrder α (· < ·) := wo
-  -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
-  -- the max are equal and `a < c`, or the max are equal and `a = c` and `b < d`.
-  let g : α × α → α := fun p => max p.1 p.2
-  let f : α × α ↪ Ordinal × α × α :=
-    ⟨fun p : α × α => (typein (· < ·) (g p), p), fun p q => congr_arg Prod.snd⟩
-  let s := f ⁻¹'o Prod.Lex (· < ·) (Prod.Lex (· < ·) (· < ·))
-  -- this is a well order on `α × α`.
-  haveI : IsWellOrder _ s := (RelEmbedding.preimage _ _).isWellOrder
-  /- it suffices to show that this well order is smaller than `r`
-       if it were larger, then `r` would be a strict prefix of `s`. It would be contained in
-      `β × β` for some `β` of cardinality `< c`. By the inductive assumption, this set has the
-      same cardinality as `β` (or it is finite if `β` is finite), so it is `< c`, which is a
-      contradiction. -/
-  suffices type s ≤ type r by exact card_le_card this
-  refine le_of_forall_lt fun o h => ?_
-  rcases typein_surj s h with ⟨p, rfl⟩
-  rw [← e, lt_ord]
-  refine lt_of_le_of_lt
-    (?_ : _ ≤ card (succ (typein (· < ·) (g p))) * card (succ (typein (· < ·) (g p)))) ?_
-  · have : { q | s q p } ⊆ insert (g p) { x | x < g p } ×ˢ insert (g p) { x | x < g p } := by
-      intro q h
-      simp only [s, f, Preimage, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
-        typein_inj, mem_setOf_eq] at h
-      exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
-    suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ { x | r x (g p) } ⊕ PUnit from
-      ⟨(Set.embeddingOfSubset _ _ this).trans
-        ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
-    refine (Equiv.Set.insert ?_).trans ((Equiv.refl _).sumCongr punitEquivPUnit)
-    apply @irrefl _ r
-  rcases lt_or_ge (card (succ (typein (· < ·) (g p)))) ℵ₀ with qo | qo
-  · exact (mul_lt_aleph0 qo qo).trans_le ol
-  · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
-    rw [← lt_ord]
-    apply (isSuccLimit_ord ol).succ_lt
-    rw [e]
-    apply typein_lt_type
+theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
+  -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
+  induction c using WellFoundedLT.induction with | ind c IH
+  refine le_antisymm ?_ (by simpa using mul_le_mul_right (one_le_aleph0.trans hc) c)
+  -- Consider the minimal well-order on `α` (a type with cardinality `c`).
+  induction c using Cardinal.inductionOn with | mk α
+  obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
+  have : NoMaxOrder α := by
+    rw [← isSuccPrelimit_type_lt_iff, ← hα]
+    exact (isSuccLimit_ord hc).isSuccPrelimit
+  -- Define an order `s` on `α × α`, comparing first by `max x.1 x.2`, then by `toLex (x.1, x.2)`.
+  let g : α × α → α := uncurry max
+  let f : α × α ↪ α ×ₗ (α ×ₗ α) := ⟨fun p ↦ toLex (g p, toLex p), fun p q ↦ congrArg Prod.snd⟩
+  let s := f ⁻¹'o (· < ·)
+  have : IsWellOrder _ s := (RelEmbedding.preimage ..).isWellOrder
+  -- Every initial segment of `s` is contained in `β × β` for some `β` of cardinality `< c`.
+  -- By the inductive hypothesis, this means `#(β × β) < c`. Thus, `α × α` must have
+  -- cardinality `≤ c`.
+  refine @card_le_card (type s) (typeLT α) <| le_of_forall_lt fun o h ↦ ?_
+  obtain ⟨p, rfl⟩ := typein_surj s h
+  obtain ⟨q, hq'⟩ := exists_gt (g p)
+  rw [← hα, lt_ord]
+  apply lt_of_le_of_lt (b := #(Iio q) * #(Iio q))
+  · apply (Set.embeddingOfSubset { x | s x p } ..).cardinal_le.trans_eq (mk_setProd ..)
+    simp [s, f, Prod.Lex.lt_iff, subset_def]
+    grind
+  rcases lt_or_ge #(Iio q) ℵ₀ with hq | hq
+  · exact (mul_lt_aleph0 hq hq).trans_le hc
+  · have := mk_Iio_lt q hα
+    rwa [IH _ this hq]
 
 /-- If `α` and `β` are infinite types, then the cardinality of `α × β` is the maximum
 of the cardinalities of `α` and `β`. -/
@@ -144,7 +129,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert mul_le_mul_right (one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (Cardinal.one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -178,7 +163,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (Cardinal.one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -216,7 +201,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     · contradiction
     · contradiction
     rw [← Ne] at h2a
-    rw [← one_le_iff_ne_zero] at h2a hb
+    rw [← Cardinal.one_le_iff_ne_zero] at h2a hb
     norm_cast at h2a hb h ⊢
     apply le_antisymm _ hb
     rw [← not_lt]
@@ -432,9 +417,6 @@ theorem sum_eq_iSup_of_mk_le_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #�
     sum f = ⨆ i, f i :=
   sum_eq_iSup_of_lift_mk_le_iSup hι ((lift_id #ι).symm ▸ h)
 
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup_lift := sum_eq_iSup_of_lift_mk_le_iSup
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup := sum_eq_iSup_of_mk_le_iSup
-
 end ciSup
 
 /-! ### Properties of `aleph` -/
@@ -590,10 +572,7 @@ lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀)
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
   · rw [powerlt_le]
-    intro c'
-    rw [lt_aleph0]
-    rintro ⟨n, rfl⟩
-    apply power_nat_le h
+    exact fun _ a ↦ pow_le h a
   convert le_powerlt c one_lt_aleph0; rw [power_one]
 
 theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by

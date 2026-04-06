@@ -57,7 +57,7 @@ attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instS
 
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18")]
+@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.

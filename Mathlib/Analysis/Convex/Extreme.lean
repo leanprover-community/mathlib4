@@ -174,6 +174,10 @@ theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
   Subset.antisymm (fun _ hx ↦ ⟨hx.1, hAB.extremePoints_subset_extremePoints hx⟩)
     (inter_extremePoints_subset_extremePoints_of_subset hAB.1)
 
+@[nontriviality]
+lemma Set.extremePoints_eq_self [Subsingleton E] (A : Set E) : Set.extremePoints 𝕜 A = A :=
+  subset_antisymm extremePoints_subset fun _ h ↦ ⟨h, fun _ _ _ _ _ ↦ Subsingleton.elim ..⟩
+
 end SMul
 
 section OrderedSemiring

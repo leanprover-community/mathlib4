@@ -70,9 +70,7 @@ lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
   introv R h
-  suffices Module.Flat R S by
-    rw [RingHom.Flat]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
-  exact IsLocalization.flat _ (Submonoid.powers r)
+  exact flat_algebraMap_iff.mpr (IsLocalization.flat _ (Submonoid.powers r))
 
 lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h
@@ -127,7 +125,6 @@ lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (com
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
   let := f.toAlgebra
   let := hR.toField

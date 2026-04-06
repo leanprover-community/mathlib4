@@ -414,19 +414,17 @@ variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField �
   [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) : PathConnectedSpace 𝕜 := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
+  letI : NormedSpace ℝ G := .restrictScalars ℝ 𝕜 G
   /- By composition with `AffineMap.lineMap x y`, we reduce to a statement for functions defined
     on `[0,1]`, for which it is proved in `norm_image_sub_le_of_norm_deriv_le_segment`.
     We just have to check the differentiability of the composition and bounds on its derivative,
@@ -512,7 +510,6 @@ theorem lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
   hs.lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
@@ -520,7 +517,7 @@ theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
     {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   rw [← lipschitzOnWith_univ]
   exact lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
 
@@ -565,13 +562,12 @@ theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : Differentiabl
   simpa only [(dist_eq_norm _ _).symm, zero_mul, dist_le_zero, eq_comm] using
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.is_const_of_fderiv_eq_zero
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   exact convex_univ.is_const_of_fderivWithin_eq_zero hf.differentiableOn
     (fun x _ => by rw [fderivWithin_univ]; exact hf' x) trivial trivial
 
@@ -642,13 +638,12 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
   obtain rfl := left_eq_add.mp (hfgx.symm.trans (ha hx))
   simpa using ha
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
     uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
@@ -822,7 +817,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     rw [← dist_eq_norm]
     exact le_of_lt (hε H').2
   -- apply mean value theorem
-  letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
+  letI : NormedSpace ℝ G := .restrictScalars ℝ 𝕜 G
   refine (convex_ball _ _).norm_image_sub_le_of_norm_hasFDerivWithin_le' ?_ hf' h.2 h.1
   exact fun y hy => (hε hy).1.hasFDerivWithinAt
 

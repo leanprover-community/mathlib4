@@ -121,7 +121,7 @@ section IsPreorder
 variable (α) (r : α → α → Prop) [IsPreorder α r]
 
 /-- The antisymmetrization relation as an equivalence relation. -/
-@[simps]
+@[simps, implicit_reducible]
 def AntisymmRel.setoid : Setoid α :=
   ⟨AntisymmRel r, .refl r, .symm, .trans⟩
 
@@ -140,11 +140,11 @@ def toAntisymmetrization : α → Antisymmetrization α r :=
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out
 
-instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
-  unfold Antisymmetrization; infer_instance
+instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
+  inferInstanceAs <| Inhabited (Quotient _)
 
-instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) := by
-  unfold Antisymmetrization; infer_instance
+instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) :=
+  inferInstanceAs <| Subsingleton (Quotient _)
 
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :

@@ -173,16 +173,12 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-private local instance : Ord Name := ⟨Name.quickCmp⟩
-
 set_option linter.style.docString.empty false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
   theorems :
-    TreeMap Name (TreeMap Name (Array FunctionTheorem) compare) compare := {}
+    TreeMap Name (TreeMap Name (Array FunctionTheorem) Name.quickCmp) Name.quickCmp := {}
   deriving Inhabited
 
 
@@ -247,7 +243,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -269,7 +265,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 
 --------------------------------------------------------------------------------

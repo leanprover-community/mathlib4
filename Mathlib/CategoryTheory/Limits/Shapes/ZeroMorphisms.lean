@@ -205,13 +205,11 @@ theorem iff_isSplitEpi_eq_zero {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsZero Y
     simp [h]
 
 theorem of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (i : IsZero Y) : IsZero X := by
-  have hf := i.eq_zero_of_tgt f
-  subst hf
+  obtain rfl := i.eq_zero_of_tgt f
   exact IsZero.of_mono_zero X Y
 
 theorem of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (i : IsZero X) : IsZero Y := by
-  have hf := i.eq_zero_of_src f
-  subst hf
+  obtain rfl := i.eq_zero_of_src f
   exact IsZero.of_epi_zero X Y
 
 end IsZero
@@ -224,6 +222,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
+@[implicit_reducible]
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -251,6 +250,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
+@[implicit_reducible]
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
@@ -621,6 +621,26 @@ lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : Is
   (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
     (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
 
+/-- Given a functor `F : D ⥤ C`, zero morphisms on `C` induce zero morphisms on
+`D` by taking preimages. -/
+@[reducible]
+def _root_.CategoryTheory.Functor.FullyFaithful.hasZeroMorphisms (hF : F.FullyFaithful) :
+    HasZeroMorphisms D where
+  zero X Y := ⟨hF.preimage 0⟩
+  comp_zero f _ := by
+    apply hF.map_injective
+    change F.map (f ≫ (hF.preimage _)) = F.map (hF.preimage _)
+    simp
+  zero_comp _ _ _ f := by
+    apply hF.map_injective
+    change F.map ((hF.preimage _) ≫ f) = F.map (hF.preimage _)
+    simp
+
+omit [HasZeroObject C] in
+lemma _root_.CategoryTheory.Functor.FullyFaithful.hasZeroMorphisms_def (hF : F.FullyFaithful)
+    (X Y : D) : letI : HasZeroMorphisms D := hF.hasZeroMorphisms
+    (0 : X ⟶ Y) = hF.preimage 0 := rfl
+
 end
 
 section
@@ -777,4 +797,27 @@ instance : Epi (coprod.snd X Y) where
 
 end CoprodFstSnd
 
-end CategoryTheory.Limits
+end Limits
+
+namespace ObjectProperty
+
+open Limits
+
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] (P : ObjectProperty C)
+
+instance [HasZeroMorphisms C] : HasZeroMorphisms P.FullSubcategory where
+  -- Note: Add zero field explicitly for a better transparency of definitional properties
+  zero _ _ := { zero := P.homMk 0}
+  __ := P.fullyFaithfulι.hasZeroMorphisms
+
+@[simp]
+lemma homMk_zero (X Y : P.FullSubcategory) :
+    P.homMk (0 : X.obj ⟶ Y.obj) = 0 := rfl
+
+@[simp]
+lemma zero_hom (X Y : P.FullSubcategory) :
+    (0 : X ⟶ Y).hom = 0 := rfl
+
+end ObjectProperty
+
+end CategoryTheory

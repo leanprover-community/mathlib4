@@ -94,6 +94,7 @@ variable (A)
 set_option backward.isDefEq.respectTransparency false in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
+@[implicit_reducible]
 noncomputable def induced : HasShift D A :=
   hasShiftMk D A
     { F := s
@@ -168,7 +169,6 @@ lemma shiftFunctor_of_induced (a : A) :
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
@@ -176,7 +176,6 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
@@ -186,7 +185,6 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
 
 variable {A}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
     letI := HasShift.induced F A s i
@@ -197,7 +195,6 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         (s b).map ((i a).inv.app X) := by
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
     letI := HasShift.induced F A s i
@@ -214,6 +211,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/
+@[implicit_reducible]
 noncomputable def Functor.CommShift.ofInduced :
     letI := HasShift.induced F A s i
     F.CommShift A := by

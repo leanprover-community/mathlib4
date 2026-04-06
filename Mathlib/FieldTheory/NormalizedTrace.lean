@@ -51,7 +51,6 @@ private noncomputable def normalizedTraceAux (a : K) : F :=
 private theorem normalizedTraceAux_def (a : K) : normalizedTraceAux F K a =
     (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem normalizedTraceAux_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
     normalizedTraceAux F K (f a) = normalizedTraceAux F E a := by
   let e := (F⟮a⟯.equivMap f).trans (equivOfEq <| Set.image_singleton ▸ adjoin_map F {a} f)
@@ -65,7 +64,6 @@ private theorem normalizedTraceAux_intermediateField {E : IntermediateField F K}
 
 variable [CharZero F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F K] (a : K) :
     normalizedTraceAux F K a = (Module.finrank F K : F)⁻¹ • trace F K a := by
@@ -77,7 +75,6 @@ private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F 
 
 variable [Algebra.IsIntegral F K]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The normalized trace map from an algebraic extension `K` to the base field `F`. -/
@@ -213,7 +210,6 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
     ← normalizedTrace_intermediateField F K a']
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a tower `K / E / F` of algebraic extensions, the normalized trace from `K` to `E` composed
 with the normalized trace from `E` to `F` equals the normalized trace from `K` to `F`. -/
 theorem normalizedTrace_trans_apply [Algebra.IsIntegral E K] [CharZero E] (a : K) :

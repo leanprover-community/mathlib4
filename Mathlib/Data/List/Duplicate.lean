@@ -94,7 +94,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
   induction h with
   | slnil => exact hx
   | cons y _ IH => exact (IH hx).duplicate_cons _
-  | cons₂ y h IH =>
+  | cons_cons y h IH =>
     rw [duplicate_cons_iff] at hx ⊢
     rcases hx with (⟨rfl, hx⟩ | hx)
     · simp [h.subset hx]

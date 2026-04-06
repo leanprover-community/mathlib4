@@ -71,8 +71,14 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
+#adaptation_note /-- nightly-2026-03-31
+Without this `set_option` we get a PANIC!
+-/
+set_option backward.inferInstanceAs.wrap.data false in
+instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
+
 deriving instance
-  T2Space, CommGroup, IsTopologicalGroup,
+  T2Space, IsTopologicalGroup,
   Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A

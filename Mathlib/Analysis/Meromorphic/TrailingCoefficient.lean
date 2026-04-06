@@ -299,16 +299,20 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (
 /--
 The trailing coefficient of a product is the product of the trailing coefficients.
 -/
-theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
-    (h : ∀ σ, MeromorphicAt (f σ) x) :
+theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    {x : 𝕜} (h : ∀ σ ∈ s, MeromorphicAt (f σ) x) :
     meromorphicTrailingCoeffAt (∏ n ∈ s, f n) x = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
   classical
   induction s using Finset.induction with
   | empty =>
     apply meromorphicTrailingCoeffAt_const
   | insert σ s₁ hσ hind =>
-    rw [Finset.prod_insert hσ, Finset.prod_insert hσ, (h σ).meromorphicTrailingCoeffAt_mul
-      (MeromorphicAt.prod h), hind]
+    have : ∀ σ₀ ∈ s₁, MeromorphicAt (f σ₀) x := by
+      intro τ hτ
+      apply h τ (Finset.mem_insert_of_mem hτ)
+    rw [Finset.prod_insert hσ, Finset.prod_insert hσ,
+      (h σ (Finset.mem_insert_self σ s₁)).meromorphicTrailingCoeffAt_mul
+      (MeromorphicAt.prod this), hind this]
 
 /--
 The trailing coefficient of the inverse function is the inverse of the trailing coefficient.

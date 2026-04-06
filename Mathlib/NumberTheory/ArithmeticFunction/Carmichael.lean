@@ -115,7 +115,7 @@ theorem carmichael_finset_prod {α : Type*} {s : Finset α} {f : α → ℕ}
 
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     Carmichael n = n.primeFactors.lcm fun p ↦ Carmichael (p ^ n.factorization p) := by
-  nth_rw 1 [← n.factorization_prod_pow_eq_self <| NeZero.ne _]
+  nth_rw 1 [← n.prod_factorization_pow_eq_self <| NeZero.ne _]
   exact carmichael_finset_prod pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
 
 theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :

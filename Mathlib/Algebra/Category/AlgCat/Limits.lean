@@ -153,7 +153,6 @@ lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgCat.{w} R) :=
 instance hasLimits : HasLimits (AlgCat.{w} R) :=
   AlgCat.hasLimitsOfSize.{w, w, u}
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
 instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :

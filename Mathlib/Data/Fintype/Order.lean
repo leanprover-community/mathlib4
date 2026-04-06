@@ -11,6 +11,7 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
+import Mathlib.Data.Finite.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
@@ -92,10 +93,8 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   __ := ‹BoundedOrder α›
   sSup := fun s => s.toFinset.sup id
   sInf := fun s => s.toFinset.inf id
-  le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
-  sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
+  isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
+  isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
@@ -242,7 +241,7 @@ namespace Finite
 
 section CCL
 
-variable {α ι : Type*} [Finite ι] [ConditionallyCompleteLattice α]
+variable {α ι ι' : Type*} [Finite ι] [Finite ι'] [ConditionallyCompleteLattice α]
 
 lemma le_ciSup_of_le {a : α} {f : ι → α} (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   _root_.le_ciSup_of_le (bddAbove_range f) c h
@@ -272,11 +271,19 @@ lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
     (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
   ciSup_sup (α := αᵒᵈ) ..
 
+lemma ciSup_prod (f : ι × ι' → α) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
+  _root_.ciSup_prod (bddAbove_range f)
+
+lemma ciInf_prod (f : ι × ι' → α) :
+    ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
+  ciSup_prod (α := αᵒᵈ) f
+
 end CCL
 
 section CCLO
 
-variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLinearOrder β]
+variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLattice β]
   [Finite ι] [Nonempty ι]
 
 lemma map_iSup_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)

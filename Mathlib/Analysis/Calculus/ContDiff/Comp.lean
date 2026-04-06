@@ -333,6 +333,12 @@ theorem contDiffWithinAt_fst {s : Set (E × F)} {p : E × F} :
     ContDiffWithinAt 𝕜 n (Prod.fst : E × F → E) s p :=
   contDiff_fst.contDiffWithinAt
 
+/-- Postcomposing `f` with `Prod.fst` is `C^n` at `x` -/
+@[fun_prop]
+theorem ContDiffWithinAt.fst {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (fun x ↦ (f x).1) s x :=
+  contDiffWithinAt_fst.comp x hf (mapsTo_image f s)
+
 /-- The second projection in a product is `C^∞`. -/
 @[fun_prop]
 theorem contDiff_snd : ContDiff 𝕜 n (Prod.snd : E × F → F) :=
@@ -357,10 +363,22 @@ theorem ContDiffOn.snd {f : E → F × G} {s : Set E} (hf : ContDiffOn 𝕜 n f 
     ContDiffOn 𝕜 n (fun x => (f x).2) s :=
   contDiff_snd.comp_contDiffOn hf
 
+/-- The second projection within a domain at a point in a product is `C^∞`. -/
+@[fun_prop]
+theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
+    ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
+  contDiff_snd.contDiffWithinAt
+
 /-- The second projection at a point in a product is `C^∞`. -/
 @[fun_prop]
 theorem contDiffAt_snd {p : E × F} : ContDiffAt 𝕜 n (Prod.snd : E × F → F) p :=
   contDiff_snd.contDiffAt
+
+/-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
+@[fun_prop]
+theorem ContDiffWithinAt.snd {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (fun x ↦ (f x).2) s x :=
+  contDiffWithinAt_snd.comp x hf (mapsTo_image f s)
 
 /-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
 @[fun_prop]
@@ -378,11 +396,25 @@ theorem ContDiffAt.snd'' {f : F → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.
     ContDiffAt 𝕜 n (fun x : E × F => f x.2) x :=
   hf.comp x contDiffAt_snd
 
-/-- The second projection within a domain at a point in a product is `C^∞`. -/
-@[fun_prop]
-theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
-    ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
-  contDiff_snd.contDiffWithinAt
+theorem contDiffWithinAt_prod_iff (f : E → F × G) :
+    ContDiffWithinAt 𝕜 n f s x ↔
+      ContDiffWithinAt 𝕜 n (Prod.fst ∘ f) s x ∧ ContDiffWithinAt 𝕜 n (Prod.snd ∘ f) s x :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiffAt_prod_iff (f : E → F × G) :
+    ContDiffAt 𝕜 n f x ↔
+      ContDiffAt 𝕜 n (Prod.fst ∘ f) x ∧ ContDiffAt 𝕜 n (Prod.snd ∘ f) x :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiffOn_prod_iff (f : E → F × G) :
+    ContDiffOn 𝕜 n f s ↔
+      ContDiffOn 𝕜 n (Prod.fst ∘ f) s ∧ ContDiffOn 𝕜 n (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiff_prod_iff (f : E → F × G) :
+    ContDiff 𝕜 n f ↔
+      ContDiff 𝕜 n (Prod.fst ∘ f) ∧ ContDiff 𝕜 n (Prod.snd ∘ f) :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
 section NAry
 
@@ -505,7 +537,6 @@ end SpecificBilinearMaps
 
 section ClmApplyConst
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_clm_apply_const_apply
     {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G}
@@ -659,7 +690,6 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
     contDiffWithinAt_id hk hs hmn hx₀s (by rw [preimage_id'])
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :

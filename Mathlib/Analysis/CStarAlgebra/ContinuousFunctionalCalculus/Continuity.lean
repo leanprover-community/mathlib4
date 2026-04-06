@@ -154,7 +154,6 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
@@ -388,7 +387,7 @@ section NNReal
 variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
@@ -658,7 +657,6 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 open UniformOnFun in
 open scoped NonUnitalContinuousFunctionalCalculus in
@@ -903,7 +901,7 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in

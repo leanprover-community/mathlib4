@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
@@ -45,7 +46,7 @@ section
 /-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at `x` and
 its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
-    {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
+    {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivAt[s] f x f')
     (hd : DenseRange f') : UniqueMDiffWithinAt I' (f '' s) (f x) := by
   /- Rewrite in coordinates, apply `HasFDerivWithinAt.uniqueDiffWithinAt`. -/
   have := hs.inter' <| hf.1 (extChartAt_source_mem_nhds (I := I') (f x))
@@ -60,7 +61,7 @@ theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
 at every point of `s` has dense range, then `f '' s` has the unique differential property.
 This version uses the `HasMFDerivWithinAt` predicate. -/
 theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
-    {f' : M → E →L[𝕜] E'} (hf : ∀ x ∈ s, HasMFDerivWithinAt I I' f s x (f' x))
+    {f' : M → E →L[𝕜] E'} (hf : ∀ x ∈ s, HasMFDerivAt[s] f x (f' x))
     (hd : ∀ x ∈ s, DenseRange (f' x)) :
     UniqueMDiffOn I' (f '' s) :=
   forall_mem_image.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
@@ -68,7 +69,7 @@ theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
 /-- If `s` has the unique differential property, `f` is differentiable on `s` and its derivative
 at every point of `s` has dense range, then `f '' s` has the unique differential property. -/
 theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
-    (hf : MDifferentiableOn I I' f s) (hd : ∀ x ∈ s, DenseRange (mfderivWithin I I' f s x)) :
+    (hf : MDiff[s] f) (hd : ∀ x ∈ s, DenseRange (mfderiv[s] f x)) :
     UniqueMDiffOn I' (f '' s) :=
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
@@ -79,9 +80,6 @@ protected theorem UniqueMDiffWithinAt.preimage_openPartialHomeomorph
   exact (hs.inter (e.open_source.mem_nhds hx)).image_denseRange
     (he.mdifferentiableAt hx).hasMFDerivAt.hasMFDerivWithinAt
     (he.mfderiv_surjective hx).denseRange
-
-@[deprecated (since := "2025-08-29")] alias
-UniqueMDiffWithinAt.preimage_PartialHomeomorph := UniqueMDiffWithinAt.preimage_openPartialHomeomorph
 
 /-- If a set has the unique differential property, then its image under a local
 diffeomorphism also has the unique differential property. -/

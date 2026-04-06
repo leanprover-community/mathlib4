@@ -56,7 +56,7 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
 alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
-  (submonoid M p).toCommMonoid
+  fast_instance% (submonoid M p).toCommMonoid
 
 variable (M : Type*) [CommMonoid M] (p : ℕ)
 
@@ -126,6 +126,16 @@ theorem coeffMonoidHom_pow_p_pow (f : Perfection M p) (m n : ℕ) :
     coeffMonoidHom M p (m + n) (f ^ p ^ n) = coeffMonoidHom M p m f :=
   n.recOn (by simp) fun n ih ↦ by rw [pow_succ, pow_mul, Nat.add_succ, coeffMonoidHom_pow_p, ih]
 
+@[simp]
+theorem coeffMonoidHom_pow_p_pow' (f : Perfection M p) (m n : ℕ) :
+    coeffMonoidHom M p (m + n) f ^ p ^ n = coeffMonoidHom M p m f := by
+  rw [← map_pow, coeffMonoidHom_pow_p_pow]
+
+@[simp]
+theorem coeffMonoidHom_pow_p_pow_self (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n f ^ p ^ n = coeffMonoidHom M p 0 f := by
+  rw [← coeffMonoidHom_pow_p_pow' _ 0 n, zero_add]
+
 theorem coeffMonoidHom_powMonoidHom (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (powMonoidHom p f) = coeffMonoidHom M p n f :=
   coeffMonoidHom_pow_p f n
@@ -141,7 +151,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
 
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
-@[simps]
+@[simps! symm_apply]
 noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
     (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
   toFun f :=
@@ -159,8 +169,11 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
 
+@[simp] lemma coeffMonoidHom_zero_liftMonoidHom
+    (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
+    coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
+
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
-@[simps!]
 def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
   toFun f := ⟨fun n ↦ φ (f.coeffMonoidHom M p n), fun n ↦ by rw [← map_pow, coeffMonoidHom_pow_p']⟩
@@ -189,7 +202,7 @@ alias _root_.Ring.perfectionSubsemiring := subsemiring
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
-  (subsemiring R p).toCommSemiring
+  fast_instance% (subsemiring R p).toCommSemiring
 
 instance : CharP (Perfection R p) p :=
   CharP.subsemiring _ _ (subsemiring R p)
@@ -339,13 +352,12 @@ theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {
 variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
-@[simps!]
 def map (φ : R →+* S) : Perfection R p →+* Perfection S p where
   __ := mapMonoidHom p (φ : R →* S)
   map_zero' := Subtype.ext <| funext fun _ => φ.map_zero
   map_add' _ _ := Subtype.ext <| funext fun _ => φ.map_add _ _
 
-theorem coeff_map (φ : R →+* S) (f : Perfection R p) (n : ℕ) :
+@[simp] theorem coeff_map (φ : R →+* S) (f : Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
 
 end CommSemiring
@@ -364,12 +376,20 @@ alias _root_.Ring.perfectionSubring := subring
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : Ring (Perfection R p) :=
-  (subring R p).toRing
+  fast_instance% (subring R p).toRing
 
 instance : CommRing (Perfection R p) :=
-  (subring R p).toCommRing
+  fast_instance% (subring R p).toCommRing
 
 end CommRing
+
+section CommMonoid_CommRing
+
+@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [CommMonoid M] [CommRing N]
+    [CharP N p] (e : M →* N) (n : ℕ) (x : Perfection M p) :
+    coeff N p n (mapMonoidHom p e x) = e (coeffMonoidHom M p n x) := rfl
+
+end CommMonoid_CommRing
 
 end Perfection
 
@@ -547,7 +567,6 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -557,7 +576,6 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -628,7 +646,6 @@ variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 instance : CommRing (PreTilt O p) :=
   inferInstanceAs <| CommRing <| Perfection _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 
@@ -723,7 +740,6 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
@@ -750,7 +766,6 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0

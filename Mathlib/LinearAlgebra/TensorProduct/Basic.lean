@@ -302,40 +302,49 @@ end
 
 section CompatibleSMul
 
-variable (R A M N) [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
+variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+  [Module R N] [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
+  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
-canonical A-linear map from `M ⊗[A] N` to `M ⊗[R] N`. -/
-def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
-  lift
-  { toFun := fun m ↦
-    { __ := mk R M N m
-      map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
-    map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-    map_smul' := fun _ _ ↦ rfl }
+canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
+where `S` is any other ring acting on `M` and whose action commutes with the `A` and `R`-actions. -/
+def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
+  __ :=
+    lift (σ₁₂ := RingHom.id A)
+    { toFun := fun m ↦
+      { __ := mk R M N m
+        map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+      map_add' := fun _ _ ↦ LinearMap.ext <| by simp
+      map_smul' := fun _ _ ↦ rfl }
+  map_smul' s x := by
+    induction x with
+    | zero => simp
+    | add x y _ _ => simp_all
+    | tmul x y => simp [smul_tmul']
 
-@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A M N (m ⊗ₜ n) = m ⊗ₜ n :=
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
-theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A M N) :=
+/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.ker_mapOfCompatibleSMul`. -/
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
 attribute [local instance] SMulCommClass.symm
 
-/-- `mapOfCompatibleSMul R A M N` is also R-linear. -/
-def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
-  __ := mapOfCompatibleSMul R A M N
-  map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
-    fun _ _ h h' ↦ by simpa using congr($h + $h')
+@[deprecated "with (S := R)" (since := "2026-02-21")]
+alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
-then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
-def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
-  __ := mapOfCompatibleSMul R A M N
-  invFun := mapOfCompatibleSMul A R M N
+then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N` as `S`-modules,
+where `S` is any other ring acting on `M` and whose action commutes with the `A` and `R`-actions. -/
+def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[S] M ⊗[R] N where
+  __ := mapOfCompatibleSMul R A S M N
+  invFun := mapOfCompatibleSMul A R S M N
   left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by simpa using congr($h + $h')
   right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
@@ -381,17 +390,16 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
       abel
     rw [hx, hy, add_zero]
 
-instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
-  { TensorProduct.addCommMonoid with
-    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
-    zsmul := (· • ·)
-    zsmul_zero' := by simp
-    zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
-    zsmul_neg' := fun n x => by
-      change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
-      rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
-        ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
-      rfl }
+instance addCommGroup : AddCommGroup (M ⊗[R] N) where
+  neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+  zsmul := (· • ·)
+  zsmul_zero' := by simp
+  zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
+  zsmul_neg' := fun n x => by
+    change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
+    rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
+      ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
+    rfl
 
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl

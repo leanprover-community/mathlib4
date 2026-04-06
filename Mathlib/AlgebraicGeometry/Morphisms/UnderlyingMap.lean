@@ -9,8 +9,7 @@ public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
-
-## Properties on the underlying functions of morphisms of schemes.
+# Properties on the underlying functions of morphisms of schemes
 
 This file includes various results on properties of morphisms of schemes that come from properties
 of the underlying map of topological spaces, including

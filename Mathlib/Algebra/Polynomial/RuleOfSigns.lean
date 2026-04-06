@@ -64,7 +64,7 @@ theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c
   · simp [hcz]
   · simp [hcz, signVariations, coeffList_eraseLead (mt (monomial_eq_zero_iff c d).mp hcz)]
 
-/-- If the first two signs are the same, then sign_variations is unchanged by eraseLead -/
+/-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
 theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
     signVariations P.eraseLead = signVariations P := by
   by_cases hpz : P = 0

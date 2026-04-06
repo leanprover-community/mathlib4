@@ -58,7 +58,7 @@ namespace PointedCone
 tensor products `x ⊗ₜ y` with `x ∈ C₁` and `y ∈ C₂`. -/
 noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
-  .span R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
+  .hull R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
 
 /-- The maximal tensor product of two cones is the dual (pointed cone) of the minimal tensor product
 of the dual cones. -/
@@ -75,7 +75,7 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2,
+  simp only [maxTensorProduct, minTensorProduct, dual_hull, mem_dual, Set.forall_mem_image2,
     SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
@@ -110,7 +110,7 @@ variable {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H} {z : G �
 @[simp]
 theorem minTensorProduct_comm :
     (minTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = minTensorProduct C₂ C₁ := by
-  simp [minTensorProduct, map, span, Submodule.map_span, Set.image_image2,
+  simp [minTensorProduct, map, hull, Submodule.map_span, Set.image_image2,
     Set.image2_swap (· ⊗ₜ[R] · : H → G → _)]
 
 /-- The maximal tensor product is commutative. -/

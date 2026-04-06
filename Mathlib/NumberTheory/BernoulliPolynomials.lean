@@ -222,6 +222,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
   have := bernoulli_comp_one_add_X n
   simpa using congr(Polynomial.eval x $this)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_neg_X (n : ℕ) :
     (bernoulli n).comp (-X) = (-1) ^ n • (bernoulli n + n • X ^ (n - 1)) := by
   cases n with
@@ -251,7 +252,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
   | succ n =>
     trans ((bernoulli (n + 1)).comp (1 + X)).comp (-X)
     · simp [comp_assoc, sub_eq_add_neg]
-    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ), add_assoc]
+    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ)]
     ring
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :

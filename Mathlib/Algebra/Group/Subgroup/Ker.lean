@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
+import Mathlib.Algebra.Group.Equiv.Basic
+
 /-!
 # Kernel and range of group homomorphisms
 
@@ -266,6 +268,13 @@ lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃*
     (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
 
+/-- Composing with an isomorphism on the codomain does not change the kernel. -/
+@[to_additive (attr := simp)]
+lemma ker_mulEquiv_comp {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃* P) :
+    ((iso : N →* P).comp f).ker = f.ker := by
+  ext
+  simp
+
 @[to_additive (attr := simp)]
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
@@ -507,6 +516,11 @@ theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
   Function.LeftInverse.injective <| comap_map_eq_self_of_injective h
 
+@[to_additive]
+theorem map_subtype_inj {H : Subgroup G} {K L : Subgroup H} :
+    K.map H.subtype = L.map H.subtype ↔ K = L :=
+  (map_injective H.subtype_injective).eq_iff
+
 /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/
 @[to_additive /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/]
 theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ker ≤ K)
@@ -553,4 +567,30 @@ theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
   rw [codisjoint_iff, ← subgroupOf_sup, subgroupOf_self]
   exacts [le_sup_left, le_sup_right]
 
+variable {M : Type*} [CommGroup M]
+
+@[to_additive]
+lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
+    (map (powMonoidHom n) S).subgroupOf S = (powMonoidHom n).range := by
+  ext : 1
+  simp [mem_subgroupOf]
+  grind
+
 end Subgroup
+
+namespace MulEquiv
+
+@[to_additive (attr := simp)]
+lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
+  MonoidHom.range_eq_top.mpr e.surjective
+
+variable {M N : Type*} [CommGroup M] [CommGroup N]
+
+open MonoidHom in
+@[to_additive]
+lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
+    (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
+  have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
+  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+
+end MulEquiv

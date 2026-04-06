@@ -42,7 +42,7 @@ def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
 attribute [simp] nerve_obj
 
 instance {C : Type*} [Category* C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
-  (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
+  inferInstanceAs <| Category (ComposableArrows C (Δ.unop.len))
 
 section
 

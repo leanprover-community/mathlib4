@@ -200,16 +200,15 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
-          ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
-            = Fork.ι s := ?_
+        have aux (s : KernelFork (cokernel.π f)) :
+            (limit.lift (parallelPair (cokernel.π f) 0) s ≫ inv (imageMonoFactorisation f).e) ≫
+            Fork.ι (KernelFork.ofι _ (cokernel.condition f)) = Fork.ι s := ?_
         · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
           intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
-        · intro A
-          simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π A WalkingParallelPair.zero using 2
+        · simp only [KernelFork.ι_ofι, Category.assoc]
+          convert limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -226,17 +225,17 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
-          inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
-          colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
+        have aux (s : CokernelCofork (kernel.ι f)) :
+            Cofork.π (CokernelCofork.ofπ _ (kernel.condition f)) ≫
+              inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
+                colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
         · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
                   inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
           intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
-        · intro A
-          simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc A WalkingParallelPair.one using 2
+        · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
+          convert colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -253,7 +252,8 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
-"The Stacks project uses this characterisation at the definition of an abelian category."]
+"The Stacks project uses this characterisation at the definition of an abelian category.",
+  implicit_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -822,6 +822,7 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
+@[implicit_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
@@ -870,6 +871,7 @@ preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
 where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
 This assumption is packaged in a structure `AbelianStruct f`. -/
+@[implicit_reducible]
 noncomputable def mk' [HasFiniteProducts C]
     (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where

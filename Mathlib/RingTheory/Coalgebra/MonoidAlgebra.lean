@@ -62,6 +62,7 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A
 
 instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstanceAs <| IsCocomm R A[ℤ]
 
 variable {R A}

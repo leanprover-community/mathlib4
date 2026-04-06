@@ -67,7 +67,6 @@ theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact ((p.map (algebraMap ℚ ℂ)).Splits)
 attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The number of complex roots equals the number of real roots plus
 the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
@@ -123,7 +122,6 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     rw [hb, hc]
     tauto
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An irreducible polynomial of prime degree with two non-real roots has full Galois group. -/
 theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible p)
     (p_deg : p.natDegree.Prime)
@@ -152,7 +150,6 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     rw [← p_roots, ← Set.toFinset_card (rootSet p ℝ), ← Set.toFinset_card (rootSet p ℂ)]
     exact (card_complex_roots_eq_card_real_add_card_not_gal_inv p).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group. -/
 theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducible p)
     (p_deg : p.natDegree.Prime)

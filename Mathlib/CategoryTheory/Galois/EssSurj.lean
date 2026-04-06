@@ -87,7 +87,7 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
-      exact (DFunLike.congr_fun (r.comm p.1) p.2).symm
+      exact (ConcreteCategory.congr_hom (r.comm p.1) p.2).symm
     have hrinj : Function.Injective r.hom :=
       (ConcreteCategory.mono_iff_injective_of_preservesPullback r).mp <| mono_comp _ _
     let t₁ : TopologicalSpace (G × (f i).V) := inferInstance

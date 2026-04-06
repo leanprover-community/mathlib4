@@ -267,7 +267,7 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
   ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
-    fapply Cocones.ext
+    fapply Cocone.ext
     · rfl
     · simp⟩
 
@@ -284,7 +284,7 @@ instance forget_preservesColimits [HasLimits C] :
   preservesColimitsOfShape {J 𝒥} :=
     { preservesColimit := fun {F} => preservesColimit_of_preserves_colimit_cocone
           (colimitCoconeIsColimit F)
-          (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _))) }
+          (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _))) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The components of the colimit of a diagram of `PresheafedSpace C` is obtained

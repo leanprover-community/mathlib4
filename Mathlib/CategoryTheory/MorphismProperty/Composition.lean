@@ -173,10 +173,10 @@ instance unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplica
   comp_mem f g hf hg := W.comp_mem g.op f.op hg hf
 
 lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative W :=
-  (inferInstance : IsMultiplicative W.op.unop)
+  inferInstanceAs <| IsMultiplicative W.op.unop
 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
-  (inferInstance : IsMultiplicative W.unop.op)
+  inferInstanceAs <| IsMultiplicative W.unop.op
 
 instance : MorphismProperty.IsMultiplicative (⊤ : MorphismProperty C) where
   comp_mem _ _ _ _ := trivial

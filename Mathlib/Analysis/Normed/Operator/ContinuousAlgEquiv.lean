@@ -169,7 +169,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     we know there exists a continuous linear equivalence `y : V ≃L[𝕜] W` such that
     `f = y.conjAlgEquiv`.
     Our goal will be to construct an isometry from `y`. We do this by first showing
-    `adjoint y ∘ y` is in the center of the endormorphisms, and as the algebra of endomorphisms
+    `adjoint y ∘ y` is in the center of the endomorphisms, and as the algebra of endomorphisms
     are central, `adjoint y ∘ y` is a scalar multiple of the identity. -/
   obtain ⟨y, hy⟩ := (ContinuousAlgEquiv.mk f.toAlgEquiv hf
     (f.toAlgEquiv.toLinearEquiv.continuous_symm hf)).eq_continuousLinearEquivConjContinuousAlgEquiv

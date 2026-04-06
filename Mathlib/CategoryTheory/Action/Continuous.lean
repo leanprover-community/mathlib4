@@ -202,7 +202,6 @@ def mapContActionCongr
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Continuous version of `Equivalence.mapAction`. -/
 @[simps functor inverse]
 def Equivalence.mapContAction (E : V ≌ W)

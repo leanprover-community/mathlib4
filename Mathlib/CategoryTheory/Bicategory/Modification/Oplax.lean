@@ -10,17 +10,24 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 /-!
 # Modifications between transformations of oplax functors
 
-In this file we define modifications of oplax and strong transformations of oplax functors.
+In this file we define modifications of lax, oplax, and strong transformations of oplax functors.
 
 A modification `Γ` between oplax transformations `η` and `θ` (of oplax functors) consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which for all 1-morphisms `f : a ⟶ b`
 satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`.
 
-Modifications between strong transformations are defined similarly.
+Modifications between lax and strong transformations are defined similarly.
 
 ## Main definitions
 
 Given two oplax functors `F` and `G`, we define:
+
+* `LaxTrans.Modification η θ`: modifications between lax transformations `η` and `θ` between
+  `F` and `G`.
+* `LaxTrans.homCategory F G`: the category structure on the lax transformations
+  between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
+  instance in the `Oplax.LaxTrans` namespace, so you need to run `open scoped Oplax.LaxTrans`
+  to access it.
 
 * `OplaxTrans.Modification η θ`: modifications between oplax transformations `η` and `θ` between
   `F` and `G`.
@@ -48,6 +55,110 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
   {F G : B ⥤ᵒᵖᴸ C}
+
+namespace LaxTrans
+
+open scoped Oplax.LaxTrans
+
+variable (η θ : F ⟶ G)
+
+/-- A modification `Γ` between lax natural transformations `η` and `θ` (between oplax functors)
+consists of a family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
+`(app a ▷ G.map f) ≫ θ.naturality f = η.naturality f ≫ (F.map f ◁ app b)`
+for each 1-morphism `f : a ⟶ b`.
+-/
+@[ext]
+structure Modification where
+  /-- The underlying family of 2-morphisms. -/
+  app (a : B) : η.app a ⟶ θ.app a
+  /-- The naturality condition. -/
+  naturality :
+    ∀ {a b : B} (f : a ⟶ b),
+      app a ▷ G.map f ≫ θ.naturality f = η.naturality f ≫ F.map f ◁ app b := by
+    cat_disch
+
+attribute [reassoc (attr := simp)] Modification.naturality
+
+variable {η θ}
+
+namespace Modification
+
+section
+
+variable (Γ : Modification η θ) {a b c : B} {a' : C}
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_naturality (f : a' ⟶ F.obj a) (g : a ⟶ b) :
+    f ◁ Γ.app a ▷ G.map g ≫ f ◁ θ.naturality g =
+      f ◁ η.naturality g ≫ f ◁ F.map g ◁ Γ.app b := by
+  simp_rw [← whiskerLeft_comp, naturality]
+
+@[reassoc (attr := simp)]
+theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
+    Γ.app a ▷ G.map f ▷ g ≫ θ.naturality f ▷ g =
+      η.naturality f ▷ g ≫ (F.map f ◁ Γ.app b) ▷ g := by
+  simp_rw [← comp_whiskerRight, naturality]
+
+end
+
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where
+  app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
+end Modification
+
+variable (η θ) in
+/-- Type-alias for modifications between lax transformations of oplax functors. This is the type
+used for the 2-homomorphisms in the bicategory of oplax functors equipped with lax
+transformations. -/
+@[ext]
+structure Hom where
+  of ::
+  /-- The underlying modification of lax transformations. -/
+  as : Modification η θ
+
+/-- Category structure on the lax natural transformations between oplax functors.
+
+Note that this is a scoped instance in the `Oplax.LaxTrans` namespace. -/
+@[simps!]
+scoped instance homCategory : Category (F ⟶ G) where
+  Hom := Hom
+  id η := ⟨Modification.id η⟩
+  comp Γ Δ := ⟨Modification.vcomp Γ.as Δ.as⟩
+
+instance : Inhabited (η ⟶ η) :=
+  ⟨𝟙 η⟩
+
+@[ext]
+lemma homCategory.ext {m n : η ⟶ θ} (h : ∀ a, m.as.app a = n.as.app a) : m = n :=
+  Hom.ext <| Modification.ext <| funext h
+
+/-- Construct a modification isomorphism between lax natural transformations
+by giving object level isomorphisms, and checking naturality only in the forward direction.
+-/
+@[simps]
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
+    (naturality :
+      ∀ {a b} (f : a ⟶ b),
+        (app a).hom ▷ G.map f ≫ θ.naturality f =
+          η.naturality f ≫ F.map f ◁ (app b).hom := by cat_disch) :
+    η ≅ θ where
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv
+
+end LaxTrans
 
 namespace OplaxTrans
 
@@ -143,11 +254,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         F.map f ◁ (app b).hom ≫ θ.naturality f =
           η.naturality f ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
 @[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
 
@@ -272,11 +382,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
 end StrongTrans
 

@@ -35,7 +35,6 @@ namespace IsPrimitiveRoot
 variable {n : ℕ} [NeZero n] {K : Type u} [Field K] [CharZero K] {ζ : K}
 variable [ce : IsCyclotomicExtension {n} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
 discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :

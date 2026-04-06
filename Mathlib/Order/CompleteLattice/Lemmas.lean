@@ -237,10 +237,8 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instLinearOrder
   sSup := fun _ => unit
   sInf := fun _ => unit
-  le_sSup := by intros; trivial
-  sSup_le := by intros; trivial
-  sInf_le := by intros; trivial
-  le_sInf := by intros; trivial
+  isLUB_sSup _ := ⟨top_mem_upperBounds _, bot_mem_lowerBounds _⟩
+  isGLB_sInf _ := ⟨bot_mem_lowerBounds _, top_mem_upperBounds _⟩
   le_himp_iff := by intros; trivial
   himp_bot := by intros; trivial
   sdiff_le_iff := by intros; trivial

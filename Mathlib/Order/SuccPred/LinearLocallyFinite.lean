@@ -149,6 +149,7 @@ variable (ι) in
 /-- A locally finite order is a `SuccOrder`.
 This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
@@ -159,6 +160,7 @@ variable (ι) in
 /-- A locally finite order is a `PredOrder`.
 This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)

@@ -52,13 +52,11 @@ to the Dirichlet series in the convergence range. -/
 noncomputable def hurwitzZeta (a : UnitAddCircle) (s : ℂ) :=
   hurwitzZetaEven a s + hurwitzZetaOdd a s
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaEven a s = (hurwitzZeta a s + hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaOdd_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaOdd a s = (hurwitzZeta a s - hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
@@ -116,7 +114,6 @@ lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
 noncomputable def expZeta (a : UnitAddCircle) (s : ℂ) :=
   cosZeta a s + I * sinZeta a s
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
     cosZeta a s = (expZeta a s + expZeta (-a) s) / 2 := by
   rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
@@ -170,7 +167,6 @@ lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
   generalize (-(↑π * s / 2) * I).exp = z
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functional equation for the exponential zeta function. -/
 lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
     expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *

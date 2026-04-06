@@ -218,7 +218,6 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
   rw [petersson, ← Real.rpow_mul_natCast τ.im_pos.le]
   simp [abs_of_pos τ.im_pos, field]
 
-set_option backward.isDefEq.respectTransparency false in
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
 `max 1 (1 / (τ.im) ^ k)`. -/

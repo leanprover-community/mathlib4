@@ -9,6 +9,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
 
 /-!
 
@@ -120,3 +121,14 @@ end SurjectiveOnStalks
 end LocallySurjective
 
 end TopCat.Presheaf
+
+theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC] [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
+    [(Opens.grothendieckTopology X).HasSheafCompose (CategoryTheory.forget C)]
+    [HasSheafify (Opens.grothendieckTopology X) C]
+    [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
+    [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
+    {F G : Sheaf C X} (φ : F ⟶ G) :
+    TopCat.Presheaf.IsLocallySurjective φ.hom ↔ Epi φ :=
+  CategoryTheory.Sheaf.isLocallySurjective_iff_epi' ..

@@ -229,3 +229,20 @@ theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α �
     Nat.card_congr (Equiv.Set.univ α) ▸ h
 
 end Set
+
+namespace List.Nodup
+
+variable {l : List α} (h : l.Nodup)
+include h
+
+theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
+  have := Fintype.ofFinite α
+  grw [h.length_le_card, Fintype.card_eq_nat_card]
+
+theorem length_le_enatCard : l.length ≤ ENat.card α := by
+  cases finite_or_infinite α
+  · grw [h.length_le_natCard, ENat.card_eq_coe_natCard]
+  · grw [ENat.card_eq_top_of_infinite]
+    exact le_top
+
+end List.Nodup

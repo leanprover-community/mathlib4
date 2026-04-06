@@ -50,7 +50,7 @@ def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
 abbrev Cont (r : Type u) (α : Type w) :=
-  ContT r id α
+  ContT r Id α
 
 namespace ContT
 
@@ -120,9 +120,19 @@ Here, the `throwError` is being run inside the `try`.
 See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
 for further discussion.
 -/
-instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
   throw e _ := throw e
-  tryCatch act h f := tryCatch (act f) fun e => h e f
+  tryCatch act h f := tryCatch (act.run f) fun e => (h e).run f
+
+@[simp]
+theorem run_throw {ε} [MonadExceptOf ε m]
+    (e : ε) (f : α → m r) :
+    (throw e : ContT r m α).run f = throw e := rfl
+
+@[simp]
+theorem run_tryCatch {ε} [MonadExceptOf ε m]
+    (act : ContT r m α) (h : ε → ContT r m α) (f : α → m r) :
+    (tryCatch act h : ContT r m α).run f = tryCatch (act.run f) fun e => (h e).run f := rfl
 
 end ContT
 

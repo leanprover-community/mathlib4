@@ -17,6 +17,8 @@ of presheaves which become isomorphisms after applying the sheafification functo
 
 -/
 
+universe w
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -40,7 +42,7 @@ lemma W_eq_isLocal_range_sheafToPresheaf_obj :
   · intro hP
     exact ⟨⟨P, hP⟩, rfl⟩
   · rintro ⟨F, rfl⟩
-    exact F.cond
+    exact F.property
 
 @[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
   W_eq_isLocal_range_sheafToPresheaf_obj
@@ -94,5 +96,27 @@ instance : (presheafToSheaf J A).IsLocalization J.W := by
 end HasWeakSheafify
 
 end GrothendieckTopology
+
+lemma Sieve.W_shrinkFunctor_ι_of_mem [LocallySmall.{w} C] {X : C} (S : Sieve X) (hS : S ∈ J X) :
+    J.W (Sieve.shrinkFunctor.{w} S).ι := by
+  intro Z hZ
+  rw [isSheaf_iff_isSheaf_of_type] at hZ
+  rw [← Presieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp]
+  exact hZ _ hS
+
+variable {D : Type*} [Category* D] {K : GrothendieckTopology D}
+
+/-- SGA 4 III 1.2 (ii) => (i) -/
+lemma Presieve.IsSheaf.comp_of_W_map_of_adjunction
+    [LocallySmall.{w} C] {F : C ⥤ D} {H : (Cᵒᵖ ⥤ Type w) ⥤ (Dᵒᵖ ⥤ Type w)}
+    (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
+    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X → K.W (H.map <| (Sieve.shrinkFunctor.{w} S).ι))
+    (G : Dᵒᵖ ⥤ Type w) (hG : Presieve.IsSheaf K G) :
+    Presieve.IsSheaf J (F.op ⋙ G) := by
+  intro X S hS
+  rw [Presieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp, ← Functor.whiskeringLeft_obj_obj,
+    ← adj.map_comp_bijective_iff]
+  refine h hS _ ?_
+  rwa [isSheaf_iff_isSheaf_of_type]
 
 end CategoryTheory

@@ -221,7 +221,7 @@ lemma transpose_mem_rowStochastic_iff_mem_colStochastic :
     Mᵀ ∈ rowStochastic R n ↔ M ∈ colStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- The transpose of a matrix is column stochastic matrix if it is row stochastic. -/
 @[grind =]
@@ -229,7 +229,7 @@ lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
     Mᵀ ∈ colStochastic R n ↔ M ∈ rowStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- Reindexing a matrix preserves row-stochasticity. -/
 @[aesop safe apply]

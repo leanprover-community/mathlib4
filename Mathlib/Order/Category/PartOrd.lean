@@ -178,10 +178,12 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x
-    exact Quotient.inductionOn' x fun x => Quotient.map'_mk'' _ (fun a b => id) _
+    induction x using Quotient.inductionOn'
+    exact Quotient.map'_mk'' _ (fun a b ↦ id) _
   map_comp f g := by
     ext x
-    exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
+    induction x using Quotient.inductionOn'
+    exact OrderHom.antisymmetrization_apply_mk ..
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/

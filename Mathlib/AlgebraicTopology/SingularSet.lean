@@ -69,12 +69,18 @@ It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop
 
+/-- The geometric realization of a simplicial set. -/
+scoped [Simplicial] notation "|" X "|" => SSet.toTop.obj X
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
 noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
   Presheaf.uliftYonedaAdjunction
     (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.toTop)
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
+
+instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
+instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
@@ -86,9 +92,22 @@ instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
 
+lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
+    ((sSetTopAdj.unit.app S).app m a).down =
+      SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by
+  delta sSetTopAdj
+  rw [Presheaf.uliftYonedaAdjunction_unit_app_app]
+  rfl
+
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
     TopCat.toSSet.obj X ≅ (Functor.const _).obj X :=
   (NatIso.ofComponents (fun n ↦ Equiv.toIso
     ((TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace _ X).symm.trans
       (X.toSSetObjEquiv n).symm))).symm
+
+/-- The canonical map `Δ[n] ⟶ Simp(Δₜ[n])` (where `Δₜ[n]` is the topological `n`-simplex`. -/
+@[simps! -isSimp] noncomputable def SSet.stdSimplexToTop :
+    SSet.stdSimplex.{u} ⟶ SimplexCategory.toTop ⋙ TopCat.toSSet :=
+  SSet.stdSimplex.whiskerLeft sSetTopAdj.unit ≫
+    Functor.whiskerRight SSet.toTopSimplex.hom TopCat.toSSet

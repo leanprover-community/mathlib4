@@ -213,11 +213,11 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
-  (inferInstance : (K.sc i).op.HasHomology)
+  inferInstanceAs <| (K.sc i).op.HasHomology
 
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
-  (inferInstance : (K.sc i).unop.HasHomology)
+  inferInstanceAs <| (K.sc i).unop.HasHomology
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     ((opFunctor _ _).obj (op K)).HasHomology i := by

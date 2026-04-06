@@ -72,8 +72,13 @@ theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a
 is transitive. -/
 @[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
 additive semigroup is transitive. -/]
-protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
-  | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
+protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
+  ⟨fun _ _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨y * x, hy.mul_left hx⟩⟩
+
+@[deprecated (since := "2026-02-20")]
+protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
+@[to_additive existing, deprecated (since := "2026-02-20")]
+protected alias transitive := SemiconjBy.isTrans
 
 end Semigroup
 

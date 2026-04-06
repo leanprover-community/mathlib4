@@ -401,7 +401,7 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
     letI : TopologicalSpace B' := .coinduced φ inferInstance
     -- With this new topology on `B`, φ is a quotient map by definition,
     -- and hence an open quotient map by a result in the library.
-    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
+    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨⟨rfl⟩, hφ⟩
     -- We're trying to prove the module topology on B is ≤ the coinduced topology.
     -- But recall that the module topology is the Inf of the topologies on B making addition
     -- and scalar multiplication continuous, so it suffices to prove
@@ -540,7 +540,7 @@ instance instProd : IsModuleTopology R (M × N) := by
   change @Continuous (M × N) P instTopologicalSpaceProd τP i
   -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
   -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
-  -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
+  -- the maps i₁ and i₂ are linear inclusions M → P and N → P, and the addition is P × P → P.
   let i₁ : M →ₗ[R] P := LinearMap.inl R M N
   let i₂ : N →ₗ[R] P := LinearMap.inr R M N
   rw [show (i : M × N → P) =

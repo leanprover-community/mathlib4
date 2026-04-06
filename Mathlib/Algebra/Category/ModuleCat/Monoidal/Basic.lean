@@ -449,7 +449,6 @@ end MonoidalCategory
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intros

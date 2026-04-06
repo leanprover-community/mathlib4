@@ -38,7 +38,6 @@ namespace ContinuousMap
 
 variable [TopologicalSpace α] [CompactSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) where
 
 instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) where

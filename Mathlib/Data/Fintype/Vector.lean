@@ -19,10 +19,10 @@ open List (Vector)
 variable {α : Type*}
 
 instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (List.Vector α n) :=
-  Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
+  fast_instance% Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) :=
-  Quotient.fintype _
+  inferInstanceAs <| Fintype (Quotient _)
 
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
-  Fintype.ofEquiv _ Sym.symEquivSym'.symm
+  fast_instance% Fintype.ofEquiv _ Sym.symEquivSym'.symm

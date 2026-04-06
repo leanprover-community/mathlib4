@@ -874,17 +874,84 @@ end
 section
 
 variable {α : Type*} [TopologicalSpace α]
-variable {β : Type*} [LinearOrder β]
+variable {β : Type*}
 variable {γ : Type*} [TopologicalSpace γ]
 variable {f : α → β} {g : γ → α} {s : Set α} {a : α} {c : γ} {t : Set γ}
 
-theorem upperSemicontinuousOn_iff_preimage_Iio :
+theorem upperSemicontinuousOn_iff_preimage_Iio [Preorder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ u : Set α, IsOpen u ∧ s ∩ f ⁻¹' Set.Iio b = s ∩ u :=
   lowerSemicontinuousOn_iff_preimage_Ioi (β := βᵒᵈ)
 
-theorem upperSemicontinuousOn_iff_preimage_Ici :
+theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
+
+variable [PartialOrder β] [CommGroup β] [IsOrderedMonoid β]
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousWithinAt_inv_iff :
+    LowerSemicontinuousWithinAt f⁻¹ s a ↔ UpperSemicontinuousWithinAt f s a := by
+  rw [lowerSemicontinuousWithinAt_iff, inv_surjective.forall, upperSemicontinuousWithinAt_iff]
+  simp
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousWithinAt.inv⟩ := lowerSemicontinuousWithinAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousWithinAt_inv_iff :
+    UpperSemicontinuousWithinAt f⁻¹ s a ↔ LowerSemicontinuousWithinAt f s a := by
+  simp [← lowerSemicontinuousWithinAt_inv_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousWithinAt.inv⟩ := upperSemicontinuousWithinAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuouAt_inv_iff :
+    LowerSemicontinuousAt f⁻¹ a ↔ UpperSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuouAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousAt_inv_iff :
+    UpperSemicontinuousAt f⁻¹ a ↔ LowerSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousAt.inv⟩ := upperSemicontinuousAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousOn_inv_iff :
+    LowerSemicontinuousOn f⁻¹ s ↔ UpperSemicontinuousOn f s := by
+  simp [lowerSemicontinuousOn_iff, upperSemicontinuousOn_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousOn.inv⟩ := lowerSemicontinuousOn_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousOn_inv_iff :
+    UpperSemicontinuousOn f⁻¹ s ↔ LowerSemicontinuousOn f s := by
+  simp [← lowerSemicontinuousOn_inv_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousOn.inv⟩ := upperSemicontinuousOn_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemiContinuous_inv_iff :
+    LowerSemicontinuous f⁻¹ ↔ UpperSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuous.inv⟩ := lowerSemiContinuous_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemiContinuous_inv_iff :
+    UpperSemicontinuous f⁻¹ ↔ LowerSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuous.inv⟩ := upperSemiContinuous_inv_iff
 
 end
 

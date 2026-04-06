@@ -517,26 +517,13 @@ variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
 section MeasurableConstSMul
 variable [MeasurableConstSMul M X]
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := to_fun (attr := fun_prop))]
 lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :=
   (measurable_const_smul c).comp hg
 
-/-- Compositional version of `Measurable.const_smul` for use by `fun_prop`. -/
-@[to_additive (attr := fun_prop)
-/-- Compositional version of `Measurable.const_vadd` for use by `fun_prop`. -/]
-lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Measurable ↿g) (hh : Measurable h)
-    (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
-  (hg.comp <| measurable_id.prodMk hh).const_smul _
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
+@[to_additive (attr := to_fun (attr := fun_prop))]
+lemma AEMeasurable.const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
-
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
-  hf.fun_const_smul c
 
 @[to_additive]
 instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]

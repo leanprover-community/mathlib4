@@ -402,9 +402,9 @@ lemma isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Se
 lemma isQuotientMap_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) :
     IsQuotientMap c.π := by
   rw [isQuotientMap_iff]
-  constructor
+  refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦ ?_, ?_⟩
+  · exact (isOpen_iff_of_isColimit_cofork c hc s).symm
   · simpa only [← epi_iff_surjective] using epi_of_isColimit_cofork hc
-  · exact isOpen_iff_of_isColimit_cofork c hc
 
 theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
     IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=

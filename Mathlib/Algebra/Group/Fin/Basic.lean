@@ -53,7 +53,7 @@ silently introducing wraparound arithmetic.
 -/
 @[instance_reducible]
 def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
-  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  __ := (inferInstance : AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
@@ -106,31 +106,11 @@ lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 :=
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, Nat.add_comm, Nat.add_sub_add_left]
-  conv_rhs => rw [Nat.add_comm]
-  rw [Nat.add_le_add_iff_left, Nat.one_le_iff_ne_zero]
-  rwa [Fin.ext_iff] at h
+  exact val_sub_one_of_ne_zero h
 
 @[simp]
 lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
-  rcases n with - | n
-  · exact a.elim0
-  constructor
-  · contrapose
-    intro h
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le (Fin.not_lt.mp h)
-    simpa only [Fin.not_lt, le_iff_val_le_val, sub_def, hl, ← Nat.add_assoc, Nat.add_mod_left,
-      Nat.mod_eq_of_lt, Nat.sub_add_cancel b.is_lt.le] using
-        (le_trans (mod_le _ _) (le_add_left _ _))
-  · intro h
-    rw [lt_def, sub_def]
-    simp only
-    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
-    have : n + 1 - b = k + 1 := by
-      simp_rw [hk, Nat.add_assoc, Nat.add_sub_cancel_left]
-      -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
-    rw [this, Nat.mod_eq_of_lt (hk.ge.trans_lt' ?_), Nat.lt_add_left_iff_pos] <;>
-    lia
+  fin_omega
 
 @[simp]
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by

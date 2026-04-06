@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Shift
 # Bounded below cochain complexes
 
 In this file, we consider the full subcategory `CochainComplex.Plus C`
-of `CochainComplex C ℤ` consisting of bounded below cocahin complexes
+of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
 -/

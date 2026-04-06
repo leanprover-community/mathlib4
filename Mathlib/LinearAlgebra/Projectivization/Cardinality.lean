@@ -72,7 +72,7 @@ lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   cases finite_or_infinite V with
   | inr h =>
     have := not_iff_not.mpr (finite_iff_of_finite k V)
-    push_neg at this
+    push Not at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
   | inl h =>

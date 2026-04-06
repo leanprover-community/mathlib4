@@ -41,7 +41,7 @@ instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J
   preservesLimit.preserves {coneK} isLimitConeK :=
     have isLimitConeD := (IsLimit.postcomposeHomEquiv liftFromOverComp.symm _).symm <|
       isLimitOfPreserves F (isLimitEquiv.symm isLimitConeK)
-    ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <| Cones.ext (.refl _) fun | .star | .of a => by aesop⟩
+    ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <| Cone.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
     PreservesFiniteLimits (Over.post F (X := X)) where
@@ -57,7 +57,7 @@ instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithIniti
     have isColimitCoconeD := (IsColimit.precomposeHomEquiv liftFromUnderComp _).symm <|
       isColimitOfPreserves F (isColimitEquiv.symm isColimitCoconeK)
     ⟨isColimitEquiv <| isColimitCoconeD.ofIsoColimit <|
-      Cocones.ext (.refl _) fun | .star | .of a => by aesop⟩
+      Cocone.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteColimits.underPost [PreservesFiniteColimits F] :
     PreservesFiniteColimits (Under.post F (X := X)) where

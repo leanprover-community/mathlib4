@@ -17,7 +17,6 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
@@ -39,7 +38,6 @@ lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQu
 lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P :=
   fun _ ↦ not_weaklyQuasiFiniteAt P inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_under_lt_comap_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     (P.under R).map C < P.comap (f : R[X] →+* S) := by
@@ -62,7 +60,6 @@ lemma map_under_lt_comap_of_quasiFiniteAt
     (P.under R).map C < P.comap (f : R[X] →+* S) :=
   map_under_lt_comap_of_weaklyQuasiFiniteAt f P
 
-set_option backward.isDefEq.respectTransparency false in
 lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :

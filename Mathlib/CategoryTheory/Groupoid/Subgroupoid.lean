@@ -127,6 +127,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
   id_mem_of_nonempty_isotropy S d (mem_objs_of_tgt S h)
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
+@[implicit_reducible]
 def asWideQuiver : Quiver C :=
   ⟨fun c d => S.arrows c d⟩
 

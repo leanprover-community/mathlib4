@@ -38,35 +38,31 @@ namespace Path
 ## Subpaths
 -/
 
-/-- Auxiliary function for defining subpaths. -/
-@[simp]
-def subpathAux (t₀ t₁ s : I) : I := ⟨(1 - s) * t₀ + s * t₁,
-  (convex_Icc 0 1) t₀.prop t₁.prop (one_minus_nonneg s) s.prop.left (sub_add_cancel 1 _)⟩
+@[deprecated (since := "2026-03-20")]
+alias subpathAux := Icc.convexCombo
 
-lemma subpathAux_zero (t₀ t₁ : I) : subpathAux t₀ t₁ 0 = t₀ := by simp
+@[deprecated (since := "2026-03-20")]
+alias subpathAux_zero := Icc.convexCombo_zero
 
-lemma subpathAux_one (t₀ t₁ : I) : subpathAux t₀ t₁ 1 = t₁ := by simp
+@[deprecated (since := "2026-03-20")]
+alias subpathAux_one := Icc.convexCombo_one
 
-/-- `subpathAux` is continuous as an uncurried function `I × I × I → I`. -/
-@[continuity, fun_prop]
-lemma subpathAux_continuous : Continuous (fun x ↦ subpathAux x.1 x.2.1 x.2.2 : I × I × I → I) := by
-  unfold subpathAux
-  fun_prop
+@[deprecated (since := "2026-03-20")]
+alias subpathAux_continuous := Icc.continuous_convexCombo_prod
 
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
 def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
-  toFun := γ ∘ (subpathAux t₀ t₁)
-  source' := by rw [comp_apply, subpathAux_zero]
-  target' := by rw [comp_apply, subpathAux_one]
-  continuous_toFun := by fun_prop
+  toFun := γ ∘ Icc.convexCombo t₀ t₁
+  source' := by simp
+  target' := by simp
 
 /-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
 theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
   ext s
-  simp [subpath, add_comm]
+  simp [subpath]
 
-lemma range_subpathAux (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t₀ t₁ := by
+lemma range_subpathAux (t₀ t₁ : I) : range (Icc.convexCombo t₀ t₁) = uIcc t₀ t₁ := by
   rw [range_eq_iff]
   constructor
   · intro s
@@ -97,7 +93,7 @@ lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
 @[simp]
 theorem subpath_self (γ : Path a b) (t : I) : γ.subpath t t = Path.refl (γ t) := by
   ext s
-  simp [subpath, ← add_mul, sub_add_cancel, one_mul]
+  simp [subpath]
 
 /-- The subpath of `γ` from `0` to `1` is just `γ`, with a slightly different type. -/
 @[simp]
@@ -110,7 +106,7 @@ the uncurried function which maps `(t₀, t₁, s)` to `γ.subpath t₀ t₁ s` 
 @[continuity]
 theorem subpath_continuous_family (γ : Path a b) :
     Continuous (fun x => γ.subpath x.1 x.2.1 x.2.2 : I × I × I → X) :=
-  Continuous.comp' (map_continuous γ) subpathAux_continuous
+  Continuous.comp' (map_continuous γ) Set.Icc.continuous_convexCombo_prod
 
 namespace Homotopy
 
@@ -118,15 +114,15 @@ namespace Homotopy
 copy of `Path.refl`. -/
 def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) ((γ.subpath t₀ t₂).trans (Path.refl _)) where
-  toFun x := ((γ.subpath t₀ (subpathAux t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
+  toFun x := ((γ.subpath t₀ (Icc.convexCombo t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
   continuous_toFun := by
-    let γ₁ (t : I) := γ.subpath t₀ (subpathAux t₁ t₂ t)
-    let γ₂ (t : I) := γ.subpath (subpathAux t₁ t₂ t) t₂
+    let γ₁ (t : I) := γ.subpath t₀ (Icc.convexCombo t₁ t₂ t)
+    let γ₂ (t : I) := γ.subpath (Icc.convexCombo t₁ t₂ t) t₂
     refine Path.trans_continuous_family γ₁ ?_ γ₂ ?_ <;>
     refine γ.subpath_continuous_family.comp (.prodMk ?_ <| .prodMk ?_ ?_) <;>
     fun_prop
-  map_zero_left _ := by rw [subpathAux_zero, coe_toContinuousMap]
-  map_one_left _ := by rw [subpathAux_one, subpath_self, coe_toContinuousMap]
+  map_zero_left _ := by rw [Icc.convexCombo_zero, coe_toContinuousMap]
+  map_one_left _ := by rw [Icc.convexCombo_one, subpath_self, coe_toContinuousMap]
   prop' _ _ hx := by
     rcases hx with rfl | rfl <;>
     simp

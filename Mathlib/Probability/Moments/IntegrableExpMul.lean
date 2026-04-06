@@ -298,7 +298,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     congr
     symm
     simp only [abs_eq_self]
-    exact rpow_nonneg (div_nonneg hp (sub_nonneg_of_le hx.le)) _
+    positivity [sub_nonneg_of_le hx.le]
 
 /-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable
 then for any `n : ℕ` and any `x ∈ [0, |t|)`,

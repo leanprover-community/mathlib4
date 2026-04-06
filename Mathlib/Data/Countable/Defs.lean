@@ -113,7 +113,7 @@ instance (priority := 500) Quotient.countable [Countable α] {r : α → α → 
   Quot.mk_surjective.countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
-  (inferInstance : Countable (@Quot α _))
+  inferInstanceAs <| Countable (@Quot α _)
 
 /-!
 ### Uncountable types

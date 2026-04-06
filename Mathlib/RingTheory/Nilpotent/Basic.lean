@@ -111,7 +111,7 @@ theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadica
 
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
-  exact forall_swap
+  exact forall_comm
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by

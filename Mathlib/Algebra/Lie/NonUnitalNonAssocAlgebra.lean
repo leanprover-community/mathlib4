@@ -55,12 +55,9 @@ instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty 
 
 instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
 
-instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
+instance : LieRing (CommutatorRing L) := inferInstanceAs <| LieRing L
 
-instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_instance
-
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-instance : SMul R (CommutatorRing L) := show SMul R L by infer_instance
+instance : LieAlgebra R (CommutatorRing L) := inferInstanceAs <| LieAlgebra R L
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
@@ -79,7 +76,6 @@ namespace LieHom
 variable {R L}
 variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 regard a `LieHom` as a `NonUnitalAlgHom`. -/
 @[simps]
@@ -89,7 +85,6 @@ def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R]
     map_zero' := f.toLinearMap.map_zero
     map_mul' := f.map_lie }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNonUnitalAlgHom_injective :
     Function.Injective (toNonUnitalAlgHom : _ → CommutatorRing L →ₙₐ[R] CommutatorRing L₂) :=
   fun _ _ h => ext <| NonUnitalAlgHom.congr_fun h
