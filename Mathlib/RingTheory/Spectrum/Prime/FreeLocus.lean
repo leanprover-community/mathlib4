@@ -355,7 +355,6 @@ lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algeb
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a module `M` at a prime `p` is equal to the dimension
 of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
 lemma rankAtStalk_eq (p : PrimeSpectrum R) :
