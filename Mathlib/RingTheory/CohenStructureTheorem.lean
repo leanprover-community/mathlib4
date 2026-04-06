@@ -134,7 +134,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     simpa [maxeq'] using Ideal.subset_span (Set.mem_singleton _)
   have dimle := ringKrullDim_le_spanFinrank_maximalIdeal R'
   let _ : IsRegularLocalRing R' :=
-    (isRegularLocalRing_def _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
+    (isRegularLocalRing_iff _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
   let _ : IsDiscreteValuationRing R' :=
     IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one _
       (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
@@ -462,29 +462,6 @@ section fromPR
 
 open WithIdeal
 
-variable {R} in
-theorem Ideal.isLinearTopology (I : Ideal R) :
-    @IsLinearTopology R R _ _ _ I.adicTopology :=
-  letI := I.adicTopology
-  IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
-
-instance (priority := 100) [WithIdeal R] : IsLinearTopology R R := i.isLinearTopology
-
-variable {R} in
-theorem WithIdeal.uniformContinuous_of_map_le [WithIdeal R] {S : Type*} [CommRing S] [WithIdeal S]
-    {f : R →+* S} (hf : i.map f ≤ i) :
-    UniformContinuous f := uniformContinuous_of_continuousAt_zero f (by
-  rw [ContinuousAt, map_zero, i.hasBasis_nhds_zero_adic.tendsto_iff i.hasBasis_nhds_zero_adic]
-  refine fun n _ ↦ ⟨n, trivial, Ideal.map_le_iff_le_comap.mp ?_⟩
-  simpa [Ideal.map_pow] using Ideal.pow_right_mono hf n)
-
-variable {R} in
-lemma WithIdeal.isTopologicallyNilpotent_of_mem [WithIdeal R] {a : R} (ha : a ∈ i) :
-    IsTopologicallyNilpotent a := by
-  suffices ∀ m : ℕ, ∃ n₀, ∀ n, n₀ ≤ n → a ^ n ∈ i ^ m by
-    simpa [IsTopologicallyNilpotent, i.hasBasis_nhds_zero_adic.tendsto_right_iff]
-  exact fun m ↦ ⟨m, fun n hn ↦ Ideal.pow_le_pow_right hn (Ideal.pow_mem_pow ha _)⟩
-
 instance MvPowerSeries.isAdicComplete (σ : Type*) [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) :=
   sorry
@@ -609,7 +586,7 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
       rcases Ideal.mem_span_singleton.mp hy with ⟨z, hz⟩
       simp [hz, RingHom.mem_ker.mp hx]
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
-    rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
+    rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
     have : (maximalIdeal R).spanFinrank ≤ (maximalIdeal (S ⧸ Ideal.span {x})).spanFinrank := by
       rw [← map_maximalIdeal_of_surjective _ surj']
@@ -626,7 +603,7 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
       rcases Ideal.mem_span_singleton.mp hy with ⟨z, hz⟩
       simp [hz, RingHom.mem_ker.mp hx]
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
-    rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
+    rw [← (isRegularLocalRing_iff _).mp reg, ← (isRegularLocalRing_iff _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
     simp only [← add_assoc, ← dim, Nat.add_right_cancel_iff] at hn
     exact ih (S ⧸ Ideal.span {x}) inferInstance reg _ surj' hn
