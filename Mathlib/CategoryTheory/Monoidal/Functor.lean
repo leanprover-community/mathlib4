@@ -969,7 +969,6 @@ variable [G.LaxMonoidal] [adj.IsMonoidal]
 lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G :=
   Adjunction.IsMonoidal.leftAdjoint_ε.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
@@ -1053,7 +1052,6 @@ def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
       tensorHom_comp_tensorHom_assoc]
     simp [tensorHom_def, homEquiv_unit, homEquiv_counit])
 
-set_option backward.isDefEq.respectTransparency false in
 instance :
     letI := adj.leftAdjointOplaxMonoidal
     adj.IsMonoidal := by
@@ -1243,6 +1241,7 @@ instance [e'.functor.Monoidal] : (e.trans e').functor.Monoidal :=
 instance [e'.inverse.Monoidal] : (e.trans e').inverse.Monoidal :=
   inferInstanceAs (e'.inverse ⋙ e.inverse).Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of two monoidal category equivalences is monoidal. -/
 instance isMonoidal_trans [e'.functor.Monoidal] [e'.inverse.Monoidal] [e'.IsMonoidal] :
     (e.trans e').IsMonoidal := by

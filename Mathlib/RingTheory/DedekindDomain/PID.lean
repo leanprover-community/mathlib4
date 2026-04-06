@@ -101,12 +101,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
   have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
     left_lt_sup.1
-      ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
+      ((hf.mem_toFinset.1 hM).lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
     intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
       SetLike.exists_of_lt
-        ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
+        ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).lt_top).trans_eq
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this

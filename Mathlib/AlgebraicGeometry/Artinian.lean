@@ -187,6 +187,6 @@ instance (priority := low) {X : Scheme} [Subsingleton X] [IsReduced X] :
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem Scheme.isArtinianScheme_Spec {R : CommRingCat} :
     IsArtinianScheme (Spec R) ↔ IsArtinianRing R := by
-  simp [isArtinianScheme_iff, inferInstanceAs (CompactSpace (Spec R))]
+  simp [isArtinianScheme_iff, (inferInstance : CompactSpace (Spec R))]
 
 end AlgebraicGeometry
