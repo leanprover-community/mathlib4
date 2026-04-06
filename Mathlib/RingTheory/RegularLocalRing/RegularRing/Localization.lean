@@ -25,7 +25,7 @@ variable (R : Type u) [CommRing R]
 
 lemma isRegularRing_of_globalDimension_lt_top [IsNoetherianRing R] [Small.{v} R]
     (h : globalDimension.{v} R < ⊤) :  IsRegularRing R := by
-  apply (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
+  apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   have : globalDimension.{v} (Localization.AtPrime p) ≤ globalDimension.{v} R := by
     rw [globalDimension_eq_iSup_loclization_prime R]
     apply le_iSup (fun (q : PrimeSpectrum R) ↦ globalDimension.{v} (Localization.AtPrime q.1))
@@ -38,10 +38,10 @@ lemma isRegularRing_of_isRegularLocalRing [IsRegularLocalRing R] : IsRegularRing
   rw [IsRegularLocalRing.globalDimension_eq_ringKrullDim]
   exact ringKrullDim_lt_top
 
-lemma isRegularRing_of_localization_maximal_isRegularLocalRing
+lemma isRegularRing_of_localization_maximal_isRegularLocalRing [IsNoetherianRing R]
     (h : ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsRegularLocalRing (Localization.AtPrime m)) :
     IsRegularRing R := by
-  apply (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
+  apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   rcases Ideal.exists_le_maximal p (Ideal.IsPrime.ne_top hp) with ⟨m, hm, le⟩
   let Rₘ := Localization.AtPrime m
   let _ : IsRegularLocalRing Rₘ := h m hm
