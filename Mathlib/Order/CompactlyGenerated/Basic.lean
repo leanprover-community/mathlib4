@@ -125,8 +125,7 @@ theorem isCompactElement_iff_exists_le_sSup_of_le_sSup (k : α) :
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
         use ∅
-        simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty,
-          and_self_iff]
+        simp
       -- Now apply the defn of compact and finish.
       obtain ⟨j, ⟨hjS, hjk⟩⟩ := hk S Sne dir_US (le_trans hsup sup_S)
       obtain ⟨t, ⟨htS, htsup⟩⟩ := hjS
@@ -224,9 +223,8 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  rcases t.eq_empty_or_nonempty with h | h
-  · subst h
-    rw [Finset.sup_empty] at ht₂
+  rcases t.eq_empty_or_nonempty with rfl | h
+  · rw [Finset.sup_empty] at ht₂
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]

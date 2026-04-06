@@ -317,6 +317,11 @@ theorem LinearIndepOn.of_comp (f : M →ₗ[R] M') (hfv : LinearIndepOn R (f ∘
     LinearIndepOn R v s :=
   LinearIndependent.of_comp f hfv
 
+lemma LinearIndependent.of_linearIndependent_subset (s : Set ι') {v : ι → ι' → R}
+    (hv : LinearIndependent R fun (i : ι) (j : s) ↦ v i j) :
+    LinearIndependent R v :=
+  hv.of_comp ⟨⟨s.restrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
+
 /-- If `f` is a linear map injective on the span of the range of `v`, then the family `f ∘ v`
 is linearly independent if and only if the family `v` is linearly independent.
 See `LinearMap.linearIndependent_iff_of_disjoint` for the version with `Set.InjOn` replaced
@@ -625,7 +630,7 @@ theorem not_linearIndependent_iffₒₛ :
       ∃ (s t : Finset ι) (f : ι → R),
         Disjoint s t ∧ ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ ∃ i ∈ s, 0 < f i := by
   simp only [linearIndependent_iffₒₛ, pos_iff_ne_zero]
-  push_neg +distrib
+  push +distrib Not
   refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_,
     fun ⟨s, t, f, hst, heq, hi⟩ => ⟨s, t, f, hst, heq, .inl hi⟩⟩
   rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
@@ -748,6 +753,14 @@ theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) 
     LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
   simp [linearIndependent_iff_injective_finsuppLinearCombination,
     ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
+
+theorem not_linearIndependent_iff_linearCombination :
+    ¬LinearIndependent R v ↔ ∃ l, (Finsupp.linearCombination R v) l = 0 ∧ l ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
+
+theorem not_linearIndependent_iff_finsupp :
+    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), f.sum (fun x r ↦ r • v x) = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

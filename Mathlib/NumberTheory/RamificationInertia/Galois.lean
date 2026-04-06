@@ -58,7 +58,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx (algebraMap A B) h.choose
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx h.choose
   else 0
 
 open scoped Classical in
@@ -144,7 +144,7 @@ alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
 include G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
-    ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
+    ramificationIdx p P = ramificationIdx p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
@@ -164,7 +164,7 @@ alias inertiaDeg_eq_of_isGalois := inertiaDeg_eq_of_isGaloisGroup
 include G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
 theorem ramificationIdxIn_eq_ramificationIdx :
-    ramificationIdxIn p B = ramificationIdx (algebraMap A B) p P := by
+    ramificationIdxIn p B = ramificationIdx p P := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [ramificationIdxIn, dif_pos h]
@@ -361,7 +361,6 @@ variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Fi
     [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
     [IsIntegralClosure S R L] [FiniteDimensional K L]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_comap_galRestrict_eq [IsDedekindDomain R] [IsGalois K L] {p : Ideal R}
     {P₁ P₂ : Ideal S} (hP₁ : P₁ ∈ primesOver p S) (hP₂ : P₂ ∈ primesOver p S) :
     ∃ σ, P₁.comap (galRestrict R K L S σ) = P₂ := by

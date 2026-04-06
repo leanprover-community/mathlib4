@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.Linarith
 
@@ -8,7 +9,7 @@ private axiom test_sorry : ∀ {α}, α
 
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
-notation "ℝ" => Real
+local notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
