@@ -406,8 +406,15 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
+@[gcongr]
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
+
+theorem Adj.left_mem_support (hadj : G.Adj u v) : u ∈ G.support :=
+  ⟨v, hadj⟩
+
+theorem Adj.right_mem_support (hadj : G.Adj u v) : v ∈ G.support :=
+  hadj.symm.left_mem_support
 
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
 @[simp]
