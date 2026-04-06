@@ -291,14 +291,14 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
     | .inr y => n - y
   let sA := {a ∈ Ioc 0 n | a ∈ A}
   let sB := {b ∈ Ioc 0 n | b ∈ B}
-  have hc : (image f (disjSum sA sB)).card < (disjSum sA sB).card := calc
-    (image f (disjSum sA sB)).card ≤ (Ioo 0 n).card := card_le_card (by grind [mem_disjSum])
-    _ < n := by grind [Nat.card_Ioo]
-    _ ≤ sA.card + sB.card := by
+  have hc : #(image f (disjSum sA sB)) < #(disjSum sA sB) := calc
+    #(image f (disjSum sA sB)) ≤ #(Ioo 0 n) := by gcongr; grind [mem_disjSum]
+    _ < n := by simp [Nat.card_Ioo, n]
+    _ ≤ #(disjSum sA sB) := by
+      rw [card_disjSum]
       rify
       nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
         @schnirelmannDensity_mul_le_card_filter B _ n]
-    _ = (disjSum sA sB).card := (card_disjSum sA sB).symm
   obtain ⟨a | b, ha, a | b, hb, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc <;>
   simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at ha hb <;>
   first | grind [inr_mem_disjSum] | exact ⟨a, by simp [*], b, by simp [*], by grind⟩
