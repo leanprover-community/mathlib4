@@ -201,9 +201,9 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
 proof_wanted isStationary_iff_not_isCofinal_compl (hα : Order.cof α ≤ ℵ₀) :
     IsStationary s ↔ ¬ IsCofinal (sᶜ)
 
-/-- **Fodor's lemma:** if `α` has the order type of a regular cardinal, `s` is a stationary set, and
-`f : s → α` is a regressive function, there exists some stationary subset of `s` which is constant
-on `f`. -/
+/-- **Fodor's lemma,** or the **pressing down lemma:** if `α` has the order type of a regular
+cardinal, `s` is a stationary set, and `f : s → α` is a regressive function, there exists some
+stationary subset of `s` which is constant on `f`. -/
 theorem exists_isStationary_preimage_singleton [WellFoundedLT α] {f : s → α}
     (hα' : ℵ₀ < Order.cof α) (hα : typeLT α ≤ (Order.cof α).ord)
     (hs : IsStationary s) (hf : ∀ x : s, f x < x) :
