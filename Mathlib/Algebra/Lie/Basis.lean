@@ -145,14 +145,14 @@ private lemma cartan_lie_mem_lieSpan_e {x y : L}
     rw [leibniz_lie, ← lie_skew _ v, neg_add_eq_sub]
     exact sub_mem (LieSubalgebra.lie_mem _ hu hv') (LieSubalgebra.lie_mem _ hv hu')
 
-/-- The nilpotent part of the "upper" Borel subalgebra assocated to a basis. -/
+/-- The nilpotent part of the "upper" Borel subalgebra associated to a basis. -/
 def borelUpper : LieSubmodule R b.cartan L where
   __ := lieSpan R L <| range b.e
   lie_mem {x y} hy := by
     obtain ⟨x, hx⟩ := x
     simpa using b.cartan_lie_mem_lieSpan_e hx hy
 
-/-- The nilpotent part of the "lower" Borel subalgebra assocated to a basis. -/
+/-- The nilpotent part of the "lower" Borel subalgebra associated to a basis. -/
 def borelLower : LieSubmodule R b.cartan L where
   __ := lieSpan R L <| range b.f
   lie_mem := b.symm.borelUpper.lie_mem
