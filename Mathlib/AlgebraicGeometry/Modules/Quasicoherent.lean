@@ -32,9 +32,11 @@ abbrev Modules.isQuasicoherent : ObjectProperty X.Modules :=
   Modules.IsQuasicoherent
 
 @[simp]
-lemma isQuasicoherent_def {M : X.Modules} : isQuasicoherent X M = M.IsQuasicoherent := rfl
+lemma isQuasicoherent_def {M : X.Modules} : isQuasicoherent X M ↔ M.IsQuasicoherent := by rfl
 
-instance : (isQuasicoherent X).IsClosedUnderIsomorphisms := sorry
+instance : (isQuasicoherent X).IsClosedUnderIsomorphisms :=
+  ObjectProperty.IsClosedUnderIsomorphisms.mk
+    (fun e _ => SheafOfModules.IsQuasicoherent.of_iso.{u} _ _ e)
 
 theorem isQuasicoherent_iff_isIso_fromSpecΓ :
     (tilde.functor R).essImage = isQuasicoherent (Spec R) := by

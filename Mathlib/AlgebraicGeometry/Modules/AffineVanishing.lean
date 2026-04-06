@@ -7,7 +7,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib
-public import Mathlib.AlgebraicGeometry.Modules.QuasiCoherentsheaves
+public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
 
 @[expose] public section
 
