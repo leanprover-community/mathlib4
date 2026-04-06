@@ -45,9 +45,9 @@ theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
   have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by
     ext ⟨x, hx⟩; simp [hx]
-  have hAs := hA.submatrix (Subtype.val : x.support → ι)
-  have hBs := hB.submatrix (Subtype.val : x.support → ι)
   have hHads : ((A ⊙ B).submatrix (Subtype.val : x.support → ι) Subtype.val).PosSemidef := by
+    have hAs := hA.submatrix (Subtype.val : x.support → ι)
+    have hBs := hB.submatrix (Subtype.val : x.support → ι)
     rw [submatrix_hadamard, posSemidef_iff_dotProduct_mulVec]
     exact ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y => by
       rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
