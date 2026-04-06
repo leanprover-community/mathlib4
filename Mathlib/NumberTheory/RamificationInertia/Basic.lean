@@ -33,6 +33,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -75,7 +76,6 @@ variable (K)
 
 open scoped Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
