@@ -54,7 +54,7 @@ lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
     | coe a =>
       induction a with
       | top => simp
-      | coe a => simpa using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
+      | coe a => simpa [-ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
   simp only [isGorensteinLocalRing_def, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
   rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
