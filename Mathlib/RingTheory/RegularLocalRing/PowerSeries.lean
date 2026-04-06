@@ -44,7 +44,7 @@ lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R
     IsRegularLocalRing R⟦X⟧ := by
   apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
   apply le_trans _ ringKrullDim_succ_le_ringKrullDim_powerseries
-  rw [← (isRegularLocalRing_def R).mp ‹_›, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
+  rw [← (isRegularLocalRing_iff R).mp ‹_›, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
   have maxeq : maximalIdeal R⟦X⟧ = Ideal.span ((C '' (maximalIdeal R).generators) ∪ {X}) := by
     rw [Ideal.span_union, ← Ideal.map_span, ← Ideal.submodule_span_eq,
       (maximalIdeal R).span_generators, PowerSeries.maximalIdeal_eq_sup]
