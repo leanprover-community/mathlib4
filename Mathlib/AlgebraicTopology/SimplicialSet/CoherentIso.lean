@@ -85,7 +85,7 @@ protected def rec : ∀ a, motive a
 
 end induction
 
-/-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
+/-- From an isomorphism in a category, we can build a functor out of `WalkingIso` to
 that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
   obj x := by induction x; exacts [X, Y]
