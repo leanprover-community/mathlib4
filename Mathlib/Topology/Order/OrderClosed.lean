@@ -624,7 +624,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
   frontier_le_subset_eq (@continuous_id α _) continuous_const
 
-@[to_dual frontier_gt_subset_eq]
+@[to_dual (reorder := f g, hf hg) frontier_gt_subset_eq]
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b < g b } ⊆ { b | f b = g b } := by
   simpa only [← not_lt, ← compl_setOf, frontier_compl, eq_comm] using frontier_le_subset_eq hg hf
