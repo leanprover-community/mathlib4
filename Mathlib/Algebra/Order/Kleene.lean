@@ -52,7 +52,6 @@ kleene algebra, idempotent semiring
 
 @[expose] public section
 
-
 open Function
 
 variable {α β ι : Type*} {π : ι → Type*}
