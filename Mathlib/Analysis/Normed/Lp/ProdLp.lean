@@ -486,8 +486,6 @@ lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induc
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
   toEquiv := WithLp.equiv p (α × β)
-  continuous_toFun := prod_continuous_ofLp p α β
-  continuous_invFun := prod_continuous_toLp p α β
 
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
@@ -839,7 +837,6 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 section Single
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_toLp_inl (x : α) : ‖toLp p (x, (0 : β))‖₊ = ‖x‖₊ := by
   induction p generalizing hp with
   | top =>
@@ -848,7 +845,6 @@ set_option backward.isDefEq.respectTransparency false in
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_toLp_inr (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
   induction p generalizing hp with
   | top =>
