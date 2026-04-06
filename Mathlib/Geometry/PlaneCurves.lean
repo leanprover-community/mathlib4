@@ -40,17 +40,30 @@ namespace PlaneCurve
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-/-- Curvature for plane curves. This is usually called just the curvature function of a plane curve
-in most elementary differential geometry texts, but because this definition is slightly different
-from the general definition of the curvature function of a general parametrized curve (which is
+/-- Oriented curvature of a plane curve `c` at `t`. This is usually called just the curvature of a 
+plane curve in most elementary differential geometry texts, but because this definition is slightly
+different from the general definition of the curvature of a general parametrized curve (which is
 always non-negative and only expresses magnitude as opposed to this definition which can also be
 negative and expresses also direction) we call this the oriented curvature, this is also the name
-given in the Wikipedia article about curvature in the section about plane curves. This definition is
-meaningful only for regular plane curves which are twice continuously differentiable on an
-interval I. -/
+given in the Wikipedia article about curvature in the section about plane curves.
+This curvature expresses a direction / orientation in the following way:
+Denote `v = deriv c t`, `a = iteratedDeriv 2 c t`, `n = normal c t` and `κ = orientedCurvature c t`.
+Then for a general plane curve, if (`v`, `a`) is a positvely oriented, then `κ` is positive, and if
+it's negatively oriented, then `κ` is negative (geometrically the orientation of a basis of the
+plane is positive when the basis vectors are ordered anti-clockwise and negative when ordered
+clockwise). It's useful for understanding also to consider the case in which `c` is parametrized by
+arc-length, in which case `a` is in the span of `n` and `κ` is positive if `a` is in the same
+direction as `n` and negative if `a` is in the opposite direction of `n`.
+This definition is meaningful only when `c` is two times differentiable at `t` with a non-zero
+derivative; otherwise it has junk value `0`. -/
 def orientedCurvature (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) : ℝ :=
   !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
+/-- See `orientedCurvature` for a full explanation about the definition. It's important to note that
+`orientedCurvature c t` is only meaningful when `c` is two times differentiable at `t` with a
+non-zero derivative; otherwise it has junk value `0`.
+See also `orientedCurvature_of_norm_deriv_eq_one` for the special case where `‖deriv c t‖ = 1` (this
+is useful usually for plane curves parametrized by arc-length). -/
 lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1;
     iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3) := rfl
 
@@ -120,11 +133,11 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
   OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- A simpler formula for the curvature (`orientedCurvature`) of a plane curve parametrized by
-arc-length, or in other words with unit speed. -/
-theorem orientedCurvature_of_norm_deriv_eq_one (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
+/-- A simpler formula for the curvature (`orientedCurvature`) of a plane curve `c` with unit
+derivative at `t` (usually used when `c` is parametrized by arc-length, i.e, with unit speed). -/
+theorem orientedCurvature_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
     orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
-  simp only [orientedCurvature_eq, normal_eq_of_norm_deriv_eq_one (h:=(hc t ht)), hc t ht,
+  simp only [orientedCurvature_eq, normal_eq_of_norm_deriv_eq_one h, h,
     Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one, EuclideanSpace.inner_eq_star_dotProduct,
     Fin.isValue, star_trivial, Matrix.cons_dotProduct, neg_mul, Matrix.dotProduct_of_isEmpty,
     add_zero]
@@ -170,7 +183,7 @@ is equal to the curvature times the normal vector. -/
 theorem second_deriv_eq_orientedCurvature_times_normal (hI : IsOpen I) (hc₁ : ContDiffOn ℝ 2 c I)
     (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     iteratedDeriv 2 c t = (orientedCurvature c t)•(normal c t) := by
-  rw [orientedCurvature_of_norm_deriv_eq_one hc₂ ht]
+  rw [orientedCurvature_of_norm_deriv_eq_one (hc₂ t ht)]
   nth_rewrite 1 [← (frameAt hc₂ ht).sum_repr' (iteratedDeriv 2 c t)]
   simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk, Fin.sum_univ_two,
     Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
