@@ -26,7 +26,7 @@ open IsLocalRing
 
 lemma IsRegularLocalRing.of_isRegularRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
-  have := (isRegularRing_iff R).mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
+  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
   let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
     IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
