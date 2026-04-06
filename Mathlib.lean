@@ -7889,3 +7889,4 @@ public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
 
 set_option linter.style.longLine false
+import Mathlib.LinearAlgebra.Matrix.Determinant.DesnanotJacobi
