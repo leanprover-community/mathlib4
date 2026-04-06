@@ -29,9 +29,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 
 universe u v w
 
-variable {R : Type u} {M : Type v} [CommRing R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
-
 open Matrix Polynomial
 
 noncomputable section
@@ -39,6 +36,9 @@ noncomputable section
 open Module.Free Polynomial Matrix
 
 namespace LinearMap
+
+variable {R : Type u} {M : Type v} [CommRing R]
+variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
 section Basic
 
@@ -133,3 +133,22 @@ theorem minpoly_coeff_zero_of_injective [Nontrivial R] (hf : Function.Injective 
 end CayleyHamilton
 
 end LinearMap
+
+section Algebra
+variable {R M} [CommRing R] [Ring M] [Algebra R M]
+  [Module.Finite R M] [Module.Free R M]
+
+/-- Cayley-Hamilton theorem on general free modules. -/
+theorem Algebra.aeval_self_charpoly_lmul {α : M} :
+    aeval α (Algebra.lmul R M α).charpoly = 0 :=
+  Algebra.lmul_injective (by
+    rw [map_zero, ← aeval_algHom_apply]
+    exact LinearMap.aeval_self_charpoly <| Algebra.lmul R M α)
+
+theorem minpoly.natDegree_le' [Nontrivial R] {α : M} :
+    (minpoly R α).natDegree ≤ Module.finrank R M := by
+  rw [← (Algebra.lmul R M α).charpoly_natDegree]
+  exact natDegree_le_natDegree <|
+    minpoly.min R α (Algebra.lmul R M α).charpoly_monic Algebra.aeval_self_charpoly_lmul
+
+end Algebra
