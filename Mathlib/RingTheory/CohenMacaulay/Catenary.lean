@@ -50,7 +50,8 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
   · rename_i n hn
     simp only [Nat.cast_add, Nat.cast_one, height, le_iInf_iff]
     intro p hp
-    let _ := hp.1.1
+    let := Ideal.minimalPrimes_isPrime hp
+    rw [← Ideal.height_eq_primeHeight]
     have : Ideal.ofList (rs.take n) ≤ p :=
       le_trans (Ideal.span_mono (fun r hr ↦ List.mem_of_mem_take hr)) hp.1.2
     rcases Ideal.exists_minimalPrimes_le this with ⟨q, hq, lep⟩
@@ -65,8 +66,8 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
     let _ := hq.1.1
     have le := le_trans (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
       (fun r hr ↦ List.mem_of_mem_take hr))) len') (Ideal.height_mono hq.1.2)
-    rw [Ideal.height_eq_primeHeight] at le
-    apply le_trans (add_le_add_left le 1) (Ideal.primeHeight_add_one_le_of_lt (lep.lt_of_ne _))
+    apply le_trans (add_le_add_left le 1)
+      (Ideal.height_add_one_le_of_lt_of_isPrime (lep.lt_of_ne _))
     by_contra eq
     have p_min : p ∈ (Module.annihilator R
       (R ⧸ Ideal.ofList (rs.take n) • (⊤ : Ideal R))).minimalPrimes := by
@@ -158,13 +159,14 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
         Nat.cast_one, height, ofList_append, ofList_cons, ofList_nil, bot_le, sup_of_le_left,
         le_iInf_iff]
       intro p hp
-      let _ := hp.1.1
+      let := Ideal.minimalPrimes_isPrime hp
+      rw [← Ideal.height_eq_primeHeight]
       rcases Ideal.exists_minimalPrimes_le (sup_le_iff.mp hp.1.2).1 with ⟨q, hq, qle⟩
       let _ := hq.1.1
       have lt : q < p := lt_of_le_of_ne qle (ne_of_mem_of_not_mem'
-          ((sup_le_iff.mp hp.1.2).2 (mem_span_singleton_self x)) (nmem q hq)).symm
-      apply le_trans _ (Ideal.primeHeight_add_one_le_of_lt lt)
-      simpa only [← ht, ← height_eq_primeHeight] using add_le_add_left (Ideal.height_mono hq.1.2) 1
+        ((sup_le_iff.mp hp.1.2).2 (mem_span_singleton_self x)) (nmem q hq)).symm
+      apply le_trans _ (Ideal.height_add_one_le_of_lt_of_isPrime lt)
+      simpa only [← ht] using add_le_add_left (Ideal.height_mono hq.1.2) 1
     have len' : d - (rs ++ [x]).length = k := by
       simp only [List.length_append, List.length_cons, List.length_nil, zero_add]
       omega
