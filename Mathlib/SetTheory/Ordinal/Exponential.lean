@@ -522,9 +522,9 @@ alias iSup_pow := iSup_pow_natCast
 
 @[simp, norm_cast]
 lemma natCast_log (m n : ℕ) : ↑(Nat.log m n) = Ordinal.log ↑m ↑n := by
-  obtain (hm | hm) := le_or_gt m 1
+  obtain hm | hm := le_or_gt m 1
   case inl => rw_mod_cast [Nat.log_of_left_le_one hm, log_of_left_le_one (mod_cast hm)]
-  obtain (rfl | hn) := eq_or_ne n 0
+  obtain rfl | hn := eq_or_ne n 0
   case inl => simp
   rw_mod_cast [eq_comm, log_eq_iff (mod_cast hm) (mod_cast hn), ← Nat.log_eq_iff (.inr ⟨hm, hn⟩)]
 
