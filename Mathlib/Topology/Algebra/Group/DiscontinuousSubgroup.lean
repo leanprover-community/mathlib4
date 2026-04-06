@@ -30,11 +30,11 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
   · intro h
     convert h.map Subtype.val
     ext g
-    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by grind]
+    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by intro; rfl]
   · refine fun h ↦ .of_finite_image ?_ injOn_subtype_val
     convert h
     ext g
-    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by grind]
+    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by intro; rfl]
 
 @[to_additive]
 lemma Subgroup.properlyDiscontinuousSMul_of_le
