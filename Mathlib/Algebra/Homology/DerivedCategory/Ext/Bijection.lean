@@ -50,9 +50,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
   · rename_i n bij
     rcases EnoughProjectives.presentation X with ⟨⟨P, p⟩⟩
     let S := ShortComplex.mk (kernel.ι p) p (kernel.condition p)
-    have S_exact : S.ShortExact := {
-      exact := ShortComplex.exact_kernel p
-      mono_f := equalizer.ι_mono }
+    have S_exact : S.ShortExact := { exact := ShortComplex.exact_kernel p }
     have FS_exact : (S.map F).ShortExact := S_exact.map_of_exact F
     let _ : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj ‹_›
     let f : Ext S.X₂ Y n →+ Ext S.X₁ Y n := (mk₀ S.f).precomp Y (zero_add n)
@@ -94,9 +92,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
   · rename_i n bij
     rcases EnoughInjectives.presentation Y with ⟨⟨I, _, i⟩⟩
     let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
-    have S_exact : S.ShortExact := {
-      exact := ShortComplex.exact_cokernel i
-      epi_g := coequalizer.π_epi }
+    have S_exact : S.ShortExact := { exact := ShortComplex.exact_cokernel i }
     have FS_exact : (S.map F).ShortExact := S_exact.map_of_exact F
     let _ : Injective (S.map F).X₂ := Functor.PreservesInjectiveObjects.injective_obj ‹_›
     let f : Ext X S.X₂ n →+ Ext X S.X₃ n := (mk₀ S.g).postcomp X (add_zero n)
