@@ -283,7 +283,7 @@ theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [Dec
   · exact ⟨0, by simp, 0, by simp⟩
   set n := m + 1
   by_cases hnA : n ∈ A
-  · exact ⟨n, by simp [hnA], 0, by simp, rfl⟩
+  · exact ⟨n, by simp [hnA], 0, by simp⟩
   by_cases hnB : n ∈ B
   · exact ⟨0, by simp, n, by simp [hnB]⟩
   let f : ℕ ⊕ ℕ → ℕ
