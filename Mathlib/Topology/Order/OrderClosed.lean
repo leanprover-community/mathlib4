@@ -685,16 +685,11 @@ protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto 
   simp_rw [max_comm _ a]
   exact h.max_right
 
--- TODO: tag after #36972
+@[to_dual]
 theorem Filter.tendsto_nhds_max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
     Tendsto (fun i => max a (f i)) l (𝓝[>] a) := by
   obtain ⟨h₁, h₂⟩ := tendsto_nhdsWithin_iff.mp h
   exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
-
-@[to_dual existing]
-theorem Filter.tendsto_nhds_min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝[<] a) :=
-  Filter.tendsto_nhds_max_right (α := αᵒᵈ) h
 
 @[to_dual]
 theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
@@ -702,12 +697,12 @@ theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (
   simp_rw [max_comm _ a]
   exact Filter.tendsto_nhds_max_right h
 
-@[to_dual none]
+@[to_dual self]
 theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x y : α} (h : x < y) :
     ∃ z ∈ s, z ∈ Ioo x y :=
   hs.exists_mem_open isOpen_Ioo (nonempty_Ioo.2 h)
 
--- TODO: tag after #36972
+-- TODO: why does to_dual fail?
 theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
   refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
