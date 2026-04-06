@@ -131,6 +131,64 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
 
+theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
+  rintro a (has | hat)
+  · exact hc has
+  · exact ⟨a, hat, le_rfl⟩
+
+theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
+  rw [Set.union_comm]
+  exact hc.union_left
+
+theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+  intro x hx y hy
+  obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
+  obtain ⟨w, hw, hzw⟩ := hc hz
+  exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+theorem or_of_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    IsCofinalFor t s ∨ IsCofinalFor s t := by
+  rw [or_iff_not_imp_left]
+  intro hts x hx
+  simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
+  obtain ⟨y, hy, hys⟩ := hts
+  obtain ⟨z, hz, hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
+  rcases hz with hzs | hzt
+  · exact (hys z hzs hyz).elim
+  · exact ⟨z, hzt, hxz⟩
+
+theorem directedOn_union_iff : DirectedOn (· ≤ ·) (s ∪ t) ↔
+    (DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s) ∨ (DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases or_of_isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h Set.subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h Set.subset_union_right hst.union_left, hst⟩
+  · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
+    · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
+      obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := hs x' hx' y' hy'
+      exact ⟨z, .inl hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+    · obtain ⟨x', hx', hxx'⟩ := hst.union_left hx
+      obtain ⟨y', hy', hyy'⟩ := hst.union_left hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
+      exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+
+theorem or_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
+  rw [directedOn_union_iff] at h
+  tauto
+
+theorem or_of_directedOn_union' (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := or_of_directedOn_union h
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · aesop
+    · exact .inl ⟨h, hs⟩
+  · obtain rfl | ht := t.eq_empty_or_nonempty
+    · aesop
+    · exact .inr ⟨h, ht⟩
+
 /-!
 ### Monotonicity
 -/
