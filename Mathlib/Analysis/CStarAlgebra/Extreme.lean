@@ -61,8 +61,9 @@ theorem isStarProjection_iff_mem_extremePoints_nonneg_inter_unitClosedBall
         simpa [mul_one_sub_mul] using he.inr.isSelfAdjoint.conjugate_le_conjugate <|
           norm_le_one_iff_of_nonneg (b : A⁺¹) (by simpa) |>.mp (by simpa [norm_inr])
       _ = e - e * (t • a + s • b) * e := by
-        simp [smul_sub, sub_add_eq_add_sub, add_sub, ← add_smul, hts, sub_mul, mul_sub,
-          he.inr.isIdempotentElem.eq, mul_add, add_mul, sub_sub, mul_assoc]
+        simp only [mul_one_sub_mul, he.inr.isIdempotentElem.eq, smul_sub, mul_add,
+          Algebra.mul_smul_comm, add_mul, Algebra.smul_mul_assoc]
+        match_scalars <;> grind
       _ = 0 := by simp [← inr_smul, ← inr_add, hlin, ← inr_mul, he.isIdempotentElem.eq]
   · /- Now suppose `e` is an extreme point of the nonnegative closed unit ball.
     So then it is self-adjoint, and so we only need to show `e * e = e`.
