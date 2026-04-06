@@ -130,7 +130,6 @@ end Indexed
 
 section repr
 
-set_option backward.isDefEq.respectTransparency false in
 variable (ι R M) in
 theorem iSupIndep_range_lsingle :
     iSupIndep fun i : ι ↦ LinearMap.range (Finsupp.lsingle (R := R) (M := M) i) := by
@@ -170,8 +169,7 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'}
     LinearIndependent R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) := by
   have : linearCombination R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) =
       .prodMap (linearCombination R v) (linearCombination R v') ∘ₗ
-      (sumFinsuppLEquivProdFinsupp R).toLinearMap := by
-    ext (_ | _) <;> simp [linearCombination_comapDomain]
+      (sumFinsuppLEquivProdFinsupp R).toLinearMap := by ext (_ | _) <;> simp
   rw [LinearIndependent, this]
   simpa [LinearMap.coe_prodMap] using ⟨hv, hv'⟩
 
@@ -215,10 +213,10 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
         simpa using And.intro hfsupp hgsupp
     exact linearIndepOn_iffₛ.mp I.2 f (subset_union_left.trans hI)
       g (subset_union_right.trans hI) hsum
-  have trans : Transitive r := fun I J K => Set.Subset.trans
   obtain ⟨⟨I, hli : indep I⟩, hmax : ∀ a, r ⟨I, hli⟩ a → r a ⟨I, hli⟩⟩ :=
-    exists_maximal_of_chains_bounded
-      (fun c hc => ⟨⟨⋃ I ∈ c, (I : Set ι), key c hc⟩, fun I => Set.subset_biUnion_of_mem⟩) @trans
+    exists_maximal_of_chains_bounded (r := r)
+      (fun c hc => ⟨⟨⋃ I ∈ c, (I : Set ι), key c hc⟩, fun I => Set.subset_biUnion_of_mem⟩)
+      Set.Subset.trans
   exact ⟨I, hli, fun J hsub hli => Set.Subset.antisymm hsub (hmax ⟨J, hli⟩ hsub)⟩
 
 end Maximal
@@ -335,7 +333,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   rcases eq_or_ne (a * d) (b * c) with h | h
   · suffices ¬ LinearIndependent R ![a • x + b • y, c • x + d • y] by simpa [h]
     rw [pair_iff]
-    push_neg
+    push Not
     by_cases hbd : b = 0 ∧ d = 0
     · simp only [hbd.1, hbd.2, zero_smul, add_zero]
       by_cases hac : a = 0 ∧ c = 0; · exact ⟨1, 0, by simp [hac.1, hac.2], by simp⟩
@@ -521,7 +519,7 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
-  simpa [s.sum_eq_single i aux (by aesop), h2 i] using congr_arg (f i) hrel
+  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
 
 end Module
 
@@ -771,7 +769,6 @@ theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s �
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
     (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :

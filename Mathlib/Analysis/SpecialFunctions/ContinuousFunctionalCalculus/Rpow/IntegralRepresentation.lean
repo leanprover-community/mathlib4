@@ -186,7 +186,6 @@ lemma rpowIntegrand₀₁_le_rpow_sub_one (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (h
     _ = t ^ (p - 1) * 1 := by congr; exact (div_eq_one_iff_eq hx_zero).mpr rfl
     _ = _ := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpowIntegrand₀₁_one_ge_rpow_sub_two (hp : p ∈ Ioo 0 1) (ht : 1 ≤ t) :
     (1 : ℝ) / 2 * t ^ (p - 2) ≤ rpowIntegrand₀₁ p t 1 := calc
   _ = t ^ (p - 1) * (1 / 2 * 1 / t) := by
@@ -286,7 +285,6 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
     ← smul_eq_mul (b := x ^ p), integral_smul_const]
   rw [smul_eq_mul, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
     -1 / (2 * (p - 1)) ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   _ = (1 / 2) * -((1 : ℝ) ^ (p - 1)) / (p - 1) := by rw [← div_div]; simp [neg_div]
@@ -307,7 +305,6 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
           exact rpowIntegrand₀₁_nonneg hp.1 (le_of_lt ht) zero_le_one
         · exact .of_forall <| Set.Ioi_subset_Ioi zero_le_one
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
     0 < ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   0 < -1 / (2 * (p - 1)) := by
@@ -334,11 +331,8 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     ∃ μ : Measure ℝ, ∀ x ∈ Ici 0,
       (IntegrableOn (fun t => rpowIntegrand₀₁ p t x) (Ioi 0) μ)
       ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrand₀₁ p t x ∂μ := by
-  let C : ℝ≥0 :=
-    { val := (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹
-      property := by
-        rw [inv_nonneg]
-        exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
+  let C : ℝ≥0 := .mk (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹
+    (by rw [inv_nonneg]; exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp)
   refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
   · unfold IntegrableOn
     rw [Measure.restrict_smul]

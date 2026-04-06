@@ -273,6 +273,10 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_notMem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
+@[simp, mfld_simps]
+theorem empty_eq_image {α β} {f : α → β} {s : Set α} : ∅ = f '' s ↔ s = ∅ := by
+  rw [eq_comm, image_eq_empty]
+
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
     Compl.compl ⁻¹' s = Compl.compl '' s :=
   Set.ext fun x =>
@@ -342,7 +346,6 @@ theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : S
     (h₂ : RightInverse g f) : b ∈ f '' s ↔ g b ∈ s := by
   rw [image_eq_preimage_of_inverse h₁ h₂, mem_preimage]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
   Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
 
@@ -446,7 +449,6 @@ theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
     (f '' s ∩ t).Nonempty ↔ (s ∩ f ⁻¹' t).Nonempty := by
   rw [← image_inter_preimage, image_nonempty]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_image_left {f : α → β} {s : Set α} {t : Set β} :
     Disjoint (f '' s) t ↔ Disjoint s (f ⁻¹' t) := by
   simp_rw [disjoint_iff_inter_eq_empty, ← not_nonempty_iff_eq_empty, image_inter_nonempty_iff]
@@ -523,8 +525,6 @@ theorem imageFactorization_eq {f : α → β} {s : Set α} :
 theorem imageFactorization_surjective {f : α → β} {s : Set α} :
     Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
-
-@[deprecated (since := "2025-08-18")] alias surjective_onto_image := imageFactorization_surjective
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
 -/
@@ -880,8 +880,6 @@ theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f 
 @[simp]
 theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
 
-@[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
-
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
   constructor
@@ -945,6 +943,12 @@ theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
     RightInverse (rangeFactorization f) (rangeSplitting f) :=
   (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
+
+@[simp]
+lemma leftInverse_rangeFactorization_iff_injective (f : α → β) :
+    LeftInverse (rangeSplitting f) (rangeFactorization f) ↔ f.Injective :=
+  ⟨(rangeFactorization_injective.mp ·.injective),
+    fun h ↦ congrFun' (rightInverse_rangeSplitting h).id⟩
 
 theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=
@@ -1335,7 +1339,6 @@ theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t
 theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
     (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) : Disjoint s t := by
   rw [disjoint_iff_inter_eq_empty, ← image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
@@ -1346,7 +1349,6 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) ↔ Disjoint s t :=
   ⟨Disjoint.of_preimage hf, Disjoint.preimage _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
     f ⁻¹' s = ∅ := by
   simpa using h.preimage f

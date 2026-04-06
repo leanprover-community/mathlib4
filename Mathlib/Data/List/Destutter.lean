@@ -68,7 +68,7 @@ theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   | cons b l hl =>
     rw [destutter']
     split_ifs
-    · exact Sublist.cons₂ a (hl b)
+    · exact Sublist.cons_cons a (hl b)
     · exact (hl a).trans ((l.sublist_cons_self b).cons_cons a)
 
 theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
@@ -101,10 +101,6 @@ theorem destutter'_of_isChain_cons (h : (a :: l).IsChain R) : l.destutter' R a =
   | cons b l hb =>
     obtain ⟨h, hc⟩ := isChain_cons_cons.mp h
     rw [l.destutter'_cons_pos h, hb hc]
-
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain := isChain_cons_destutter'_of_rel
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain' := isChain_destutter'
-@[deprecated (since := "2025-09-24")] alias destutter'_of_chain := destutter'_of_isChain_cons
 
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsChain R :=
@@ -147,9 +143,6 @@ theorem isChain_destutter : ∀ l : List α, (l.destutter R).IsChain R
 theorem destutter_of_isChain : ∀ l : List α, l.IsChain R → l.destutter R = l
   | [], _ => rfl
   | _ :: l, h => l.destutter'_of_isChain_cons _ h
-
-@[deprecated (since := "2025-09-24")] alias destutter_is_chain' := isChain_destutter
-@[deprecated (since := "2025-09-24")] alias destutter_of_chain' := destutter_of_isChain
 
 @[simp]
 theorem destutter_eq_self_iff : ∀ l : List α, l.destutter R = l ↔ l.IsChain R
@@ -257,16 +250,16 @@ lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
   | l₁, _, .cons (l₂ := l₂) a hl, hl₁ =>
     (hl₁.length_le_length_destutter hl).trans length_destutter_le_length_destutter_cons
   -- `l₁ := [a]`, `l₂ := a :: l₂`
-  | _, _, .cons₂ (l₁ := []) (l₂ := l₁) a hl, hl₁ => by simp [Nat.one_le_iff_ne_zero]
+  | _, _, .cons_cons (l₁ := []) (l₂ := l₁) a hl, hl₁ => by simp [Nat.one_le_iff_ne_zero]
   -- `l₁ := a :: l₁`, `l₂ := a :: b :: l₂`
-  | _, _, .cons₂ a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+  | _, _, .cons_cons a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     by_cases hab : R a b
     · simpa [destutter_cons_cons, hab] using hl₁.tail.length_le_length_destutter (hl.cons _)
-    · simpa [destutter_cons_cons, hab] using hl₁.length_le_length_destutter (hl.cons₂ _)
+    · simpa [destutter_cons_cons, hab] using hl₁.length_le_length_destutter (hl.cons_cons _)
   -- `l₁ := a :: b :: l₁`, `l₂ := a :: b :: l₂`
-  | _, _, .cons₂ a <| .cons₂ (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+  | _, _, .cons_cons a <| .cons_cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     simpa [destutter_cons_cons, rel_of_isChain_cons_cons hl₁]
-      using hl₁.tail.length_le_length_destutter (hl.cons₂ _)
+      using hl₁.tail.length_le_length_destutter (hl.cons_cons _)
 
 /-- `destutter` of `≠` gives a list of maximal length over any chain.
 

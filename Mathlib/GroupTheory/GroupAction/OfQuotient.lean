@@ -51,7 +51,7 @@ variable {G : Type*} [Group G] {A : Type*} [Monoid A] [MulDistribMulAction G A]
 variable {H : Subgroup G} [H.Normal]
 
 instance : MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H A) where
-  __ := inferInstanceAs (MulAction (G ⧸ H) (fixedPoints H A))
+  __ := (inferInstance : MulAction (G ⧸ H) (fixedPoints H A))
   smul_mul g a b := g.induction_on fun g ↦ Subtype.ext (smul_mul g a.1 b.1)
   smul_one g := g.induction_on fun g ↦ Subtype.ext (smul_one g)
 
@@ -59,7 +59,7 @@ open scoped FixedPoints
 
 variable {α : Type*} [Group α] [MulDistribMulAction G α]
 
-instance : MulDistribMulAction (G ⧸ H) (α ^* H) :=
-  inferInstanceAs (MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H α))
+instance : MulDistribMulAction (G ⧸ H) (α^*H) :=
+  inferInstanceAs <| MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H α)
 
 end MulDistribMulAction

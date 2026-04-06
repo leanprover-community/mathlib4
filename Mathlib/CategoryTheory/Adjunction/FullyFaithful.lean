@@ -123,7 +123,6 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
   map_injective {X Y f g} hfg := by
@@ -274,5 +273,18 @@ instance [L.IsEquivalence] : IsIso h.unit := by
 instance [R.IsEquivalence] : IsIso h.counit := by
   have := h.isEquivalence_left_of_isEquivalence_right
   infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
+    {T : C ⥤ E} {S : E ⥤ D} {X : C} (adj2 : T ⊣ S ⋙ R) [R.Faithful] [R.Full] :
+    IsIso (T.map (h.unit.app X)) := by
+  let FF := FullyFaithful.ofFullyFaithful R
+  apply isIso_of_coyoneda_map_bijective
+  intro Y
+  convert ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| FF.homEquiv.symm.trans <|
+    (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
+  ext x
+  have := adj2.counit_naturality x
+  simp_all [Adjunction.homEquiv]
 
 end CategoryTheory.Adjunction

@@ -30,11 +30,11 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
@@ -59,9 +59,9 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
   *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
   * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-  `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-  *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-  is continuous.
+    `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+    *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+    is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
@@ -110,11 +110,11 @@ section Topology
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to

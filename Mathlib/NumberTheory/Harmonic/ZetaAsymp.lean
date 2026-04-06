@@ -144,7 +144,6 @@ section s_gt_one
 ## Evaluation of the sum for `1 < s`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     term n s = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
     - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
@@ -420,6 +419,10 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
+
+lemma _root_.riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
+  filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
+  grind [riemannZeta_one_ne_zero]
 
 end val_at_one
 

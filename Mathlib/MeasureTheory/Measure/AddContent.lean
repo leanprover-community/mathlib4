@@ -105,7 +105,6 @@ lemma addContent_sUnion (h_ss : ↑I ⊆ C)
     m (⋃₀ I) = ∑ u ∈ I, m u :=
   m.sUnion' I h_ss h_dis h_mem
 
-set_option backward.isDefEq.respectTransparency false in
 lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : ∀ i ∈ a, f i ∈ C)
     (h_dis : PairwiseDisjoint ↑a f) (h_mem : ⋃ i ∈ a, f i ∈ C) :
     m (⋃ i ∈ a, f i) = ∑ i ∈ a, m (f i) := by
@@ -134,7 +133,16 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
-  · fin_cases i <;> fin_cases j <;> grind
+  · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed all four
+    cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+    the new canonicalizer; a minimization would help. The original proof was:
+    `fin_cases i <;> fin_cases j <;> grind` -/
+    fin_cases i <;> fin_cases j
+    · grind
+    · assumption
+    · exact h_dis.symm
+    · grind
   · rwa [← A]
 
 /-- An additive content with values in `ℝ≥0∞` is said to be sigma-sub-additive if for any sequence
@@ -236,7 +244,6 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
     m.supClosureFun_apply hC (by simp [hs]) (by simp) (by simp)
   simp [this]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extend a content over `C` to the finite unions of elements of `C` by additivity. -/
 @[no_expose] noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring C) :
     AddContent G (supClosure C) where
@@ -281,7 +288,6 @@ lemma AddContent.supClosure_apply (hC : IsSetSemiring C)
     m.supClosure hC s = ∑ s ∈ J, m s :=
   m.supClosureFun_apply hC hJ h'J hs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finpartition s} (hJ : ↑J.parts ⊆ C) :
     m.supClosure hC s = ∑ s ∈ J.parts, m s := by
@@ -587,7 +593,6 @@ def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty
 
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma addContent_union_le (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m (s ∪ t) ≤ m s + m t := by
   rw [← union_diff_self, addContent_union hC hs (hC.diff_mem ht hs)]
@@ -691,6 +696,22 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
   refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
   rw [partialSups_eq_biUnion_range]
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
+
+/-- If an additive content is continuous from below on monotone sequences of sets,
+then it is countably additive on pairwise disjoint sequences. -/
+theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
+    (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
+    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    m (⋃ i, s i) = ∑' i, m (s i) :=
+  calc
+    m (⋃ i, s i) = m (⋃ i, accumulate s i) := by simp
+    _ = ⨆ i, m (accumulate s i) :=
+      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
+    _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
+      iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
+    _ = ∑' i, m (s i) :=
+      (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
 
 end IsSetRing
 
