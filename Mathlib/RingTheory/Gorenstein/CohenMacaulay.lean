@@ -644,7 +644,8 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
   | coe n =>
     induction n with
     | top => rfl
-    | coe n => simpa using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
+    | coe n =>
+      simpa [- ENat.WithBot.coe_eq_natCast] using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_quotient_span_regular
