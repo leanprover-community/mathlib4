@@ -19,7 +19,7 @@ as simplicial objects are functors from `SimplexCategory`.
 @[expose] public section
 
 open CategoryTheory Simplicial
-
+g
 /-- The category whose objects are denoted `⦋n⦌ₛ` for `n : ℕ` and
 morphisms `⦋n⦌ₛ ⟶ ⦋m⦌ₛ` are order embeddings `Fin (n.len + 1) ↪o Fin (m.len + 1)`. -/
 @[ext]
@@ -91,8 +91,8 @@ def homOfMono {n m : SemiSimplexCategory}
 
 @[simp]
 lemma toSimplexCategory_map_homOfMono {n m : SemiSimplexCategory}
-      (f : toSimplexCategory.obj n ⟶ toSimplexCategory.obj m) [Mono f] :
-      toSimplexCategory.map (homOfMono f) = f := by
+    (f : toSimplexCategory.obj n ⟶ toSimplexCategory.obj m) [Mono f] :
+    toSimplexCategory.map (homOfMono f) = f := by
   aesop
 
 end SemiSimplexCategory
