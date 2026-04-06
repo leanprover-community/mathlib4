@@ -63,9 +63,7 @@ variable {α β ι : Type*} {π : ι → Type*}
 -/
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α, OrderBot α where
   protected sup := (· + ·)
-  protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
-    intros
-    rfl
+  protected add_eq_sup (a b : α) : a + b = a ⊔ b := by intros; rfl
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
