@@ -18,8 +18,6 @@ as simplicial objects are functors from `SimplexCategory`.
 
 @[expose] public section
 
-universe u
-
 open CategoryTheory Simplicial
 
 /-- The category whose objects are denoted `⦋n⦌ₛ` for `n : ℕ` and
