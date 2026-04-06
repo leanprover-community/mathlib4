@@ -105,10 +105,6 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
-theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).prod := by
-  simpa only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
-
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
       ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
@@ -118,13 +114,18 @@ theorem bell_eq (m : Multiset ℕ) :
   · rw [← bell_mul_eq, mul_assoc]
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
-    exact Nat.mul_pos (map_factorial_prod_pos m) <| Finset.prod_pos fun _ _ ↦ Nat.factorial_pos _
+    apply Nat.mul_pos
+    · simp only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+      exact fun _ _ ↦ Nat.factorial_pos _
+    · apply Finset.prod_pos
+      exact fun _ _ ↦ Nat.factorial_pos _
 
 theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
     {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) : ∏ j ∈ m.toFinset.erase 0, (m.count j)! =
     (m.count a)! * ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)! := by
   by_cases hmem : a ∈ m.toFinset.erase 0
-  · simpa using (Finset.mul_prod_erase (m.toFinset.erase 0) (fun j ↦ (m.count j)!) hmem).symm
+  · rw [← Finset.mul_prod_erase _ _ hmem]
   · rw [Finset.erase_eq_of_notMem hmem]
     have hcount : m.count a = 0 := by
       apply Multiset.count_eq_zero_of_notMem
@@ -135,11 +136,19 @@ theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
 theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
     ∏ j ∈ ((a ::ₘ m).toFinset.erase 0).erase a, ((a ::ₘ m).count j)! =
     ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)! := by
-  refine Finset.prod_congr ?_ ?_
-  · ext x
-    by_cases hx : x = a <;> simp [Multiset.toFinset_cons, hx]
-  · intro j hj
-    simp [(Finset.mem_erase.mp hj).1]
+  have hset : ((a ::ₘ m).toFinset.erase 0).erase a = (m.toFinset.erase 0).erase a := by
+    ext x
+    by_cases hx : x = a
+    · simp [hx]
+    · simp [Multiset.toFinset_cons, hx]
+  rw [hset]
+  refine Finset.prod_congr rfl ?_
+  intro j hj
+  simp [(Finset.mem_erase.mp hj).1]
+
+theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).prod := by
+  simpa only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
 
 theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = Nat.choose (m.sum + a) a * m.bell := by
@@ -189,9 +198,11 @@ theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
       simp [count_replicate]
 
-theorem uniformBell_zero_left (n : ℕ) : uniformBell 0 n = 1 := by simp [uniformBell_eq]
+theorem uniformBell_zero_left (n : ℕ) : uniformBell 0 n = 1 := by
+  simp [uniformBell_eq]
 
-theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by simp [uniformBell_eq]
+theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
+  simp [uniformBell_eq]
 
 theorem uniformBell_succ_left (m n : ℕ) :
     uniformBell (m + 1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
@@ -233,7 +244,8 @@ protected def bell : ℕ → ℕ
   | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)
 
 theorem bell_succ (n : ℕ) :
-    Nat.bell (n + 1) = ∑ i : Fin n.succ, choose n i * Nat.bell (n - i) := by rw [Nat.bell]
+    Nat.bell (n + 1) = ∑ i : Fin n.succ, choose n i * Nat.bell (n - i) := by
+  rw [Nat.bell]
 
 theorem bell_succ' (n : ℕ) :
     Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, choose n ij.1 * Nat.bell ij.2 := by
@@ -242,11 +254,17 @@ theorem bell_succ' (n : ℕ) :
     Finset.sum_range]
 
 
-@[simp] theorem bell_zero : Nat.bell 0 = 1 := by simp [Nat.bell]
+@[simp]
+theorem bell_zero : Nat.bell 0 = 1 := by
+  simp [Nat.bell]
 
-@[simp] theorem bell_one : Nat.bell 1 = 1 := by simp [Nat.bell]
+@[simp]
+theorem bell_one : Nat.bell 1 = 1 := by
+  simp [Nat.bell]
 
-@[simp] theorem bell_two : Nat.bell 2 = 2 := by simp [Nat.bell]
+@[simp]
+theorem bell_two : Nat.bell 2 = 2 := by
+  simp [Nat.bell]
 
 theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
     ∑ a ∈ p.parts.toFinset, choose n (a - 1) * Multiset.bell (p.parts.erase a) =
