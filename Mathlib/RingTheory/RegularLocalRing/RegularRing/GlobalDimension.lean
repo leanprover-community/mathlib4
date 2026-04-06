@@ -23,8 +23,8 @@ variable {R : Type u} [CommRing R]
 open IsLocalRing CategoryTheory
 
 variable (R) in
-theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRing R]
-    [IsNoetherianRing R] : globalDimension.{v} R = ringKrullDim R := by
+theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRing R] :
+    globalDimension.{v} R = ringKrullDim R := by
   rcases subsingleton_or_nontrivial R with sub|ntr
   · rw [(globalDimension_eq_bot_iff R).mpr sub, ringKrullDim_eq_bot_of_subsingleton]
   · rw [globalDimension_eq_iSup_loclization_maximal]
@@ -42,18 +42,16 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
     apply le_antisymm
     · simp only [iSup_le_iff]
       intro p
-      let _ : IsRegularLocalRing (Localization.AtPrime p.1) :=
-        (isRegularRing_iff R).mp ‹_› p.1 (Ideal.IsMaximal.isPrime' p.1)
-      let _ : Small.{v} (Localization.AtPrime p.1) :=
+      have := isRegularRing_iff.mp ‹_› p.1 (Ideal.IsMaximal.isPrime' p.1)
+      have : Small.{v} (Localization.AtPrime p.1) :=
         small_of_surjective Localization.mkHom_surjective
       rw [IsRegularLocalRing.globalDimension_eq_ringKrullDim.{u, v} (Localization.AtPrime p.1),
         IsLocalization.AtPrime.ringKrullDim_eq_height p.1]
       exact le_iSup (fun i ↦ (f i : WithBot ℕ∞)) ⟨p.1, p.2⟩
     · simp only [iSup_le_iff]
       intro ⟨p, hp⟩
-      let _ : IsRegularLocalRing (Localization.AtPrime p) :=
-        (isRegularRing_iff R).mp ‹_› p (Ideal.IsMaximal.isPrime' p)
-      let _ : Small.{v} (Localization.AtPrime p) :=
+      have := isRegularRing_iff.mp ‹_› p (Ideal.IsMaximal.isPrime' p)
+      have : Small.{v} (Localization.AtPrime p) :=
         small_of_surjective Localization.mkHom_surjective
       simp only [f, ← IsLocalization.AtPrime.ringKrullDim_eq_height p (Localization.AtPrime p),
         ← IsRegularLocalRing.globalDimension_eq_ringKrullDim.{u, v} (Localization.AtPrime p)]
