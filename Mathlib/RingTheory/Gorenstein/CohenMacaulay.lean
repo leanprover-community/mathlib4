@@ -978,7 +978,7 @@ lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List 
   | [] =>
     exact LinearEquiv.bijective _
   | a :: rs' =>
-    simp only [List.length_cons, QuotientRegularSequenceToExt, ModuleCat.smulShortComplex_X₁,
+    simp only [List.length_cons, QuotientRegularSequenceToExt, ModuleCat.smulShortComplex,
       LinearMap.coe_comp]
     have reg' := (isWeaklyRegular_cons_iff _ _ _).mp reg
     have mem' := mem
@@ -1341,7 +1341,7 @@ lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
     | coe a =>
       induction a with
       | top => simp
-      | coe a => simpa using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
+      | coe a => simpa [- ENat.WithBot.coe_eq_natCast] using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
   simp only [isGorensteinLocalRing_def, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
   rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
