@@ -557,9 +557,11 @@ end Mathlib.Tactic
 
 /-!
 We set up `positivity` as a first-pass discharger for `gcongr` side goals.
+We use `grind` as second discharger, making sure to run it after positivity for performance.
 -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| grind)
 
 /-!
 We register `positivity` with the `hint` tactic.

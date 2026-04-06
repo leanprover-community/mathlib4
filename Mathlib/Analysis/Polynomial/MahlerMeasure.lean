@@ -393,8 +393,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z p.roots := by
       gcongr with a
-      · exact le_max_left 1 ‖a‖
-      · exact hx.1
+      exact hx.1
   --final calc block:
   calc ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
     _ ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by

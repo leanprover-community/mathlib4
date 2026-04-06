@@ -203,7 +203,6 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   intro a ha μa_pos μa_lt_top
   grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn]
   gcongr
-  exact μa_lt_top.ne
 
 section AbsolutelyContinuous
 
