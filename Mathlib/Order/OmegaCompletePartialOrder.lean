@@ -217,11 +217,11 @@ lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr :
   | inl c => exact inl c
   | inr c => exact inr c
 
-lemma eq_inl_of_coe_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
+lemma inl_projL_of_apply_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
     (hn : c n = .inl x) : inl (projL c) = c := by
   ext; cases c using sum_cases <;> simp_all
 
-lemma eq_inr_of_coe_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
+lemma inr_projR_of_apply_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
     (hn : c n = .inr x) : inr (projR c) = c := by
   ext; cases c using sum_cases <;> simp_all
 
