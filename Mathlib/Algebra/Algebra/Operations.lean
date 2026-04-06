@@ -572,6 +572,7 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
 instance idemSemiring : IdemSemiring (Submodule R A) where
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
+  bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
 
