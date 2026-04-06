@@ -131,9 +131,9 @@ meromorphic on the complex plane, then the characteristic functions (for value `
 theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphic f) :
     |characteristic f ⊤ r - characteristic (f · - a₀) ⊤ r| ≤ log⁺ ‖a₀‖ + log 2 := by
   have h₁f : CircleIntegrable (fun x ↦ log⁺ ‖f x‖) 0 r :=
-    circleIntegrable_posLog_norm_meromorphicOn h.meromorphicOn
+    h.meromorphicOn.circleIntegrable_posLog_norm
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
-    apply circleIntegrable_posLog_norm_meromorphicOn
+    apply MeromorphicOn.circleIntegrable_posLog_norm
     apply h.meromorphicOn.sub (MeromorphicOn.const a₀)
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
