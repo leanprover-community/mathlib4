@@ -513,7 +513,6 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -678,7 +677,6 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :

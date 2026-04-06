@@ -51,7 +51,7 @@ def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
   (m { red, evalAtom }).run' {}
 
 /-- A safe version of `isDefEq` that doesn't throw errors. We use it to avoid
-"unknown free variable '_fvar.102937'" errors when there may be out-of-scope free variables.
+"unknown free variable `_fvar.102937`" errors when there may be out-of-scope free variables.
 
 TODO: don't catch any other errors
 -/
