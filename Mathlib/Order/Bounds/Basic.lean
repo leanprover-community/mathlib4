@@ -137,7 +137,7 @@ theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t)
   · exact ⟨a, hat, le_rfl⟩
 
 theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
-  rw [Set.union_comm]
+  rw [union_comm]
   exact hc.union_left
 
 theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
@@ -147,7 +147,7 @@ theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
   obtain ⟨w, hw, hzw⟩ := hc hz
   exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
 
-theorem or_of_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     IsCofinalFor t s ∨ IsCofinalFor s t := by
   rw [or_iff_not_imp_left]
   intro hts x hx
@@ -161,9 +161,9 @@ theorem or_of_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s �
 theorem directedOn_union_iff : DirectedOn (· ≤ ·) (s ∪ t) ↔
     (DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s) ∨ (DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t) := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rcases or_of_isCofinalFor_of_directedOn_union h with hts | hst
-    · exact .inl ⟨DirectedOn.of_isCofinalFor h Set.subset_union_left hts.union_right, hts⟩
-    · exact .inr ⟨DirectedOn.of_isCofinalFor h Set.subset_union_right hst.union_left, hst⟩
+  · rcases isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
   · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
     · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
       obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
