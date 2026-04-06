@@ -97,8 +97,7 @@ variable [CompleteSpace H] [CompleteSpace V]
 --TODO: make private
 variable (H) in
 /-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
-the point evaluation.
--/
+the point evaluation. -/
 def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
 
 variable (H) in
@@ -106,49 +105,58 @@ variable (H) in
 kernel functions. -/
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
 
+variable (H) in
 lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
   simp [kernel, kerFun]
 
+variable (H) in
 lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L kerFun H y := by
   simp [kerFun, kernel]
 
-/-- The "reproducing" property of the kernel functions, left version.
--/
+variable (H) in
+/-- The "reproducing" property of the kernel functions, left version. -/
 @[simp]
 lemma kerFun_inner (x : X) (v : V) (f : H) : ⟪kerFun H x v, f⟫_𝕜 = ⟪v, f x⟫_𝕜 := by
   simp [kerFun, ← adjoint_inner_right]
 
-/-- The "reproducing" property of the kernel functions, right version.
--/
+variable (H) in
+/-- The "reproducing" property of the kernel functions, right version. -/
 @[simp]
 lemma inner_kerFun (x : X) (v : V) (f : H) : ⟪f, kerFun H x v⟫_𝕜 = ⟪f x, v⟫_𝕜 := by
   simp [kerFun, ← adjoint_inner_left]
 
-/-- The "reproducing" property of the kernel.
--/
+variable (H) in
+/-- The "reproducing" property of the kernel. -/
 lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
   simp [← adjoint_inner_left, kernel]
 
+variable (H) in
 lemma norm_kerFun_sq_eq_norm_kernel (x) : ‖kerFun H x‖ ^ 2 = ‖kernel H x x‖ := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
 
+variable (H) in
 lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
   rw [← norm_kerFun_sq_eq_norm_kernel, Real.sqrt_sq (norm_nonneg _)]
 
+variable (H) in
 lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
   grw [kernel_apply, opNorm_comp_le]
   simp [norm_kerFun_eq_sqrt_norm_kernel]
 
+variable (H) in
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
 
+variable (H) in
 theorem norm_kernel_eq_zero_iff {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H x y‖ = 0 :=
-  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _).trans (by simp [h]), fun h ↦ h x⟩
+  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _ _).trans (by simp [h]), fun h ↦ h x⟩
 
+variable (H) in
 theorem norm_kernel_eq_zero_iff' {x} : ‖kernel H x x‖ = 0 ↔ ∀ y, ‖kernel H y x‖ = 0 :=
-  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _).trans (by simp [h]), fun h ↦ h x⟩
+  ⟨fun h y ↦ (sq_nonpos_iff _).mp <| (norm_kernel_sq_le _ _ _).trans (by simp [h]), fun h ↦ h x⟩
 
+variable (H) in
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))
