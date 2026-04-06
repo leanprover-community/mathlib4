@@ -15,20 +15,17 @@ This file proves basic results about the suprema of families of ordinals.
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 assert_not_exists Field Module
 
-noncomputable section
-
-open Function Cardinal Set Equiv Order
-open scoped Ordinal
+open Function Cardinal Set Order
 
 universe u v w
 
 namespace Ordinal
 
-variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+variable {α β : Type*}
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
