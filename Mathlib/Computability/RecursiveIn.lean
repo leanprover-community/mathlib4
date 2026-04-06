@@ -202,6 +202,7 @@ protected theorem ComputableIn₂.recursiveIn₂ [Primcodable α] [Primcodable �
     {f : α → β → σ} {O} (hf : ComputableIn₂ O f) :
     RecursiveIn₂ O fun a => (f a : β →. σ) := hf
 
+variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 variable {f : α →. σ} {O : Set (ℕ →. ℕ)}
 
 namespace RecursiveIn
