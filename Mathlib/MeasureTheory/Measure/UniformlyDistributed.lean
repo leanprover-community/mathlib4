@@ -6,8 +6,11 @@ Authors: Yongxi Lin
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.Measure.Hausdorff
+public import Mathlib.MeasureTheory.Measure.Regular
 
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Order.Filter.ENNReal
@@ -15,18 +18,17 @@ import Mathlib.Order.Filter.ENNReal
 /-!
 # Uniformly distributed measures
 
-In this file we define uniformly distributed measures and prove Christensen's Lemma.
+In this file we define uniformly distributed measures and prove Christensen's Lemma. As an
+application, we prove that the restriction of the `n - 1`-dimensional Hausdorff measure onto an
+`n`-dimensional sphere coincides with the spherical measure.
 
 ## Main statements
 
 * `UniformlyDistributed.eq_smul`: Uniformly distributed outer regular measures in a
   second countable pseudometric space are unique up to a finite constant. We follow the proof
   in chapter 3 of [*Geometry of sets and measures in {E}uclidean spaces*][mattila1995].
-
-## TODO
-
-Use `UniformlyDistributed.eq_smul` to prove that the restriction of the `n - 1`-dimensional
-Hausdorff measure onto an `n`-dimensional sphere coincides with the spherical measure.
+* `hausdorff_eq_measure_toSphere` : The restriction of the `n - 1`-dimensional Hausdorff measure
+  onto an `n`-dimensional sphere coincides with the spherical measure.
 
 -/
 
@@ -64,8 +66,8 @@ class UniformlyDistributed (μ : Measure X) : Prop where
 namespace UniformlyDistributed
 
 /-- If a measure is uniformly distributed, then every bounded set has finite measure. -/
-theorem measure_ne_top_of_isBounded [UniformlyDistributed μ]
-    (hb : Bornology.IsBounded U) : μ U ≠ ∞ := by
+theorem measure_ne_top_of_isBounded [UniformlyDistributed μ] (hb : Bornology.IsBounded U) :
+    μ U ≠ ∞ := by
   by_cases! hx : Nonempty X
   · apply ne_of_lt
     obtain ⟨r, hr⟩ := hb.subset_ball_lt 0 hx.some
@@ -191,6 +193,32 @@ theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
       ⟨c, hci, OuterRegular.ext_isOpen_isBounded fun U hU hb => hc U hU hb⟩
 
 end UniformlyDistributed
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+  [BorelSpace E] [FiniteDimensional ℝ E]
+
+/-- The spherical measure is uniformly distributed. -/
+instance {m : Measure E} (he : 0 < Module.finrank ℝ E) [m.IsAddHaarMeasure] :
+    UniformlyDistributed m.toSphere := by
+  sorry
+
+instance hausdorffMeasure_outerRegular (d : ℝ) : OuterRegular (μH[d] : Measure E) := by sorry
+
+instance hausdorffMeasure_restirct_sphere_outerRegular : OuterRegular
+    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
+  refine OuterRegular.comap' μH[↑(Module.finrank ℝ E) - 1] ?_ ?_
+
+instance hausdorffMeasure_restrict_sphere_uniformlydist : UniformlyDistributed
+    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
+  sorry
+
+/-- The restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional sphere
+coincides with the spherical measure. -/
+theorem hausdorff_eq_measure.toSphere {m : Measure E} [m.IsAddHaarMeasure] :
+    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) =
+    m.toSphere := by
+  obtain ⟨c, hc⟩ := eq_smul (μH[↑(Module.finrank ℝ E) - 1].comap
+    Subtype.val : Measure (sphere (0 : E) 1)) m.toSphere
 
 end Measure
 
