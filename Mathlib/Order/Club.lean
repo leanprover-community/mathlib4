@@ -143,21 +143,19 @@ theorem IsClub.diag {f : α → Set α} (hα' : ℵ₀ < Order.cof α) (hα : ty
     obtain ⟨_, ⟨n, rfl⟩, hb, hn⟩ := hg'.exists_between hb
     apply (hf b).isLUB_mem _ _ (hg'.inter_Ici_of_mem ⟨n + 1, rfl⟩)
     · rintro _ ⟨⟨m, rfl⟩, hm⟩
-      simp_rw [Set.sInter_image, Set.mem_iInter] at hg
-      have := (hg (g^[n] a)).1 b hb
+      rw [Set.mem_Ici, hgm.le_iff_le, Nat.add_one_le_iff] at hm
       cases m with
-      | zero =>
-        rw [← hm.antisymm (hgm.monotone (zero_le _))]
-        simpa [← Function.iterate_succ_apply'] using this
+      | zero => contradiction
       | succ m =>
         dsimp
         rw [g.iterate_succ_apply']
-        simp_rw [Set.mem_Ici, hgm.le_iff_le, Nat.succ_le_succ_iff] at hm
+        rw [Nat.lt_add_one_iff] at hm
+        simp_rw [Set.sInter_image, Set.mem_iInter] at hg
         exact (hg _).1 _ (hb.trans_le <| hgm.monotone hm)
     · use g^[n + 1] a; simp
 
-theorem Order.IsNormal.isClub_fixedPoints {f : α → α}
-    (hα : ℵ₀ < Order.cof α) (hf : Order.IsNormal f) : IsClub f.fixedPoints := by
+theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : ℵ₀ < cof α) (hf : IsNormal f) :
+    IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
   · rwa [Set.image_congr hs, Set.image_id']
