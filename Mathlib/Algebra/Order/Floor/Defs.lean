@@ -93,14 +93,18 @@ theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
   simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
 
-instance : ZeroLEOneClass α :=
-  ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
+  refine strictMono_nat_of_lt_succ fun n => (natCast_mono (Nat.le_succ n)).lt_of_ne fun hn => ?_
+  replace hn (k : ℕ) : ((n + k : ℕ) : α) = n := by
+    induction k with | zero => rfl | succ k k_ih =>
+      rw [← Nat.add_assoc, Nat.cast_add, k_ih, ← Nat.cast_add, ← hn]
+  have h : n + (floor (n : α) + 1) ≤ floor (n : α) := (gc_floor (natCast_nonneg n)).mpr (hn _).le
+  rw [← Nat.add_assoc, Nat.add_one_le_iff] at h
+  exact Nat.not_le_of_lt h (Nat.le_add_left _ _)
 
-instance : NeZero (1 : α) :=
-  ⟨fun h ↦ Nat.not_succ_le_self (floor 0) <|
-    (gc_floor (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
+instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
-instance : Nontrivial α := NeZero.nontrivial 1
+instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
 end FloorSemiring
 
@@ -246,6 +250,13 @@ variable [Ring α] [LinearOrder α] [FloorRing α]
 theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
   fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
 
+theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
+  have h : (1 : α) ≠ 0 :=
+    fun h ↦ (Int.lt_succ (floor 0)).not_ge <|
+      (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le
+  refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
+  rwa [Int.cast_add, Int.cast_one, left_ne_add]
+
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
   fun m n h => by simpa only [Int.cast_natCast]
     using intCast_mono (Int.natCast_strictMono.monotone h)
@@ -253,14 +264,13 @@ theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
   simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
 
-instance : ZeroLEOneClass α :=
-  ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
+  fun m n h => by simpa only [Int.cast_natCast]
+    using intCast_strictMono (Int.natCast_strictMono h)
 
-instance : NeZero (1 : α) :=
-  ⟨fun h ↦ (Int.lt_succ (floor 0)).not_ge <|
-    (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
+instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
-instance : Nontrivial α := NeZero.nontrivial 1
+instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
 end FloorRing
 
