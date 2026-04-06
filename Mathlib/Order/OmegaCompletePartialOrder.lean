@@ -227,10 +227,8 @@ lemma elim_toSum (c : Chain (α ⊕ β)) : (toSum c).elim .inl .inr = c := by
 @[elab_as_elim]
 lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
     (c : Chain (α ⊕ β)) : p c := by
-  rw [←elim_toSum c]
-  cases c.toSum with
-  | inl c => exact inl c
-  | inr c => exact inr c
+  rw [← toSum.symm_apply_apply c]
+  cases c.toSum <;> simp [inl, inr]
 
 lemma inl_projL_of_apply_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
     (hn : c n = .inl x) : inl (projL c) = c := by
