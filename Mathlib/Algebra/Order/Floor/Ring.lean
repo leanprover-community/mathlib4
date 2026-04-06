@@ -886,7 +886,7 @@ end Nat
 
 section FloorRingToSemiring
 
-variable [Ring R] [LinearOrder R] [IsOrderedRing R] [FloorRing R]
+variable [Ring R] [LinearOrder R] [FloorRing R]
 
 /-! #### A floor ring as a floor semiring -/
 

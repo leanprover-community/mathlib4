@@ -82,6 +82,29 @@ instance : FloorSemiring ℕ where
   gc_ceil n a := by
     rw [Nat.cast_id, id_def]
 
+
+namespace FloorSemiring
+
+variable [Semiring α] [PartialOrder α] [FloorSemiring α]
+
+theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
+  fun _ _ h => (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
+
+theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
+  simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
+
+instance : ZeroLEOneClass α :=
+  ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ Nat.not_succ_le_self (floor 0) <|
+    (gc_floor (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
+
+end FloorSemiring
+
+
 namespace Nat
 
 section OrderedSemiring
@@ -113,8 +136,8 @@ notation "⌈" a "⌉₊" => Nat.ceil a
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
 
-theorem le_floor [IsOrderedRing α] (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
-  (le_floor_iff <| n.cast_nonneg.trans h).2 h
+theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
+  (le_floor_iff ((FloorSemiring.natCast_nonneg n).trans h)).2 h
 
 theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
   FloorSemiring.gc_ceil
@@ -122,12 +145,6 @@ theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
 @[simp]
 theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
   gc_ceil_coe _ _
-
-instance : NeZero (1 : α) :=
-  ⟨fun h ↦ not_succ_le_self ⌊(0 : α)⌋₊ <|
-    (le_floor_iff (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
-
-instance : Nontrivial α := NeZero.nontrivial 1
 
 end OrderedSemiring
 
@@ -187,7 +204,8 @@ def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : 
     gc_ceil_coe }
 
 open Classical in
-private noncomputable def floorAux {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {x : α}
+private noncomputable def floorAux
+    {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {x : α}
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
   let n := Classical.indefiniteDescription _ above
@@ -196,7 +214,8 @@ private noncomputable def floorAux {α} [Ring α] [PartialOrder α] [IsStrictOrd
   exact hm.trans n.2
 
 /-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
-theorem exists_floor' {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] (x : α)
+theorem exists_floor'
+    {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] (x : α)
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
   refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
@@ -206,7 +225,8 @@ theorem exists_floor' {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] 
 /-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
 bounded above by a natural number. -/
 @[no_expose, implicit_reducible]
-noncomputable def FloorRing.ofBounded (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+noncomputable def FloorRing.ofBounded
+    (α) [Ring α] [LinearOrder α] [IsOrderedRing α] [Nontrivial α]
     (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
   have below (x : α) : ∃ n : ℤ, n ≤ x := by
     obtain ⟨n, hn⟩ := bounded (-x)
@@ -217,6 +237,33 @@ noncomputable def FloorRing.ofBounded (α) [Ring α] [LinearOrder α] [IsStrictO
     use n
     exact_mod_cast hn
   .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
+
+
+namespace FloorRing
+
+variable [Ring α] [LinearOrder α] [FloorRing α]
+
+theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
+  fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
+
+theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
+  fun m n h => by simpa only [Int.cast_natCast]
+    using intCast_mono (Int.natCast_strictMono.monotone h)
+
+theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
+  simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
+
+instance : ZeroLEOneClass α :=
+  ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ (Int.lt_succ (floor 0)).not_ge <|
+    (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
+
+end FloorRing
+
 
 namespace Int
 
@@ -262,12 +309,6 @@ theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
 theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
   rfl
 
-instance : NeZero (1 : α) :=
-  ⟨fun h ↦ (Int.lt_succ ⌊(0 : α)⌋).not_ge <|
-    (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
-
-instance : Nontrivial α := NeZero.nontrivial 1
-
 /-! #### Floor -/
 
 theorem gc_coe_floor : GaloisConnection ((↑) : ℤ → α) floor :=
@@ -285,10 +326,14 @@ theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
 
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
+theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
+
 @[bound]
-theorem floor_nonpos [IsOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
-  rw [← @cast_le α, Int.cast_zero]
-  exact (floor_le a).trans ha
+theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
+  obtain ha0 | rfl : a < 0 ∨ a = 0 := ha.lt_or_eq
+  · exact (floor_lt_zero.mpr ha0).le
+  · rw [← Int.lt_add_one_iff, floor_lt, Int.zero_add, Int.cast_one]
+    exact zero_lt_one
 
 /-! #### Ceil -/
 
@@ -305,17 +350,27 @@ theorem lt_ceil : z < ⌈a⌉ ↔ (z : α) < a :=
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
-@[bound]
-theorem ceil_nonneg [IsOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
+theorem ceil_nonpos : ⌈a⌉ ≤ 0 ↔ a ≤ 0 := by rw [ceil_le, cast_zero]
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
+
+@[bound]
+theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
+  obtain ha0 | rfl : 0 < a ∨ a = 0 := ha.lt_or_eq'
+  · exact (ceil_pos.mpr ha0).le
+  · refine not_lt.mp (fun h => ?_)
+    rw [← le_sub_one_iff, ceil_le, ← cast_zero] at h
+    replace h : ((-1 : ℤ) : α) = ((0 : ℤ) : α) :=
+      h.antisymm' (FloorRing.intCast_mono (neg_ofNat_le_ofNat 1 0))
+    rw [cast_neg, cast_zero, neg_eq_zero, cast_one] at h
+    exact zero_ne_one h.symm
 
 end Int
 
 section FloorRingToSemiring
 
-variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 
@@ -323,7 +378,7 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
-  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_lt.mpr (ha.trans_eq Int.cast_zero.symm)).le
   gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
 
