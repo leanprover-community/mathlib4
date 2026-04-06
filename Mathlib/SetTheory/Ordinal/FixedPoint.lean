@@ -423,11 +423,7 @@ end
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
-  simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_natCast]
-  congr; funext n
-  induction n with
-  | zero => rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
+  simp [← iSup_iterate_eq_nfp]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)

@@ -170,7 +170,6 @@ lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
 abbrev Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
 
@@ -196,7 +195,7 @@ theorem commProb_reciprocal (n : ℕ) :
   · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have hn : Odd (n % 4) := by grind
     rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
-    · grind [Nat.div_add_mod n 4]
+    · grind [Nat.div_add_mod n 4, Odd]
     · positivity [hn.pos.ne']
 
 end DihedralGroup
