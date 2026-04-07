@@ -18,10 +18,10 @@ In this file we define and provide API for (co)frames, completely distributive l
 complete Boolean algebras.
 
 We distinguish two different distributivity properties:
- 1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
+1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
   This is required by `Frame`, `CompleteDistribLattice`, and `CompleteBooleanAlgebra`
   (`Coframe`, etc., require the dual property).
- 2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
+2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
   (infinite `⨅` distributes over infinite `⨆`).
   This stronger property is called "completely distributive",
   and is required by `CompletelyDistribLattice` and `CompleteAtomicBooleanAlgebra`.
@@ -341,10 +341,9 @@ theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ :
   refine le_antisymm
     (iSup₂_le fun i hi ↦ le_iSup₂_of_le (fun _ ↦ i) hi (le_iInf fun _ ↦ le_rfl))
     (iSup₂_le fun I hI ↦ ?_)
-  by_cases H : ∀ k, I k = I j
+  by_cases! H : ∀ k, I k = I j
   · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
-  · push_neg at H
-    rcases H with ⟨k, hk⟩
+  · rcases H with ⟨k, hk⟩
     calc ⨅ l, f (I l)
     _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
     _ = ⊥ := (h hk).eq_bot
