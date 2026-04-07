@@ -846,8 +846,7 @@ section Algebra
 
 variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-open scoped AlgebraMonoidAlgebra
-
+open scoped AlgebraMonoidAlgebra in
 /--
 If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
 
