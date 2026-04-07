@@ -46,6 +46,7 @@ it is the measure which gives mass `p` to `{x}` and `1 - p` to `{y}`. -/
 noncomputable def bernoulliMeasure (x y : X) (p : I) : Measure X :=
   toNNReal p • dirac x + toNNReal (σ p) • dirac y
 
+@[inherit_doc]
 scoped notation "Ber(" x ", " y ", " p ")" => bernoulliMeasure x y p
 
 lemma bernoulliMeasure_def (x y : X) (p : I) :
