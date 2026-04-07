@@ -48,7 +48,7 @@ lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries
     coeff_truncTotal_mul_truncTotal_eq_coeff_mul _ _ hx]
 
 /-- The canonical map induced by `truncTotal` from multivariate power series to
-the quotient ring of multivariate polynomials with respect to the `n`-th power of
+the quotient ring of multivariate polynomials by the `n`-th power of
 the ideal spanned by all variables. -/
 @[simps]
 def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
@@ -74,7 +74,8 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
     rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ h, MvPolynomial.coeff_coe]
 
 /-- The canonical map from multivariate power series to the adic completion of
-multivariate polynomials at the ideal spanned by all variables when the index is finite. -/
+multivariate polynomials with respect to the ideal spanned by all variables
+when the index is finite. -/
 def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) :=
@@ -132,7 +133,8 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
   simp
 
 /-- The isomorphism from multivariate power series to the adic completion of
-multivariate polynomials at the ideal spanned by all variables when the index is finite. -/
+multivariate polynomials with respect to the ideal spanned by all variables
+when the index is finite. -/
 def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
     MvPowerSeries σ R ≃ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) where
