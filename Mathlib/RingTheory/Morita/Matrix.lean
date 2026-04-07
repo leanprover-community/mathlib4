@@ -180,6 +180,8 @@ def MatrixModCat.counitIso (i : ι) :
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 300000 in
+-- This declaration has been on the tipping point of timeout ever since nightly-2026-02-23.
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
 @[simps, stacks 074D "(1)"]

@@ -156,6 +156,8 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 /-- Restatement of `Equiv.right_inv` in terms of `Function.RightInverse`. -/
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
+@[simp] lemma symm_mk (f : α → β) (g hl hr) : (mk f g hl hr).symm = mk g f hr hl := rfl
+
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
