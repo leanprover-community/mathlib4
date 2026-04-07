@@ -125,7 +125,7 @@ lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
   norm_cast
 
 @[simp]
-lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
+lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
   ext s hs
   rw [setBernoulli_apply_eq_apply_subsets]
   by_cases h : ∅ ∈ s
