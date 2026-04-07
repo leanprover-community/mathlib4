@@ -108,74 +108,44 @@ lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology
   intro s
   rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
     Filter.atTop_basis_Ioi.mem_iff]
-  rintro ⟨_, b, hb⟩
+  intro ⟨_, b, hb⟩
   rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
   use b
 
-lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α := by
-  intro s
-  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
-    Filter.atBot_basis_Iio.mem_iff]
-  rintro ⟨⟨a, ha⟩, _⟩
-  rw [mem_lowerBounds_iff_subset_Ici, ← compl_compl (Ici a), compl_subset_compl, compl_Ici] at ha
-  use a
+-- TODO (khw): Generate this in the future with `to_dual`
+-- See https://github.com/leanprover-community/mathlib4/pull/37738
+lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
+  atTop_le_cobounded (α := αᵒᵈ)
 
 lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
     cobounded α ≤ .atBot ⊔ .atTop := by
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
     ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
-  rintro ⟨⟨b, _, hb⟩, ⟨a, _, ha⟩⟩
-  constructor
-  · use b
-    intro x hx
-    by_contra! hx'
-    exact hx (hb hx'.le)
-  · use a
-    intro x hx
-    by_contra! hx'
-    exact hx (ha hx'.le)
+  intro ⟨⟨b, _, hb⟩, ⟨a, _, ha⟩⟩
+  refine ⟨⟨b, fun x hx ↦ ?_⟩, ⟨a, fun x hx ↦ ?_⟩⟩ <;> by_contra! hx'
+  · exact hx (hb hx'.le)
+  · exact hx (ha hx'.le)
 
 @[simp]
 lemma IsOrderBornology.cobounded_eq [NoMaxOrder α] [NoMinOrder α] :
-    Bornology.cobounded α = .atBot ⊔ .atTop := by
-  apply le_antisymm
-  · exact cobounded_le_atBot_sup_atTop
-  · exact sup_le IsOrderBornology.atBot_le_cobounded IsOrderBornology.atTop_le_cobounded
+    Bornology.cobounded α = .atBot ⊔ .atTop :=
+  cobounded_le_atBot_sup_atTop.antisymm <|
+    sup_le IsOrderBornology.atBot_le_cobounded IsOrderBornology.atTop_le_cobounded
 
 lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
     Bornology.cobounded α = .atTop := by
-  apply le_antisymm
-  · intro s
-    rw [Filter.atTop_basis.mem_iff,
-      ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
-    rintro ⟨b, _, hb⟩
-    constructor
-    · use ⊥
-      intro x hx
-      simp
-    · use b
-      intro x hx
-      by_contra! hx'
-      exact hx (hb hx'.le)
-  · exact IsOrderBornology.atTop_le_cobounded
+  refine atTop_le_cobounded.antisymm' fun s ↦ ?_
+  rw [Filter.atTop_basis.mem_iff,
+    ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+  refine fun ⟨b, _, hb⟩ ↦ ⟨⟨⊥, fun x hx ↦ by simp⟩, ⟨b, fun x hx ↦ ?_⟩⟩
+  by_contra! hx'
+  exact hx (hb hx'.le)
 
+-- TODO (khw): Generate this in the future with `to_dual`
+-- See https://github.com/leanprover-community/mathlib4/pull/37738
 lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
-    Bornology.cobounded α = .atBot := by
-  apply le_antisymm
-  · intro s
-    rw [Filter.atBot_basis.mem_iff,
-      ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
-    rintro ⟨a, _, ha⟩
-    constructor
-    · use a
-      intro x hx
-      by_contra! hx'
-      exact hx (ha hx'.le)
-    · use ⊤
-      intro x hx
-      simp
-  · exact IsOrderBornology.atBot_le_cobounded
+    Bornology.cobounded α = .atBot := cobounded_eq_atTop (α := αᵒᵈ)
 
 end LinearOrder
 
