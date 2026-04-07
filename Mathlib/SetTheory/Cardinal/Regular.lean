@@ -78,7 +78,7 @@ lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
 
 theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) := by
   have hc₀ := hc.trans (le_succ c)
-  refine ⟨hc₀, ?_⟩
+  use hc₀
   by_contra! hc'
   obtain ⟨f, hf⟩ := exists_isFundamentalSeq (o := (succ c).ord) rfl
   apply hf.iSup_add_one_eq.not_lt
