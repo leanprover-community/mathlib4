@@ -55,7 +55,7 @@ example [AddCommGroup α] (a b c : α) :
   right; trivial
 
 /-- `MyTrue` should be opaque to `abel`. -/
-private def MyTrue := True
+def MyTrue := True
 
 /--
 error: `abel_nf` made no progress on goal
