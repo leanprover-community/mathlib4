@@ -24,6 +24,8 @@ and Lindenstrauss. *Random Structures & Algorithms* 22(1), 60–65.
 
 -/
 
+@[expose] public section
+
 namespace Real
 
 /-- **Log upper bound**: `log(1+ε) ≤ ε − ε²/4` for `ε ∈ (−1, 1]`.
@@ -57,7 +59,9 @@ lemma log_one_add_le {ε : ℝ} (hε : -1 < ε) (hε1 : ε ≤ 1) :
           ((continuous_pow 2).div_const 4).continuousOn)
           (Real.continuousOn_log.comp (continuous_const.add continuous_id).continuousOn
             (fun e he => (show 0 < 1 + e by linarith [he.1]).ne')))
-        (fun e he => by rw [interior_Icc] at he; exact (hg_drv e (by linarith [he.1])).hasDerivWithinAt)
+        (fun e he => by
+          rw [interior_Icc] at he
+          exact (hg_drv e (by linarith [he.1])).hasDerivWithinAt)
         (fun e he => by
           rw [interior_Icc] at he
           exact div_nonneg (mul_nonneg he.1.le (by linarith [he.2])) (by linarith [he.1]))
@@ -69,7 +73,9 @@ lemma log_one_add_le {ε : ℝ} (hε : -1 < ε) (hε1 : ε ≤ 1) :
           ((continuous_pow 2).div_const 4).continuousOn)
           (Real.continuousOn_log.comp (continuous_const.add continuous_id).continuousOn
             (fun e he => (show 0 < 1 + e by linarith [he.1, hε]).ne')))
-        (fun e he => by rw [interior_Icc] at he; exact (hg_drv e (by linarith [he.1, hε])).hasDerivWithinAt)
+        (fun e he => by
+          rw [interior_Icc] at he
+          exact (hg_drv e (by linarith [he.1, hε])).hasDerivWithinAt)
         (fun e he => by
           rw [interior_Icc] at he
           exact div_nonpos_of_nonpos_of_nonneg
@@ -113,3 +119,5 @@ lemma log_one_sub_le {ε : ℝ} (hε0 : 0 ≤ ε) (hε1 : ε < 1) :
   exact hh0 ▸ hmon (Set.left_mem_Ico.mpr (by linarith)) (Set.mem_Ico.mpr ⟨hε0, hε1⟩) hε0
 
 end Real
+
+end

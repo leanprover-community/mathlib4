@@ -32,10 +32,12 @@ and Lindenstrauss. *Random Structures & Algorithms* 22(1), 60–65.
 <https://cseweb.ucsd.edu/~dasgupta/papers/jl.pdf>
 -/
 
+@[expose] public section
+
 private lemma smul_mulVec_real {m d : ℕ} (c : ℝ) (M : Fin m → Fin d → ℝ) (x : Fin d → ℝ) :
     Matrix.mulVec (c • M) x = c • Matrix.mulVec M x := by
   funext i
-  show (∑ j : Fin d, (c • M) i j * x j : ℝ) = c * ∑ j : Fin d, M i j * x j
+  change (∑ j : Fin d, (c • M) i j * x j : ℝ) = c * ∑ j : Fin d, M i j * x j
   simp only [Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum, mul_assoc]
 
 
@@ -52,7 +54,7 @@ instance Matrix.instTopologicalSpace {m n : Type*} {α : Type*} [TopologicalSpac
   inferInstanceAs (TopologicalSpace (m → n → α))
 
 /-- Bridge: `BorelSpace` for `Matrix m n α` via Pi (requires `Fintype` for `Pi.borelSpace`). -/
-instance Matrix.instBorelSpace {m n : Type*} {α : Type*} [Fintype m] [Fintype n]
+private instance Matrix.instBorelSpace {m n : Type*} {α : Type*} [Fintype m] [Fintype n]
     [TopologicalSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α] :
     BorelSpace (Matrix m n α) := by
   haveI : BorelSpace (n → α) := Pi.borelSpace
@@ -71,7 +73,7 @@ noncomputable def gaussianMatrixMeasure (m d : ℕ) :
 Pi instance since `Matrix` is an opaque `def`. -/
 instance (m d : ℕ) :
     MeasureTheory.IsProbabilityMeasure (gaussianMatrixMeasure m d) := by
-  show MeasureTheory.IsProbabilityMeasure
+  change MeasureTheory.IsProbabilityMeasure
     (MeasureTheory.Measure.pi (fun _ : Fin m =>
       MeasureTheory.Measure.pi (fun _ : Fin d => ProbabilityTheory.gaussianReal 0 1)))
   infer_instance
@@ -521,8 +523,7 @@ lemma jl_union_bound
   by_cases hS : S.card ≤ 1
   · exact ⟨0, fun u hu v hv huv =>
       absurd (Finset.card_le_one.mp hS u hu v hv) huv⟩
-  · push Not at hS
-
+  · push_neg at hS
     set Good : Set (Matrix (Fin m) (Fin d) ℝ) :=
       {A | ∀ u ∈ S, ∀ v ∈ S, u ≠ v →
         (1 - ε) * ‖u - v‖ ^ 2 ≤
@@ -758,3 +759,5 @@ theorem johnson_lindenstrauss
   · constructor <;> (subst huv; simp)
   · obtain ⟨hlb, hub⟩ := hA u hu v hv huv
     exact ⟨hnorm_eq ▸ hlb, hnorm_eq ▸ hub⟩
+
+end
