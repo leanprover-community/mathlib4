@@ -15,6 +15,8 @@ def RatInterval.toSet (x : RatInterval) : Set ℝ := Set.Icc x.lb x.ub
 
 @[simp] lemma RatInterval.toSet_def (x : RatInterval) : x.toSet = Set.Icc ↑x.lb ↑x.ub := rfl
 
+def RatInterval.const (r : ℚ) : RatInterval := ⟨r,r⟩
+
 def RatInterval.add (x : RatInterval) (y : RatInterval) : RatInterval := ⟨x.lb + y.lb, x.ub + y.ub⟩
 
 instance : Add RatInterval := ⟨RatInterval.add⟩
@@ -113,6 +115,9 @@ lemma RatInterval.pow_of_contains_zero_and_nonzero_even {x : RatInterval} {n : �
 
 /- Inclusion Theorems -/
 
+theorem const_inclusion (r : ℚ) : (r : ℝ) ∈ (RatInterval.const r).toSet := by
+  simp [RatInterval.const]
+
 theorem add_inclusion {r s : ℝ} {x y : RatInterval} (hrx : r ∈ x.toSet) (hsy : s ∈ y.toSet) :
     (r + s) ∈ (x + y).toSet := by
   simp at *
@@ -210,11 +215,191 @@ theorem pow_inclusion {r : ℝ} {x : RatInterval} (n : ℕ) (hrx : r ∈ x.toSet
 
 /- Interval Comparisons -/
 
-def RatInterval.subset (x : RatInterval) (y : RatInterval) : Prop := x.lb ≤ y.lb ∧ x.ub ≤ y.ub
+def RatInterval.subset (x : RatInterval) (y : RatInterval) : Prop := y.lb ≤ x.lb ∧ x.ub ≤ y.ub
 
-instance : LE RatInterval :=
-  ⟨RatInterval.subset⟩
+-- instance (x y : RatInterval) : Decidable (x.subset y) := instDecidableAnd
 
-instance (x y : RatInterval) : Decidable (x ≤ y) := instDecidableAnd
+instance : HasSubset RatInterval := ⟨(RatInterval.subset · ·)⟩
 
-instance : HasSubset RatInterval := ⟨(· ≤ ·)⟩
+instance (x y : RatInterval) : Decidable (x ⊆ y) := instDecidableAnd
+
+def RatInterval.le (x : RatInterval) (r : ℝ) : Prop := x.ub ≤ r
+
+def RatInterval.lt (x : RatInterval) (r : ℝ) : Prop := x.ub < r
+
+def RatInterval.ge (x : RatInterval) (r : ℝ) : Prop := r ≤ x.lb
+
+def RatInterval.gt (x : RatInterval) (r : ℝ) : Prop := r < x.lb
+
+lemma RatInterval.le_of_le {x : RatInterval} (r s : ℝ) (hrx : r ∈ x.toSet) (hsx : x.le s) :
+    r ≤ s := le_trans hrx.2 hsx
+
+lemma RatInterval.lt_of_lt {x : RatInterval} (r s : ℝ) (hrx : r ∈ x.toSet) (hsx : x.lt s) :
+    r < s := lt_of_le_of_lt hrx.2 hsx
+
+lemma RatInterval.le_of_ge {x : RatInterval} (r s : ℝ) (hrx : r ∈ x.toSet) (hsx : x.ge s) :
+    s ≤ r := le_trans hsx hrx.1
+
+lemma RatInterval.lt_of_gt {x : RatInterval} (r s : ℝ) (hrx : r ∈ x.toSet) (hsx : x.gt s) :
+    s < r := lt_of_lt_of_le hsx hrx.1
+
+lemma RatInterval.subset_of_subset {x y : RatInterval} (hxy : x ⊆ y) : x.toSet ⊆ y.toSet := by
+  intro r hr
+  simp only [Subset, subset, toSet_def, Set.mem_Icc] at hxy hr ⊢
+  rify at hxy
+  exact ⟨by linarith, by linarith⟩
+
+/- Define `exp` approximations -/
+
+def exp_lower_taylor (x : ℚ) (n : ℕ) :=
+  ∑ i ∈ Finset.range (2 * (n + 1) + 1), (x ^ i) / i !
+
+def exp_upper_taylor (x : ℚ) (n : ℕ) :=
+  ∑ i ∈ Finset.range (2*(n + 1)), (x ^ i) / i !
+
+def exp_neg_lb (x : ℚ) (n : ℕ) :=
+  if x < -1 then (exp_lower_taylor (x / - x.floor) n) ^ (- x.floor)
+  else exp_lower_taylor x n
+
+def exp_neg_ub (x : ℚ) (n : ℕ) :=
+  if x < -1 then (exp_upper_taylor (x / - x.floor) n) ^ (- x.floor)
+  else exp_upper_taylor x n
+
+def exp_lb (x : ℚ) (n : ℕ) :=
+  if x < 0 then exp_neg_lb x n
+  else if x = 0 then 1
+  else 1 / exp_neg_ub (-x) n
+
+def exp_ub (x : ℚ) (n : ℕ) :=
+  if x < 0 then exp_neg_ub x n
+  else if x = 0 then 1
+  else 1 / exp_neg_lb (-x) n
+
+def RatInterval.exp (x : RatInterval) (n : ℕ) : RatInterval :=
+  ⟨exp_lb x.lb n, exp_ub x.ub n⟩
+
+/- ## Test 1 -/
+
+-- example (u : ℝ) (hu : 0 ≤ u) : 0 ≤ (Real.exp u * (u - 2) + u + 2) := by
+
+/-
+
+## Prototype 1
+
+Prototype 1 will assume all hypothesis come in the form `rᵢ ∈ xᵢ.toSet` exactly one for each
+real variable `rᵢ` in the context.
+
+We want to prove a goal of the form `e₁ ⋈ e₂`. We will need to rewrite this as
+`e₁ - e₂ ⋈ 0` and then convert the lhs into an interval. Then compute that this is
+true or false.
+
+Perhaps we construct a proof term that `[e] ⋈ 0 → e ⋈ 0` (I think this will be easier to extend).
+
+So to make this work we need to show that our map `e ⋈ 0` iff `[e] ⋈ 0`, then we prove
+`[e] ⋈ 0` by reflection.
+
+-/
+
+open Lean Meta Expr Elab Tactic Std
+
+namespace RatArithmetic
+
+structure Result where
+  interval : RatInterval
+  /-- proof that `e ∈ interval` -/
+  proof : Expr
+
+#check Expr.rat?
+#check Expr.fvarId?
+#check add_inclusion
+#check mkAppM
+
+#check getMainGoal
+/-
+add_inclusion {r s : ℝ} {x y : RatInterval} (hrx : r ∈ x.toSet) (hsy : s ∈ y.toSet) :
+  r + s ∈ (x + y).toSet
+-/
+
+partial def Expr.toInterval (e : Expr) (ctx : HashMap FVarId (RatInterval × Expr)) :
+    MetaM RatArithmetic.Result := do
+  if let some fvarid := e.fvarId? then
+    if let some ⟨x, p⟩ := ctx[fvarid]? then
+      return {interval := x, proof := p}
+    else
+      throwError "variable not in context"
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, x, y]) =>
+    let rx ← Expr.toInterval x ctx
+    let ry ← Expr.toInterval y ctx
+    let p ← mkAppM ``add_inclusion #[rx.proof, ry.proof]
+    return {interval := rx.interval + ry.interval, proof := p}
+  | (``HSub.hSub, #[_, _, _, _, x, y]) =>
+    let rx ← Expr.toInterval x ctx
+    let ry ← Expr.toInterval y ctx
+    let p ← mkAppM ``sub_inclusion #[rx.proof, ry.proof]
+    return {interval := rx.interval - ry.interval, proof := p}
+  | (``HMul.hMul, #[_, _, _, _, x, y]) =>
+    let rx ← Expr.toInterval x ctx
+    let ry ← Expr.toInterval y ctx
+    let p ← mkAppM ``mul_inclusion #[rx.proof, ry.proof]
+    return {interval := rx.interval * ry.interval, proof := p}
+  | _ => throwError "unsupported"
+
+syntax (name := interval) "interval" : tactic
+
+def Expr.RatInterval? (e : Expr) : Option RatInterval :=
+  match e.getAppFnArgs with
+  | (``RatInterval.mk, #[lb, ub]) =>
+    match lb.rat?, ub.rat? with
+    | some lb, some ub => some ⟨lb, ub⟩
+    | _, _ => none
+  | _ => none
+
+def Expr.intervalHyp? (e : Expr) : MetaM (Option (FVarId × RatInterval)) :=
+  match e.getAppFnArgs with
+  | (``Membership.mem, #[_, _, .app (.const ``RatInterval.toSet []) ex, v]) => do
+    match v.fvarId?, Expr.RatInterval? ex with
+    | some fvarid, some x => return some ⟨fvarid, x⟩
+    | _, _ => return none
+  | _ => return none
+
+def RatInterval.toExpr (x : RatInterval) : Expr :=
+  mkAppN (mkConst ``RatInterval.mk) #[ToExpr.toExpr x.lb, ToExpr.toExpr x.ub]
+
+elab "interval" : tactic => withMainContext do
+  let g ← getMainGoal
+  -- why do we need `:= ←`
+  let ctx : HashMap FVarId (RatInterval × Expr) := ← do
+    let mut ctx : HashMap FVarId (RatInterval × Expr) := {}
+    for ldecl in ← getLCtx do
+      if let some ⟨fvarid, x⟩ := (← Expr.intervalHyp? ldecl.type) then
+        ctx := ctx.insert fvarid ⟨x, ldecl.toExpr⟩
+    return ctx
+  let t ← g.getType
+  match t.getAppFnArgs with
+  | (``Membership.mem, #[_, _, .app (.const ``RatInterval.toSet []) ex, e]) =>
+    let some x := Expr.RatInterval? ex | throwError "unsupported1"
+    let r ← Expr.toInterval e ctx
+    if r.interval ⊆ x then
+      let hrx ← mkDecideProof
+        (← mkAppM ``HasSubset.Subset #[RatInterval.toExpr r.interval, RatInterval.toExpr x])
+      let p := .app (← mkAppM ``RatInterval.subset_of_subset #[hrx]) r.proof
+      g.assign p
+      replaceMainGoal []
+    else throwError "failure to bound"
+  | _ => throwError "unsupported2"
+
+/- ## Scratchpad Brainstorm
+
+- Create a context: `Array (Name × RatInterval)`
+
+- Convert the expression in the goal to a RatInterval. This is a map which takes the context and
+  the goal as an expression and converts to a RatInterval.
+
+-/
+
+example {x : ℝ} (hx : x ∈ (RatInterval.mk 3 5).toSet) :
+    x ∈ (RatInterval.mk 3 5).toSet := by
+  interval
+
+end RatArithmetic
