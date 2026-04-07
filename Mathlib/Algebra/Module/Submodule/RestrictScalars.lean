@@ -42,6 +42,7 @@ def restrictScalars (V : Submodule R M) : Submodule S M where
 theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) = V :=
   rfl
 
+@[simp]
 theorem toAddSubmonoid_restrictScalars (V : Submodule R M) :
     (V.restrictScalars S).toAddSubmonoid = V.toAddSubmonoid :=
   rfl
@@ -139,7 +140,7 @@ lemma restrictScalars_sInf (s : Set (Submodule R M)) :
 @[simp]
 lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
-  rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
+  simp [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
 
 variable (R M) in
 /-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
@@ -181,12 +182,12 @@ theorem codisjoint_restrictScalars_iff {s t : Submodule R M} :
 
 @[simp]
 theorem disjoint_restrictScalars_iff {s t : Submodule R M} :
-    Disjoint (s.restrictScalars R) (t.restrictScalars R) ↔ Disjoint s t := by
+    Disjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Disjoint s t := by
   simp [disjoint_def]
 
 @[simp]
 theorem isCompl_restrictScalars_iff {s t : Submodule R M} :
-    IsCompl (s.restrictScalars R) (t.restrictScalars R) ↔ IsCompl s t := by
+    IsCompl (s.restrictScalars S) (t.restrictScalars S) ↔ IsCompl s t := by
   simp [isCompl_iff]
 
 end Submodule

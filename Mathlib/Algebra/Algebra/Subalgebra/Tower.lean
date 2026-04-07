@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
-
+public import Mathlib.RingTheory.Ideal.Defs
 /-!
 # Subalgebras in towers of algebras
 
@@ -120,9 +120,36 @@ end Semiring
 
 section CommSemiring
 
+variable [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A)
+
 @[simp]
-lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) :
+theorem restrictScalars_toSubmodule_bot :
+    Submodule.restrictScalars R (Subalgebra.toSubmodule (⊥ : Subalgebra S A))
+      = Subalgebra.toSubmodule S := by
+  rw [← Subalgebra.restrictScalars_toSubmodule]
+  ext x
+  simp [Algebra.mem_bot]
+
+@[simp]
+theorem restrictScalars_toSubmodule_top :
+    Submodule.restrictScalars R (Subalgebra.toSubmodule (⊤ : Subalgebra S A))
+      = Subalgebra.toSubmodule ⊤ := by
+  rw [← Subalgebra.restrictScalars_toSubmodule]
+  simp
+
+theorem codisjoint_bot_iff (I : Ideal A) :
+    Codisjoint (Subalgebra.toSubmodule (⊥ : Subalgebra S A)) (I.restrictScalars S) ↔
+      Codisjoint (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
+  simp only [← Submodule.codisjoint_restrictScalars_iff R, restrictScalars_toSubmodule_bot,
+    Submodule.restrictScalars_restrictScalars, Submodule.restrictScalars_self]
+
+theorem disjoint_bot_iff (I : Ideal A) :
+    Disjoint (Subalgebra.toSubmodule (⊥ : Subalgebra S A)) (I.restrictScalars S) ↔
+      Disjoint (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
+  simp [← Submodule.disjoint_restrictScalars_iff R]
+
+@[simp]
+lemma range_isScalarTower_toAlgHom :
     LinearMap.range (IsScalarTower.toAlgHom R S A : S →ₗ[R] A) = Subalgebra.toSubmodule S := by
   ext
   simp [algebraMap_eq]
@@ -146,3 +173,5 @@ theorem adjoin_range_toAlgHom (t : Set A) :
          z ∈ Subsemiring.closure (Set.range (algebraMap S A) ∪ t : Set A) by simp
 
 end IsScalarTower
+
+
