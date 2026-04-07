@@ -69,8 +69,8 @@ lemma add_def (s t : SetSemiring α) : s + t = ⟨s.toSet ∪ t.toSet⟩ := rfl
 
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc _ _ _ := by simp_rw [add_def, union_assoc]
-  zero_add _ := by simp_rw [zero_def, add_def, empty_union]
-  add_zero _ := by simp_rw [zero_def, add_def, union_empty]
+  zero_add _ := by rw [zero_def, add_def, empty_union]
+  add_zero _ := by rw [zero_def, add_def, union_empty]
   add_comm _ _ := by simp_rw [add_def, union_comm]
   nsmul := nsmulRec
 
@@ -90,8 +90,8 @@ lemma mul_def (s t : SetSemiring α) : s * t = ⟨s.toSet * t.toSet⟩ := rfl
 @[simp] lemma _root_.Set.ofSet_mul (s t : Set α) : ofSet (s * t) = ⟨s⟩ * ⟨t⟩ := rfl
 
 instance : NonUnitalNonAssocSemiring (SetSemiring α) where
-  zero_mul _ := by simp_rw [mul_def, zero_def, empty_mul]
-  mul_zero _ := by simp_rw [mul_def, zero_def, mul_empty]
+  zero_mul _ := by rw [mul_def, zero_def, empty_mul]
+  mul_zero _ := by rw [mul_def, zero_def, mul_empty]
   left_distrib _ _ _ := by simp_rw [mul_def, add_def, mul_union]
   right_distrib _ _ _ := by simp_rw [mul_def, add_def, union_mul]
 
@@ -126,8 +126,8 @@ end One
 
 instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
   __ := instNonUnitalNonAssocSemiring
-  mul_one _ := by simp_rw [one_def, mul_def, mul_one]
-  one_mul _ := by simp_rw [one_def, mul_def, one_mul]
+  mul_one _ := by rw [one_def, mul_def, mul_one]
+  one_mul _ := by rw [one_def, mul_def, one_mul]
 
 instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
   __ := instNonUnitalNonAssocSemiring
@@ -173,8 +173,8 @@ def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
 with respect to the pointwise operations on sets. -/
 def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
   toFun s := ⟨f '' s.toSet⟩
-  map_zero' := by simp [image_empty]
-  map_one' := by simp_rw [toSet_one, image_one, map_one, singleton_one, ofSet_one]
+  map_zero' := by simp
+  map_one' := by simp [singleton_one]
   map_add' := by simp [image_union]
   map_mul' _ _ := by simp [image_mul f]
 
