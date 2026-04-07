@@ -44,7 +44,7 @@ noncomputable def mapDerivedCategoryFactors :
   F.mapHomologicalComplexUpToQuasiIsoFactors _
 
 @[reassoc]
-lemma mapDerivedCategoryFactors_naturality {X Y : CochainComplex C₁ ℤ} (f : X ⟶ Y) :
+lemma mapDerivedCategoryFactors_hom_naturality {X Y : CochainComplex C₁ ℤ} (f : X ⟶ Y) :
     F.mapDerivedCategory.map (DerivedCategory.Q.map f) ≫ F.mapDerivedCategoryFactors.hom.app Y =
       F.mapDerivedCategoryFactors.hom.app X ≫
         DerivedCategory.Q.map ((F.mapHomologicalComplex (ComplexShape.up ℤ)).map f) :=
