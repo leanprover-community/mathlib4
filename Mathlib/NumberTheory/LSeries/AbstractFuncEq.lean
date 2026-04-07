@@ -301,6 +301,13 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     simp_rw [rpow_neg hx.le]
     match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
+lemma hf_modif_top (r : ℝ) :
+    (fun x ↦ P.f_modif x - 0) =O[atTop] fun x ↦ x ^ r := by
+  refine (P.hf_top r).congr' ?_ (by rfl)
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
+    indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
@@ -318,17 +325,8 @@ def toStrongFEPair : StrongFEPair E where
   hk       := P.hk
   hf₀      := rfl
   hg₀      := rfl
-  hf_top r := by
-    refine (P.hf_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
-  hg_top r := by
-    refine (P.hg_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
-    rfl
+  hf_top   := P.hf_modif_top
+  hg_top   := P.symm.hf_modif_top
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
