@@ -138,6 +138,7 @@ theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.S
   apply h.2 _ _
   · exact ⟨Ideal.map_isPrime_of_surjective hf this, Ideal.le_map_of_comap_le_of_surjective f hf e₁⟩
   · exact Ideal.map_le_of_le_comap e₂
+
 @[deprecated (since := "2026-04-01")] alias Ideal.minimal_primes_comap_of_surjective :=
     Ideal.minimalPrimes_comap_of_surjective
 
