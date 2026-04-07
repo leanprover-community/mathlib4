@@ -20,7 +20,7 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 * `MvPowerSeries.uniqueEquiv` : The isomorphism between multivariable power series
   in a single variable and power series over the ground ring.
 
-* `MvPowerSeries.mapEquiv`, `MvPowerSeries.mapAlgEquiv` : The isomorhism between
+* `MvPowerSeries.congrRingEquiv`, `MvPowerSeries.congrAlgEquiv` : The isomorhism between
   multivariable power series induced by an isomorphism between the coefficient rings.
 
 * `MvPowerSeries.sumAlgEquiv` : The isomorphism between multivariable power series
@@ -96,22 +96,23 @@ variable [CommSemiring S] {f : R →+* S}
 variable (σ) in
 /-- If `e : A ≃+* B` is an isomorphism of rings, then so is `map e`. -/
 @[simps apply]
-def mapEquiv (e : R ≃+* S) : MvPowerSeries σ R ≃+* MvPowerSeries σ S where
+def congrRingEquiv (e : R ≃+* S) : MvPowerSeries σ R ≃+* MvPowerSeries σ S where
   __ := map (e : R →+* S)
   invFun := map (e.symm : S →+* R)
   left_inv := map_leftInverse e.left_inv
   right_inv := map_rightInverse e.right_inv
 
 @[simp]
-theorem mapEquiv_refl : mapEquiv σ (RingEquiv.refl R) = RingEquiv.refl _ :=
+theorem congrRingEquiv_refl : congrRingEquiv σ (RingEquiv.refl R) = RingEquiv.refl _ :=
   RingEquiv.ext (by simp)
 
 @[simp]
-theorem mapEquiv_symm (e : R ≃+* S) : (mapEquiv σ e).symm = mapEquiv σ e.symm := rfl
+theorem congrRingEquiv_symm (e : R ≃+* S) : (congrRingEquiv σ e).symm = congrRingEquiv σ e.symm :=
+  rfl
 
 @[simp]
-theorem mapEquiv_trans {S' : Type*} [CommSemiring S'] (e : R ≃+* S) (f : S ≃+* S') :
-    (mapEquiv σ e).trans (mapEquiv σ f) = mapEquiv σ (e.trans f) :=
+theorem congrRingEquiv_trans {S' : Type*} [CommSemiring S'] (e : R ≃+* S) (f : S ≃+* S') :
+    (congrRingEquiv σ e).trans (congrRingEquiv σ f) = congrRingEquiv σ (e.trans f) :=
   RingEquiv.ext fun p => by simp
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
@@ -120,20 +121,20 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable (σ) in
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
 @[simps apply]
-def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPowerSeries σ A₁ ≃ₐ[R] MvPowerSeries σ A₂ :=
-  { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
+def congrAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPowerSeries σ A₁ ≃ₐ[R] MvPowerSeries σ A₂ := {
+  mapAlgHom (e : A₁ →ₐ[R] A₂), congrRingEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
 
 @[simp]
-theorem mapAlgEquiv_refl : mapAlgEquiv σ (AlgEquiv.refl : A₁ ≃ₐ[R] A₁) = AlgEquiv.refl :=
+theorem congrAlgEquiv_refl : congrAlgEquiv σ (AlgEquiv.refl : A₁ ≃ₐ[R] A₁) = AlgEquiv.refl :=
   AlgEquiv.ext (by simp)
 
 @[simp]
-theorem mapAlgEquiv_symm (e : A₁ ≃ₐ[R] A₂) : (mapAlgEquiv σ e).symm = mapAlgEquiv σ e.symm :=
+theorem congrAlgEquiv_symm (e : A₁ ≃ₐ[R] A₂) : (congrAlgEquiv σ e).symm = congrAlgEquiv σ e.symm :=
   rfl
 
 @[simp]
-theorem mapAlgEquiv_trans (e : A₁ ≃ₐ[R] A₂) (f : A₂ ≃ₐ[R] A₃) :
-    (mapAlgEquiv σ e).trans (mapAlgEquiv σ f) = mapAlgEquiv σ (e.trans f) := by
+theorem congrAlgEquiv_trans (e : A₁ ≃ₐ[R] A₂) (f : A₂ ≃ₐ[R] A₃) :
+    (congrAlgEquiv σ e).trans (congrAlgEquiv σ f) = congrAlgEquiv σ (e.trans f) := by
   ext; simp
 
 end Map
