@@ -61,6 +61,7 @@ Instances for concrete types are proved in their respective files:
 * `Fin n` is in `Order.Interval.Finset.Fin`
 * `Finset α` is in `Data.Finset.Interval`
 * `Σ i, α i` is in `Data.Sigma.Interval`
+
 Along, you will find lemmas about the cardinality of those finite intervals.
 
 ## TODO
