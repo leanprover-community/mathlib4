@@ -415,13 +415,11 @@ lemma qExpansion_smul
   grind [map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
     (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_neg
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
     qExpansion h (-f) = -qExpansion h f := by
   simpa using qExpansion_smul hh hΓ (-1 : ℂ) f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f - g) = qExpansion h f - qExpansion h g := by

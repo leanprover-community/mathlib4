@@ -43,10 +43,8 @@ section IsLocalRing
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : FormallyUnramified S (ResidueField S) := .quotient _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [FormallyUnramified R S] :
     FormallyUnramified (ResidueField R) (ResidueField S) :=
   have : FormallyUnramified R (ResidueField S) := .comp _ S _
@@ -54,7 +52,6 @@ instance [FormallyUnramified R S] :
 
 variable [EssFiniteType R S]
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
@@ -62,14 +59,12 @@ instance [FormallyUnramified R S] :
   have : EssFiniteType (ResidueField R) (ResidueField S) := .of_comp R _ _
   FormallyUnramified.finite_of_free _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
 set_option backward.inferInstanceAs.wrap.data false in
-set_option backward.isDefEq.respectTransparency false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
@@ -96,7 +91,6 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   exact isField_quotient_map_maximalIdeal
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
@@ -120,7 +114,6 @@ lemma FormallyUnramified.of_map_maximalIdeal
     have : residue S x = 0 := by rwa [residue_eq_zero_iff, ← H]
     simp [*, TensorProduct.tmul_add, TensorProduct.smul_tmul', ← Algebra.algebraMap_eq_smul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma FormallyUnramified.iff_map_maximalIdeal_eq :
     Algebra.FormallyUnramified R S ↔
       Algebra.IsSeparable (ResidueField R) (ResidueField S) ∧
@@ -134,7 +127,6 @@ section IsUnramifiedAt
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
 Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`. -/
 lemma isUnramifiedAt_iff_map_eq :
@@ -151,11 +143,9 @@ lemma isUnramifiedAt_iff_map_eq :
     Ideal.map_map, Localization.localRingHom,
     IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
 
@@ -201,7 +191,6 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
       map_mul, mul_assoc, mul_left_comm, IsLocalization.mk'_spec'_mk, ← map_mul]
   exact Submodule.subset_span ⟨_, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma localRingHom_surjective_of_primesOver_eq_singleton
     [Module.Finite R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :

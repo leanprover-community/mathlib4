@@ -531,11 +531,11 @@ theorem swap_covBy_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 
 @[to_dual none]
 theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
-  refine fun h => of_not_not fun hab => ?_
-  push_neg at hab
+  intro h
+  by_contra! ⟨ha, hb⟩
   exact
-    h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
-      (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)
+    h.2 (mk_lt_mk.2 <| Or.inl ⟨ha.lt_of_le h.1.1, le_rfl⟩)
+      (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hb.lt_of_le h.1.2⟩)
 
 @[to_dual self]
 theorem _root_.WCovBy.fst (h : x ⩿ y) : x.1 ⩿ y.1 :=

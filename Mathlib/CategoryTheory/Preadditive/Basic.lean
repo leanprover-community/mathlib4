@@ -235,7 +235,6 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
     (w : kernel.ι f = 0) : Mono f :=
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
     (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
@@ -266,7 +265,6 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
     (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
@@ -318,7 +316,6 @@ section
 
 variable {X Y : C} {f : X ⟶ Y} {g : X ⟶ Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map a kernel cone on the difference of two morphisms to the equalizer fork. -/
 @[simps! pt]
 def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
@@ -328,7 +325,6 @@ def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
 theorem forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map any equalizer fork to a cone on the difference of the two morphisms. -/
 def kernelForkOfFork (c : Fork f g) : KernelFork (f - g) :=
   Fork.ofι c.ι <| by rw [comp_sub, comp_zero, sub_eq_zero, c.condition]
