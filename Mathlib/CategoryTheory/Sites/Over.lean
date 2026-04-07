@@ -200,13 +200,13 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
     simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma overEquiv_ {D : Type*} [Category* D] (F : C ⥤ D) {X : C} (U : Over X) (S : Sieve _) :
-    (Sieve.overEquiv ((Over.post F).obj U)) (Sieve.functorPushforward (Over.post F) S) =
-      Sieve.functorPushforward F (Sieve.overEquiv _ S) := by
-  refine le_antisymm ?_ ?_
-  · sorry
-  · rw [functorPushforward_le_iff_le_functorPullback, ← overEquiv_functorPullback_post]
-    sorry
+lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
+    (U : Over X) (S : Sieve U) :
+    (Sieve.overEquiv _) (Sieve.functorPushforward (Over.post F) S) =
+      Sieve.functorPushforward F ((Sieve.overEquiv _) S) := by
+  dsimp [Sieve.overEquiv, ← Sieve.functorPushforward_comp]
+  rw [← Sieve.functorPushforward_comp, ← Sieve.functorPushforward_comp]
+  rfl
 
 end Sieve
 
@@ -307,6 +307,15 @@ instance {D : Type*} [Category* D] (K : GrothendieckTopology D)
     rw [GrothendieckTopology.mem_over_iff] at hS ⊢
     rw [Sieve.overEquiv_functorPullback_post]
     exact F.cover_lift J K hS
+
+variable {J} in
+lemma _root_.CategoryTheory.CoverPreserving.overPost {D : Type*} [Category* D]
+    {K : GrothendieckTopology D} {F : C ⥤ D} (X : C) (h : CoverPreserving J K F) :
+    CoverPreserving (J.over X) (K.over _) (Over.post (X := X) F) where
+  cover_preserve {U} S hS := by
+    rw [GrothendieckTopology.mem_over_iff] at hS ⊢
+    rw [Sieve.overEquiv_functorPushforward_post]
+    exact h.cover_preserve hS
 
 open Limits
 

@@ -411,49 +411,6 @@ lemma _root_.CategoryTheory.Sieve.functorPushforward_ofArrows {C D : Type*} [Cat
     Sieve.functorPushforward F (Sieve.ofArrows Y f) = Sieve.ofArrows _ (fun i ↦ F.map (f i)) := by
   rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows]
 
--- false
---lemma _root_.CategoryTheory.Functor.ofArrows_map_mem {C D : Type*} [Category* C] [Category* D]
---    (F : C ⥤ D) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
---    [Functor.PreservesOneHypercovers.{w} F J K] {ι : Type w} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X)
---    (h : Sieve.ofArrows Y f ∈ J X) :
---    Sieve.ofArrows _ (fun i ↦ F.map (f i)) ∈ K _ := by
---  rw [← Sieve.functorPushforward_ofArrows]
-
--- false?
---lemma _root_.CategoryTheory.Functor.ofArrows_map_mem {C D : Type*} [Category* C] [Category* D]
---    (F : C ⥤ D) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
---    [Functor.PreservesOneHypercovers.{w} F J K] {X : C} (E : PreOneHypercover.{w} X)
---    (h : E.sieve₀ ∈ J X) :
---    (E.map F).sieve₀ ∈ K _ := by
---  sorry
-
-lemma _root_.CategoryTheory {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (X : C)
-    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    (h : CoverPreserving J K F) :
-    CoverPreserving (J.over _) (K.over _) (Over.post (X := X) F) where
-  cover_preserve {U} S hS := by
-    rw [K.mem_over_iff]
-    sorry
-
-lemma dasfsdf {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (X : C)
-  (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-  [Functor.PreservesOneHypercovers.{w} F J K] :
-  Functor.PreservesOneHypercovers.{w} (Over.post (X := X) F) (J.over _) (K.over _) := by
-refine fun {U} E ↦ ⟨?_, ?_⟩
-· simp only [Over.post_obj, Functor.id_obj, PreOneHypercover.map_toPreZeroHypercover,
-    PreZeroHypercover.sieve₀_map]
-  rw [K.mem_over_iff]
-  dsimp [Sieve.overEquiv]
-  rw [← Sieve.functorPushforward_comp]
-  change Sieve.functorPushforward (Over.forget _ ⋙ F) E.sieve₀ ∈ K (F.obj U.left)
-  rw [Sieve.functorPushforward_comp, ← CategoryTheory.PreOneHypercover.sieve₀_map,
-    ← GrothendieckTopology.OneHypercover.map_toPreOneHypercover _ _ J,
-    ← PreOneHypercover.sieve₀_map,
-    ← GrothendieckTopology.OneHypercover.map_toPreOneHypercover _ _ K]
-  exact GrothendieckTopology.OneHypercover.mem₀ _
-· intro i j W p₁ p₂ heq
-  sorry
-
 instance {C : Type*} [Category* C] {A : Type*} [Category* A]
     (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
     IsIso f.hom := by
@@ -512,7 +469,7 @@ omit [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
 lemma isQuasicoherent_pushforward_of_isLeftAdjoint (G : C' ⥤ C) [G.IsLeftAdjoint]
     [G.IsContinuous J' J] [G.IsCocontinuous J' J]
     (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
-    [∀ X, Functor.IsContinuous.{u} (Over.post (X := X) G) (J'.over _) (J.over _)]
+    [∀ X, Functor.IsContinuous (Over.post (X := X) G) (J'.over _) (J.over _)]
     [HasPullbacks C] [HasPullbacks C']
     (η : (pushforward φ).obj (unit R) ≅ unit S)
     {M : SheafOfModules.{u} R} [IsQuasicoherent M] :

@@ -12,6 +12,8 @@ public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Over
+public import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 
@@ -431,6 +433,36 @@ lemma ModuleCat.restrictScalarsIsoOfIso_inv_apply {R S : CommRingCat.{u}} (e : R
     (ModuleCat.restrictScalarsIsoOfIso e).inv x = e.hom x :=
   rfl
 
+lemma Scheme.Hom.coverPreserving_opensFunctor {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
+  f.isOpenEmbedding.isOpenMap.coverPreserving
+
+open Limits
+lemma _root_.CategoryTheory.Limits.preservesLimit_walkingParallelPair_of_eq
+    {C D : Type*} [Category* C] [Category* D] {K : WalkingParallelPair ⥤ C}
+    (heq : K.map .left = K.map .right) (F : C ⥤ D) :
+    PreservesLimit K F := by
+  suffices h : ∀ {X Y : C} {f g : X ⟶ Y} (hfg : f = g), PreservesLimit (parallelPair f g) F by
+    have := h heq
+    exact preservesLimit_of_iso_diagram _ (diagramIsoParallelPair _).symm
+  rintro X Y f g rfl
+  refine preservesLimit_of_preserves_limit_cone (isLimitIdFork rfl) ?_
+  exact (isLimitMapConeForkEquiv F _).symm (by simpa using isLimitIdFork rfl)
+
+instance {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    PreservesLimit (parallelPair f f) F :=
+  Limits.preservesLimit_walkingParallelPair_of_eq rfl _
+
+instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsThin C] (F : C ⥤ D) :
+    Limits.PreservesLimitsOfShape Limits.WalkingParallelPair F := by
+  constructor
+  intro K
+  exact Limits.preservesLimit_walkingParallelPair_of_eq (Subsingleton.elim _ _) _
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] : f.opensFunctor.Full :=
+  haveI : Mono f.base := (TopCat.mono_iff_injective f.base).mpr f.isOpenEmbedding.injective
+  inferInstanceAs <| (f.isOpenEmbedding.functor.Full)
+
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
@@ -438,10 +470,20 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
   letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   have hα : IsIso α := NatIso.isIso_of_isIso_app _
   dsimp [restrictFunctor]
-  have (Z : TopologicalSpace.Opens ↥X) :
+  have (Z : TopologicalSpace.Opens X) :
       (Over.post (Hom.opensFunctor f)).IsContinuous ((Opens.grothendieckTopology ↥X).over Z)
-        ((Opens.grothendieckTopology ↥Y).over ((Hom.opensFunctor f).obj Z)) :=
-    sorry
+        ((Opens.grothendieckTopology Y).over ((Hom.opensFunctor f).obj Z)) := by
+    refine Functor.isContinuous_of_coverPreserving ?_ (.overPost _ f.coverPreserving_opensFunctor)
+    refine compatiblePreservingOfDownwardsClosed _ _ fun {U V} a ↦ ?_
+    refine ⟨Over.mk (Y := (Opens.map f.base).obj V.left) ?_, ?_⟩
+    · refine homOfLE fun x hx ↦ ?_
+      obtain ⟨u, hu, heq⟩ := V.hom.le hx
+      obtain rfl := f.isOpenEmbedding.injective heq
+      exact hu
+    · refine Over.isoMk (eqToIso <| Opens.ext ?_) (Subsingleton.elim _ _)
+      refine Set.image_preimage_eq_of_subset fun x h ↦ ?_
+      obtain ⟨_, _, rfl⟩ := a.left.le h
+      exact ⟨_, rfl⟩
   convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
     (J := Opens.grothendieckTopology _) (J' := Opens.grothendieckTopology _) f.opensFunctor _ _
   · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
@@ -457,11 +499,6 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
       ext x
       exact congr($(f.appIso_hom_naturality _).hom x)
   · infer_instance
-
-lemma Scheme.Modules.exists_opens_nonempty_presentation (x : X) (U : X.Opens) (hx : x ∈ U) :
-    ∃ V ≤ U, x ∈ V ∧ Nonempty ((Scheme.Modules.restrictFunctor V.ι).obj M).Presentation := by
-  have := M.isQuasicoherent_restrictFunctor U.ι
-  sorry
 
 end AlgebraicGeometry
 
