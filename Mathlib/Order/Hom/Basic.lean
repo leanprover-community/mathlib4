@@ -971,11 +971,8 @@ def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < �
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
+@[to_dual toRelIsoGT_symm]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
-  rfl
-
-@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
-theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
   rfl
 
 @[to_dual (attr := simp) coe_toRelIsoGT]
