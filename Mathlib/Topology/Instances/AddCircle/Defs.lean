@@ -328,11 +328,22 @@ theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
   rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
+@[simp]
+lemma coe_equivIco {y : AddCircle p} :
+    (equivIco p a y : AddCircle p) = y :=
+  (equivIco p a).left_inv y
+
+@[simp]
 lemma coe_equivIoc {y : AddCircle p} :
     (equivIoc p a y : AddCircle p) = y :=
   (equivIoc p a).left_inv y
 
-lemma equivIoc_coe_of_mem {y : 𝕜} (hy : y ∈ Set.Ioc a (a + p)) :
+lemma equivIco_coe_of_mem {y : 𝕜} (hy : y ∈ Ico a (a + p)) :
+    equivIco p a y = y := by
+  have : equivIco p a y = ⟨y, hy⟩ := (equivIco p a).right_inv ⟨y, hy⟩
+  simp [this]
+
+lemma equivIoc_coe_of_mem {y : 𝕜} (hy : y ∈ Ioc a (a + p)) :
     equivIoc p a y = y := by
   have : equivIoc p a y = ⟨y, hy⟩ := (equivIoc p a).right_inv ⟨y, hy⟩
   simp [this]
@@ -346,10 +357,10 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
   exact h
 
 /-- Ioc version of `coe_eq_coe_iff_of_mem_Ico`. -/
-lemma coe_eq_coe_iff_of_mem_Ioc {x y : 𝕜} (hx : x ∈ Set.Ioc a (a + p))
-    (hy : y ∈ Set.Ioc a (a + p)) : (x : AddCircle p) = y ↔ x = y := by
+lemma coe_eq_coe_iff_of_mem_Ioc {x y : 𝕜} (hx : x ∈ Ioc a (a + p))
+    (hy : y ∈ Ioc a (a + p)) : (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
-  suffices (⟨x, hx⟩ : Set.Ioc a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
+  suffices (⟨x, hx⟩ : Ioc a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIoc p a at h
   rw [← (equivIoc p a).right_inv ⟨x, hx⟩, ← (equivIoc p a).right_inv ⟨y, hy⟩]
   exact h
@@ -362,13 +373,11 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc_coe_eq hx]
 
-theorem liftIoc_eq_liftIco_of_ne (f : 𝕜 → B) {x : AddCircle p}
+theorem liftIoc_eq_liftIco_of_ne {f : 𝕜 → B} {x : AddCircle p}
     (x_ne_a : x ≠ a) : liftIoc p a f x = liftIco p a f x := by
-  let b := QuotientAddGroup.equivIcoMod hp.out a x
-  have x_eq_b : x = ↑b :=
-    (QuotientAddGroup.equivIcoMod hp.out a).apply_eq_iff_eq_symm_apply.mp rfl
-  rw [x_eq_b, liftIco_coe_apply b.coe_prop]
-  exact liftIoc_coe_apply ⟨lt_of_le_of_ne b.coe_prop.1 (x_ne_a <| · ▸ x_eq_b), b.coe_prop.2.le⟩
+  have x_eq_b : x = ↑(equivIco p a x) := coe_equivIco.symm
+  rw [x_eq_b, liftIco_coe_apply (equivIco p a x).coe_prop]
+  exact liftIoc_coe_apply (by grind)
 
 lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
@@ -382,7 +391,7 @@ lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
 
 /-- Ioc version of `eq_coe_Ico`. -/
-lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Set.Ioc 0 p, ↑b = a := by
+lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIocMod hp.out 0 a
   exact ⟨b.1, by simpa only [zero_add] using b.2,
     (QuotientAddGroup.equivIocMod hp.out 0).symm_apply_apply a⟩
