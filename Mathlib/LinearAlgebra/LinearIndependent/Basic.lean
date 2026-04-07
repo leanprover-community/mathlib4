@@ -391,6 +391,9 @@ theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : Li
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
 
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
+
 end Module
 
 /-! ### Properties which require `Ring R` -/
