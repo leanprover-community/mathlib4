@@ -209,7 +209,7 @@ theorem Right.mul_lt_mul [MulLeftMono α]
     a * c < b * d :=
   mul_lt_mul_of_lt_of_le h₁ h₂.le
 
-@[to_additive (attr := gcongr high) add_le_add]
+@[to_additive (attr := gcongr high, to_dual self) add_le_add]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d := by grw [h₁, h₂]
