@@ -243,6 +243,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("directedOrder", "CodirectedOrder"),
   ("galoisInsertion", "GaloisCoinsertion"),
   ("galoisCoinsertion", "GaloisInsertion"),
+  ("leftOrdContinuous", "RightOrdContinuous"),
+  ("rightOrdContinuous", "LeftOrdContinuous"),
 
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
