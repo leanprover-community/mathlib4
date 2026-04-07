@@ -305,8 +305,7 @@ lemma hf_modif_top (r : ℝ) :
     (fun x ↦ P.f_modif x - 0) =O[atTop] fun x ↦ x ^ r := by
   refine (P.hf_top r).congr' ?_ (by rfl)
   filter_upwards [eventually_gt_atTop 1] with x hx
-  rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-    indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
+  simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
