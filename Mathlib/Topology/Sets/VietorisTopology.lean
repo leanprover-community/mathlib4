@@ -689,6 +689,7 @@ instance [NoncompactSpace α] : NoncompactSpace (NonemptyCompacts α) :=
 instance [LocallyCompactSpace α] : LocallyCompactSpace (NonemptyCompacts α) :=
   isOpenEmbedding_toCompacts.locallyCompactSpace
 
+@[simp]
 theorem locallyCompactSpace_iff :
     LocallyCompactSpace (NonemptyCompacts α) ↔ LocallyCompactSpace α := by
   refine ⟨fun _ => ⟨fun x U hU => ?_⟩, fun _ => inferInstance⟩
@@ -699,6 +700,7 @@ theorem locallyCompactSpace_iff :
   rw [mem_interior_iff_mem_nhds] at hxK
   filter_upwards [continuous_singleton.tendsto x hxK] with y hy using mem_iUnion₂_of_mem hy rfl
 
+@[simp]
 theorem _root_.TopologicalSpace.Compacts.locallyCompactSpace_iff :
     LocallyCompactSpace (Compacts α) ↔ LocallyCompactSpace α :=
   ⟨fun _ => NonemptyCompacts.locallyCompactSpace_iff.mp
