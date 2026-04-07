@@ -57,7 +57,7 @@ open DerivedCategory
 set_option backward.isDefEq.respectTransparency false in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
-    F.mapDerivedCategory.map (triangleOfSESδ hS) =
+    dsimp% F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
       triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex _)) ≫
         (F.mapDerivedCategoryFactors.inv.app S.X₁)⟦1⟧' ≫
@@ -66,7 +66,7 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   rw [← cancel_epi (F.mapDerivedCategory.map
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
     descShortComplex_triangleOfSESδ,
-    reassoc_of% F.mapDerivedCategoryFactors.hom.naturality_assoc,
+    dsimp% F.mapDerivedCategoryFactors.hom.naturality_assoc,
     ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
     Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
     ← Functor.map_comp_assoc]
