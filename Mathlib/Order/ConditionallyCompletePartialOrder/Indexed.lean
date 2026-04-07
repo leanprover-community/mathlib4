@@ -119,6 +119,18 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   · rintro - ⟨i, rfl⟩
     simp
 
+@[to_dual]
+lemma cbiSup_eq_of_forall_not {p : ι → Prop} {f : ∀ i, p i → α} (hp : ∀ i, ¬p i) :
+    ⨆ (i) (h : p i), f i h = sSup ∅ := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty']
+  · have (i : ι) : IsEmpty (p i) := ⟨hp i⟩
+    simp only [iSup_of_empty', ciSup_const]
+
+@[to_dual]
+theorem cbiSup_empty {f : β → α} : ⨆ i ∈ (∅ : Set β), f i = sSup ∅ :=
+  cbiSup_eq_of_forall_not Set.notMem_empty
+
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
