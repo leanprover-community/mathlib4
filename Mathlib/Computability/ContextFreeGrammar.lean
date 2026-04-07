@@ -330,7 +330,6 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 
 @[simp] lemma language_reverse : g.reverse.language = g.language.reverse := by ext; simp
 
-
 end ContextFreeGrammar
 
 protected theorem Language.IsContextFree.reverse {L : Language T} (h : L.IsContextFree) :
