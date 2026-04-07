@@ -415,8 +415,52 @@ open CategoryTheory TopologicalSpace
 
 variable {X : Scheme.{u}} (M : X.Modules) [M.IsQuasicoherent]
 
+def ModuleCat.restrictScalarsIsoOfIso {R S : CommRingCat.{u}} (e : R ≅ S) :
+    (ModuleCat.restrictScalars e.hom.hom).obj (ModuleCat.of S S) ≅ ModuleCat.of R R :=
+  letI : Algebra R S := e.hom.hom.toAlgebra
+  (AlgEquiv.toLinearEquiv (AlgEquiv.ofRingEquiv (R := R) (f := e.commRingCatIsoToRingEquiv.symm)
+    e.commRingCatIsoToRingEquiv.symm_apply_apply)).toModuleIso
+
+@[simp]
+lemma ModuleCat.restrictScalarsIsoOfIso_hom_apply {R S : CommRingCat.{u}} (e : R ≅ S) (x : S) :
+    (ModuleCat.restrictScalarsIsoOfIso e).hom x = e.inv x :=
+  rfl
+
+@[simp]
+lemma ModuleCat.restrictScalarsIsoOfIso_inv_apply {R S : CommRingCat.{u}} (e : R ≅ S) (x : R) :
+    (ModuleCat.restrictScalarsIsoOfIso e).inv x = e.hom x :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
+    ((Scheme.Modules.restrictFunctor f).obj M).IsQuasicoherent := by
+  letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
+  have hα : IsIso α := NatIso.isIso_of_isIso_app _
+  dsimp [restrictFunctor]
+  have (Z : TopologicalSpace.Opens ↥X) :
+      (Over.post (Hom.opensFunctor f)).IsContinuous ((Opens.grothendieckTopology ↥X).over Z)
+        ((Opens.grothendieckTopology ↥Y).over ((Hom.opensFunctor f).obj Z)) :=
+    sorry
+  convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
+    (J := Opens.grothendieckTopology _) (J' := Opens.grothendieckTopology _) f.opensFunctor _ _
+  · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
+    · dsimp
+      infer_instance
+    · infer_instance
+  · refine (SheafOfModules.fullyFaithfulForget _).preimageIso ?_
+    refine PresheafOfModules.isoMk ?_ ?_
+    · intro U
+      dsimp [SheafOfModules.pushforward, PresheafOfModules.pushforward₀_obj, PresheafOfModules.unit]
+      exact ModuleCat.restrictScalarsIsoOfIso (f.appIso U.unop).symm
+    · intro U V g
+      ext x
+      exact congr($(f.appIso_hom_naturality _).hom x)
+  · infer_instance
+
 lemma Scheme.Modules.exists_opens_nonempty_presentation (x : X) (U : X.Opens) (hx : x ∈ U) :
     ∃ V ≤ U, x ∈ V ∧ Nonempty ((Scheme.Modules.restrictFunctor V.ι).obj M).Presentation := by
+  have := M.isQuasicoherent_restrictFunctor U.ι
   sorry
 
 end AlgebraicGeometry

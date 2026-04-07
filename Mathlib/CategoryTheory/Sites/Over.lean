@@ -181,6 +181,33 @@ lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
   rw [Sieve.overEquiv_iff, Sieve.overEquiv_iff]
   simp [Presieve.functorPullback, heq]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
+    (U : Over X) (S : Sieve ((Over.post F).obj U)) :
+    (Sieve.overEquiv U) (Sieve.functorPullback (Over.post F) S) =
+      Sieve.functorPullback F ((Sieve.overEquiv ((Over.post F).obj U)) S) := by
+  refine le_antisymm ?_ ?_
+  · dsimp [Sieve.overEquiv]
+    rw [Sieve.functorPushforward_le_iff_le_functorPullback, ← Sieve.functorPullback_comp]
+    change _ ≤ Sieve.functorPullback (Over.post (X := X) F ⋙ Over.forget _)
+      (Sieve.functorPushforward (Over.forget (F.obj X)) S)
+    rw [Sieve.functorPullback_comp]
+    exact Sieve.functorPullback_monotone _ _ (Sieve.le_functorPushforward_pullback _ _)
+  · intro Z g hg
+    rw [Sieve.overEquiv_iff]
+    dsimp [Presieve.functorPullback]
+    convert (Sieve.overEquiv_iff _ _).mp hg
+    simp
+
+set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_ {D : Type*} [Category* D] (F : C ⥤ D) {X : C} (U : Over X) (S : Sieve _) :
+    (Sieve.overEquiv ((Over.post F).obj U)) (Sieve.functorPushforward (Over.post F) S) =
+      Sieve.functorPushforward F (Sieve.overEquiv _ S) := by
+  refine le_antisymm ?_ ?_
+  · sorry
+  · rw [functorPushforward_le_iff_le_functorPullback, ← overEquiv_functorPullback_post]
+    sorry
+
 end Sieve
 
 variable (J : GrothendieckTopology C)
@@ -272,6 +299,14 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsCocontinuous (J.over _) (J.ove
   cover_lift {U} S hS := by
     rw [J.mem_over_iff] at hS ⊢
     rwa [Sieve.overEquiv_functorPullback_map]
+
+instance {D : Type*} [Category* D] (K : GrothendieckTopology D)
+    (F : C ⥤ D) (X : C) [F.IsCocontinuous J K] :
+    (Over.post (X := X) F).IsCocontinuous (J.over X) (K.over _) where
+  cover_lift {U} S hS := by
+    rw [GrothendieckTopology.mem_over_iff] at hS ⊢
+    rw [Sieve.overEquiv_functorPullback_post]
+    exact F.cover_lift J K hS
 
 open Limits
 

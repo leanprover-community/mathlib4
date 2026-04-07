@@ -389,6 +389,71 @@ instance {C : Type*} [Category* C] (X : C) (J : GrothendieckTopology C) :
     obtain ⟨j, u, h₁, h₂⟩ := hg
     exact ⟨j, u.left, congr($(h₁).left), congr($(h₂).left)⟩
 
+lemma coverPreserving_of_coverPreserving_comp {C D E : Type*} [Category* C] [Category* D]
+    [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+    (T : GrothendieckTopology E) (h : CoverPreserving J T (F ⋙ G)) [G.IsCocontinuous K T]
+    [G.Full] [G.Faithful] :
+    CoverPreserving J K F where
+  cover_preserve {U} S hS := by
+    refine K.superset_covering ?_ (G.cover_lift K _ (h.cover_preserve hS))
+    rw [Sieve.functorPushforward_comp, Sieve.functorPullback_functorPushforward_eq G]
+
+lemma _root_.CategoryTheory.coverPreserving_of_preservesOneHypercovers {C : Type u₁} {D : Type*}
+    [Category.{v₁} C] [Category* D] (F : C ⥤ D) (J : GrothendieckTopology C)
+    (K : GrothendieckTopology D) [Functor.PreservesOneHypercovers.{max u₁ v₁} F J K] :
+    CoverPreserving J K F where
+  cover_preserve {U} S hS := by
+    let E := GrothendieckTopology.Cover.oneHypercover ⟨_, hS⟩
+    simpa [CategoryTheory.PreZeroHypercover.sieve₀_map, E] using (E.map F K).mem₀
+
+lemma _root_.CategoryTheory.Sieve.functorPushforward_ofArrows {C D : Type*} [Category* C]
+    [Category* D] (F : C ⥤ D) {ι : Type*} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    Sieve.functorPushforward F (Sieve.ofArrows Y f) = Sieve.ofArrows _ (fun i ↦ F.map (f i)) := by
+  rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows]
+
+-- false
+--lemma _root_.CategoryTheory.Functor.ofArrows_map_mem {C D : Type*} [Category* C] [Category* D]
+--    (F : C ⥤ D) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+--    [Functor.PreservesOneHypercovers.{w} F J K] {ι : Type w} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X)
+--    (h : Sieve.ofArrows Y f ∈ J X) :
+--    Sieve.ofArrows _ (fun i ↦ F.map (f i)) ∈ K _ := by
+--  rw [← Sieve.functorPushforward_ofArrows]
+
+-- false?
+--lemma _root_.CategoryTheory.Functor.ofArrows_map_mem {C D : Type*} [Category* C] [Category* D]
+--    (F : C ⥤ D) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+--    [Functor.PreservesOneHypercovers.{w} F J K] {X : C} (E : PreOneHypercover.{w} X)
+--    (h : E.sieve₀ ∈ J X) :
+--    (E.map F).sieve₀ ∈ K _ := by
+--  sorry
+
+lemma _root_.CategoryTheory {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (X : C)
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+    (h : CoverPreserving J K F) :
+    CoverPreserving (J.over _) (K.over _) (Over.post (X := X) F) where
+  cover_preserve {U} S hS := by
+    rw [K.mem_over_iff]
+    sorry
+
+lemma dasfsdf {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (X : C)
+  (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+  [Functor.PreservesOneHypercovers.{w} F J K] :
+  Functor.PreservesOneHypercovers.{w} (Over.post (X := X) F) (J.over _) (K.over _) := by
+refine fun {U} E ↦ ⟨?_, ?_⟩
+· simp only [Over.post_obj, Functor.id_obj, PreOneHypercover.map_toPreZeroHypercover,
+    PreZeroHypercover.sieve₀_map]
+  rw [K.mem_over_iff]
+  dsimp [Sieve.overEquiv]
+  rw [← Sieve.functorPushforward_comp]
+  change Sieve.functorPushforward (Over.forget _ ⋙ F) E.sieve₀ ∈ K (F.obj U.left)
+  rw [Sieve.functorPushforward_comp, ← CategoryTheory.PreOneHypercover.sieve₀_map,
+    ← GrothendieckTopology.OneHypercover.map_toPreOneHypercover _ _ J,
+    ← PreOneHypercover.sieve₀_map,
+    ← GrothendieckTopology.OneHypercover.map_toPreOneHypercover _ _ K]
+  exact GrothendieckTopology.OneHypercover.mem₀ _
+· intro i j W p₁ p₂ heq
+  sorry
+
 instance {C : Type*} [Category* C] {A : Type*} [Category* A]
     (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
     IsIso f.hom := by
@@ -404,6 +469,19 @@ lemma _root_.CategoryTheory.Sheaf.inv_hom {C : Type*} [Category* C]
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← ObjectProperty.FullSubcategory.comp_hom]
 
+omit
+  [HasSheafify J AddCommGrpCat]
+  [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [HasSheafify J' AddCommGrpCat]
+  [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat]
+  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat]
+  [∀ (X : C'), (J'.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ (X : C'), HasSheafify (J'.over X) AddCommGrpCat]
+  [∀ (X : C'), (J'.over X).WEqualsLocallyBijective AddCommGrpCat] in
 lemma isLeftAdjoint_pushforward_of_isIso (G : C' ⥤ C) [G.IsContinuous J' J] [G.IsCocontinuous J' J]
     (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
     [G.IsLeftAdjoint] :
@@ -424,68 +502,33 @@ lemma isLeftAdjoint_pushforward_of_isIso (G : C' ⥤ C) [G.IsContinuous J' J] [G
       simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
   exact adj.isLeftAdjoint
 
+instance {C : Type*} [Category* C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    (Over.map f).IsLeftAdjoint :=
+  (Over.mapPullbackAdj f).isLeftAdjoint
+
 set_option backward.isDefEq.respectTransparency false in
 omit [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat] in
-lemma isQuasicoherent_pushforward_of_adjunction (G : C' ⥤ C) (F : C ⥤ C') (adj : G ⊣ F)
-    [G.IsContinuous J' J] [F.IsContinuous J J'] [G.IsCocontinuous J' J]
-    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R)
-    (ψ : R ⟶ (F.sheafPushforwardContinuous RingCat.{u} J J').obj S)
-    (H₁ : Functor.whiskerRight (NatTrans.op adj.counit) R.obj = ψ.hom ≫ F.op.whiskerLeft φ.hom)
-    (H₂ : φ.hom ≫ G.op.whiskerLeft ψ.hom ≫ Functor.whiskerRight (NatTrans.op adj.unit) S.obj =
-      𝟙 S.obj)
-    [∀ X, Functor.IsContinuous.{u} (Over.post (X := X) F) (J.over _) (J'.over _)]
+lemma isQuasicoherent_pushforward_of_isLeftAdjoint (G : C' ⥤ C) [G.IsLeftAdjoint]
+    [G.IsContinuous J' J] [G.IsCocontinuous J' J]
+    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
     [∀ X, Functor.IsContinuous.{u} (Over.post (X := X) G) (J'.over _) (J.over _)]
     [HasPullbacks C] [HasPullbacks C']
     (η : (pushforward φ).obj (unit R) ≅ unit S)
     {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
     IsQuasicoherent ((pushforward φ).obj M) := by
-  convert isQuasicoherent_pushforward G φ _ _
+  convert isQuasicoherent_pushforward G φ _ η
   · intro X Y f
     apply Functor.isContinuous_comp _ _ _ (J.over _) _
   · intro X Y f
-    dsimp
     let G' := Over.post (X := X) G ⋙ Over.map f
-    let F' : Over Y ⥤ Over X :=
-      Over.pullback f ⋙ Over.post F ⋙ Over.pullback (adj.unit.app _)
-    let GFadj : G' ⊣ F' :=
-      .comp (Over.postAdjunctionLeft _) (Over.mapPullbackAdj f)
-    have : G'.IsContinuous (J'.over X) (J.over Y) := by
-      apply Functor.isContinuous_comp _ _ _ (J.over _) _
-    have : F'.IsContinuous (J.over Y) (J'.over X) := by
-      convert Functor.isContinuous_comp _ _ _ (J.over _) _
-      · infer_instance
-      · exact Functor.isContinuous_comp _ _ _ (J'.over _) _
+    have : G'.IsContinuous (J'.over X) (J.over Y) := Functor.isContinuous_comp _ _ _ (J.over _) _
+    have : G'.IsCocontinuous (J'.over X) (J.over Y) := isCocontinuous_comp _ _ _ (J.over _)
     let a : S.over X ⟶
-        (G'.sheafPushforwardContinuous RingCat.{u} (J'.over X) (J.over Y)).obj
-          (R.over Y) :=
+        (G'.sheafPushforwardContinuous RingCat.{u} (J'.over X) (J.over Y)).obj (R.over Y) :=
       ((Over.forget X).sheafPushforwardContinuous RingCat.{u} (J'.over X) J').map φ
-    let e :
-        ((Over.forget Y).sheafPushforwardContinuous RingCat (J.over Y) J).obj
-        ((F.sheafPushforwardContinuous RingCat J J').obj S) ⟶
-          (F'.sheafPushforwardContinuous RingCat (J.over Y) (J'.over X)).obj (S.over X) :=
-      { hom.app U := S.obj.map (Quiver.Hom.op <| pullback.fst _ _ ≫ F.map (pullback.fst _ _))
-        hom.naturality U V g := by simp [← Functor.map_comp, ← op_comp, F'] }
-    let b : R.over Y ⟶
-        (F'.sheafPushforwardContinuous RingCat.{u} (J.over Y) (J'.over X)).obj (S.over X) :=
-      ((Over.forget Y).sheafPushforwardContinuous RingCat.{u} _ _).map ψ ≫ e
-    let adj : pushforward.{u} a ⊣ pushforward.{u} b := by
-      refine SheafOfModules.pushforwardPushforwardAdj.{u, _, _, _, _, u} GFadj _ _ ?_ ?_
-      · ext U : 2
-        dsimp [F', G', GFadj, b, e, a]
-        have := congr($(H₁).app (.op U.unop.left))
-        dsimp at this
-        simp [← op_comp, Category.assoc, ← reassoc_of% this, ← Functor.map_comp]
-        simp [Functor.map_comp, Category.assoc, Adjunction.counit_naturality, Functor.comp_obj,
-          Functor.id_obj, CategoryTheory.Adjunction.homEquiv]
-      · ext U : 2
-        have := congr($(H₂).app (.op U.unop.left))
-        dsimp at this
-        simp [G', a, F', b, e, GFadj, ← this,
-          ← Functor.map_comp, ← op_comp, Adjunction.equivHomsetLeftOfNatIso]
-    change PreservesColimitsOfSize (pushforward a)
-    exact adj.leftAdjoint_preservesColimits
-  · exact η
+    have : (pushforward.{u} a).IsLeftAdjoint := isLeftAdjoint_pushforward_of_isIso _ _
+    infer_instance
   · infer_instance
 
 end map
@@ -561,72 +604,17 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
 
 set_option backward.isDefEq.respectTransparency false
 
-instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
-    Functor.IsContinuous.{w} (Over.pullback f) (J.over Y) (J.over X) := by
-  apply Functor.isContinuous_of_coverPreserving
-  · apply compatiblePreserving_overPullback
-  · apply coverPreserving_overPullback
-
-noncomputable
-def pushforwardOverPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
-    R.over Y ⟶
-      ((Over.pullback f).sheafPushforwardContinuous _ _ _).obj (R.over X) where
-  hom.app U := R.obj.map (pullback.fst _ _).op
-  hom.naturality U V g := by simp [← Functor.map_comp, ← op_comp]
-
-/-- Transport an adjunction along a natural isomorphism on the left. -/
-def _root_.CategoryTheory.Adjunction.ofNatIsoLeft' {C : Type*} [Category* C] {D : Type*}
-    [Category* D] {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
-  unit := adj.unit ≫ Functor.whiskerRight iso.hom _
-  counit := Functor.whiskerLeft _ iso.inv ≫ adj.counit
-  left_triangle_components X := by
-    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, Functor.whiskerRight_app,
-      Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
-    simp [← Functor.comp_map]
-
 set_option backward.isDefEq.respectTransparency false in
--- set_option pp.universes true in
 lemma isQuasicoherent_over [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-    [HasPullbacks C]
-    (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
+    [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
     IsQuasicoherent (M.over X) := by
-  have (Z : Over X) (Y : C) (f : (Over.forget X).obj Z ⟶ Y) :
-      (Over.post (Over.forget X) ⋙ Over.map f).IsContinuous
-        ((J.over X).over Z) (J.over Y) := by
-    convert Functor.isContinuous_comp _ _ _ (J.over _) _
-    · convert Functor.isContinuous_of_iso (Z.iteratedSliceForwardIsoPost _).symm _ _
-      dsimp
-      infer_instance
-    · infer_instance
-  refine isQuasicoherent_pushforward _ _ ?_ (.refl _)
-  intro Z Y f
-  let G := Over.post (Over.forget X) ⋙ Over.map f
-  let iso : Over.post (Over.forget X) ⋙ Over.map f ≅
-      Z.iteratedSliceForward ⋙ Over.map f :=
-    Functor.isoWhiskerRight (Z.iteratedSliceForwardIsoPost _) _
-  let a3 :=
-    Adjunction.ofNatIsoLeft' Z.iteratedSliceEquiv.toAdjunction
-      (Z.iteratedSliceForwardIsoPost _).symm
-  let adj : G ⊣ _ := a3.comp (Over.mapPullbackAdj f)
-  let φ : (R.over X).over Z ⟶
-      (G.sheafPushforwardContinuous RingCat.{u} _ _).obj (R.over _) :=
-    𝟙 _
-  have : Functor.IsContinuous.{u} (Over.pullback f ⋙ Z.iteratedSliceEquiv.inverse)
-      (J.over Y) ((J.over X).over Z) := by
-    convert Functor.isContinuous_comp.{u} _ _ _ (J.over _) _
-    · infer_instance
-    · dsimp
-      infer_instance
-  let adj' : pushforward.{u} φ ⊣ _ := by
-    refine SheafOfModules.pushforwardPushforwardAdj.{u, _, _, _, _, u} adj φ ?_ ?_ ?_
-    · exact pushforwardOverPullback _
-    · ext U : 2
-      simp [pushforwardOverPullback, adj, a3, φ, G, Adjunction.ofNatIsoLeft',
-        Over.iteratedSliceEquiv]
-    · ext U : 2
-      simp [φ, adj, a3, Adjunction.ofNatIsoLeft', Over.iteratedSliceEquiv, G,
-        pushforwardOverPullback, ← op_comp, ← Functor.map_comp]
-  refine Adjunction.leftAdjoint_preservesColimits adj'
+  have (Z : Over X) : (Over.post (Over.forget X)).IsContinuous ((J.over X).over Z)
+      (J.over ((Over.forget X).obj Z)) := by
+    convert Functor.isContinuous_of_iso (Z.iteratedSliceForwardIsoPost _).symm _ _
+    dsimp
+    infer_instance
+  apply isQuasicoherent_pushforward_of_isLeftAdjoint
+  exact Iso.refl _
 
 end bind
 
