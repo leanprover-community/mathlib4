@@ -117,25 +117,11 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
   have eq1 : (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
     F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C (ComplexShape.up ℤ) 0).obj
     S.X₃) = Q.map ((F.mapCochainComplexSingleFunctor 0).inv.app S.X₃) := by
-    simp only [Functor.comp_obj, Functor.mapDerivedCategorySingleFunctor,
-      CochainComplex.singleFunctor, CochainComplex.singleFunctors,
-      CochainComplex.shiftFunctor_obj_X', singleFunctorIsoCompQ, Functor.isoWhiskerRight_refl,
-      Functor.isoWhiskerLeft_refl, Iso.refl_symm, Iso.refl_trans, Iso.trans_inv, Iso.refl_inv,
-      Category.id_comp, Functor.isoWhiskerRight_inv, Iso.symm_inv, Category.assoc, Category.comp_id,
-      NatTrans.comp_app, Functor.isoWhiskerLeft_inv, Functor.associator_inv_app, Iso.inv_hom_id_app,
-      Functor.whiskerRight_app, Functor.associator_hom_app, Functor.whiskerLeft_app]
-    exact Category.id_comp _
+    simp [Functor.mapCochainComplexSingleFunctor]
   have eq2 : (F.mapDerivedCategoryFactors.inv.app ((HomologicalComplex.single C (ComplexShape.up ℤ)
     0).obj S.X₁) ≫ (F.mapDerivedCategorySingleFunctor 0).hom.app S.X₁) =
     Q.map ((F.mapCochainComplexSingleFunctor 0).hom.app S.X₁) := by
-    simp only [Functor.comp_obj, Functor.mapDerivedCategorySingleFunctor,
-      CochainComplex.singleFunctor, CochainComplex.singleFunctors,
-      CochainComplex.shiftFunctor_obj_X', singleFunctorIsoCompQ,
-      Functor.isoWhiskerRight_refl, Functor.isoWhiskerLeft_refl, Iso.refl_symm, Iso.refl_trans,
-      Iso.trans_hom, Functor.isoWhiskerLeft_hom, Iso.symm_hom, Functor.isoWhiskerRight_hom,
-      Iso.refl_hom, NatTrans.comp_app, Functor.associator_hom_app, Functor.whiskerLeft_app,
-      Functor.associator_inv_app, Functor.whiskerRight_app, NatTrans.id_app, Category.id_comp]
-    simp [Q_obj_single_obj, Functor.mapCochainComplexSingleFunctor]
+    simp [Functor.mapCochainComplexSingleFunctor]
   rw [← (shiftFunctor (DerivedCategory D) 1).map_comp, eq2, ← Category.assoc]
   generalize_proofs _ _ _ _ _ _ h1 _ _ h2
   let f : ((S.map (CochainComplex.singleFunctor C 0)).map (F.mapHomologicalComplex
