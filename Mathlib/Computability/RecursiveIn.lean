@@ -16,11 +16,11 @@ This file defines oracle computability using partial recursive functions.
 
 * `Nat.RecursiveIn O f`: A partial function `f : ℕ →. ℕ` is partial recursive given access to
   oracles in the set `O`.
+* `RecursiveIn O f`: Lifts `Nat.RecursiveIn` to partial functions between `Primcodable` types.
+* `ComputableIn O f`: A total function `f : α → σ` is computable given access to oracles in `O`.
 * `Nat.PrimrecIn O f`: A total function `f : ℕ → ℕ` is primitive recursive relative to oracles
   in the set `O`.
 * `PrimrecIn O f`: Lifts `Nat.PrimrecIn` to total functions between `Primcodable` types.
-* `RecursiveIn O f`: Lifts `Nat.RecursiveIn` to partial functions between `Primcodable` types.
-* `ComputableIn O f`: A total function `f : α → σ` is computable given access to oracles in `O`.
 
 ## Main results
 
@@ -99,14 +99,15 @@ protected inductive PrimrecIn (O : Set (ℕ → ℕ)) : (ℕ → ℕ) → Prop
 
 end Nat
 
-/-- Relative primitive recursion between `Primcodable` types. -/
-def PrimrecIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ → ℕ)) (f : α → σ) : Prop :=
-  Nat.PrimrecIn O fun n => encode ((@decode α _ n).map f)
-
 /-- A partial function `f : α →. σ` between `Primcodable` types is recursive in a set of oracles
 `O` if its encoding as a function `ℕ →. ℕ` is `Nat.RecursiveIn O`. -/
 def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α →. σ) : Prop :=
   Nat.RecursiveIn O fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
+
+/-- A total function `f : α → σ` between `Primcodable` types is primitive recursive relative to a
+set of oracles `O` if its encoding as a function `ℕ → ℕ` is `Nat.PrimrecIn O`. -/
+def PrimrecIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ → ℕ)) (f : α → σ) : Prop :=
+  Nat.PrimrecIn O fun n => encode ((@decode α _ n).map f)
 
 lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f := by
   simp [RecursiveIn, Part.map_id']
