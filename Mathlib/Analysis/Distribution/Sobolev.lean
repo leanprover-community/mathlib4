@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Fourier.LpSpace
 In this file we define Sobolev spaces on normed vector spaces via the Fourier transform.
 These spaces are also known as Bessel potential spaces. The Bessel potential operator
 `besselPotential` is the Fourier multiplier with the symbol `x ↦ (1 + ‖x‖ ^ 2) ^ (s / 2)` and a
-tempered distribution `u` belongs to the Sobolev space `H^{s,p}` if
+tempered distribution `u` belongs to the Sobolev space `H ^ {s, p}` if
 `besselPotential E F s u` can be represented by a `Lp` function, informally this is written as
 `𝓕⁻ (fun x ↦ (1 + ‖x‖ ^ 2) ^ (s / 2)) 𝓕 u ∈ Lp`.
 
@@ -314,7 +314,7 @@ section LineDeriv
 
 open scoped LineDeriv Laplacian Real
 
-/-- The directional derivative maps `H ^ {s}` to `H ^ {s - 1}`. -/
+/-- The directional derivative maps `H ^ s` to `H ^ {s - 1}`. -/
 theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) {m : E} :
     MemSobolev (s - 1) 2 (∂_{m} f) := by
   rw [SubNegMonoid.sub_eq_add_neg s 1, add_comm, ← memSobolev_besselPotential_iff,
@@ -342,7 +342,7 @@ theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 
   apply le_of_eq
   field_simp
 
-/-- The Laplacian maps `H ^ {s}` to `H ^ {s - 2}`. -/
+/-- The Laplacian maps `H ^ s` to `H ^ {s - 2}`. -/
 theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev (s - 2) 2 (Δ f) := by
   rw [SubNegMonoid.sub_eq_add_neg s 2, add_comm, ← memSobolev_besselPotential_iff,
