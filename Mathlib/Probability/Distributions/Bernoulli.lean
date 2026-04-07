@@ -1,137 +1,183 @@
+/-
+Copyright (c) 2026 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion, David Ledvinka
+-/
 module
 
-public import Mathlib.MeasureTheory.Constructions.UnitInterval
-public import Mathlib.Probability.Distributions.Uniform
-public import Mathlib.Probability.HasLaw
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.UnitInterval
+
+/-!
+# Bernoulli distribution
+
+We define the **Bernoulli distribution** over an arbitrary measurable space `X`. Given `x y : X`
+and `p : I` (`I` is the `unitInterval`),
+`Ber(x, y, p) := toNNReal p • dirac x + toNNReal (σ p) • dirac y`.
+It is the measure which gives mass `p` to `{x}` and `1 - p` to `{y}`.
+
+## Main definition
+
+* `bernoulliMeasure x y p`: The measure `Ber(x, y, p)` which gives mass
+  `p` to `{x}` and `1 - p` to `{y}`.
+
+## Notation
+
+* `Ber(x, y, p)`: notation for `bernoulliMeasure x y p`.
+
+## Tags
+
+Bernoulli distribution
+-/
 
 public section
 
-open MeasureTheory Measure unitInterval Set
+open MeasureTheory Measure unitInterval
 open scoped ENNReal
 
 namespace ProbabilityTheory
 
-
-variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-  {a b : α} {p : I}
+variable {X Y : Type*} [MeasurableSpace X] [MeasurableSpace Y] {x y : X} {p : I}
 
 @[expose]
-noncomputable def bernoulliMeasure (a b : α) (p : I) : Measure α :=
-  toNNReal p • dirac a + toNNReal (σ p) • dirac b
+noncomputable def bernoulliMeasure (x y : X) (p : I) : Measure X :=
+  toNNReal p • dirac x + toNNReal (σ p) • dirac y
 
-lemma bernoulliMeasure_def (a b : α) (p : I) :
-    bernoulliMeasure a b p = toNNReal p • dirac a + toNNReal (σ p) • dirac b := rfl
+scoped notation "Ber(" x ", " y ", " p ")" => bernoulliMeasure x y p
+
+lemma bernoulliMeasure_def (x y : X) (p : I) :
+    Ber(x, y, p) = toNNReal p • dirac x + toNNReal (σ p) • dirac y := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma bernoulliMeasure_apply_of_mem_of_mem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∈ s) (hb : b ∈ s) :
-    bernoulliMeasure a b p s = 1 := by
-  simp_all [bernoulliMeasure_def, ← add_smul]
+lemma bernoulliMeasure_zero (x y : X) : bernoulliMeasure x y 0 = dirac y := by
+  simp [bernoulliMeasure_def]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma bernoulliMeasure_one (x y : X) : bernoulliMeasure x y 1 = dirac x := by
+  simp [bernoulliMeasure_def]
+
+lemma bernoulliMeasure_apply (p : I) {s : Set X}
+    (hs : MeasurableSet s) [DecidablePred (· ∈ s)] :
+    Ber(x, y, p) s =
+      if x ∈ s
+        then if y ∈ s
+          then (1 : ℝ≥0∞)
+          else toNNReal p
+        else if y ∈ s
+          then toNNReal (σ p)
+          else 0 := by
+  split_ifs <;> simp_all [bernoulliMeasure_def, ← ENNReal.coe_add]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma bernoulliMeasure_apply_of_mem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∈ s) :
+    Ber(x, y, p) s = 1 := by
+  classical
+  simp_all [bernoulliMeasure_apply]
 
 @[simp]
-lemma ENNReal.nnreal_smul_one (r : NNReal) :
-    r • (1 : ℝ≥0∞) = r := by
-  change ((r • 1 : NNReal) : ENNReal) = r
-  simp
+lemma bernoulliMeasure_apply_of_mem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∉ s) :
+    Ber(x, y, p) s = toNNReal p := by
+  classical
+  simp_all [bernoulliMeasure_apply]
 
 @[simp]
-lemma bernoulliMeasure_apply_of_mem_of_notMem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∈ s) (hb : b ∉ s) :
-    bernoulliMeasure a b p s = toNNReal p := by
-  simp_all [bernoulliMeasure_def]
+lemma bernoulliMeasure_apply_of_notMem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∈ s) :
+    Ber(x, y, p) s = toNNReal (σ p) := by
+  classical
+  simp_all [bernoulliMeasure_apply]
 
 @[simp]
-lemma bernoulliMeasure_apply_of_notMem_of_mem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∉ s) (hb : b ∈ s) :
-    bernoulliMeasure a b p s = toNNReal (σ p) := by
-  simp_all [bernoulliMeasure_def]
+lemma bernoulliMeasure_apply_of_notMem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∉ s) :
+    Ber(x, y, p) s = 0 := by
+  classical
+  simp_all [bernoulliMeasure_apply]
+
+lemma bernoulliMeasure_real_apply (p : I) {s : Set X}
+    (hs : MeasurableSet s) [DecidablePred (· ∈ s)] :
+    Ber(x, y, p).real s =
+      if x ∈ s
+        then if y ∈ s
+          then (1 : ℝ)
+          else toNNReal p
+        else if y ∈ s
+          then toNNReal (σ p)
+          else 0 := by
+  simp [measureReal_def, bernoulliMeasure_apply p hs, apply_ite ENNReal.toReal]
 
 @[simp]
-lemma bernoulliMeasure_apply_of_notMem_of_notMem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∉ s) (hb : b ∉ s) :
-    bernoulliMeasure a b p s = 0 := by
-  simp_all [bernoulliMeasure_def]
-@[simp]
-lemma bernoulliMeasure_real_apply_of_mem_of_mem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∈ s) (hb : b ∈ s) :
-    (bernoulliMeasure a b p).real s = 1 := by
-  simp_all [bernoulliMeasure_def, measureReal_def, ENNReal.toReal_add]
+lemma bernoulliMeasure_real_apply_of_mem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∈ s) :
+    Ber(x, y, p).real s = 1 := by
+  classical
+  simp_all [bernoulliMeasure_real_apply]
 
 @[simp]
-lemma bernoulliMeasure_real_apply_of_mem_of_notMem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∈ s) (hb : b ∉ s) :
-    (bernoulliMeasure a b p).real s = p := by
-  simp_all [bernoulliMeasure_def, measureReal_def]
+lemma bernoulliMeasure_real_apply_of_mem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∉ s) :
+    Ber(x, y, p).real s = p := by
+  classical
+  simp_all [bernoulliMeasure_real_apply]
 
 @[simp]
-lemma bernoulliMeasure_real_apply_of_notMem_of_mem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∉ s) (hb : b ∈ s) :
-    (bernoulliMeasure a b p).real s = 1 - p := by
-  simp_all [bernoulliMeasure_def, measureReal_def]
+lemma bernoulliMeasure_real_apply_of_notMem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∈ s) :
+    Ber(x, y, p).real s = 1 - p := by
+  classical
+  simp_all [bernoulliMeasure_real_apply]
 
 @[simp]
-lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set α}
-    (hs : MeasurableSet s) (ha : a ∉ s) (hb : b ∉ s) :
-    (bernoulliMeasure a b p).real s = 0 := by
-  simp_all [bernoulliMeasure_def, measureReal_def]
+lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∉ s) :
+    Ber(x, y, p).real s = 0 := by
+  classical
+  simp_all [bernoulliMeasure_real_apply]
 
-instance (a b : α) (p : I) : IsProbabilityMeasure (bernoulliMeasure a b p) where
+instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem bernoulliMeasure_self_eq_dirac (a : α) (p : I) :
-    bernoulliMeasure a a p = dirac a := by
+theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :
+    bernoulliMeasure x x p = dirac x := by
   simp [bernoulliMeasure_def, ← add_smul]
 
 @[simp]
-theorem map_bernoulliMeasure [MeasurableSingletonClass α] [MeasurableSingletonClass β]
-    (a b : α) (f : α → β) (p : I) :
-    (bernoulliMeasure a b p).map f = bernoulliMeasure (f a) (f b) p := by
-  have hf (a : α) : AEMeasurable f (dirac a) := by fun_prop
+theorem map_bernoulliMeasure [MeasurableSingletonClass X] [MeasurableSingletonClass Y]
+    (x y : X) (f : X → Y) (p : I) :
+    Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
+  have hf (x : X) : AEMeasurable f (dirac x) := by fun_prop
   simp only [bernoulliMeasure_def]
   rw [AEMeasurable.map_add₀ (by fun_prop) (by fun_prop)]
   simp
 
-theorem map_bernoulliMeasure' (a b : α) {f : α → β} (hf : Measurable f) (p : I) :
-    (bernoulliMeasure a b p).map f = bernoulliMeasure (f a) (f b) p := by
+theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I) :
+    Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
+section Integral
 
-@[simp]
-lemma test {x : I} : ((toNNReal x) : ℝ≥0∞) = ENNReal.ofReal x := by
-  rw [ENNReal.coe_nnreal_eq]
-  rfl
+variable {E : Type*} [NormedAddCommGroup E]
 
-theorem HasLaw.uniform_le_hasLaw {M : Type*} [Zero M] [MeasurableSpace M]
-    [MeasurableSingletonClass M] (c : M) [NeZero c] {s : Set Ω}
-    (hs : NullMeasurableSet s P) :
-    HasLaw (s.indicator (fun _ ↦ c)) (bernoulliMeasure c 0 ⟨P.real s, by simp⟩) P where
-  aemeasurable := (aemeasurable_indicator_const_iff c).2 hs
-  map_eq := by
-    have := (aemeasurable_indicator_const_iff c).2 hs
-    ext t ht
-    rw [map_apply_of_aemeasurable this ht]
-    by_cases! h1 : 0 ∈ t <;> by_cases h2 : c ∈ t
-    · have : s.indicator (fun _ ↦ c) ⁻¹' t = univ := by
-        ext x; simp; by_cases h : x ∈ s <;> simpa [h]
-      rw [this]
-      simp_all
-    · have : s.indicator (fun _ ↦ c) ⁻¹' t = sᶜ := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
-      rw [this]
-      simp_all [measure_compl₀ hs, ENNReal.ofReal_sub]
-    · have : s.indicator (fun _ ↦ c) ⁻¹' t = s := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
-      rw [this]
-      simp_all
-    · have : s.indicator (fun _ ↦ c) ⁻¹' t = ∅ := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
-      rw [this]
-      simp_all
-theorem HasLaw.uniform_le_hasLaw' {M : Type*} [Zero M] [One M] [MeasurableSpace M]
-    [MeasurableSingletonClass M] [NeZero (1 : M)] {s : Set Ω}
-    (hs : NullMeasurableSet s P) :
-    HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
-  HasLaw.uniform_le_hasLaw 1 hs
+lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
+    Integrable f Ber(x, y, p) := by
+  simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
+    Integrable.smul_measure_nnreal]
+
+variable [NormedSpace ℝ E] [CompleteSpace E]
+
+lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
+    ∫ z, f z ∂Ber(x, y, p) = (p : ℝ) • (f x) + (1 - p : ℝ) • (f y) := by
+  rw [bernoulliMeasure_def, integral_add_measure]
+  · simp [NNReal.smul_def]
+  all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
+
+end Integral
 
 end ProbabilityTheory
