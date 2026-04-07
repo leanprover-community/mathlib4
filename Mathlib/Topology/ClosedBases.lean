@@ -48,19 +48,19 @@ theorem IsClosedBasis.isClosed {u : Set α} {s : Set (Set α)}
   simp_rw [← isOpen_compl_iff]
   exact isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-theorem isClosed_of_closed_subbasis_of_mem {u : Set α} {s : Set (Set α)}
+theorem isClosed_of_closedSubbasis_of_mem {u : Set α} {s : Set (Set α)}
     (hs : t = generateFrom (compl '' s)) (hus : u ∈ s) : IsClosed u :=
   isOpen_compl_iff.1 <| hs ▸ isOpen_generateFrom_of_mem ⟨u, hus, rfl⟩
 
-theorem closed_subbasis_iff_isTopologicalBasis_sInter_compl {s : Set (Set α)} :
+theorem closedSubbasis_iff_isTopologicalBasis_sInter_compl {s : Set (Set α)} :
     t = generateFrom (compl '' s) ↔
       IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ compl '' s }) :=
   subbasis_iff_isTopologicalBasis_sInter (compl '' s)
 
-theorem closed_subbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
+theorem closedSubbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
     t = generateFrom (compl '' s) ↔
       IsClosedBasis ((fun f => ⋃₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
-  refine closed_subbasis_iff_isTopologicalBasis_sInter_compl.trans
+  refine closedSubbasis_iff_isTopologicalBasis_sInter_compl.trans
     (isClosedBasis_iff.trans <| iff_of_eq <| compl_image_set_of ▸ ?_).symm
   congr
   ext t
@@ -70,7 +70,7 @@ theorem closed_subbasis_iff_isClosedBasis_sUnion {s : Set (Set α)} :
   · exact ⟨compl '' f, ⟨hf.image compl, s.compl_compl_image ▸ image_mono hfs⟩,
       eq_compl_comm.2 (compl_sUnion _ ▸ f.compl_compl_image.symm ▸ hft.symm)⟩
 
-theorem isClosedBasis_of_closed_subbasis_of_union
+theorem isClosedBasis_of_closedSubbasis_of_union
     {s : Set (Set α)} (hs1 : t = generateFrom (compl '' s))
     (hs2 : ∀ u ∈ s, ∀ v ∈ s, u ∪ v ∈ s) : IsClosedBasis (insert ∅ s) :=
   isClosedBasis_iff.2 <| s.image_insert_eq ▸
