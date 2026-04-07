@@ -176,18 +176,18 @@ theorem isElementary_closure (hA : L.MeetsDefinable A) :
   have hD : A.Definable₁ L D := by
     simp only [Definable₁, Definable, Fin.isValue]
     refine ⟨((L.lhomWithConstants A).onBoundedFormula φ).toFormula.relabel
-      (Sum.elim Empty.elim id) |>.subst (fun i => Fin.lastCases (Term.var 0)
+      (Sum.elim Empty.elim id) |>.subst fun i => Fin.lastCases (Term.var 0)
         (fun j => (L.con ⟨x j, by
         nth_rw 1 [← hA.closure_eq_self]
         simp only [Subtype.coe_prop]
-        ⟩).term) i), ?_⟩
+        ⟩).term) i, ?_⟩
     ext v
     simp only [Fin.isValue, mem_setOf_eq, Formula.relabel, Formula.Realize,
       BoundedFormula.realize_subst, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero,
       Fin.cast_refl, Function.comp_id, Fin.natAdd_zero, D]
     rw [← Formula.Realize, BoundedFormula.realize_toFormula, LHom.realize_onBoundedFormula]
-    exact Iff.of_eq <| congrArg₂ _ (funext fun e => e.elim)
-      (funext fun i => by cases i using Fin.lastCases <;> simp)
+    congr! 1
+    ext i; cases i using Fin.lastCases <;> simp
   obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
   exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
 
@@ -208,9 +208,9 @@ theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : 
   classical
   rintro D ⟨x, hx⟩ ⟨φ, hφ⟩
   have hφx : φ.Realize ![x] := by
-    change ![x] ∈ setOf φ.Realize
-    simpa [← hφ] using hx
-  let ψ : L[[@Elem M ↑S]].Sentence := (φ.relabel Sum.inr).iExs
+    simp [Set.ext_iff] at hφ
+    simp [← hφ, hx]
+  let ψ : L[[(S : Set M)]].Sentence := (φ.relabel Sum.inr).iExs
   have hψM : ψ.Realize M := by
     simpa only [Sentence.Realize, SetLike.coe_sort_coe, Formula.realize_iExs,
       Formula.realize_relabel, Sum.elim_comp_inr, ψ] using
