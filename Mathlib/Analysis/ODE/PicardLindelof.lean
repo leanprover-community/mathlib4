@@ -464,7 +464,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
   have hL' : 0 ≤ L' := by
     have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
     positivity
-  refine ⟨⟨L', hL'⟩, fun x y hx hy α β hα hβ ↦ ?_⟩
+  refine ⟨.mk L' hL', fun x y hx hy α β hα hβ ↦ ?_⟩
   rw [NNReal.coe_mk]
   apply le_of_tendsto_of_tendsto' (b := Filter.atTop) _ _ <|
     dist_iterate_iterate_next_le_of_lipschitzWith hf hy α (h y hy).2
@@ -710,8 +710,8 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   let ε := a / L / 2 / 2
   have hε0 : 0 < ε := by positivity
   refine ⟨ε, hε0,
-    ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
-    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
+    .mk (a / 2) (half_pos ha).le, (.mk (a / 2) (half_pos ha).le) / 2,
+    .mk L hL0.le, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
   apply of_time_independent hb <|
     hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
   simp [ε, field]
