@@ -213,9 +213,7 @@ continuous. -/
 @[fun_prop]
 theorem _root_.Continuous.image_vietoris (hf : Continuous f) : Continuous (f '' ·) := by
   simp_rw [continuous_iff, powerset, preimage_setOf_eq, image_subset_iff]
-  exact ⟨
-    fun U hU => (hU.preimage hf).powerset_vietoris,
-    fun F hF => (hF.preimage hf).powerset_vietoris⟩
+  constructor <;> exact fun U hU => (hU.preimage hf).powerset_vietoris
 
 /-- When `Set` is equipped with the Vietoris topology, taking the image under an inducing map is
 inducing. -/
