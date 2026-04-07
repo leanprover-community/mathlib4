@@ -75,7 +75,7 @@ protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
 protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   strictMono _ := by simp
   le_ord_cof := by simp
-  isCofinal_range := by rw [range_eq_empty, isCofinal_empty_iff]; infer_instance
+  isCofinal_range := .of_isEmpty _
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
