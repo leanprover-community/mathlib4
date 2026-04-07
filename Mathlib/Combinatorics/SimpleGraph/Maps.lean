@@ -621,8 +621,9 @@ theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
 graph. -/
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
-protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding ≃g G :=
-  { f with map_rel_iff' := by simp }
+protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f ≃g G where
+  __ := f
+  map_rel_iff' := by simp
 
 @[simp]
 lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) : Iso.comap f G v = f v := rfl
@@ -634,8 +635,9 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
-protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by aesop (add simp map_adj') }
+protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f where
+  __ := f
+  map_rel_iff' := by aesop (add simp map_adj')
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) : Iso.map f G v = f v := rfl
