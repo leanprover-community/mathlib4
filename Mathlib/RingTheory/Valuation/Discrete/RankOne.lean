@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
+public import Mathlib.Data.Int.WithZero
 
 /-!
 # Discrete valuations have rank one
