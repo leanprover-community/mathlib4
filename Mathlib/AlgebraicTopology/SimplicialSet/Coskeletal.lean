@@ -142,7 +142,6 @@ lemma fac_aux₂ {n : ℕ}
         apply sx.spineInjective
         apply Path.ext'
         intro t
-        -- have : X.obj (op ((unop α.right).obj (P := fun a ↦ a.len ≤ 2))) = X _⦋2⦌ := rfl
         dsimp [spineEquiv, α]
         rw [← Functor.map_comp_apply]
         match t with
