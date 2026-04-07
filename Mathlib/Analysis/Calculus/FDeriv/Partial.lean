@@ -26,8 +26,8 @@ open scoped Convex Topology
 /-- Suppose that along `l : Filter α` each of `v w : α → E` tends to `u : E` and that along
 `l ×ˢ 𝓝[s] u` the derivative of `f : α → E → F` tends to `φ : E →L[𝕜] F`. Then the difference
 between `f χ (v χ)` and `f χ (w χ)` is, to first order, `φ (v χ - w χ)`. This can be useful where
-`χ : α` is a point (or pair of points) in a space containing `E`, and `v` or `w` is a projection (or
-both are). -/
+`χ : α` stands for a point (or a pair of points) in a space containing `E`, and `v χ` or `w χ` is
+its projection (or both are projections). -/
 theorem isLittleO_sub_sub_fderiv
     {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
