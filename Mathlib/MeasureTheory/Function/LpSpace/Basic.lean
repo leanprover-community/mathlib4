@@ -206,7 +206,7 @@ instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p
 
 -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
 -- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
-instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
+instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := .mk ‖f‖ ENNReal.toReal_nonneg
 
 instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
@@ -416,7 +416,7 @@ theorem coe_LpSubmodule : (LpSubmodule 𝕜 E p μ).toAddSubgroup = Lp E p μ :=
   rfl
 
 instance instModule : Module 𝕜 (Lp E p μ) :=
-  { (LpSubmodule 𝕜 E p μ).module with }
+  fast_instance% (LpSubmodule 𝕜 E p μ).module
 
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _

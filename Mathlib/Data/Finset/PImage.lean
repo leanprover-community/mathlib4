@@ -92,7 +92,7 @@ theorem pimage_empty : pimage f ∅ = ∅ := by
   simp
 
 theorem pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y ∈ f x, y ∈ t := by
-  simp [subset_iff, @forall_swap _ β]
+  simp [subset_iff, @forall_comm _ β]
 
 @[mono]
 theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
