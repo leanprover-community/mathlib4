@@ -277,7 +277,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     intro b
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
-    change (_ ≫ Y.obj.map _) _ = (_ ≫ Y.obj.map _) _
+    rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply]
     simp only [← g.hom.naturality]
     rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom.hom) b ≫ sigmaIncl (f.map _) a =
         CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
@@ -285,7 +285,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     simp only [op_comp, Functor.map_comp, types_comp_apply, dsimp% incl_of_counitAppApp]
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp]
     rw [mk_image]
-    change (X.obj.map _ ≫ _) _ = (X.obj.map _ ≫ _) _
+    rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply]
     simp only [g.hom.naturality]
     simp only [types_comp_apply]
     have := map_preimage_eq_image (f := g.hom.app _ ∘ f) (a := a)

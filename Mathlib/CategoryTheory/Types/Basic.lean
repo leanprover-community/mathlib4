@@ -58,8 +58,6 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
   coe_injective' _ := by aesop
 
-initialize_simps_projections Fun (toFun → apply)
-
 @[simp]
 lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl
@@ -67,14 +65,6 @@ lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
 @[simp]
 lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
-
-/-- The identity function as a `Fun`. -/
-@[simps! +dsimpLhs]
-def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
-
-/-- Composition of `Fun`s. -/
-@[simps! +dsimpLhs]
-def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
 def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
@@ -84,33 +74,26 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   right_inv := by intro; rfl
 
 /-- The type of morphisms in `Type`. -/
-@[ext]
-structure Hom (X Y : Type u) where
-  private mk ::
-  /-- The underlying function -/
-  hom' : Fun X Y
+abbrev Hom (X Y : Type u) := Fun X Y
 
 end TypeCat
 
 open TypeCat CategoryTheory
 
-set_option backward.privateInPublic true in
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
-  id X := .mk <| .id X
-  comp f g := .mk <| g.hom'.comp f.hom'
+  id X := ⟨id⟩
+  comp f g := ⟨g.toFun ∘ f.toFun⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The concrete category instance on `Type u`.
 
 Note: sometimes one needs to specify explicitly `(CC := fun X ↦ X)` to help typeclass inference.
 -/
 instance : ConcreteCategory.{u} (Type u) Fun where
-  hom := Hom.hom'
-  ofHom := Hom.mk
+  hom f := f
+  ofHom f := f
 
 example (X Y : Type u) (f : X ⟶ Y) : (f : X → Y) = (ConcreteCategory.hom f : X → Y) := by
   with_reducible rfl
@@ -141,7 +124,7 @@ scoped notation "↾" f:200 => TypeCat.ofHom f
 def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
   ConcreteCategory.hom f
 
-initialize_simps_projections Hom (hom' → hom)
+initialize_simps_projections Fun (toFun → hom)
 
 @[simp]
 lemma Fun.toFun_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.toFun x = f x :=
@@ -412,13 +395,10 @@ variable {X Y : Type u}
 /-- Any equivalence between types in the same universe gives
 a categorical isomorphism between those types.
 -/
-@[simps!]
+@[simps]
 def toIso (e : X ≃ Y) : X ≅ Y where
   hom := ofHom fun x ↦ e x
   inv := ofHom fun x ↦ e.symm x
-
-@[deprecated (since := "2026-03-20")] alias toIso_hom := toIso_hom_hom_apply
-@[deprecated (since := "2026-03-20")] alias toIso_inv := toIso_inv_hom_apply
 
 end Equiv
 

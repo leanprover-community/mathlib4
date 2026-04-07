@@ -73,35 +73,6 @@ lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
     a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
-`F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
-We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
--/
-@[deprecated "No replacement." (since := "2026-03-03")]
-def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
-    F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
-  NatIso.ofComponents (fun X =>
-    (NatIso.ofComponents (fun Y =>
-      ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by cat_disch)))
-
-set_option linter.deprecated false in
-/-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
-@[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
-  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
-def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
-    (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
-  NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
-    (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
-
-set_option linter.deprecated false in
-/-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
-@[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
-  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
-def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
-    (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
-
 end Adjunction
 
 namespace Functor

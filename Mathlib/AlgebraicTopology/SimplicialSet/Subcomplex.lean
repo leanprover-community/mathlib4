@@ -111,7 +111,7 @@ variable (X)
 
 /-- If `X : SSet`, this is the isomorphism of simplicial sets
 from `⊤ : X.Subcomplex` to `X`. -/
-@[simps! inv_app_hom_apply]
+@[simps! inv_app_hom]
 def topIso : ((⊤ : X.Subcomplex) : SSet) ≅ X :=
   NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (X.obj n)).toIso)
 

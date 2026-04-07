@@ -112,7 +112,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
 /-- The Yoneda lemma for sheaves. -/
-@[simps! +dsimpLhs hom_app_app_hom_apply_down inv_app_app]
+@[simps! +dsimpLhs hom_app_app_hom_down inv_app_app]
 def yonedaOpCompCoyoneda :
     J.yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -253,7 +253,7 @@ def uliftYonedaOpCompCoyoneda :
     (isoWhiskerRight CategoryTheory.uliftYonedaOpCompCoyoneda
     ((whiskeringLeft _ _ _).obj _))
 
-attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_apply_down
+attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_down
 
 -- @[simp]
 lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type max v v'))
