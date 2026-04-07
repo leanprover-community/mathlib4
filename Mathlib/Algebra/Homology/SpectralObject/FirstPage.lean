@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 # The first page of the spectral sequence of a spectral object
 
 Let `ι` be a preordered type, `X` a spectral object in an abelian
-category indexed by `ι`. Let `data : SpectralSequenceMkData ι c r₀`.
+category indexed by `ι`. Let `data : SpectralSequenceDataCore ι c r₀`.
 Assume that `X.HasSpectralSequence data` holds. In this file,
 we introduce a property `data.HasFirstPageComputation` which allows
 to "compute" the objects of the `r₀`th page of the spectral
