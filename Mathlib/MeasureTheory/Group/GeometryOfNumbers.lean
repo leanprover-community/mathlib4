@@ -89,13 +89,6 @@ variable [FiniteDimensional ℝ E]
 
 variable [hL : DiscreteTopology L]
 
-theorem finrank_real_span_range_eq_finrank_int {ι : Type*} {v : ι → L} :
-    finrank ℝ (span ℝ <| .range (Subtype.val ∘ v)) =
-      finrank ℤ (span ℤ <| .range (Subtype.val ∘ v)) := by
-  have hd : DiscreteTopology (span ℤ (.range (Subtype.val ∘ v))) :=
-    hL.of_subset (span_le.mpr <| range_subset_iff.mpr fun j => (v j).prop)
-  simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
-
 theorem successiveMin_of_finrank_int_le (hi : finrank ℤ L ≤ i) : successiveMin L s i = 0 := by
   have hd : DiscreteTopology (span ℤ (L : Set E)) := by rw [L.span_eq]; exact hL
   have h := Real.finrank_eq_int_finrank_of_discrete hd
@@ -120,7 +113,8 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
   calc
     i < finrank ℤ L := hi
     _ = finrank ℤ (span ℤ (.range (Subtype.val ∘ b))) := by rw [hspan_eq]
-    _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) := finrank_real_span_range_eq_finrank_int.symm
+    _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) :=
+        (Real.finrank_real_span_range_eq_finrank_int _).symm
     _ ≤ finrank ℝ (span ℝ <| r • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩
@@ -204,7 +198,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
         · have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
             rw [range_comp]; rfl
           rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
-        · exact finrank_real_span_range_eq_finrank_int.symm
+        · exact (Real.finrank_real_span_range_eq_finrank_int _).symm
     _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩
