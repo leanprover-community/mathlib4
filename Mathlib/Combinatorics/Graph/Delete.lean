@@ -80,18 +80,18 @@ lemma restrict_mono_right (G : Graph α β) (hss : F₀ ⊆ F) : G.restrict F₀
   isLink_mono _ _ _ := fun h ↦ ⟨hss h.1, h.2⟩
 
 @[simp, grind =]
-lemma restrict_inc : (G.restrict F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by
+lemma inc_restrict : (G.restrict F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by
   simp [Inc, and_comm]
 
 @[simp, grind =]
-lemma restrict_isLoopAt : (G.restrict F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∈ F := by
+lemma isLoopAt_restrict : (G.restrict F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∈ F := by
   simp [← isLink_self_iff, and_comm]
 
 @[simp]
 lemma restrict_restrict (G : Graph α β) (F₁ F₂ : Set β) :
     (G.restrict F₁).restrict F₂ = G.restrict (F₁ ∩ F₂) := by
   refine (Compatible.of_le_le (G := G) (restrict_le.trans (by simp)) (by simp)).ext (by simp) ?_
-  simp only [restrict_edgeSet]
+  simp only [edgeSet_restrict]
   rw [← inter_assoc, inter_comm _ F₂]
 
 /-- Delete a set `F` of edges from `G`. This is a special case of `restrict`,
@@ -101,7 +101,7 @@ def deleteEdges (G : Graph α β) (F : Set β) : Graph α β :=
   (G.restrict (E(G) \ F)).copy (edgeSet := E(G) \ F)
   (IsLink := fun e x y ↦ G.IsLink e x y ∧ e ∉ F) rfl (by simp)
   (fun e x y ↦ by
-    simp only [restrict_isLink, mem_diff, and_comm, and_congr_left_iff, and_iff_left_iff_imp]
+    simp only [isLink_restrict, mem_diff, and_comm, and_congr_left_iff, and_iff_left_iff_imp]
     exact fun h _ ↦ h.edge_mem)
 
 lemma deleteEdges_eq_restrict (G : Graph α β) (F : Set β) :
@@ -126,12 +126,12 @@ lemma deleteEdges_mono_left (h : H ≤ G) (F : Set β) : H.deleteEdges F ≤ G.d
   exact diff_subset_diff_left h.edgeSet_mono
 
 @[simp, grind =]
-lemma deleteEdges_inc : (G.deleteEdges F).Inc e x ↔ G.Inc e x ∧ e ∉ F := by
+lemma inc_deleteEdges : (G.deleteEdges F).Inc e x ↔ G.Inc e x ∧ e ∉ F := by
   simp [Inc, and_comm]
 
 @[simp, grind =]
-lemma deleteEdges_isLoopAt : (G.deleteEdges F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∉ F := by
-  simp only [deleteEdges_eq_restrict, restrict_isLoopAt, mem_diff, and_congr_right_iff,
+lemma isLoopAt_deleteEdges : (G.deleteEdges F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∉ F := by
+  simp only [deleteEdges_eq_restrict, isLoopAt_restrict, mem_diff, and_congr_right_iff,
     and_iff_right_iff_imp]
   exact fun h _ ↦ h.edge_mem
 
@@ -139,7 +139,7 @@ lemma deleteEdges_isLoopAt : (G.deleteEdges F).IsLoopAt e x ↔ G.IsLoopAt e x �
 lemma deleteEdges_deleteEdges (G : Graph α β) (F₁ F₂ : Set β) :
     (G.deleteEdges F₁).deleteEdges F₂ = G.deleteEdges (F₁ ∪ F₂) := by
   simp only [deleteEdges_eq_restrict, diff_eq_compl_inter, restrict_inter_edgeSet,
-    restrict_edgeSet, restrict_restrict, compl_union]
+    edgeSet_restrict, restrict_restrict, compl_union]
   rw [← inter_comm, inter_comm F₁ᶜ, inter_assoc, inter_assoc, inter_self, inter_comm,
     inter_assoc, inter_comm, restrict_inter_edgeSet, inter_comm]
 
@@ -160,11 +160,11 @@ lemma induce_le (hX : X ⊆ V(G)) : G.induce X ≤ G := ⟨hX, fun _ _ _ h ↦ h
 @[simp, grind =]
 lemma induce_le_iff : G.induce X ≤ G ↔ X ⊆ V(G) := ⟨(·.vertexSet_mono), induce_le⟩
 
-lemma induce_edgeSet (G : Graph α β) (X : Set α) :
+lemma edgeSet_induce (G : Graph α β) (X : Set α) :
     E(G.induce X) = {e | ∃ x y, G.IsLink e x y ∧ x ∈ X ∧ y ∈ X} := rfl
 
 @[simp, grind =]
-lemma induce_vertexSet_self (G : Graph α β) : G.induce V(G) = G := by
+lemma induce_vertexSet (G : Graph α β) : G.induce V(G) = G := by
   refine (Compatible.of_le_le (G := G) (by simp) (by simp)).ext rfl <| Set.ext fun e ↦
     ⟨fun ⟨_, _, h⟩ ↦ h.1.edge_mem, fun h ↦ ?_⟩
   obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet h
@@ -176,16 +176,16 @@ def deleteVerts (G : Graph α β) (X : Set α) : Graph α β := G.induce (V(G) \
 lemma deleteVerts_def (G : Graph α β) (X : Set α) : G.deleteVerts X = G.induce (V(G) \ X) := rfl
 
 @[simp, grind =]
-lemma deleteVerts_vertexSet (G : Graph α β) (X : Set α) : V(G.deleteVerts X) = V(G) \ X := rfl
+lemma vertexSet_deleteVerts (G : Graph α β) (X : Set α) : V(G.deleteVerts X) = V(G) \ X := rfl
 
 @[simp, grind =]
-lemma deleteVerts_isLink (G : Graph α β) (X : Set α) :
+lemma isLink_deleteVerts (G : Graph α β) (X : Set α) :
     (G.deleteVerts X).IsLink e x y ↔ (G.IsLink e x y ∧ x ∉ X ∧ y ∉ X) := by
-  simp only [deleteVerts_def, induce_isLink, mem_diff, and_congr_right_iff]
+  simp only [deleteVerts_def, isLink_induce, mem_diff, and_congr_right_iff]
   exact fun h ↦ by simp [h.left_mem, h.right_mem]
 
 @[simp]
-lemma deleteVerts_edgeSet (G : Graph α β) (X : Set α) :
+lemma edgeSet_deleteVerts (G : Graph α β) (X : Set α) :
     E(G.deleteVerts X) = {e | ∃ x y, G.IsLink e x y ∧ x ∉ X ∧ y ∉ X} := by
   simp [edgeSet_eq_setOf_exists_isLink]
 
