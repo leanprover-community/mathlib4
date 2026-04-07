@@ -44,9 +44,8 @@ For context, here is a diagram of the possible routes from polynomials to L-func
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
 
 ## TODO
-* If each `q` is a prime power, then `ArithmeticFunction.ofPowerSeries q f` is multiplicative.
-* If each `f i` is multiplicative, then `ArithmeticFunction.eulerProduct f` is multiplicative.
 
+* If each `q` is a prime power, then `ArithmeticFunction.ofPowerSeries q f` is multiplicative.
 -/
 
 @[expose] public section
@@ -243,6 +242,23 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     have h2 := hw' (fun i hi ↦ hw i (Finset.mem_insert_of_mem hi)) j.2
       ((Nat.divisor_le (Nat.snd_mem_divisors_of_mem_antidiagonal hj)).trans hk)
     rw [h1, h2]
+
+theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
+    (hf : ∀ i, IsMultiplicative (f i)) : IsMultiplicative (eulerProduct f) := by
+  by_cases hf' : Multipliable f
+  · have h (s : Finset ι) : (∏ b ∈ s, f b).IsMultiplicative :=
+      isMultiplicative_finsetProd f s fun i a ↦ hf i
+    have key := tendsto_iff.mp hf'.hasProd
+    refine (forall_and.mp h).imp (fun h ↦ ?_) fun h m n hmn ↦ ?_
+    · specialize key 1
+      simp_rw [h] at key
+      rwa [eventually_const, eq_comm] at key
+    · replace h s : (∏ b ∈ s, f b) (m * n) = (∏ b ∈ s, f b) m * (∏ b ∈ s, f b) n := h s hmn
+      have h2 := key (m * n)
+      simp_rw [h] at h2
+      exact eventually_const.mp (EventuallyEq.trans (.symm h2) (.mul (key m) (key n)))
+  · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
+    exact isMultiplicative_one
 
 end EulerProduct
 

@@ -83,7 +83,6 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
       IsLocalization.Away.invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) (P.σ g)) := by
   simp [compLocalizationAwayAlgHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
     compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
   rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway T g) P]
@@ -93,7 +92,6 @@ lemma compLocalizationAwayAlgHom_relation_eq_zero :
     IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     ((localizationAway T g).comp P).ker ^ 2 ≤
       RingHom.ker (compLocalizationAwayAlgHom T g P) := by

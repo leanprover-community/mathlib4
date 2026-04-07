@@ -183,8 +183,8 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 -/
 #guard_msgs in
 run_meta
-  Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
-  Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+  Lean.logInfo ((← Lean.getConstInfo ``lt_le_trans).value! (allowOpaque := true))
+  Lean.logInfo ((← Lean.getConstInfo ``le_refl').value! (allowOpaque := true))
 
 -- Test that we do not translate the order on `Prop`
 instance Prop.le : LE Prop :=

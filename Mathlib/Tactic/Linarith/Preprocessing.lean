@@ -111,14 +111,6 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-/-- Ordering on `Expr`. -/
-@[deprecated
-  "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
-  If you need to order expressions, consider ordering them by order seen, with AtomM."
-  (since := "2025-08-31"), implicit_reducible]
-def Expr.Ord : Ord Expr :=
-⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
-
 /--
 If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
@@ -276,7 +268,7 @@ partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
 
 /-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
 private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
+  withTraceNode `linarith (fun _ => return m!" finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
     let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
@@ -295,7 +287,7 @@ Note that the length of the resulting list is proportional to `ls.length^2`, whi
 amount of work for the linarith oracle.
 -/
 private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} adding product terms") do
+  withTraceNode `linarith (fun _ => return m!" adding product terms") do
   let with_comps ← ls.mapM (fun e => do
     let tp ← inferType e
     try
@@ -394,7 +386,7 @@ so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
     MetaM (List Branch) := do
-  withTraceNode `linarith (fun e => return m!"{exceptEmoji e} Running preprocessors") <|
+  withTraceNode `linarith (fun _ => return m!"Running preprocessors") <|
     g.withContext <|
       pps.foldlM (init := [(g, l)]) fun ls pp => do
         return (← ls.mapM fun (g, l) => do pp.process g l).flatten
