@@ -60,11 +60,11 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
 
 initialize_simps_projections Fun (toFun → apply)
 
-@[simp]
-lemma Fun.coe_mk {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
+lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl
 
-lemma Fun.mk_apply {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
+@[simp]
+lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
