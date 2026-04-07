@@ -35,7 +35,7 @@ noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
 
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
-@[simps! obj map, pp_with_univ]
+@[simps! -isSimp obj map, pp_with_univ]
 noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
   toTop₀ ⋙ TopCat.uliftFunctor
 
@@ -52,5 +52,27 @@ instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp
 
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=
   ULift.up_surjective.pathConnectedSpace continuous_uliftUp
+
+lemma _root_.stdSimplex.map_δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n + 1⦌.len + 1))
+    (σ : stdSimplex ℝ (Fin (⦋n⦌.len + 1))) :
+    stdSimplex.map (SimplexCategory.δ i) σ j =
+      (if i < j then σ ⟨j - 1, by simp_all; lia⟩ else 0) +
+      (if h : i > j then σ ⟨j, by simp_all; lia⟩ else 0) := by
+  simp only [_root_.SimplexCategory.len_mk, stdSimplex.map_coe, FunOnFinite.linearMap_apply_apply,
+    SimplexCategory.δ_apply, Fin.succAbove_eq_iff]
+  obtain hij | rfl | hij := lt_trichotomy i j
+  · rw [Finset.sum_eq_single ⟨j - 1, by lia⟩]
+    all_goals simp; grind
+  · rw [Finset.sum_eq_zero]
+    all_goals simp <;> grind
+  · rw [Finset.sum_eq_single ⟨j, by lia⟩]
+    all_goals simp; grind
+
+lemma toTop_map_δ_apply {n : ℕ} (i : Fin (n + 2)) (j : Fin (⦋n + 1⦌.len + 1))
+    (σ : toTop.{u} ^⦋n⦌) :
+    (toTop.map (SimplexCategory.δ i) σ).down.1 j =
+      (if i < j then σ.down.1 ⟨j - 1, by simpa using j.2⟩ else 0) +
+      (if h : i > j then σ.down.1 ⟨j, by simp_all; lia⟩ else 0) :=
+  stdSimplex.map_δ_apply ..
 
 end SimplexCategory

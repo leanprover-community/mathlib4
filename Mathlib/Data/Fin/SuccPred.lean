@@ -214,6 +214,9 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 @[simp]
 theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by simp [← val_pos_iff]
 
+lemma castSucc_eq_zero {n : ℕ} {i : Fin n} : i.castSucc = 0 ↔ i.1 = 0 := by
+  simp [← Fin.val_eq_zero_iff]
+
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
@@ -693,6 +696,18 @@ simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp] lemma one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simpa only [succ_zero_eq_one, val_zero, zero_succAbove, succ_one_eq_two]
     using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 1))
+
+@[simp]
+lemma succAbove_eq_zero {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
+    i.succAbove j = 0 ↔ i ≠ 0 ∧ j.castSucc = 0 := by
+  delta Fin.succAbove
+  split_ifs
+  · simp; grind
+  · simp_all [Fin.le_iff_val_le_val]; grind
+
+lemma succAbove_eq_iff {n : ℕ} {i k : Fin (n + 1)} {j : Fin n} :
+    i.succAbove j = k ↔ if i.1 ≤ j.1 then j.1 + 1 = k.1 else j.1 = k.1 := by
+  delta Fin.succAbove; grind [Fin.lt_def]
 
 end SuccAbove
 
