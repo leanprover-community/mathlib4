@@ -31,7 +31,7 @@ namespace SimpleGraph
 variable {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} {K K' : Type*}
 
 /-- An edge labeling of a simple graph `G` with labels in type `K`. Sometimes this is called an
-edge-colouring, but we reserve that terminology for labelings where incident edges cannot share a
+edge-coloring, but we reserve that terminology for labelings where incident edges cannot share a
 label.
 -/
 def EdgeLabeling (G : SimpleGraph V) (K : Type*) :=
@@ -71,7 +71,7 @@ theorem card_topEdgeLabeling [DecidableEq V] [Fintype V] [Fintype K] :
 namespace EdgeLabeling
 
 /--
-Convenience function to get the colour of the edge `x ~ y` in the colouring of the complete graph
+Convenience function to get the color of the edge `x ~ y` in the coloring of the complete graph
 on `V`.
 -/
 def get (C : EdgeLabeling G K) (x y : V) (h : G.Adj x y) : K :=
@@ -92,7 +92,7 @@ theorem ext_get {C' : EdgeLabeling G K}
   induction e using Sym2.inductionOn
   exact h _ _ he
 
-/-- Compose an edge-labeling with a function on the colour set. -/
+/-- Compose an edge-labeling with a function on the color set. -/
 def compRight (C : EdgeLabeling G K) (f : K → K') : EdgeLabeling G K' :=
   f ∘ C
 
@@ -173,7 +173,7 @@ end EdgeLabeling
 namespace TopEdgeLabeling
 
 /-- Compose an edge-labeling, by an injection into the vertex type. This must be an injection, else
-we don't know how to colour `x ~ y` in the case `f x = f y`.
+we don't know how to color `x ~ y` in the case `f x = f y`.
 -/
 abbrev pullback (C : TopEdgeLabeling V K) (f : V' ↪ V) : TopEdgeLabeling V' K :=
   EdgeLabeling.pullback C ⟨f, by simp⟩
