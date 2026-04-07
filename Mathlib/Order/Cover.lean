@@ -390,6 +390,25 @@ theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
 theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
   h.wcovBy.Icc_eq
 
+theorem Set.Ioc_eq_singleton_iff : Ioc a b = {c} ↔ b = c ∧ a ⋖ b where
+  mp h := by
+    rw [Set.ext_iff] at h
+    have ⟨hac, hcb⟩ := (h c).mpr rfl
+    have hb := (h b).mp ⟨hac.trans_le hcb, le_refl b⟩
+    rw [hb] at h ⊢
+    exact ⟨rfl, ⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.le⟩)⟩⟩
+  mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ioc_eq
+
+@[to_dual existing]
+theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
+  mp h := by
+    rw [Set.ext_iff] at h
+    have ⟨hac, hcb⟩ := (h c).mpr rfl
+    have ha := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
+    rw [ha] at h ⊢
+    exact ⟨rfl, ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hcd.le, hdb⟩).symm⟩⟩
+  mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ico_eq
+
 end PartialOrder
 
 section LinearOrder
@@ -414,6 +433,16 @@ theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
 @[to_dual]
 theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
   subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
+
+theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
+  mp h := by
+    rw [Set.ext_iff] at h
+    have ⟨hac, hcb⟩ := (h c).mpr rfl
+    exact ⟨⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.trans hcb⟩)⟩,
+      ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hac.trans hcd, hdb⟩).symm⟩⟩
+  mpr := fun ⟨hac, hcb⟩ ↦ Set.ext_iff.mpr fun _x ↦
+    ⟨fun ⟨hxa, hxb⟩ ↦ le_antisymm (hcb.le_of_lt hxb) (hac.ge_of_gt hxa),
+      fun | rfl => ⟨hac.lt, hcb.lt⟩⟩
 
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
