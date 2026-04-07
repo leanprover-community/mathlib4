@@ -40,8 +40,7 @@ conditionally complete lattices. -/
 @[to_dual
 /-- A function `f` between preorders is right order continuous if it preserves all infima.  We
 define it using `IsGLB` instead of `sInf` so that the proof works both for complete lattices and
-conditionally complete lattices. -/
-]
+conditionally complete lattices. -/]
 def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsLUB s x → IsLUB (f '' s) (f x)
 
@@ -109,8 +108,7 @@ variable (f)
 
 /-- Convert an injective left order continuous function to an order embedding. -/
 @[to_dual
-/-- Convert an injective right order continuous function to an order embedding. -/
-]
+/-- Convert an injective right order continuous function to an order embedding. -/]
 def toOrderEmbedding (hf : LeftOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 
