@@ -43,8 +43,6 @@ theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef := by
   classical
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
-  have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by
-    ext ⟨x, hx⟩; simp [hx]
   have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosSemidef := by
     have hAs := hA.submatrix ((↑) : x.support → ι)
     have hBs := hB.submatrix ((↑) : x.support → ι)
@@ -52,7 +50,7 @@ theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
     refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y ↦ ?_⟩
     rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
     exact (hAs.kronecker hBs).dotProduct_mulVec_nonneg _
-  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum, ← Finset.sum_attach x.support, ← hs,
+  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
   exact hAB.2 (x.subtypeDomain (· ∈ x.support))
 
@@ -62,8 +60,6 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
   classical
   refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
-  have hs : x.support.subtype (· ∈ x.support) = x.support.attach := by
-    ext ⟨x, hx⟩; simp [hx]
   have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosDef := by
     have hAs : (A.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
       hA.submatrix Subtype.coe_injective
@@ -74,11 +70,11 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
     refine (PosDef.kronecker hAs hBs).dotProduct_mulVec_pos ?_
     rwa [ne_eq, vec_eq_zero_iff, diagonal_eq_zero]
-  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum, ← Finset.sum_attach x.support, ← hs,
+  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
   refine hAB.2 ?_
-  simp_rw [← Finsupp.support_nonempty_iff, Finsupp.support_subtypeDomain, hs,
-    Finset.attach_nonempty_iff]
+  simp_rw [← Finsupp.support_nonempty_iff, Finsupp.support_subtypeDomain,
+    Finset.subtype_mem_eq_attach, Finset.attach_nonempty_iff]
   exact Finsupp.support_nonempty_iff.mpr hx
 
 end Matrix
