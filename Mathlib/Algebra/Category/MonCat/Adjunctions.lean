@@ -76,8 +76,7 @@ def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
     { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans (FreeMonoid.lift.symm.trans
-        { toFun f := TypeCat.ofHom f
-          invFun f := f })
+        TypeCat.homEquiv.symm)
       homEquiv_naturality_left_symm _ _ := ConcreteCategory.ext (FreeMonoid.hom_eq fun _ ↦ by rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
