@@ -117,19 +117,34 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
       (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable {k : Type*} [Field k]
+variable (k : Type*) [Field k]
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
-    {S : Type*} [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsDomain S]
-    {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K]
+    (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsDomain S]
+    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
+    [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
+  sorry
+
+lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
+    (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
+    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   sorry
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
-    {S : Type*} [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
-    {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K]
-    [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
-  sorry
+    {S : Type*} [CommRing S] [Algebra k S] [IsReduced S]
+    {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K] :
+    IsReduced (TensorProduct k K S) := by
+  refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun B hB ↦ ?_)
+  have : Algebra.FiniteType k B := (Subalgebra.fg_iff_finiteType B).mp hB
+  have : IsReduced B := isReduced_of_injective B.val Subtype.val_injective
+  have : IsReduced (TensorProduct k B K) := by
+    refine IsReduced.tensorProduct_of_forall_fg_intermediateField (fun L hL ↦ ?_)
+    rw [← IntermediateField.essFiniteType_iff] at hL
+    have := Algebra.IsTranscendentalSeparable.forall_isSeparablyGenerated L hL
+    have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType k B L
+    exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
+  exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
