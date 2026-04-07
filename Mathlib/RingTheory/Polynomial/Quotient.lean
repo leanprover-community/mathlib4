@@ -44,16 +44,6 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
 
-/-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
-isomorphism of $R$-algebras $R[X] / \langle X \rangle \cong R$. -/
-def quotientSpanXAlgEquiv : (R[X] ⧸ Ideal.span {(X : R[X])}) ≃ₐ[R] R :=
-  (Ideal.quotientEquivAlg _ _ (AlgEquiv.refl) (by simp)).trans (quotientSpanXSubCAlgEquiv (0 : R))
-
-@[simp]
-theorem quotientSpanXAlgEquiv_mk (p : R[X]) :
-    quotientSpanXAlgEquiv p = p.eval 0 :=
-  rfl
-
 /-- For a commutative ring $R$, evaluating a polynomial at an element $y \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
 def quotientSpanCXSubCAlgEquiv (x y : R) :
