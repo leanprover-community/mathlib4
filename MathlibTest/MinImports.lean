@@ -26,6 +26,7 @@ namespace X
 /-- info: public import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
+set_option warn.classDefReducibility false in
 protected def xxx : Semiring Nat := inferInstance
 end X
 
@@ -75,8 +76,7 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 #min_imports in uses_norm_num
 
 /--
-info: public import Mathlib.Tactic.Lemma
-public import Mathlib.Data.Nat.Notation
+info: public import Mathlib.Data.Nat.Notation
 ---
 info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/

@@ -179,6 +179,7 @@ instance (priority := 75) toModule : Module R S' := fast_instance%
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
+@[implicit_reducible]
 def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :

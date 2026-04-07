@@ -229,7 +229,6 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
 ## Constant Functions
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The circle average of a constant function equals the constant.
 -/

@@ -367,6 +367,7 @@ structure shouldn't come from `HasLeftDual` (e.g. in the category `FinVect k`, i
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
+@[implicit_reducible]
 def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
   rightAdj := tensorLeft (ᘁY)
   adj := tensorLeftAdjunction (ᘁY) Y
@@ -480,6 +481,7 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
   simp
 
 /-- Transport an exact pairing across an isomorphism in the first argument. -/
+@[implicit_reducible]
 def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : ExactPairing X Y where
   evaluation' := Y ◁ i.hom ≫ ε_ _ _
   coevaluation' := η_ _ _ ≫ i.inv ▷ Y
@@ -508,6 +510,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
         simp
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
+@[implicit_reducible]
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
   evaluation' := i.hom ▷ X ≫ ε_ _ _
   coevaluation' := η_ _ _ ≫ X ◁ i.inv
@@ -536,6 +539,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
         monoidal
 
 /-- Transport an exact pairing across isomorphisms. -/
+@[implicit_reducible]
 def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y ≅ Y') :
     ExactPairing X Y :=
   haveI : ExactPairing X' Y := exactPairingCongrRight j
@@ -594,6 +598,7 @@ often a more useful definition of the internal hom object than `ᘁY ⊗ X`, in 
 closed structure shouldn't come the rigid structure (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic). -/
+@[implicit_reducible]
 def monoidalClosedOfLeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
     [LeftRigidCategory C] : MonoidalClosed C where
   closed X := closedOfHasLeftDual X

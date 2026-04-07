@@ -51,7 +51,6 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (log n), ← mul_assoc]
     using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
-set_option backward.isDefEq.respectTransparency false in
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
 private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
@@ -100,7 +99,6 @@ lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]

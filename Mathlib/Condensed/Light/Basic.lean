@@ -30,7 +30,7 @@ def LightCondensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology LightProfinite.{u}) C
 
 instance {C : Type w} [Category.{v} C] : Category (LightCondensed.{u} C) :=
-  show Category (Sheaf _ _) from inferInstance
+  inferInstanceAs <| Category (Sheaf _ _)
 
 /--
 Light condensed sets. Because `LightProfinite` is an essentially small category, we don't need the

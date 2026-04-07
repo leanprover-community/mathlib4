@@ -66,7 +66,8 @@ end Monoid
 open Monoid
 
 /-- Torsion monoids are really groups. -/
-@[to_additive /-- Torsion additive monoids are really additive groups -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Torsion additive monoids are really additive groups -/]
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
@@ -347,6 +348,7 @@ end CommGroup
 
 section AddCommGroup
 
+set_option backward.inferInstanceAs.wrap.data false in
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦

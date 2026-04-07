@@ -482,7 +482,7 @@ end
 set_option backward.isDefEq.respectTransparency false in
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
-We will show in `is_bilimit_binary_bicone_of_split_mono_of_cokernel` that this binary bicone is in
+We will show in `isBilimitBinaryBiconeOfIsSplitMonoOfCokernel` that this binary bicone is in
 fact already a biproduct. -/
 @[simps]
 def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] {c : CokernelCofork f}
@@ -596,7 +596,7 @@ def BinaryBicone.isBilimitOfCokernelSnd {X Y : C} (b : BinaryBicone X Y)
 set_option backward.isDefEq.respectTransparency false in
 /-- Every split epi `f` with a kernel induces a binary bicone with `f` as its `snd` and
 the kernel map as its `inl`.
-We will show in `binary_bicone_of_is_split_mono_of_cokernel` that this binary bicone is in fact
+We will show in `isBilimitBinaryBiconeOfIsSplitEpiOfKernel` that this binary bicone is in fact
 already a biproduct. -/
 @[simps]
 def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c : KernelFork f}

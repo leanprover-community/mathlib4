@@ -280,6 +280,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
+@[implicit_reducible]
 def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
   toNormedField := h'

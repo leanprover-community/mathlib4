@@ -15,7 +15,7 @@ This file defines `foldImportedDecls`, a function for efficiently folding throug
 It splits the environment into parts, each of which is folded over in a separate thread.
 
 We also provide `foldCurrFileDecls` which loops through the declarations of the current module,
-without any parallellism.
+without any parallelism.
 -/
 
 variable {α : Type}
@@ -60,7 +60,7 @@ def foldModules (ngen : NameGenerator) (errorRef : FoldDeclErrorRef)
   go.run' mctx {} |>.run' cctx { env, ngen }
 
 /-- Fold through all imported constants using `act`.
-This uses paralellism, with each thread independently folding over a subset of modules.
+This uses parallelism, with each thread independently folding over a subset of modules.
 The array of tasks is returned, so this function typically returns before all tasks have finished.
 The results can then be combined using `Array.foldl`. -/
 @[specialize]

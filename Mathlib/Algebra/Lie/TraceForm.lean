@@ -237,7 +237,6 @@ lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
@@ -427,7 +426,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

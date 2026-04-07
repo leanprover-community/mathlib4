@@ -629,7 +629,7 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
 @[simp]
 lemma mem_divisorsAntidiag :
