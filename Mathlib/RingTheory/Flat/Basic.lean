@@ -413,9 +413,9 @@ noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChang
 
 @[simp]
 theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
-    (p.toBaseChange.toLinearEquiv A).symm
+    (toBaseChange.toLinearEquiv A p).symm
       ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
-  (p.toBaseChange.toLinearEquiv A).symm_apply_apply (a ⊗ₜ[R] m)
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
 
 end Submodule
 
