@@ -195,7 +195,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
   | empty =>
     simp at hp
   | insert i₀ s hi₀ ih =>
-    rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
+    rcases eq_or_ne (p i₀) 1 with h2i₀ | h2i₀
     · simp only [hi₀, not_false_eq_true, prod_insert]
       have h2p : ∀ i ∈ s, p i = 0 := by
         simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]
@@ -263,29 +263,11 @@ theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ 
 theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_top : (∫⁻ a, f a ^ p ∂μ) < ⊤) (hg_top : (∫⁻ a, g a ^ p ∂μ) < ⊤)
     (hp1 : 1 ≤ p) : (∫⁻ a, (f + g) a ^ p ∂μ) < ⊤ := by
-  have hp0_lt : 0 < p := lt_of_lt_of_le zero_lt_one hp1
-  have hp0 : 0 ≤ p := le_of_lt hp0_lt
   calc
     (∫⁻ a : α, (f a + g a) ^ p ∂μ) ≤
         ∫⁻ a, (2 : ℝ≥0∞) ^ (p - 1) * f a ^ p + (2 : ℝ≥0∞) ^ (p - 1) * g a ^ p ∂μ := by
       refine lintegral_mono fun a => ?_
-      dsimp only
-      have h_zero_lt_half_rpow : (0 : ℝ≥0∞) < (1 / 2 : ℝ≥0∞) ^ p := by
-        rw [← ENNReal.zero_rpow_of_pos hp0_lt]
-        exact ENNReal.rpow_lt_rpow (by simp) hp0_lt
-      have h_rw : (1 / 2 : ℝ≥0∞) ^ p * (2 : ℝ≥0∞) ^ (p - 1) = 1 / 2 := by
-        rw [sub_eq_add_neg, ENNReal.rpow_add _ _ two_ne_zero ENNReal.coe_ne_top, ← mul_assoc, ←
-          ENNReal.mul_rpow_of_nonneg _ _ hp0, one_div,
-          ENNReal.inv_mul_cancel two_ne_zero ENNReal.coe_ne_top, ENNReal.one_rpow, one_mul,
-          ENNReal.rpow_neg_one]
-      rw [← ENNReal.mul_le_mul_left (ne_of_lt h_zero_lt_half_rpow).symm _]
-      · rw [mul_add, ← mul_assoc, ← mul_assoc, h_rw, ← ENNReal.mul_rpow_of_nonneg _ _ hp0, mul_add]
-        refine
-          ENNReal.rpow_arith_mean_le_arith_mean2_rpow (1 / 2 : ℝ≥0∞) (1 / 2 : ℝ≥0∞) (f a) (g a) ?_
-            hp1
-        rw [ENNReal.div_add_div_same, one_add_one_eq_two,
-          ENNReal.div_self two_ne_zero ENNReal.coe_ne_top]
-      · finiteness
+      simpa [mul_add] using ENNReal.rpow_add_le_mul_rpow_add_rpow (f a) (g a) hp1
     _ < ⊤ := by
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
         lintegral_const_mul' _ _ (by finiteness), ENNReal.add_lt_top]
@@ -326,28 +308,14 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
       simp_rw [div_mul_div_comm, mul_one, mul_comm p2, mul_comm q2, hpp2, hpq2]
 
 theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
-    (hpq : p.HolderConjugate q) {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
-    (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) :
-    (∫⁻ a, f a * g a ^ (p - 1) ∂μ) ≤
-      (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ p ∂μ) ^ (1 / q) := by
-  refine le_trans (ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf (hg.pow_const _)) ?_
-  by_cases hf_zero_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) = 0
-  · rw [hf_zero_rpow, zero_mul]
-    exact zero_le _
-  have hf_top_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := by
-    by_contra h
-    refine hf_top ?_
-    have hp_not_neg : ¬p < 0 := by simp [hpq.nonneg]
-    simpa [hpq.pos, hp_not_neg] using h
-  refine (ENNReal.mul_le_mul_left hf_zero_rpow hf_top_rpow).mpr (le_of_eq ?_)
-  congr
-  ext1 a
-  rw [← ENNReal.rpow_mul, hpq.sub_one_mul_conj]
+    (hpq : p.HolderConjugate q) {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    ∫⁻ a, f a * g a ^ (p - 1) ∂μ ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ p ∂μ) ^ (1 / q) := by
+  refine (ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf (hg.pow_const _)).trans_eq ?_
+  simp [← ENNReal.rpow_mul, hpq.sub_one_mul_conj]
 
 theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
-    (hpq : p.HolderConjugate q) {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) (hg : AEMeasurable g μ) (hg_top : (∫⁻ a, g a ^ p ∂μ) ≠ ⊤) :
-    (∫⁻ a, (f + g) a ^ p ∂μ) ≤
+    (hpq : p.HolderConjugate q) {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    ∫⁻ a, (f + g) a ^ p ∂μ ≤
       ((∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p)) *
         (∫⁻ a, (f a + g a) ^ p ∂μ) ^ (1 / q) := by
   calc
@@ -376,12 +344,11 @@ theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
           (∫⁻ a, (f a + g a) ^ p ∂μ) ^ (1 / q) := by
       rw [add_mul]
       gcongr
-      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hf (hf.add hg) hf_top
-      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hg (hf.add hg) hg_top
+      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hf (hf.add hg)
+      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hg (hf.add hg)
 
 private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) {f g : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) (hg : AEMeasurable g μ)
-    (hg_top : (∫⁻ a, g a ^ p ∂μ) ≠ ⊤) (h_add_zero : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ 0)
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (h_add_zero : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ 0)
     (h_add_top : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ ⊤) :
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
@@ -391,14 +358,14 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     1 ≤
       (∫⁻ a : α, (f + g) a ^ p ∂μ) ^ (-(1 / p)) *
         ((∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a : α, g a ^ p ∂μ) ^ (1 / p)) by
-    rwa [← mul_le_mul_left h0_rpow (by finiteness),
+    rwa [← ENNReal.mul_le_mul_iff_right h0_rpow (by finiteness),
       ← mul_assoc, ← rpow_add _ _ h_add_zero h_add_top, ←
       sub_eq_add_neg, _root_.sub_self, rpow_zero, one_mul, mul_one] at h
   have h :
     (∫⁻ a : α, (f + g) a ^ p ∂μ) ≤
       ((∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a : α, g a ^ p ∂μ) ^ (1 / p)) *
         (∫⁻ a : α, (f + g) a ^ p ∂μ) ^ (1 / q) :=
-    lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add hpq hf hf_top hg hg_top
+    lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add hpq hf hg
   have h_one_div_q : 1 / q = 1 - 1 / p := by
     nth_rw 2 [← hpq.inv_add_inv_eq_one]
     ring
@@ -406,7 +373,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     rpow_one] at h
   conv_rhs at h => enter [2]; rw [mul_comm]
   conv_lhs at h => rw [← one_mul (∫⁻ a : α, (f + g) a ^ p ∂μ)]
-  rwa [← mul_assoc, ENNReal.mul_le_mul_right h_add_zero h_add_top, mul_comm] at h
+  rwa [← mul_assoc, ENNReal.mul_le_mul_iff_left h_add_zero h_add_top, mul_comm] at h
 
 /-- **Minkowski's inequality for functions** `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
 functions is bounded by the sum of their `ℒp` seminorms. -/
@@ -415,9 +382,9 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
   have hp_pos : 0 < p := lt_of_lt_of_le zero_lt_one hp1
-  by_cases hf_top : ∫⁻ a, f a ^ p ∂μ = ⊤
+  obtain hf_top | hf_top := eq_top_or_lt_top (∫⁻ a, f a ^ p ∂μ)
   · simp [hf_top, hp_pos]
-  by_cases hg_top : ∫⁻ a, g a ^ p ∂μ = ⊤
+  obtain hg_top | hg_top := eq_top_or_lt_top (∫⁻ a, g a ^ p ∂μ)
   · simp [hg_top, hp_pos]
   by_cases h1 : p = 1
   · refine le_of_eq ?_
@@ -431,11 +398,8 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   by_cases h0 : (∫⁻ a, (f + g) a ^ p ∂μ) = 0
   · rw [h0, @ENNReal.zero_rpow_of_pos (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]
     exact zero_le _
-  have htop : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ ⊤ := by
-    rw [← Ne] at hf_top hg_top
-    rw [← lt_top_iff_ne_top] at hf_top hg_top ⊢
-    exact lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top hf hf_top hg_top hp1
-  exact lintegral_Lp_add_le_aux hpq hf hf_top hg hg_top h0 htop
+  exact lintegral_Lp_add_le_aux hpq hf hg h0
+    (lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top hf hf_top hg_top hp1).ne
 
 /-- Variant of Minkowski's inequality for functions `α → ℝ≥0∞` in `ℒp` with `p ≤ 1`: the `ℒp`
 seminorm of the sum of two functions is bounded by a constant multiple of the sum

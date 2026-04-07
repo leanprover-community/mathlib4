@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.Algebra.Lie.SkewAdjoint
@@ -108,13 +107,9 @@ Along with some elements produced by `singleSubSingle`, these form a natural bas
 def single (h : i ≠ j) : R →ₗ[R] sl n R :=
   Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
 
-@[deprecated (since := "2025-05-06")] alias Eb := single
-
 @[simp]
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
-
-@[deprecated (since := "2025-05-06")] alias eb_val := val_single
 
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
@@ -194,7 +189,7 @@ def Pso (i : R) : Matrix (p ⊕ q) (p ⊕ q) R :=
 variable [Fintype p] [Fintype q]
 
 theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, h, one_apply]
@@ -207,12 +202,13 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
     simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
+@[implicit_reducible]
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
   invertibleOfRightInverse _ _ (pso_inv p q R hi)
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h, one_apply]
@@ -233,11 +229,12 @@ noncomputable def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ
   apply LieEquiv.ofEq
   ext A; rw [indefiniteDiagonal_transform p q R hi]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  grind [skewAdjointMatricesLieSubalgebraEquiv_apply]
+  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 
@@ -279,6 +276,7 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   simp [two_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
   rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]

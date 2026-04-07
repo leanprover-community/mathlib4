@@ -44,7 +44,7 @@ variable {β : α → Type u} {δ : α → Sort v} {s : Finset α} {t : ∀ a, F
 section
 variable [DecidableEq α]
 
-/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
+/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `β a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
 Note that the elements of `s.pi t` are only partially defined, on `s`. -/
 def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :=
@@ -54,7 +54,7 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
   Multiset.mem_pi _ _ _
@@ -100,7 +100,7 @@ alias ⟨_, pi_nonempty_of_forall_nonempty⟩ := pi_nonempty
 
 @[simp]
 lemma pi_eq_empty : s.pi t = ∅ ↔ ∃ a ∈ s, t a = ∅ := by
-  simp [← not_nonempty_iff_eq_empty]
+  contrapose!; exact pi_nonempty
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
@@ -122,14 +122,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 
 theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
-    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
-  rw [eq_singleton_iff_unique_mem]
-  constructor
-  · simp
-  intro a ha
-  ext i hi
-  rw [mem_pi] at ha
-  simpa using ha i hi
+    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by grind
 
 theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
     (s.pi fun _ => ({i} : Finset β)) = {fun _ _ => i} :=
@@ -193,25 +186,22 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
 
-lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
+lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict, forall_const, Subtype.forall,
-    mem_coe]
-  refine ⟨fun h i hi ↦ by simpa [hi] using h i hi, fun h i hi ↦ ?_⟩
-  convert h i hi
-  rw [dif_pos hi]
+  ext
+  simp_all
+
+lemma restrict_preimage [DecidableEq ι] {I : Set ι}
+    [DecidablePred (· ∈ I)] (s : Finset I) (u : (i : I) → Set (π i)) :
+    I.restrict ⁻¹' Set.pi s u =
+      Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
+  grind
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
       (@Set.univ t).pi (fun j ↦ if h : j.1 ∈ s then u ⟨j.1, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict₂, forall_const, Subtype.forall]
-  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hst i_mem)⟩
-  split_ifs with i_mem
-  · exact h i i_mem
-  · exact Set.mem_univ _
+  grind [restrict₂]
 
 end Pi
 

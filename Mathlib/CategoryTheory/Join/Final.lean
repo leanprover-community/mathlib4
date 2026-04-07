@@ -21,7 +21,7 @@ Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
 
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to
 `C`. -/
@@ -45,12 +45,12 @@ def structuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
 
 instance [IsConnected C] : (inclLeft C D).Initial where
   out x := match x with
-    |.left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
-    |.right d => isConnected_of_equivalent (costructuredArrowEquiv C D d).symm
+    | .left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
+    | .right d => isConnected_of_equivalent (costructuredArrowEquiv C D d).symm
 
 instance [IsConnected D] : (inclRight C D).Final where
   out x := match x with
-    |.left c => isConnected_of_equivalent (structuredArrowEquiv C D c).symm
-    |.right _ => isConnected_of_isInitial _ (StructuredArrow.mkIdInitial (T := inclRight C D))
+    | .left c => isConnected_of_equivalent (structuredArrowEquiv C D c).symm
+    | .right _ => isConnected_of_isInitial _ (StructuredArrow.mkIdInitial (T := inclRight C D))
 
 end CategoryTheory.Join

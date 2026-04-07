@@ -190,7 +190,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
   rfl
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
-is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
+is a unit in the source ring, the `p`th power of the Gauss sum of `χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
@@ -201,7 +201,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R 
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
-sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
+sum of `χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
@@ -278,6 +278,7 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈ #F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by

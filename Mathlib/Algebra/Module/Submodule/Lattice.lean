@@ -22,8 +22,6 @@ This file defines the lattice structure on submodules, `Submodule.CompleteLattic
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-Many results about operations on this lattice structure are defined in `LinearAlgebra/Basic.lean`,
-most notably those which use `span`.
 
 ## Implementation notes
 
@@ -75,6 +73,9 @@ variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
+
+@[simp] lemma mk_eq_bot (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊥ : Submodule R M) ↔ carrier = ⊥ := by simp [← toAddSubmonoid_inj]
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
@@ -136,16 +137,25 @@ theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
   rfl
 
 @[simp]
+theorem coe_eq_univ : (p : Set M) = Set.univ ↔ p = ⊤ := by
+  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
+
+@[simp] lemma mem_top {x : M} : x ∈ (⊤ : Submodule R M) := trivial
+
+@[simp]
 theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
   rfl
 
 @[simp]
-lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 @[simp]
-theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
-  trivial
+lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
+
+@[simp] lemma mk_eq_top (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊤ : Submodule R M) ↔ carrier = ⊤ := by simp [← toAddSubmonoid_inj]
 
 instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
@@ -174,11 +184,16 @@ instance : InfSet (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
+set_option backward.privateInPublic true in
 private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
   Set.biInter_subset_of_mem
 
+set_option backward.privateInPublic true in
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
+
+protected theorem isGLB_sInf {S : Set (Submodule R M)} : IsGLB S (sInf S) :=
+  .of_image SetLike.coe_subset_coe isGLB_biInf
 
 instance : Min (Submodule R M) :=
   ⟨fun p q ↦
@@ -187,6 +202,8 @@ instance : Min (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
@@ -199,26 +216,20 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
     sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
-    le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
-    sSup_le := fun _ _ hs ↦ sInf_le' hs
-    le_sInf := fun _ _ ↦ le_sInf'
-    sInf_le := fun _ _ ↦ sInf_le' }
+    isLUB_sSup _ := isGLB_upperBounds.mp Submodule.isGLB_sInf
+    isGLB_sInf _ := Submodule.isGLB_sInf }
 
 @[simp]
 theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 @[simp]
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 @[simp]
 theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
@@ -229,28 +240,22 @@ theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
   · rw [Finset.inf_insert, coe_inf, ih]
     simp
 
-@[deprecated (since := "2025-08-31")] alias finset_inf_coe := coe_finsetInf
-
-@[simp]
+@[simp, norm_cast]
 theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
   rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
-
-@[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
 theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
 @[simp]
-theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
 
 @[simp]
 theorem mem_finsetInf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
   simp only [← SetLike.mem_coe, coe_finsetInf, Set.mem_iInter]
-
-@[deprecated (since := "2025-08-31")] alias mem_finset_inf := mem_finsetInf
 
 lemma inf_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
     q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=
@@ -286,7 +291,7 @@ theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Su
     (h : ∀ i ∈ s, f i ∈ p i) : (∑ i ∈ s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 
-/-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span.lean`. -/
+/-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span/Defs.lean`. -/
 
 
 theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
@@ -364,6 +369,13 @@ theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p
 theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
     (x : M) ∈ p ↔ x = 0 :=
   ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+
+/-- Version of `AddSubgroup.disjoint_iff_add_eq_zero` for submodules. -/
+theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {N₁ N₂ : Submodule R M} :
+    Disjoint N₁ N₂ ↔ ∀ {x y : M}, x ∈ N₁ → y ∈ N₂ → x + y = 0 → x = 0 ∧ y = 0 := by
+  simp only [← Submodule.mem_toAddSubgroup, ← AddSubgroup.disjoint_iff_add_eq_zero]
+  aesop (add norm [disjoint_def', AddSubgroup.disjoint_def'])
 
 end Submodule
 

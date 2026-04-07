@@ -56,7 +56,7 @@ We also define
 
 theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
-    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (Ordinal.not_lt_zero (ord I x)) (hsC c hc x ht))
+    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ not_lt_zero (hsC c hc x ht))
   rw [Set.subset_singleton_iff_eq] at this
   cases this
   · subst C
@@ -132,8 +132,7 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
       convert C.2
       ext x
-      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
-        decide_eq_false_iff_not, not_not]
+      simp
     · refine IsClopen.isOpen ?_
       convert C.2
       ext x

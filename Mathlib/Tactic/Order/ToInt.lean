@@ -5,22 +5,23 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Batteries.Data.List.Pairwise
-public meta import Mathlib.Tactic.Order.CollectFacts
-public meta import Batteries.Tactic.GeneralizeProofs
-public meta import Mathlib.Util.Qq
+public import Batteries.Data.List.Pairwise
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Util.Qq
 
 /-!
 # Translating linear orders to ℤ
 
 In this file we implement the translation of a problem in any linearly ordered type to a problem in
-`ℤ`. This allows us to use the `omega` tactic to solve it.
+`ℤ`. This allows us to use the `lia` tactic to solve it.
 
 While the core algorithm of the `order` tactic is complete for the theory of linear orders in the
 signature (`<`, `≤`),
 it becomes incomplete in the signature with lattice operations `⊓` and `⊔`. With these operations,
 the problem becomes NP-hard, and the idea is to reuse a smart and efficient procedure, such as
-`omega`.
+`lia`.
 
 ## TODO
 
@@ -34,7 +35,7 @@ namespace Mathlib.Tactic.Order.ToInt
 variable {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
 
 /-- The main theorem asserting the existence of a translation.
-We use `Classical.chooose` to turn this into a value for use in the `order` tactic,
+We use `Classical.choose` to turn this into a value for use in the `order` tactic,
 see `toInt`.
 -/
 theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
@@ -52,8 +53,8 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   generalize_proofs _ hi hj
   rw [← hi.choose_spec, ← hj.choose_spec] at h_eq
   conv_lhs => rw [← hi.choose_spec, ← hj.choose_spec]
-  have := List.pairwise_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
-      (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
+  have := li.pairwise_mergeSort (le := fun a b ↦ decide (a ≤ b))
+      (fun a b c ↦ by simpa using le_trans) (by simpa using le_total)
   rw [List.pairwise_iff_get] at this
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
@@ -107,12 +108,17 @@ def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : MetaM Expr :
     return q(fun (x : Fin $m) ↦ ($rarrayExpr).get x.val)
 
 /-- Translates a set of values in a linear ordered type to `ℤ`,
-preserving all the facts except for `.isTop` and `.isBot`. These facts are filtered at the
-preprocessing step. -/
+preserving all the facts except for `.isTop` and `.isBot`. We assume that these facts are filtered
+at the preprocessing step. -/
 def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $type))
-    (idxToAtom : Std.HashMap ℕ Q($type))
     (facts : Array AtomicFact) :
-    MetaM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
+    AtomM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
+  let mut idxToAtom : Std.HashMap Nat Q($type) := ∅
+  for atom in (← get).atoms do
+    -- `atoms` contains atoms for all types we are working on, so here we need to filter only
+    -- those of type `type`
+    if ← withReducible <| isDefEq type (← inferType atom) then
+      idxToAtom := idxToAtom.insert idxToAtom.size atom
   haveI nE : Q(ℕ) := mkNatLitQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=
     ← mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)

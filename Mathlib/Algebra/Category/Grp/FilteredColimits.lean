@@ -74,7 +74,10 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 @[to_additive]
 lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
     G.mk.{v, u} F ⟨j, x⟩ * G.mk.{v, u} F ⟨j, y⟩ = G.mk.{v, u} F ⟨j, x * y⟩ := by
-  simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+  #adaptation_note /-- Prior to leanprover/lean4#12564, this was just
+  `simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)` -/
+  have := colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+  simpa using this
 
 /-- The "unlifted" version of taking inverses in the colimit. -/
 @[to_additive /-- The "unlifted" version of negation in the colimit. -/]
@@ -88,7 +91,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
   apply G.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  rw [MonoidHom.map_inv, MonoidHom.map_inv, inv_inj]
+  rw [map_inv, map_inv, inv_inj]
   exact hfg
 
 /-- Taking inverses in the colimit. See also `colimitInvAux`. -/

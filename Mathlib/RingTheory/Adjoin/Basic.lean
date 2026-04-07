@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Order.Group.Nat
 /-!
 # Adjoining elements to form subalgebras
 
@@ -20,7 +21,7 @@ adjoin, algebra
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Polynomial
 
@@ -52,7 +53,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
   · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
-      subset_adjoin,-- the rest comes from `squeeze_simp`
+      subset_adjoin, -- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,
       Set.mk_preimage_prod_left, LinearMap.coe_inr, and_self_iff, Set.union_singleton,
@@ -188,7 +189,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     toSubmodule (adjoin E (L : Set K)) = span E (Set.range fun i : ι ↦ (bL i).1) :=
   L.adjoin_eq_span_of_eq_span E <| by
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
-      using congr_arg (Submodule.map L.val) bL.span_eq.symm
+      using congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
 
 theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :

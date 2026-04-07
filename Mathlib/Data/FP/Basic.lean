@@ -56,9 +56,7 @@ def emin : ℤ :=
 @[nolint docBlame]
 def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
   emin ≤ e + prec - 1 ∧ e + prec - 1 ≤ emax ∧ e = max (e + m.size - prec) emin
-
-instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
-  (unfold ValidFinite; infer_instance)
+deriving Decidable
 
 @[nolint docBlame]
 inductive Float
@@ -89,7 +87,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      cutsat
+      lia
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
     by (simp [sub_eq_add_neg, Int.natCast_nonneg])⟩
 

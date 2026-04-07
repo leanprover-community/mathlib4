@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 open Opposite Presieve Functor
 
@@ -69,6 +69,7 @@ theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
   ⟨Fork.isLimitOfIsos _ (hP π c hc).some _ (i.app _) (i.app _) (i.app _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Precomposing with a pullback-preserving functor preserves the equalizer condition. -/
 theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F : E ⥤ C)
     [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
@@ -83,28 +84,46 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
         (isLimitOfPreserves F (hc.ofIsoLimit (PullbackCone.ext (Iso.refl _) (by simp) (by simp))))
 
 /-- The canonical map to the explicit equalizer. -/
-def MapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
+def mapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
     P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } := fun t ↦
   ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← FunctorToTypes.map_comp_apply, ← op_comp, w]⟩
 
-theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Type*)
-    (hP : EqualizerCondition P) : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
-    Function.Bijective
-      (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition) := by
-  intro X B π _ _
-  specialize hP π _ (pullbackIsPullback π π)
+@[deprecated (since := "2025-11-23")] alias MapToEqualizer := mapToEqualizer
+
+theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ Type*}
+    (hP : EqualizerCondition P) {X B : C} {π : X ⟶ B} [EffectiveEpi π]
+    (c : PullbackCone π π) (hc : IsLimit c) :
+    Function.Bijective (mapToEqualizer P π c.fst c.snd c.condition) := by
+  specialize hP π _ hc
   rw [Types.type_equalizer_iff_unique] at hP
   rw [Function.bijective_iff_existsUnique]
   intro ⟨b, hb⟩
   obtain ⟨a, ha₁, ha₂⟩ := hP b hb
-  refine ⟨a, ?_, ?_⟩
-  · simpa [MapToEqualizer] using ha₁
-  · simpa [MapToEqualizer] using ha₂
+  exact ⟨a, by simpa [mapToEqualizer] using ha₁, by simpa [mapToEqualizer] using ha₂⟩
 
+theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ Type*}
+    (hP : EqualizerCondition P) {X B : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
+    Function.Bijective
+      (mapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition) :=
+  bijective_mapToEqualizer_pullback' hP _ (pullback.isLimit _ _)
+
+theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
+    (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] (c : PullbackCone π π) (_ : IsLimit c),
+      Function.Bijective (mapToEqualizer P π c.fst c.snd c.condition)) :
+    EqualizerCondition P := by
+  intro X B π _ c hc
+  specialize hP X B π c hc
+  rw [Types.type_equalizer_iff_unique]
+  rw [Function.bijective_iff_existsUnique] at hP
+  intro b hb
+  obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb⟩
+  exact ⟨a, by simpa [mapToEqualizer] using ha₁, by simpa [mapToEqualizer] using ha₂⟩
+
+set_option backward.isDefEq.respectTransparency false in
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
-    (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π)
+    (mapToEqualizer P π (pullback.fst π π) (pullback.snd π π)
     pullback.condition)) : EqualizerCondition P := by
   intro X B π _ c hc
   have : HasPullback π π := ⟨c, hc⟩
@@ -119,29 +138,31 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb'⟩
   refine ⟨a, ?_, ?_⟩
-  · simpa [MapToEqualizer] using ha₁
-  · simpa [MapToEqualizer] using ha₂
+  · simpa [mapToEqualizer] using ha₁
+  · simpa [mapToEqualizer] using ha₂
 
 lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst π π).op =
     P.map π.op ≫ P.map (pullback.snd π π).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
-    MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
+    mapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
     equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
   rw [← Iso.comp_inv_eq (α := Types.equalizerIso _ _)]
   apply equalizer.hom_ext
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
       IsIso (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
   constructor
   · intro hP X B π _ _
-    have h := hP.bijective_mapToEqualizer_pullback _ X B π
+    have h := hP.bijective_mapToEqualizer_pullback π
     rw [← isIso_iff_bijective, mapToEqualizer_eq_comp] at h
     exact IsIso.of_isIso_comp_right (equalizer.lift (P.map π.op)
       (equalizerCondition_w' P π))
@@ -159,26 +180,29 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open WalkingParallelPair WalkingParallelPairHom in
 theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :
     (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.categoryᵒᵖ)
     (Y := op ((Presieve.categoryMk _ (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩)))
     (X := op ((Presieve.categoryMk _ π (Sieve.ofArrows_mk _ _ Unit.unit))))
-    (Quiver.Hom.op (Over.homMk c.fst))
-    (Quiver.Hom.op (Over.homMk c.snd c.condition.symm))).Initial := by
+    ((ObjectProperty.homMk (Over.homMk c.fst)).op)
+    ((ObjectProperty.homMk (Over.homMk c.snd c.condition.symm)).op)).Initial := by
   apply Limits.parallelPair_initial_mk
   · intro ⟨Z⟩
     obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
     let X' : (Presieve.ofArrows (fun () ↦ X) (fun () ↦ π)).category :=
       Presieve.categoryMk _ π (ofArrows.mk ())
     let f' : Z.obj.left ⟶ X'.obj.left := f
-    exact ⟨(Over.homMk f').op⟩
+    exact ⟨(ObjectProperty.homMk (Over.homMk f')).op⟩
   · intro ⟨Z⟩ ⟨i⟩ ⟨j⟩
-    let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
-    refine ⟨Quiver.Hom.op (Over.homMk ij (by simpa [ij] using i.w)), ?_, ?_⟩
-    all_goals congr
-    all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
+    have hi := Over.w i.hom
+    have hj := Over.w j.hom
+    dsimp at hi hj
+    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by simp [hi, hj])
+    refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
+    all_goals congr; aesop
 
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
@@ -191,15 +215,15 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
   let X' := S.categoryMk π ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩
   let P' := S.categoryMk (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩
-  let fst : P' ⟶ X' := Over.homMk c.fst
-  let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let fst : P' ⟶ X' := ObjectProperty.homMk (Over.homMk c.fst)
+  let snd : P' ⟶ X' := ObjectProperty.homMk (Over.homMk c.snd c.condition.symm)
   let F : S.categoryᵒᵖ ⥤ D := S.diagram.op ⋙ P
   let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
   let H := parallelPair fst.op snd.op
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro ⟨_ | _⟩
   all_goals aesop
 

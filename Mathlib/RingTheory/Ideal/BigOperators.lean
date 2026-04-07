@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Defs
 This contains some results on the big operators `∑` and `∏` interacting with the `Ideal` type.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

@@ -15,7 +15,7 @@ Some of the concrete descriptions of (co)limits in `Type v` extend to (co)limits
 category `K ⥤ Type v`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.FunctorToTypes
 

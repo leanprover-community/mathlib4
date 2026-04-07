@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -412,7 +412,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
@@ -464,7 +464,7 @@ syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
-@[inherit_doc computeDegree]
+@[tactic_alt computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
@@ -517,7 +517,7 @@ The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on t
 macro (name := monicityMacro) "monicity" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
 
-@[inherit_doc monicityMacro]
+@[tactic_alt monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
@@ -529,3 +529,4 @@ end Mathlib.Tactic.ComputeDegree
  We register `compute_degree` with the `hint` tactic.
  -/
 register_hint 1000 compute_degree
+register_try?_tactic (priority := 1000) compute_degree

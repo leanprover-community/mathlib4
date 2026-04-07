@@ -64,6 +64,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
+@[implicit_reducible]
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]
@@ -140,7 +141,12 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
-instance instTopologicalSpace : TopologicalSpace (WithLawson α) := lawson α
+
+instance instTopologicalSpace : TopologicalSpace (WithLawson α) :=
+  -- fast_instance% lawson α fails
+  letI : TopologicalSpace α := lawson α
+  inferInstanceAs <| TopologicalSpace α
+
 instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
@@ -218,19 +224,18 @@ end Preorder
 namespace IsLawson
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lawson topology on a partial order is T₁. -/
 -- see Note [lower instance priority]
 instance (priority := 90) toT1Space : T1Space α where
   t1 a := by
-    simp only [IsLawson.topology_eq_lawson]
+    simp +instances only [IsLawson.topology_eq_lawson]
     rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
       ← WithLawson.isClosed_preimage_ofLawson]
     apply IsClosed.inter
       (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
     rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
     exact lawsonClosed_of_scottClosed _ isClosed_Iic
-
-@[deprecated (since := "2025-07-02")] protected alias singleton_isClosed := isClosed_singleton
 
 end IsLawson
 

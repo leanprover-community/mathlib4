@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Order.RelClasses
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Perm.Basic
@@ -16,6 +15,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Sums and products from lists
@@ -25,7 +25,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
-@[expose] public section
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -64,7 +64,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   simp only [prod_eq_foldr, foldr_map]
-  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y) ) _ _ (by simp [hf]), hf']
+  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y)) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
@@ -110,9 +110,8 @@ theorem prod_set :
       (L.set n a).prod =
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
-  | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt]
+  | x :: xs, i + 1, a => by simp [set, prod_set xs i a, mul_assoc]
+  | [], _, _ => by simp [set]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -199,10 +198,36 @@ lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' �
     l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 
+@[to_additive (attr := simp)]
+theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i, Commute a a') :
+    (l.insertIdx i a).prod = a * l.prod := by
+  induction i generalizing l
+  case zero => rfl
+  case succ i ih =>
+    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt hlen)
+    simp only [insertIdx_succ_cons, prod_cons,
+      ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))]
+    exact Commute.left_comm (hcomm hd (mem_of_mem_head? rfl)).symm tl.prod
+
+@[to_additive (attr := simp)]
+theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i, Commute l[i] a') :
+    l[i] * (l.eraseIdx i).prod = l.prod := by
+  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) (fun a' a'_mem =>
+      hcomm a' (by rwa [take_eraseIdx_eq_take_of_le l i i (Nat.le_refl i)] at a'_mem)),
+    insertIdx_eraseIdx_getElem hlen]
+
 end Monoid
 
 section CommMonoid
 variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
+
+@[to_additive (attr := simp)]
+theorem CommMonoid.prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod :=
+  List.prod_insertIdx h (fun a' _ ↦ Commute.all a a')
+
+@[to_additive (attr := simp)]
+theorem CommMonoid.mul_prod_eraseIdx {i} (h : i < l.length) : l[i] * (l.eraseIdx i).prod = l.prod :=
+  List.mul_prod_eraseIdx h (fun a' _ ↦ Commute.all l[i] a')
 
 @[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
@@ -219,8 +244,11 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive (attr := simp)]
-lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+-- In order to make `to_additive` work, this theorem is adjusted to `List.sum_reverse` from core
+@[to_additive existing, simp]
+lemma prod_reverse [One α] [Mul α] [@Std.Associative α (· * ·)] [@Std.Commutative α (· * ·)]
+    [@Std.LawfulLeftIdentity α α (· * ·) 1] (l : List α) : prod l.reverse = prod l :=
+  @List.sum_reverse α ⟨1⟩ ⟨(· * ·)⟩ _ _ _ l
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -230,7 +258,7 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
   | [], ys => by simp
   | xs, [] => by simp
   | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    simp only [drop, zipWith_cons_cons, prod_cons]
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
@@ -272,7 +300,7 @@ lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'
     (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
   refine ext_get h fun i h₁ h₂ => ?_
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
-  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
+  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (Nat.le_of_lt h₁)] at this
   convert mul_left_cancel this
 
 section Group
@@ -335,8 +363,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
+  · simp (disch := grind) [take_of_length_le, drop_eq_nil_of_le]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :

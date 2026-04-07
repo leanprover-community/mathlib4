@@ -101,23 +101,14 @@ theorem isChain_cons_primeFactorsList {n : ℕ} :
         ((le_minFac.2 h).resolve_left (by simp)) (isChain_cons_primeFactorsList ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 
-@[deprecated (since := "2025-09-21")]
-alias primeFactorsList_chain := isChain_cons_primeFactorsList
-
 theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
   isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
 theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
   (isChain_two_cons_primeFactorsList _).tail
 
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
-
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain' := isChain_primeFactorsList
-
-theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  (isChain_primeFactorsList _).pairwise
+theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
+  (isChain_primeFactorsList _).sortedLE
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/
@@ -223,7 +214,8 @@ theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
   rcases n with - | hn
   · simp [zero_mul]
-  apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
+  apply sublist_of_subperm_of_pairwise _
+    (primeFactorsList_sorted _).pairwise (primeFactorsList_sorted _).pairwise
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 

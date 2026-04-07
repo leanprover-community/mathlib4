@@ -32,7 +32,7 @@ namespace SimplicialObject
 
 namespace Splitting
 
-variable {C : Type*} [Category C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] {X : SimplicialObject C}
   (s : Splitting X)
 
 /-- The projection on a summand of the coproduct decomposition given
@@ -44,11 +44,13 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
     · exact eqToHom (by subst h; rfl)
     · exact 0)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem cofan_inj_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A ≫ s.πSummand A = 𝟙 _ := by
   simp [πSummand]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : (s.cofan Δ).inj A ≫ s.πSummand B = 0 := by
@@ -57,6 +59,7 @@ theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategory�
 
 variable [Preadditive C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
     𝟙 (X.obj Δ) = ∑ A : IndexSet Δ, s.πSummand A ≫ (s.cofan Δ).inj A := by
   apply s.hom_ext'
@@ -67,6 +70,7 @@ theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
     rw [s.cofan_inj_πSummand_eq_zero_assoc _ _ h₂, zero_comp]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ s.πSummand (IndexSet.id (op ⦋n + 1⦌)) = 0 := by
@@ -80,8 +84,9 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [IndexSet.eqId_iff_len_eq]
   have h := SimplexCategory.len_le_of_epi A.e
   dsimp at h ⊢
-  cutsat
+  lia
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a simplicial object `X` in an additive category is split,
 then `PInfty` vanishes on all the summands of `X _⦋n⦌` which do
 not correspond to the identity of `⦋n⦌`. -/
@@ -91,6 +96,7 @@ theorem cofan_inj_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialOb
   rw [SimplicialObject.Splitting.IndexSet.eqId_iff_mono] at hA
   rw [SimplicialObject.Splitting.cofan_inj_eq, assoc, degeneracy_comp_PInfty X n A.e hA, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = 0 := by
   constructor
@@ -116,6 +122,7 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
       rw [assoc, reassoc_of% h, zero_comp]
     · simp only [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_πSummand_id (n : ℕ) :
     PInfty.f n ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = s.πSummand (IndexSet.id (op ⦋n⦌)) := by
@@ -124,6 +131,7 @@ theorem PInfty_comp_πSummand_id (n : ℕ) :
   rw [← sub_eq_zero, ← sub_comp, ← comp_PInfty_eq_zero_iff, sub_comp, id_comp, PInfty_f_idem,
     sub_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty (n : ℕ) :
     s.πSummand (IndexSet.id (op ⦋n⦌)) ≫ (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n =
@@ -141,12 +149,14 @@ simplicial object are induced by the differentials on the alternating face map c
 noncomputable def d (i j : ℕ) : s.N i ⟶ s.N j :=
   (s.cofan _).inj (IndexSet.id (op ⦋i⦌)) ≫ K[X].d i j ≫ s.πSummand (IndexSet.id (op ⦋j⦌))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op ⦋j⦌)) (hA : ¬A.EqId) :
     (s.cofan _).inj A ≫ K[X].d j k ≫ s.πSummand (IndexSet.id (op ⦋k⦌)) = 0 := by
   rw [A.eqId_iff_mono] at hA
   rw [← assoc, ← s.comp_PInfty_eq_zero_iff, assoc, ← PInfty.comm j k, s.cofan_inj_eq, assoc,
     degeneracy_comp_PInfty_assoc X j A.e hA, zero_comp, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a splitting of a simplicial object `X` in a preadditive category,
 `s.nondegComplex` is a chain complex which is given in degree `n` by
 the nondegenerate `n`-simplices of `X`. -/
@@ -170,6 +180,7 @@ noncomputable def nondegComplex : ChainComplex C ℕ where
       simp only [assoc, ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ _ hA, comp_zero]
     rw [eq, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The chain complex `s.nondegComplex` attached to a splitting of a simplicial object `X`
 becomes isomorphic to the normalized Moore complex `N₁.obj X` defined as a formal direct
 factor in the category `Karoubi (ChainComplex C ℕ)`. -/
@@ -217,8 +228,9 @@ end Splitting
 
 namespace Split
 
-variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a split simplicial object in a preadditive category to
 the chain complex which consists of nondegenerate simplices. -/
 @[simps]
@@ -245,6 +257,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
         · rw [S₁.s.cofan_inj_πSummand_eq_zero_assoc _ _ (Ne.symm h),
             S₂.s.cofan_inj_πSummand_eq_zero _ _ (Ne.symm h), zero_comp, comp_zero] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism (in `Karoubi (ChainComplex C ℕ)`) between the chain complex
 of nondegenerate simplices of a split simplicial object and the normalized Moore complex
 defined as a formal direct factor of the alternating face map complex. -/

@@ -20,7 +20,7 @@ We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -110,7 +110,7 @@ theorem prod_add_prod_eq {s : Finset ι} {i : ι} {f g h : ι → R} (hi : i ∈
     (h1 : g i + h i = f i) (h2 : ∀ j ∈ s, j ≠ i → g j = f j) (h3 : ∀ j ∈ s, j ≠ i → h j = f j) :
     (∏ i ∈ s, g i) + ∏ i ∈ s, h i = ∏ i ∈ s, f i := by
   classical
-    simp_rw [prod_eq_mul_prod_diff_singleton hi, ← h1, right_distrib]
+    simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi, ← h1, right_distrib]
     congr 2 <;> apply prod_congr rfl <;> simpa
 
 section DecidableEq
@@ -163,6 +163,7 @@ lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t` -/
 theorem prod_add (f g : ι → R) (s : Finset ι) :
@@ -219,6 +220,11 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
     rw [filter_insert, if_neg (ha i hi).not_gt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
+
+theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+    ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
+  rw [prod_add_ordered]
+  simp
 
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/

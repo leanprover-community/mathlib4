@@ -19,11 +19,11 @@ where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj 
 
 ## TODOs
 - Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
-ι induce a monoidal functor `D ⥤ (C ⊛⥤ V)`.
+  ι induces a monoidal functor `D ⥤ (C ⊛⥤ V)`.
 - Specialize to the case `V := Type _`, and prove a universal property stating
-that for every monoidal category `W` with suitable colimits,
-colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
-to monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
+  that for every monoidal category `W` with suitable colimits,
+  colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
+  monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
 -/
 
 @[expose] public section
@@ -164,7 +164,7 @@ lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
 @[reassoc (attr := simp)]
 lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) (x y : C) :
-   (η F G).app (x , y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
+   (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
 open LawfulDayConvolutionMonoidalCategoryStruct
@@ -188,6 +188,7 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
       (F ⊗ G).functor (η F G) _
       ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor)) (x, y)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
     Limits.colimit.ι
@@ -213,7 +214,7 @@ def νNatTrans :
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
 instance : (𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (νNatTrans C V) :=
-  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V)|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V) |>.isLeftKanExtension
 
 lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
     (h : ν C V ≫ α.natTrans.app (𝟙_ C) = ν C V ≫ β.natTrans.app (𝟙_ C)) :

@@ -5,8 +5,10 @@ Authors: Jujian Zhang, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.AdaptationNote
 
@@ -16,7 +18,7 @@ public import Mathlib.Tactic.AdaptationNote
 ## Main results
 When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
-  `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a chain map
+  `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a cochain map
   `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `I.ι` intertwines the descent and
   the original morphism, see `CategoryTheory.InjectiveResolution.desc_commutes`.
 * `CategoryTheory.InjectiveResolution.descHomotopy`: Any two such descents are homotopic.
@@ -50,6 +52,7 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFZero {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 0 ⟶ I.cocomplex.X 0 :=
@@ -65,6 +68,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
   ShortComplex.exact_of_f_is_kernel _ I.isLimitKernelFork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
@@ -87,7 +91,7 @@ def descFSucc {Y Z : C} (I : InjectiveResolution Y) (J : InjectiveResolution Z) 
     (g' ≫ I.cocomplex.d (n + 1) (n + 2)) (by simp [reassoc_of% w]),
       (J.exact_succ n).comp_descToInjective _ _⟩
 
-/-- A morphism in `C` descends to a chain map between injective resolutions. -/
+/-- A morphism in `C` descends to a cochain map between injective resolutions. -/
 def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex ⟶ I.cocomplex :=
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
@@ -116,7 +120,7 @@ def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveRes
 lemma comp_descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) :
     I.cocomplex.d 0 1 ≫ descHomotopyZeroZero f comm = f.f 0 :=
-  I.exact₀.comp_descToInjective  _ _
+  I.exact₀.comp_descToInjective _ _
 
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroOne {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -150,9 +154,9 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
     (f : I.cocomplex ⟶ J.cocomplex) (n : ℕ) (g : I.cocomplex.X (n + 1) ⟶ J.cocomplex.X n)
     (g' : I.cocomplex.X (n + 2) ⟶ J.cocomplex.X (n + 1))
     (w : f.f (n + 1) = I.cocomplex.d (n + 1) (n + 2) ≫ g' + g ≫ J.cocomplex.d n (n + 1)) :
-    I.cocomplex.d (n+2) (n+3) ≫ descHomotopyZeroSucc f n g g' w =
+    I.cocomplex.d (n + 2) (n + 3) ≫ descHomotopyZeroSucc f n g g' w =
       f.f (n + 2) - g' ≫ J.cocomplex.d _ _ :=
-  (I.exact_succ (n + 1)).comp_descToInjective  _ _
+  (I.exact_succ (n + 1)).comp_descToInjective _ _
 
 /-- Any descent of the zero morphism is homotopic to zero. -/
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -214,7 +218,7 @@ variable [HasInjectiveResolutions C]
 
 /-- Taking injective resolutions is functorial,
 if considered with target the homotopy category
-(`ℕ`-indexed cochain complexes and chain maps up to homotopy).
+(`ℕ`-indexed cochain complexes and cochain maps up to homotopy).
 -/
 def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ) where
   obj X := (HomotopyCategory.quotient _ _).obj (injectiveResolution X).cocomplex
@@ -236,6 +240,7 @@ def InjectiveResolution.iso {X : C} (I : InjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj I.cocomplex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
     (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -261,12 +266,13 @@ section
 
 variable [Abelian C] [EnoughInjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk f (d f) (by simp)).Exact := by
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
     { τ₁ := 𝟙 _
       τ₂ := 𝟙 _
-      τ₃ := Injective.ι _  }
+      τ₃ := Injective.ι _ }
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_g_is_cokernel
   apply cokernelIsCokernel
@@ -314,6 +320,7 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
@@ -338,5 +345,16 @@ instance (priority := 100) (Z : C) : HasInjectiveResolution Z where out := ⟨of
 instance (priority := 100) : HasInjectiveResolutions C where out _ := inferInstance
 
 end InjectiveResolution
+
+variable [Abelian C]
+
+/-- Given an injective presentation `M → I`, the short complex `0 → M → I → N → 0`. -/
+noncomputable abbrev InjectivePresentation.shortComplex
+    {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
+  ShortComplex.mk ip.f (Limits.cokernel.π ip.f) (Limits.cokernel.condition ip.f)
+
+theorem InjectivePresentation.shortExact_shortComplex {X : C}
+    (ip : InjectivePresentation X) : ip.shortComplex.ShortExact :=
+  { exact := ShortComplex.exact_cokernel ip.f }
 
 end CategoryTheory

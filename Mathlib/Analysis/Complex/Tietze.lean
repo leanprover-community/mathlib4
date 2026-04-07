@@ -34,6 +34,7 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
     [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Module.Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
+set_option backward.isDefEq.respectTransparency false in
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
@@ -95,6 +96,10 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
       DilationEquiv.smulTorsor_apply, vadd_eq_add, dist_add_self_left, norm_smul,
       RCLike.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
+
+instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
+  rw [unitInterval.eq_closedBall]
+  exact Metric.instTietzeExtensionClosedBall ℝ _ (by norm_num)
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]

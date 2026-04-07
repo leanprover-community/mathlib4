@@ -20,7 +20,7 @@ shows basic properties of this notion.
 ## Tags
 lifting property
 
-@TODO :
+## TODO
 1) direct/inverse images, adjunctions
 
 -/
@@ -34,7 +34,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
+variable {C : Type*} [Category* C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
   (p' : Y ⟶ Y')
 
 /-- `HasLiftingProperty i p` means that `i` has the left lifting
@@ -109,12 +109,14 @@ instance of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
           fac_left := by simp only [CommSq.fac_left]
           fac_right := by simp only [CommSq.fac_right_assoc, CommSq.fac_right] }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) [hip : HasLiftingProperty i p] :
     HasLiftingProperty i' p := by
   rw [Arrow.iso_w' e]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
     (e : Arrow.mk p ≅ Arrow.mk p') [hip : HasLiftingProperty i p] : HasLiftingProperty i p' := by
   rw [Arrow.iso_w' e]
@@ -133,6 +135,7 @@ theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {
 
 end HasLiftingProperty
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RetractArrow.leftLiftingProperty
     {X Y Z W Z' W' : C} {g : Z ⟶ W} {g' : Z' ⟶ W'}
     (h : RetractArrow g' g) (f : X ⟶ Y) [HasLiftingProperty g f] : HasLiftingProperty g' f where
@@ -145,6 +148,7 @@ lemma RetractArrow.leftLiftingProperty
             simp only [← h.i_w_assoc, sq'.fac_left, h.retract_left_assoc,
               Arrow.mk_left, Category.id_comp]}⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RetractArrow.rightLiftingProperty
     {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (h : RetractArrow f' f) (g : Z ⟶ W) [HasLiftingProperty g f] : HasLiftingProperty g f' where
@@ -160,6 +164,7 @@ abbreviation for the `CommSq.LiftStruct` structure for
 the square corresponding to `φ`. -/
 abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty i p ↔
       ∀ (φ : Arrow.mk i ⟶ Arrow.mk p), Nonempty (LiftStruct φ) := by

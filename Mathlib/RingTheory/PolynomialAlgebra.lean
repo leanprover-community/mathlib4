@@ -27,9 +27,9 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
 noncomputable section
 
-variable (R A : Type*)
-variable [CommSemiring R]
-variable [Semiring A] [Algebra R A]
+variable (R S A : Type*)
+variable [CommSemiring R] [CommSemiring S]
+variable [Semiring A] [Algebra R A] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 
 namespace PolyEquivTensor
 
@@ -75,7 +75,7 @@ theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[
         a₁ * (algebraMap R A) (coeff p₁ x.1) * (a₂ * (algebraMap R A) (coeff p₂ x.2)) := by
   simp_rw [mul_assoc, Algebra.commutes, ← Finset.mul_sum, mul_assoc, ← Finset.mul_sum]
   congr
-  simp_rw [Algebra.commutes (coeff p₂ _), coeff_mul, map_sum, RingHom.map_mul]
+  simp_rw [Algebra.commutes (coeff p₂ _), coeff_mul, map_sum, map_mul]
 
 theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     (toFunLinear R A) ((a₁ * a₂) ⊗ₜ[R] (p₁ * p₂)) =
@@ -211,7 +211,12 @@ attribute [local instance] Polynomial.algebra
 @[simp]
 theorem Polynomial.algebraMap_def : algebraMap R[X] A[X] = mapRingHom (algebraMap R A) := rfl
 
-instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+instance : IsScalarTower R S[X] A[X] :=
+  have : IsScalarTower S S[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+  .to₁₃₄ _ S _ _
+
+instance : IsScalarTower R[X] S[X] A[X] := .of_algebraMap_eq' <|
+  congr(mapRingHom $(IsScalarTower.algebraMap_eq R S A)).trans (mapRingHom_comp ..).symm
 
 instance [FaithfulSMul R A] : FaithfulSMul R[X] A[X] :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr

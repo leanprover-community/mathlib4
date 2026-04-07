@@ -26,14 +26,14 @@ of definitional equality of the different points used in the composition. These 
 often more flexible to use.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, chain rule
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -42,8 +42,6 @@ open scoped Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
-
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -51,7 +49,7 @@ variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
 variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {L : Filter (𝕜 × 𝕜)}
 
 section Composition
 
@@ -70,31 +68,35 @@ usual multiplication in `comp` lemmas.
 get confused since there are too many possibilities for composition -/
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
-  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
+  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter (𝕜' × 𝕜')} {y : 𝕜'} (x)
 
-theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
-    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
-    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
-  simpa using ((hg.restrictScalars 𝕜).comp x hh hL).hasDerivAtFilter
+theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' L')
+    (hh : HasDerivAtFilter h h' L) (hL : Tendsto (Prod.map h h) L L') :
+    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') L := by
+  simpa using ((hg.hasFDerivAtFilter.restrictScalars 𝕜).comp hh hL).hasDerivAtFilter
 
-theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
-    (hh : HasDerivAtFilter h h' x L) (hy : y = h x) (hL : Tendsto h L L') :
-    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
-  rw [hy] at hg; exact hg.scomp x hh hL
+@[deprecated HasDerivAtFilter.scomp (since := "2026-02-17")]
+theorem HasDerivAtFilter.scomp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
+    (hg : HasDerivAtFilter g₁ g₁' (L' ×ˢ pure y)) (hh : HasDerivAtFilter h h' (L ×ˢ pure x))
+    (hy : y = h x) (hL : Tendsto h L L') :
+    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') (L ×ˢ pure x) :=
+  hg.scomp hh <| .prodMap hL <| by simp [hy]
 
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
-  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| Eventually.of_forall hs⟩
+  hg.scomp hh <| .prodMap (tendsto_nhdsWithin_iff.mpr ⟨hh.continuousAt, .of_forall hs⟩)
+    (tendsto_pure_pure _ _)
 
 theorem HasDerivWithinAt.scomp_hasDerivAt_of_eq (hg : HasDerivWithinAt g₁ g₁' s' y)
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') (hy : y = h x) :
     HasDerivAt (g₁ ∘ h) (h' • g₁') x := by
   rw [hy] at hg; exact hg.scomp_hasDerivAt x hh hs
 
-nonrec theorem HasDerivWithinAt.scomp (hg : HasDerivWithinAt g₁ g₁' t' (h x))
+theorem HasDerivWithinAt.scomp (hg : HasDerivWithinAt g₁ g₁' t' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s t') :
     HasDerivWithinAt (g₁ ∘ h) (h' • g₁') s x :=
-  hg.scomp x hh <| hh.continuousWithinAt.tendsto_nhdsWithin hst
+  HasDerivAtFilter.scomp hg hh <| hh.continuousWithinAt.tendsto_nhdsWithin hst |>.prodMap <|
+    tendsto_pure_pure ..
 
 theorem HasDerivWithinAt.scomp_of_eq (hg : HasDerivWithinAt g₁ g₁' t' y)
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s t') (hy : y = h x) :
@@ -102,9 +104,9 @@ theorem HasDerivWithinAt.scomp_of_eq (hg : HasDerivWithinAt g₁ g₁' t' y)
   rw [hy] at hg; exact hg.scomp x hh hst
 
 /-- The chain rule. -/
-nonrec theorem HasDerivAt.scomp (hg : HasDerivAt g₁ g₁' (h x)) (hh : HasDerivAt h h' x) :
+theorem HasDerivAt.scomp (hg : HasDerivAt g₁ g₁' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
-  hg.scomp x hh hh.continuousAt
+  HasDerivAtFilter.scomp hg hh <| hh.continuousAt.tendsto.prodMap <| tendsto_pure_pure _ _
 
 /-- The chain rule. -/
 theorem HasDerivAt.scomp_of_eq
@@ -113,8 +115,9 @@ theorem HasDerivAt.scomp_of_eq
   rw [hy] at hg; exact hg.scomp x hh
 
 theorem HasStrictDerivAt.scomp (hg : HasStrictDerivAt g₁ g₁' (h x)) (hh : HasStrictDerivAt h h' x) :
-    HasStrictDerivAt (g₁ ∘ h) (h' • g₁') x := by
-  simpa using ((hg.restrictScalars 𝕜).comp x hh).hasStrictDerivAt
+    HasStrictDerivAt (g₁ ∘ h) (h' • g₁') x :=
+  HasDerivAtFilter.scomp hg hh <|
+    hh.hasStrictFDerivAt.continuousAt.prodMap hh.hasStrictFDerivAt.continuousAt
 
 theorem HasStrictDerivAt.scomp_of_eq
     (hg : HasStrictDerivAt g₁ g₁' y) (hh : HasStrictDerivAt h h' x) (hy : y = h x) :
@@ -154,26 +157,26 @@ theorem deriv.scomp_of_eq
 
 /-! ### Derivative of the composition of a scalar and vector functions -/
 
-theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L'' : Filter E}
-    (hh₂ : HasDerivAtFilter h₂ h₂' (f x) L') (hf : HasFDerivAtFilter f f' x L'')
-    (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
-  convert (hh₂.restrictScalars 𝕜).comp x hf hL
+theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'}
+    {L'' : Filter (E × E)} (hh₂ : HasDerivAtFilter h₂ h₂' L') (hf : HasFDerivAtFilter f f' L'')
+    (hL : Tendsto (Prod.map f f) L'' L') :
+    HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') L'' := by
+  convert (hh₂.restrictScalars 𝕜).comp hf hL
   ext x
   simp [mul_comm]
 
+@[deprecated HasDerivAtFilter.comp_hasFDerivAtFilter (since := "2026-02-17")]
 theorem HasDerivAtFilter.comp_hasFDerivAtFilter_of_eq
-    {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L'' : Filter E}
-    (hh₂ : HasDerivAtFilter h₂ h₂' y L') (hf : HasFDerivAtFilter f f' x L'')
-    (hL : Tendsto f L'' L') (hy : y = f x) : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
-  rw [hy] at hh₂; exact hh₂.comp_hasFDerivAtFilter x hf hL
+    {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L' : Filter 𝕜'} {L'' : Filter E}
+    (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y)) (hf : HasFDerivAtFilter f f' (L'' ×ˢ pure x))
+    (hL : Tendsto f L'' L') (hy : y = f x) :
+    HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') (L'' ×ˢ pure x) :=
+  hh₂.comp_hasFDerivAtFilter hf <| hL.prodMap <| by simp [hy]
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x := by
-  rw [HasStrictDerivAt] at hh
-  convert (hh.restrictScalars 𝕜).comp x hf
-  ext x
-  simp [mul_comm]
+    HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x :=
+  HasDerivAtFilter.comp_hasFDerivAtFilter hh hf <| hf.continuousAt.prodMap hf.continuousAt
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' y) (hf : HasStrictFDerivAt f f' x) (hy : y = f x) :
@@ -182,7 +185,7 @@ theorem HasStrictDerivAt.comp_hasStrictFDerivAt_of_eq {f : E → 𝕜'} {f' : E 
 
 theorem HasDerivAt.comp_hasFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasDerivAt h₂ h₂' (f x)) (hf : HasFDerivAt f f' x) : HasFDerivAt (h₂ ∘ f) (h₂' • f') x :=
-  hh.comp_hasFDerivAtFilter x hf hf.continuousAt
+  hh.comp_hasFDerivAtFilter hf <| hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure _ _
 
 theorem HasDerivAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasDerivAt h₂ h₂' y) (hf : HasFDerivAt f f' x) (hy : y = f x) :
@@ -192,7 +195,7 @@ theorem HasDerivAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] �
 theorem HasDerivAt.comp_hasFDerivWithinAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s} (x)
     (hh : HasDerivAt h₂ h₂' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (h₂ ∘ f) (h₂' • f') s x :=
-  hh.comp_hasFDerivAtFilter x hf hf.continuousWithinAt
+  hh.comp_hasFDerivAtFilter hf <| hf.continuousWithinAt.tendsto.prodMap <| tendsto_pure_pure _ _
 
 theorem HasDerivAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s} (x)
     (hh : HasDerivAt h₂ h₂' y) (hf : HasFDerivWithinAt f f' s x) (hy : y = f x) :
@@ -202,7 +205,8 @@ theorem HasDerivAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E →L[�
 theorem HasDerivWithinAt.comp_hasFDerivWithinAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s t} (x)
     (hh : HasDerivWithinAt h₂ h₂' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (h₂ ∘ f) (h₂' • f') s x :=
-  hh.comp_hasFDerivAtFilter x hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
+  hh.comp_hasFDerivAtFilter hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst |>.prodMap <|
+    tendsto_pure_pure _ _
 
 theorem HasDerivWithinAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s t} (x)
     (hh : HasDerivWithinAt h₂ h₂' t y) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t)
@@ -213,7 +217,8 @@ theorem HasDerivWithinAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E 
 theorem HasDerivWithinAt.comp_hasFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {t} (x)
     (hh : HasDerivWithinAt h₂ h₂' t (f x)) (hf : HasFDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) :
     HasFDerivAt (h₂ ∘ f) (h₂' • f') x :=
-  hh.comp_hasFDerivAtFilter x hf <| tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩
+  hh.comp_hasFDerivAtFilter hf <| tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩ |>.prodMap <|
+    tendsto_pure_pure _ _
 
 theorem HasDerivWithinAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {t} (x)
     (hh : HasDerivWithinAt h₂ h₂' t y) (hf : HasFDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t)
@@ -222,16 +227,18 @@ theorem HasDerivWithinAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[�
 
 /-! ### Derivative of the composition of two scalar functions -/
 
-theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
-    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
-    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
+theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' L')
+    (hh : HasDerivAtFilter h h' L) (hL : Tendsto (Prod.map h h) L L') :
+    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') L := by
   rw [mul_comm]
-  exact hh₂.scomp x hh hL
+  exact hh₂.scomp hh hL
 
-theorem HasDerivAtFilter.comp_of_eq (hh₂ : HasDerivAtFilter h₂ h₂' y L')
-    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') (hy : y = h x) :
-    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
-  rw [hy] at hh₂; exact hh₂.comp x hh hL
+@[deprecated HasDerivAtFilter.comp (since := "2026-07-17")]
+theorem HasDerivAtFilter.comp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
+    (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y))
+    (hh : HasDerivAtFilter h h' (L ×ˢ pure x)) (hL : Tendsto h L L') (hy : y = h x) :
+    HasDerivAtFilter (h₂ ∘ h) (h₂' * h') (L ×ˢ pure x) :=
+  hh₂.comp hh <| hL.prodMap <| by simp [hy]
 
 theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') :
@@ -248,9 +255,9 @@ theorem HasDerivWithinAt.comp_of_eq (hh₂ : HasDerivWithinAt h₂ h₂' s' y)
 
 Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
 with `h₂` taking values in a vector space, use `HasDerivAt.scomp`. -/
-nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
+theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
-  hh₂.comp x hh hh.continuousAt
+  HasDerivAtFilter.comp hh₂ hh <| hh.continuousAt.tendsto.prodMap <| tendsto_pure_pure _ _
 
 /-- The chain rule.
 
@@ -282,7 +289,8 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
 
 theorem HasDerivWithinAt.comp_hasDerivAt {t} (hh₂ : HasDerivWithinAt h₂ h₂' t (h x))
     (hh : HasDerivAt h h' x) (ht : ∀ᶠ x' in 𝓝 x, h x' ∈ t) : HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
-  HasDerivAtFilter.comp x hh₂ hh <| tendsto_nhdsWithin_iff.mpr ⟨hh.continuousAt, ht⟩
+  HasDerivAtFilter.comp hh₂ hh <| tendsto_nhdsWithin_iff.mpr ⟨hh.continuousAt, ht⟩ |>.prodMap <|
+    tendsto_pure_pure _ _
 
 theorem HasDerivWithinAt.comp_hasDerivAt_of_eq {t} (hh₂ : HasDerivWithinAt h₂ h₂' t y)
     (hh : HasDerivAt h h' x) (ht : ∀ᶠ x' in 𝓝 x, h x' ∈ t) (hy : y = h x) :
@@ -312,25 +320,25 @@ theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : Different
   subst hy; exact deriv_comp x hh₂ hh
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
-    (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
-    HasDerivAtFilter f^[n] (f' ^ n) x L := by
-  have := hf.iterate hL hx n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+    (hf : HasDerivAtFilter f f' L) (hL : Tendsto (Prod.map f f) L L) (n : ℕ) :
+    HasDerivAtFilter f^[n] (f' ^ n) L := by
+  have := hf.hasFDerivAtFilter.iterate hL n
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
-  hf.iterate _ (have := hf.tendsto_nhds le_rfl; by rwa [hx] at this) hx n
+  hf.iterate (by simpa [hx] using hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure f x) _
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
-protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
+protected theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
-  have := hf.iterate hx n
-  rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  have := hf.hasStrictFDerivAt.iterate hx n
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 end Composition
 
@@ -348,8 +356,7 @@ equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
 theorem HasFDerivWithinAt.comp_hasDerivWithinAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
+  simpa using (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative within a set
 equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
@@ -361,8 +368,7 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt_of_eq {t : Set F}
 
 theorem HasFDerivWithinAt.comp_hasDerivAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
+  simpa using (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
 
 theorem HasFDerivWithinAt.comp_hasDerivAt_of_eq {t : Set F} (hl : HasFDerivWithinAt l l' t y)
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) :
@@ -393,8 +399,7 @@ theorem HasFDerivAt.comp_hasDerivAt_of_eq
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
+  simpa using (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :

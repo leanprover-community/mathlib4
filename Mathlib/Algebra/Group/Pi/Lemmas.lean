@@ -312,8 +312,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := congr_fun h m
     have hn := congr_fun h n
-    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
-    grind [mul_one, one_mul]
+    grind [mul_one, one_mul, mul_apply]
   · aesop (add simp [mulSingle_apply])
 
 end Single

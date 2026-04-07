@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Positivity
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Deriv
 
 /-!
@@ -25,7 +25,7 @@ The main results of this file are as follows.
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexOrder
 

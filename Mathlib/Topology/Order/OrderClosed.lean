@@ -28,8 +28,8 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
-`Preorder` vs `PartialOrder` vs `LinearOrder` etc)
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology`,
+`Preorder` vs `PartialOrder` vs `LinearOrder`, etc.)
 see their statements.
 
 ### Open / closed sets
@@ -59,7 +59,7 @@ see their statements.
 
 @[expose] public section
 
-open Set Filter
+open Set Filter TopologicalSpace
 open OrderDual (toDual)
 open scoped Topology
 
@@ -88,6 +88,7 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
 
 instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
 instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
+instance [TopologicalSpace α] [h : SeparableSpace α] : SeparableSpace αᵒᵈ := h
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=

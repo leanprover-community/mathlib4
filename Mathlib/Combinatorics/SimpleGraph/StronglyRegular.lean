@@ -54,6 +54,7 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
 
 variable {G} {n k ℓ μ : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
@@ -113,13 +114,7 @@ theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
       (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
-  ext
-  simp only [and_imp, mem_union, mem_sdiff, mem_compl, and_iff_left_iff_imp, mem_neighborFinset,
-    mem_inter, mem_singleton]
-  rintro hnv hnw (rfl | rfl)
-  · exact hnv h
-  · apply hnw
-    rwa [adj_comm]
+  simpa using ⟨h, adj_symm _ h⟩
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsRegularOfDegree (n - k - 1) := by

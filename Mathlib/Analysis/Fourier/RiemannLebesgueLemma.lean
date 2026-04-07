@@ -11,7 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
@@ -44,7 +43,7 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -99,7 +98,7 @@ of interest as a preparatory step for the more general result
 theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
     (hf2 : HasCompactSupport f) :
     Tendsto (fun w : V => ∫ v : V, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
-  refine NormedAddCommGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
+  refine NormedAddGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
   suffices ∃ T : ℝ, ∀ w : V, T ≤ ‖w‖ → ‖∫ v : V, 𝐞 (-⟪v, w⟫) • f v‖ < ε by
     simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
       dist_eq_norm', sub_zero]
@@ -199,7 +198,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]
-    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ bilinFormOfRealInner (f - g) w
+    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this

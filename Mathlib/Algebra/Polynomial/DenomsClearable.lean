@@ -43,13 +43,13 @@ def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
 
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
   ⟨0, bi, bu, by
-    simp only [eval_zero, RingHom.map_zero, mul_zero, Polynomial.map_zero]⟩
+    simp only [eval_zero, map_zero, mul_zero, Polynomial.map_zero]⟩
 
 theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
   refine ⟨r * a ^ n * b ^ (N - n), bi, bu, ?_⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
-  rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, eval_X, mul_comm]
+  rw [map_mul, map_mul, map_pow, map_pow, eval_X, mul_comm]
   rw [← tsub_add_cancel_of_le nN]
   conv_lhs => rw [← mul_one (i a), ← bu]
   simp [mul_assoc, mul_comm, mul_left_comm, pow_add, mul_pow]
@@ -58,7 +58,7 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
     DenomsClearable a b N f i → DenomsClearable a b N g i → DenomsClearable a b N (f + g) i :=
   fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
   ⟨Df + Dg, bf, bfu, by
-    rw [RingHom.map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
+    rw [map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
     congr
     refine @inv_unique K _ (i b) bg bf ?_ ?_ <;> rwa [mul_comm]⟩
 

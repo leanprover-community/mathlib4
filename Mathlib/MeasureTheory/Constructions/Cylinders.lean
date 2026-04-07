@@ -44,7 +44,7 @@ a product set.
 
 @[expose] public section
 
-open Function Set
+open Function Set MeasurableSpace
 
 namespace MeasureTheory
 
@@ -55,7 +55,7 @@ section squareCylinders
 /-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
 `∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
-`squareCylinders` is the set of all such squareCylinders. -/
+`squareCylinders` is the set of all such square cylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
@@ -126,7 +126,11 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
       convert ht
       simp only [cast_heq]
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
-  · grind
+  · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was: `grind` -/
+    simp [h]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -389,6 +393,7 @@ variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ 
 
 /-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
 on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
+@[implicit_reducible]
 def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
 
 @[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by
@@ -440,7 +445,7 @@ lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
 /-- The function `update f a : X a → Π a, X a` is always measurable.
 This doesn't require `f` to be measurable.
 This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[fun_prop]
 lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
   measurable_update_cylinderEvents'.comp measurable_prodMk_left
@@ -454,4 +459,27 @@ lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
+
+/-- A measurable set from the product sigma-algebra only depends on countably many coordinates. -/
+lemma MeasurableSet.eq_preimage_restrict_countable
+    [∀ i, MeasurableSpace (α i)] {s : Set (Π i, α i)} (hs : MeasurableSet s) :
+    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.restrict ⁻¹' t := by
+  refine induction_on_inter generateFrom_squareCylinders.symm
+    (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet) (by simp))
+    ⟨∅, ∅, by simp⟩ ?_ ?_ ?_ s hs
+  · rintro - ⟨I, t, -, rfl⟩
+    exact ⟨I, univ.pi (fun i ↦ t i), I.countable_toSet, by ext; simp⟩
+  · rintro - - ⟨I, t, hI, rfl⟩
+    exact ⟨I, tᶜ, hI, by simp⟩
+  intro f df mf hf
+  choose! I t hI hf using hf
+  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).restrict '' (f n), countable_iUnion hI, ?_⟩
+  ext x
+  simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
+  have (x : Π i, α i) : (I n).restrict x =
+      (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
+      ((⋃ k, I k).restrict x) := rfl
+  rwa [this, ← hx, ← this]
+
 end MeasureTheory

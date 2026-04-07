@@ -16,11 +16,11 @@ surjectivity of morphisms of presheaves, and that precomposition with a cover-pr
 cover-dense functor reflects the same properties.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Functor
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
   (H : C ⥤ D) {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
@@ -36,6 +36,7 @@ lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f]
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallyInjective J (whiskerLeft H.op f)] : IsLocallyInjective K f where
   equalizerSieve_mem {X} a b h := by

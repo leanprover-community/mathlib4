@@ -44,6 +44,8 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
 
@@ -100,12 +102,12 @@ instance instInfCoe : Min L where
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
 instance instLatticeCoe (L : Sublattice α) : Lattice L :=
-  Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
 instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
-  Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The natural lattice hom from a sublattice to the original lattice. -/
 def subtype (L : Sublattice α) : LatticeHom L α where
@@ -184,8 +186,6 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
   rw [← SetLike.mem_coe]; simp
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
@@ -387,7 +387,7 @@ attribute [norm_cast] coe_pi
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
-    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; grind
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
   simp_rw [← coe_inj]; simp
