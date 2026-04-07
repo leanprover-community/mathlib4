@@ -133,14 +133,10 @@ lemma Abelian.Ext.mapExactFunctor_hom
           F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
   rw [this, ← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
   congr 2
-  · dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
-    simp only [Category.comp_id, Category.id_comp, Category.assoc]
-    congr 1
-    exact (Category.comp_id _).symm.trans (congr_arg _ (F.mapDerivedCategory.map_id _).symm)
-  · congr 1
-    dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
-    simp only [map_id, Category.id_comp, NatIso.cancel_natIso_hom_left, comp_obj]
-    exact (Category.comp_id _).symm
+  · simp [← F.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app_assoc,
+      CochainComplex.singleFunctor, CochainComplex.singleFunctors]
+  · simp [CochainComplex.singleFunctor, CochainComplex.singleFunctors,
+      ← Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app]
 
 section
 
