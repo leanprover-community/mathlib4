@@ -526,9 +526,12 @@ where
     if let .lam n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      (if let value :: values := values then withLetDecl n d value
-        else withLocalDecl n bi d) fun x =>
-        visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
+      if let value :: values := values then
+        withLetDecl n d value fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
+      else
+        withLocalDecl n bi d fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkLambda fvars e
