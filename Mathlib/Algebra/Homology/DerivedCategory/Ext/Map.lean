@@ -26,11 +26,11 @@ where `F` is an exact functor between abelian categories.
 
 * `CategoryTheory.Functor.mapExtLinearMap` : Upgrade of `F.mapExtAddHom` assuming `F` is linear.
 
-* `Ext.mapExt_mk₀_eq_mk₀_map` : `Ext.mapExactFunctor` commutes with `Ext.mk₀`
+* `Ext.mapExactFunctor_mk₀` : `Ext.mapExactFunctor` commutes with `Ext.mk₀`
 
-* `Ext.mapExt_comp_eq_comp_mapExt` : `Ext.mapExactFunctor` preserves `Ext.comp`
+* `Ext.mapExactFunctor_comp` : `Ext.mapExactFunctor` preserves `Ext.comp`
 
-* `Ext.mapExt_extClass_eq_extClass_map` :
+* `mapExactFunctor_extClass` :
   `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
 
 -/
