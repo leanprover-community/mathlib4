@@ -585,30 +585,24 @@ theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
 section
 
 /-- If `f : X → Y` is coinducing and has connected fibers, it induces a homeomorphism on `π₀`. -/
-noncomputable def Topology.IsCoinducing.connectedComponentsEquiv {f : X → Y}
+noncomputable def Topology.IsCoinducing.connectedComponentsHomeomorph {f : X → Y}
     (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
     ConnectedComponents X ≃ₜ ConnectedComponents Y :=
   IsHomeomorph.homeomorph hf.continuous.connectedComponentsMap <| by
-    have hbij : Bijective hf.continuous.connectedComponentsMap := by
-      refine ⟨fun x y h ↦ ?_,
-        Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
-      obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
-      obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
-      simp_all [← hf.preimage_connectedComponent hf']
-    refine ⟨?_, ?_, hbij⟩
-    · exact hf.continuous.connectedComponentsMap_continuous
-    · exact hf.connectedComponentsMap.isOpenMap_of_injective hbij.injective
+    have hbij := hf.connectedComponentsMap_bijective hf'
+    exact ⟨hf.continuous.connectedComponentsMap_continuous,
+      hf.connectedComponentsMap.isOpenMap_of_injective hbij.injective, hbij⟩
 
 variable {f : X → Y} (hf : Topology.IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y}))
 
 @[simp]
-lemma Topology.IsCoinducing.connectedComponentsEquiv_mk (x : X) :
-    hf.connectedComponentsEquiv hf' (.mk x) = .mk (f x) :=
+lemma Topology.IsCoinducing.connectedComponentsHomeomorph_mk (x : X) :
+    hf.connectedComponentsHomeomorph hf' (.mk x) = .mk (f x) :=
   rfl
 
 @[simp]
-lemma Topology.IsCoinducing.connectedComponentsEquiv_symm_mk_apply (x : X) :
-    (hf.connectedComponentsEquiv hf').symm (.mk (f x)) = .mk x :=
-  (hf.connectedComponentsEquiv hf').injective (by simp)
+lemma Topology.IsCoinducing.connectedComponentsHomeomorph_symm_mk_apply (x : X) :
+    (hf.connectedComponentsHomeomorph hf').symm (.mk (f x)) = .mk x :=
+  (hf.connectedComponentsHomeomorph hf').injective (by simp)
 
 end

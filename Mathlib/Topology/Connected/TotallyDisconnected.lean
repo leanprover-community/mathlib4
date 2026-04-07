@@ -315,6 +315,14 @@ lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpac
     Surjective hf.connectedComponentsMap :=
   Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
 
+lemma Topology.IsCoinducing.connectedComponentsMap_bijective {β : Type*} [TopologicalSpace β]
+    {f : α → β} (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    hf.continuous.connectedComponentsMap.Bijective := by
+  refine ⟨fun x y h ↦ ?_, Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  simp_all [← hf.preimage_connectedComponent hf']
+
 /-- A preconnected set `s` has the property that every map to a
 discrete space that is continuous on `s` is constant on `s` -/
 theorem IsPreconnected.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTopology Y] {s : Set α}
