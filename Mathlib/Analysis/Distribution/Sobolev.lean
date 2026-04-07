@@ -41,6 +41,10 @@ the definition of the Sobolev spaces.
   `Δ u` is a Sobolev function of order `s - 2`.
 
 
+## References
+* [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
+* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations][mclean2000]
+
 -/
 
 @[expose] public noncomputable section
@@ -76,7 +80,7 @@ theorem besselPotential_zero : besselPotential E F 0 = ContinuousLinearMap.id �
 @[simp]
 theorem besselPotential_besselPotential_apply (s s' : ℝ) (f : 𝓢'(E, F)) :
     besselPotential E F s' (besselPotential E F s f) = besselPotential E F (s + s') f := by
-  simp_rw [besselPotential]
+  simp only [besselPotential]
   rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
   congr
   ext x
@@ -94,12 +98,11 @@ theorem besselPotential_compL_besselPotential (s s' : ℝ) :
 
 theorem besselPotential_neg_apply_eq_iff (s : ℝ) (f g : 𝓢'(E, F)) :
     besselPotential E F (-s) f = g ↔ besselPotential E F s g = f := by
-  constructor
-  all_goals { intro h; simp [← h] }
+  constructor <;>
+  intro h <;> simp [← h]
 
 open scoped Real Laplacian LineDeriv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
     (besselPotential E F (-1)) (∂_{m} f) =
       (2 * π * Complex.I) • fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
@@ -131,7 +134,7 @@ variable [InnerProductSpace ℂ F]
 open FourierTransform
 
 @[simp]
-theorem fourier_besselPotential_eq_smulLeftCLM_fourierInv_apply (s : ℝ) (f : 𝓢'(E, F)) :
+theorem fourier_besselPotential_eq_smulLeftCLM_fourier_apply (s : ℝ) (f : 𝓢'(E, F)) :
     𝓕 (besselPotential E F s f) =
       smulLeftCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) (𝓕 f) := by
   simp [besselPotential, fourierMultiplierCLM]
@@ -160,6 +163,21 @@ theorem MemSobolev.add {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : �
   rw [← Lp.toTemperedDistributionCLM_apply]
   simp [map_add, hf, hg]
 
+theorem MemSobolev.sub {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : 𝓢'(E, F)}
+    (hf : MemSobolev s p f) (hg : MemSobolev s p g) : MemSobolev s p (f - g) := by
+  obtain ⟨f', hf⟩ := hf
+  obtain ⟨g', hg⟩ := hg
+  use f' - g'
+  rw [← Lp.toTemperedDistributionCLM_apply]
+  simp [map_sub, hf, hg]
+
+theorem MemSobolev.neg {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f : 𝓢'(E, F)}
+    (hf : MemSobolev s p f) : MemSobolev s p (-f) := by
+  obtain ⟨f', hf⟩ := hf
+  use -f'
+  rw [← Lp.toTemperedDistributionCLM_apply]
+  simp [map_neg, hf]
+
 theorem MemSobolev.smul {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (c : ℂ) {f : 𝓢'(E, F)}
     (hf : MemSobolev s p f) : MemSobolev s p (c • f) := by
   obtain ⟨f', hf⟩ := hf
@@ -168,7 +186,9 @@ theorem MemSobolev.smul {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (c : �
   simp [hf]
 
 variable (E F) in
-theorem memSobolev_zero (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] : MemSobolev s p (0 : 𝓢'(E, F)) := by
+@[simp]
+theorem memSobolev_fun_zero (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+    MemSobolev s p (0 : 𝓢'(E, F)) := by
   use 0
   rw [← Lp.toTemperedDistributionCLM_apply]
   simp only [map_zero]
@@ -197,14 +217,14 @@ variable [InnerProductSpace ℂ F] [CompleteSpace F]
 
 /-- A tempered distribution belongs to the Sobolev space of order `s` and `p = 2` if and only if
 its Fourier transform multiplied by `(1 + ‖x‖ ^ 2) ^ (s / 2)` is in `Lp`. -/
-theorem memSobolev_two_iff_fourier {s : ℝ} {f : 𝓢'(E, F)} :
+theorem memSobolev_iff_exists_smulLeftCLM_fourier {s : ℝ} {f : 𝓢'(E, F)} :
     MemSobolev s 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)),
     smulLeftCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) (𝓕 f) = f' := by
   constructor
   · intro ⟨f', hf'⟩
     use 𝓕 f'
     apply_fun 𝓕 at hf'
-    rw [fourier_besselPotential_eq_smulLeftCLM_fourierInv_apply] at hf'
+    rw [fourier_besselPotential_eq_smulLeftCLM_fourier_apply] at hf'
     rw [hf', Lp.fourier_toTemperedDistribution_eq f']
   · intro ⟨f', hf'⟩
     use 𝓕⁻ f'
@@ -212,9 +232,9 @@ theorem memSobolev_two_iff_fourier {s : ℝ} {f : 𝓢'(E, F)} :
     apply_fun 𝓕⁻ at hf'
     rw [hf', Lp.fourierInv_toTemperedDistribution_eq f']
 
-theorem memSobolev_zero_two_iff_fourier {f : 𝓢'(E, F)} :
+theorem memSobolev_zero_iff_exists_fourier {f : 𝓢'(E, F)} :
     MemSobolev 0 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)), 𝓕 f = f' := by
-  simp [memSobolev_two_iff_fourier]
+  simp [memSobolev_iff_exists_smulLeftCLM_fourier]
 
 /-- The Fourier transform of a Sobolev function of order `s` with `s > d / 2` can be represented by
 a `L1` function.
@@ -223,7 +243,7 @@ This is the main calculation of the Sobolev embedding theorem. -/
 theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {f : 𝓢'(E, F)}
     (hf : MemSobolev s 2 f) :
     ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f  = (v : 𝓢'(E, F)) := by
-  obtain ⟨u, hu⟩ :=  memSobolev_two_iff_fourier.mp hf
+  obtain ⟨u, hu⟩ :=  memSobolev_iff_exists_smulLeftCLM_fourier.mp hf
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
     constructor
     · have : (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by
@@ -263,7 +283,7 @@ open scoped BoundedContinuousFunction
 theorem MemSobolev.fourierMultiplierCLM_of_bounded {s : ℝ} {f : 𝓢'(E, F)}
     (hf : MemSobolev s 2 f) {g : E → ℂ} (hg₁ : g.HasTemperateGrowth) (hg₂ : ∃ C, ∀ x, ‖g x‖ ≤ C) :
     MemSobolev s 2 (fourierMultiplierCLM F g f) := by
-  rw [memSobolev_two_iff_fourier] at hf ⊢
+  rw [memSobolev_iff_exists_smulLeftCLM_fourier] at hf ⊢
   obtain ⟨f', hf⟩ := hf
   obtain ⟨C, hC⟩ := hg₂
   set g' : E →ᵇ ℂ := BoundedContinuousFunction.ofNormedAddCommGroup g hg₁.1.continuous C hC
