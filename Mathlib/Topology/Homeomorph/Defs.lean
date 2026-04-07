@@ -43,9 +43,11 @@ variable {X Y W Z : Type*}
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_toFun : Continuous toFun := by
+    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun := by fun_prop
+  continuous_invFun : Continuous invFun := by
+    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
 
 @[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
@@ -105,8 +107,6 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
 /-- Identity map as a homeomorphism. -/
 @[simps! -fullyApplied apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
   toEquiv := Equiv.refl X
 
 /-- Composition of two homeomorphisms. -/
@@ -327,9 +327,7 @@ variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
-  { Equiv.ofUnique X Y with
-    continuous_toFun := continuous_const
-    continuous_invFun := continuous_const }
+  { Equiv.ofUnique X Y with }
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
