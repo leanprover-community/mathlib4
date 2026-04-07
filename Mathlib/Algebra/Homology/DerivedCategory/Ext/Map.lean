@@ -55,7 +55,7 @@ section
 open DerivedCategory
 
 set_option backward.isDefEq.respectTransparency false in
-lemma DerivedCategory.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
@@ -90,7 +90,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
   simp only [Functor.comp_obj, ShiftedHom.map, ShortComplex.ShortExact.singleδ, Functor.mapIso_hom,
     SingleFunctors.evaluation_obj, SingleFunctors.postcomp_functor, ShortComplex.map_X₁,
     SingleFunctors.evaluation_map, Functor.mapIso_inv, Functor.map_comp, Category.assoc,
-    Functor.commShiftIso_hom_naturality, ShortComplex.map_X₃, DerivedCategory.mapTriangleOfSESδ]
+    Functor.commShiftIso_hom_naturality, ShortComplex.map_X₃, DerivedCategory.map_triangleOfSESδ]
   simp only [Iso.inv_hom_id_app_assoc, singleFunctorsPostcompQIso_hom_hom, Category.id_comp,
     Functor.map_id, Functor.comp_obj, singleFunctorsPostcompQIso_inv_hom, Category.comp_id,
     NatTrans.id_app, CochainComplex.singleFunctors, Functor.map_id, SingleFunctors.postcomp_functor]
