@@ -265,8 +265,8 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
 to the Euler product pointwise. -/
 theorem tendsTo_eulerProduct_ofPowerSeries (q : ι → ℕ) [hq : Northcott q]
     (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (n : ℕ) :
-    ∀ᶠ s in atTop, (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n =
-      eulerProduct (fun i ↦ ArithmeticFunction.ofPowerSeries (q i) (f i)) n := by
+    ∀ᶠ s in atTop, (∏ i ∈ s, ofPowerSeries (q i) (f i)) n =
+      eulerProduct (fun i ↦ ofPowerSeries (q i) (f i)) n := by
   apply tendsTo_eulerProduct_of_tendsTo
   refine fun n ↦ (tendsto_atTop.mp ((northcott_iff_tendsto q).mp hq) (n + 1)).mono fun i hi ↦ ?_
   rcases n with rfl | rfl | n
