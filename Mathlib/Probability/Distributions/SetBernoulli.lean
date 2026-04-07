@@ -99,7 +99,6 @@ variable (u p) in
     _ = ∏' i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ℝ≥0∞) else 0) +
           if i ∈ s then 0 else (toNNReal (σ p) : ℝ≥0∞)) := by
       simp [setBernoulli_apply, Set.image_singleton, Set.indicator]
-      simp [ENNReal.smul_def]
     _ = ∏ i ∈ u, (if i ∈ s then (toNNReal p : ℝ≥0∞) else (toNNReal (σ p) : ℝ≥0∞)) := by
       rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
         simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]
