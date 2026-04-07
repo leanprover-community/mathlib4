@@ -63,4 +63,34 @@ theorem tsum_joint_fst (p : PMF α) (f : α → PMF β) (b : β) :
 
 end Joint
 
+section Posterior
+
+/-- Posterior probabilities `joint(a, b) / marginal(b)` sum to 1
+when `b` is in the support of the marginal. -/
+theorem posterior_hasSum (p : PMF α) (f : α → PMF β) (b : β)
+    (hb : b ∈ (p.bind f).support) :
+    HasSum (fun a => (p.joint f) (a, b) / (p.bind f) b) 1 := by
+  have hne := (mem_support_iff _ _).mp hb
+  have hne_top := (p.bind f).apply_ne_top b
+  have h : ∑' a, (p.joint f) (a, b) / (p.bind f) b = 1 := by
+    simp only [div_eq_mul_inv]
+    rw [ENNReal.tsum_mul_right, tsum_joint_fst]
+    exact ENNReal.mul_inv_cancel hne hne_top
+  exact h ▸ ENNReal.summable.hasSum
+
+/-- The posterior distribution `Pr[A = a | B = b]` as a `PMF`,
+given a prior `p`, a family of distributions `f`, and that `b` has positive marginal
+probability under `p.bind f`. -/
+def posterior (p : PMF α) (f : α → PMF β) (b : β)
+    (hb : b ∈ (p.bind f).support) : PMF α :=
+  ⟨fun a => (p.joint f) (a, b) / (p.bind f) b, posterior_hasSum p f b hb⟩
+
+@[simp]
+theorem posterior_apply (p : PMF α) (f : α → PMF β) (b : β)
+    (hb : b ∈ (p.bind f).support) (a : α) :
+    (p.posterior f b hb) a = (p.joint f) (a, b) / (p.bind f) b :=
+  rfl
+
+end Posterior
+
 end PMF
