@@ -316,9 +316,7 @@ noncomputable def Under.mapPushoutAdj (f : X ⟶ Y) [P.HasPushoutsAlong f]
     apply Q.of_precomp (W' := Q)
     · exact Q.pushout_inl _ _ hQf
     · simpa using Q.of_isIso _
-  counit.naturality A B g := by
-    have : HasPushout (f ≫ A.hom) f := HasPushoutsAlong.hasPushout _ (P.comp_mem _ _ hPf A.prop)
-    cat_disch
+  counit.naturality A B g := by ext; apply pushout.hom_ext <;> simp
 
 instance (f : X ⟶ Y) [P.HasPushoutsAlong f] [P.IsStableUnderCobaseChangeAlong f] (hPf : P f) :
     (MorphismProperty.Under.map ⊤ hPf).IsRightAdjoint :=
