@@ -276,7 +276,7 @@ contain zero, then every natural number is sum of an element of `A` and an eleme
 Note that we cannot omit the assumption that both sets contain zero, as shown by the
 counterexample `A = B = Odd`.
 -/
-theorem zero_union_add_eq_univ_of_schirelmannDensity_ge_one_of_zero_mem {A B : Set ℕ}
+theorem add_eq_univ_of_one_le_schirelmannDensity_add_schnirelmannDensity {A B : Set ℕ}
     [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
     (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
   rw [Set.eq_univ_iff_forall]
