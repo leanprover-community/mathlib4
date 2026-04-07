@@ -25,9 +25,9 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## Notes
 
-* `GraphLike α β` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph,
+* `GraphLike V D` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph,
   hypergraphs and other kinds of graphs are formalized, they can also use this typeclass.
-* `GraphLike α (α × α)` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
+* `GraphLike V (V × V)` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
 
 ## TODO
 * Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
@@ -35,29 +35,29 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 @[expose] public section
 
-/-- The typeclass `DartLike α β` captures the common structure of darts. -/
-class DartLike (α β : Type*) where
+/-- The typeclass `DartLike V D` captures the common structure of darts. -/
+class DartLike (V D : Type*) where
   /-- The first vertex of a dart. -/
-  fst : β → α
+  fst : D → V
   /-- The second vertex of a dart. -/
-  snd : β → α
+  snd : D → V
 
 /-- Convert a dart to a pair of vertices. -/
-def DartLike.toProd {α β : Type*} [DartLike α β] (d : β) : α × α := (DartLike.fst d, DartLike.snd d)
+def DartLike.toProd {V D : Type*} [DartLike V D] (d : D) : V × V := (DartLike.fst d, DartLike.snd d)
 
 /-- The `GraphLike` typeclass abstracts over graph-like structures by encoding the minimal structure
 required to reason about directed edges ("darts") and adjacency. The "darts" terminology comes from
 combinatorial maps, and they are also known as "half-edges" or "bonds." -/
-class GraphLike (α β : outParam Type*) [DartLike α β] (Gr : Type*) where
+class GraphLike (V D : outParam Type*) [DartLike V D] (Gr : Type*) where
   /-- The set of vertices of a graph-like structure. -/
-  verts : Gr → Set α
+  verts : Gr → Set V
   /-- The set of darts (oriented edges) of a graph-like structure. -/
-  darts : Gr → Set β
-  fst_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.fst d ∈ verts G
-  snd_mem_of_darts {G : Gr} {d : β} : d ∈ darts G → DartLike.snd d ∈ verts G
+  darts : Gr → Set D
+  fst_mem_of_darts {G : Gr} {d : D} : d ∈ darts G → DartLike.fst d ∈ verts G
+  snd_mem_of_darts {G : Gr} {d : D} : d ∈ darts G → DartLike.snd d ∈ verts G
   /-- The adjacency relation of a graph-like structure. -/
-  Adj : Gr → α → α → Prop := fun G u v ↦ ∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v
-  exists_darts_iff_adj {G : Gr} {u v : α} :
+  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v
+  exists_darts_iff_adj {G : Gr} {u v : V} :
     (∃ d ∈ darts G, DartLike.fst d = u ∧ DartLike.snd d = v) ↔ Adj G u v
 
 open DartLike
