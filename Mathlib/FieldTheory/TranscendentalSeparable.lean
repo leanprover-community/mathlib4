@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 
 /-!
 # Transcendental separable extensions
@@ -59,7 +61,7 @@ def toLocalizationMinimal (S : Type*) [CommRing S] :=
     letI := Ideal.minimalPrimes_isPrime p.2
     algebraMap S (Localization.AtPrime p.1)))
 
-lemma isReduced_injective_to_prod_localizations {S : Type*} [CommRing S] [IsReduced S] :
+lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsReduced S] :
     Function.Injective (toLocalizationMinimal S) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
@@ -81,14 +83,13 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
   have le : B ≤ (IntermediateField.adjoin k (T : Set K)).toSubalgebra := by
     simp [← hT, Algebra.adjoin_le_iff]
   have : Function.Injective (Algebra.TensorProduct.lTensor S (Subalgebra.inclusion le)) :=
-    Module.Flat.lTensor_preserves_injective_linearMap (Subalgebra.inclusion le).toLinearMap
-      (Subalgebra.inclusion_injective le)
+    Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
 variable (k : Type*) [Field k]
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
-    (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsDomain S]
+    (S : Type*) [CommRing S] [Algebra k S] [IsDomain S]
     (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   sorry
@@ -97,7 +98,29 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFi
     (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
     (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
-  sorry
+  classical
+  have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
+  have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+    ext p
+    simp [toLocalizationMinimal, Algebra.smul_def, ← IsScalarTower.algebraMap_apply]
+  let f := AlgHom.mk' (toLocalizationMinimal S) h
+  have inj : Function.Injective (Algebra.TensorProduct.lTensor K f) :=
+    Module.Flat.lTensor_preserves_injective_linearMap _
+      (isReduced_injective_to_prod_localizations S)
+  let : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
+  have (p : minimalPrimes S) :
+    letI := Ideal.minimalPrimes_isPrime p.2
+    IsReduced (K ⊗[k] Localization.AtPrime p.1) := by
+    let := (localization_minimal_isField p.1 p.2).toField
+    exact tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain k _ K
+  have : IsReduced (K ⊗[k] ((p : (minimalPrimes S)) →
+    letI := Ideal.minimalPrimes_isPrime p.2
+    Localization.AtPrime p.1)) := by
+    apply isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K
+      (fun (p : (minimalPrimes S)) ↦
+        letI := Ideal.minimalPrimes_isPrime p.2
+        Localization.AtPrime p.1)).injective
+  exact isReduced_of_injective _ inj
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
     {S : Type*} [CommRing S] [Algebra k S] [IsReduced S]
