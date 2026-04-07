@@ -44,7 +44,7 @@ noncomputable def localPolynomial : ℤ[X] :=
   letI a : ℤ := q + 1 - (Nat.card (W'.reduction R).toAffine.Point)
   if W'.HasGoodReduction R then 1 - C a * X + C q * X ^ 2
   else if W'.HasAdditiveReduction R then 1
-  else if W'.IsSplitMultiplicativeReduction R then 1 - X
+  else if W'.HasSplitMultiplicativeReduction R then 1 - X
   else 1 + X
 
 /-- The power series associated to an elliptic curve over a nonarchimedean local field. -/
