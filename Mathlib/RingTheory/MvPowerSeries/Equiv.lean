@@ -58,12 +58,10 @@ variable [CommSemiring R]
 
 section isEmptyEquiv
 
-variable [IsEmpty σ]
-
 variable (σ R) in
 /-- The isomorphism between multivariable power series in no variables and the ground ring. -/
 @[simps!]
-def isEmptyEquiv : MvPowerSeries σ R ≃ₐ[R] R where
+def isEmptyEquiv [IsEmpty σ] : MvPowerSeries σ R ≃ₐ[R] R where
   __ := constantCoeff
   invFun := C
   left_inv _ := by
@@ -75,21 +73,19 @@ end isEmptyEquiv
 
 section uniqueEquiv
 
-variable [Unique σ]
-
 variable (σ R) in
 /-- The isomorphism between multivariable power series in a single variable and
 power series over the ground ring. -/
-abbrev uniqueEquiv : MvPowerSeries σ R ≃ₐ[R] PowerSeries R :=
+abbrev uniqueEquiv [Unique σ] : MvPowerSeries σ R ≃ₐ[R] PowerSeries R :=
   renameEquiv R (Equiv.ofUnique σ Unit)
 
-theorem coeff_uniqueEquiv (p : MvPowerSeries σ R) (n : ℕ) :
+theorem coeff_uniqueEquiv [Unique σ] (p : MvPowerSeries σ R) (n : ℕ) :
     PowerSeries.coeff n (uniqueEquiv σ R p) = p.coeff (single default n) := by
   simp [PowerSeries.coeff, ← coeff_embDomain_rename (Equiv.ofUnique σ Unit).toEmbedding p]
 
-lemma uniqueEquiv_X : uniqueEquiv σ R (X default) = .X := by simp [PowerSeries.X]
+lemma uniqueEquiv_X [Unique σ] : uniqueEquiv σ R (X default) = .X := by simp [PowerSeries.X]
 
-lemma uniqueEquiv_C (r : R) : uniqueEquiv σ R (C r) = .C r := by simp [PowerSeries.C]
+lemma uniqueEquiv_C [Unique σ] (r : R) : uniqueEquiv σ R (C r) = .C r := by simp [PowerSeries.C]
 
 end uniqueEquiv
 
