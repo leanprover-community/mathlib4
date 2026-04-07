@@ -39,6 +39,9 @@ namespace ProbabilityTheory
 
 variable {X Y : Type*} [MeasurableSpace X] [MeasurableSpace Y] {x y : X} {p : I}
 
+/-- The **Bernoulli distribution** over an arbitrary measurable space `X`.
+Given `x y : X` and `p : I` (`I` is the `unitInterval`),
+it is the measure which gives mass `p` to `{x}` and `1 - p` to `{y}`. -/
 @[expose]
 noncomputable def bernoulliMeasure (x y : X) (p : I) : Measure X :=
   toNNReal p • dirac x + toNNReal (σ p) • dirac y
