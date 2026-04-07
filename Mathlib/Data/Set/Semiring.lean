@@ -9,101 +9,63 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets as a semiring under union
 
-This file defines `SetSemiring α`, an alias of `Set α`, which we endow with `∪` as addition and
+This file defines `SetSemiring α`, a one-field structure enclosing `Set α` with `∪` as addition and
 pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring α` is a
 (commutative) semiring.
 -/
 
 @[expose] public section
 
-
-open Function Set
-
-open Pointwise
+open Set Pointwise
 
 variable {α β : Type*}
 
 /-- A one-field structure enclosing `Set α`, endowed with a semiring structure given by
-`∪` as "addition" and pointwise multiplication `*` as "multiplication". -/
+`∪` as addition and pointwise multiplication `*` as multiplication. -/
 @[ext]
 structure SetSemiring (α : Type*) where
   /-- Construct a `SetSemiring` from its underlying set. -/
-  up ::
+  ofSet ::
   /-- The underlying set -/
-  down : Set α
+  toSet : Set α
 deriving Inhabited
-
-@[deprecated (since := "2026-04-03")] alias Set.up := SetSemiring.up
 
 namespace SetSemiring
 
 /-- The natural equivalence between `SetSemiring` and `Set`. -/
 def equiv : SetSemiring α ≃ Set α where
-  toFun := down
-  invFun := up
+  toFun := toSet
+  invFun := ofSet
 
 instance : PartialOrder (SetSemiring α) :=
   equiv.partialOrder
 
-lemma le_def {s t : SetSemiring α} : s ≤ t ↔ s.down ⊆ t.down := Iff.rfl
+lemma le_def {s t : SetSemiring α} : s ≤ t ↔ s.toSet ⊆ t.toSet := Iff.rfl
 
 instance : OrderBot (SetSemiring α) where
   bot := ⟨∅⟩
   bot_le _ := le_def.mpr (by simp)
 
-protected theorem down_up (s : Set α) : (up s).down = s :=
-  rfl
-
-@[simp]
-protected theorem up_down (s : SetSemiring α) : up s.down = s :=
-  rfl
-
-@[simp]
-theorem up_le_up {s t : Set α} : up s ≤ up t ↔ s ⊆ t :=
-  Iff.rfl
-
-@[simp]
-theorem up_lt_up {s t : Set α} : up s < up t ↔ s ⊂ t :=
-  Iff.rfl
-
-@[simp]
-theorem down_subset_down {s t : SetSemiring α} : s.down ⊆ t.down ↔ s ≤ t :=
-  Iff.rfl
-
-@[simp]
-theorem down_ssubset_down {s t : SetSemiring α} : s.down ⊂ t.down ↔ s < t :=
-  Iff.rfl
+protected lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
+@[simp] protected lemma ofSet_toSet (s : SetSemiring α) : ofSet s.toSet = s := rfl
+@[simp] lemma ofSet_le_ofSet {s t : Set α} : ofSet s ≤ ofSet t ↔ s ⊆ t := Iff.rfl
+@[simp] lemma ofSet_lt_ofSet {s t : Set α} : ofSet s < ofSet t ↔ s ⊂ t := Iff.rfl
+@[simp] lemma toSet_subset_toSet {s t : SetSemiring α} : s.toSet ⊆ t.toSet ↔ s ≤ t := Iff.rfl
+@[simp] lemma toSet_ssubset_toSet {s t : SetSemiring α} : s.toSet ⊂ t.toSet ↔ s < t := Iff.rfl
 
 instance : Zero (SetSemiring α) where zero := ⟨∅⟩
+instance : Add (SetSemiring α) where add s t := ⟨s.toSet ∪ t.toSet⟩
 
-instance : Add (SetSemiring α) where add s t := ⟨s.down ∪ t.down⟩
-
-theorem zero_def : (0 : SetSemiring α) = ⟨∅⟩ :=
-  rfl
-
-@[simp]
-theorem down_zero : (0 : SetSemiring α).down = ∅ :=
-  rfl
-
-@[simp]
-theorem _root_.Set.up_empty : up (∅ : Set α) = 0 :=
-  rfl
-
-theorem add_def (s t : SetSemiring α) : s + t = ⟨s.down ∪ t.down⟩ :=
-  rfl
-
-@[simp]
-theorem down_add (s t : SetSemiring α) : (s + t).down = s.down ∪ t.down :=
-  rfl
-
-@[simp]
-theorem _root_.Set.up_union (s t : Set α) : ⟨s ∪ t⟩ = up s + up t :=
-  rfl
+lemma zero_def : (0 : SetSemiring α) = ⟨∅⟩ := rfl
+@[simp] lemma toSet_zero : (0 : SetSemiring α).toSet = ∅ := rfl
+@[simp] lemma _root_.Set.ofSet_empty : ofSet (∅ : Set α) = 0 := rfl
+lemma add_def (s t : SetSemiring α) : s + t = ⟨s.toSet ∪ t.toSet⟩ := rfl
+@[simp] lemma toSet_add (s t : SetSemiring α) : (s + t).toSet = s.toSet ∪ t.toSet := rfl
+@[simp] lemma _root_.Set.ofSet_union (s t : Set α) : ⟨s ∪ t⟩ = ofSet s + ofSet t := rfl
 
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc _ _ _ := by simp_rw [add_def, union_assoc]
@@ -112,27 +74,20 @@ instance : AddCommMonoid (SetSemiring α) where
   add_comm _ _ := by simp_rw [add_def, union_comm]
   nsmul := nsmulRec
 
-/- Since addition on `SetSemiring` is commutative (it is set union), there is no need
+/-- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `AddRightMono (SetSemiring α)`. -/
-instance addLeftMono : AddLeftMono (SetSemiring α) :=
-  ⟨fun _ _ _ => union_subset_union_right _⟩
+instance addLeftMono : AddLeftMono (SetSemiring α) where
+  elim _ _ _ := union_subset_union_right _
 
 section Mul
 
 variable [Mul α]
 
-instance : Mul (SetSemiring α) where mul s t := ⟨image2 (· * ·) s.down t.down⟩
+instance : Mul (SetSemiring α) where mul s t := ⟨image2 (· * ·) s.toSet t.toSet⟩
 
-theorem mul_def (s t : SetSemiring α) : s * t = ⟨s.down * t.down⟩ :=
-  rfl
-
-@[simp]
-theorem down_mul (s t : SetSemiring α) : (s * t).down = s.down * t.down :=
-  rfl
-
-@[simp]
-theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = ⟨s⟩ * ⟨t⟩ :=
-  rfl
+lemma mul_def (s t : SetSemiring α) : s * t = ⟨s.toSet * t.toSet⟩ := rfl
+@[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
+@[simp] lemma _root_.Set.ofSet_mul (s t : Set α) : ofSet (s * t) = ⟨s⟩ * ⟨t⟩ := rfl
 
 instance : NonUnitalNonAssocSemiring (SetSemiring α) where
   zero_mul _ := by simp_rw [mul_def, zero_def, empty_mul]
@@ -145,18 +100,17 @@ instance : NoZeroDivisors (SetSemiring α) where
     obtain ⟨a⟩ := a
     obtain ⟨b⟩ := b
     simp_rw [zero_def, mul_def, SetSemiring.ext_iff] at *
-    exact a.eq_empty_or_nonempty.imp_right fun ha =>
-      b.eq_empty_or_nonempty.resolve_right fun hb =>
+    exact a.eq_empty_or_nonempty.imp_right fun ha ↦
+      b.eq_empty_or_nonempty.resolve_right fun hb ↦
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab
 
-instance mulLeftMono : MulLeftMono (SetSemiring α) :=
-  ⟨fun _ _ _ => mul_subset_mul_left⟩
+instance mulLeftMono : MulLeftMono (SetSemiring α) where
+  elim _ _ _ := mul_subset_mul_left
 
-instance mulRightMono : MulRightMono (SetSemiring α) :=
-  ⟨fun _ _ _ => mul_subset_mul_right⟩
+instance mulRightMono : MulRightMono (SetSemiring α) where
+  elim _ _ _ := mul_subset_mul_right
 
 end Mul
-
 
 section One
 
@@ -164,20 +118,13 @@ variable [One α]
 
 instance : One (SetSemiring α) where one := ⟨1⟩
 
-theorem one_def : (1 : SetSemiring α) = ⟨1⟩ :=
-  rfl
-
-@[simp]
-theorem down_one : (1 : SetSemiring α).down = 1 :=
-  rfl
-
-@[simp]
-theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
-  rfl
+lemma one_def : (1 : SetSemiring α) = ⟨1⟩ := rfl
+@[simp] lemma toSet_one : (1 : SetSemiring α).toSet = 1 := rfl
+@[simp] lemma _root_.Set.ofSet_one : ofSet (1 : Set α) = 1 := rfl
 
 end One
 
-noncomputable instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
+instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
   __ := instNonUnitalNonAssocSemiring
   mul_one _ := by simp_rw [one_def, mul_def, mul_one]
   one_mul _ := by simp_rw [one_def, mul_def, one_mul]
@@ -186,7 +133,7 @@ instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring �
   __ := instNonUnitalNonAssocSemiring
   __ := equiv.semigroup
 
-noncomputable instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) where
+instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) where
   __ := instNonAssocSemiring
   __ := instNonUnitalSemiring
   __ := equiv.semilatticeSup
@@ -196,11 +143,11 @@ instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
   __ := instNonUnitalSemiring
   __ := equiv.commSemigroup
 
-noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
+instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
   __ := instIdemSemiring
   __ := equiv.commMonoid
 
-noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) where
+instance [CommMonoid α] : CommMonoid (SetSemiring α) where
   __ := equiv.monoid
   __ := equiv.commSemigroup
 
@@ -213,38 +160,55 @@ instance : CanonicallyOrderedAdd (SetSemiring α) where
   le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
-noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
-/-- If `α` is a monoid, the map that sends `a : α` to
-the singleton set `{a}` is a monoid homomorphism. -/
-noncomputable def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
-  toFun a := up {a}
+/-- If `α` is a monoid, the map that sends `a : α` to `{a}` is a monoid homomorphism. -/
+def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
+  toFun a := ⟨{a}⟩
   map_one' := rfl
   map_mul' _ _ := by simp [mul_def]
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
-noncomputable def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) :
-    SetSemiring α →+* SetSemiring β where
-  toFun s := ⟨image f s.down⟩
+def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
+  toFun s := ⟨f '' s.toSet⟩
   map_zero' := by simp [image_empty]
-  map_one' := by simp_rw [down_one, image_one, map_one, singleton_one, up_one]
+  map_one' := by simp_rw [toSet_one, image_one, map_one, singleton_one, ofSet_one]
   map_add' := by simp [image_union]
   map_mul' _ _ := by simp [image_mul f]
 
 lemma imageHom_def [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
-    imageHom f s = ⟨image f s.down⟩ :=
+    imageHom f s = ⟨f '' s.toSet⟩ :=
   rfl
 
 @[simp]
-lemma down_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
-    (imageHom f s).down = f '' s.down :=
+lemma toSet_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
+    (imageHom f s).toSet = f '' s.toSet :=
   rfl
 
 @[simp]
-lemma _root_.Set.up_image [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
+lemma _root_.Set.ofSet_image [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
     ⟨f '' s⟩ = imageHom f ⟨s⟩ :=
   rfl
+
+@[deprecated (since := "2026-04-07")] alias Set.up := SetSemiring.ofSet
+@[deprecated (since := "2026-04-07")] alias down := SetSemiring.toSet
+@[deprecated (since := "2026-04-07")] alias down_up := SetSemiring.toSet_ofSet
+@[deprecated (since := "2026-04-07")] alias up_down := SetSemiring.ofSet_toSet
+@[deprecated (since := "2026-04-07")] alias up_le_up := ofSet_le_ofSet
+@[deprecated (since := "2026-04-07")] alias up_lt_up := ofSet_lt_ofSet
+@[deprecated (since := "2026-04-07")] alias down_subset_down := toSet_subset_toSet
+@[deprecated (since := "2026-04-07")] alias down_ssubset_down := toSet_ssubset_toSet
+@[deprecated (since := "2026-04-07")] alias down_zero := toSet_zero
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_empty := Set.ofSet_empty
+@[deprecated (since := "2026-04-07")] alias down_add := toSet_add
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_union := Set.ofSet_union
+@[deprecated (since := "2026-04-07")] alias down_mul := toSet_mul
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_mul := Set.ofSet_mul
+@[deprecated (since := "2026-04-07")] alias down_one := toSet_one
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_one := Set.ofSet_one
+@[deprecated (since := "2026-04-07")] alias down_imageHom := toSet_imageHom
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_image := Set.ofSet_image
 
 end SetSemiring
