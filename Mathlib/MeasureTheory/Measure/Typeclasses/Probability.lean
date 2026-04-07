@@ -111,7 +111,7 @@ set_option backward.isDefEq.respectTransparency false in
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
-  measure_univ := by simp [← add_smul]
+  measure_univ := by simp [← ENNReal.coe_add]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
