@@ -1568,6 +1568,9 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
+  authors: Chris Henson, Maximiliano Onofre Martínez
+  url: https://github.com/leanprover/cslib/
+  comment: "CSLib has a few variants for untyped terms, inlcluding β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
