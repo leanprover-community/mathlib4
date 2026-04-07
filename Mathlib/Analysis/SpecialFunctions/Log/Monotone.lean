@@ -32,7 +32,7 @@ namespace Real
 
 theorem mul_log_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
   simp only [StrictMonoOn]
-  intro x hex y hey hxy
+  intro x hex y hey _
   obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
       deriv (fun x ↦ x * Real.log x) c = (y * Real.log y - x * Real.log x) / (y - x) := by
     apply_rules [exists_deriv_eq_slope]
