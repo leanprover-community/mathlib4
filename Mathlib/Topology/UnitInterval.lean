@@ -575,8 +575,4 @@ def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 @[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
 @[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
 
-lemma ennreal_coe_toNNReal (x : I) : ((toNNReal x) : ENNReal) = ENNReal.ofReal x := by
-  rw [ENNReal.coe_nnreal_eq]
-  rfl
-
 end unitInterval
