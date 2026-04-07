@@ -26,7 +26,7 @@ the `ConcreteCategory` instance is `TypeCat.Fun`. `TypeCat.Fun` serves as a laye
 between the `FC` parameter of the `ConcreteCategory` instance and bare functions, to avoid defining
 a `FunLike` instance on the latter (which would give two non-reducibly defeq coercions from
 morphisms in `Type` to functions), and the outer nesting `TypeCat.Hom` gives a layer of separation
-between morphisms in `Type` and `FC`, as is done for all concrete categories in mathlib.
+between morphisms and `FC`, as is done for all concrete categories in mathlib.
 
 To promote a function to a morphism in this category, we provide the abbreviation `TypeCat.ofHom f`,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
