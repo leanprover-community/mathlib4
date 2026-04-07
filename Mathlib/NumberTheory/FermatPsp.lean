@@ -134,8 +134,8 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : b < (a ^ b
   calc
     b = ∑ _ ∈ Finset.range b, (1 : ℕ) := by simp
     _ < _ := by
-      refine Finset.sum_lt_sum (fun i hi => Nat.one_le_pow _ _ (by omega)) ?_
-      exact ⟨1, Finset.mem_range.mpr (by omega), by simpa using ha⟩
+      refine Finset.sum_lt_sum (fun i hi => Nat.one_le_pow _ _ (by lia)) ?_
+      exact ⟨1, Finset.mem_range.mpr (by lia), by simpa using ha⟩
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -199,7 +199,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   set B := (b ^ p + 1) / (b + 1)
   -- Inequalities
   have hA : p < A := a_id_helper b_ge_two p_gt_two
-  have hi_A : 1 < A := by omega
+  have hi_A : 1 < A := by lia
   have hi_B : 1 < B := b_id_helper b_ge_two p_gt_two
   have hi_b : 0 < b := by lia
   have hi_bsquared : 0 < b ^ 2 - 1 := by
@@ -296,7 +296,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have hA : p < A := a_id_helper b_ge_two p_gt_two
   have hB : 0 < B := by
     have : 1 < B := b_id_helper b_ge_two p_gt_two
-    omega
+    lia
   exact hA.trans_le (Nat.le_mul_of_pos_right _ hB)
 
 /-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
