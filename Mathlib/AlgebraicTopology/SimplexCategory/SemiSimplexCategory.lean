@@ -34,8 +34,13 @@ namespace SemiSimplexCategory
 /-- The object of `SemiSimplexCategory` corresponding to `n : ℕ` is denoted `⦋n⦌ₛ`. -/
 scoped[Simplicial] notation "⦋" n "⦌ₛ" => SemiSimplexCategory.mk n
 
+/-- The type of morphisms in the semi-simplex category are order embedding.
+This type is made irreducible: use `SemiSimplexCategory.homEquiv` to make
+the conversion. -/
+def Hom (n m : SemiSimplexCategory) := Fin (n.len + 1) ↪o Fin (m.len + 1)
+
 instance smallCategory : SmallCategory.{0} SemiSimplexCategory where
-  Hom n m := Fin (n.len + 1) ↪o Fin (m.len + 1)
+  Hom := Hom
   id _ := .refl _
   comp f g := f.trans g
 
@@ -53,6 +58,8 @@ lemma homEquiv_id (a : SemiSimplexCategory) :
 lemma homEquiv_comp {a b c : SemiSimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
     homEquiv (f ≫ g) = (homEquiv f).trans (homEquiv g) := rfl
 
+attribute [irreducible] Hom
+
 @[ext]
 theorem hom_ext {a b : SemiSimplexCategory} {f g : a ⟶ b}
     (h : homEquiv f = homEquiv g) : f = g :=
@@ -61,7 +68,7 @@ theorem hom_ext {a b : SemiSimplexCategory} {f g : a ⟶ b}
 /-- The inclusion functor `SemiSimplexCategory ⥤ SimplexCategory`. -/
 def toSimplexCategory : SemiSimplexCategory ⥤ SimplexCategory where
   obj n := ⦋n.len⦌
-  map f := SimplexCategory.Hom.mk (homEquiv.symm f).toOrderHom
+  map f := SimplexCategory.Hom.mk (homEquiv f).toOrderHom
 
 @[simp]
 lemma toSimplexCategory_obj (n : ℕ) :
