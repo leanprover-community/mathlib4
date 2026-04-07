@@ -155,16 +155,10 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
 
 end InvolutiveStar
 
-section Hadamard
-
-variable [CommMonoid α] [StarMul α]
-
 /-- The Hadamard product of Hermitian matrices is Hermitian. -/
-theorem IsHermitian.hadamard {A B : Matrix n n α}
+theorem IsHermitian.hadamard [CommMonoid α] [StarMul α] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : (A ⊙ B).IsHermitian := by
   rw [IsHermitian, conjTranspose_hadamard, hB.eq, hA.eq, hadamard_comm]
-
-end Hadamard
 
 section AddMonoid
 
