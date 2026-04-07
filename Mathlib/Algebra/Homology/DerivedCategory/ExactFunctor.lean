@@ -43,20 +43,12 @@ noncomputable def mapDerivedCategoryFactors :
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ DerivedCategory.Q :=
   F.mapHomologicalComplexUpToQuasiIsoFactors _
 
+@[reassoc]
 lemma mapDerivedCategoryFactors_naturality {X Y : CochainComplex C₁ ℤ} (f : X ⟶ Y) :
     F.mapDerivedCategory.map (DerivedCategory.Q.map f) ≫ F.mapDerivedCategoryFactors.hom.app Y =
       F.mapDerivedCategoryFactors.hom.app X ≫
         DerivedCategory.Q.map ((F.mapHomologicalComplex (ComplexShape.up ℤ)).map f) :=
   F.mapDerivedCategoryFactors.hom.naturality f
-
-lemma mapDerivedCategoryFactors_naturality_assoc
-    {X Y : CochainComplex C₁ ℤ} (f : X ⟶ Y) {Z : DerivedCategory C₂}
-    (g : DerivedCategory.Q.obj ((F.mapHomologicalComplex (ComplexShape.up ℤ)).obj Y) ⟶ Z) :
-    F.mapDerivedCategory.map (DerivedCategory.Q.map f) ≫
-      F.mapDerivedCategoryFactors.hom.app Y ≫ g =
-        F.mapDerivedCategoryFactors.hom.app X ≫
-          DerivedCategory.Q.map ((F.mapHomologicalComplex (ComplexShape.up ℤ)).map f) ≫ g :=
-  F.mapDerivedCategoryFactors.hom.naturality_assoc f g
 
 noncomputable instance :
     Localization.Lifting DerivedCategory.Q
