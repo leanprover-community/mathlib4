@@ -531,17 +531,15 @@ private lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prim
       have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
       rw [hpow]; push_cast; field_simp
     simpa [h] using (pIntegral_ofInt _ (z := (-(2 : ℤ) ^ (2 * k - 2))))
-  · have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by positivity
-    field_simp [h2]
-    rw [neg_div']
-    have hdvd : (-(p : ℚ) ^ (2 * k - 1) / 2).den ∣ 2 := by
-      rw [neg_div, Rat.den_neg_eq_den, ← Nat.cast_pow]
-      conv_lhs => rw [show (2 : ℚ) = (2 : ℕ) from rfl, Rat.natCast_div_eq_divInt]
-      exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _)
-    have hcop : (-(p : ℚ) ^ (2 * k - 1) / 2).den.Coprime p := Nat.Coprime.of_dvd_left hdvd
-      (Odd.coprime_two_left ((Fact.out : p.Prime).odd_of_ne_two hp2))
-    exact (pIntegral_iff_not_dvd p _).2
-      ((Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm)
+  · have hrw : (-1 / 2 : ℚ) * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k) =
+        (-1 : ℤ) * ((p : ℚ) ^ (2 * k - 1) / 2) := by
+      field_simp [show ((2 * k : ℕ) : ℚ) ≠ 0 by positivity]; push_cast; ring
+    rw [hrw]
+    exact pIntegral_mul p _ _ (by exact_mod_cast pIntegral_ofInt p (-1))
+      (pIntegral_pow_div p 2 (2 * k - 1) two_ne_zero (by
+        rw [Nat.factorization_eq_zero_of_not_dvd (fun h ↦ by
+          have := Nat.le_of_dvd two_pos h; have := (Fact.out : p.Prime).two_le; omega)]
+        exact Nat.zero_le _))
 
 /-- Main valuation estimate behind the contradiction step for even-index summands. -/
 private lemma factorization_succ_le_sub_one (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
@@ -604,32 +602,23 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
   set P := (p : ℚ) ^ (2 * k - 2 * m - 1)
   have hpow : (p : ℚ) ^ (2 * k - 2 * m) = P * p := by
     conv_lhs => rw [show 2 * k - 2 * m = (2 * k - 2 * m - 1) + 1 by lia, pow_succ]
-  have hdecomp : (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
-      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) : ℚ) =
+  have hdecomp : bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
+      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) =
     (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
-      ((2 * k + 1).choose (2 * m)) *
-      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) -
+      ((2 * k + 1).choose (2 * m)) * (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) -
     vonStaudtIndicator (2 * m) p * ((2 * k + 1).choose (2 * m)) *
-      P / (2 * k + 1) := by
-    rw [hpow]; field_simp [hp_ne]; ring
+      P / (2 * k + 1) := by rw [hpow]; field_simp [hp_ne]; ring
   rw [hdecomp]
+  have hcmp := pIntegral_choose_mul_pow_div k m p hm_lt (by lia)
   apply pIntegral_sub
-  · rw [show (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
-        ((2 * k + 1).choose (2 * m)) *
-        (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) =
-        (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
-        (((2 * k + 1).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) by ring]
+  · rw [mul_assoc, mul_div_assoc]
     apply pIntegral_mul _ _ _ ih
     rw [choose_two_mul_succ_mul_div_eq k m _ hm_lt,
       show ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m) / (2 * k - 2 * m + 1) =
         (p : ℚ) * (((2 * k).choose (2 * m) : ℚ) * P / (2 * k - 2 * m + 1)) by rw [hpow]; ring]
-    exact pIntegral_mul _ _ _ (pIntegral_ofInt p p)
-      (pIntegral_choose_mul_pow_div k m p hm_lt (by lia))
-  · unfold vonStaudtIndicator
-    split_ifs with h
-    · simp only [one_mul]
-      rw [choose_two_mul_succ_mul_div_eq k m _ hm_lt]
-      exact pIntegral_choose_mul_pow_div k m p hm_lt (by lia)
+    exact pIntegral_mul _ _ _ (pIntegral_ofInt p p) hcmp
+  · unfold vonStaudtIndicator; split_ifs
+    · simp only [one_mul]; rw [choose_two_mul_succ_mul_div_eq k m _ hm_lt]; exact hcmp
     · simp only [zero_mul, zero_div, pIntegral, map_zero]; exact bot_le
 
 /-- The full remainder sum in Faulhaber's formula is `p`-integral. -/
