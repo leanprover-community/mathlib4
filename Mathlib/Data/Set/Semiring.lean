@@ -36,6 +36,10 @@ deriving Inhabited
 
 namespace SetSemiring
 
+instance : SetLike (SetSemiring α) α where
+  coe := toSet
+  coe_injective' _ _ _ := by simp [*, SetSemiring.ext_iff]
+
 /-- The natural equivalence between `SetSemiring` and `Set`. -/
 def equiv : SetSemiring α ≃ Set α where
   toFun := toSet
