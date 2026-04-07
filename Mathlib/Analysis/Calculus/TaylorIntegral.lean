@@ -11,12 +11,11 @@ public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
-# Taylor's formula with an integral remainder
+# Taylor's formula with an integral remainder in higher dimensions
 
 In this file we prove Taylor's formula with the remainder term in integral form.
 
-* `add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
-* `add_eq_sum_add_integral_iteratedDeriv`: one-dimensional version with `iteratedDeriv`
+* `map_add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
 -/
 
 @[expose] public section
@@ -64,10 +63,14 @@ variable {f : E → F} {x y : E} {n : ℕ}
 
 variable [CompleteSpace F]
 
-/-- *Taylor's theorem with remainder in integral form*.
+/-- *Taylor's theorem with remainder in integral form*. If `f` is `n + 1` times continuously
+differentiable, then `f (x + y)` is given by
+`∑ k in 0..n, D^k f(x; y,..,y) / k! + 1/n! ∫ t in 0..1, (1 - t) ^ n • D^{n+1}f (x + t • y; y,..,y)`,
+where `D^k f` denotes the iterated derivative of `f`.
 
-Version for higher dimensions. -/
-theorem add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1),
+In the case that `n = 1`, this is a reformulation of the fundamental theorem of calculus, namely
+`f (x + y) = f x + ∫ t in 0..1, D f(x + t • y; y)`. -/
+theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1),
     ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +
     (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • iteratedFDeriv ℝ (n + 1) f (x + t • y) (fun _ ↦ y) := by
@@ -79,7 +82,7 @@ theorem add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ 
         (Set.uIcc 0 1) := by
       intro t ht
       rw [DifferentiableAt.deriv_comp_add_smul]
-      exact (hf t ht).differentiableAt (le_refl _)
+      exact (hf t ht).differentiableAt (by simp)
     simp only [zero_add, Finset.range_one, Finset.sum_singleton, factorial_zero, cast_one, inv_one,
       iteratedFDeriv_zero_apply, one_smul, pow_zero, reduceAdd, iteratedFDeriv_one_apply]
     rw [← sub_eq_iff_eq_add', Eq.comm, intervalIntegral.integral_congr h_eq]
@@ -137,28 +140,3 @@ theorem add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ 
     simpa [← eq_neg_add_iff_add_eq, ← intervalIntegral.integral_smul, smul_smul, u, v] using
       intervalIntegral.integral_smul_deriv_eq_deriv_smul (fun t _ ↦ hu t) hv
       (hu'.neg.intervalIntegrable _ _) hv'.intervalIntegrable
-
-/-- *Taylor's theorem with remainder in integral form*.
-
-Version for the 1-dimensional derivative. -/
-theorem add_eq_sum_add_integral_iteratedDeriv {f : ℝ → F} {x y : ℝ}
-    (hf : ∀ (t : ℝ) (_ht : t ∈ Set.uIcc x (x + y)), ContDiffAt ℝ (n + 1) f t) :
-    f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • y ^ k • iteratedDeriv k f x +
-    (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • y ^ (n + 1) • iteratedDeriv (n + 1) f (x + t * y) := by
-  have hf' : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1), ContDiffAt ℝ (n + 1) f (x + t * y) := by
-    intro t ⟨ht₁, ht₂⟩
-    apply hf (x + t * y)
-    by_cases h : 0 ≤ y
-    · refine Set.mem_uIcc_of_le ?_ ?_
-      · simp only [le_add_iff_nonneg_right]
-        positivity
-      simp only [add_le_add_iff_left]
-      exact mul_le_of_le_one_left h ht₂
-    · simp only [not_le] at h
-      refine Set.mem_uIcc_of_ge ?_ ?_
-      · simp only [add_le_add_iff_left]
-        exact le_mul_of_le_one_left h.le ht₂
-      simp only [add_le_iff_nonpos_right]
-      exact mul_nonpos_of_nonneg_of_nonpos ht₁ h.le
-  simpa [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod] using
-    add_eq_sum_add_integral_iteratedFDeriv hf'
