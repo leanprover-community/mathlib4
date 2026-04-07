@@ -280,7 +280,7 @@ noncomputable def baseChangeFromBaseChange :
     simp [RingHom.algebraMap_toAlgebra]
 
 @[simp]
-lemma baseChangeFromBaseChange_apply (x) :
+lemma baseChangeFromBaseChange_apply (x : P.toExtension.baseChange.Ring) :
     dsimp% (P.baseChangeFromBaseChange T).toRingHom x = MvPolynomial.algebraTensorAlgEquiv R T x :=
   rfl
 
