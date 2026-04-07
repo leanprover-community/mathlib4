@@ -59,10 +59,7 @@ derivative; otherwise it has junk value `0`. -/
 def orientedCurvature (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) : ℝ :=
   !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
-/-- See `orientedCurvature` for a full explanation about the definition. It's important to note that
-`orientedCurvature c t` is only meaningful when `c` is two times differentiable at `t` with a
-non-zero derivative; otherwise it has junk value `0`.
-See also `orientedCurvature_of_norm_deriv_eq_one` for the special case where `‖deriv c t‖ = 1` (this
+/-- See also `orientedCurvature_of_norm_deriv_eq_one` for the special case where `‖deriv c t‖ = 1`. -/
 is useful usually for plane curves parametrized by arc-length). -/
 lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1;
     iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3) := rfl
