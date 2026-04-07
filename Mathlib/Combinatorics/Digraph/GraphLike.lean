@@ -18,14 +18,14 @@ variable {V : Type*}
 
 namespace Digraph
 
-instance : GraphLike α (α × α) (Digraph α) where
+instance : GraphLike V (V × V) (Digraph V) where
   verts _ := Set.univ
   darts G := { (u, v) | G.Adj u v }
   fst_mem_of_darts _ := Set.mem_univ _
   snd_mem_of_darts _ := Set.mem_univ _
   Adj G := G.Adj
-  exists_darts_iff_adj {G : Digraph α} {u v : α} := by simp
+  exists_darts_iff_adj {G : Digraph V} {u v : V} := by simp
 
-lemma darts_def (G : Digraph α) : GraphLike.darts G = { (u, v) | G.Adj u v } := rfl
+lemma darts_def (G : Digraph V) : GraphLike.darts G = { (u, v) | G.Adj u v } := rfl
 
 end Digraph
