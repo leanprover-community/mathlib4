@@ -331,11 +331,11 @@ theorem bell_eq_sum_partition (n : ℕ) :
       exact hsub ▸ Eq.symm (Fintype.sum_equiv (partitionWithPartEquiv h1 h2)
         (fun p => choose n i * Multiset.bell ((partitionWithPartEquiv h1 h2 p).parts))
         (fun q => choose n i * Multiset.bell q.parts) (fun _ => rfl))
-    _ = ∑ x : Σ i : Fin n.succ, {p : Nat.Partition (n + 1) // (i + 1 : ℕ) ∈ p.parts},
-        choose n x.1 * Multiset.bell (x.2.1.parts.erase (x.1 + 1)) := by rw [← Fintype.sum_sigma']
     _ = ∑ x : Σ p : Nat.Partition (n + 1), {a : ℕ // a ∈ p.parts.toFinset},
-        choose n (x.2.1 - 1) * Multiset.bell (x.1.parts.erase x.2.1) :=
-      Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ (by simp [sigmaPartitionWithPartEquiv])
+        choose n (x.2.1 - 1) * Multiset.bell (x.1.parts.erase x.2.1) := by
+      rw [← Fintype.sum_sigma']
+      refine Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ ?_
+      simp [sigmaPartitionWithPartEquiv]
     _ = ∑ p : Nat.Partition (n + 1), ∑ a : {a : ℕ // a ∈ p.parts.toFinset},
         choose n (a.1 - 1) * Multiset.bell (p.parts.erase a.1) := by
       simpa using (Fintype.sum_sigma' fun (p : Nat.Partition (n + 1))
