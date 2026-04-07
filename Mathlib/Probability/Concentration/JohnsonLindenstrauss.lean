@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Ted Vucurevich. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ted Vucurevich
+-/
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
@@ -54,9 +59,11 @@ instance Matrix.instTopologicalSpace {m n : Type*} {α : Type*} [TopologicalSpac
   inferInstanceAs (TopologicalSpace (m → n → α))
 
 /-- Bridge: `BorelSpace` for `Matrix m n α` via Pi (requires `Fintype` for `Pi.borelSpace`). -/
-private instance Matrix.instBorelSpace {m n : Type*} {α : Type*} [Fintype m] [Fintype n]
+private instance Matrix.instBorelSpace {m n : Type*} {α : Type*} [Finite m] [Finite n]
     [TopologicalSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α] :
     BorelSpace (Matrix m n α) := by
+  haveI : Fintype m := Fintype.ofFinite m
+  haveI : Fintype n := Fintype.ofFinite n
   haveI : BorelSpace (n → α) := Pi.borelSpace
   exact inferInstanceAs (BorelSpace (m → n → α))
 
@@ -244,7 +251,9 @@ lemma jl_chisq_complement_bound
           rw [← one_div] at key
           linarith)
   rw [bad_eq]
-  have bad_subset : {A : Matrix (Fin m) (Fin d) ℝ | ∑ i : Fin m, Xi i A ∉ Set.Icc (↑m * (1 - ε)) (↑m * (1 + ε))} ⊆
+  have bad_subset :
+      {A : Matrix (Fin m) (Fin d) ℝ |
+          ∑ i : Fin m, Xi i A ∉ Set.Icc (↑m * (1 - ε)) (↑m * (1 + ε))} ⊆
       {A | ↑m * (1 + ε) < ∑ i : Fin m, Xi i A} ∪
       {A | ∑ i : Fin m, Xi i A < ↑m * (1 - ε)} := by
     intro A hA
@@ -324,7 +333,6 @@ lemma jl_chisq_complement_bound
       exact hval
     rw [h0] at hmgf_int
     linarith [Real.rpow_pos_of_pos (by linarith : (0:ℝ) < 1 - 2 * t) (-(↑m / 2 : ℝ))]
-
   let t_u : ℝ := ε / (2 * (1 + ε))
   have ht_u_pos : 0 < t_u := by positivity
   have ht_u_half : t_u < 1 / 2 := by
@@ -523,7 +531,7 @@ lemma jl_union_bound
   by_cases hS : S.card ≤ 1
   · exact ⟨0, fun u hu v hv huv =>
       absurd (Finset.card_le_one.mp hS u hu v hv) huv⟩
-  · push_neg at hS
+  · push Not at hS
     set Good : Set (Matrix (Fin m) (Fin d) ℝ) :=
       {A | ∀ u ∈ S, ∀ v ∈ S, u ≠ v →
         (1 - ε) * ‖u - v‖ ^ 2 ≤
