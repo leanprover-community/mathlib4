@@ -6,9 +6,7 @@ Authors: Bolton Bailey
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Logarithm Tonality
@@ -32,7 +30,7 @@ noncomputable section
 
 namespace Real
 
-theorem mul_log_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
+theorem mul_log_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
   simp only [StrictMonoOn]
   intro x hex y hey hxy
   obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
@@ -49,7 +47,11 @@ theorem mul_log_self_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Se
   rw [deriv_mul_log c_ne0, eq_div_iff] at hc
     <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_ge_inve]
 
-theorem mul_log_self_StrictAntiOn :
+@[deprecated "use `Real.mul_log_StrictMonoOn`" (since := "2026-04-07")]
+theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
+  grind [mul_log_StrictMonoOn.monotoneOn, MonotoneOn.mono, show exp (-1) < 1 by norm_num]
+
+theorem mul_log_StrictAntiOn :
     StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
   simp only [StrictAntiOn]
   intro x hex y hey hxy
