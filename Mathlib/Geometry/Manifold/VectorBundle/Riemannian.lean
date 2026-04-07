@@ -260,7 +260,6 @@ def ContMDiffRiemannianMetric.toRiemannianMetric
     (g : ContMDiffRiemannianMetric IB n F E) : RiemannianMetric E :=
   g.toContinuousRiemannianMetric.toRiemannianMetric
 
-set_option backward.isDefEq.respectTransparency false in
 instance (g : ContMDiffRiemannianMetric IB n F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
     IsContMDiffRiemannianBundle IB n F E :=

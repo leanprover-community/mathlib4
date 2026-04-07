@@ -360,7 +360,7 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
   rw [h]
   congr
   · ext1 a
-    simp only [coe_eval₂Hom, RingHom.id_apply, comp_apply, eval₂_C, RingHom.coe_comp]
+    simp
   · ext1 n
     simp only [comp_apply, eval₂_X]
 
@@ -577,7 +577,6 @@ theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S�
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
   ext

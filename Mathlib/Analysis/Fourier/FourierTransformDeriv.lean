@@ -123,7 +123,6 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
     fderiv ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) w y = -2 * π * I * L v y * 𝐞 (-L v w) := by
   simp only [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv, neg_mul,
@@ -140,7 +139,6 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L.flip w))) v :=
   hasFDerivAt_fourierChar_neg_bilinear_right L.flip w v
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :
     fderiv ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) v y = -2 * π * I * L y w * 𝐞 (-L v w) := by
   simp only [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv, neg_mul,
@@ -448,7 +446,6 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
@@ -532,7 +529,6 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
 
 end SecondCountableTopology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
 theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
@@ -573,7 +569,6 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       ofReal_mul, neg_neg, Fin.tail_def]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`, is the
 Fourier integral of the `n`-th derivative of `(L v w) ^ k * f`. -/
 theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional ℝ V]
@@ -604,7 +599,6 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
       positivity
     · simpa only [Finset.mem_product, Finset.mem_range_succ_iff] using ⟨hj, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
 (for `i ≤ k`).
@@ -638,7 +632,6 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
     · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
       exact ⟨hj, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
 (for `i ≤ k`). -/

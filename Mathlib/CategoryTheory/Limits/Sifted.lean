@@ -65,7 +65,6 @@ namespace IsSifted
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by

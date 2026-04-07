@@ -561,13 +561,15 @@ def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
-  Z.toFiberBundleCore.topologicalSpaceFiber x
+  letI : TopologicalSpace (Z.toFiberBundleCore.Fiber x) :=
+    Z.toFiberBundleCore.topologicalSpaceFiber x
+  inferInstanceAs <| TopologicalSpace (Z.toFiberBundleCore.Fiber x)
 
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
-  inferInstanceAs (AddCommGroup F)
+  inferInstanceAs <| AddCommGroup F
 
 instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
-  inferInstanceAs (Module R F)
+  inferInstanceAs <| Module R F
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
 @[reducible, simp, mfld_simps]
@@ -592,7 +594,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 /-- Topological structure on the total space of a vector bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
-  Z.toFiberBundleCore.toTopologicalSpace
+  fast_instance% Z.toFiberBundleCore.toTopologicalSpace
 
 variable (b : B) (a : F)
 
@@ -677,7 +679,7 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 
 instance fiberBundle : FiberBundle F Z.Fiber :=
-  Z.toFiberBundleCore.fiberBundle
+  fast_instance% Z.toFiberBundleCore.fiberBundle
 
 protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
 

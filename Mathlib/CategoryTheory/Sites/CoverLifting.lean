@@ -114,8 +114,7 @@ lemma Adjunction.isContinuous_of_isCocontinuous (adj : F ⊣ G) [F.IsCocontinuou
   apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat J G)
   rwa [← adj.isCocontinuous_iff_coverPreserving]
 
-instance [F.IsContinuous J K] [F.IsCocontinuous J K] [F.IsLeftAdjoint] :
-    F.rightAdjoint.IsContinuous K J :=
+instance [F.IsCocontinuous J K] [F.IsLeftAdjoint] : F.rightAdjoint.IsContinuous K J :=
   (Adjunction.ofIsLeftAdjoint F).isContinuous_of_isCocontinuous J K
 
 end

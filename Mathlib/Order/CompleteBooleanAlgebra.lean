@@ -18,10 +18,10 @@ In this file we define and provide API for (co)frames, completely distributive l
 complete Boolean algebras.
 
 We distinguish two different distributivity properties:
- 1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
+1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
   This is required by `Frame`, `CompleteDistribLattice`, and `CompleteBooleanAlgebra`
   (`Coframe`, etc., require the dual property).
- 2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
+2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
   (infinite `⨅` distributes over infinite `⨆`).
   This stronger property is called "completely distributive",
   and is required by `CompletelyDistribLattice` and `CompleteAtomicBooleanAlgebra`.
@@ -86,6 +86,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
+@[to_dual]
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
 /-- `⊔` distributes over `⨅`. -/
@@ -113,6 +114,8 @@ attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalA
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
+
+attribute [to_dual existing] CompleteDistribLattice.toFrame
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -338,10 +341,9 @@ theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ :
   refine le_antisymm
     (iSup₂_le fun i hi ↦ le_iSup₂_of_le (fun _ ↦ i) hi (le_iInf fun _ ↦ le_rfl))
     (iSup₂_le fun I hI ↦ ?_)
-  by_cases H : ∀ k, I k = I j
+  by_cases! H : ∀ k, I k = I j
   · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
-  · push_neg at H
-    rcases H with ⟨k, hk⟩
+  · rcases H with ⟨k, hk⟩
     calc ⨅ l, f (I l)
     _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
     _ = ⊥ := (h hk).eq_bot
@@ -876,17 +878,10 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
-  __ := PUnit.instBooleanAlgebra
-  sSup _ := unit
-  sInf _ := unit
-  le_sSup _ _ _ := trivial
-  sSup_le _ _ _ := trivial
-  sInf_le _ _ _ := trivial
-  le_sInf _ _ _ := trivial
-  iInf_iSup_eq _ := rfl
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit where
 
-instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
+  iInf_iSup_eq _ := rfl
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

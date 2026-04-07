@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 /-!
 # Map Between Ext Induced by Exact Functor
 
-In this file, we develope the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
+In this file, we develop the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
 where `F` is an exact functor between abelian categories.
 
 -/

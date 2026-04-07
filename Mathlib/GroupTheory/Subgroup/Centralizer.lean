@@ -125,16 +125,29 @@ theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
+theorem isMulCommutative_closure {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    IsMulCommutative (closure k) :=
+  have := closure_le_centralizer_centralizer k
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+open scoped IsMulCommutative in
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
+@[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-10"))
+/-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
 abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
     CommGroup (closure k) :=
-  { (closure k).toGroup with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := closure_le_centralizer_centralizer k
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_closure hcomm
+  inferInstance
+
+@[to_additive]
+instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set G)) :=
+  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 /-- The conjugation action of N(H) on H. -/
 @[simps]
-instance : MulDistribMulAction H.normalizer H where
+instance : MulDistribMulAction (normalizer H : Subgroup G) H where
   smul g h := ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
   one_smul g := by simp [HSMul.hSMul]
   mul_smul := by simp [HSMul.hSMul, mul_assoc]
@@ -143,11 +156,11 @@ instance : MulDistribMulAction H.normalizer H where
 
 /-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
 @[simps!]
-def normalizerMonoidHom : H.normalizer →* MulAut H :=
-  MulDistribMulAction.toMulAut H.normalizer H
+def normalizerMonoidHom : normalizer (H : Set G) →* MulAut H :=
+  MulDistribMulAction.toMulAut (normalizer H : Subgroup G) H
 
 theorem normalizerMonoidHom_ker :
-    H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
+    H.normalizerMonoidHom.ker = (centralizer H).subgroupOf (normalizer H : Subgroup G) := by
   simp [Subgroup.ext_iff, DFunLike.ext_iff, Subtype.ext_iff,
     mem_subgroupOf, mem_centralizer_iff, eq_mul_inv_iff_mul_eq, eq_comm]
 

@@ -68,8 +68,8 @@ section CommMonoidWithZero
 variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
 
 instance : CommMonoidWithZero R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : MonoidWithZero R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommMonoidWithZero
 
@@ -79,10 +79,10 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMon
 variable [DistribMulAction R X]
 
 /-- Auxiliary definition for addition on the Ore localization. -/
-def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
+private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
-theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) (sb : R)
+private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) (sb : R)
     (hb : sb * s₁ = rb * s₂) (h : sb * s₁ ∈ S) :
     add'' r₁ s₁ r₂ s₂ = (sb • r₁ + rb • r₂) /ₒ ⟨sb * s₁, h⟩ := by
   simp only [add'']
@@ -104,7 +104,7 @@ theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) (sb : R)
 attribute [local instance] OreLocalization.oreEqv
 
 /-- Auxiliary definition for addition on the Ore localization, with one argument fixed. -/
-def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
+private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
       fun r₁s₁ : X × S => add'' r₁s₁.1 r₁s₁.2 r₂ s₂) <| by
@@ -128,7 +128,7 @@ def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
 
 /-- The addition on the Ore localization. -/
 @[irreducible]
-def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
+private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
@@ -147,6 +147,7 @@ def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
+@[no_expose]
 instance : Add X[S⁻¹] :=
   ⟨add⟩
 
@@ -299,8 +300,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
-  __ := inferInstanceAs (AddGroup X[S⁻¹])
-  __ := inferInstanceAs (AddCommMonoid X[S⁻¹])
+  __ := (inferInstance : AddGroup X[S⁻¹])
+  __ := (inferInstance : AddCommMonoid X[S⁻¹])
 
 end AddCommGroup
 

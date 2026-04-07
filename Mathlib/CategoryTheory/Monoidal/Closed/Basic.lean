@@ -326,8 +326,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
@@ -348,8 +347,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl

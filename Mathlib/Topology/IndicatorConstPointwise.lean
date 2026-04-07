@@ -63,8 +63,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
     by_cases hq : q
     · simp only [hq, ite_true]
       apply le_trans _ haF
-      simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
-        Set.preimage_const_of_mem, univ_mem]
+      simp
     · simp only [hq, ite_false]
       apply le_trans _ hbG
       simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
