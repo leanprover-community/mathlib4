@@ -42,7 +42,6 @@ def restrictScalars (V : Submodule R M) : Submodule S M where
 theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) = V :=
   rfl
 
-@[simp]
 theorem toAddSubmonoid_restrictScalars (V : Submodule R M) :
     (V.restrictScalars S).toAddSubmonoid = V.toAddSubmonoid :=
   rfl
@@ -54,6 +53,13 @@ theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalar
 @[simp]
 theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
   SetLike.coe_injective rfl
+
+@[simp] theorem restrictScalars_restrictScalars
+    (T : Type*) [Semiring T] [SMul T R] [SMul S T] [IsScalarTower S T R]
+    [Module T M] [IsScalarTower S T M] [IsScalarTower T R M]
+    (V : Submodule R M) :
+    (V.restrictScalars T).restrictScalars S = V.restrictScalars S :=
+  rfl
 
 variable (R M)
 
@@ -133,7 +139,7 @@ lemma restrictScalars_sInf (s : Set (Submodule R M)) :
 @[simp]
 lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
-  simp [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
+  rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
 
 variable (R M) in
 /-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
@@ -167,5 +173,20 @@ lemma restrictScalars_sup (s t : Submodule R M) :
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
+
+@[simp]
+theorem codisjoint_restrictScalars_iff {s t : Submodule R M} :
+    Codisjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Codisjoint s t := by
+  simp [codisjoint_iff, ← restrictScalars_sup]
+
+@[simp]
+theorem disjoint_restrictScalars_iff {s t : Submodule R M} :
+    Disjoint (s.restrictScalars R) (t.restrictScalars R) ↔ Disjoint s t := by
+  simp [disjoint_def]
+
+@[simp]
+theorem isCompl_restrictScalars_iff {s t : Submodule R M} :
+    IsCompl (s.restrictScalars R) (t.restrictScalars R) ↔ IsCompl s t := by
+  simp [isCompl_iff]
 
 end Submodule

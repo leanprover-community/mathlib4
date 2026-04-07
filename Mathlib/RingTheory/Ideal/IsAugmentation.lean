@@ -3,28 +3,22 @@ Copyright (c) 2026 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+module
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-! # Augmentation ideals
 
-## Main definitions
+* `Ideal.IsAugmentation` :  An ideal `I` of an `A`-algebra `S` is an augmentation ideal
+  if it is submodule a complement of `⊥ : Subalgebra A S`.
 
-* `Ideal.IsAugmentation` :  An ideal `I` of an `A`-algebra `S` is an augmentation ideal if it is
-  a complement of `⊥ : Subalgebra A S`.
+* `Ideal.isAugmentation_subalgebra_iff` : If `S` is a subalgebra of an `R`-algebra `A`,
+  then an ideal `I`of `A` is an augmentation ideal for the `R`-algebra structure if and only if
+  it is an augmentation ideal for the `S`-algebra structure.
 
-## Main results
-
-* `Ideal.isAugmentation_baseChange`: if `R` is a `CommRing` and an `A`-algebra,
-then the ideal `R ⊗[A] I` of `R ⊗[A] S` is an augmentation ideal.
-
-## Notes
-
-* There is a weaker version that holds for general commutative rings and would just assert that the
-  quotient map `R →+* R ⧸ I` has a section which is a ring homomorphism (possibly with a variant
-  “with data” that keeps track of the choice of one such section).
 -/
+
 
 /-
 section DistribLattice
@@ -71,35 +65,6 @@ theorem Submodule.isCompl_assoc_of_disjoint {a b c : Submodule R M}
 
 end DistribLattice
 -/
-
-section restrictScalars
-
-namespace Submodule
-
-variable (A : Type*) [CommSemiring A] {R M : Type*} [Semiring R] [Algebra A R] [AddCommMonoid M]
-  [Module A M] [Module R M] [IsScalarTower A R M] (M₁ M₂ : Submodule R M)
-
-theorem sup_restrictScalars :
-   (M₁ ⊔ M₂).restrictScalars A = M₁.restrictScalars A ⊔ (M₂.restrictScalars A) := by
-  apply toAddSubmonoid_injective
-  simp [toAddSubmonoid_restrictScalars, sup_toAddSubmonoid]
-
-theorem codisjoint_restrictScalars_iff :
-    Codisjoint (M₁.restrictScalars A) (M₂.restrictScalars A) ↔ Codisjoint M₁ M₂ := by
-  simp only [codisjoint_iff]
-  rw [← sup_restrictScalars, restrictScalars_eq_top_iff]
-
-theorem disjoint_restrictScalars_iff :
-    Disjoint (M₁.restrictScalars A) (M₂.restrictScalars A) ↔ Disjoint M₁ M₂ := by
-  simp [disjoint_def, restrictScalars_mem]
-
-theorem isCompl_restrictScalars_iff :
-    IsCompl (M₁.restrictScalars A) (M₂.restrictScalars A) ↔ IsCompl M₁ M₂ := by
-  simp [isCompl_iff, disjoint_restrictScalars_iff, codisjoint_restrictScalars_iff]
-
-end Submodule
-
-end restrictScalars
 
 /-
 section
@@ -417,8 +382,9 @@ end Submodule.TensorProduct
 
 section bot
 
-variable {A R : Type*} [CommSemiring A] [CommSemiring R] [Algebra A R] (S : Subalgebra A R) (r : R)
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) (r : R)
 
+/-
 theorem Subalgebra.mem_bot_iff : r ∈ (⊥ : Subalgebra S R) ↔ r ∈ S := by
   simp only [Algebra.mem_bot, Set.mem_range, Subtype.exists]
   constructor
@@ -427,19 +393,33 @@ theorem Subalgebra.mem_bot_iff : r ∈ (⊥ : Subalgebra S R) ↔ r ∈ S := by
   · intro hr
     exact ⟨r, hr, rfl⟩
 
+#find_home! Subalgebra.mem_bot_iff
+-/
+
+@[simp]
 theorem Subalgebra.restrictScalars_toSubmodule_bot :
-    Submodule.restrictScalars A (Subalgebra.toSubmodule (⊥ : Subalgebra S R))
+    Submodule.restrictScalars R (Subalgebra.toSubmodule (⊥ : Subalgebra S A))
       = Subalgebra.toSubmodule S := by
-  rw [← Subalgebra.restrictScalars_toSubmodule A]
+  rw [← Subalgebra.restrictScalars_toSubmodule]
   congr
   ext x
-  simp only [Subalgebra.mem_restrictScalars, Subalgebra.mem_bot_iff]
+  simp [Subalgebra.mem_restrictScalars, Algebra.mem_bot]
+#find_home! Subalgebra.restrictScalars_toSubmodule_bot
 
-theorem Subalgebra.codisjoint_bot_iff (I : Ideal R) :
-    Codisjoint (Subalgebra.toSubmodule (⊥ : Subalgebra S R)) (I.restrictScalars S) ↔
-    Codisjoint (Subalgebra.toSubmodule S) (I.restrictScalars A) := by
-  rw [← Submodule.codisjoint_restrictScalars_iff A, Subalgebra.restrictScalars_toSubmodule_bot]
-  exact Iff.rfl
+@[simp]
+lemma Submodule.restrictScalars_restrictScalars
+    {R S T M : Type*} [Semiring R] [Semiring S] [Semiring T] [SMul R S] [SMul R T] [SMul S T]
+    [AddCommMonoid M] [Module R M] [Module S M] [Module T M]
+    [IsScalarTower R S M] [IsScalarTower S T M] [IsScalarTower R T M]
+    (N : Submodule T M) :
+    (N.restrictScalars S).restrictScalars R = N.restrictScalars R :=
+  rfl
+#find_home! Submodule.restrictScalars_restrictScalars
+
+theorem Subalgebra.codisjoint_bot_iff (I : Ideal A) :
+    Codisjoint (Subalgebra.toSubmodule (⊥ : Subalgebra S A)) (I.restrictScalars S) ↔
+    Codisjoint (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
+  simp [← Submodule.codisjoint_restrictScalars_iff R]
 
 theorem Subalgebra.disjoint_bot_iff (I : Ideal R) :
     Disjoint (Subalgebra.toSubmodule (⊥ : Subalgebra S R)) (I.restrictScalars S) ↔
@@ -450,152 +430,28 @@ theorem Subalgebra.disjoint_bot_iff (I : Ideal R) :
 
 end bot
 
-section Augmentation
-
 namespace Ideal
 
 variable (R : Type*) [CommRing R] {A : Type*} [CommRing A] [Algebra R A] (J : Ideal A)
 
 open TensorProduct Ideal LinearMap Submodule
 
-/-- An ideal `J` of a commutative `R`-algebra `A` is an augmentation ideal if it is a complement
-  to `⊥ : Subalgebra R A`. -/
+/-- An ideal `J` of a commutative `R`-algebra `A` is an augmentation ideal
+if it is a submodule complement to `⊥ : Subalgebra R A`. -/
 def IsAugmentation (R : Type*) [CommSemiring R]
     {A : Type*} [CommSemiring A] [Algebra R A] (J : Ideal A) : Prop :=
   IsCompl (Subalgebra.toSubmodule (⊥ : Subalgebra R A)) (J.restrictScalars R)
 
-theorem isAugmentation_subalgebra_iff {A : Type*} [CommSemiring A] {R : Type*} [CommSemiring R]
-    [Algebra A R] {S : Subalgebra A R} {I : Ideal R} :
-    I.IsAugmentation S ↔ IsCompl (Subalgebra.toSubmodule S) (I.restrictScalars A) := by
+/-- If `S` is a subalgebra of an `R`-algebra `A`, then an ideal `I`of `A` is an augmentation ideal
+for the `R`-algebra structure
+if and only if it is an augmentation ideal for the `S`-algebra structure. -/
+theorem isAugmentation_subalgebra_iff {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A]
+    [Algebra R A] {S : Subalgebra R A} {I : Ideal A} :
+    I.IsAugmentation S ↔ IsCompl (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
   unfold Ideal.IsAugmentation
-  rw [← Submodule.isCompl_restrictScalars_iff A, Subalgebra.restrictScalars_toSubmodule_bot]
+  rw [← Submodule.isCompl_restrictScalars_iff R, Subalgebra.restrictScalars_toSubmodule_bot]
   exact Iff.rfl
-
-/-- If `R` is a `CommRing` and an `A`-algebra, then the ideal `R ⊗[A] I` of `R ⊗[A] S` is an
-  augmentation ideal. -/
-theorem isAugmentation_baseChange {S : Type*} [CommRing S] [Algebra A S] {I : Ideal S}
-    (hI : IsCompl (Subalgebra.toSubmodule (⊥ : Subalgebra A S)) (I.restrictScalars A))
-    {R : Type*} [CommRing R] [Algebra A R] :
-    (Ideal.map Algebra.TensorProduct.includeRight I : Ideal (R ⊗[A] S)).IsAugmentation R := by
-  unfold IsAugmentation
-  rw [Algebra.baseChange_bot, Algebra.TensorProduct.map_includeRight_eq_range_baseChange]
-  exact isCompl_baseChange hI R
-
-theorem isAugmentation_tensorProduct (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
-    [Algebra A R] {R₀ : Subalgebra A R} {I : Ideal R} (hI : I.IsAugmentation R₀) [CommRing S]
-    [Algebra A S] {S₀ : Subalgebra A S} {J : Ideal S} (hJ : J.IsAugmentation S₀) :
-    let K : Ideal (R ⊗[A] S) := Ideal.map (Algebra.TensorProduct.includeLeft (S := A)) I ⊔
-      Ideal.map Algebra.TensorProduct.includeRight J
-    let T₀ : Subalgebra A (R ⊗[A] S) := Subalgebra.map (Algebra.TensorProduct.map R₀.val S₀.val) ⊤
-    K.IsAugmentation T₀ := by
-  rw [Ideal.isAugmentation_subalgebra_iff] at hI hJ ⊢
-  convert Submodule.TensorProduct.isCompl_left_left hI hJ
-  · unfold Submodule.TensorProduct
-    simp only [Algebra.map_top, mapIncl]
-    rfl
-  · ext x
-    simp [Submodule.TensorProduct]
-    rw [sup_comm]
-    rw [← restrictScalars_mem A, sup_restrictScalars]
-    simp only [Ideal.map_includeLeft_eq, Ideal.map_includeRight_eq]
-    rw [← id_comp (⊤ : Submodule A R).subtype, ← comp_id (Submodule.restrictScalars A J).subtype,
-      ← id_comp (⊤ : Submodule A S).subtype, ← comp_id (Submodule.restrictScalars A I).subtype]
-    simp only [TensorProduct.map_comp, range_comp]
-    simp only [comp_id, lTensor, rTensor, LinearMap.range_eq_map]
-    rw [show (Submodule.map (TensorProduct.map (⊤ : Submodule A R).subtype LinearMap.id) ⊤) = ⊤ by
-      rw [Submodule.map_top, LinearMap.range_eq_top]
-      apply TensorProduct.map_surjective _ Function.surjective_id
-      rw [← LinearMap.range_eq_top, range_subtype]]
-    rw [show (Submodule.map (TensorProduct.map LinearMap.id (⊤ : Submodule A S).subtype) ⊤) = ⊤ by
-      rw [Submodule.map_top, LinearMap.range_eq_top]
-      apply TensorProduct.map_surjective Function.surjective_id
-      rw [← LinearMap.range_eq_top, range_subtype]]
-    simp
 
 end Ideal
 
-variable (R : Type*) [CommRing R]
-    {A : Type*} [CommRing A] [Algebra R A] (J : Ideal A)
-
-open TensorProduct Ideal LinearMap Submodule
-
-def Ideal.isHomogeneous {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    (S : Subalgebra A R) (I : Ideal R) (J : Ideal R) : Prop :=
-  IsCompl (Subalgebra.toSubmodule S ⊓ J.restrictScalars A)
-    (I.restrictScalars A ⊓ J.restrictScalars A)
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} (FS : S) : R := FS.val
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} (FS : Set S) : Set R := S.val '' FS
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R] {I : Ideal R} (FI : Set I) : Set R :=
-  I.subtype '' FI
-
-#exit
-
-def Ideal.span_isHomogeneous' {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} {I : Ideal R}
-    (FS : Set S) (FI : Set I) : Ideal R :=
-  Ideal.span ((S.val '' FS) ∪ (I.subtype '' FI))
-
--- Roby 1965, end of §1
-theorem Ideal.span_isHomogeneous {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} {I : Ideal R} (hIS : I.IsAugmentation S) (FS : Set S) (FI : Set I) :
-    Ideal.isHomogeneous S I (Ideal.span ((S.val '' FS) ∪ (I.subtype '' FI)) : Ideal R) := by
-  simp only [Ideal.isAugmentation_subalgebra_iff] at hIS
-  unfold Ideal.isHomogeneous
-  apply IsCompl.mk
-  · simp only [Submodule.disjoint_def]
-    intro x hx hx'
-    simp only [Submodule.mem_inf, Subalgebra.mem_toSubmodule, restrictScalars_mem] at hx hx'
-    exact disjoint_def.mp hIS.disjoint x hx.left hx'.left
-  · rw [codisjoint_iff]
-    rw [eq_top_iff]
-    intro x hx
-    simp only [mem_sup, Submodule.mem_inf, Subalgebra.mem_toSubmodule, restrictScalars_mem]
-    have hx' := eq_top_iff.mp (codisjoint_iff.mp hIS.codisjoint)
-      (Submodule.mem_top (x := x))
-    simp only [mem_sup, Subalgebra.mem_toSubmodule, restrictScalars_mem] at hx'
-    obtain ⟨y, hy, z, hz, rfl⟩ := hx'
-    refine ⟨y, ⟨⟨hy, ?_⟩, z, ⟨⟨hz, ?_⟩, rfl⟩⟩⟩
-    · sorry
-    · sorry
-
-
-def Subalgebra.isHomogeneous {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    (S : Subalgebra A R) (I : Ideal R)
-    /- (hIS : I.IsAugmentation S) -/ (T : Subalgebra A R) : Prop :=
-  IsCompl (Subalgebra.toSubmodule S ⊓ Subalgebra.toSubmodule T)
-    (I.restrictScalars A ⊓ Subalgebra.toSubmodule T)
-
--- TODO: reinstate
--- Roby 1965, end of §1
-theorem Subalgebra.span_isHomogeneous {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} {I : Ideal R}
-    (hIS : I.IsAugmentation S)
-    (FS : Set S) (FI : Set I) :
-    Subalgebra.isHomogeneous S I
-      (Algebra.adjoin A ((S.val '' FS) ∪ (I.subtype '' FI) : Set R)) := by
-  sorry
-
-end Augmentation
-
- /-
-comment définir, pour  M₁,  M₂  ≤ M,
-    M₁ ⊗[A] N, M₂ ⊗[A] N ≤ M ⊗[A] N
-    et compatibilité à ⊔ (et ⊓ ?)
-  M₁ ⊗[A] N = range TensorProduct.map M₁.subtype LinearMap.id
-
-  plus généralement, M' ≤ M, N' ≤ N :
-    range TensorProduct.map M'.subtype N'.subtype
- -/
+end Ideal
