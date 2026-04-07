@@ -50,16 +50,16 @@ class HasFirstPageComputation : Prop where
 export HasFirstPageComputation (hi₀₁ hi₂₃)
 
 instance : coreE₂Cohomological.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; grind
-  hi₂₃ pq := by dsimp; grind
+  hi₀₁ pq := by dsimp; lia
+  hi₂₃ pq := by dsimp; lia
 
 instance : coreE₂CohomologicalNat.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; grind
-  hi₂₃ pq := by dsimp; grind
+  hi₀₁ pq := by dsimp; lia
+  hi₂₃ pq := by dsimp; lia
 
 instance : coreE₂HomologicalNat.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; grind
-  hi₂₃ pq := by dsimp; grind
+  hi₀₁ pq := by dsimp; lia
+  hi₂₃ pq := by dsimp; lia
 
 end SpectralSequenceDataCore
 
