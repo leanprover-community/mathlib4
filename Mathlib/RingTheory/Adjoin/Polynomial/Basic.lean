@@ -64,7 +64,7 @@ instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : 
 @[simp]
 theorem adjoin_aeval_self (R : Type*) {A : Type*} [CommSemiring R] [Semiring A]
     [Algebra R A] {p : Polynomial R} (x : A) :
-    aeval (x : Algebra.adjoin R {x}) p = (aeval x p : Algebra.adjoin R {x}) := by
+    (aeval x p : Algebra.adjoin R {x}) = aeval (x : Algebra.adjoin R {x}) p := by
   ext; simp
 
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :

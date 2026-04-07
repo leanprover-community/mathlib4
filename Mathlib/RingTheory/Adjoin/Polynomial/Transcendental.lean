@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Polynomial.Quotient
 
-
 /-!
 # Polynomials and adjoining transcendental elements
 -/
@@ -68,23 +67,25 @@ namespace Algebra
 
 open Ideal Polynomial
 
-variable {p : R[X]}
+variable {T : Type*} [CommRing T] [Algebra R T] {p : R[X]}
 
-/-- TODO: add doc -/
-def adjoin.evalOfTranscendental (ht : Transcendental R s) (c : R) : R[s] →ₐ[R] R :=
+/-- If `s : S` is transcendental over `R`, we get an `R`-algebra homomorphism given by
+evaluation at some element `c`.
+
+For the more general case where `s` is not nec. transcendental see `Algebra.adjoin.liftSingleton`.
+-/
+def adjoin.evalOfTranscendental (ht : Transcendental R s) (c : T) : R[s] →ₐ[R] T :=
   (aeval c).comp (algEquivOfTranscendental R s ht).symm
 
 @[simp]
-theorem adjoin.evalOfTranscendental_aeval (ht : Transcendental R s) (c : R) :
-    (evalOfTranscendental s ht c) (p.aeval s : R[s]) = p.aeval c := by
-  simp_all [evalOfTranscendental, ← adjoin_aeval_self,
-    algEquivOfTranscendental_symm_aeval A y ht p]
+theorem adjoin.evalOfTranscendental_aeval (ht : Transcendental R s) (c : T) :
+    (evalOfTranscendental s ht c) (p.aeval (s : R[s])) = p.aeval c := by
+  simp_all [evalOfTranscendental, algEquivOfTranscendental_symm_aeval A y ht p]
 
-theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R[s])
-    (c : R) : evalOfTranscendental s ht c x = 0 ↔ ((s : R[s]) - algebraMap R R[s] c) ∣ x := by
+theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R[s]) (c : R) :
+    evalOfTranscendental s ht c x = 0 ↔ ((s : R[s]) - algebraMap R R[s] c) ∣ x := by
   simp [evalOfTranscendental, ← map_dvd_iff (algEquivOfTranscendental R s ht).symm,
     Polynomial.dvd_iff_isRoot]
-
 
 end Algebra
 
