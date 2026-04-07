@@ -29,19 +29,34 @@ universe v u
 -- morphism levels before object levels. See note [category theory universes].
 variable {T : Type u} [Category.{v} T]
 
-section
-
-variable (T)
-
+variable (T) in
 /-- The arrow category of `T` has as objects all morphisms in `T` and as morphisms commutative
 squares in `T`. -/
-def Arrow :=
-  Comma.{v, v, v} (𝟭 T) (𝟭 T)
-deriving Category, [Inhabited T] → Inhabited _
+def Arrow := Comma (𝟭 T) (𝟭 T)
 
-end
+/-- The type of morphisms in the category `Arrow T`. -/
+protected def Arrow.Hom (f g : Arrow T) := CommaMorphism f g
+
+instance : Category (Arrow T) where
+  Hom := Arrow.Hom
+  __ := (inferInstance : Category (Comma (𝟭 T) (𝟭 T)))
 
 namespace Arrow
+
+/-- The left object of an arrow. -/
+abbrev left (X : Arrow T) : T := Comma.left X
+
+/-- The right object of an arrow. -/
+abbrev right (X : Arrow T) : T := Comma.right X
+
+/-- Given `X : Arrow T`, this is the morphism `X.left ⟶ X.right`. -/
+abbrev hom (X : Arrow T) : X.left ⟶ X.right := Comma.hom X
+
+/-- The left part of a morphism in the category of arrows. -/
+abbrev Hom.left {X Y : Arrow T} (f : X ⟶ Y) : X.left ⟶ Y.left := CommaMorphism.left f
+
+/-- The right part of a morphism in the category of arrows. -/
+abbrev Hom.right {X Y : Arrow T} (f : X ⟶ Y) : X.right ⟶ Y.right := CommaMorphism.right f
 
 @[ext]
 lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
@@ -49,11 +64,11 @@ lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f
   CommaMorphism.ext h₁ h₂
 
 @[simp]
-theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
+theorem id_left (f : Arrow T) : Arrow.Hom.left (𝟙 f) = 𝟙 f.left :=
   rfl
 
 @[simp]
-theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
+theorem id_right (f : Arrow T) : Arrow.Hom.right (𝟙 f) = 𝟙 f.right := by
   rfl
 
 @[simp, reassoc]
@@ -140,24 +155,18 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   w := w
 
 -- `w_mk_left` is not needed, as it is a consequence of `w` and `mk_hom`.
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/ShortComplex/QuasiIso.lean
 @[reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
     sq.left ≫ g = f.hom ≫ sq.right :=
   sq.w
 
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right := by
-  simp
+@[reassoc (attr := simp high)]
+theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
+  CommaMorphism.w sq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
     [IsIso ff.right] : IsIso ff where
-  out := by
-    let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
-    apply Exists.intro inverse
-    cat_disch
+  out := ⟨homMk (inv ff.left) (inv ff.right), by cat_disch⟩
 
 /-- Create an isomorphism between arrows,
 by providing isomorphisms between the domains and codomains,
@@ -179,7 +188,6 @@ theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.right = φ₂.right := by
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
   rw [Arrow.comp_right, Arrow.id_right] at eq
@@ -193,24 +201,16 @@ section
 
 variable {f g : Arrow T} (sq : f ⟶ g)
 
-set_option backward.isDefEq.respectTransparency false in
-instance isIso_left [IsIso sq] : IsIso sq.left where
-  out := by
-    apply Exists.intro (inv sq).left
-    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id]
-    simp
+instance isIso_left [IsIso sq] : IsIso sq.left :=
+  ⟨(inv sq).left, by simp [← comp_left]⟩
 
-set_option backward.isDefEq.respectTransparency false in
-instance isIso_right [IsIso sq] : IsIso sq.right where
-  out := by
-    apply Exists.intro (inv sq).right
-    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id]
-    simp
+instance isIso_right [IsIso sq] : IsIso sq.right :=
+  ⟨(inv sq).right, by simp [← comp_right]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :
     IsIso g.hom := by
-  rw [iso_w' (asIso sq)]
+  simp only [iso_w' (asIso sq)]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
@@ -226,39 +226,33 @@ lemma isIso_hom_iff_isIso_of_isIso {Y Z : T} {f : Arrow T} {g : Y ⟶ Z} (sq : f
     IsIso f.hom ↔ IsIso g :=
   isIso_hom_iff_isIso_hom_of_isIso sq
 
-set_option backward.isDefEq.respectTransparency false in
+--set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
-  IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
+  IsIso.eq_inv_of_hom_inv_id (by simp [← comp_left])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_right [IsIso sq] : (inv sq).right = inv sq.right :=
-  IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
+  IsIso.eq_inv_of_hom_inv_id (by simp [← comp_right])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
   simp only [← Category.assoc, IsIso.comp_inv_eq, w]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
     let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
       { left := φ
         right := φ ≫ f.hom }
-    have : ∀ g, (aux g).right = g ≫ f.hom := fun g => by dsimp
+    have : ∀ g, (aux g).right = g ≫ f.hom := fun g => rfl
     change (aux φ).left = (aux ψ).left
     congr 1
     rw [← cancel_mono sq]
-    apply CommaMorphism.ext
+    ext
     · exact h
-    · rw [Comma.comp_right, Comma.comp_right, this, this, Category.assoc, Category.assoc]
-      rw [← Arrow.w]
-      simp only [← Category.assoc, h]
+    · simp [this, ← Arrow.w, reassoc_of% h]
 
 set_option backward.isDefEq.respectTransparency false in
 instance epi_right [Epi sq] : Epi sq.right where
@@ -352,14 +346,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
   obj a := Arrow.mk (F.map a.hom)
-  map f :=
-    { left := F.map f.left
-      right := F.map f.right
-      w := by
-        let w := f.w
-        simp only [id_map] at w
-        dsimp
-        simp only [← F.map_comp, w] }
+  map f := Arrow.homMk (F.map f.left) (F.map f.right) (by simp [← Functor.map_comp])
 
 variable (C D)
 
@@ -368,14 +355,12 @@ a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
-  map τ :=
-    { app := fun f =>
-        { left := τ.app _
-          right := τ.app _ } }
+  map τ := { app f := Arrow.homMk (τ.app _) (τ.app _) }
 
 variable {C D}
 
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
+@[simps]
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   functor := e.functor.mapArrow
   inverse := e.inverse.mapArrow
