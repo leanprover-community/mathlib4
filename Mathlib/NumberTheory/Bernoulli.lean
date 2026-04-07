@@ -422,15 +422,13 @@ private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
   have hbij : (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) =
       ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
     Finset.sum_bij'
-      (fun v hv ↦ Units.mk0 (v : ZMod p) (by
+      (fun v hv ↦ Units.mk0 (v : ZMod p) (mt (ZMod.natCast_eq_zero_iff v p).mp (by
         obtain ⟨hlt, hne⟩ := Finset.mem_filter.mp hv
-        exact fun h ↦ absurd (Nat.le_of_dvd (Nat.pos_of_ne_zero hne)
-          ((ZMod.natCast_eq_zero_iff v p).mp h)) (Nat.not_le_of_lt (Finset.mem_range.mp hlt))))
+        exact Nat.not_dvd_of_pos_of_lt (Nat.pos_of_ne_zero hne) (Finset.mem_range.mp hlt))))
       (fun u _ ↦ (u : ZMod p).val)
       (fun _ _ ↦ Finset.mem_univ _)
       (fun u _ ↦ by simp [ZMod.val_lt, u.ne_zero])
-      (fun v hv ↦ by
-        simp [ZMod.val_cast_of_lt (Finset.mem_range.mp (Finset.mem_filter.mp hv).1)])
+      (fun v hv ↦ by simp [ZMod.val_cast_of_lt (Finset.mem_range.mp (Finset.mem_filter.mp hv).1)])
       (fun u _ ↦ Units.ext (ZMod.natCast_zmod_val _))
       (fun _ _ ↦ rfl)
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
@@ -528,8 +526,7 @@ private lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prim
   obtain rfl | hp2 := eq_or_ne p 2
   · have h : ((-1 / 2 : ℚ) * (2 * k) * (2 : ℚ) ^ (2 * k - 1) / (2 * k)) =
         -(2 : ℤ) ^ (2 * k - 2) := by
-      have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
-      rw [hpow]; push_cast; field_simp
+      rw [show 2 * k - 1 = (2 * k - 2) + 1 by omega, pow_succ]; push_cast; field_simp
     simpa [h] using pIntegral_ofInt _ (-(2 : ℤ) ^ (2 * k - 2))
   · have hrw : (-1 / 2 : ℚ) * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k) =
         (-1 : ℤ) * ((p : ℚ) ^ (2 * k - 1) / 2) := by
@@ -571,8 +568,7 @@ private lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < 
       ((2 * k).choose (2 * m) : ℚ) / (2 * k - 2 * m + 1) := by
     rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia)]
     conv_rhs => norm_cast; rw [Nat.choose_mul_succ_eq]
-    rw [show 2 * (k : ℚ) - 2 * (m : ℚ) = 2 * (k - m : ℕ) by rw [cast_sub hm_lt.le]; ring]
-    norm_cast; grind
+    push_cast [Nat.cast_sub (show 2 * m ≤ 2 * k + 1 by lia)]; ring
   rw [mul_comm ((2 * k + 1).choose (2 * m) : ℚ) x, mul_div_assoc,
       mul_comm ((2 * k).choose (2 * m) : ℚ) x, mul_div_assoc, h]
 
@@ -586,9 +582,7 @@ private lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p
       d ≠ 0 ∧ d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
   have h_denom_rat : (2 * (k : ℚ) - 2 * m + 1) = ((d + 1 : ℕ) : ℚ) := by
     simp only [hd_def]; push_cast [Nat.cast_sub hkm]; ring
-  rw [h_exp, h_denom_rat]
-  rw [show ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ) =
-      (2 * k).choose (2 * m) * ((p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ)) by ring]
+  rw [h_exp, h_denom_rat, mul_div_assoc]
   exact pIntegral_mul p _ _ (by exact_mod_cast pIntegral_ofInt p ((2 * k).choose (2 * m)))
     (pIntegral_pow_div p (d + 1) (d - 1) hd_plus_one_ne_zero (factorization_succ_le_sub_one p d hd))
 
@@ -601,7 +595,7 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.Prime.ne_zero Fact.out)
   set P := (p : ℚ) ^ (2 * k - 2 * m - 1)
   have hpow : (p : ℚ) ^ (2 * k - 2 * m) = P * p := by
-    conv_lhs => rw [show 2 * k - 2 * m = (2 * k - 2 * m - 1) + 1 by lia, pow_succ]
+    rw [show 2 * k - 2 * m = (2 * k - 2 * m - 1) + 1 by lia, pow_succ]
   have hdecomp : bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
       (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) =
     (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
@@ -658,7 +652,7 @@ private lemma exists_int_sum_pow_add_indicator_eq (k p : ℕ) [Fact p.Prime] :
   refine ⟨T, ?_⟩
   have : vonStaudtIndicator (2 * k) p =
       ((if (p - 1) ∣ 2 * k then (1 : ℤ) else 0) : ℚ) := by
-    by_cases hd : (p - 1) ∣ 2 * k <;> simp [vonStaudtIndicator, hd]
+    unfold vonStaudtIndicator; split_ifs <;> simp
   rw [this]; exact_mod_cast hT
 
 private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
@@ -695,15 +689,11 @@ private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Pr
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
   obtain ⟨T, hT⟩ := exists_int_sum_pow_add_indicator_eq k p
   use T
-  have hFaul : (∑ v ∈ Finset.range p with v ≠ 0, (v : ℚ) ^ (2 * k)) =
-      (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
-        (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) + p * bernoulli (2 * k) :=
-    sum_pow_filter_eq_faulhaber k p hk
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) / p := by
-    field_simp [hp_ne]; linarith [hT, hFaul]
+    field_simp [hp_ne]; linarith [hT, sum_pow_filter_eq_faulhaber k p hk]
   rw [hAlg]; congr 1; simpa using faulhaber_sum_div_prime_eq k p
 
 /-- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
