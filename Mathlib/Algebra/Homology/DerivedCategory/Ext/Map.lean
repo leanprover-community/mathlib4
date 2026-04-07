@@ -75,7 +75,7 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
+lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex C} (hS : S.ShortExact) (F : C ⥤ D) [F.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
@@ -97,6 +97,18 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     dsimp% triangleOfSESδ_naturality h1 h2
       (S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom),
     ← Functor.map_comp_assoc]
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
+    [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    {S : ShortComplex C} (hS : S.ShortExact) (F : C ⥤ D) [F.Additive]
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
+    ShiftedHom.map hS.singleδ F.mapDerivedCategory  =
+      (F.mapDerivedCategorySingleFunctor 0).hom.app S.X₃ ≫
+        (hS.map_of_exact F).singleδ ≫ ((F.mapDerivedCategorySingleFunctor 0).inv.app S.X₁)⟦1⟧' := by
+  rw [← hS.mapShiftedHom_singleδ', Category.assoc, Category.assoc, ← Functor.map_comp]
   simp
 
 end
@@ -221,7 +233,7 @@ lemma mapExactFunctor_extClass [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex 
     (hS : S.ShortExact) : hS.extClass.mapExactFunctor F = (hS.map_of_exact F).extClass := by
   ext
   rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
-  exact (hS.mapShiftedHom_singleδ F).trans (hS.map_of_exact F).extClass_hom.symm
+  exact (hS.mapShiftedHom_singleδ' F).trans (hS.map_of_exact F).extClass_hom.symm
 
 end Abelian.Ext
 
