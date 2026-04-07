@@ -39,20 +39,6 @@ Hermann Minkowski.
 
 public section
 
-namespace Real
-
-lemma atTop_le_cobounded : .atTop ≤ Bornology.cobounded ℝ := by
-  rw [cobounded_eq]; exact le_sup_right
-
-end Real
-
-namespace NNReal
-
-@[simp] lemma cobounded_eq_atTop : Bornology.cobounded ℝ≥0 = .atTop := by
-  rw [← Metric.comap_dist_right_atTop 0]; simp [NNReal.dist_eq]
-
-end NNReal
-
 namespace MeasureTheory
 
 open ENNReal Module MeasureTheory MeasureTheory.Measure Set Submodule Filter
@@ -124,7 +110,7 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
     refine (finite_range_iff ?_).mpr (Module.Finite.finite_basis b)
     simp [b.injective]
   obtain ⟨r, hr, hr0⟩ :=
-    ((hs.absorbs_finite this).filter_mono Real.atTop_le_cobounded |>.and
+    ((hs.absorbs_finite this).filter_mono IsOrderBornology.atTop_le_cobounded |>.and
       (eventually_ge_atTop (0 : ℝ))).exists
   use ⟨r, hr0⟩
   have hspan_eq : span ℤ (.range (Subtype.val ∘ b)) = L := by
