@@ -552,7 +552,7 @@ noncomputable def equivValuationSubring :
       (RingEquiv.subringCongr map_algebraMap_eq_valuationSubring)
 
 lemma intValuation_maximalIdeal
-    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (x) :
+    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (x : R) :
     (maximalIdeal R).intValuation x =
       (WithZero.map (.ofAdd ∘ (↑)) (addVal R x))⁻¹ := by
   by_cases hx : x = 0

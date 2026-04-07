@@ -107,7 +107,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     exact (IsDiscreteValuationRing.not_krullDimLE_zero R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
-  rw [ord_mul, ord_pow, ord_of_irreducible ϖ hϖ]
+  rw [ord_mul, ord_pow, ord_of_irreducible hϖ]
   · simp [IsDiscreteValuationRing.addVal_uniformizer hϖ]
   all_goals simp_all [Irreducible.ne_zero hϖ]
 
@@ -161,7 +161,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
     algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
   apply le_mul_of_one_le_left'
-  simp [IsScalarTower.algebraMap_eq S R K, ordFrac_ge_one_of_ne_zero _ ha]
+  simp [IsScalarTower.algebraMap_eq S R K, ordFrac_ge_one_of_ne_zero ha]
 
 @[simp]
 lemma ENat.multiplicative_cast_zero_eq_one :
@@ -172,7 +172,7 @@ lemma ENat.multiplicative_cast_zero_eq_one :
 lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := IsUnit.ne_zero hx
   have thing : x ∈ nonZeroDivisors R := IsUnit.mem_nonZeroDivisors hx
-  simp [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord, ord_of_isUnit x hx]
+  simp [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord, ord_of_isUnit hx]
 
 end ordFrac
 
@@ -184,7 +184,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 lemma ordMonoidWithZeroHom_eq_intValutation {R : Type u_1} [CommRing R] [IsDomain R]
     [IsDiscreteValuationRing R] (x : R) (h : x ∈ nonZeroDivisors R) :
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  simp [ordMonoidWithZeroHom_eq_ord x h, ord_eq_addVal,
+  simp [ordMonoidWithZeroHom_eq_ord h, ord_eq_addVal,
     IsDiscreteValuationRing.intValuation_maximalIdeal,
     WithZero.map'_apply, Multiplicative.ofAdd_cast_toAdd_eq_ofAdd_cast,
     WithZero.map_multiplicative_eq_map]

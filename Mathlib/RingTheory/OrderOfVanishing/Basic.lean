@@ -141,7 +141,7 @@ variable {R}
 For `x : R` a non zero divisor, `ord R (x ^ n) = n • ord R x`.
 -/
 @[simp]
-theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n) = n • ord R x := by
+theorem ord_pow {x : R} (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n) = n • ord R x := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -149,20 +149,20 @@ theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n)
     exact hx
 
 @[simp]
-lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
+lemma ord_mul_of_isUnit_left {a : R} (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_left_unit h x]
 
 @[simp]
-lemma ord_mul_of_isUnit_right (a : R) (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
+lemma ord_mul_of_isUnit_right {a : R} (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_right_unit h x]
 
-lemma ord_eq_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
+lemma ord_eq_of_associated {x y : R} (h : Associated x y) : ord R x = ord R y := by
   obtain ⟨a, rfl⟩ := h
   simp
 
 @[simp]
 lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
-    simp [ord_eq_of_associated (-x) (x) (by simp)]
+    simp [ord_eq_of_associated (x := -x) (y := x) (by simp)]
 
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order of vanishing
@@ -172,7 +172,7 @@ of `a • x` for `a` a unit in `S`.
 lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
     {a : S} (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
   rw [Algebra.smul_def a x]
-  exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
+  exact ord_mul_of_isUnit_left (RingHom.isUnit_map (algebraMap S R) h) x
 
 /-
 Note that the order here is the order on `ℕ∞` where `∞` is a top element, rather than the order on
@@ -186,7 +186,7 @@ lemma ord_le_ord_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
   rw [@Ideal.span_singleton_le_span_singleton]
   exact Dvd.intro_left (Algebra.algebraMap a) rfl
 
-lemma ord_le_ord_of_dvd (a : R) (x : R) (h : a ∣ x) : ord R a ≤ ord R x := by
+lemma ord_le_ord_of_dvd {a x : R} (h : a ∣ x) : ord R a ≤ ord R x := by
   obtain ⟨b, rfl⟩ := h
   rw [mul_comm]
   exact ord_le_ord_mul b a
@@ -203,8 +203,8 @@ lemma ord_le_smul {S : Type*} [CommRing S] [Algebra S R] (a : S) (x : R) :
 The order of vanishing of a unit is `0`.
 -/
 @[simp]
-lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
-  simpa using ord_smul_of_isUnit x hx (1 : R)
+lemma ord_of_isUnit {x : R} (hx : IsUnit x) : ord R x = 0 := by
+  simpa using ord_smul_of_isUnit hx (1 : R)
 
 section IsPrincipalIdealRing
 
@@ -213,7 +213,7 @@ variable [IsPrincipalIdealRing R]
 /--
 In a principal ideal ring, the order of vanishing of an irreducible element is `1`.
 -/
-theorem ord_of_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
+theorem ord_of_irreducible {ϖ : R} (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   rw [Ring.ord, Module.length_eq_one_iff]
   have : (Ideal.span {ϖ}).IsMaximal :=
     PrincipalIdealRing.isMaximal_of_irreducible hϖ
@@ -260,22 +260,26 @@ If `x` is a non zero divisor, `ordMonoidWithZeroHom` is equal to the canonical e
 of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 -/
 @[simp]
-theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] (x : R) (h : x ∈ nonZeroDivisors R) :
+theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
   WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x) := dif_pos h
+
+@[simp]
+lemma _root_.ENat.map'_toMultiplicative_cast_eq_ofAdd {n : ℕ} :
+    (map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) (n : ℕ∞) =
+    ↑(Multiplicative.ofAdd (n : ℤ)) := rfl
 
 lemma ordMonoidWithZeroHom_eq_coe
     [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :
     ordMonoidWithZeroHom R x = Multiplicative.ofAdd (n : ℤ) := by
-  rw [ordMonoidWithZeroHom_eq_ord x hx, hn]
-  rfl
+  simp [ordMonoidWithZeroHom_eq_ord hx, hn]
 
 variable {R} in
 /--
 If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
 -/
 @[simp]
-theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] (x : R) (h : x ∉ nonZeroDivisors R) :
+theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] {x : R} (h : x ∉ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x = 0 := dif_neg h
 
 set_option backward.isDefEq.respectTransparency false in
