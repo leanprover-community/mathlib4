@@ -66,15 +66,10 @@ variable (F G)
 of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
+deriving AddCommGroup
 
-instance : AddCommGroup (Cochain F G n) := by
-  dsimp only [Cochain]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance : Module R (Cochain F G n) := by
-  dsimp only [Cochain]
-  infer_instance
+instance : Module R (Cochain F G n) :=
+  inferInstanceAs <| Module R (∀ _, _)
 
 namespace Cochain
 
