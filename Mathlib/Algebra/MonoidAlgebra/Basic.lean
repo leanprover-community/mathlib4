@@ -144,6 +144,16 @@ def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp [Unique.eq_default]
 
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
+    uniqueAlgEquiv R (A := A) M = uniqueRingEquiv (R := A) M := rfl
+
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
+    (uniqueAlgEquiv R (A := A) M).symm = (uniqueRingEquiv (R := A) M).symm := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
@@ -320,7 +330,7 @@ theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.sy
 
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
-@[to_additive (dont_translate := R)
+@[to_additive
 /-- Nested monoid algebras can be taken in an arbitrary order. -/]
 def commAlgEquiv : A[M][N] ≃ₐ[R] A[N][M] :=
   (curryAlgEquiv _).symm.trans <| .trans (domCongr _ _ <| .prodComm ..) (curryAlgEquiv _)
@@ -332,6 +342,15 @@ lemma symm_commAlgEquiv : (commAlgEquiv R : A[M][N] ≃ₐ[R] A[N][M]).symm = co
 lemma commAlgEquiv_single_single (m : M) (n : N) (a : A) :
     commAlgEquiv R (single m <| single n a) = single n (single m a) :=
   commRingEquiv_single_single ..
+
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma commAlgEquiv_single_one (m : M) :
+    commAlgEquiv R (single m (1 : A[N])) = single 1 (single m 1) := commRingEquiv_single_one ..
+
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma commAlgEquiv_single_one_single (m : M) :
+    commAlgEquiv R (single 1 <| single m 1) = (single m (1 : A[N])) :=
+  commRingEquiv_single_one_single ..
 
 end lift
 
