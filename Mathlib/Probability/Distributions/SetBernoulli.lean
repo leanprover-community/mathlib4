@@ -96,7 +96,7 @@ lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u
 
 /-- `setBer(u, p)` only gives mass to families of sets contained in `u`. -/
 lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)) :
-    setBer(u, p) S = setBer(u, p) {s | s ∈ S ∧ s ⊆ u} := by
+    setBer(u, p) S = setBer(u, p) { s ∈ S | s ⊆ u} := by
   apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
   exact Measure.mono_null (by grind) setBernoulli_ae_subset
 
