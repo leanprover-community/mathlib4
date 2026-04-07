@@ -881,10 +881,8 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
   simp_rw [enorm_eq_nnnorm, tsum_congr B]
-  have S' :
-    Summable fun i : ι =>
-      (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, integral_nonneg fun x => NNReal.coe_nonneg _⟩ :
-        NNReal) := by
+  have S' : Summable fun i : ι =>
+      (NNReal.mk (∫ x : X in s i, ‖f x‖₊ ∂μ) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
