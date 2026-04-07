@@ -81,7 +81,7 @@ def limitπAlgHom (j) :
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
     commutes' := fun x => by
       simp only [Functor.comp_obj, Types.Small.limitCone_pt, Functor.const_obj_obj,
-        Types.Small.limitCone_π_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+        Types.Small.limitCone_π_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
         ← Shrink.algEquiv_apply R, AlgEquiv.commutes]
       rfl
     }

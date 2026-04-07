@@ -56,7 +56,7 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   have := ConcreteCategory.congr_hom (piComparison_comp_π X (fun a ↦ ⟨of P (σ a)⟩) a)
   simp only [comp_apply] at this
   rw [this, ← comp_apply, ← Functor.map_comp]
-  simp only [sigmaComparison, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply]
+  simp only [sigmaComparison, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
   apply ConcreteCategory.congr_hom
   congr 2
   rw [← opCoproductIsoProduct_inv_comp_ι]

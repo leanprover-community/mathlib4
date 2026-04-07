@@ -271,7 +271,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
   simp only [ObjectProperty.FullSubcategory.comp_hom, Sheaf.image_obj, Sheaf.toImage_hom,
     NatTrans.comp_app, Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Subtype.ext_iff] at this E ⊢
+    ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Subtype.ext_iff] at this E ⊢
   convert this <;> exact E.symm
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/

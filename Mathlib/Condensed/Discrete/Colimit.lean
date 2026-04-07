@@ -255,7 +255,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply, toProfinite_obj,
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Function.comp_apply, toProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
 
@@ -290,7 +290,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   congr
   ext f
   simp only [toProfinite_obj, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, counitApp_app]
+    ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
   dsimp [toProfinite_obj]
@@ -301,7 +301,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
   simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.mk_apply, ← Functor.map_comp_apply, ← op_comp]
+    TypeCat.Fun.coe_mk, ← Functor.map_comp_apply, ← op_comp]
   rw [show (Profinite.of PUnit.{u + 1}).const y ≫
     IsTerminal.from _ (fiber.{u, u + 1} f x) = 𝟙 _ from rfl]
   simp only [op_comp, Functor.map_comp_apply, op_id, Functor.map_id_apply]
@@ -542,7 +542,7 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply, toLightProfinite_obj,
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Function.comp_apply, toLightProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
 
@@ -587,7 +587,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [toLightProfinite_obj, isoFinYonedaComponents_hom, TypeCat.hom_ofHom,
-    TypeCat.Fun.mk_apply, ← map_comp_apply, ← op_comp]
+    TypeCat.Fun.coe_mk, ← map_comp_apply, ← op_comp]
   rw [show (LightProfinite.of PUnit.{u + 1}).const y ≫
     IsTerminal.from _ (fiber.{u, u} f x) = 𝟙 _ from rfl]
   simpa [← dsimp% isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x),

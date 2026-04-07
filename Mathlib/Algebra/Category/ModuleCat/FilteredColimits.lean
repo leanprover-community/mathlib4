@@ -76,7 +76,7 @@ theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
   simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.mk_apply] at hfg
+    TypeCat.Fun.coe_mk] at hfg
   simp [hfg]
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/

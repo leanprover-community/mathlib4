@@ -279,7 +279,7 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
     have hy := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'
     simp only [Functor.mapCocone_pt, Functor.comp_obj, Functor.const_obj_obj,
       CategoryTheory.comp_apply, Functor.mapCocone_ι_app, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply, Function.Embedding.coeFn_mk] at hx hy ⊢
+      TypeCat.Fun.coe_mk, Function.Embedding.coeFn_mk] at hx hy ⊢
     rw [hx, hy, OrderEmbedding.le_iff_le]
     refine ⟨fun h ↦ ⟨j, _, _, rfl, rfl, h⟩, fun ⟨k, x, y, hx', hy', h⟩ ↦ ?_⟩
     obtain ⟨l, f, g, hl⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hx'

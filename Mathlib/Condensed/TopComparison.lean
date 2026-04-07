@@ -69,7 +69,7 @@ theorem equalizerCondition_yonedaPresheaf
   apply EqualizerCondition.mk
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
-  · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.mk_apply,
+  · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
       Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq,
       mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
@@ -78,8 +78,8 @@ theorem equalizerCondition_yonedaPresheaf
     rw [← hy]
     exact congr_fun h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply, mk.injEq, Set.mem_setOf_eq] at ha
-    simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.mk_apply,
+      TypeCat.Fun.coe_mk, mk.injEq, Set.mem_setOf_eq] at ha
+    simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
       Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩

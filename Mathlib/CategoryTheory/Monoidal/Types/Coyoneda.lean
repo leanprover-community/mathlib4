@@ -32,7 +32,7 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       simp only [op_tensorUnit, Functor.flip_obj_obj, yoneda_obj_obj, unop_tensorUnit,
         types_tensorObj_def, tensorHom_id, Functor.flip_obj_map, yoneda_map_app,
         TypeCat.Fun.toFun_apply, comp_apply, whiskerRight_apply, TypeCat.hom_ofHom,
-        TypeCat.Fun.mk_apply, Category.assoc, id_tensorHom, associator_hom_apply, whiskerLeft_apply,
+        TypeCat.Fun.coe_mk, Category.assoc, id_tensorHom, associator_hom_apply, whiskerLeft_apply,
         Iso.cancel_iso_inv_left]
       conv_lhs =>
         rw [← Category.id_comp h, ← tensorHom_comp_tensorHom, Category.assoc, associator_naturality,

@@ -114,7 +114,7 @@ noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat
     naturality := fun _ _ _ ↦ by
       ext
       simp only [TopCat.toSheafCompHausLike_obj_obj, Opposite.op_unop, TypeCat.Fun.toFun_apply,
-        comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+        comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
         TopCat.toSheafCompHausLike_obj_map, ← Functor.map_comp_apply]
       rfl }
 

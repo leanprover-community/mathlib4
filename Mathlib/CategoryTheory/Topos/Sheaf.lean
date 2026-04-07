@@ -86,7 +86,7 @@ lemma Presheaf.isPullback_χ_truth (m : F ⟶ G) [Mono m] :
   refine ⟨congr(($(comp_χ_eq m)).app X), ?_, ?_⟩
   · simpa using (mono_iff_injective (m.app X)).mp (inferInstance)
   · simp only [Functor.const_obj_obj, Functor.sieves_obj, χ_app, Opposite.op_unop,
-      TypeCat.hom_ofHom, TypeCat.Fun.mk_apply, truth_app, Functor.isTerminalConst_from_app,
+      TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, truth_app, Functor.isTerminalConst_from_app,
       Types.isTerminalPUnit_from_apply, and_true, forall_const]
     intro p hp
     simpa [eq_comm] using congr($(hp).arrows (𝟙 _))
@@ -98,7 +98,7 @@ lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
   ext X x
   simp only [IsPullback.iff_app, Functor.const_obj_obj, Functor.sieves_obj,
     Functor.isTerminalConst_from_app, truth_app, Types.isPullback_iff,
-    Types.isTerminalPUnit_from_apply, and_true, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply,
+    Types.isTerminalPUnit_from_apply, and_true, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
     forall_const, forall_and] at hχ'
   obtain ⟨h₁, h₂, h₃⟩ := hχ'
   refine Sieve.ext fun Y f => ?_

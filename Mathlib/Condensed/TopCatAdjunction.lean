@@ -125,7 +125,7 @@ noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat
       ext
       simp only [TopCat.toSheafCompHausLike_obj_obj, TypeCat.Fun.toFun_apply,
         comp_apply, TopCat.toSheafCompHausLike_obj_map, ConcreteCategory.hom_ofHom,
-        TypeCat.Fun.mk_apply, ← Functor.map_comp_apply]
+        TypeCat.Fun.coe_mk, ← Functor.map_comp_apply]
       rfl }
 
 set_option backward.isDefEq.respectTransparency false in

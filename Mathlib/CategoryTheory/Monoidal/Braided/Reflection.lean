@@ -165,7 +165,7 @@ theorem isIso_tfae : List.TFAE
     ext f
     simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, flip_map_app, yoneda_obj_map,
       Quiver.Hom.unop_op, Adjunction.homEquiv_counit, map_comp, TypeCat.Fun.toFun_apply, comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Category.assoc, id_apply]
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Category.assoc, id_apply]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
     simp [← map_comp, -map_preimage]

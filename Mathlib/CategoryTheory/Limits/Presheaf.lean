@@ -305,7 +305,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type (max w v₁)) :
     ext X x
     simp only [functorToRepresentables_obj, coconeOfRepresentable_pt, Functor.const_obj_obj,
       coconeOfRepresentable_ι_app, Functor.leftOp_obj, CategoryOfElements.π_obj, op_unop,
-      TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.mk_apply] at hm ⊢
+      TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.coe_mk] at hm ⊢
     rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
 variable {A : C ⥤ ℰ}
@@ -456,7 +456,7 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
         (uliftYoneda.{max w v₂}.map f)) _) ⟨𝟙 _⟩
       simp only [uliftYoneda, Functor.comp_obj, Functor.whiskeringRight_obj_obj, Functor.op_obj,
         yoneda_obj_obj, uliftFunctor_obj, uliftYonedaMap, comp_apply, hom_ofHom,
-        TypeCat.Fun.mk_apply, Functor.map_id, Functor.whiskeringLeft_obj_obj, Functor.id_obj,
+        TypeCat.Fun.coe_mk, Functor.map_id, Functor.whiskeringLeft_obj_obj, Functor.id_obj,
         Functor.comp_map, Functor.whiskeringRight_obj_map, Functor.id_map, NatTrans.comp_app,
         Functor.whiskerRight_app, yoneda_map_app, uliftFunctor_map, id_comp,
         Functor.whiskeringLeft_obj_map, Functor.whiskerLeft_app, uliftYonedaEquiv, op_unop,

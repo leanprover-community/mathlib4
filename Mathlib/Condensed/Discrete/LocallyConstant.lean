@@ -125,7 +125,7 @@ lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
       TypeCat.ofHom (fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
   simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.toFun_apply,
-    CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+    CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
     ← X.map_comp_apply]
   rfl
 
@@ -172,7 +172,7 @@ lemma incl_of_counitAppApp [PreservesFiniteProducts Y] [HasExplicitFiniteCoprodu
     (a : Fiber f) : Y.map (sigmaIncl f a).op (counitAppApp S Y f) = counitAppAppImage f a := by
   rw [← sigmaComparison_comp_sigmaIso, Functor.mapIso_hom, Iso.op_hom, types_comp_apply]
   simp only [counitAppApp, Functor.mapIso_inv, ← Iso.op_hom, CategoryTheory.comp_apply,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, ← Functor.map_comp_apply, Iso.inv_hom_id,
+    ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← Functor.map_comp_apply, Iso.inv_hom_id,
     Functor.map_id_apply]
   exact congrFun (Iso.inv_hom_id_apply (asIso (sigmaComparison Y (fun a ↦ (fiber f a).1)))
     (counitAppAppImage f)) _
@@ -214,7 +214,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     intro a
     simp only [op_unop, functorToPresheaves_obj_obj, functorToPresheaves_obj_map,
       TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply]
+      TypeCat.Fun.coe_mk]
     rw [incl_of_counitAppApp, ← Functor.map_comp_apply, incl_comap,
       Functor.map_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp]
@@ -272,7 +272,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply presheaf_ext (f.map (g.hom.app (op (CompHausLike.of P PUnit.{u + 1}))))
     intro a
     simp only [functorToPresheaves_obj_obj, functorToPresheaves_map_app, TypeCat.hom_ofHom,
-      TypeCat.Fun.mk_apply, dsimp% incl_of_counitAppApp]
+      TypeCat.Fun.coe_mk, dsimp% incl_of_counitAppApp]
     apply presheaf_ext (f.comap (sigmaIncl _ _).hom.hom)
     intro b
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp,
@@ -316,7 +316,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   simp only [Functor.id_obj, functor_obj_obj_obj, functorToPresheaves_obj_obj, Functor.comp_obj,
     Functor.flip_obj_obj, ObjectProperty.ι_obj, unit_app, NatTrans.comp_app,
     functorToPresheaves_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.toFun_apply,
-    CategoryTheory.comp_apply, TypeCat.Fun.mk_apply, NatTrans.id_app, id_apply]
+    CategoryTheory.comp_apply, TypeCat.Fun.coe_mk, NatTrans.id_app, id_apply]
   simp only [counit]
   have := CompHausLike.preregular hs
   apply presheaf_ext

@@ -96,7 +96,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         const_obj_obj, op_obj, StructuredArrow.mk_hom_eq_self, map_id, whiskeringLeft_obj_obj,
         RightExtension.mk_hom, Category.id_comp] at this
       simp only [id_obj, yoneda_obj_obj, comp_obj, whiskeringLeft_obj_obj, op_obj, yoneda_map_app,
-        ConcreteCategory.hom_ofHom, const_obj_obj, TypeCat.Fun.mk_apply, this,
+        ConcreteCategory.hom_ofHom, const_obj_obj, TypeCat.Fun.coe_mk, this,
         StructuredArrow.mk_right, StructuredArrow.mk_left, StructuredArrow.mk_hom_eq_self, unop_id,
         c]
       apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (𝟙 (G.obj U))⟩ _ _ fun I ↦ ?_

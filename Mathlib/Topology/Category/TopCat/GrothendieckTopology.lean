@@ -108,7 +108,7 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩
   · apply ConcreteCategory.hom_ext
     intro
-    simp only [yoneda_obj_map, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+    simp only [yoneda_obj_map, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
       hom_comp, ContinuousMap.comp_apply]
     rw [heq, ContinuousMap.liftCover_coe]
     simp
@@ -126,7 +126,7 @@ lemma precoverage_le_comap_uliftFunctor :
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
     Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom, Set.mem_range,
-    TypeCat.Fun.mk_apply]
+    TypeCat.Fun.coe_mk]
     intro ⟨x⟩
     obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
     use i, ⟨y⟩

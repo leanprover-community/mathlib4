@@ -208,7 +208,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     -- simp? [spineEquiv] says:
     simp only [spineEquiv, RightExtension.coneAt_pt, rightExtensionInclusion_left,
       TypeCat.Fun.toFun_apply, Equiv.coe_fn_mk, lift, Nat.reduceAdd, ObjectProperty.ι_obj,
-      const_obj_obj, comp_obj, proj_obj, mk_right, op_obj, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply,
+      const_obj_obj, comp_obj, proj_obj, mk_right, op_obj, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
       spine_spineToSimplex_apply]
     ext i
     · exact ConcreteCategory.congr_hom (hm (StructuredArrow.mk

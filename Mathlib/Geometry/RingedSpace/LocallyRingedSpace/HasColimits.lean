@@ -183,7 +183,7 @@ theorem imageBasicOpen_image_preimage :
     (TypeCat.ofHom g.base) (TypeCat.ofHom (coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
     simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
+      TypeCat.Fun.coe_mk, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
     congr 3
     exact SheafedSpace.forgetToPresheafedSpace.congr_map
       (coequalizer.condition f.toShHom g.toShHom)

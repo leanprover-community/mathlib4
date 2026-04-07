@@ -72,7 +72,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
         have h := congr_hom (s.ι.naturality g) (f (t.ι.app j y))
         have h' := congr_hom (s.ι.naturality l) y
         simp only [Functor.const_obj_obj, comp_apply, Functor.const_obj_map, Category.comp_id,
-          TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.mk_apply] at h h' ⊢
+          TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.coe_mk] at h h' ⊢
         rw [← h, ← eq, h']
       uniq := fun s m hm => by
         ext x

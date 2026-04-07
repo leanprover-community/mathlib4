@@ -35,7 +35,7 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     obtain ⟨l, fli, flj, x, hi, hj⟩ := (G ⋙ Scheme.forget).exists_map_eq_of_isLocallyDirected fi fj
         (s.app i xi) (s.app j xj) <| by
       simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
-        ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply]
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
       dsimp at heq
       rw [← Scheme.Hom.comp_apply, ← s.naturality, Scheme.Hom.comp_apply, heq,
         ← Scheme.Hom.comp_apply, s.naturality]
@@ -47,7 +47,7 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     · simp [← h1, ← Scheme.Hom.comp_apply, e]
     · apply H fj
       simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
-        ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, ← Scheme.Hom.comp_apply,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← Scheme.Hom.comp_apply,
         Category.assoc, ← Functor.map_comp, show flj ≫ fj = fli ≫ fi by subsingleton]
       dsimp at heq
       simp [e, Functor.map_comp, ← heq, h1]

@@ -122,7 +122,7 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
   cond {i j k} fi fj xi xj hxij := by
     simp only [Functor.comp_obj, functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
       functorOfLocallyDirected_map, forget_map, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply] at hxij
+      TypeCat.Fun.coe_mk] at hxij
     have : 𝒰.f i xi = 𝒰.f j xj := by
       rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
         ConcreteCategory.comp_apply, hxij, ConcreteCategory.comp_apply]

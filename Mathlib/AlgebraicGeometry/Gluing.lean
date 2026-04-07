@@ -581,7 +581,7 @@ lemma fst_inv_eq_snd_inv
     ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv) x) (by
       simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
         ConcreteCategory.hom_ofHom, Hom.comp_base, TopCat.hom_comp, ContinuousMap.comp_apply,
-        TypeCat.Fun.mk_apply]
+        TypeCat.Fun.coe_mk]
       simp only [← Hom.comp_apply]
       congr 5
       simpa using congr($(pullback.condition (f := (F.obj i).homOfLE h₁)

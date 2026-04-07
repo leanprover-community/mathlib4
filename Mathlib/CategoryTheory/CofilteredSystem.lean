@@ -223,7 +223,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
         ← comp_apply, ← map_comp]
       apply mem_iInter.1 hx
     · simp only [toPreimages_obj, toPreimages_map, ConcreteCategory.hom_ofHom,
-        TypeCat.Fun.mk_apply, MapsTo.val_restrict_apply]
+        TypeCat.Fun.coe_mk, MapsTo.val_restrict_apply]
       rw [← Category.assoc, map_comp, comp_apply, h₃, map_comp, comp_apply]
 
 theorem isMittagLeffler_of_exists_finite_range

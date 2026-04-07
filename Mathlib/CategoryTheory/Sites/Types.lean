@@ -113,7 +113,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
   apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
   intro β f hf
   apply (IsSheafFor.valid_glue _ _ _ hf).trans
-  simp only [eval, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, ← comp_apply,
+  simp only [eval, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← comp_apply,
     ← Functor.map_comp, ← op_comp]
   congr
   ext x
