@@ -100,6 +100,85 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
 
 end Preorder
 
+section LinearOrder
+
+variable [Nonempty α] [LinearOrder α] [IsOrderBornology α]
+
+lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
+  intro s
+  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
+    Filter.atTop_basis_Ioi.mem_iff]
+  rintro ⟨_, ⟨b, hb⟩⟩
+  rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
+  use b
+
+lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α := by
+  intro s
+  rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
+    Filter.atBot_basis_Iio.mem_iff]
+  rintro ⟨⟨a, ha⟩, _⟩
+  rw [mem_lowerBounds_iff_subset_Ici, ← compl_compl (Ici a), compl_subset_compl, compl_Ici] at ha
+  use a
+
+lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
+    cobounded α ≤ .atBot ⊔ .atTop := by
+  intro s
+  rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
+    ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+  rintro ⟨⟨b, _, hb⟩, ⟨a, _, ha⟩⟩
+  constructor
+  · use b
+    intro x hx
+    by_contra! hx'
+    exact hx (hb hx'.le)
+  · use a
+    intro x hx
+    by_contra! hx'
+    exact hx (ha hx'.le)
+
+@[simp]
+lemma IsOrderBornology.cobounded_eq [NoMaxOrder α] [NoMinOrder α] :
+    Bornology.cobounded α = .atBot ⊔ .atTop := by
+  apply le_antisymm
+  · exact cobounded_le_atBot_sup_atTop
+  · exact sup_le IsOrderBornology.atBot_le_cobounded IsOrderBornology.atTop_le_cobounded
+
+lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
+    Bornology.cobounded α = .atTop := by
+  apply le_antisymm
+  · intro s
+    rw [Filter.atTop_basis.mem_iff,
+      ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+    rintro ⟨b, _, hb⟩
+    constructor
+    · use ⊥
+      intro x hx
+      simp
+    · use b
+      intro x hx
+      by_contra! hx'
+      exact hx (hb hx'.le)
+  · exact IsOrderBornology.atTop_le_cobounded
+
+lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
+    Bornology.cobounded α = .atBot := by
+  apply le_antisymm
+  · intro s
+    rw [Filter.atBot_basis.mem_iff,
+      ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
+    rintro ⟨a, _, ha⟩
+    constructor
+    · use a
+      intro x hx
+      by_contra! hx'
+      exact hx (ha hx'.le)
+    · use ⊤
+      intro x hx
+      simp
+  · exact IsOrderBornology.atBot_le_cobounded
+
+end LinearOrder
+
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
 
