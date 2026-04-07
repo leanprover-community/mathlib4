@@ -450,7 +450,7 @@ lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
   -- As Sₚ is an artinian local ring, its prime spectrum is a singleton.
   obtain rfl : q = IsLocalRing.closedPoint _ := Subsingleton.elim _ _
   ext1
-  dsimp
+  dsimp [-RingEquiv.symm_mk]
   rw [Ideal.comap_comap, ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
   exact IsLocalization.AtPrime.comap_maximalIdeal _ _
 

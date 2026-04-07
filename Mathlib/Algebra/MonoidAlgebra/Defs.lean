@@ -634,12 +634,21 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
 set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R) (attr := simps! apply)
 /-- The trivial additive monoid algebra is the base ring. -/]
 def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
   toAddEquiv := .finsuppUnique
   map_mul' x y :=
     (mul_apply ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
+
+variable (M) in
+@[to_additive (attr := simp)]
+lemma uniqueRingEquiv_symm_apply [Unique M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
+  classical
+  ext m
+  simp only [uniqueRingEquiv, AddEquiv.toEquiv_eq_coe, RingEquiv.symm_mk, RingEquiv.coe_mk,
+    Subsingleton.elim m 1, single_eq_same]
+  erw [AddEquiv.finsuppUnique_symm_apply_apply]
 
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)

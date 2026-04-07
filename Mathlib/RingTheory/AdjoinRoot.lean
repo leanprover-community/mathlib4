@@ -431,7 +431,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
+      simpa [Polynomial.map_map, this, -RingEquiv.symm_mk] using map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
 @[simp] lemma coe_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
@@ -442,7 +442,8 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
+      simpa [Polynomial.map_map, this, -RingEquiv.symm_mk]
+        using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
 /-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
