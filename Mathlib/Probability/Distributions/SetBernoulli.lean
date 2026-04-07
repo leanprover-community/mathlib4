@@ -100,7 +100,7 @@ lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)
   apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
   exact Measure.mono_null (by grind) setBernoulli_ae_subset
 
-variable (u p) in
+variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical
@@ -121,8 +121,7 @@ variable (u p) in
 @[simp]
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
-  rw [measureReal_def, setBernoulli_singleton u p hsu hu]
-  norm_cast
+  simp [measureReal_def, setBernoulli_singleton p hsu hu]
 
 @[simp]
 lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
