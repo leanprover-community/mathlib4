@@ -115,6 +115,9 @@ theorem closure_of_rat_image_lt {q : ℚ} :
   · exact (closure_Ioi _).symm
   · exact ⟨q + 1, show (q : ℝ) < _ by linarith, q + 2, show (q : ℝ) < _ by linarith, by simp⟩
 
+@[deprecated (since := "2026-04-07")]
+alias Real.cobounded_eq := IsOrderBornology.cobounded_eq
+
 /- TODO(Mario): Put these back only if needed later
 lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
   _
