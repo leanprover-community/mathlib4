@@ -36,7 +36,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 
 /-- Power series for `log(1 + X) = X - X²/2 + X³/3 - ⋯`. -/
 def log : PowerSeries A :=
-  mk fun n => if n = 0 then 0 else algebraMap ℚ A ((-1 : ℚ) ^ (n + 1) / n)
+  mk fun n ↦ if n = 0 then 0 else algebraMap ℚ A ((-1 : ℚ) ^ (n + 1) / n)
 
 variable {A}
 
