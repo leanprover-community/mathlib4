@@ -172,7 +172,7 @@ lemma ofSimplex_map_of_epi {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) 
   refine le_antisymm (ofSimplex_map_le f x) ?_
   simp only [Subfunctor.ofSection_le_iff]
   have := isSplitEpi_of_epi f
-  exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  exact ⟨(section_ f).op, by simp [← Functor.map_comp_apply, ← op_comp]⟩
 
 section
 
