@@ -460,6 +460,9 @@ where
     return e
   visitApp (e : Expr) := e.withApp fun f args ↦ do
     let env ← getEnv
+    if f.isLambda && !args.isEmpty then
+      if ← isProof f then
+        return ← visit (f.beta args)
     match f with
     | .proj n i b =>
       let some info := getStructureInfo? env n |
