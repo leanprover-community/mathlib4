@@ -201,7 +201,6 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] 
 
 instance : (alternatingFaceMapComplex C).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Limits.HasPullbacks C] : (alternatingFaceMapComplex C).PreservesMonomorphisms where
   preserves _ _ := HomologicalComplex.mono_of_mono_f _ fun _ ↦ by dsimp; infer_instance
 
