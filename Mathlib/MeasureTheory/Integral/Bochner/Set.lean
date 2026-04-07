@@ -352,6 +352,14 @@ theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
     ∫ x in t, f x ∂μ = 0 :=
   setIntegral_eq_zero_of_ae_eq_zero (Eventually.of_forall ht_eq)
 
+theorem frequently_ae_ne_zero_of_setIntegral_ne_zero (hU : ∫ x in t, f x ∂μ ≠ 0) :
+    ∃ᶠ x in ae (μ.restrict t), f x ≠ 0 :=
+  frequently_ae_ne_zero_of_integral_ne_zero hU
+
+theorem exists_ne_zero_of_setIntegral_ne_zero (hU : ∫ x in t, f x ∂μ ≠ 0) :
+    ∃ x, x ∈ t ∧ f x ≠ 0 := by
+  contrapose! hU; exact setIntegral_eq_zero_of_forall_eq_zero hU
+
 theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0)
     (haux : StronglyMeasurable f) (H : IntegrableOn f (s ∪ t) μ) :
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
@@ -911,7 +919,6 @@ end IntegrableUnion
 
 We prove that for any set `s`, the function
 `fun f : X →₁[μ] E => ∫ x in s, f x ∂μ` is continuous. -/
-
 
 section ContinuousSetIntegral
 
