@@ -218,6 +218,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
+
 @[deprecated (since := "2026-04-01")] alias Ideal.height_le_spanRank_toENat_of_mem_minimal_primes :=
     Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
 
