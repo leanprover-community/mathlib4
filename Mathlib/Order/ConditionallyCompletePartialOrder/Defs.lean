@@ -70,7 +70,7 @@ class ConditionallyCompletePartialOrder (α : Type*)
     extends ConditionallyCompletePartialOrderSup α, ConditionallyCompletePartialOrderInf α where
 
 attribute [to_dual existing]
-  ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderInf
+  ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderSup
 
 variable [ConditionallyCompletePartialOrderSup α]
 variable {f : ι → α} {s : Set α} {a : α}
