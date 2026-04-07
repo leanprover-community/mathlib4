@@ -62,6 +62,12 @@ def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
 noncomputable
 def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
+open LightCondensed
+
+instance : (LightCondensed.free R).IsLeftAdjoint := freeForgetAdjunction R |>.isLeftAdjoint
+
+instance : (LightCondensed.forget R).IsRightAdjoint := freeForgetAdjunction R |>.isRightAdjoint
+
 /--
 The category of light condensed abelian groups, defined as sheaves of `ℤ`-modules over
 `LightProfinite.{0}` with respect to the coherent Grothendieck topology.
