@@ -630,6 +630,10 @@ variable {H : Subgroup G}
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
   ⟨by simp [mul_comm]⟩
 
+@[to_additive]
+instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
+    H.Normal := ⟨by simp [mul_comm']⟩
+
 namespace Normal
 
 @[to_additive]
