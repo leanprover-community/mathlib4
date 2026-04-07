@@ -47,7 +47,7 @@ variable {f g h : ℕ →. ℕ}
 `f` is Turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
 -/
 abbrev TuringReducible (f g : ℕ →. ℕ) : Prop :=
-  Nat.RecursiveIn {g} f
+  RecursiveIn {g} f
 
 /--
 `f` is Turing equivalent to `g` if `f` is reducible to `g` and `g` is reducible to `f`.
