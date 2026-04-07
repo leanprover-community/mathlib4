@@ -48,7 +48,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
     rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
   Basis.mk (v := Fin.cons y (N.subtype ∘ b))
-    (LinearIndependent.finCons' _ _ (b.linearIndependent.map' N.subtype (Submodule.ker_subtype _))
+    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).finCons' _ _
       (by
         intro c x hx heq
         rw [span_b] at hx
@@ -75,8 +75,8 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     fun z => hsp z z.2
 
 @[simp]
-theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
-    (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
+theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
+    (b : Basis (Fin n) R N) (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
     (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
       Fin.cons ⟨y, yO⟩ (Submodule.inclusion hNO ∘ b) :=
@@ -91,7 +91,7 @@ noncomputable def mkFinSnoc {n : ℕ} {N : Submodule R M} (b : Basis (Fin n) R N
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
     rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
   Basis.mk (v := Fin.snoc (N.subtype ∘ b) y)
-    (LinearIndependent.finSnoc' _ _ (b.linearIndependent.map' N.subtype (Submodule.ker_subtype _))
+    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).finSnoc' _ _
       (by
         intro c x hx heq
         rw [span_b] at hx
