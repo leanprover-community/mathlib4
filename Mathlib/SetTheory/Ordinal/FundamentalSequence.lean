@@ -33,7 +33,7 @@ variable {a b o : Ordinal}
 cofinal range. We provide `a = o.cof.ord` explicitly to avoid type rewrites. -/
 structure IsFundamentalSeq (f : Iio a → Iio o) : Prop where
   /-- This condition alongside the others is enough to conclude `o.cof.ord = a`, see
-  `IsFundamentalSeq.ord_cof_eq`. -/
+  `IsFundamentalSeq.ord_cof`. -/
   le_ord_cof : a ≤ o.cof.ord
   /-- A fundamental sequence is strictly monotonic. -/
   strictMono : StrictMono f
