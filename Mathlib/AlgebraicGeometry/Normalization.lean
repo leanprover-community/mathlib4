@@ -462,7 +462,7 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
-      -- `Spec.map_id` isn't firing in the previous simp call. TODO: investigate why.
+      #adaptation_note /-- Before #36613, the following simp call was not needed. -/
       simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
     · simp only [AlgHom.toRingHom_eq_coe, hf₀, comp_appLE, Spec.map_comp, Category.assoc,
@@ -476,7 +476,7 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
-      -- `Spec.map_id` isn't firing in the previous simp call. TODO: investigate why.
+      #adaptation_note /-- Before #36613, the following simp call was not needed. -/
       simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
 
