@@ -417,26 +417,6 @@ open CategoryTheory TopologicalSpace
 
 variable {X : Scheme.{u}} (M : X.Modules) [M.IsQuasicoherent]
 
-def ModuleCat.restrictScalarsIsoOfIso {R S : CommRingCat.{u}} (e : R ≅ S) :
-    (ModuleCat.restrictScalars e.hom.hom).obj (ModuleCat.of S S) ≅ ModuleCat.of R R :=
-  letI : Algebra R S := e.hom.hom.toAlgebra
-  (AlgEquiv.toLinearEquiv (AlgEquiv.ofRingEquiv (R := R) (f := e.commRingCatIsoToRingEquiv.symm)
-    e.commRingCatIsoToRingEquiv.symm_apply_apply)).toModuleIso
-
-@[simp]
-lemma ModuleCat.restrictScalarsIsoOfIso_hom_apply {R S : CommRingCat.{u}} (e : R ≅ S) (x : S) :
-    (ModuleCat.restrictScalarsIsoOfIso e).hom x = e.inv x :=
-  rfl
-
-@[simp]
-lemma ModuleCat.restrictScalarsIsoOfIso_inv_apply {R S : CommRingCat.{u}} (e : R ≅ S) (x : R) :
-    (ModuleCat.restrictScalarsIsoOfIso e).inv x = e.hom x :=
-  rfl
-
-lemma Scheme.Hom.coverPreserving_opensFunctor {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
-  f.isOpenEmbedding.isOpenMap.coverPreserving
-
 open Limits
 lemma _root_.CategoryTheory.Limits.preservesLimit_walkingParallelPair_of_eq
     {C D : Type*} [Category* C] [Category* D] {K : WalkingParallelPair ⥤ C}
@@ -458,10 +438,6 @@ instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsT
   constructor
   intro K
   exact Limits.preservesLimit_walkingParallelPair_of_eq (Subsingleton.elim _ _) _
-
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] : f.opensFunctor.Full :=
-  haveI : Mono f.base := (TopCat.mono_iff_injective f.base).mpr f.isOpenEmbedding.injective
-  inferInstanceAs <| (f.isOpenEmbedding.functor.Full)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -494,7 +470,7 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
     refine PresheafOfModules.isoMk ?_ ?_
     · intro U
       dsimp [SheafOfModules.pushforward, PresheafOfModules.pushforward₀_obj, PresheafOfModules.unit]
-      exact ModuleCat.restrictScalarsIsoOfIso (f.appIso U.unop).symm
+      exact ModuleCat.restrictScalarsIsoOfEquiv (f.appIso U.unop).symm.commRingCatIsoToRingEquiv
     · intro U V g
       ext x
       exact congr($(f.appIso_hom_naturality _).hom x)

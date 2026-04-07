@@ -98,6 +98,14 @@ instance : f.opensFunctor.IsCocontinuous (Opens.grothendieckTopology _)
   rw [f.opensFunctorAdjunction.isCocontinuous_iff_coverPreserving]
   exact coverPreserving_opens_map f.base
 
+instance : f.opensFunctor.Full :=
+  have : Mono f.base := (TopCat.mono_iff_injective f.base).mpr f.isOpenEmbedding.injective
+  inferInstanceAs f.isOpenEmbedding.functor.Full
+
+lemma coverPreserving_opensFunctor :
+    CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
+  f.isOpenEmbedding.isOpenMap.coverPreserving
+
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
 The preferred name in lemmas is `image` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
