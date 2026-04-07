@@ -78,14 +78,14 @@ def refl (f : X.PtSimplex n x) (i : Fin (n + 1)) : RelStruct f f i where
   δ_castSucc_map := by rw [CosimplicialObject.δ_comp_σ_self_assoc]
   δ_succ_map := by rw [CosimplicialObject.δ_comp_σ_succ_assoc]
   δ_map_of_lt j hj := by
-    obtain ⟨i, rfl⟩ := i.eq_succ_of_ne_zero (by grind)
+    obtain ⟨i, rfl⟩ := i.eq_succ_of_ne_zero (by aesop)
     obtain ⟨j, rfl⟩ := j.eq_castSucc_of_ne_last (by grind)
     obtain _ | n := n
     · fin_cases i
     · rw [stdSimplex.δ_comp_σ_of_le_assoc (by grind), δ_map, comp_const]
   δ_map_of_gt j hj := by
     obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (by grind)
-    obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (by grind)
+    obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (by aesop)
     obtain _ | n := n
     · fin_cases i
     · rw [stdSimplex.δ_comp_σ_of_gt_assoc (by grind), δ_map, comp_const]
