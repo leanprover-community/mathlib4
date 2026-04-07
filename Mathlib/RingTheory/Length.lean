@@ -294,11 +294,7 @@ theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A 
     [IsScalarTower A R M] (p : Submodule R M) :
     Module.length R p ≤ Module.length A (p.restrictScalars A) := by
   rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
-  let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
-  have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) :=
-    Set.Subsingleton.coe_sort <| Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
-  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
-    Order.krullDim_nonpos_of_subsingleton
+  exact krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
 
 theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
     (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
