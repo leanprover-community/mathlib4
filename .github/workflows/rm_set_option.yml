@@ -2,7 +2,8 @@ name: Remove unnecessary set_option lines
 
 on:
   schedule:
-    - cron: "0 4 * * 1" # At 04:00 UTC on Monday.
+    # Run several hours before the technical debt report which runs at 04:00 UTC
+    - cron: "0 0 * * 1" # At 00:00 UTC on Monday.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -121,7 +122,7 @@ jobs:
           base: master
           title: "chore: remove unnecessary set_option lines"
           body: ${{ steps.pr_body.outputs.body }}
-          # labels: "auto-merge-after-CI"
+          labels: "auto-merge-after-CI"
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'
