@@ -172,7 +172,6 @@ lemma commShiftIso_unopUnop_inv_app (X : Cᵒᵖᵒᵖ) (n m : ℤ) (hnm : n + m
 instance : (opOpEquivalence C).functor.CommShift ℤ :=
   inferInstanceAs ((unopUnop C).CommShift ℤ)
 
-set_option backward.inferInstanceAs.wrap false in
 instance : (opOpEquivalence C).inverse.CommShift ℤ :=
   inferInstanceAs ((opOp C).CommShift ℤ)
 
@@ -206,7 +205,7 @@ instance : (opOp C).IsTriangulated where
     simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
 
 instance : (opOpEquivalence C).IsTriangulated :=
-  .mk'' _ (by dsimp; infer_instance)
+  .mk'' _ <| inferInstanceAs <| (opOp C).IsTriangulated
 
 instance : (unopUnop C).IsTriangulated :=
   inferInstanceAs ((opOpEquivalence C).functor.IsTriangulated)

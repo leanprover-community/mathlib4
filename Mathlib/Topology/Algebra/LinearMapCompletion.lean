@@ -24,7 +24,7 @@ lifted to a continuous semilinear map between the completions of those modules.
 
 namespace ContinuousLinearMap
 
-open UniformSpace UniformSpace.Completion
+open UniformSpace Completion
 
 variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
   [Semiring R₁] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β]
@@ -39,7 +39,7 @@ continuous linear map when the input is itself a continuous linear map.
 noncomputable def completion (f : α →SL[σ] β) : Completion α →SL[σ] Completion β where
   __ := f.toAddMonoidHom.completion f.continuous
   map_smul' r x := by
-    induction x using Completion.induction_on with
+    induction x using induction_on with
     | hp =>
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
         (continuous_map.const_smul _)

@@ -206,7 +206,6 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   rw [coePNatMonoidHom.map_add]
   exact Multiset.prod_add _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
@@ -299,7 +298,6 @@ theorem factorMultiset_ofPrime (p : Nat.Primes) :
   change (p : ℕ+).factorMultiset.prod = (PrimeMultiset.ofPrime p).prod
   rw [(p : ℕ+).prod_factorMultiset, PrimeMultiset.prod_ofPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We now have four different results that all encode the
 idea that inequality of multisets corresponds to divisibility
 of positive integers. -/

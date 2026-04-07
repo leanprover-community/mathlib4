@@ -47,10 +47,7 @@ from x to y is a scalar taking x to y. Due to implementation details, the object
 of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
   (actionAsFunctor M X).Elements
-
-instance : Category (ActionCategory M X) := by
-  dsimp only [ActionCategory]
-  infer_instance
+deriving Category
 
 namespace ActionCategory
 

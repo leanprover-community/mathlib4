@@ -106,13 +106,8 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
   ⟨fun ⟨_, h⟩ ↦ (eq_of_length_eq_zero h), (· ▸ ⟨nil, rfl⟩)⟩
 
 @[simp]
-lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
-  refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
-  induction p with
-  | nil => simp at hp
-  | cons h p' =>
-    simp only [Walk.length_cons, add_eq_right] at hp
-    exact (p'.eq_of_length_eq_zero hp) ▸ h
+lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v :=
+  ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
 @[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
@@ -150,6 +145,11 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.getLast (by simp) = b := by
   induction p <;> simp [*]
 
+@[simp]
+lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
+  cases p <;> simp
+
+@[deprecated cons_tail_support (since := "2026-03-16")]
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 
@@ -424,6 +424,79 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨_, a⟩, List.Mem.head _, uS, h⟩
+
+/-- Construct a walk from a list of vertices where adjacent vertices in the list are also adjacent
+in the graph -/
+def ofSupport (l : List V) (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
+    G.Walk (l.head hne) (l.getLast hne) :=
+  match l with
+  | [_] => .nil
+  | _ :: v :: l => .cons hchain.rel <| .ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons
+
+variable (G v) in
+@[simp]
+theorem ofSupport_singleton :
+    ofSupport [v] ([].cons_ne_nil v) (.singleton v) = .nil (G := G) (u := v) :=
+  rfl
+
+@[simp]
+theorem ofSupport_cons_cons {l : List V} (hchain : u :: v :: l |>.IsChain G.Adj) :
+    ofSupport (u :: v :: l) ((v :: l).cons_ne_nil u) hchain =
+      .cons hchain.rel (.ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons) :=
+  rfl
+
+@[simp]
+theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
+    (ofSupport l hne hchain).support = l := by
+  match l with
+  | [_] => rfl
+  | _ :: v :: l =>
+    simpa using support_ofSupport (l.cons_ne_nil v) hchain.of_cons
+
+@[simp, grind =]
+theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
+    (ofSupport l hne hchain).length = l.length - 1 := by
+  grind [support_ofSupport]
+
+/-- Construct a walk from a list of darts where adjacent darts in the list are also adjacent
+in the graph -/
+def ofDarts (l : List G.Dart) (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    G.Walk (l.head hne).fst (l.getLast hne).snd :=
+  match l with
+  | [d] => .cons d.adj .nil
+  | d₁ :: d₂ :: l =>
+    .cons (hchain.rel ▸ d₁.adj) <| ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons
+
+variable (G) in
+@[simp]
+theorem ofDarts_singleton (d : G.Dart) :
+    ofDarts [d] ([].cons_ne_nil d) (.singleton d) = .cons d.adj .nil :=
+  rfl
+
+@[simp]
+theorem ofDarts_cons_cons {d₁ d₂ : G.Dart} {l : List G.Dart}
+    (hchain : d₁ :: d₂ :: l |>.IsChain G.DartAdj) :
+    ofDarts (d₁ :: d₂ :: l) ((d₂ :: l).cons_ne_nil d₁) hchain =
+      .cons (hchain.rel ▸ d₁.adj) (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons) :=
+  rfl
+
+@[simp]
+theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    (ofDarts l hne hchain).darts = l := by
+  match l with
+  | [_] => rfl
+  | d₁ :: d₂ :: l =>
+    simpa [hchain.rel.symm] using darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons
+
+@[simp]
+theorem edges_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    (ofDarts l hne hchain).edges = l.map Dart.edge := by
+  simp [edges]
+
+@[simp, grind =]
+theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    (ofDarts l hne hchain).length = l.length := by
+  grind [darts_ofDarts]
 
 end Walk
 
