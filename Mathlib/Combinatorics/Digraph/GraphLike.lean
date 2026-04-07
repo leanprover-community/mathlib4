@@ -14,7 +14,7 @@ In this file we make `Digraph` an instance of `GraphLike`.
 
 @[expose] public section
 
-variable {α : Type*}
+variable {V : Type*}
 
 namespace Digraph
 
