@@ -6222,6 +6222,7 @@ public import Mathlib.RingTheory.Artinian.Algebra
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.AugmentationIdeal
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
