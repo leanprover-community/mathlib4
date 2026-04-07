@@ -718,9 +718,6 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    #adaptation_note /-- Before leanprover/lean4#13166, the proof from here to the end of the
-    first branch was:
-    ```
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
       induction m generalizing a' with simp [F] at am
@@ -754,9 +751,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      #adaptation_note /-- After leanprover/lean4#13166 which arrived in nightly-2026-03-28:
-      This `clear_value` used to not be necessary.
-      -/
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer),
+      the `clear_value F` was not required here. -/
       clear_value F
       grind
 
