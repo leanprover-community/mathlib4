@@ -104,7 +104,7 @@ def modulesSpecToSheafIso :
       map_smul' r m := IsScalarTower.algebraMap_smul (M := ((structureSheafInType R M).obj.obj U))
         ((structureSheafInType R R).obj.obj U) r m }) fun _ ↦ rfl
 
-/-- The map from `M` to `Γ(M, U)`. This is a localiation map when `U = D(f)`. -/
+/-- The map from `M` to `Γ(M, U)`. This is a localization map when `U = D(f)`. -/
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
   ModuleCat.ofHom (StructureSheaf.toOpenₗ R M U) ≫ ((modulesSpecToSheafIso M).app _).inv
 
@@ -276,7 +276,7 @@ def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :
 
 set_option backward.isDefEq.respectTransparency false in
 open Scheme.Modules in
-/-- The tilde-Gamma adjuntion. -/
+/-- The tilde-Gamma adjunction. -/
 def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
   unit := toTildeΓNatIso.hom
   counit := fromTildeΓNatTrans

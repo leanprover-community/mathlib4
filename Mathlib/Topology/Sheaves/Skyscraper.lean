@@ -298,15 +298,13 @@ lemma germ_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresh
     𝓕.germ U p₀ hU ≫ fromStalk p₀ f = f.app (op U) ≫ eqToHom (if_pos hU) :=
   colimit.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem to_skyscraper_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) :
     toSkyscraperPresheaf p₀ (fromStalk _ f) = f := by
   apply NatTrans.ext
   ext U
   dsimp
   split_ifs with h
-  · rw [← Category.assoc, germ_fromStalk, Category.assoc, eqToHom_trans, eqToHom_refl,
-      Category.comp_id]
+  · simp
   · exact ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext ..
 
 theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ c) :
@@ -367,7 +365,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   right_triangle_components Y := by
     ext
     simp only [skyscraperPresheafFunctor_obj, Functor.id_obj, skyscraperPresheaf_obj,
-      Functor.comp_obj, Presheaf.stalkFunctor_obj, unit_app, counit_app,
+      Presheaf.stalkFunctor_obj, unit_app, counit_app,
       skyscraperPresheafStalkOfSpecializes, skyscraperPresheafFunctor_map, Presheaf.comp_app,
       toSkyscraperPresheaf_app, Category.id_comp, SkyscraperPresheafFunctor.map'_app]
     split_ifs with h

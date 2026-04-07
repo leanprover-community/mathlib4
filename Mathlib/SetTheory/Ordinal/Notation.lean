@@ -236,7 +236,7 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
   | oadd' _ _ h₃ _ IH =>
     rw [repr]
     apply (add_lt_add_right IH _).trans_le
-    grw [← mul_succ, succ_le_of_lt (nat_lt_omega0 _), ← opow_succ, succ_le_of_lt h₃]
+    grw [← mul_succ, succ_le_of_lt (natCast_lt_omega0 _), ← opow_succ, succ_le_of_lt h₃]
     exact omega0_pos
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
@@ -435,7 +435,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
-    · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
+    · rw [← add_assoc, @add_of_omega0_opow_le _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
@@ -496,11 +496,11 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
           (Ordinal.sub_eq_of_add_eq <|
-              add_absorp h₂.snd'.repr_lt <| le_trans ?_ le_self_add).symm
+              add_of_omega0_opow_le h₂.snd'.repr_lt <| le_trans ?_ le_self_add).symm
         exact Ordinal.le_mul_left _ (Nat.cast_lt.2 <| Nat.succ_pos _)
     · exact
         (Ordinal.sub_eq_of_add_eq <|
-            add_absorp (h₂.below_of_lt ee).repr_lt <| omega0_le_oadd _ _ _).symm
+            add_of_omega0_opow_le (h₂.below_of_lt ee).repr_lt <| omega0_le_oadd _ _ _).symm
 
 /-- Multiplication of ordinal notations (correct only for normal input) -/
 def mul : ONote → ONote → ONote
@@ -551,7 +551,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       lhs
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
-      apply add_absorp h₁.snd'.repr_lt
+      apply add_of_omega0_opow_le h₁.snd'.repr_lt
       simpa using (mul_le_mul_iff_right₀ <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
     · obtain ⟨x, xe⟩ := Nat.exists_eq_succ_of_ne_zero n₂.ne_zero
@@ -566,7 +566,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       congr 2
       have := mt repr_inj.1 e0
       rw [add_mul_of_isSuccLimit ao (isSuccLimit_opow_left isSuccLimit_omega0 this), mul_assoc,
-        mul_omega0_dvd (Nat.cast_pos'.2 n₁.pos) (nat_lt_omega0 _)]
+        mul_omega0_dvd (Nat.cast_pos'.2 n₁.pos) (natCast_lt_omega0 _)]
       simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 this)
 
 /-- Calculate division and remainder of `o` mod `ω`:
@@ -716,7 +716,7 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
     repr a + m < ω ^ repr e := by
   obtain ⟨h₁, h₂⟩ := nf_repr_split h
   obtain ⟨e0, d⟩ := h₁.of_dvd_omega0 (split_dvd h)
-  apply principal_add_omega0_opow _ h₁.snd'.repr_lt (lt_of_lt_of_le (nat_lt_omega0 _) _)
+  apply isPrincipal_add_omega0_opow _ h₁.snd'.repr_lt (lt_of_lt_of_le (natCast_lt_omega0 _) _)
   simpa using opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0)
 
 @[simp]
@@ -783,13 +783,12 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
       · exact omega0_pos
       · exact succ_le_iff.2 <| by gcongr; exact isSuccLimit_omega0.succ_lt l
     · exact omega0_pos
-  · grw [show _ * _ < _ from principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l]
+  · grw [show _ * _ < _ from isPrincipal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l]
     · simpa using mul_le_mul_left (one_le_iff_ne_zero.2 e0) ω
     · exact omega0_pos
 
 section
 
-set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
@@ -820,21 +819,21 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     by_cases k0 : k = 0
     · simp only [k0, Nat.cast_zero, succ_eq_add_one, _root_.zero_add, mul_one, R]
       refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0))
-      rcases m with - | m <;> simp [opowAux, omega0_pos]
-      rw [← Nat.cast_add_one]
-      apply nat_lt_omega0
+      rcases m with - | m
+      · simp [opowAux, omega0_pos]
+      · simpa [opowAux] using natCast_lt_omega0 (m + 1)
     · rw [opow_mul]
       exact IH.1 k0
   refine ⟨fun _ => ?_, ?_⟩
   · rw [RR, ← opow_mul _ _ (succ k.succ)]
     have e0 := pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 le_add_self
-    apply principal_add_omega0_opow
+    apply isPrincipal_add_omega0_opow
     · simp only [Nat.cast_add_one, opow_add_one, opow_mul, opow_succ, mul_assoc]
       gcongr ?_ * ?_
       rw [← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
-      · exact mul_lt_omega0_opow rr0 this (nat_lt_omega0 _)
+      · exact mul_lt_omega0_opow rr0 this (natCast_lt_omega0 _)
       · simpa using (add_lt_add_iff_left (repr a0)).2 e0
     · exact
         lt_of_lt_of_le Rl
@@ -854,9 +853,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       exact α0.ne'
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_of_isSuccLimit _ ⟨α0, isSuccPrelimit_iff_omega0_dvd.2 αd⟩, mul_assoc,
-      @mul_omega0_dvd n (Nat.cast_pos'.2 n.pos) (nat_lt_omega0 _) _ αd]
-    apply @add_absorp _ (repr a0 * succ ↑k)
-    · refine principal_add_omega0_opow _ ?_ Rl
+      @mul_omega0_dvd n (Nat.cast_pos'.2 n.pos) (natCast_lt_omega0 _) _ αd]
+    apply @add_of_omega0_opow_le _ (repr a0 * succ ↑k)
+    · refine isPrincipal_add_omega0_opow _ ?_ Rl
       rw [opow_mul, opow_succ]
       gcongr
       exact No.snd'.repr_lt
@@ -867,7 +866,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [natCast_succ, add_mul_succ]
-      apply add_absorp Rl
+      apply add_of_omega0_opow_le Rl
       rw [opow_mul, opow_succ]
       gcongr
       simpa [repr] using omega0_le_oadd a0 n a'
@@ -1013,18 +1012,18 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
       rw [← mul_succ, ← natCast_succ]
       gcongr
-      apply nat_lt_omega0
+      apply natCast_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
         ⟨isSuccLimit_add _ (isSuccLimit_mul_right this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
       · rw [← mul_succ, ← natCast_succ]
         gcongr
-        apply nat_lt_omega0
+        apply natCast_lt_omega0
       · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ]
         gcongr
-        apply nat_lt_omega0
+        apply natCast_lt_omega0
     · rcases iha with ⟨h1, h2, h3⟩
       refine ⟨isSuccLimit_opow one_lt_omega0 h1, fun i => ?_,
         exists_lt_omega0_opow' one_lt_omega0 h1 h3⟩
@@ -1038,8 +1037,8 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       refine ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
       rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
         opow_lt_opow_iff_right one_lt_omega0]
-  · refine ⟨by
-      rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (ihb.2 H.snd))⟩
+  · refine ⟨?_, fun H ↦ H.fst.oadd _ (NF.below_of_lt' ?_ (ihb.2 H.snd))⟩
+    · rw [repr, ihb.1, succ_eq_add_one, succ_eq_add_one, ← add_assoc, repr]
     have := H.snd'.repr_lt
     rw [ihb.1] at this
     exact (lt_succ _).trans this
@@ -1102,8 +1101,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
+  exact Nat.succ_iterate _ _
 
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
@@ -1134,8 +1132,7 @@ which requires `ONote`, so all these things would have to be defined at once, wh
 representation. -/
 def NONote :=
   { o : ONote // o.NF }
-
-instance : DecidableEq NONote := by unfold NONote; infer_instance
+deriving DecidableEq
 
 namespace NONote
 

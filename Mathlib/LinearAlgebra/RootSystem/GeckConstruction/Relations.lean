@@ -41,7 +41,6 @@ variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
 lemma lie_h_e :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
@@ -69,7 +68,6 @@ lemma lie_h_e :
     simp only [pairingIn_eq_add_of_root_eq_add hkil, Int.cast_add]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.3 (b) from [Geck](Geck2017). -/
 lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
@@ -186,7 +184,6 @@ lemma lie_e_f_same :
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
   h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)

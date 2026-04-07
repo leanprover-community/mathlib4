@@ -115,7 +115,8 @@ instance (priority := low) [Subsingleton Y] [IsIntegral Y] : Flat f := by
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
     [Surjective f] : Topology.IsQuotientMap f := by
   rw [Topology.isQuotientMap_iff]
-  refine ⟨f.surjective, fun s ↦ ⟨fun hs ↦ hs.preimage f.continuous, fun hs ↦ ?_⟩⟩
+  refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦
+    ⟨fun hs ↦ ?_, fun hs ↦ hs.preimage f.continuous⟩, f.surjective⟩
   wlog hY : ∃ R, Y = Spec R
   · let 𝒰 := Y.affineCover
     rw [𝒰.isOpenCover_opensRange.isOpen_iff_inter]
@@ -291,7 +292,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   let e : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
       .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
     (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm
-  -- It remains to check that the square indeed commutes, and we may concluce that the map
+  -- It remains to check that the square indeed commutes, and we may conclude that the map
   -- at the left is also injective.
   suffices (ψY.comp (pushoutSection H hUST hUSX hUY).hom).comp e.inv.hom = φ.comp
       (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ).toRingHom by

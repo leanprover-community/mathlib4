@@ -13,7 +13,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
+action, so we postpone the proofs of `ContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -49,8 +49,6 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space

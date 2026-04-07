@@ -5,10 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -96,20 +95,17 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
+lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
+    (g : α →₀ γ) : (fun x ↦ f x • g x).support.Finite :=
+  Set.Finite.subset g.hasFiniteSupport (by simp; grind [smul_zero])
+
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
-  smul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset g.hasFiniteSupport
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
-        Finsupp.fun_support_eq, Finset.mem_coe]
-      intro x hx h
-      apply hx
-      rw [h, smul_zero])
+abbrev pointwiseScalar [Zero γ] [SMulZeroClass β γ] : SMul (α → β) (α →₀ γ) where
+  smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
 instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
@@ -120,5 +116,8 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
+
+instance [Semiring β] : IsScalarTower β (α → β) (α →₀ β) where
+  smul_assoc r f m := by ext; simp [mul_assoc]
 
 end Finsupp

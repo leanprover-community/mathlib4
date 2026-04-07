@@ -413,7 +413,8 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
       simp only [Nat.mod_add_mod,
         Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by lia)]
       refine (Nat.mod_eq_of_lt ?_).symm
-      lia
+      #adaptation_note /-- After leanprover/lean4#13166, the `lia` tactic was timing out here. -/
+      omega
 
 @[simp]
 theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
@@ -465,5 +466,38 @@ end Val
 
 lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
   (cons_fin_one x _).symm
+
+/-!
+### Interaction between cons and Equiv.swap
+-/
+
+section swap
+
+@[simp]
+lemma cons_cons_comp_swap_zero_one (a b : α) (x : Fin n → α) :
+    vecCons a (vecCons b x) ∘ (Equiv.swap 0 1) = vecCons b (vecCons a x) := by
+  ext j : 1
+  match j with
+  | 0 => simp
+  | 1 => simp
+  | ⟨i + 2, h⟩ =>
+    have h' : (⟨i + 2, h⟩ : Fin n.succ.succ) = Fin.succ (Fin.succ ⟨i, by lia⟩) := by grind
+    simp only [Nat.succ_eq_add_one, h', Function.comp_apply,
+      Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero _) (Fin.succ_succ_ne_one _), cons_val_succ]
+
+lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
+    vecCons a (x ∘ (Equiv.swap i j)) = vecCons a x ∘ (Equiv.swap i.succ j.succ) := by
+  ext k : 1
+  rcases eq_or_ne k 0 with rfl | hk₀
+  · simp [Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero i).symm (Fin.succ_ne_zero j).symm]
+  rcases eq_or_ne k i.succ with rfl | hki
+  · simp
+  rcases eq_or_ne k j.succ with rfl | hkj
+  · simp
+  have hk : k = Fin.succ ⟨k - 1, by lia⟩ := by grind
+  rw [Function.comp_apply, Equiv.swap_apply_of_ne_of_ne hki hkj, hk, cons_val_succ,
+    Function.comp_apply, cons_val_succ, Equiv.swap_apply_of_ne_of_ne (by grind) (by grind)]
+
+end swap
 
 end Matrix
