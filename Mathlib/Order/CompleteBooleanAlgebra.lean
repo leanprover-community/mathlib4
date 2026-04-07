@@ -888,15 +888,14 @@ protected abbrev coframe [Coframe β] : Coframe α := by
 
 /-- Transfer `CompleteDistribLattice` across an `Equiv`. -/
 protected abbrev completeDistribLattice [CompleteDistribLattice β] : CompleteDistribLattice α := by
-  let frame := e.frame
-  let coframe := e.coframe
+  let completeLattice := e.completeLattice
+  let biheytingAlgebra := e.biheytingAlgebra
   apply e.injective.completeDistribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 /-- Transfer `CompletelyDistribLattice` across an `Equiv`. -/
 protected abbrev completelyDistribLattice [CompletelyDistribLattice β] :
     CompletelyDistribLattice α := by
-  let completeLattice := e.completeLattice
-  let biheytingAlgebra := e.biheytingAlgebra
+  let completeDistribLattice := e.completeDistribLattice
   apply e.injective.completelyDistribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 /-- Transfer `CompleteBooleanAlgebra` across an `Equiv`. -/
