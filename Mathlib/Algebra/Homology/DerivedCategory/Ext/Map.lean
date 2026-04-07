@@ -79,7 +79,7 @@ lemma DerivedCategory.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedC
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app
+lemma Functor.mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D] (X : C) :
     dsimp% F.mapDerivedCategoryFactors.inv.app ((HomologicalComplex.single C (.up ℤ) 0).obj X) ≫
       (F.mapDerivedCategorySingleFunctor 0).hom.app X =
@@ -89,7 +89,7 @@ lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app
+lemma Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D] (X : C) :
     dsimp% (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
       F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C (.up ℤ) 0).obj X) =
@@ -128,8 +128,8 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     (ComplexShape.up ℤ))) ⟶ (S.map F).map (CochainComplex.singleFunctor D 0) :=
     S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom
   rw [← S.mapNatTrans_τ₁, triangleOfSESδ_naturality h1 h2 f]
-  simp only [mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app, map_X₃,
-    Q_obj_single_obj, map_X₁, mapNatTrans, map_comp, f]
+  simp only [Functor.mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app,
+    map_X₃, Q_obj_single_obj, map_X₁, mapNatTrans, map_comp, f]
   rw [← Iso.app_hom, ← Iso.app_inv, ← Category.assoc, ← Q.map_comp, Iso.inv_hom_id, Q.map_id]
   exact Category.id_comp _
 
