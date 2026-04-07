@@ -663,8 +663,7 @@ lemma mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport (s : γ → Set β)
     (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
     (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
   by_cases h₀ : i ∈ ⋃ d, s d
-  · simp only [h₀, Set.mulIndicator_of_mem]
-    apply Eq.symm <| tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem _ _ _ h₀ hs
+  · simp only [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
   · aesop
 
 @[to_additive]

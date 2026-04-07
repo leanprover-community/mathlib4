@@ -203,15 +203,10 @@ section One
 lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
   (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
     (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
-  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff,] at hs
-  simp only [Set.subset_singleton_iff, mem_mulSupport, ne_eq, Set.mulIndicator_apply_eq_one,
-    Classical.not_imp, and_imp]
-  intro j' hj' hi
-  by_contra h
-  change f i ≠ 1 at hi
-  rw [← mem_mulSupport] at hi
-  simp_rw [← Set.singleton_subset_iff] at hs hj hj' hi
-  simpa only [Set.singleton_subset_iff] using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
+  suffices ∀ j', j' ≠ j →  {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
+  intro j' h hj hj' hi
+  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One
 
