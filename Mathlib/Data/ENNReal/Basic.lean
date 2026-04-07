@@ -120,7 +120,9 @@ instance : Zero ℝ≥0∞ := ⟨ofNNReal 0⟩
 instance : One ℝ≥0∞ := ⟨ofNNReal 1⟩
 instance : Bot ℝ≥0∞ := ⟨0⟩
 
-deriving instance Top, LE, PartialOrder, AddCommMonoidWithOne, SemilatticeSup, DistribLattice,
+example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
+
+deriving instance Top, LE, PartialOrder, Add, AddCommMonoidWithOne, SemilatticeSup, DistribLattice,
   Nontrivial for ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
