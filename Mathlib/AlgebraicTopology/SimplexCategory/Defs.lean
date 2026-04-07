@@ -12,15 +12,13 @@ public import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
-We construct a skeletal model of the simplex category, with objects `ℕ` and the
-morphisms `n ⟶ m` being the monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
+We construct a skeletal model of the simplex category, with an object `⦋n⦌` for each `n : ℕ`, and
+morphisms `⦋n⦌ ⟶ ⦋m⦌` identify to monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
 
 In `Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean`, we show that this category
 is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
-
-The definitions `SimplexCategory` and `SimplexCategory.Hom` are marked as irreducible.
 
 We provide the following functions to work with these objects:
 1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
@@ -46,46 +44,28 @@ universe v
 open CategoryTheory
 
 /-- The simplex category:
-* objects are natural numbers `n : ℕ`
-* morphisms from `n` to `m` are monotone functions `Fin (n+1) → Fin (m+1)`
+* for each `n : ℕ`, there is an object `⦋n⦌`;
+* morphisms `⦋n⦌ ⟶ ⦋m⦌` are monotone functions `Fin (n+1) → Fin (m+1)`
 -/
-def SimplexCategory :=
-  ℕ
+@[ext]
+structure SimplexCategory : Type where
+  /-- Constructor `ℕ → SimplexCategory`. -/
+  mk ::
+  /-- The length of an object in `SimplexCategory` -/
+  len : ℕ
 
 namespace SimplexCategory
-
--- The definition of `SimplexCategory` is made irreducible below.
-/-- Interpret a natural number as an object of the simplex category. -/
-def mk (n : ℕ) : SimplexCategory :=
-  n
 
 /-- the `n`-dimensional simplex can be denoted `⦋n⦌` -/
 scoped[Simplicial] notation "⦋" n "⦌" => SimplexCategory.mk n
 
--- TODO: Make `len` irreducible.
-/-- The length of an object of `SimplexCategory`. -/
-def len (n : SimplexCategory) : ℕ :=
-  n
-
-@[ext]
-theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
-  id
-
-attribute [irreducible] SimplexCategory
-
 open Simplicial
 
-@[simp]
-theorem len_mk (n : ℕ) : ⦋n⦌.len = n :=
-  rfl
+theorem len_mk (n : ℕ) : ⦋n⦌.len = n := rfl
 
 @[simp]
 theorem mk_len (n : SimplexCategory) : ⦋n.len⦌ = n :=
   rfl
-
-/-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F ⦋n⦌) : ∀ X, F X := fun n =>
-  h n.len
 
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
@@ -105,8 +85,6 @@ def toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) :
 theorem ext' {a b : SimplexCategory} (f g : SimplexCategory.Hom a b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   id
-
-attribute [irreducible] SimplexCategory.Hom
 
 @[simp]
 theorem mk_toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) : mk f.toOrderHom = f :=
