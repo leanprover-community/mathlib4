@@ -120,7 +120,7 @@ lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology
   rw [mem_lowerBounds_iff_subset_Ici, ← compl_compl (Ici a), compl_subset_compl, compl_Ici] at ha
   use a
 
-lemma IsOrderBornology.cobounded_le_atBot_sup_atTop [NoMaxOrder α] [NoMinOrder α] :
+lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
     cobounded α ≤ .atBot ⊔ .atTop := by
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
