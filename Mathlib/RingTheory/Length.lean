@@ -294,7 +294,7 @@ theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A 
     [IsScalarTower A R M] (p : Submodule R M) :
     Module.length R p ≤ Module.length A (p.restrictScalars A) := by
   rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
-  exact krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
+  exact Order.krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
 
 theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
     (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
