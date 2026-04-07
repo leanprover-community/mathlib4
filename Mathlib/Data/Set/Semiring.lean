@@ -190,6 +190,7 @@ noncomputable instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring 
   __ := instNonAssocSemiring
   __ := instNonUnitalSemiring
   __ := equiv.semilatticeSup
+  __ := instOrderBot
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
   __ := instNonUnitalSemiring
