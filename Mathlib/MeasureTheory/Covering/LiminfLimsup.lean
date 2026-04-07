@@ -281,3 +281,4 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
       rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
     simp only [q, h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
+  exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)
