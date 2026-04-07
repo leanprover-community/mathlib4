@@ -136,17 +136,14 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
       Iso.refl_hom, NatTrans.comp_app, Functor.associator_hom_app, Functor.whiskerLeft_app,
       Functor.associator_inv_app, Functor.whiskerRight_app, NatTrans.id_app, Category.id_comp]
     simp [Q_obj_single_obj, Functor.mapCochainComplexSingleFunctor]
-  rw [← (shiftFunctor (DerivedCategory D) 1).map_comp, eq2, ← Category.assoc, eq1]
-  generalize_proofs _ _ _ _ _ _ _ h1 _ h2
+  rw [← (shiftFunctor (DerivedCategory D) 1).map_comp, eq2, ← Category.assoc]
+  generalize_proofs _ _ _ _ _ _ h1 _ _ h2
   let f : ((S.map (CochainComplex.singleFunctor C 0)).map (F.mapHomologicalComplex
-    (ComplexShape.up ℤ))) ⟶ (S.map F).map (CochainComplex.singleFunctor D 0) := {
-    τ₁ := (F.mapCochainComplexSingleFunctor 0).hom.app S.X₁
-    τ₂ := (F.mapCochainComplexSingleFunctor 0).hom.app S.X₂
-    τ₃ := (F.mapCochainComplexSingleFunctor 0).hom.app S.X₃
-    comm₁₂ := (NatTrans.naturality _ S.f).symm
-    comm₂₃ := (NatTrans.naturality _ S.g).symm }
-  rw [triangleOfSESδ_naturality h1 h2 f]
-  simp only [Functor.comp_obj, ShortComplex.map_X₃, ShortComplex.map_X₁, f]
+    (ComplexShape.up ℤ))) ⟶ (S.map F).map (CochainComplex.singleFunctor D 0) :=
+    S.mapNatTrans (F.mapCochainComplexSingleFunctor 0).hom
+  rw [← S.mapNatTrans_τ₁, triangleOfSESδ_naturality h1 h2 f]
+  simp only [mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app, map_X₃,
+    Q_obj_single_obj, map_X₁, mapNatTrans, map_comp, f]
   rw [← Iso.app_hom, ← Iso.app_inv, ← Category.assoc, ← Q.map_comp, Iso.inv_hom_id, Q.map_id]
   exact Category.id_comp _
 
