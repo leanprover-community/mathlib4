@@ -117,18 +117,20 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
       (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-lemma tensorProduct_of_isTranscendentalSeparable_of_isDomain {k : Type*} [Field k]
+variable {k : Type*} [Field k]
+
+lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
     {S : Type*} [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsDomain S]
     {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   sorry
 
-lemma tensorProduct_of_isTranscendentalSeparable_of_isReduced {k : Type*} [Field k]
+lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
     {S : Type*} [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
     {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   sorry
 
-lemma Algebra.isTranscendentalSeparable_of_perfectField {k : Type*} [Field k] [PerfectField k]
+lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
   sorry
