@@ -1128,6 +1128,12 @@ lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
   Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
 
+lemma krullDim_le_of_orderEmbedding (e : α ↪o β) : Order.krullDim α ≤ Order.krullDim β := by
+  have (b : β) : Subsingleton (e ⁻¹' {b}) := Set.Subsingleton.coe_sort <|
+    Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
+    Order.krullDim_nonpos_of_subsingleton
+
 end orderHom
 
 end Order
