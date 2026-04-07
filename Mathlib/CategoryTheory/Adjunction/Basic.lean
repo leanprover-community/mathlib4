@@ -266,12 +266,10 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
       using homEquiv_naturality_left_square adj _ _ _ _ w,
     homEquiv_naturality_right_square adj f g h k⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
@@ -520,7 +518,6 @@ lemma homEquiv_ofNatIsoLeft_symm_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F �
     ((ofNatIsoLeft adj iso).homEquiv X Y).symm f = iso.inv.app _ ≫ (adj.homEquiv _ _).symm f := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the right. -/
 @[simps]
 def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
@@ -699,7 +696,6 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_comp_bijective_iff (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) (Z : D) :
     Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
       Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by

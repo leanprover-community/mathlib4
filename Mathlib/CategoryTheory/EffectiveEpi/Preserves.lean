@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 
 # Functors preserving effective epimorphisms
@@ -108,6 +109,26 @@ instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limit
   preserves _ _ := by
     rw [← isRegularEpi_iff_effectiveEpi]
     apply IsRegularEpiCategory.regularEpiOfEpi
+
+/--
+Applying a functor which preserves pullbacks and effective epimorphisms to a regular epi diagram
+of the form `X ×_Y X ⇉ X → Y` gives a regular epi diagram.
+-/
+@[simps]
+noncomputable def regularEpiOfPreserves {C D : Type*} [Category* C] [Category* D] {X Y : C}
+    (f : X ⟶ Y) [EffectiveEpi f] (F : C ⥤ D) [PreservesEffectiveEpis F]
+    [PreservesLimitsOfShape WalkingCospan F] (c : PullbackCone f f) (hc : IsLimit c) :
+    RegularEpi (F.map f) where
+  W := F.obj c.pt
+  left := F.map c.fst
+  right := F.map c.snd
+  w := by rw [← F.map_comp, c.condition]; simp
+  isColimit := by
+    refine isColimitCoforkOfEffectiveEpi (F.map f) (.mk (F.map c.fst) (F.map c.snd) ?_) ?_
+    · simp [← Functor.map_comp, c.condition]
+    · refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (isLimitOfPreserves F hc)
+      · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      · exact Cone.ext (Iso.refl _) <| by rintro (_ | _ | _) <;> cat_disch
 
 /--
 A class describing the property of preserving effective epimorphic families.
