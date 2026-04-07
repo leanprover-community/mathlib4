@@ -6222,7 +6222,6 @@ public import Mathlib.RingTheory.Artinian.Algebra
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.AugmentationIdeal
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
@@ -6392,6 +6391,7 @@ public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.Ideal.IsAugmentation
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
