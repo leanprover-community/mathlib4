@@ -164,7 +164,7 @@ lemma induce_le (hX : X ⊆ V(G)) : G[X] ≤ G := ⟨hX, fun _ _ _ h ↦ h.1⟩
 @[simp, grind =]
 lemma induce_le_iff : G[X] ≤ G ↔ X ⊆ V(G) := ⟨(·.vertexSet_mono), induce_le⟩
 
-lemma induce_edgeSet (G : Graph α β) (X : Set α) :
+lemma edgeSet_induce (G : Graph α β) (X : Set α) :
     E(G[X]) = {e | ∃ x y, G.IsLink e x y ∧ x ∈ X ∧ y ∈ X} := rfl
 
 @[simp, grind =]
