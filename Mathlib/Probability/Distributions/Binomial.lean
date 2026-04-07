@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Etienne Marion
 module
 
 public import Mathlib.Probability.CondVar
+public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.HasLaw
@@ -202,6 +203,34 @@ lemma integral_map_cast_binomial [MeasurableSingletonClass R]
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
   rw [integral_map .of_discrete (integrable_map_cast_binomial f).aestronglyMeasurable,
     integral_binomial]
+
+lemma l1 {ι : Type*} (u : Set ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
+    iIndepFun (fun i ω ↦ i ∈ S ω) P := by
+  have := hS.isProbabilityMeasure
+  rw [iIndepFun_iff_finset]
+  intro s
+  rw [iIndepFun_iff_map_fun_eq_pi_map]
+  · have : (fun ω i ↦ s.restrict (fun i ω ↦ i ∈ S ω) i ω) = (fun t (i : s) ↦ i.1 ∈ t) ∘ S := by
+      ext; simp
+    have h1 : (fun t (i : s) ↦ i.1 ∈ t) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = s.restrict := by
+      ext; simp
+    rw [this, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map,
+      h1, infinitePi_map_restrict]
+    · congr
+      ext i : 1
+      have : s.restrict (fun i ω ↦ i ∈ S ω) i = (fun t ↦ i.1 ∈ t) ∘ S := by ext; simp
+      have h1 : (fun t ↦ i.1 ∈ t) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i.1 := by
+        ext; simp
+      rw [this, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map, h1,
+        infinitePi_map_eval]
+      all_goals fun_prop
+    any_goals fun_prop
+  intro
+  exact ((Finset.measurable_restrict s).comp_aemeasurable hS.aemeasurable).eval _
+
+lemma test {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun X P)
+    (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
 
 end Integral
 
