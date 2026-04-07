@@ -23,29 +23,33 @@ public section
 
 assert_not_exists Field
 
-variable {α : Type*}
-
 local infixl:50 " ~ᵤ " => Associated
 
-theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
+section
+
+variable {α : Type*} [CommMonoidWithZero α] [WfDvdMonoid α]
+
+theorem WfDvdMonoid.max_power_factor' {a₀ x : α} (h : a₀ ≠ 0) (hx : ¬IsUnit x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
   refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
   exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
-theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
+theorem WfDvdMonoid.max_power_factor {a₀ x : α} (h : a₀ ≠ 0) (hx : Irreducible x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
+variable [IsCancelMulZero α]
+
+theorem FiniteMultiplicity.of_not_isUnit {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
+theorem FiniteMultiplicity.of_prime_left {a b : α} (ha : Prime a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
 
 namespace UniqueFactorizationMonoid
