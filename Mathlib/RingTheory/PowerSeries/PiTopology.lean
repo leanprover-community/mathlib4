@@ -103,10 +103,9 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     Tendsto f u (nhds g) ↔
     ∀ d : ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) := by
   rw [MvPowerSeries.WithPiTopology.tendsto_iff_coeff_tendsto]
-  apply (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.forall_congr
+  apply (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.forall_congr
   intro d
-  simp only [LinearEquiv.coe_toEquiv, Finsupp.LinearEquiv.finsuppUnique_apply,
-    PUnit.default_eq_unit, coeff]
+  simp only [LinearEquiv.coe_toEquiv, Finsupp.uniqueLinearEquiv_apply, coeff]
   apply iff_of_eq
   congr
   · ext _; congr; ext; simp
@@ -322,14 +321,13 @@ open WithPiTopology MvPowerSeries.WithPiTopology
 
 variable {R}
 
--- NOTE : one needs an API to apply `Finsupp.LinearEquiv.finsuppUnique`
+-- NOTE : one needs an API to apply `Finsupp.uniqueLinearEquiv`
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
     HasSum (fun d : ℕ => monomial d (coeff d f)) f := by
-  rw [← (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.hasSum_iff]
+  rw [← (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.hasSum_iff]
   convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
-  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
-    Finsupp.LinearEquiv.finsuppUnique_apply, PUnit.default_eq_unit]
+  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff]
   congr
   all_goals { ext; simp }
 

@@ -213,13 +213,6 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 @[simp]
 lemma coe_equivFunOnFinite_symm {α} [Finite α] (f : α → M) : ⇑(equivFunOnFinite.symm f) = f := rfl
 
-/--
-If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
--/
-@[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
-  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
-
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]

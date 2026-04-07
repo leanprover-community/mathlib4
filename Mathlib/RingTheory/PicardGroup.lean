@@ -244,7 +244,7 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
       e.symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
   have : Unique (Free.ChooseBasisIndex R M) :=
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
-  exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
+  exact ⟨e ≪≫ₗ uniqueLinearEquiv R R default⟩
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
