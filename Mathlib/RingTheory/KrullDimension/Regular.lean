@@ -212,9 +212,13 @@ lemma _root_.ringKrullDim_add_length_eq_ringKrullDim_of_isRegular (rs : List R)
     ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_add_length_eq_supportDim_of_isRegular rs reg
 
-open Ring in
-lemma Ring.dimensionLEOne_iff_krullDimLE_one {R : Type*} [CommRing R] [NoZeroDivisors R] :
+end Module
+namespace Ring
+
+variable {R : Type*} [CommRing R] [NoZeroDivisors R]
+
+lemma dimensionLEOne_iff_krullDimLE_one :
     DimensionLEOne R ↔ KrullDimLE 1 R :=
   .trans ⟨fun h _ ↦ h.maximalOfPrime, fun h ↦ ⟨@h⟩⟩ krullDimLE_one_iff_of_noZeroDivisors.symm
 
-end Module
+end Ring
