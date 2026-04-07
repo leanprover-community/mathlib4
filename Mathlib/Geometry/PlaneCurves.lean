@@ -72,6 +72,7 @@ lemma normal_eq_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
     normal c t = !₂[-(deriv c t 1), deriv c t 0] := by
   simp [normal_eq, h]
 
+variable (c t) in
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_deriv_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
@@ -114,11 +115,11 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
       · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, ne_eq] at hinej
         have h : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
         simp only [h, Fin.isValue]
-        exact inner_deriv_normal_eq_zero
+        exact inner_deriv_normal_eq_zero c t
       · simp at hinej
         have h : j=0 := by fin_cases j <;> trivial
         simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue, h, real_inner_comm]
-        exact inner_deriv_normal_eq_zero
+        exact inner_deriv_normal_eq_zero c t
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, top_le_iff]
     apply hBon.linearIndependent.span_eq_top_of_card_eq_finrank; simp
