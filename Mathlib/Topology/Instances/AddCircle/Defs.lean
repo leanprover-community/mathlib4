@@ -385,7 +385,7 @@ lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 
 lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
-lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
   exact ⟨b.1, by simpa only [zero_add] using b.2,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
