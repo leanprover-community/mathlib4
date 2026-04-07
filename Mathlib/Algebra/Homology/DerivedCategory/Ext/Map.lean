@@ -46,9 +46,7 @@ open Limits Abelian
 variable {C : Type u} [Category.{v} C] [Abelian C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
-variable (F : C ⥤ D) [F.Additive]
-
-variable [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 section
 
