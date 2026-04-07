@@ -8,7 +8,7 @@ module
 
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
-public import KernelHom.Mathlib.SFinKer
+public import Mathlib.Probability.Kernel.Category.SFinKer
 
 /-!
 # Stoch
