@@ -32,7 +32,7 @@ variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-lemma ord_ne_top (a : R) (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
+lemma ord_ne_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
   simp [isFiniteLength_quotient_span_singleton R ha, Ring.ord, Module.length_ne_top_iff]
 
 open scoped nonZeroDivisors
@@ -41,28 +41,26 @@ Order of vanishing function as a monoid homomorphism
 -/
 noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
-  toFun x := .ofAdd <| (Ring.ord R x).untop (ord_ne_top _ x.2)
-  map_one' := by simp only [OneMemClass.coe_one, isUnit_one, ord_of_isUnit, ofAdd_eq_one]; rfl
-  map_mul' x y := by
-    rw [← ofAdd_add]
-    congr 1
-    apply WithTop.coe_injective
-    simp [ord_mul]
-    rfl
+  toFun x := .ofAdd <| (Ring.ord R x).toNat
+  map_one' := by simp [OneMemClass.coe_one, isUnit_one, ord_of_isUnit]
+  map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.2) (ord_ne_top y.2)]
 
-lemma ord_eq_ordMonoidHom (x : R⁰) : Ring.ord R x = (ordMonoidHom x).toAdd := by
-  change _ = WithTop.some ((Ring.ord R x).untop (ord_ne_top _ x.2))
-  simp
+lemma ordMonoidHom_eq_ord (x : R⁰) : ((Nat.cast (Multiplicative.toAdd (ordMonoidHom x))) : ℕ∞) =
+  WithTop.some ((Ring.ord R x).toNat) := rfl
 
+@[simp]
+lemma ord_eq_ordMonoidHom (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
+  (ENat.coe_toNat (ord_ne_top x.2))
+
+@[simp]
 lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
-    ordMonoidWithZeroHom R x = .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) := by
+    .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
   simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
     OneHom.coe_mk, toAdd_ofAdd]
-  generalize_proofs ha
+  have := ord_ne_top x.2
   generalize ord R x.1 = a at *
   induction a
-  · simp at ha
-    contradiction
+  · contradiction
   · rfl
 
 /--
@@ -71,7 +69,7 @@ Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
 lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] (a : R) (ha : a ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R a ≠ 0 := by
   lift a to R⁰ using ha
-  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
+  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
 
 variable [Nontrivial R]
 /--
@@ -83,7 +81,7 @@ lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDiv
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
-  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
+  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, ← ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
 
 end NoetherianDimLEOne
 
@@ -126,8 +124,7 @@ This is relevant since when we're working with `ordFrac` we work with `ℤᵐ⁰
 order instance has the `0` element less than everything else.
 -/
 theorem ord_add (x y : R) : min (Ring.ord R x) (Ring.ord R y) ≤ Ring.ord R (x + y) := by
-  rw [ord_eq_addVal x, ord_eq_addVal y, ord_eq_addVal (x + y)]
-  exact IsDiscreteValuationRing.addVal_add
+  grw [ord_eq_addVal x, ord_eq_addVal y, ord_eq_addVal (x + y), IsDiscreteValuationRing.addVal_add]
 
 end IsDiscreteValuationRing
 
@@ -146,10 +143,9 @@ we work with the order on `ℕ∞` where the `∞` element is interpreted as a `
 -/
 lemma ordFrac_ge_one_of_ne_zero (x : R) (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) ≥ 1 := by
-  obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp (ord_ne_top x (by simpa))
+  obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp (ord_ne_top (a := x) (by simpa))
   simp_rw [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
-    WithZero.one_le_coe, ← ofAdd_zero, Multiplicative.ofAdd_le]
-  exact Nat.cast_nonneg ..
+    WithZero.one_le_coe, ← ofAdd_zero, Multiplicative.ofAdd_le, Nat.cast_nonneg _]
 
 /--
 For `R` an `S` algebra (with a corresponding compatible action on `K`, the field of fractions
@@ -164,19 +160,19 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
   suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq,
     algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
-  suffices (ordFrac R) ((algebraMap S K) a) ≥ 1 by exact le_mul_of_one_le_left' this
-  suffices (ordFrac R) ((algebraMap R K) (algebraMap S R a)) ≥ 1 by
-    simpa [IsScalarTower.algebraMap_eq S R K]
-  apply ordFrac_ge_one_of_ne_zero
-  exact ha
+  apply le_mul_of_one_le_left'
+  simp [IsScalarTower.algebraMap_eq S R K, ordFrac_ge_one_of_ne_zero _ ha]
+
+@[simp]
+lemma ENat.multiplicative_cast_zero_eq_one :
+    (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ)))
+    (0 : ℕ∞) = 1 := rfl
 
 @[simp]
 lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := IsUnit.ne_zero hx
   have thing : x ∈ nonZeroDivisors R := IsUnit.mem_nonZeroDivisors hx
-  simp only [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord]
-  rw [ord_of_isUnit x hx]
-  aesop
+  simp [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord, ord_of_isUnit x hx]
 
 end ordFrac
 
@@ -185,6 +181,23 @@ section IsDiscreteValuationRing
 variable [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
+lemma ordMonoidWithZeroHom_eq_intValutation {R : Type u_1} [CommRing R] [IsDomain R]
+    [IsDiscreteValuationRing R] (x : R) (h : x ∈ nonZeroDivisors R) :
+    (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
+  simp [ordMonoidWithZeroHom_eq_ord x h, ord_eq_addVal,
+    IsDiscreteValuationRing.intValuation_maximalIdeal,
+    WithZero.map'_apply, Multiplicative.ofAdd_cast_toAdd_eq_ofAdd_cast,
+    WithZero.map_multiplicative_eq_map]
+
+lemma ordFrac_eq_intValuation {R K : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+    [Field K] [Algebra R K] [IsFractionRing R K]
+    {x : R}
+    (h : x ≠ 0)
+    : (ordFrac R) ((algebraMap R K) x) =
+    ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
+  rw [ordFrac_eq_ord R x h,
+      ordMonoidWithZeroHom_eq_intValutation _ (mem_nonZeroDivisors_of_ne_zero h)]
+
 theorem ordFrac_eq_inverse_comp_valuation :
     ordFrac R = MonoidWithZeroHom.comp MonoidWithZero.inverse
     ((IsDiscreteValuationRing.maximalIdeal R).valuation K).toMonoidWithZeroHom := by
@@ -192,10 +205,9 @@ theorem ordFrac_eq_inverse_comp_valuation :
   by_cases ha : a = 0
   · simp_all
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) a
-  simp_all [ordFrac_eq_ord, ord_eq_addVal,
+  simp_all [- ordMonoidWithZeroHom_eq_ord, ordFrac_eq_intValuation _,
     IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
-    IsDiscreteValuationRing.intValuation_maximalIdeal, WithZero.map'_apply]
-  rfl
+    IsDiscreteValuationRing.intValuation_maximalIdeal]
 
 theorem ordFrac_eq_valuation_inv (x : K) :
     ordFrac R x = ((IsDiscreteValuationRing.maximalIdeal R).valuation K x)⁻¹ := by

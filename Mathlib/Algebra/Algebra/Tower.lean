@@ -322,6 +322,19 @@ def orderIsoOfAlgebraMapSurjective
   right_inv _ := rfl
   map_rel_iff' := .rfl
 
+@[simp]
+lemma orderIsoOfAlgebraMapSurjective_apply {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) (N : Submodule S M) :
+    orderIsoOfAlgebraMapSurjective h N = N.restrictScalars R := rfl
+
+@[simp]
+lemma orderIsoOfAlgebraMapSurjective_inv_apply {R S M : Type*} [CommRing R] [Ring S]
+    [AddCommGroup M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) (N : Submodule R M) :
+    (orderIsoOfAlgebraMapSurjective h).invFun N =
+    ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩ := rfl
+
 end Submodule
 
 section Semiring
