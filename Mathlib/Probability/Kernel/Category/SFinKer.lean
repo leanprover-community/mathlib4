@@ -78,8 +78,8 @@ instance : MonoidalCategory SFinKer.{u} where
   whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, inferInstance⟩
   tensorUnit := SFinKer.of PUnit
   associator X Y Z := by
-    refine ⟨⟨Kernel.deterministic prodAssoc (by fun_prop), inferInstance⟩,
-      ⟨Kernel.deterministic prodAssoc.symm (by fun_prop), inferInstance⟩, ?_, ?_⟩
+    refine ⟨⟨Kernel.deterministic prodAssoc <| MeasurableEquiv.measurable _, inferInstance⟩,
+      ⟨Kernel.deterministic prodAssoc.symm <| MeasurableEquiv.measurable _, inferInstance⟩, ?_, ?_⟩
     · ext : 1; dsimp
       rw [Kernel.deterministic_comp_deterministic, Kernel.id]
       congr
