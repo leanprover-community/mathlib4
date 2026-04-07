@@ -199,9 +199,10 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
   classical
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
   · refine (mem_image_comap_basicOpen _ _).trans (not_iff_not.mpr ?_)
-    let e : MvPolynomial σ R ⊗[R] x.asIdeal.ResidueField ≃ₐ[R]
+    let e : x.asIdeal.ResidueField ⊗[R] MvPolynomial σ R ≃ₐ[x.asIdeal.ResidueField]
         MvPolynomial σ x.asIdeal.ResidueField := scalarRTensorAlgEquiv
-    rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
+    rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm ..).injective,
+      ← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
     change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
     congr!
     ext
