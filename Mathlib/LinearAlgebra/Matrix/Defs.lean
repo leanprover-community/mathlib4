@@ -281,6 +281,10 @@ protected theorem map_add [Add α] [Add β] (f : α → β) (hf : ∀ a₁ a₂,
     (M N : Matrix m n α) : (M + N).map f = M.map f + N.map f :=
   ext fun _ _ => hf _ _
 
+protected theorem map_neg [Neg α] [Neg β] (f : α → β) (hf : ∀ a, f (-a) = -f a)
+    (M : Matrix m n α) : (-M).map f = -(M.map f) :=
+  ext fun _ _ => hf _
+
 protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂, f (a₁ - a₂) = f a₁ - f a₂)
     (M N : Matrix m n α) : (M - N).map f = M.map f - N.map f :=
   ext fun _ _ => hf _ _
