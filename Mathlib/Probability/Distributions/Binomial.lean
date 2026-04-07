@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
@@ -19,12 +19,27 @@ import Mathlib.Probability.Notation
 # Binomial random variables
 
 This file defines the binomial distribution and binomial random variables,
-and computes their expectation and variance.
+and computes their expectation and variance. For `n : ℕ` and `p : I`,
+the binomial distribution `Bin(n, p)` is defined as the cardinal of a random subset `U`
+of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently with probability `p`.
 
-## Main definitions
+## Main definition
 
 * `ProbabilityTheory.binomial`:
   Binomial distribution on an arbitrary semiring with parameters `n` and `p`.
+
+## Implementation details
+
+We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
+over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general
+`AddMonoidWithOne R`, that stands for `Bin(n, p).map (Nat.cast : ℕ → R)`. This is in particular
+useful if one is interested in the binomial distribution as a measure over `ℝ` or `ℤ`.
+Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, using the first
+one to prove the second. Note that results concerning `Bin(R, n, p)` may require
+`[MeasurableSingletonClass R]` and/or `[CharZero R]`.
+
+When refering to `Bin(n, p)` in names, use `binomial`. When refering to `Bin(R, n, p)`,
+use `map_cast_binomial`.
 
 ## Notation
 
@@ -34,7 +49,7 @@ and computes their expectation and variance.
 
 public section
 
-open MeasureTheory Set
+open MeasureTheory Set Measure
 open scoped NNReal ProbabilityTheory unitInterval ENNReal
 
 namespace ProbabilityTheory
@@ -52,16 +67,19 @@ scoped notation3 "Bin(" n ", " p ")" => binomial n p
 scoped notation3 "Bin(" R ", " n ", " p ")" => (binomial n p).map (Nat.cast : ℕ → R)
 
 @[simp]
-lemma binomial_nat : Bin(ℕ, n, p) = Bin(n, p) := Measure.map_id
+lemma binomial_nat : Bin(ℕ, n, p) = Bin(n, p) := map_id
 
-lemma binomial_nat_zero : Bin(0, p) = Measure.dirac 0 := by simp [binomial]
+lemma binomial_zero : Bin(0, p) = dirac 0 := by simp [binomial]
 
 @[simp]
-lemma binomial_zero : Bin(R, 0, p) = Measure.dirac 0 := by
-  simp [binomial, Measure.map_dirac' .of_discrete]
+lemma map_cast_binomial_zero : Bin(R, 0, p) = dirac 0 := by
+  simp [binomial, map_dirac' .of_discrete]
 
 instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(n, p) :=
-  Measure.isProbabilityMeasure_map <| by fun_prop
+  isProbabilityMeasure_map <| by fun_prop
+
+instance isProbabilityMeasure_map_cast_binomial : IsProbabilityMeasure Bin(R, n, p) :=
+  isProbabilityMeasure_map .of_discrete
 
 lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : ∀ᵐ ω ∂P, X ω ≤ n := by
   rw [hX.ae_iff (p := (· ≤ n)) <| by fun_prop, binomial,
@@ -69,33 +87,32 @@ lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : �
   filter_upwards [setBernoulli_ae_subset] with s hs
   simpa using ncard_le_ncard hs
 
-lemma binomial_nat_apply (s : Set ℕ) :
+lemma binomial_apply (s : Set ℕ) :
     Bin(n, p) s = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
-  rw [binomial, Measure.map_apply (by fun_prop) (by measurability),
-    setBernoulli_apply_eq_apply_subsets]
+  rw [binomial, map_apply (by fun_prop) (by measurability), setBernoulli_apply_eq_apply_subsets]
   simp
 
-lemma binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
+lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
-  rw [Measure.map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
-    binomial_nat_apply]
+  rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
+    binomial_apply]
   simp
 
-lemma binomial_real_nat_apply (s : Set ℕ) :
+lemma binomial_real_apply (s : Set ℕ) :
     Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
-  rw [measureReal_def, binomial_nat_apply, measureReal_def]
-
-lemma binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p).real (Nat.cast '' s) =
-      setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [measureReal_def, binomial_apply, measureReal_def]
 
-lemma binomial_real_nat_singleton (n k : ℕ) (p : I) :
+lemma map_cast_binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
+    Bin(R, n, p).real (Nat.cast '' s) =
+      setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+  rw [measureReal_def, map_cast_binomial_apply, measureReal_def]
+
+lemma binomial_real_singleton (n k : ℕ) (p : I) :
     Bin(n, p).real {k} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   classical
   have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ Iio n}.Finite :=
     (finite_Iio n).finite_subsets.subset (by grind)
-  rw [binomial_real_nat_apply, ← biUnion_of_singleton (setOf _)]
+  rw [binomial_real_apply, ← biUnion_of_singleton (setOf _)]
   simp_rw [← this.mem_toFinset]
   rw [measureReal_biUnion_finset (by simp) (by simp)]
   have h1 s (hs : s ∈ this.toFinset) :
@@ -107,112 +124,78 @@ lemma binomial_real_nat_singleton (n k : ℕ) (p : I) :
     ← ncard_eq_toFinset_card _ _]
   simp [ncard_powerset_ncard]
 
-lemma binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
+lemma map_cast_binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
     Bin(R, n, p).real {(k : R)} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [map_measureReal_apply (by fun_prop) (by measurability)]
-  convert binomial_real_nat_singleton n k p
+  convert binomial_real_singleton n k p
   ext; simp
 
-lemma binomial_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
-    Bin(R, n, p) {(k : R)} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
-  rw [← ENNReal.ofReal_toReal (a := Bin(R, n, p) _) (by simp), ← measureReal_def,
-    binomial_real_singleton]
-
-lemma binomial_singleton_nat (n k : ℕ) (p : I) :
+lemma binomial_singleton (n k : ℕ) (p : I) :
     Bin(n, p) {k} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
   rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
-    binomial_real_nat_singleton]
+    binomial_real_singleton]
 
-lemma binomial_nat_eq (n : ℕ) (p : I) :
+@[simp]
+lemma binomial_nonneg {k : ℕ} : (0 : ℝ) ≤ (n.choose k) * p ^ k * (1 - p) ^ (n - k) :=
+    mul_nonneg (mul_nonneg (by positivity) (pow_nonneg (by grind) _)) (pow_nonneg (by grind) _)
+
+lemma map_cast_binomial_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
+    Bin(R, n, p) {(k : R)} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
+  rw [← ENNReal.ofReal_toReal (a := Bin(R, n, p) _) (by simp), ← measureReal_def,
+    map_cast_binomial_real_singleton]
+
+lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
-      ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
-        .dirac k := by
-  apply Measure.ext_of_singleton
-  intro k
-  rw [binomial_singleton_nat, Measure.finset_sum_apply, Finset.sum_eq_single k]
+      ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) • dirac k := by
+  refine ext_of_singleton fun k ↦ ?_
+  rw [binomial_singleton, finset_sum_apply, Finset.sum_eq_single k]
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
 
 lemma map_sum {ι α β : Type*} {m : MeasurableSpace α} {m' : MeasurableSpace β} {m : ι → Measure α}
     {f : α → β} {s : Finset ι} (hf : AEMeasurable f (∑ i ∈ s, m i)) :
-    Measure.map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
-  rw [← Measure.sum_coe_finset, ← Measure.sum_coe_finset, Measure.map_sum]
-  rwa [Measure.sum_coe_finset]
+    map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
+  rw [← sum_coe_finset, ← sum_coe_finset, Measure.map_sum]
+  rwa [sum_coe_finset]
 
-lemma binomial_eq [MeasurableSingletonClass R] (n : ℕ) (p : I) :
+lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p : I) :
     Bin(R, n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
-        .dirac (k : R) := by
-  rw [binomial_nat_eq, map_sum]
-  · refine Finset.sum_congr rfl fun x hx ↦ ?_
-    · rw [Measure.map_smul, Measure.map_dirac]
-  · exact Measurable.aemeasurable (by fun_prop)
+        dirac (k : R) := by
+  rw [binomial_eq_sum_dirac, map_sum .of_discrete]
+  exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul, map_dirac]
 
-lemma integrable_binomial_nat {E : Type*} [NormedAddCommGroup E]
-    (f : ℕ → E) :
-    Integrable f Bin(n, p) := by
-  rw [binomial_nat_eq, integrable_finset_sum_measure]
-  intro i hi
-  apply Integrable.smul_measure
-  · exact integrable_dirac (by simp)
-  · simp
+section Integral
 
-lemma integrable_binomial [MeasurableSingletonClass R] {E : Type*} [NormedAddCommGroup E]
-    (f : R → E) :
+variable {E : Type*} [NormedAddCommGroup E]
+
+lemma integrable_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
     Integrable f Bin(R, n, p) := by
-  rw [binomial_eq, integrable_finset_sum_measure]
-  intro i hi
-  apply Integrable.smul_measure
-  · exact integrable_dirac (by simp)
-  · simp
+  simp [map_cast_binomial_eq_sum_dirac, integrable_finset_sum_measure, integrable_dirac,
+    Integrable.smul_measure]
 
-lemma integral_binomial_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    (f : ℕ → E) :
+lemma integrable_binomial (f : ℕ → E) :
+    Integrable f Bin(n, p) := (integrable_map_cast_binomial f).comp_measurable .of_discrete
+
+variable [NormedSpace ℝ E] [CompleteSpace E]
+
+lemma integral_binomial (f : ℕ → E) :
     ∫ x, f x ∂Bin(n, p) =
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
-  rw [binomial_nat_eq, integral_finset_sum_measure]
-  · congr with
-    simp only [integral_smul_measure, integral_dirac]
-    rw [ENNReal.toReal_ofReal]
-    have : 0 ≤ (1 - p : ℝ) := by grind
-    have : 0 ≤ (p : ℝ) := by grind
-    positivity
+  rw [binomial_eq_sum_dirac, integral_finset_sum_measure]
+  · simp
   exact fun _ _ ↦ (integrable_dirac (by simp)).smul_measure (by simp)
 
-lemma integral_binomial [MeasurableSingletonClass R]
+lemma integral_map_cast_binomial [MeasurableSingletonClass R]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     (f : R → E) :
     ∫ x, f x ∂Bin(R, n, p) =
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
-  rw [integral_map .of_discrete (integrable_binomial f).aestronglyMeasurable, integral_binomial_nat]
+  rw [integral_map .of_discrete (integrable_map_cast_binomial f).aestronglyMeasurable,
+    integral_binomial]
 
-lemma test' : ∫ x, x ∂Bin(ℝ, n, p) = p * n := by
-  cases n with
-  | zero => simp
-  | succ n =>
-  rw [integral_binomial]
-  calc
-  _ = ∑ k ∈ Finset.Iic (n + 1), (k * ((n + 1).choose k) *
-      ((p : ℝ) ^ k * (1 - p) ^ (n + 1 - k))) := by
-    congr with; rw [smul_eq_mul]; ring
-  _ = ∑ k ∈ Finset.Iic n, (k + 1) * (n + 1).choose (k + 1) * ((p : ℝ) ^ (k + 1) *
-      (1 - p) ^ (n - k)) := by
-    rw [← Nat.range_succ_eq_Iic, Finset.sum_range_succ', Nat.range_succ_eq_Iic]
-    simp
-  _ = p * ∑ k ∈ Finset.Iic n, (n + 1) * (n.choose k) * ((p : ℝ) ^ k * (1 - p) ^ (n - k)) := by
-    rw [Finset.mul_sum]
-    congr with k
-    rw [← n.cast_add_one, ← Nat.cast_mul, Nat.add_one_mul_choose_eq, pow_add]
-    push_cast
-    ring
-  _ = p * (n + 1) * ∑ k ∈ Finset.range (n + 1), (p : ℝ) ^ k * (1 - p) ^ (n - k) * n.choose k := by
-    rw [← Nat.range_succ_eq_Iic, Finset.mul_sum, Finset.mul_sum]
-    congr with k
-    ring
-  _ = p * (n + 1 : ℕ) := by
-    rw [← add_pow]
-    simp
+end Integral
 
 /-! ### Binomial random variables -/
 
@@ -221,8 +204,7 @@ variable {X : Ω → ℝ}
 /-- **Expectation of a binomial random variable**.
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-lemma integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
-  rw [hX.integral_eq, test']
+proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
 
 /-- **Variance of a binomial random variable**.
 
