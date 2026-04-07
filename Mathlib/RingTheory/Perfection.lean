@@ -244,7 +244,7 @@ lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := r
 set_option backward.isDefEq.respectTransparency false in
 lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
     ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
-  simp; rfl
+  simp
 
 lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R p n := rfl
 
