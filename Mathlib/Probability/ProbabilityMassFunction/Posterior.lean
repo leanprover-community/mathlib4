@@ -57,6 +57,10 @@ theorem joint_apply (p : PMF α) (f : α → PMF β) (a : α) (b : β) :
     · intro b' hb'; simp [hb'.symm]
   · intro a' ha'; simp [ha'.symm]
 
+theorem tsum_joint_fst (p : PMF α) (f : α → PMF β) (b : β) :
+    ∑' a, (p.joint f) (a, b) = (p.bind f) b := by
+  simp [bind_apply]
+
 end Joint
 
 end PMF
