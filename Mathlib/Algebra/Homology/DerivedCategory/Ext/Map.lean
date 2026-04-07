@@ -65,15 +65,13 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
   rw [← cancel_epi (F.mapDerivedCategory.map
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
-    descShortComplex_triangleOfSESδ,
-    dsimp% F.mapDerivedCategoryFactors.hom.naturality_assoc,
+    descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_naturality_assoc,
     ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
     Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
     ← Functor.map_comp_assoc]
   dsimp
   rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
-    ← reassoc_of% dsimp% F.mapDerivedCategoryFactors.hom.naturality,
-    Functor.map_comp]
+    ← F.mapDerivedCategoryFactors_naturality_assoc, Functor.map_comp]
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
