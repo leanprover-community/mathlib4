@@ -297,7 +297,7 @@ noncomputable def baseChangeToBaseChange :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma baseChangeToBaseChange_apply (x) :
+lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
     dsimp% (P.baseChangeToBaseChange T).toRingHom x =
       (MvPolynomial.algebraTensorAlgEquiv R T).symm x :=
   rfl
