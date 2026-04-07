@@ -899,6 +899,11 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
+theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ d : R} (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂)
+    (_ : (xa₁ ^ c₁ * (nat_lit 1).rawCast) * c₂ = d) :
+    (xa₁ ^ ea₁ * a₂ : R) ^ b = d := by
+  subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
+
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
 private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
     MonadLiftT (OptionT m) (OptionT m') where
@@ -933,7 +938,8 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd sα a) (vb : ExProd sℕ 
     | .mul vxa₁ vea₁ va₂, vb =>
       let ⟨_, vc₁, pc₁⟩ ← evalMulProd sℕ vea₁ vb
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
-      return ⟨_, .mul vxa₁ vc₁ vc₂, q(mul_pow $pc₁ $pc₂)⟩
+      let ⟨_, vd, pd⟩ ← evalMulProd sα (vxa₁.toProd vc₁) vc₂
+      return ⟨_, vd, q(mul_pow_mul $pc₁ $pc₂ $pd)⟩
     | _, _ => OptionT.fail
   return (← res.run).getD (evalPowProdAtom sα va vb)
 
