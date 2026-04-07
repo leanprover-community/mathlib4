@@ -135,6 +135,20 @@ lemma binomial_singleton (n k : ℕ) (p : I) :
   rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
     binomial_real_singleton]
 
+lemma binomial_real_zero (n : ℕ) (p : I) :
+    Bin(n, p).real {0} = (1 - p) ^ n := by simp [binomial_real_singleton]
+
+lemma map_cast_binomial_real_zero [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
+    Bin(R, n, p).real {0} = (1 - p) ^ n := by
+  rw [← Nat.cast_zero, map_cast_binomial_real_singleton]
+  simp
+
+lemma binomial_real_self (n : ℕ) (p : I) :
+    Bin(n, p).real {n} = p ^ n := by simp [binomial_real_singleton]
+
+lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
+    Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
+
 @[simp]
 lemma binomial_nonneg {k : ℕ} : (0 : ℝ) ≤ (n.choose k) * p ^ k * (1 - p) ^ (n - k) :=
     mul_nonneg (mul_nonneg (by positivity) (pow_nonneg (by grind) _)) (pow_nonneg (by grind) _)
@@ -157,7 +171,7 @@ lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p :
     Bin(R, n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
         dirac (k : R) := by
-  rw [binomial_eq_sum_dirac, map_sum .of_discrete]
+  rw [binomial_eq_sum_dirac, Measure.map_finset_sum .of_discrete]
   exact Finset.sum_congr rfl fun _ _ ↦ by rw [Measure.map_smul, map_dirac]
 
 section Integral
