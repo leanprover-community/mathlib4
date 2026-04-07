@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
 
@@ -74,7 +75,7 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
       by_contra! h
       rw [Function.ne_iff] at h
       let i := wf.min {i | a i ≠ b i} h
-      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ _ · hr)
+      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ · hr)
       have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
       exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
 

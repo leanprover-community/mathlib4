@@ -44,7 +44,7 @@ explicitly as the pullbacks and pushouts of binary (co)fans in the base category
 For `Over X`, one could construct these binary products from the general theory of arbitrary
 products from the next section, i.e.
 ```
-(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
+(Cone.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
 ```
 but this gives worse defeqs.
@@ -300,18 +300,18 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := 𝟙 _
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
---       `Cones.ext`?
+--       `Cone.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 

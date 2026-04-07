@@ -124,7 +124,7 @@ composition by the functor `IsOpenMap.functor f` (sending an open `U` to `f '' U
 -/
 def sheafPullback : Y.Sheaf A ⥤ X.Sheaf A :=
   haveI := Topology.IsOpenEmbedding.functor_isContinuous hf
-  hf.isOpenMap.functor.sheafPushforwardContinuous _ _ _
+  hf.functor.sheafPushforwardContinuous _ _ _
 
 variable {FA : A → A → Type*} {CA : A → Type w}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
@@ -149,7 +149,8 @@ def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
     rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality, Sheaf.hom_ext_iff]
     simp only [Functor.whiskeringLeft_obj_obj, Functor.whiskeringLeft_obj_map, Functor.map_comp,
       isoSheafify_inv, Category.assoc]
-    rw [Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val]
+    rw [ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom,
+      ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom]
     dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
     simp only [sheafifyMap_sheafifyLift, Category.comp_id, sheafifyMap_sheafifyLift_assoc]
     rw [CategoryTheory.sheafifyLift_comp]

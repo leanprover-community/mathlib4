@@ -165,7 +165,7 @@ instance : Fintype (torsion K) := by
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
 /-- The torsion subgroup is cyclic. -/
-instance : IsCyclic (torsion K) := subgroup_units_cyclic _
+instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
 def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)

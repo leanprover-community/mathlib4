@@ -73,7 +73,6 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
     single_kroneckerTMul_single]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :
     kroneckerTMulLinearEquiv m m n n R S A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
@@ -131,7 +130,6 @@ def toFunLinear : A ⊗[R] Matrix n n R →ₗ[R] Matrix n n A :=
 
 variable [DecidableEq n] [Fintype n]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `(A ⊗[R] Matrix n n R) →ₐ[R] Matrix n n A`, as an algebra homomorphism.
 -/
 def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
@@ -208,7 +206,6 @@ end MatrixEquivTensor
 
 variable [Fintype n] [DecidableEq n]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
@@ -228,7 +225,6 @@ theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, single]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
     (matrixEquivTensor n R A).symm (a ⊗ₜ M) = a • M.map (algebraMap R A) :=
@@ -241,7 +237,6 @@ variable (m) (S B)
 variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 variable [Fintype m] [DecidableEq m]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored. -/
 def kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
@@ -256,7 +251,6 @@ theorem kroneckerTMulAlgEquiv_apply (x : Matrix m m A ⊗[R] Matrix n n B) :
     (kroneckerTMulAlgEquiv m n R S A B) x = kroneckerTMulLinearEquiv m m n n R S A B x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R] B)) :
     (kroneckerTMulAlgEquiv m n R S A B).symm x =
@@ -266,7 +260,6 @@ theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R]
 section StarRing
 variable [StarRing R] [StarAddMonoid A] [StarAddMonoid B] [StarModule R A] [StarModule R B]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (m n A B) in
 /-- `Matrix.kroneckerTMul` as a ⋆-algebra equivalence, when the two arguments are tensored. -/
 def kroneckerTMulStarAlgEquiv :
@@ -276,7 +269,6 @@ def kroneckerTMulStarAlgEquiv :
     (by simp [star_eq_conjTranspose, conjTranspose_kroneckerTMul])
     (by simp_all)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toAlgEquiv_kroneckerTMulStarAlgEquiv :
     (kroneckerTMulStarAlgEquiv m n R S A B).toAlgEquiv =
       kroneckerTMulAlgEquiv m n R S A B := rfl
@@ -293,24 +285,20 @@ set_option backward.isDefEq.respectTransparency false in
 
 end StarRing
 
-set_option backward.isDefEq.respectTransparency false in
 variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
 def kroneckerAlgEquiv : (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R :=
   (kroneckerTMulAlgEquiv m n R R R R).trans (Algebra.TensorProduct.lid R R).mapMatrix
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toLinearEquiv_kroneckerAlgEquiv :
     (kroneckerAlgEquiv m n R).toLinearEquiv = kroneckerLinearEquiv m m n n R := rfl
 
 @[simp] theorem kroneckerAlgEquiv_apply (x : Matrix m m R ⊗ Matrix n n R) :
     kroneckerAlgEquiv m n R x = kroneckerLinearEquiv m m n n R x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem kroneckerAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) R) :
     (kroneckerAlgEquiv m n R).symm x = (kroneckerLinearEquiv m m n n R).symm x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (m n) in
 /-- `Matrix.kronecker` as a ⋆-algebra equivalence, when the two arguments are tensored. -/
 def kroneckerStarAlgEquiv [StarRing R] :
@@ -320,7 +308,6 @@ def kroneckerStarAlgEquiv [StarRing R] :
     (by simp [star_eq_conjTranspose, conjTranspose_kronecker])
     (by simp_all)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toAlgEquiv_kroneckerStarAlgEquiv [StarRing R] :
     (kroneckerStarAlgEquiv m n R).toAlgEquiv = kroneckerAlgEquiv m n R := rfl
 

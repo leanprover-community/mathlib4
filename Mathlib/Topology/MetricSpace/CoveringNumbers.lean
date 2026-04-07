@@ -22,7 +22,7 @@ We prove inequalities between these covering and packing numbers.
 
 ## Main definitions
 
-* `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
+* `externalCoveringNumber`: the external covering number of a set `A` for radius `ε` is the minimal
   cardinality (in `ℕ∞`) of an `ε`-cover.
 * `coveringNumber`: the covering number (or internal covering number) of a set `A` for radius `ε` is
   the minimal cardinality (in `ℕ∞`) of an `ε`-cover contained in `A`.
@@ -366,7 +366,6 @@ theorem coveringNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set
   refine (coveringNumber_le_packingNumber _ A).trans ?_
   exact packingNumber_two_mul_le_externalCoveringNumber ε A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coveringNumber_subset_le (h : A ⊆ B) :
     coveringNumber ε A ≤ coveringNumber (ε / 2) B := calc
   coveringNumber ε A
