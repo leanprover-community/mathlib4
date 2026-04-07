@@ -141,14 +141,12 @@ variable {R M} [CommRing R] [Ring M] [Algebra R M]
 /-- Cayley-Hamilton theorem on general free modules. -/
 theorem Algebra.aeval_self_charpoly_lmul {α : M} :
     aeval α (Algebra.lmul R M α).charpoly = 0 :=
-  Algebra.lmul_injective (by
-    rw [map_zero, ← aeval_algHom_apply]
-    exact LinearMap.aeval_self_charpoly <| Algebra.lmul R M α)
+  Algebra.lmul_injective (R := R) <| by
+    simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
 
 theorem minpoly.natDegree_le' [Nontrivial R] {α : M} :
     (minpoly R α).natDegree ≤ Module.finrank R M := by
-  rw [← (Algebra.lmul R M α).charpoly_natDegree]
-  exact natDegree_le_natDegree <|
-    minpoly.min R α (Algebra.lmul R M α).charpoly_monic Algebra.aeval_self_charpoly_lmul
+simpa [charpoly_natDegree] using natDegree_le_natDegree <| minpoly.min _ _
+      (Algebra.lmul R _ α).charpoly_monic Algebra.aeval_self_charpoly
 
 end Algebra
