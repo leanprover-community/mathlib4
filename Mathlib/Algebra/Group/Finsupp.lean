@@ -77,7 +77,19 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
 
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
-@[simps!]
+@[simps! apply symm_apply]
+noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+ M where
+  toEquiv := uniqueEquiv i
+  map_add' _ _ := rfl
+
+-- We want this lemma to fire before `uniqueAddEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueAddEquiv_symm_apply_apply (i : ι) [Subsingleton ι] (m : M) (j : ι) :
+    (uniqueAddEquiv i).symm m j = m := by simp [Subsingleton.elim j i]
+
+set_option linter.deprecated false in
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
@@ -161,6 +173,8 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
 
+set_option linter.deprecated false in
+@[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
