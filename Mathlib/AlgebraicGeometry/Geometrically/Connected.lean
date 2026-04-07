@@ -34,7 +34,7 @@ namespace AlgebraicGeometry
 
 variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
-/-- We say that morphism `f : X ⟶ Y` is geometrically connected if for all `Spec K ⟶ Y` with `K`
+/-- We say that a morphism `f : X ⟶ Y` is geometrically connected if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is connected. -/
 @[mk_iff]
 class GeometricallyConnected (f : X ⟶ Y) : Prop where
@@ -78,12 +78,12 @@ lemma Scheme.Hom.isConnected_preimage [GeometricallyConnected f] (hf : IsOpenMap
   exact (hf.isQuotientMap f.continuous f.surjective).isCoinducing
 
 /-- If `f : X ⟶ S` is geometrically connected and open,
-then `f` induces an equivalence between the connected components of `X` and `S`. -/
+then `f` induces a homeomorphism between the connected components of `X` and `S`. -/
 @[simps! apply]
 noncomputable
-def Scheme.Hom.connectedComponentsEquiv [GeometricallyConnected f] (hf : IsOpenMap f) :
-    ConnectedComponents X ≃ ConnectedComponents S :=
-  (hf.isQuotientMap f.continuous f.surjective).isCoinducing.connectedComponentsEquiv
+def Scheme.Hom.connectedComponentsHomeomorph [GeometricallyConnected f] (hf : IsOpenMap f) :
+    ConnectedComponents X ≃ₜ ConnectedComponents S :=
+  (hf.isQuotientMap f.continuous f.surjective).isCoinducing.connectedComponentsHomeomorph
     f.isConnected_preimage_singleton
 
 lemma GeometricallyConnected.connectedSpace [GeometricallyConnected f] [ConnectedSpace S]
