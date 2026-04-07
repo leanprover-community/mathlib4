@@ -506,7 +506,7 @@ theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : 
   have : s ⊆ { y ∈ closure s | f y ≤ g y } := fun y hy => ⟨subset_closure hy, h y hy⟩
   (closure_minimal this (isClosed_closure.isClosed_le hf hg) hx).2
 
-@[to_dual hypograph]
+@[to_dual]
 theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ f p.1 ≤ p.2 } :=
   (hs.preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd
@@ -702,17 +702,12 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
     ∃ z ∈ s, z ∈ Ioo x y :=
   hs.exists_mem_open isOpen_Ioo (nonempty_Ioo.2 h)
 
--- TODO: why does to_dual fail?
+@[to_dual]
 theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
   refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
   rcases hs.exists_between hz with ⟨y, hys, hy⟩
   exact mem_iUnion₂.2 ⟨y, ⟨hys, hy.1⟩, hy.2⟩
-
-@[to_dual existing]
-theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
-    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
-  Dense.Ioi_eq_biUnion (α := αᵒᵈ) hs x
 
 end LinearOrder
 
