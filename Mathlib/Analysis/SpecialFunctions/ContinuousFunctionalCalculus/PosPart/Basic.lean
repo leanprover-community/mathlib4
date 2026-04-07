@@ -102,7 +102,6 @@ section SMul
 
 variable [StarModule ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
