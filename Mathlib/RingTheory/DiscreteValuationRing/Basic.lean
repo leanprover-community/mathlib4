@@ -343,7 +343,7 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
 
 /--
 If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
-expressed as `u • (algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
+expressed as `u • (algebraMap R K ϖ) ^ n` for some `u : Rˣ` and `n : ℤ`.
 -/
 lemma exists_units_eq_smul_zpow_of_irreducible
     {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]

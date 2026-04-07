@@ -138,7 +138,7 @@ lemma ord_zero : ord R 0 = Module.length R R := by
 
 variable {R}
 /--
-For `x : R` a non zero divisor, `ord R (x^n) = n • ord R x`.
+For `x : R` a non zero divisor, `ord R (x ^ n) = n • ord R x`.
 -/
 @[simp]
 theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n) = n • ord R x := by
@@ -170,7 +170,7 @@ of `a • x` for `a` a unit in `S`.
 -/
 @[simp]
 lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
-    (a : S) (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
+    {a : S} (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
   rw [Algebra.smul_def a x]
   exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
 

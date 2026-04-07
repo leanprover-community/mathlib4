@@ -66,7 +66,7 @@ lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
 /--
 Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
 -/
-lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] (a : R) (ha : a ∈ nonZeroDivisors R) :
+lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] {a : R} (ha : a ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R a ≠ 0 := by
   lift a to R⁰ using ha
   simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
@@ -77,7 +77,7 @@ Helper lemma to pass between the orders on `ℕ∞` and `ℤᵐ⁰` (which notab
 `∞`). Note that here we're using the fact that the order of any non zero divisor is finite, hence
 the assumptions on the ring.
 -/
-lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDivisors R) :
+lemma ord_le_iff {a b : R} (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDivisors R) :
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
@@ -141,7 +141,7 @@ context. Further, the order here is different to similar lemmas involving `Ring.
 here the order is on `ℤᵐ⁰` has the `∞` element less than everything else, whereas in `Ring.ord`
 we work with the order on `ℕ∞` where the `∞` element is interpreted as a `⊤` element.
 -/
-lemma ordFrac_ge_one_of_ne_zero (x : R) (hx : x ≠ 0) :
+lemma ordFrac_ge_one_of_ne_zero {x : R} (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) ≥ 1 := by
   obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp (ord_ne_top (a := x) (by simpa))
   simp_rw [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
@@ -214,7 +214,7 @@ theorem ordFrac_eq_valuation_inv (x : K) :
   simp [ordFrac_eq_inverse_comp_valuation]
 
 lemma ordFrac_irreducible
-    (ϖ : R) (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
+    {ϖ : R} (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
   simp [ordFrac_eq_valuation_inv, IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
     IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
     IsDiscreteValuationRing.intValuation_maximalIdeal,
