@@ -250,6 +250,21 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 
+namespace Module.Basis
+variable {ι : Type*} [Fintype ι]
+
+/-- A linear independent family of `finrank K V` many vectors forms a basis. -/
+@[simps! repr_apply]
+noncomputable def ofLinearIndependentOfCardEqFinrank' [FiniteDimensional K V] (b : ι → V)
+    (hb : LinearIndependent K b) (hι : Fintype.card ι = finrank K V) : Basis ι K V :=
+  .mk hb (hb.span_eq_top_of_card_eq_finrank' hι).ge
+
+@[simp]
+lemma coe_ofLinearIndependentOfCardEqFinrank' [FiniteDimensional K V] (b : ι → V) (hb hι) :
+    ⇑(ofLinearIndependentOfCardEqFinrank' (K := K) b hb hι) = b := coe_mk ..
+
+end Module.Basis
+
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]
