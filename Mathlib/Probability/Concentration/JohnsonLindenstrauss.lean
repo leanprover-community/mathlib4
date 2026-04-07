@@ -1,12 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Distributions.Gaussian.Multivariate
-import Mathlib.Probability.Distributions.Gaussian.Real
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.Analysis.SpecialFunctions.Log.Inequalities
-import Mathlib.Probability.Moments.ChiSquared
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Multivariate
+public import Mathlib.Probability.Distributions.Gaussian.Real
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.Analysis.SpecialFunctions.Log.Inequalities
+public import Mathlib.Probability.Moments.ChiSquared
 
 /-!
 # Johnson–Lindenstrauss Lemma (Dasgupta–Gupta 2003)

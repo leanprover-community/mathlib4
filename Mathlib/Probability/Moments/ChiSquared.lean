@@ -1,6 +1,8 @@
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Distributions.Gaussian.Real
-import Mathlib.Analysis.SpecialFunctions.Exp
+module
+
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Real
+public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # MGF of the Square of a Standard Normal

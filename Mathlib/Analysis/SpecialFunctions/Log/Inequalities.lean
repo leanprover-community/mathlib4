@@ -1,5 +1,7 @@
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Sharp Logarithm Inequalities for Concentration Arguments
