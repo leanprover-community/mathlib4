@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
           source_workflow: Maintainer merge
@@ -40,7 +40,7 @@ jobs:
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
         if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@2536c51d3d126276eb39f74d6bc9c72ac6ef30d3 # v16
+        uses: dawidd6/action-download-artifact@8a338493df3d275e4a7a63bcff3b8fe97e51a927 # v19
         with:
           workflow: maintainer_merge.yml
           name: workflow-data
@@ -150,7 +150,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          message="${message}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
           AUTHOR: ${{ steps.inputs.outputs.author }}
@@ -188,7 +189,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          body="${body}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # body="${body}"$'\n\n---\n'"${metadata}"
           printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Add comment to PR

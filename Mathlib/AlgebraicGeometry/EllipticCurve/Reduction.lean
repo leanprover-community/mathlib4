@@ -281,7 +281,6 @@ class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W whe
 
 @[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
     HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
@@ -309,6 +308,20 @@ the valuation of its discriminant is less than 1 and the valuation of `a₄` is 
 class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
+
+-- TODO: add characterization in terms of the discriminant when the characteristic is not 2
+open Polynomial in
+/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
+
+To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
+`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
+@[mk_iff]
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+    extends W.HasMultiplicativeReduction R where
+  splitMultiplicativeReduction : letI I := W.integralModel R
+    Splits <| .map (algebraMap R (ResidueField R)) <|
+      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X - C (54 * I.b₆ - 3 * I.b₂ * I.b₄ + I.a₂ * I.c₄)
 
 variable {W : WeierstrassCurve K}
 

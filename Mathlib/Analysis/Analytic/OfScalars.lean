@@ -68,7 +68,7 @@ theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalar
   refine Function.mtr fun h ↦ ?_
   simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.smul_apply]
-  push_neg
+  push Not
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
   simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
@@ -242,7 +242,6 @@ theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : 
   simp_rw [ofScalars_norm]
   exact tendsto_succ_norm_div_norm c (by aesop) hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A convenience lemma restating the result of `ofScalars_radius_eq_inv_of_tendsto` under
 the inverse ratio. -/
 theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠ 0)

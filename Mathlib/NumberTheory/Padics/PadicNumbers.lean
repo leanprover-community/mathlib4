@@ -528,6 +528,7 @@ end PadicSeq
 -/
 def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
+deriving Zero, One, Add, Neg, Sub, Mul, Div, AddCommGroup, Ring, CommRing, Field, Inhabited
 
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
@@ -537,35 +538,6 @@ namespace Padic
 section Completion
 
 variable {p : ℕ} [Fact p.Prime]
-
-instance field : Field ℚ_[p] :=
-  Cauchy.field
-
-instance : Inhabited ℚ_[p] :=
-  ⟨0⟩
-
--- short circuits
-instance : CommRing ℚ_[p] :=
-  Cauchy.commRing
-
-instance : Ring ℚ_[p] :=
-  Cauchy.ring
-
-instance : Zero ℚ_[p] := by infer_instance
-
-instance : One ℚ_[p] := by infer_instance
-
-instance : Add ℚ_[p] := by infer_instance
-
-instance : Mul ℚ_[p] := by infer_instance
-
-instance : Sub ℚ_[p] := by infer_instance
-
-instance : Neg ℚ_[p] := by infer_instance
-
-instance : Div ℚ_[p] := by infer_instance
-
-instance : AddCommGroup ℚ_[p] := by infer_instance
 
 /-- Builds the equivalence class of a Cauchy sequence of rationals. -/
 def mk : PadicSeq p → ℚ_[p] :=
@@ -622,7 +594,6 @@ end Completion
 
 end Padic
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
@@ -630,7 +601,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    rw [Padic.zero_def, Quotient.eq]
+    erw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
     trans
@@ -824,16 +795,14 @@ instance metricSpace : MetricSpace ℚ_[p] where
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
-  { Padic.field,
-    Padic.metricSpace p with
-    dist_eq x y := by
-      rw [add_comm, ← sub_eq_add_neg]
-      change ‖x - y‖ = ‖y - x‖
-      have : y - x = (-1) * (x - y) := by ring
-      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
-    norm_mul := by simp [Norm.norm, map_mul]
-    norm := norm }
+instance normedField : NormedField ℚ_[p] where
+  dist_eq x y := by
+    rw [add_comm, ← sub_eq_add_neg]
+    change ‖x - y‖ = ‖y - x‖
+    have : y - x = (-1) * (x - y) := by ring
+    simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
+  norm_mul := by simp [Norm.norm, map_mul]
+  norm := norm
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg

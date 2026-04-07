@@ -47,53 +47,48 @@ instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
 instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance (α : Type*) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y : α ↦ y ≤ x⟩
+instance (α : Type*) [h : LE α] : LE αᵒᵈ :=
+  ⟨fun a b ↦ h.le b a⟩
 
-instance (α : Type*) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y : α ↦ y < x⟩
+instance (α : Type*) [h : LT α] : LT αᵒᵈ :=
+  ⟨fun a b ↦ h.lt b a⟩
 
-instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
-  compare := fun (a b : α) ↦ compare b a
+instance (α : Type*) [h : Ord α] : Ord αᵒᵈ :=
+  ⟨fun a b ↦ h.compare b a⟩
 
 @[to_dual]
-instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
+instance (α : Type*) [h : Min α] : Max αᵒᵈ :=
+  ⟨fun a b ↦ h.min a b⟩
 
-instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+instance [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
+  trans _ _ _ hab hbc := T.trans _ _ _ hbc hab
 
-instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+instance [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
+  trans _ _ _ hab hbc := T.trans _ _ _ hbc hab
 
 instance [LT α] [T : @Std.Trichotomous α LT.lt] : @Std.Trichotomous αᵒᵈ LT.lt where
   trichotomous a b := by rw [eq_comm]; exact T.trichotomous b a
 
-instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
-  le_refl := fun _ ↦ le_refl _
-  le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
-  lt_iff_le_not_ge := fun _ _ ↦ lt_iff_le_not_ge
+instance (α : Type*) [Preorder α] : Preorder αᵒᵈ where
+  le_refl _ := le_refl _
+  le_trans _ _ _ hab hbc := hbc.trans hab
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
 
-instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
-  __ := (inferInstance : Preorder αᵒᵈ)
-  le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
+instance (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
+  le_antisymm a b hab hba := @le_antisymm α _ a b hba hab
 
-instance (α : Type*) [DecidableEq α] : DecidableEq (αᵒᵈ) := ‹DecidableEq α›
+instance (α : Type*) [DecidableEq α] : DecidableEq αᵒᵈ := ‹DecidableEq α›
 
-instance (α : Type*) [LT α] [DecidableLT α] : DecidableLT (αᵒᵈ) :=
-  inferInstanceAs <| DecidableRel (fun a b : α ↦ b < a)
+instance (α : Type*) [LT α] [h : DecidableLT α] : DecidableLT (αᵒᵈ) :=
+  fun a b ↦ h b a
 
-instance (α : Type*) [LE α] [DecidableLE α] : DecidableLE (αᵒᵈ) :=
-  inferInstanceAs <| DecidableRel (fun a b : α ↦ b ≤ a)
+instance (α : Type*) [LE α] [h : DecidableLE α] : DecidableLE (αᵒᵈ) :=
+  fun a b ↦ h b a
 
-instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
-  __ := (inferInstance : PartialOrder αᵒᵈ)
-  __ := (inferInstance : Ord αᵒᵈ)
-  le_total := fun a b : α ↦ le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
-  min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
-  max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
+instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
+  le_total a b := le_total (α := α) b a
+  min_def := max_def' (α := α)
+  max_def := min_def' (α := α)
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
   toDecidableEq := inferInstance
@@ -101,13 +96,14 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
+-- TODO: This declaration really shouldn't exist.
 set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
 /-- The opposite linear order to a given linear order -/
 @[implicit_reducible]
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
   inferInstanceAs <| LinearOrder (OrderDual α)
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
+instance [h : Inhabited α] : Inhabited αᵒᵈ := ⟨h.default⟩
 
 theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
   rfl
@@ -124,7 +120,8 @@ theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
   rfl
 
 instance [h : Nontrivial α] : Nontrivial αᵒᵈ := h
-instance [h : Unique α] : Unique αᵒᵈ := h
+instance [h : Unique α] : Unique αᵒᵈ where
+  uniq := h.uniq
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
