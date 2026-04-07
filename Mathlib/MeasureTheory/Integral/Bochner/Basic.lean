@@ -104,19 +104,19 @@ functions :
    like `L1.integral_coe_eq_integral`.
 
 4. Since simple functions are dense in `L¹`,
-```
-univ = closure {s simple}
-     = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
-     ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
-     = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
-```
-Use `isClosed_property` or `DenseRange.induction_on` for this argument.
+   ```
+   univ = closure {s simple}
+        = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
+        ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
+        = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
+   ```
+   Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notation
 
 * `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
-                `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
+  `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `∫ a, f a ∂μ` : integral of `f` with respect to a measure `μ`
 * `∫ a, f a` : integral of `f` with respect to `volume`, the default measure on the ambient type
 

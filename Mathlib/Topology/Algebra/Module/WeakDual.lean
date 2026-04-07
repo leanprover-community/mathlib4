@@ -64,13 +64,46 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
 deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
+namespace StrongDual
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakDual : StrongDual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
+  LinearEquiv.refl 𝕜 (StrongDual 𝕜 E)
+
+theorem coe_toWeakDual (x' : StrongDual 𝕜 E) : (toWeakDual x' : E → 𝕜) = x' := rfl
+
+@[simp]
+theorem toWeakDual_apply (x' : StrongDual 𝕜 E) (y : E) : (toWeakDual x') y = x' y := rfl
+
+theorem toWeakDual_inj (x' y' : StrongDual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toWeakDual).eq_iff
+
+end StrongDual
+
 namespace WeakDual
 
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
+equivalence `StrongDual.toWeakDual` in the other direction. -/
+def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
+  StrongDual.toWeakDual.symm
+
+@[simp]
+theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
+
+theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
+
+theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toStrongDual).eq_iff
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
