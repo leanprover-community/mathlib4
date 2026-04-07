@@ -63,6 +63,8 @@ variable {α β : Type*} (f : α → β)
   [HasCoproduct (fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)]
 
 open Classical in
+/-- A colimit cokernel cofork for the map
+`∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced by a map `f : α → β`. -/
 @[simps! pt]
 noncomputable def sigmaConstCokernelCofork :
     CokernelCofork
@@ -88,6 +90,9 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
   exact dif_neg (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
+by a map `f : α → β` identifies to the coproduct of copies of `R`
+indexed by the complement of the range of `f`. -/
 noncomputable def isColimitSigmaConstCokernelCofork :
     IsColimit (sigmaConstCokernelCofork R f) :=
   Cofork.IsColimit.mk _
