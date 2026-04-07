@@ -57,7 +57,6 @@ theorem map_log {A' : Type*} [CommRing A'] [Algebra ℚ A'] (f : A →+* A') :
     map f (log A) = log A' := by
   ext n; simp only [coeff_map, coeff_log]; split_ifs <;> simp [RingHom.map_rat_algebraMap]
 
-@[simp]
 theorem coeff_one_log : coeff 1 (log A) = 1 := by simp
 
 theorem order_log [Nontrivial A] : (log A).order = 1 :=
