@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
@@ -67,7 +68,6 @@ variable {R : Type v} [CommRing R]
 variable {A : Type u} [CommRing A] [Algebra R A]
 variable {B : Type w} [CommRing B] [Algebra R B] (I : Ideal B)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
     Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   intro f₁ f₂ e
@@ -282,8 +282,11 @@ instance base_change [FormallyUnramified R A] :
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
-  · subsingleton
-  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+  exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+
+instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
+    FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) :=
+  .of_equiv (Algebra.TensorProduct.quotIdealMapEquivQuotTensor B p).symm
 
 end BaseChange
 

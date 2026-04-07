@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Spread
 
 set_option autoImplicit true

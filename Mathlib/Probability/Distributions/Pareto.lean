@@ -93,7 +93,6 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
 
 open Measure
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
@@ -136,16 +135,10 @@ lemma cdf_paretoMeasure_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · fun_prop
 
-@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_integral :=
-  cdf_paretoMeasure_eq_integral
-
 lemma cdf_paretoMeasure_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
-
-@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_lintegral :=
-  cdf_paretoMeasure_eq_lintegral
 
 end ParetoCDF
 end ProbabilityTheory

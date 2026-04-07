@@ -25,18 +25,11 @@ variable [Encodable α]
 set_option backward.privateInPublic true in
 private def enle : α → α → Prop :=
   encode ⁻¹'o (· ≤ ·)
+deriving DecidableRel
 
 set_option backward.privateInPublic true in
-private theorem enle.isLinearOrder : IsLinearOrder α enle :=
+private local instance enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
-
-set_option backward.privateInPublic true in
-@[instance_reducible]
-private def decidable_enle (a b : α) : Decidable (enle a b) := by
-  unfold enle Order.Preimage
-  infer_instance
-
-attribute [local instance] enle.isLinearOrder decidable_enle
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -90,9 +83,6 @@ theorem isChain_raise : ∀ l n, List.IsChain (· ≤ ·) (raise l n)
 
 theorem isChain_cons_raise (l n) : List.IsChain (· ≤ ·) (n :: raise l n) :=
   isChain_raise (n :: l) 0
-
-@[deprecated (since := "2025-09-19")]
-alias raise_chain := isChain_cons_raise
 
 /-- `raise l n` is a non-decreasing sequence. -/
 theorem raise_sorted (l n) : List.SortedLE (raise l n) := (isChain_raise _ _).sortedLE

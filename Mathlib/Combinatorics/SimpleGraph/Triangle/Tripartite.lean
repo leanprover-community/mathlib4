@@ -42,7 +42,7 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
 open Finset Function Sum3
 
 variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  {t : Finset (α × β × γ)} {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
+  {t : Finset (α × β × γ)}
 
 namespace SimpleGraph
 namespace TripartiteFromTriangles
@@ -66,6 +66,8 @@ lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/
 def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, ⟨rel_irrefl⟩⟩
+
+variable {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
 
 namespace Graph
 

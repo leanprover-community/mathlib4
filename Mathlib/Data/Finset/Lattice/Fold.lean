@@ -106,7 +106,6 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLUB_sup : IsLUB (f '' s) (s.sup f) := by
   simp +contextual [IsLUB, IsLeast, upperBounds, lowerBounds, le_sup]
 
@@ -141,7 +140,7 @@ theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
 
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
     (s.sup fun b => t.sup (f b)) = t.sup fun c => s.sup fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+  eq_of_forall_ge_iff fun a => by simpa using forall₂_comm
 
 @[simp]
 theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
@@ -168,8 +167,9 @@ theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {
 /-- Computing `sup` in a subtype (closed under `sup`) is the same as computing it in `α`. -/
 theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)} (t : Finset β)
     (f : β → { x : α // P x }) :
-    (@sup { x // P x } _ (Subtype.semilatticeSup Psup) (Subtype.orderBot Pbot) t f : α) =
-      t.sup fun x => ↑(f x) := by
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.sup f).val = t.sup fun x => ↑(f x) := by
   letI := Subtype.semilatticeSup Psup
   letI := Subtype.orderBot Pbot
   apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
@@ -256,7 +256,6 @@ theorem sup_eq_iSup [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup
     (Finset.sup_le (fun a ha => le_iSup_of_le a <| le_iSup (fun _ => f a) ha))
     (iSup_le fun _ => iSup_le fun ha => le_sup ha)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sup_id_eq_sSup [CompleteLattice α] (s : Finset α) : s.sup id = sSup s := by
   simp [sSup_eq_iSup, sup_eq_iSup]
 
@@ -354,7 +353,6 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGLB_inf : IsGLB (f '' s) (s.inf f) := by
   simp +contextual [IsGLB, IsGreatest, upperBounds, lowerBounds, inf_le]
 
@@ -547,12 +545,10 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _
@@ -754,7 +750,7 @@ theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempt
 
 protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
     (s.sup' hs fun b => t.sup' ht (f b)) = t.sup' ht fun c => s.sup' hs fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+  eq_of_forall_ge_iff fun a => by simpa using forall₂_comm
 
 theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
@@ -829,12 +825,10 @@ section Inf'
 
 variable [SemilatticeInf α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inf_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.inf ((↑) ∘ f : β → WithTop α) = ↑a :=
   @sup_of_mem αᵒᵈ _ _ _ f _ h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly
 unbounded) meet-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a top element you
 may instead use `Finset.inf` which does not require `s` nonempty. -/
@@ -843,7 +837,6 @@ def inf' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
 
 variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
   @coe_sup' αᵒᵈ _ _ _ H f
@@ -969,7 +962,6 @@ variable [SemilatticeInf α] [OrderTop α]
 theorem inf'_eq_inf {s : Finset β} (H : s.Nonempty) (f : β → α) : s.inf' H f = s.inf f :=
   sup'_eq_sup (α := αᵒᵈ) H f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_inf_of_nonempty {s : Finset β} (h : s.Nonempty) (f : β → α) :
     (↑(s.inf f) : WithTop α) = s.inf ((↑) ∘ f) :=
   coe_sup_of_nonempty (α := αᵒᵈ) h f

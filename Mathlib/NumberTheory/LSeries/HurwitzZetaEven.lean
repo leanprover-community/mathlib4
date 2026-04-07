@@ -166,8 +166,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
-    ring_nf
-    simp
+    grind [I_sq]
   simpa [this] using (hasSum_jacobiTheta₂_term _ (by simpa)).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -484,7 +483,6 @@ end FEPair
 ## Relation to the Dirichlet series for `1 < re s`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `completedCosZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :

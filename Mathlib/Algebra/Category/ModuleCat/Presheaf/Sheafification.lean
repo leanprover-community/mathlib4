@@ -32,7 +32,7 @@ universe v v' u u'
 open CategoryTheory Category Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-  {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
+  {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.obj)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
   [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
@@ -93,7 +93,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
-      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
+      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.obj).map f.val := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
@@ -156,6 +156,7 @@ lemma toSheaf_map_sheafificationAdjunction_counit_app (M : SheafOfModules.{v} R)
 instance : (sheafification.{v} α).IsLeftAdjoint :=
   (sheafificationAdjunction α).isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (sheafificationAdjunction α).counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro F

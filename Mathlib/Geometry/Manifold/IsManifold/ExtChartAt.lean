@@ -40,6 +40,15 @@ in general, but we can still register them as `PartialEquiv`s.
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 
+## Implementation notes
+
+This file uses the name `writtenInExtend` (in analogy to `writtenInExtChart`) to refer to a
+composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ` and `φ` extended by the
+appropriate models with corners. This is not a definition, so technically deviating from the naming
+convention.
+
+TODO: this file uses more made-up names; document these as well
+
 -/
 
 @[expose] public section
@@ -84,6 +93,9 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
 
 theorem extend_target' : (f.extend I).target = I '' f.target := by
   rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
+
+theorem extend_target_eq_image_source : (f.extend I).target = (f.extend I) '' f.source := by
+  rw [f.extend_target', ← f.image_source_eq_target, ← image_comp, f.extend_coe]
 
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
@@ -242,7 +254,6 @@ theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
   filter_upwards [hg, mem_map.1 (this hu)] with z hz hzu
   simpa only [(· ∘ ·), extend_left_inv _ hz, mem_preimage] using hzu
 
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
 theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
     {y : M} (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
@@ -255,8 +266,6 @@ theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'
   filter_upwards [inter_mem_nhdsWithin _ (f.open_source.mem_nhds hy)] with z hz
   rw [comp_apply, extend_left_inv _ hz.2]
   exact hmaps hz.1
-
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
 
 /-- If `s ⊆ f.source` and `g x ∈ f'.source` whenever `x ∈ s`, then `g` is continuous on `s` if and
 only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `f.extend I '' s`. -/
@@ -293,19 +302,6 @@ theorem extend_preimage_inter_eq :
     (f.extend I).symm ⁻¹' (s ∩ t) ∩ range I =
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
-
-@[deprecated "Removed without replacement" (since := "2025-08-27")]
-theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
-  rw [f.extend_target, inter_assoc, inter_comm (range I)]
-  conv =>
-    congr
-    · skip
-    rw [← univ_inter (_ ∩ range I)]
-  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
-  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
 
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
@@ -805,24 +801,27 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
+    MapsTo (writtenInExtChartAt I I' x f)
+      ((extChartAt I x).target ∩ f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source)
+      (extChartAt I' (f x)).target := by
+  intro x' hx'
+  simpa using (chartAt H' (f x)).mapsTo (by simpa using hx'.2)
 
 section
 
@@ -851,7 +850,6 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by

@@ -86,7 +86,6 @@ theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
   simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
   lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
@@ -104,9 +103,6 @@ instance (priority := 100) IsStrictOrderedRing.toContinuousInv₀ [ContinuousMul
     exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
-
-@[deprecated (since := "2025-09-01")] alias IsStrictOrderedRing.toHasContinuousInv₀ :=
-  IsStrictOrderedRing.toContinuousInv₀
 
 end Semifield
 

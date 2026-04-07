@@ -57,6 +57,7 @@ instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 
+set_option backward.inferInstanceAs.wrap.data false in
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
@@ -169,7 +170,7 @@ noncomputable instance forget_createsLimit :
       π := NatTrans.mk
         (fun j => ofHom (limitπMonoidHom F j))
         (MonCat.HasLimits.limitCone F).π.naturality }
-    (Cones.ext
+    (Cone.ext
       ((Types.isLimitEquivSections t).trans (equivShrink _)).symm.toIso
       (fun _ ↦ funext (fun _ ↦ by simp; rfl)))) ?_
   refine IsLimit.ofFaithful (forget MonCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _) ?_ ?_

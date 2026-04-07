@@ -73,9 +73,11 @@ theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deri
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
-variable [SMulCommClass ℝ 𝕜 F]
-
 open LineDeriv
+
+section fderiv
+
+variable [SMulCommClass ℝ 𝕜 F]
 
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
@@ -133,14 +135,6 @@ alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
 theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
   f.differentiableAt.lineDeriv_eq_fderiv.symm
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
-theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
-    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
-    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
-  ext x
-  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
-
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
 
@@ -156,7 +150,6 @@ alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
   induction n generalizing x with
@@ -169,6 +162,16 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
+
+end fderiv
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 end Derivatives
 
@@ -250,7 +253,7 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (L : E →L[ℝ] F →L[ℝ] V) :
     ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (pairing L f (derivCLM ℝ F g)).integrable
+    (fun x _ ↦ f.hasDerivAt x) (fun x _ ↦ g.hasDerivAt x) (pairing L f (derivCLM ℝ F g)).integrable
     (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
@@ -296,9 +299,7 @@ theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : �
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
     (bilinLeftCLM L (∂_{v} g).hasTemperateGrowth _).integrable
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
-  all_goals
-  intro x
-  exact (hasFDerivAt _ x).hasLineDerivAt v
+  all_goals exact fun x _ ↦ (hasFDerivAt _ x).hasLineDerivAt v
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for directional derivatives.
