@@ -290,6 +290,14 @@ lemma comm_comp_comm :
       (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) := by
   simp
 
+@[simp] theorem comm_comp_comm_assoc {M' : Type*} [AddCommMonoid M'] [Module R M']
+    (h : M' →ₗ[R] M ⊗[R] N) :
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ h = h := by
+  ext x
+  change (((TensorProduct.comm R N M).toLinearMap ∘ₗ
+      (TensorProduct.comm R M N).toLinearMap) (h x)) = h x
+  simp
+
 @[simp] theorem comm_comm (x) :
     TensorProduct.comm R M N (TensorProduct.comm R N M x) = x :=
   congr($(comm_trans_comm _ _ _) x)
