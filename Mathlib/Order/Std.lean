@@ -34,12 +34,14 @@ generated automatically.
 
 /-- Arguments for `Preorder.ofStd`; see that function for details. -/
 structure Preorder.OfStdArgs (α : Type*) where
+  /-- The `LE` instance of the order. -/
   le : LE α := by
     first
     | infer_instance
     | exact LE.ofOrd _
     | fail "failed to infer `LE` instance; \
             make sure you have an `LE` or `Ord` instance"
+  /-- The `LT` instance of the order. -/
   lt :
       let := le
       LT α := by
@@ -47,6 +49,7 @@ structure Preorder.OfStdArgs (α : Type*) where
     first
     | infer_instance
     | exact ⟨fun a b ↦ a ≤ b ∧ ¬b ≤ a⟩
+  /-- `a < b` is equivalent to `a ≤ b ∧ ¬b ≤ a`. -/
   lawfulOrderLT :
       let := le; let := lt
       Std.LawfulOrderLT α := by
@@ -54,6 +57,7 @@ structure Preorder.OfStdArgs (α : Type*) where
     first
     | exact ⟨fun _ _ ↦ _root_.Iff.rfl⟩
     | infer_instance
+  /-- ≤ forms a preorder. -/
   isPreorder :
       let := le
       Std.IsPreorder α := by
@@ -84,6 +88,7 @@ def Preorder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Preorder 
 
 /-- Arguments for `PartialOrder.ofStd`; see that function for details. -/
 structure PartialOrder.OfStdArgs (α : Type*) extends toPreorderArgs : Preorder.OfStdArgs α where
+  /-- ≤ forms a partial order. -/
   isPartialOrder :
       let := le
       Std.IsPartialOrder α := by
@@ -127,6 +132,7 @@ theorem Std.LawfulOrderCmp.compareOfLessAndEq (α : Type*)
 /-- Arguments for `LinearOrder.ofStd`; see that function for details. -/
 structure LinearOrder.OfStdArgs (α : Type*) extends
     toPartialOrderArgs : PartialOrder.OfStdArgs α where
+  /-- ≤ forms a linear order. -/
   isLinearOrder :
       let := le
       Std.IsLinearOrder α := by
@@ -137,6 +143,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     | fail "failed to infer `Std.IsLinearOrder` instance; \
             make sure you have an `Std.IsLinearOrder` instance \
             or `LawfulOrderOrd`, `LawfulEqOrd` and `TransOrd` instances"
+  /-- ≤ is decidable. -/
   decidableLE : DecidableLE α := by
     first
     | infer_instance
@@ -144,6 +151,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     | fail "failed to infer `DecidableLE` instance; \
             make sure you have a `DecidableLE` instance \
             or a `LawfulOrderOrd` instance"
+  /-- = is decidable. This can always be automatically derived from `decidableLE`. -/
   decidableEq :
       let := toPartialOrderArgs; let := decidableLE
       DecidableEq α := by
@@ -151,6 +159,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     first
     | infer_instance
     | exact @_root_.decidableEqOfDecidableLE _ (.ofStd _ toPartialOrderArgs) _
+  /-- < is decidable. This can always be automatically derived from `decidableLE`. -/
   decidableLT :
       let := toPreorderArgs; let := decidableLE
       DecidableLT α := by
@@ -158,6 +167,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     first
     | infer_instance
     | exact @_root_.decidableLTOfDecidableLE _ (.ofStd _ toPreorderArgs) _
+  /-- The `Min` instance of the order. This can always be automatically derived. -/
   min :
       let := le; let := decidableLE
       Min α := by
@@ -165,6 +175,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     first
     | infer_instance
     | exact _root_.Min.leftLeaningOfLE _
+  /-- The `Max` instance of the order. This can always be automatically derived. -/
   max :
       let := le; let := decidableLE
       Max α := by
@@ -172,8 +183,11 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     first
     | infer_instance
     | exact _root_.Max.leftLeaningOfLE _
+  /-- `min a b` is equivalent to `if a ≤ b then a else b`. -/
   lawfulOrderLeftLeaningMin : Std.LawfulOrderLeftLeaningMin α := by infer_instance
+  /-- `max a b` is equivalent to `if b ≤ a then a else b`. -/
   lawfulOrderLeftLeaningMax : Std.LawfulOrderLeftLeaningMax α := by infer_instance
+  /-- The `Ord` instance of the order. This can always be automatically derived. -/
   ord :
       let := lt; let := decidableEq; let := decidableLT
       Ord α := by
@@ -181,6 +195,7 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     first
     | infer_instance
     | exact ⟨fun a b ↦ _root_.compareOfLessAndEq a b⟩
+  /-- `Ord` is compatible with ≤. -/
   lawfulOrderOrd :
       let := le; let := lt; let := lawfulOrderLT; let := isLinearOrder
       let := decidableEq; let := decidableLT
