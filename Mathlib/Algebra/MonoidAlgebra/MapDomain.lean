@@ -49,7 +49,7 @@ lemma mapDomain_sum (f : M → N) (x : S[M]) (v : M → S → R[M]) :
     mapDomain f (x.coeff.sum v) = x.coeff.sum fun a b ↦ mapDomain f (v a b) := by
   ext; simp [Finsupp.mapDomain_sum]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; simp
 
 @[to_additive]
@@ -434,14 +434,6 @@ lemma symm_commRingEquiv : (commRingEquiv : R[M][N] ≃+* R[N][M]).symm = commRi
 @[to_additive (attr := simp)]
 lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
     commRingEquiv (single m <| single n r) = single n (single m r) := by simp [commRingEquiv]
-
-@[to_additive (dont_translate := R) (attr := simp)]
-lemma commRingEquiv_single_one (m : M) :
-    commRingEquiv (single m (1 : R[N])) = single 1 (single m 1) := commRingEquiv_single_single ..
-
-@[to_additive (dont_translate := R) (attr := simp)]
-lemma commRingEquiv_single_one_single (m : M) :
-    commRingEquiv (single 1 <| single m 1) = (single m (1 : R[N])) := commRingEquiv_single_single ..
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma commRingEquiv_single_one (m : M) :

@@ -188,14 +188,16 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
     (∏ i ∈ s, f i).coeff.support.sup degb ≤ ∑ i ∈ s, (f i).coeff.support.sup degb :=
   (sup_support_coeff_multisetProd_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map ..
 
-@[deprecated (since := "2026-04-08")] alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
+@[deprecated (since := "2026-04-08")]
+alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
 
 theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_coeff_multisetProd degt0 degtm _)
 
-@[deprecated (since := "2026-04-08")] alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
+@[deprecated (since := "2026-04-08")]
+alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
 
 end CommutativeLemmas
 
@@ -250,8 +252,7 @@ theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
   classical simp only [supDegree, coeff_sum]; grw [Finsupp.support_finsetSum, Finset.sup_biUnion]
 
 theorem supDegree_single_ne_zero (a : A) {r : R} (hr : r ≠ 0) :
-    (single a r).supDegree D = D a := by
-  rw [supDegree, Finsupp.support_single a hr, Finset.sup_singleton]
+    (single a r).supDegree D = D a := by simp [supDegree, hr]
 
 open Classical in
 theorem supDegree_single (a : A) (r : R) :

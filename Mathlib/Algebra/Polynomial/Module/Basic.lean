@@ -175,13 +175,9 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
     ext i
     -- FIXME: Including `coeff` in the simp call below makes it unfold the `*` notation.
     rw [coeff, coeff]
-    -- FIXME: Get rid of `AddEquivClass.toAddEquiv` and `EquivLike.toEquiv`,
-    -- which cause simp troubles here.
-    simp only [AddEquivClass.toAddEquiv, EquivLike.toEquiv, RingEquiv.invFun_eq_symm,
-      AddEquiv.symm_mk, PolynomialModule, single, Finsupp.singleAddHom_apply,
-      AddMonoidAlgebra.coeffAddEquiv_symm_apply, AddEquiv.coe_mk, Equiv.coe_fn_symm_mk,
-      toFinsuppIso_symm_apply, AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, toFinsupp_mul,
-      toFinsupp_monomial]
+    simp only [PolynomialModule, single, Finsupp.singleAddHom_apply,
+      AddMonoidAlgebra.coeffAddEquiv_symm_apply, AddMonoidAlgebra.coeff_ofCoeff,
+      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, toFinsupp_mul, toFinsupp_monomial]
     erw [smul_single_apply]
     split_ifs with hn
     · rw [show i = (i - n) + n by lia, AddMonoidAlgebra.coeff_mul_single_add]

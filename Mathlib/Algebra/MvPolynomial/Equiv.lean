@@ -413,7 +413,7 @@ def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomia
   suffices (commAlgEquiv R S₁ S₂).toAlgHom.comp
       (IsScalarTower.toAlgHom R (MvPolynomial S₂ R) _) = mapAlgHom (Algebra.ofId _ _) by
     exact DFunLike.congr_fun this p
-  ext; simp [commAlgEquiv, mapAlgHom, X, C, monomial]
+  ext; simp [commAlgEquiv, mapAlgHom, X, C, monomial, AddMonoidAlgebra.one_def]
 
 lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by simp [map, X, monomial]
 

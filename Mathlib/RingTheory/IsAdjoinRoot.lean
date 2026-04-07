@@ -424,21 +424,22 @@ def basis : Basis (Fin (natDegree f)) R S where
     intro i hi
     refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
     contrapose! hi
-    simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
-      modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
+    simp only [modByMonicHom, LinearMap.coe_mk, AddHom.coe_mk, SetLike.mem_coe,
+      Finsupp.mem_support_iff, Ne, not_not]
     obtain rfl | hf := eq_or_ne f 1
     · simp
+      rfl
     · exact coeff_eq_zero_of_natDegree_lt <| (natDegree_modByMonic_lt _ h.monic hf).trans_le hi
   repr.right_inv g := by
     nontriviality R
     ext i
     simp only [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, h.modByMonicHom_map,
-      Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
-    rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
+      Finsupp.comapDomain_apply]
+    rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr]
     · rw [Finsupp.mapDomain_apply Fin.val_injective]
-    rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
+    rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero, Polynomial.coeff]
     intro m hm
-    rw [Polynomial.coeff]
+    rw [AddMonoidAlgebra.coeff_mapDomain]
     rw [Finsupp.mapDomain_notin_range]
     rw [Set.mem_range, not_exists]
     rintro i rfl
@@ -449,7 +450,8 @@ def basis : Basis (Fin (natDegree f)) R S where
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
   Basis.apply_eq_iff.mpr <| by
-    simp [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, IsAdjoinRootMonic.basis]
+    simp [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, IsAdjoinRootMonic.basis,
+      AddMonoidAlgebra.single]
 
 include h in
 theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
@@ -470,7 +472,7 @@ def powerBasis : PowerBasis R S where
 @[simp]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  simp [IsAdjoinRootMonic.basis, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, toFinsupp_apply]
+  simp [IsAdjoinRootMonic.basis, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, Polynomial.coeff]
 
 theorem basis_one (hdeg : 1 < natDegree f) : h.basis ⟨1, hdeg⟩ = h.root := by
   rw [h.basis_apply, Fin.val_mk, pow_one]

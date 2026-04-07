@@ -500,7 +500,7 @@ theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModul
     ext
     -- Porting note: single_mul_apply not firing in simp without parentheses, probably due to the
     -- defeq abuse in `change` above.
-    simp [(MonoidAlgebra.single_mul_apply)]
+    simp [(MonoidAlgebra.coeff_single_mul_apply)]
   | hadd x y hx hy => simp only [hx, hy, add_mul, add_smul]
   | hsmul r x hx => simp [← hx]
 
@@ -735,19 +735,19 @@ variable (k G) (α : Type*)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
-noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule :=
-  { AddEquiv.refl _ with
-    map_smul' _ x := by
-      simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-        AddEquiv.refl_apply, RingHom.id_apply]
-      induction x using Finsupp.induction with
-      | zero => simp only [smul_zero]
-      | single_add _ _ _ _ _ h =>
-        rw [smul_add, h]
-        change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
-        simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
-          asAlgebraHom_def, MonoidAlgebra.lift_apply]
-        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
+noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule where
+  toAddEquiv := .refl _
+  map_smul' _ x := by
+    simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      AddEquiv.refl_apply, RingHom.id_apply]
+    induction x using Finsupp.induction with
+    | zero => simp only [smul_zero]
+    | single_add _ _ _ _ _ h =>
+      rw [smul_add, h]
+      change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
+      simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
+        asAlgebraHom_def, MonoidAlgebra.lift_apply]
+      simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum]
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
 noncomputable def freeAsModuleBasis : Basis α k[G] (free k G α).asModule where
