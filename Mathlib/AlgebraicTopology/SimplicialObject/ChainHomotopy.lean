@@ -56,7 +56,6 @@ private lemma comm_zero :
     f.app (op ⦋0⦌) = hom H 0 1 ≫ d + g.app (op ⦋0⦌) := by
   simp [← H.h_last_comp_δ_last 0]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma comm_succ (n : ℕ) :
     letI α : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ :=
       ((alternatingFaceMapComplex C).obj X).d (n + 1) n ≫ ToChainHomotopy.hom H n (n + 1)
