@@ -6,6 +6,7 @@ Authors: Peter Pfaffelhuber
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # Gram Matrices
@@ -114,6 +115,13 @@ theorem posDef_gram_of_linearIndependent
 theorem posDef_gram_iff_linearIndependent {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
+
+omit [Finite n] in
+theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) (v : n → E) :
+    letI m := of fun i j ↦ b.repr (v j) i
+    gram 𝕜 v = mᴴ * m := by
+  ext i j
+  simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
 end NormedInnerProductSpace
 

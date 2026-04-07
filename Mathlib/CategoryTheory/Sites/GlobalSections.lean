@@ -63,14 +63,12 @@ abbrev HasGlobalSectionsFunctor := (constantSheaf J A).IsLeftAdjoint
 whenever it exists. -/
 noncomputable def Sheaf.Γ [HasGlobalSectionsFunctor J A] : Sheaf J A ⥤ A :=
   (constantSheaf J A).rightAdjoint
+deriving Functor.IsRightAdjoint
 
 /-- The constant sheaf functor is by definition left-adjoint to the global sections functor. -/
 noncomputable def constantSheafΓAdj [HasGlobalSectionsFunctor J A] :
     constantSheaf J A ⊣ Γ J A :=
   Adjunction.ofIsLeftAdjoint (constantSheaf J A)
-
-instance [HasGlobalSectionsFunctor J A] : (Γ J A).IsRightAdjoint := by
-  unfold Γ; infer_instance
 
 /-- Sites with a terminal object admit a global sections functor. -/
 instance hasGlobalSectionsFunctor_of_hasTerminal [HasTerminal C] :

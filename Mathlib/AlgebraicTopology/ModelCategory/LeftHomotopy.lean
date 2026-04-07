@@ -121,14 +121,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : Cylinder X) {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_precomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_precomp_iff]
 
 end
 

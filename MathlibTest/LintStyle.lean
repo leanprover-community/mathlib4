@@ -8,6 +8,8 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
 import all Mathlib.Tactic.Linter.TextBased
 import all Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+-- This import line is longer than a 100 characters, and used to trigger the longLine linter.
+import all MathlibTest.AModuleWithAVeryLongModuleNameToTestTheLineLengthLinterXXXXXXXXXXXXXXXXXXXXXXXX
 
 /-! Tests for all the style linters. -/
 

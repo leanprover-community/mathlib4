@@ -9,11 +9,9 @@ public import Batteries.Classes.Order
 public import Batteries.Tactic.Trans
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.SplitIfs
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Order.Defs.PartialOrder
 
 /-!
@@ -48,10 +46,11 @@ introducing the arguments and trying the following approaches in order:
 
 1. seeing if `rfl` works
 2. seeing if the `compare` at hand is nonetheless essentially `compareOfLessAndEq`, but, because of
-implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
-`compareOfLessAndEq`
+   implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
+   `compareOfLessAndEq`
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
-  (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
+   (useful when `compare` is defined via a `match` statement, as it is for `Bool`)
+-/
 macro "compareOfLessAndEq_rfl" : tactic =>
   `(tactic| (intro a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
