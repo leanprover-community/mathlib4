@@ -57,7 +57,7 @@ theorem opow_zero (a : Ordinal) : a ^ (0 : Ordinal) = 1 := by
 @[simp]
 theorem opow_add_one (a b : Ordinal) : a ^ (b + 1) = a ^ b * a := by
   obtain rfl | h := eq_or_ne a 0
-  · rw [zero_opow (add_one_ne_zero b), mul_zero]
+  · rw [zero_opow (add_pos_of_right zero_lt_one b).ne', mul_zero]
   · rw [opow_of_ne_zero h, opow_of_ne_zero h]
     exact limitRecOn_succ ..
 
@@ -483,7 +483,7 @@ theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
   refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
-  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_one_ne_zero b)).1 ha
+  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_pos_of_right zero_lt_one b).ne').1 ha
   refine ⟨n, hn.trans_le ?_⟩
   grw [lt_succ_iff.1 hc]
   exact omega0_pos
