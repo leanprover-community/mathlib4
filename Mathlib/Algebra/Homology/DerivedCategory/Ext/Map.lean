@@ -78,6 +78,26 @@ lemma DerivedCategory.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedC
     ← Functor.map_comp_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app
+    [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D] (X : C) :
+    dsimp% F.mapDerivedCategoryFactors.inv.app ((HomologicalComplex.single C (.up ℤ) 0).obj X) ≫
+      (F.mapDerivedCategorySingleFunctor 0).hom.app X =
+    Q.map ((F.mapCochainComplexSingleFunctor 0).hom.app X) := by
+  simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
+    CochainComplex.singleFunctor, CochainComplex.singleFunctors, singleFunctorIsoCompQ]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app
+    [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D] (X : C) :
+    dsimp% (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
+      F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C (.up ℤ) 0).obj X) =
+    Q.map ((F.mapCochainComplexSingleFunctor 0).inv.app X) := by
+  simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
+    CochainComplex.singleFunctor, CochainComplex.singleFunctors, singleFunctorIsoCompQ]
+
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
