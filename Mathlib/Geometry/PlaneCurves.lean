@@ -53,27 +53,31 @@ noncomputable section
 
 namespace PlaneCurve
 
-section
+variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-variable (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ)
-
-/-- Curvature for plane curves. This is usually called just the curvature function of a plane curve
-in most elementary differential geometry texts, but because this definition is slightly different
-from the general definition of the curvature function of a general parametrized curve (which is
-always non-negative and only expresses magnitude as opposed to this definition which can also be
-negative and expresses also direction) we call this the oriented curvature, this is also the name
-given in the Wikipedia article about curvature in the section about plane curves. This definition is
-meaningful only for regular plane curves which are twice continuously differentiable on an
-interval I. -/
-def orientedCurvature : ℝ :=
+/-- Oriented curvature of a plane curve `c` at `t`.
+This curvature expresses a direction / orientation in the following way:
+Denote `v = deriv c t`, `a = iteratedDeriv 2 c t`, `n = normal c t` and `κ = orientedCurvature c t`.
+Then for a general plane curve, if (`v`, `a`) is a positvely oriented, then `κ` is positive, and if
+it's negatively oriented, then `κ` is negative (geometrically the orientation of a basis of the
+plane is positive when the basis vectors are ordered anti-clockwise and negative when ordered
+clockwise). It's useful for understanding also to consider the case in which `c` is parametrized by
+arc-length, in which case `a` is in the span of `n` and `κ` is positive if `a` is in the same
+direction as `n` and negative if `a` is in the opposite direction of `n`.
+This definition is meaningful only when `c` is two times differentiable at `t` with a non-zero
+derivative; otherwise it has junk value `0`. -/
+def orientedCurvature (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) : ℝ :=
   !![deriv c t 0, deriv c t 1; iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3)
 
+/-- See also `orientedCurvature_of_norm_deriv_eq_one` for the special case where `‖deriv c t‖ = 1`.
+(this is useful usually for plane curves parametrized by arc-length). -/
 lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1;
     iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3) := rfl
 
 /-- Normal vector at a point of a plane curve.
 This definition is only meaningful when `c` is differentiable at `t` with non-zero derivative. -/
-def normal : EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]
+def normal (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) :
+    EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]
 
 lemma normal_eq : normal c t = ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0] := rfl
 
@@ -83,15 +87,12 @@ lemma normal_eq_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
     normal c t = !₂[-(deriv c t 1), deriv c t 0] := by
   simp [normal_eq, h]
 
+variable (c t) in
 /-- The `normal` vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
 theorem inner_deriv_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
   rw [normal_eq, real_inner_smul_right]
   simp [PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
-
-end
-
-variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
 /-- The `normal` vector at point with a non-zero derivative of a plane curve has length 1 (is a unit
 vector). -/
@@ -140,11 +141,11 @@ def frameAt (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
   OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- A simpler formula for the curvature (`orientedCurvature`) of a plane curve parametrized by
-arc-length, or in other words with unit speed. -/
-theorem orientedCurvature_of_norm_deriv_eq_one (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
+/-- A simpler formula for the curvature (`orientedCurvature`) of a plane curve `c` with unit
+derivative at `t` (usually used when `c` is parametrized by arc-length, i.e, with unit speed). -/
+theorem orientedCurvature_of_norm_deriv_eq_one (h : ‖deriv c t‖ = 1) :
     orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
-  simp only [orientedCurvature_eq, normal_eq_of_norm_deriv_eq_one (h:=(hc t ht)), hc t ht,
+  simp only [orientedCurvature_eq, normal_eq_of_norm_deriv_eq_one h, h,
     Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one, EuclideanSpace.inner_eq_star_dotProduct,
     Fin.isValue, star_trivial, Matrix.cons_dotProduct, neg_mul, Matrix.dotProduct_of_isEmpty,
     add_zero]
@@ -190,7 +191,7 @@ is equal to the curvature times the normal vector. -/
 theorem second_deriv_eq_orientedCurvature_times_normal (hI : IsOpen I) (hc₁ : ContDiffOn ℝ 2 c I)
     (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) (ht : t ∈ I) :
     iteratedDeriv 2 c t = (orientedCurvature c t)•(normal c t) := by
-  rw [orientedCurvature_of_norm_deriv_eq_one hc₂ ht]
+  rw [orientedCurvature_of_norm_deriv_eq_one (hc₂ t ht)]
   nth_rewrite 1 [← (frameAt hc₂ ht).sum_repr' (iteratedDeriv 2 c t)]
   simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk, Fin.sum_univ_two,
     Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
@@ -206,7 +207,7 @@ protected lemma _root_.HasDerivAt.normal (hI : IsOpen I) (hc₁ : ContDiffOn ℝ
   simp only [hasDerivAt_deriv_iff]
   have h : DifferentiableOn ℝ (fun τ ↦  normal c τ) I := by
     have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
-      fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+      fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one (hc₂ τ hτ)
     rw [differentiableOn_congr hn, differentiableOn_piLp] at *
     intro i
     fin_cases i <;> simp [hD]
@@ -217,7 +218,7 @@ lemma _root_.ContDiffOn.normal_of_twice_contDiffOn (hI : IsOpen I) (hc₁ : Cont
     (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) : ContDiffOn ℝ 1 (normal c) I := by
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc₁.deriv_of_isOpen hI (by norm_num)
   have hn : ∀ τ ∈ I, normal c τ = !₂[-(deriv c τ 1), deriv c τ 0] :=
-    fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one c τ (hc₂ τ hτ)
+    fun τ hτ ↦ normal_eq_of_norm_deriv_eq_one (hc₂ τ hτ)
   rw [contDiffOn_congr hn, contDiffOn_piLp] at *
   intro i
   fin_cases i
@@ -240,7 +241,7 @@ theorem inner_deriv_deriv_normal_eq_minus_orientedCurvature (hI : IsOpen I)
   have hci : Set.EqOn (fun x ↦ inner ℝ (normal c x) (deriv c x)) (fun x ↦ 0) I := by
     intro x hx
     simp only
-    rw [real_inner_comm, inner_deriv_normal_eq_zero c x]
+    rw [real_inner_comm, inner_deriv_normal_eq_zero]
   rw [← inners_sum_eq_zero_of_const_inner_on_open hI ht (HasDerivAt.normal hI hc₁ ht hc₂)
     (hasDerivAt_deriv_of_contDiffOn hI hc₁ ht) hci, second_deriv_eq_orientedCurvature_times_normal
     hI hc₁ hc₂ ht, real_inner_comm, inner_smul_left_eq_smul]
