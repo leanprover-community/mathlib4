@@ -413,88 +413,68 @@ def createsColimitsOfSizeOfUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimitsOfSize.{
   CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOfUnop _ _
 
 /-- If `F : C ⥤ D` creates colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` creates limits. -/
-@[implicit_reducible]
-def createsLimitsOp (F : C ⥤ D) [CreatesColimits F] : CreatesLimits F.op where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeOp _ _
+abbrev createsLimitsOp (F : C ⥤ D) [CreatesColimits F] : CreatesLimits F.op :=
+  createsLimitsOfSizeOp F
 
 /-- If `F : C ⥤ Dᵒᵖ` creates colimits, then `F.leftOp : Cᵒᵖ ⥤ D` creates limits. -/
-@[implicit_reducible]
-def createsLimitsLeftOp (F : C ⥤ Dᵒᵖ) [CreatesColimits F] : CreatesLimits F.leftOp where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeLeftOp _ _
+abbrev createsLimitsLeftOp (F : C ⥤ Dᵒᵖ) [CreatesColimits F] : CreatesLimits F.leftOp :=
+  createsLimitsOfSizeLeftOp F
 
 /-- If `F : Cᵒᵖ ⥤ D` creates colimits, then `F.rightOp : C ⥤ Dᵒᵖ` creates limits. -/
-@[implicit_reducible]
-def createsLimitsRightOp (F : Cᵒᵖ ⥤ D) [CreatesColimits F] : CreatesLimits F.rightOp where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeRightOp _ _
+abbrev createsLimitsRightOp (F : Cᵒᵖ ⥤ D) [CreatesColimits F] : CreatesLimits F.rightOp :=
+  createsLimitsOfSizeRightOp F
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` creates colimits, then `F.unop : C ⥤ D` creates limits. -/
-@[implicit_reducible]
-def createsLimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimits F] : CreatesLimits F.unop where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeUnop _ _
+abbrev createsLimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimits F] : CreatesLimits F.unop :=
+  createsLimitsOfSizeUnop F
 
 /-- If `F : C ⥤ D` creates limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsOp (F : C ⥤ D) [CreatesLimits F] : CreatesColimits F.op where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOp _ _
+abbrev createsColimitsOp (F : C ⥤ D) [CreatesLimits F] : CreatesColimits F.op :=
+  createsColimitsOfSizeOp F
 
 /-- If `F : C ⥤ Dᵒᵖ` creates limits, then `F.leftOp : Cᵒᵖ ⥤ D` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsLeftOp (F : C ⥤ Dᵒᵖ) [CreatesLimits F] : CreatesColimits F.leftOp where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeLeftOp _ _
+abbrev createsColimitsLeftOp (F : C ⥤ Dᵒᵖ) [CreatesLimits F] : CreatesColimits F.leftOp :=
+  createsColimitsOfSizeLeftOp F
 
 /-- If `F : Cᵒᵖ ⥤ D` creates limits, then `F.rightOp : C ⥤ Dᵒᵖ` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsRightOp (F : Cᵒᵖ ⥤ D) [CreatesLimits F] :
-    CreatesColimits F.rightOp where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeRightOp _ _
+abbrev createsColimitsRightOp (F : Cᵒᵖ ⥤ D) [CreatesLimits F] : CreatesColimits F.rightOp :=
+  createsColimitsOfSizeRightOp F
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` creates limits, then `F.unop : C ⥤ D` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimits F] : CreatesColimits F.unop where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeUnop _ _
+abbrev createsColimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimits F] : CreatesColimits F.unop :=
+  createsColimitsOfSizeUnop F
 
 /-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` creates colimits, then `F : C ⥤ D` creates limits. -/
-@[implicit_reducible]
-def createsLimitsOfOp (F : C ⥤ D) [CreatesColimits F.op] : CreatesLimits F where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeOfOp _ _
+abbrev createsLimitsOfOp (F : C ⥤ D) [CreatesColimits F.op] : CreatesLimits F :=
+  createsLimitsOfSizeOfOp F
 
 /-- If `F.leftOp : Cᵒᵖ ⥤ D` creates colimits, then `F : C ⥤ Dᵒᵖ` creates limits. -/
-@[implicit_reducible]
-def createsLimitsOfLeftOp (F : C ⥤ Dᵒᵖ) [CreatesColimits F.leftOp] : CreatesLimits F where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeOfLeftOp _ _
+abbrev createsLimitsOfLeftOp (F : C ⥤ Dᵒᵖ) [CreatesColimits F.leftOp] : CreatesLimits F :=
+  createsLimitsOfSizeOfLeftOp F
 
 /-- If `F.rightOp : C ⥤ Dᵒᵖ` creates colimits, then `F : Cᵒᵖ ⥤ D` creates limits. -/
-@[implicit_reducible]
-def createsLimitsOfRightOp (F : Cᵒᵖ ⥤ D) [CreatesColimits F.rightOp] :
-    CreatesLimits F where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeOfRightOp _ _
+abbrev createsLimitsOfRightOp (F : Cᵒᵖ ⥤ D) [CreatesColimits F.rightOp] : CreatesLimits F :=
+  createsLimitsOfSizeOfRightOp F
 
 /-- If `F.unop : C ⥤ D` creates colimits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` creates limits. -/
-@[implicit_reducible]
-def createsLimitsOfUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimits F.unop] : CreatesLimits F where
-  CreatesLimitsOfShape {_} _ := createsLimitsOfShapeOfUnop _ _
+abbrev createsLimitsOfUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesColimits F.unop] : CreatesLimits F :=
+  createsLimitsOfSizeOfUnop F
 
 /-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` creates limits, then `F : C ⥤ D` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsOfOp (F : C ⥤ D) [CreatesLimits F.op] : CreatesColimits F where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOfOp _ _
+abbrev createsColimitsOfOp (F : C ⥤ D) [CreatesLimits F.op] : CreatesColimits F :=
+  createsColimitsOfSizeOfOp F
 
 /-- If `F.leftOp : Cᵒᵖ ⥤ D` creates limits, then `F : C ⥤ Dᵒᵖ` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsOfLeftOp (F : C ⥤ Dᵒᵖ) [CreatesLimits F.leftOp] :
-    CreatesColimits F where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOfLeftOp _ _
+abbrev createsColimitsOfLeftOp (F : C ⥤ Dᵒᵖ) [CreatesLimits F.leftOp] : CreatesColimits F :=
+  createsColimitsOfSizeOfLeftOp F
 
 /-- If `F.rightOp : C ⥤ Dᵒᵖ` creates limits, then `F : Cᵒᵖ ⥤ D` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsOfRightOp (F : Cᵒᵖ ⥤ D) [CreatesLimits F.rightOp] :
-    CreatesColimits F where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOfRightOp _ _
+abbrev createsColimitsOfRightOp (F : Cᵒᵖ ⥤ D) [CreatesLimits F.rightOp] : CreatesColimits F :=
+  createsColimitsOfSizeOfRightOp F
 
 /-- If `F.unop : C ⥤ D` creates limits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` creates colimits. -/
-@[implicit_reducible]
-def createsColimitsOfUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimits F.unop] : CreatesColimits F where
-  CreatesColimitsOfShape {_} _ := createsColimitsOfShapeOfUnop _ _
+abbrev createsColimitsOfUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimits F.unop] : CreatesColimits F :=
+  createsColimitsOfSizeOfUnop F
 
 /-- If `F : C ⥤ D` creates finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` creates finite
 limits. -/
