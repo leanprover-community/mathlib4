@@ -42,10 +42,6 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           | (product)                 | (product)                 | (product)
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
-
-
-## TODO
-* If each `f i` is multiplicative, then `ArithmeticFunction.eulerProduct f` is multiplicative.
 -/
 
 @[expose] public section
