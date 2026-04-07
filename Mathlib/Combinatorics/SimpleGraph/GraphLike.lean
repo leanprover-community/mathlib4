@@ -14,7 +14,7 @@ In this file we make `SimpleGraph` an instance of `GraphLike`.
 
 @[expose] public section
 
-variable {α : Type*}
+variable {V : Type*}
 
 namespace SimpleGraph
 
