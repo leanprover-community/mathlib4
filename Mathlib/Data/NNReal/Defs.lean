@@ -242,14 +242,14 @@ def toRealHom : ℝ≥0 →+* ℝ where
 section Actions
 
 /-- A scalar multiplication over `ℝ` restricts to a scalar multiplication over `ℝ≥0`. -/
-instance {M : Type*} [SMul ℝ M] : SMul ℝ≥0 M :=
+instance {M : Type*} [MulAction ℝ M] : SMul ℝ≥0 M :=
   ⟨fun c m ↦ (c : ℝ) • m⟩
 
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
 instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
   fast_instance% MulAction.compHom M toRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [SMul ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
+theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 
 instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
