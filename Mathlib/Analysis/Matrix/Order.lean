@@ -253,10 +253,8 @@ theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
     refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y ↦ ?_⟩
     rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
     exact (hAs.kronecker hBs).dotProduct_mulVec_nonneg _
-  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
-    ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
-    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
-  exact hAB.2 (x.subtypeDomain (· ∈ x.support))
+  simpa [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain] using hAB.2 _
 
 /-- **Schur product theorem**: the Hadamard (entrywise) product of positive definite
 matrices is positive definite. -/
@@ -272,15 +270,12 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
     refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy ↦ ?_⟩
     rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
-    refine (PosDef.kronecker hAs hBs).dotProduct_mulVec_pos ?_
-    rwa [ne_eq, vec_eq_zero_iff, diagonal_eq_zero]
+    exact (PosDef.kronecker hAs hBs).dotProduct_mulVec_pos <| by simpa
   simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
     ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
   refine hAB.2 ?_
-  simp_rw [← Finsupp.support_nonempty_iff, Finsupp.support_subtypeDomain,
-    Finset.subtype_mem_eq_attach, Finset.attach_nonempty_iff]
-  exact Finsupp.support_nonempty_iff.mpr hx
+  simpa [← Finsupp.support_nonempty_iff] using Finsupp.support_nonempty_iff.mpr hx
 
 end hadamard
 
