@@ -89,7 +89,7 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
   obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
-      grind [h i.property j.property]
+      grind [Subtype.ext_iff, h i.property j.property]
     · rfl
     all_goals
       rw [← CategoryOfElements.map_snd h₁.some.2]

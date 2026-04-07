@@ -155,14 +155,17 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
 
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of types) `𝒪_N ⟶ f_* 𝒪_M`
 by pre-composing with `f`. -/
-@[simps -isSimp hom_app_coe]
+@[simps! -isSimp hom_app_hom]
 def ContMDiff.smoothSheafHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     smoothSheaf IP I P N ⟶ (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
       (smoothSheaf IM I M N) where
-  hom.app U g := ⟨g ∘ Set.restrictPreimage _ f, by
+  hom.app U := TypeCat.ofHom fun g ↦ ⟨g ∘ Set.restrictPreimage _ f, by
     apply ContMDiff.comp (I' := IP) g.2
     rw [← ContMDiff.subtypeVal_comp_iff]
     exact hf.comp contMDiff_subtype_val⟩
+
+@[deprecated (since := "2026-04-06")] alias ContMDiff.smoothSheafHom_hom_app_coe :=
+  ContMDiff.smoothSheafHom_hom_app_hom
 
 end TypeCat
 
