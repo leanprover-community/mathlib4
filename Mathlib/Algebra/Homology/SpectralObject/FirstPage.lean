@@ -68,7 +68,7 @@ variable [data.HasFirstPageComputation] [X.HasSpectralSequence data]
 /-- If `data : SpectralSequenceDataCore ι c r₀` is such that
 `data.HasFirstPageComputation` holds, this is an isomorphism which
 allows to "compute" the objects on the `r₀`th page of the spectral sequence
-obtained from a spectral object `X` indexed by `i` using data as objects
+obtained from a spectral object `X` indexed by `ι` using data as objects
 of the form `X.H`. See also `spectralSequence_first_page_d_eq` for the relation
 between the differentials of the first page of the spectral sequence and `X.δ`. -/
 noncomputable def spectralSequenceFirstPageXIso (pq : κ)
