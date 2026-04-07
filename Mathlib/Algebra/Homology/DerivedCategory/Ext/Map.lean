@@ -108,8 +108,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     ShiftedHom.map hS.singleδ F.mapDerivedCategory  =
       (F.mapDerivedCategorySingleFunctor 0).hom.app S.X₃ ≫
         (hS.map_of_exact F).singleδ ≫ ((F.mapDerivedCategorySingleFunctor 0).inv.app S.X₁)⟦1⟧' := by
-  rw [← hS.mapShiftedHom_singleδ', Category.assoc, Category.assoc, ← Functor.map_comp]
-  simp
+  simp [← hS.mapShiftedHom_singleδ'_assoc, ← Functor.map_comp]
 
 end
 
