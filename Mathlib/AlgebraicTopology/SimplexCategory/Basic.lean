@@ -727,8 +727,8 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext : 2
-  exact congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
+  ext : 4
+  exact DFunLike.congr_fun (eq₁.trans eq₂.symm) _
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))

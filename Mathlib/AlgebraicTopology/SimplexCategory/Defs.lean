@@ -112,6 +112,8 @@ def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCat
 
 end Hom
 
+attribute [irreducible] SimplexCategory.Hom
+
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
   id _ := SimplexCategory.Hom.id _
