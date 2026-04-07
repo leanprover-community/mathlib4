@@ -672,7 +672,7 @@ theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent 
   linearIndependent_finCons.2 ⟨hv, hx⟩
 
 @[deprecated (since := "2026-04-07")]
-alias LinearIndependent.finCons := LinearIndependent.fin_cons
+alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
 only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
