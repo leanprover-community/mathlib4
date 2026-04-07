@@ -51,11 +51,9 @@ def joint (p : PMF α) (f : α → PMF β) : PMF (α × β) :=
 theorem joint_apply (p : PMF α) (f : α → PMF β) (a : α) (b : β) :
     (p.joint f) (a, b) = p a * f a b := by
   simp only [joint, bind_apply, pure_apply, Prod.mk.injEq]
-  rw [tsum_eq_single a]
-  · congr 1; rw [tsum_eq_single b]
-    · simp
-    · intro b' hb'; simp [hb'.symm]
-  · intro a' ha'; simp [ha'.symm]
+  rw [tsum_eq_single a (fun a' ha' => by simp [ha'.symm]),
+      tsum_eq_single b (fun b' hb' => by simp [hb'.symm])]
+  simp
 
 theorem tsum_joint_fst (p : PMF α) (f : α → PMF β) (b : β) :
     ∑' a, (p.joint f) (a, b) = (p.bind f) b := by
@@ -69,14 +67,11 @@ section Posterior
 when `b` is in the support of the marginal. -/
 theorem posterior_hasSum (p : PMF α) (f : α → PMF β) (b : β)
     (hb : b ∈ (p.bind f).support) :
-    HasSum (fun a => (p.joint f) (a, b) / (p.bind f) b) 1 := by
-  have hne := (mem_support_iff _ _).mp hb
-  have hne_top := (p.bind f).apply_ne_top b
-  have h : ∑' a, (p.joint f) (a, b) / (p.bind f) b = 1 := by
+    HasSum (fun a => (p.joint f) (a, b) / (p.bind f) b) 1 :=
+  ENNReal.summable.hasSum_iff.2 <| by
     simp only [div_eq_mul_inv]
     rw [ENNReal.tsum_mul_right, tsum_joint_fst]
-    exact ENNReal.mul_inv_cancel hne hne_top
-  exact h ▸ ENNReal.summable.hasSum
+    exact ENNReal.mul_inv_cancel ((mem_support_iff _ _).mp hb) ((p.bind f).apply_ne_top b)
 
 /-- The posterior distribution `Pr[A = a | B = b]` as a `PMF`,
 given a prior `p`, a family of distributions `f`, and that `b` has positive marginal
