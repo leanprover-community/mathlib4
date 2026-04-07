@@ -233,28 +233,3 @@ theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f
     Continuous (f ∘ fract) :=
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
     fun _ => hf
-
-/-!
-## Regular grids and `Nat.floor`
-
-Relate `⌊(t - a) / h⌋₊` to membership in a regular grid of intervals `[a + n * h, a + (n + 1) * h)`
-with step size `h > 0`. Used, for example, to construct interpolations.
--/
-
-section RegularGrid
-
-variable {K : Type*} [Field K] [LinearOrder K] [FloorSemiring K] [IsStrictOrderedRing K]
-
-/-- `⌊(t - a) / h⌋₊ = n` iff `t ∈ [a + n * h, a + (n + 1) * h)`, given `0 < h` and `a ≤ t`. -/
-theorem Nat.floor_div_eq_iff_mem_Ico {h : K} (hh : 0 < h) {a t : K} (hat : a ≤ t) {n : ℕ} :
-    ⌊(t - a) / h⌋₊ = n ↔ t ∈ Ico (a + n * h) (a + (n + 1) * h) := by
-  constructor
-  · intro h_eq
-    rw [← h_eq]
-    constructor <;> nlinarith [Nat.floor_le (div_nonneg (sub_nonneg.mpr hat) hh.le),
-      Nat.lt_floor_add_one ((t - a) / h), mul_div_cancel₀ (t - a) hh.ne']
-  · intro ht
-    exact Nat.floor_eq_on_Ico n _ ⟨(le_div_iff₀ hh).mpr (by linarith [ht.1]),
-      (div_lt_iff₀ hh).mpr (by linarith [ht.2])⟩
-
-end RegularGrid
