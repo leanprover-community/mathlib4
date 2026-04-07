@@ -22,9 +22,11 @@ In this section we define a `LargeCategory` structure on `Type u`, in such a way
 We define the one-field structure `TypeCat.Fun` to wrap a function between types, and a `FunLike`
 instance on it. Then we define a one-field structure `TypeCat.Hom` which wraps a `Fun`. The
 morphisms in the category `Type u` are defined to be `TypeCat.Hom`, and the `FC` parameter of
-the `ConcreteCategory` instance is `TypeCat.Fun`. This double nesting allows us to avoid defining a
-`FunLike` instance on bare functions, which would give two non-reducibly-defeq coercions from
-morphisms in `Type u` to functions.
+the `ConcreteCategory` instance is `TypeCat.Fun`. `TypeCat.Fun` serves as a layer of separation
+between the `FC` parameter of the `ConcreteCategory` instance and bare functions, to avoid defining
+a `FunLike` instance on the latter (which would give two non-reducibly defeq coercions from
+morphisms in `Type` to functions), and the outer nesting `TypeCat.Hom` gives a layer of separation
+between morphisms in `Type` and `FC`, as is done for all concrete categories in mathlib.
 
 To promote a function to a morphism in this category, we provide the abbreviation `TypeCat.ofHom f`,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
