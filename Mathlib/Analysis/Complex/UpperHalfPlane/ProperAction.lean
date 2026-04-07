@@ -103,8 +103,12 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   have : ProperSpace (Matrix (Fin 2) (Fin 2) ℝ) := pi_properSpace
   have : IsCompact {m : Matrix (Fin 2) (Fin 2) ℝ | ∀ i j, |m i j| ≤ max √A √A'} := by
     convert ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
-    simp [Metric.closedBall, Matrix.norm_def, pi_norm_le_iff_of_nonempty]
-    grind
+    simp only [le_sup_iff, Fin.forall_fin_two, Fin.isValue, Metric.closedBall, dist_zero_right,
+      Matrix.norm_def, pi_norm_le_iff_of_nonempty, Real.norm_eq_abs]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `ext` was not necessary.
+    The cause of this might be `Matrix` function application defeq abuse. -/
+    ext; grind
   have := Matrix.SpecialLinearGroup.isClosedEmbedding_val.isCompact_preimage this
   refine this.of_isClosed_subset (hK.isClosed.preimage <| by fun_prop) (fun g hg ↦ ?_)
   intro i j
