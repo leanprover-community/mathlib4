@@ -706,8 +706,8 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
 theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
   refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
-  rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
-  exact mem_iUnion₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
+  rcases hs.exists_between hz with ⟨y, hys, hy⟩
+  exact mem_iUnion₂.2 ⟨y, ⟨hys, hy.1⟩, hy.2⟩
 
 @[to_dual existing]
 theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
