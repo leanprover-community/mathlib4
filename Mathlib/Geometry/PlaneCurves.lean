@@ -40,12 +40,7 @@ namespace PlaneCurve
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
-/-- Oriented curvature of a plane curve `c` at `t`. This is usually called just the curvature of a
-plane curve in most elementary differential geometry texts, but because this definition is slightly
-different from the general definition of the curvature of a general parametrized curve (which is
-always non-negative and only expresses magnitude as opposed to this definition which can also be
-negative and expresses also direction) we call this the oriented curvature, this is also the name
-given in the Wikipedia article about curvature in the section about plane curves.
+/-- Oriented curvature of a plane curve `c` at `t`.
 This curvature expresses a direction / orientation in the following way:
 Denote `v = deriv c t`, `a = iteratedDeriv 2 c t`, `n = normal c t` and `κ = orientedCurvature c t`.
 Then for a general plane curve, if (`v`, `a`) is a positvely oriented, then `κ` is positive, and if
