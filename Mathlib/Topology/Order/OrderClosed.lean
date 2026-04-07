@@ -641,7 +641,7 @@ theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
   · simp only [not_le]
     exact closure_lt_subset_le hg hf
 
-@[to_dual none]
+@[to_dual if_ge]
 theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf' : Continuous f') (hg' : Continuous g') (hf : Continuous f) (hg : Continuous g)
     (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x => if f x ≤ g x then f' x else g' x :=
@@ -660,10 +660,10 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
   hf.eventually_lt hg hfg
 
 @[to_dual (attr := continuity, fun_prop)]
-protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => min (f b) (g b) := by
-  simp only [min_def]
-  exact hf.if_le hg hf hg fun x => id
+protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
+    Continuous fun b => max (f b) (g b) := by
+  simp only [max_def]
+  exact hg.if_ge hf hg hf fun x => id
 
 end
 
