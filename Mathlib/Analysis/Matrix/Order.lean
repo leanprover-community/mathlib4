@@ -270,7 +270,7 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
     refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy ↦ ?_⟩
     rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
-    exact (PosDef.kronecker hAs hBs).dotProduct_mulVec_pos <| by simpa
+    exact (hAs.kronecker hBs).dotProduct_mulVec_pos <| by simpa
   simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
     ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
