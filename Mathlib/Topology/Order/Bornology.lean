@@ -108,7 +108,7 @@ lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology
   intro s
   rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
     Filter.atTop_basis_Ioi.mem_iff]
-  rintro ⟨_, ⟨b, hb⟩⟩
+  rintro ⟨_, b, hb⟩
   rw [mem_upperBounds_iff_subset_Iic, ← compl_compl (Iic b), compl_subset_compl, compl_Iic] at hb
   use b
 
