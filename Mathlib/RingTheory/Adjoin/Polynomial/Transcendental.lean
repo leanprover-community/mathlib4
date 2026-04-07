@@ -89,6 +89,8 @@ theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R
 
 end Algebra
 
+section instances
+
 open Polynomial
 
 variable [UniqueFactorizationMonoid R]
@@ -102,5 +104,7 @@ instance {s : S} [h : Fact (Transcendental R s)] : UniqueFactorizationMonoid R[s
 
 theorem Transcendental.wfDvdMonoid_adjoin (ht : Transcendental R s) : WfDvdMonoid R[s] :=
   (uniqueFactorizationMonoid_adjoin ht).toIsWellFounded
+
+end instances
 
 end
