@@ -91,9 +91,9 @@ theorem minimal_subtype {x : Subtype Q} :
   tauto
 
 @[to_dual]
-theorem maximal_true_subtype {x : Subtype P} : Maximal (fun _ ↦ True) x ↔ Maximal P x := by
+theorem minimal_true_subtype {x : Subtype P} : Minimal (fun _ ↦ True) x ↔ Minimal P x := by
   obtain ⟨x, hx⟩ := x
-  simp [Maximal, hx]
+  simp [Minimal, hx]
 
 @[to_dual (attr := simp)]
 theorem minimal_minimal : Minimal (Minimal P) x ↔ Minimal P x :=
@@ -238,11 +238,11 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-@[to_dual eq_of_le]
+@[to_dual (rename := hge → hle) eq_of_le]
 theorem Minimal.eq_of_ge (hx : Minimal P x) (hy : P y) (hge : y ≤ x) : x = y :=
   (hx.2 hy hge).antisymm hge
 
-@[to_dual eq_of_ge]
+@[to_dual (rename := hle → hge) eq_of_ge]
 theorem Minimal.eq_of_le (hx : Minimal P x) (hy : P y) (hle : y ≤ x) : y = x :=
   (hx.eq_of_ge hy hle).symm
 
@@ -386,7 +386,7 @@ theorem setOf_minimal_subset (s : Set α) : {x | Minimal (· ∈ s) x} ⊆ s :=
   sep_subset ..
 
 @[to_dual]
-theorem Set.Subsingleton.maximal_mem_iff (h : s.Subsingleton) : Maximal (· ∈ s) x ↔ x ∈ s := by
+theorem Set.Subsingleton.minimal_mem_iff (h : s.Subsingleton) : Minimal (· ∈ s) x ↔ x ∈ s := by
   obtain (rfl | ⟨x, rfl⟩) := h.eq_empty_or_singleton <;> simp
 
 @[to_dual]
@@ -480,23 +480,23 @@ theorem minimal_mem_image (f : α ↪o β) (hx : Minimal (· ∈ s) x) : Minimal
 theorem minimal_mem_image_iff (ha : a ∈ s) : Minimal (· ∈ f '' s) (f a) ↔ Minimal (· ∈ s) a :=
   _root_.minimal_mem_image_monotone_iff ha (by simp [f.le_iff_le])
 
-attribute [local simp high] OrderEmbedding.eq_iff_eq in
 @[to_dual]
 theorem minimal_apply_mem_inter_range_iff :
     Minimal (· ∈ t ∩ range f) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
-  refine ⟨fun h ↦ ⟨h.prop.1, fun y hy ↦ ?_⟩, fun h ↦ ⟨⟨h.prop, by simp⟩, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.prop.1, fun y hy ↦ ?_⟩, fun h ↦ ⟨⟨h.prop, mem_range_self x⟩, ?_⟩⟩
   · rw [← f.le_iff_le, ← f.le_iff_le]
-    exact h.le_of_le ⟨hy, by simp⟩
+    exact h.le_of_le ⟨hy, mem_range_self y⟩
   rintro _ ⟨hyt, ⟨y, rfl⟩⟩
   simp_rw [f.le_iff_le]
   exact h.le_of_le hyt
 
-@[to_dual maximal_apply_iff] -- TODO: make the names consistent
+@[to_dual]
 theorem minimal_apply_mem_iff (ht : t ⊆ Set.range f) :
     Minimal (· ∈ t) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
   rw [← f.minimal_apply_mem_inter_range_iff, inter_eq_self_of_subset_left ht]
 
-@[to_dual (attr := simp)]
+@[deprecated (since := "2026-04-07")] alias maximal_apply_iff := maximal_apply_mem_iff
+
 theorem image_setOf_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
   _root_.image_monotone_setOf_minimal (by simp [f.le_iff_le])
 
