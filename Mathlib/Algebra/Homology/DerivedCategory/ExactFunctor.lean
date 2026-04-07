@@ -116,4 +116,24 @@ instance [F.Linear R] : F.mapDerivedCategory.Linear R := by
     (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapDerivedCategoryFactors_inv_app_mapDerivedCategorySingleFunctor_hom_app (X : C₁) :
+    dsimp% F.mapDerivedCategoryFactors.inv.app ((HomologicalComplex.single C₁ (.up ℤ) 0).obj X) ≫
+      (F.mapDerivedCategorySingleFunctor 0).hom.app X =
+    DerivedCategory.Q.map ((F.mapCochainComplexSingleFunctor 0).hom.app X) := by
+  simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
+    CochainComplex.singleFunctor, CochainComplex.singleFunctors,
+    DerivedCategory.singleFunctorIsoCompQ]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma mapDerivedCategorySingleFunctor_inv_app_mapDerivedCategoryFactors_hom_app (X : C₁) :
+    dsimp% (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
+      F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C₁ (.up ℤ) 0).obj X) =
+    DerivedCategory.Q.map ((F.mapCochainComplexSingleFunctor 0).inv.app X) := by
+  simp [Functor.mapDerivedCategorySingleFunctor, Functor.mapCochainComplexSingleFunctor,
+    CochainComplex.singleFunctor, CochainComplex.singleFunctors,
+    DerivedCategory.singleFunctorIsoCompQ]
+
 end CategoryTheory.Functor
