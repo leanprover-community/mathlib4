@@ -187,9 +187,8 @@ noncomputable def tensorH1CotangentOfFlat [Module.Flat R T] :
     (P.tensorToH1Cotangent_bijective_of_flat T)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-@[simp]
 lemma tensorH1CotangentOfFlat_tmul [Module.Flat R T] (t : T) (x : P.H1Cotangent) :
-    (P.tensorH1CotangentOfFlat T (t ⊗ₜ x)).val = t • Cotangent.map (P.toBaseChange T) x.val :=
+    P.tensorH1CotangentOfFlat T (t ⊗ₜ x) = t • H1Cotangent.map (P.toBaseChange T) x :=
   rfl
 
 end Extension
@@ -202,5 +201,16 @@ noncomputable def tensorH1CotangentOfFlat (T : Type*) [CommRing T] [Algebra R T]
       ((Generators.self R S).baseChangeFromBaseChange T)
       ((Generators.self R S).baseChangeToBaseChange T)).restrictScalars T ≪≫ₗ
     ((Generators.self R S).baseChange (T := T)).equivH1Cotangent.restrictScalars T
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma tensorH1CotangentOfFlat_tmul (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T]
+    (t : T) (x : H1Cotangent R S) :
+    tensorH1CotangentOfFlat R S T (t ⊗ₜ x) = t • H1Cotangent.map _ _ _ _ x := by
+  simp only [tensorH1CotangentOfFlat, LinearEquiv.trans_apply,
+    Extension.tensorH1CotangentOfFlat_tmul, map_smul, LinearEquiv.restrictScalars_apply,
+    Extension.H1Cotangent.equiv, LinearEquiv.coe_mk, Generators.equivH1Cotangent,
+    Generators.H1Cotangent.equiv]
+  rw [← Extension.H1Cotangent.map_comp_apply, ← Extension.H1Cotangent.map_comp_apply,
+    H1Cotangent.map, Extension.H1Cotangent.map_eq]
 
 end Algebra
