@@ -173,5 +173,3 @@ theorem adjoin_range_toAlgHom (t : Set A) :
          z ∈ Subsemiring.closure (Set.range (algebraMap S A) ∪ t : Set A) by simp
 
 end IsScalarTower
-
-
