@@ -73,8 +73,8 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
     have : IsMulCommutative (Perm s) := isMulCommutative_of_card_le_two (by simp)
-    sorry
-    apply MonoidHom.range_isMulCommutative
+    rw [MonoidHom.range_eq_map]
+    apply Subgroup.map_isMulCommutative
   is_conj g s := by
     convert (conj_smul_range_ofSubtype g s).symm
   is_generator := by
@@ -107,7 +107,8 @@ def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Set.powerse
   T s := (alternatingGroup.ofSubtype s).range
   is_comm s := by
     have : IsMulCommutative (alternatingGroup s) := isMulCommutative_of_card_le_three (by simp)
-    apply MonoidHom.range_isMulCommutative
+    rw [MonoidHom.range_eq_map]
+    apply Subgroup.map_isMulCommutative
   is_conj g s := (conj_smul_range_ofSubtype s g).symm
   is_generator := by
     rw [eq_top_iff, ← closure_isThreeCycles_eq_top, Subgroup.closure_le]
