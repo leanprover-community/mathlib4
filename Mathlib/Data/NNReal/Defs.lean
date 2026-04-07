@@ -59,20 +59,6 @@ def NNReal := { r : ℝ // 0 ≤ r }
 
 namespace NNReal
 
-deriving instance
-  Nontrivial, Inhabited,
-  PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  Sub, OrderedSub, OrderBot,
-  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
-  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
-  for NNReal
-
-noncomputable section
-deriving instance LinearOrder for NNReal
-end
-
-
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
@@ -82,6 +68,25 @@ instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
 /-- Constructor of ℝ≥0 from a nonnegative real number -/
 protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
+
+instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
+instance : One ℝ≥0 := ⟨.mk 1 zero_le_one⟩
+instance : Bot ℝ≥0 := ⟨0⟩
+
+deriving instance
+  Nontrivial, Inhabited,
+  PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
+  Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Sub, OrderedSub, OrderBot,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
+  for NNReal
+
+noncomputable section
+deriving instance LinearOrder for NNReal
+end
+
+example : (0 : ℝ≥0) = ⊥ := by with_reducible_and_instances rfl
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
