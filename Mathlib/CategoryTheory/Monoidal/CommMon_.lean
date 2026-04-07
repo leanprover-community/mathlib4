@@ -255,7 +255,6 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a.IsMonoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
 objects. -/
 @[simps] def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
