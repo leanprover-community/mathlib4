@@ -66,11 +66,11 @@ namespace GraphLike
 @[inherit_doc verts]
 scoped notation "V(" G ")" => verts G
 
-variable {α β Gr : Type*} {G : Gr} {u u' v v' w : α} {d : β}
+variable {V D Gr : Type*} {G : Gr} {u u' v v' w : V} {d : D}
 
 section GraphLike
 
-variable [DartLike α β] [GraphLike α β Gr]
+variable [DartLike V D] [GraphLike V D Gr]
 
 lemma adj_of_mem_darts (hd : d ∈ darts G) : Adj G (fst d) (snd d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
@@ -86,9 +86,9 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   exact snd_mem_of_darts hd
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
-def step (G : Gr) (u v : α) := {d : β // d ∈ darts G ∧ fst d = u ∧ snd d = v}
+def step (G : Gr) (u v : V) := {d : D // d ∈ darts G ∧ fst d = u ∧ snd d = v}
 
-instance [DecidableEq β] : DecidableEq (step G u v) := Subtype.instDecidableEq
+instance [DecidableEq D] : DecidableEq (step G u v) := Subtype.instDecidableEq
 
 @[simp]
 lemma step.fst (h : step G u v) : fst h.val = u := by
@@ -165,7 +165,7 @@ lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := rfl
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
-def DartAdj (d d' : darts G) : Prop := (snd d.val : α) = (fst d'.val : α)
+def DartAdj (d d' : darts G) : Prop := (snd d.val : V) = (fst d'.val : V)
 
 section GraphLikeProd
 
@@ -176,9 +176,9 @@ Some graph-like structures, such as `SimpleGraph` and `Digraph`, have `α × α`
 This section assumes `GraphLike α (α × α) Gr` to proves lemmas for `α × α`-valued darts.
 -/
 
-variable {d : α × α}
+variable {d : V × V}
 
-instance : DartLike α (α × α) where
+instance : DartLike V (V × V) where
   fst := Prod.fst
   snd := Prod.snd
 
@@ -188,7 +188,7 @@ instance : DartLike α (α × α) where
 
 @[simp] lemma toProd_eq : toProd d = d := rfl
 
-variable [GraphLike α (α × α) Gr]
+variable [GraphLike V (V × V) Gr]
 
 @[simp]
 lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G d.fst d.snd := by
