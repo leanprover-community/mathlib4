@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Juan Pablo Silva Alvarado
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Prod
