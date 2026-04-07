@@ -153,12 +153,6 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
 
-lemma map_sum {ι α β : Type*} {m : MeasurableSpace α} {m' : MeasurableSpace β} {m : ι → Measure α}
-    {f : α → β} {s : Finset ι} (hf : AEMeasurable f (∑ i ∈ s, m i)) :
-    map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
-  rw [← sum_coe_finset, ← sum_coe_finset, Measure.map_sum]
-  rwa [sum_coe_finset]
-
 lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p : I) :
     Bin(R, n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) •
