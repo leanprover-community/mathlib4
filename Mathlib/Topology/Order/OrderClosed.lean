@@ -74,11 +74,10 @@ class ClosedIicTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop 
 
 /-- If `α` is a topological space and a preorder, `ClosedIciTopology α` means that `Ici a` is
 closed for all `a : α`. -/
+@[to_dual existing]
 class ClosedIciTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
   /-- For any `a`, the set `[a, +∞)` is closed. -/
   isClosed_Ici (a : α) : IsClosed (Ici a)
-
-attribute [to_dual existing] ClosedIicTopology
 
 /-- A topology on a set which is both a topological space and a preorder is _order-closed_ if the
 set of points `(x, y)` with `x ≤ y` is closed in the product space. We introduce this as a mixin.
@@ -86,7 +85,7 @@ This property is satisfied for the order topology on a linear order, but it can 
 generally, and suffices to derive many interesting properties relating order and topology. -/
 class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
   /-- The set `{ (x, y) | x ≤ y }` is a closed set. -/
-  isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
+  protected isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
 
 instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
 instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
@@ -175,8 +174,11 @@ variable [Preorder α] [NoBotOrder α] [TopologicalSpace α] [ClosedIicTopology 
 @[to_dual disjoint_nhds_atTop]
 theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
 
-@[to_dual (attr := simp) inf_nhds_atTop]
-theorem inf_nhds_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
+@[to_dual (attr := simp) nhds_inf_atTop]
+theorem nhds_inf_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
+
+@[deprecated (since := "2026-04-07")] alias inf_nhds_atBot := nhds_inf_atBot
+@[deprecated (since := "2026-04-07")] alias inf_nhds_atTop := nhds_inf_atTop
 
 @[to_dual]
 theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
@@ -429,13 +431,13 @@ instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
 
 end Subtype
 
-@[to_dual existing isClosed_le']
-theorem OrderClosedTopology.isClosed_le'' : IsClosed { p : α × α | p.2 ≤ p.1 } :=
-  (isClosed_le' (α := α)).preimage continuous_swap
-
-@[to_dual isClosed_le_prod']
+-- The binder info on both theorems is slightly different, see lean4#9727.
 theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
   t.isClosed_le'
+
+@[to_dual existing isClosed_le_prod]
+theorem isClosed_le_prod' : IsClosed { p : α × α | p.2 ≤ p.1 } :=
+  (isClosed_le_prod (α := α)).preimage continuous_swap
 
 @[to_dual self (reorder := f g, hf hg)]
 theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
@@ -666,8 +668,8 @@ protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
 end
 
 @[to_dual]
-theorem continuous_min : Continuous fun p : α × α => min p.1 p.2 :=
-  continuous_fst.min continuous_snd
+theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
+  continuous_fst.max continuous_snd
 
 @[to_dual]
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
