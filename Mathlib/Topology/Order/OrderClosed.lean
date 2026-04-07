@@ -431,7 +431,8 @@ instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
 
 end Subtype
 
--- The binder info on both theorems is slightly different, see lean4#9727.
+-- The binder info on both theorems is slightly different, see
+-- https://github.com/leanprover/lean4/issues/9727
 theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
   t.isClosed_le'
 
