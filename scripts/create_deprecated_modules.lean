@@ -34,7 +34,7 @@ pass `"git commit -m 'message with spaces'`, the command will be split into
 `["git", "commit", "-m", "'message", "with", "spaces'"]`, which is not what you want.
 -/
 def runCmd (s : String) : IO String := do
-  let cmd::args := s.splitOn | EIO.throw "Please provide at least one word in your command!"
+  let cmd::args := s.splitOn | throw <| IO.userError "Please provide at least one word in your command!"
   IO.Process.run {cmd := cmd, args := args.toArray}
 
 /--
