@@ -82,11 +82,11 @@ theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) :
   by_contra! hc'
   obtain ⟨f, hf⟩ := exists_isFundamentalSeq (o := (succ c).ord) rfl
   apply hf.iSup_add_one_eq.not_lt
-  · rw [← card_le_iff]
-    refine card_iSup_Iio_le ?_ fun i ↦ ?_
-    · simpa using hc'
-    · rw [card_le_iff]
-      exact (isSuccLimit_ord hc₀).add_one_lt (f i).2
+  rw [← card_le_iff]
+  refine card_iSup_Iio_le ?_ fun i ↦ ?_
+  · simpa using hc'
+  · rw [card_le_iff]
+    exact (isSuccLimit_ord hc₀).add_one_lt (f i).2
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
