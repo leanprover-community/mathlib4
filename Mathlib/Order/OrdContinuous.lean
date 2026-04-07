@@ -104,7 +104,9 @@ theorem lt_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x < f y �
 variable (f)
 
 /-- Convert an injective left order continuous function to an order embedding. -/
-@[to_dual]
+@[to_dual
+/-- Convert an injective right order continuous function to an order embedding. -/
+]
 def toOrderEmbedding (hf : LeftOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 
