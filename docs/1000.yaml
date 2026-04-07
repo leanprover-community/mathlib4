@@ -1673,7 +1673,7 @@ Q1455794:
 Q1457052:
   title: Well-ordering theorem
   decl: exists_wellOrder
-  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
 Q1471282:
@@ -1799,7 +1799,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
   date: 2020
 
 Q1694565:
