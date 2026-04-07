@@ -30,6 +30,25 @@ of `Q`.
 * `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
 * `Partition.IsRepFun`: A predicate characterizing a representative function for a partition.
 
+## Representative functions (`IsRepFun`)
+
+`IsRepFun P f` means that `f` sends each element of the support to a representative in its
+`Partition.Rel`-class, agrees on related elements, and is the identity outside the support.
+
+This is useful whenever a construction must pick one distinguished element per part of a partition.
+For example, in graph theory one may partition edges into parallel classes or vertices into
+connected components; a representative function can specify which edge remains when simplifying
+parallel edges, or how supervertices are labeled after contraction. Similar uses arise in matroid
+theory and in the definition of minors.
+
+Tempting alternatives are to use`Classical.choice` or fix a global well-order and take minimal
+representatives. However, these lead to inconsistencies issues: independent choices need not
+respect relations between different instances (e.g. monotonicity of simplifications with respect
+to subgraph order), a global order can clash with structure already carried by the type, and maps
+between different types need not intertwine two separate canonical choices. Stating hypotheses with
+`IsRepFun` keeps the chosen representatives explicit; existence under suitable conditions can be
+proved separately.
+
 ## TODO
 
 * Link this to `Finpartition`.
@@ -312,7 +331,11 @@ lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
 
 end Rel
 
-/-! ### Representative functions -/
+/-! ### Representative functions
+
+See the module docstring for motivation (graph simplification, minors, and why we use an explicit
+`IsRepFun` hypothesis rather than a global choice of representatives).
+-/
 
 section IsRepFun
 
