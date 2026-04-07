@@ -65,7 +65,7 @@ end SpectralSequenceDataCore
 
 variable [data.HasFirstPageComputation] [X.HasSpectralSequence data]
 
-/-- If `data : SpectralSequenceMkData ι c r₀` is such that
+/-- If `data : SpectralSequenceDataCore ι c r₀` is such that
 `data.HasFirstPageComputation` holds, this is an isomorphisms which
 allows to "compute" the objects on the `r₀`th page of the spectral sequence
 obtained from a spectral object `X` indexed by `i` using data as objects
