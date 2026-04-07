@@ -625,9 +625,9 @@ theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ m m'
 
-theorem map_smul_univ {R' : Type*} [CommSemiring R'] {M₁ : Type*} [AddCommMonoid M₁]
-    [Module R' M₁] {N₁ : Type*} [AddCommMonoid N₁] [Module R' N₁] [Fintype ι]
-    (f : M₁ [⋀^ι]→ₗ[R'] N₁) (c : ι → R') (m : ι → M₁) :
+theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
+    [Module R M] {N : Type*} [AddCommMonoid N] [Module R N] [Fintype ι]
+    (f : M [⋀^ι]→ₗ[R] N) (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ c m
 
