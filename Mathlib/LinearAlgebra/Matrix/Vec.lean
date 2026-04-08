@@ -186,13 +186,10 @@ theorem dotProduct_hadamard_mulVec_eq_kronecker
 
 /-- The starred Hadamard bilinear form equals the starred Kronecker bilinear form on diagonal
 embeddings. -/
-theorem star_dotProduct_hadamard_mulVec_eq_kronecker [StarRing R]
+theorem star_dotProduct_hadamard_mulVec_eq_kronecker [StarAddMonoid R]
     (x : m → R) (A B : Matrix m n R) (x' : n → R) :
-    star x ⬝ᵥ (A ⊙ B) *ᵥ x' =
-      star (vec (diagonal x)) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
-  rw [dotProduct_hadamard_mulVec_eq_kronecker, ← diagonal_conjTranspose, conjTranspose, vec_map,
-    diagonal_transpose]
-  rfl
+    star x ⬝ᵥ (A ⊙ B) *ᵥ x' = star (vec (diagonal x)) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
+  rw [dotProduct_hadamard_mulVec_eq_kronecker, ← map_diagonal_star, star_vec]
 
 end Hadamard
 
