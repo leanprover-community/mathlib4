@@ -13,7 +13,6 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
--- public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 /-!
 # Adic valuations on Dedekind domains
@@ -278,11 +277,11 @@ instance : v.intValuation.IsNontrivial :=
   have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
   ⟨π, by aesop⟩
 
--- theorem intValuation_val_uniformizer_eq (π : v.intValuation.Uniformizer) :
---     v.intValuation (π.val : R) = WithZero.exp (-1) := by
---   simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Int.reduceNeg, Units.ext_iff]
---     using Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range
---       v.intValuation_exists_uniformizer
+theorem intValuation_val_uniformizer_eq (π : v.intValuation.Uniformizer) :
+    v.intValuation (π.val : R) = WithZero.exp (-1) := by
+  simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Int.reduceNeg, Units.ext_iff]
+    using Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range
+      v.intValuation_exists_uniformizer
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
