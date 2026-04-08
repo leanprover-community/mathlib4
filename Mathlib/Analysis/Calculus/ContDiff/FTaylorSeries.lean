@@ -1007,7 +1007,7 @@ lemma iteratedFDerivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} (n : ℕ) (a
   | zero => simp [iteratedFDerivWithin]
   | succ n ih =>
     have ih' : iteratedFDerivWithin 𝕜 n (fun x => f (-x)) s
-      = fun a ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
+        = fun a ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
       ext b
       rw [ih b]
     set g := fun a ↦ iteratedFDerivWithin 𝕜 n f (-s) a
