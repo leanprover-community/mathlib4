@@ -48,7 +48,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
   induction n generalizing X with
   | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
   | succ n hn =>
-    let P : ProjectivePresentation X := (EnoughProjectives.presentation X).some
+    let P : ProjectivePresentation X := Nonempty.some inferInstance
     let S := ShortComplex.mk _ _ (kernel.condition P.f)
     have : Projective (S.map F).X₂ := by dsimp; infer_instance
     have hS : S.ShortExact := { exact := ShortComplex.exact_kernel P.f }
@@ -70,7 +70,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
   induction n generalizing Y with
   | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
   | succ n hn =>
-    let I : InjectivePresentation Y := (EnoughInjectives.presentation Y).some
+    let I : InjectivePresentation Y := Nonempty.some inferInstance
     let S := ShortComplex.mk _ _ (cokernel.condition I.f)
     have : Injective (S.map F).X₂ := by dsimp; infer_instance
     have hS : S.ShortExact := { exact := ShortComplex.exact_cokernel I.f }
