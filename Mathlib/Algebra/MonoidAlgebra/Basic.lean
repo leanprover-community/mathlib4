@@ -147,12 +147,14 @@ def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
 variable (R M) in
 @[to_additive (attr := simp)]
 lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
-    uniqueAlgEquiv R (A := A) M = uniqueRingEquiv (R := A) M := rfl
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M) =
+      uniqueRingEquiv (R := A) M := rfl
 
 variable (R M) in
 @[to_additive (attr := simp)]
 lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
-    (uniqueAlgEquiv R (A := A) M).symm = (uniqueRingEquiv (R := A) M).symm := rfl
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
+      (uniqueRingEquiv (R := A) M).symm := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
