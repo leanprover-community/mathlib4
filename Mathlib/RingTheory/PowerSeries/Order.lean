@@ -318,7 +318,7 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
