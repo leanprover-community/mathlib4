@@ -714,25 +714,15 @@ lemma HasFTaylorSeriesUpTo.fderiv_eq (h : HasFTaylorSeriesUpTo n f p)
 
 theorem hasFTaylorSeriesUpToOn_univ_iff :
     HasFTaylorSeriesUpToOn n f p univ ↔ HasFTaylorSeriesUpTo n f p := by
-  constructor
-  · intro H
-    constructor
-    · exact fun x => H.zero_eq x (mem_univ x)
-    · intro m hm x
-      rw [← hasFDerivWithinAt_univ]
-      exact H.fderivWithin m hm x (mem_univ x)
-    · intro m hm
-      rw [← continuousOn_univ]
-      exact H.cont m hm
-  · intro H
-    constructor
-    · exact fun x _ => H.zero_eq x
-    · intro m hm x _
-      rw [hasFDerivWithinAt_univ]
-      exact H.fderiv m hm x
-    · intro m hm
-      rw [continuousOn_univ]
-      exact H.cont m hm
+  constructor <;> intro H <;> refine ⟨?_, ?_, ?_⟩
+  · simpa using H.zero_eq
+  · intro m hm x
+    simpa [hasFDerivWithinAt_univ] using H.fderivWithin m hm x (mem_univ x)
+  · simpa [continuousOn_univ] using H.cont
+  · simpa using H.zero_eq
+  · intro m hm x _
+    simpa [hasFDerivWithinAt_univ] using H.fderiv m hm x
+  · simpa [continuousOn_univ] using H.cont
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
     HasFTaylorSeriesUpToOn n f p s :=
@@ -916,20 +906,10 @@ theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
 derivative. -/
 theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
-  induction n with
-  | zero =>
-    intro x _
-    ext1
-    simp only [iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
-  | succ n IH =>
-    intro x hx
-    rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
-    dsimp
-    congr 1
-    rw [fderivWithin_of_isOpen hs hx]
-    apply Filter.EventuallyEq.fderiv_eq
-    filter_upwards [hs.mem_nhds hx]
-    exact IH
+  intro x hx
+  rw [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_congr_set
+    ((Filter.eventuallyEq_univ.2 <| hs.mem_nhds hx).mono fun y hy => by simp [hy]) n
 
 theorem ftaylorSeriesWithin_univ : ftaylorSeriesWithin 𝕜 f univ = ftaylorSeries 𝕜 f := by
   ext1 x; ext1 n
