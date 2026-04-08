@@ -70,12 +70,12 @@ private lemma comap_ker_eq_sup_of_ker_eq_map (surjRS : Function.Surjective (alge
       ← RingHom.comap_ker]
   simp [eqmap, Ideal.comap_map_of_surjective' _ surjRS]
 
-private lemma mul_le_ker_of_range_le_mul_of_sq_zero {A : Type*} [CommRing A] {J I : Ideal A}
-    (sq : I ^ 2 = ⊥) (f : J.Cotangent →ₗ[A] J.Cotangent)
+private lemma mul_le_ker_of_range_le_mul_of_sq_zero {J I : Ideal R} (sq : I ^ 2 = ⊥)
+    (f : J.Cotangent →ₗ[R] J.Cotangent)
     (le : f.range ≤ (Submodule.comap J.subtype (I * J)).map J.toCotangent) :
     (Submodule.comap J.subtype (I * J)).map J.toCotangent ≤ f.ker := by
   rw [pow_two] at sq
-  have {x : A} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_left h⟩) = 0 := by
+  have {x : R} (h : x ∈ I * J) : f (J.toCotangent ⟨x, Ideal.mul_le_left h⟩) = 0 := by
     induction h using Submodule.mul_induction_on' with
     | mem_mul_mem y hy z hz =>
       change f (J.toCotangent (y • ⟨z, hz⟩)) = 0
