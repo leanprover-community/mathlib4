@@ -120,6 +120,28 @@ theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simpa using (uniqueAlgEquiv_symm_monomial (R := R) (σ := PUnit) (d := d) (r := r))
 
+theorem coeff_uniqueAlgEquiv {σ : Type*} [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
+    ((MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n) =
+      coeff (Finsupp.single default n) P := by
+  induction P using MvPolynomial.induction_on' with
+  | monomial d r =>
+      rw [uniqueAlgEquiv_monomial]
+      by_cases hsingle : d = Finsupp.single default n
+      · subst hsingle
+        simp
+      · have hd : d default ≠ n := by
+          intro hd
+          apply hsingle
+          simpa [hd] using (Finsupp.unique_single d)
+        simp [Polynomial.coeff_monomial, hd, MvPolynomial.coeff_monomial, hsingle]
+  | add P Q hP hQ =>
+      simpa [MvPolynomial.uniqueAlgEquiv_apply] using congrArg₂ HAdd.hAdd hP hQ
+
+theorem coeff_pUnitAlgEquiv (P : MvPolynomial PUnit R) (n : ℕ) :
+    ((MvPolynomial.uniqueAlgEquiv R PUnit P : Polynomial R).coeff n) =
+      coeff (Finsupp.single default n) P :=
+  coeff_uniqueAlgEquiv (R := R) (σ := PUnit) P n
+
 section Map
 
 variable {R} (σ)
