@@ -494,7 +494,7 @@ lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
   · have hv_ne : v p.leadingCoeff ≠ 0 :=
       fun h ↦ hp <| hv.injective <| h.trans (map_zero _).symm
     have hv_norm : ‖v p.leadingCoeff‖ = ‖p.leadingCoeff‖ := hv.norm_map_of_map_zero (map_zero _) _
-    grw [←hv_norm, ←leadingCoeff_map_of_leadingCoeff_ne_zero v hv_ne,
+    grw [← hv_norm, ← leadingCoeff_map_of_leadingCoeff_ne_zero v hv_ne,
       leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
 
 variable {p} in
