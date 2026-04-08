@@ -373,11 +373,9 @@ theorem CovBy.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c
 theorem covBy_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
   ⟨fun h => ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covBy_of_eq_or_eq⟩
 
+@[to_dual]
 theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
   rw [← Ioo_union_left h.lt, h.Ioo_eq, empty_union]
-
-theorem CovBy.Ioc_eq (h : a ⋖ b) : Ioc a b = {b} := by
-  rw [← Ioo_union_right h.lt, h.Ioo_eq, empty_union]
 
 @[to_dual none]
 theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
