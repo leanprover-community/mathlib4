@@ -98,15 +98,15 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
-@[grind =]
+@[simp, grind =]
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
   rfl
 
-@[grind =]
+@[simp, grind =]
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[grind =]
+@[simp, grind =]
 theorem pow_add_one_apply (f : Perm α) (n : ℕ) (x : α) :
     (f ^ (n + 1)) x = (f^n) (f x) := by
   rfl

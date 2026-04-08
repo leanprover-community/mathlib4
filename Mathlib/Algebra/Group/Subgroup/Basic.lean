@@ -592,7 +592,7 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
   rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem normalClosure_singleton_one : normalClosure ({1} : Set G) = ⊥ :=
   le_antisymm (normalClosure_le_normal (by simp)) bot_le
 
