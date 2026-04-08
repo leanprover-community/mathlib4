@@ -247,100 +247,95 @@ private lemma E₆_qExpansion_coeff_one : (qExpansion 1 E₆).coeff 1 = -504 := 
       bernoulli'_eq_zero_of_odd (show Odd 5 from ⟨2, rfl⟩) (by norm_num)]]
   simp [ArithmeticFunction.sigma_one]; norm_num
 
-/-- The modular discriminant equals `(E₄³ - E₆²) / 1728`. -/
-theorem ModularForm.discriminant_eq_E4_cube_sub_E6_sq (z : ℍ) :
-    discriminant z = (1 / 1728) * (E₄ z ^ 3 - E₆ z ^ 2) := by
-  set F : ModularForm 𝒮ℒ 12 :=
-    ModularForm.mcast (show 4 + (4 + 4) = 12 by norm_num)
-      (E₄.mul (ModularForm.mcast (show 4 + 4 = 4 + 4 from rfl) (E₄.mul E₄))) -
+/-- A modular form whose `valueAtInfty` is `c` tends to `c` along `atImInfty`. -/
+private lemma tendsto_valueAtInfty {k : ℤ} (f : ModularForm 𝒮ℒ k) (c : ℂ)
+    (hv : valueAtInfty (f : ℍ → ℂ) = c) : Filter.Tendsto f atImInfty (𝓝 c) := by
+  rw [← hv, ← cuspFunction_apply_zero f one_pos one_mem_strictPeriods_SL]
+  exact ((analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL
+    ).continuousAt.tendsto.comp (qParam_tendsto_atImInfty one_pos)).congr
+    (fun τ ↦ eq_cuspFunction f τ one_mem_strictPeriods_SL one_ne_zero)
+
+/-- The combination `E₄³ - E₆²` viewed as a level-1 modular form of weight 12. -/
+private noncomputable def E4_cube_sub_E6_sq_form : ModularForm 𝒮ℒ 12 :=
+  ModularForm.mcast (show 4 + (4 + 4) = 12 by norm_num)
+      (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))) -
     ModularForm.mcast (show 6 + 6 = 12 by norm_num) (E₆.mul E₆)
-  have hF : ∀ w, F w = E₄ w ^ 3 - E₆ w ^ 2 := fun w ↦ by
-    change E₄ w * (E₄ w * E₄ w) - E₆ w * E₆ w = E₄ w ^ 3 - E₆ w ^ 2; ring
+
+private lemma E4_cube_sub_E6_sq_form_apply (z : ℍ) :
+    E4_cube_sub_E6_sq_form z = E₄ z ^ 3 - E₆ z ^ 2 := by
+  change E₄ z * (E₄ z * E₄ z) - E₆ z * E₆ z = _; ring
+
+private lemma E4_cube_sub_E6_sq_form_isCuspForm : IsCuspForm E4_cube_sub_E6_sq_form := by
+  refine (isCuspForm_iff_coeffZero_eq_zero _).mpr ?_
+  rw [qExpansion_coeff_zero _ one_pos one_mem_strictPeriods_SL]
+  have h4 : Filter.Tendsto (E₄ : ℍ → ℂ) atImInfty (𝓝 1) := tendsto_valueAtInfty E₄ 1 (by
+    rw [← qExpansion_coeff_zero E₄ one_pos one_mem_strictPeriods_SL]
+    exact E_qExpansion_coeff_zero _ ⟨2, rfl⟩)
+  have h6 : Filter.Tendsto (E₆ : ℍ → ℂ) atImInfty (𝓝 1) := tendsto_valueAtInfty E₆ 1 (by
+    rw [← qExpansion_coeff_zero E₆ one_pos one_mem_strictPeriods_SL]
+    exact E_qExpansion_coeff_zero _ ⟨3, rfl⟩)
+  refine ((Filter.Tendsto.congr (fun w ↦ (E4_cube_sub_E6_sq_form_apply w).symm) ?_)).limUnder_eq
+  simpa using (h4.pow 3).sub (h6.pow 2)
+
+private lemma E4_cube_sub_E6_sq_form_qExpansion_coeff_one :
+    (qExpansion 1 (E4_cube_sub_E6_sq_form : ℍ → ℂ)).coeff 1 = 1728 := by
+  have hmcast : ∀ {a b : ℤ} (h : a = b) (f : ModularForm 𝒮ℒ a),
+      qExpansion 1 (ModularForm.mcast h f : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) :=
+    fun _ _ ↦ rfl
   have h0_4 : (qExpansion 1 (E₄ : ℍ → ℂ)).coeff 0 = 1 :=
     E_qExpansion_coeff_zero _ ⟨2, rfl⟩
   have h0_6 : (qExpansion 1 (E₆ : ℍ → ℂ)).coeff 0 = 1 :=
     E_qExpansion_coeff_zero _ ⟨3, rfl⟩
-  have hF_cusp : IsCuspForm F := (isCuspForm_iff_coeffZero_eq_zero F).mpr (by
-    rw [qExpansion_coeff_zero F one_pos one_mem_strictPeriods_SL]
-    have hv4 : valueAtInfty (E₄ : ℍ → ℂ) = 1 := by
-      rwa [← qExpansion_coeff_zero E₄ one_pos one_mem_strictPeriods_SL]
-    have hv6 : valueAtInfty (E₆ : ℍ → ℂ) = 1 := by
-      rwa [← qExpansion_coeff_zero E₆ one_pos one_mem_strictPeriods_SL]
-    change limUnder atImInfty (fun w ↦ E₄ w * (E₄ w * E₄ w) - E₆ w * E₆ w) = 0
-    have htend : ∀ {k' : ℤ} (f : ModularForm 𝒮ℒ k') {c' : ℂ}, valueAtInfty (f : ℍ → ℂ) = c' →
-        Filter.Tendsto f atImInfty (𝓝 c') := fun {_} f {_} hv ↦ by
-      rw [← hv, ← cuspFunction_apply_zero f one_pos one_mem_strictPeriods_SL]
-      exact ((analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL
-        ).continuousAt.tendsto.comp (qParam_tendsto_atImInfty one_pos)).congr
-        (fun τ ↦ eq_cuspFunction f τ one_mem_strictPeriods_SL one_ne_zero)
-    have h4 := htend E₄ hv4
-    have h6 := htend E₆ hv6
-    convert ((h4.mul (h4.mul h4)).sub (h6.mul h6)).limUnder_eq using 1
-    norm_num)
-  obtain ⟨g, hg⟩ := hF_cusp
+  have hsub := (qExpansionAddHom one_pos one_mem_strictPeriods_SL (k := (12 : ℤ))).map_sub
+    (ModularForm.mcast (by norm_num) (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))))
+    (ModularForm.mcast (by norm_num) (E₆.mul E₆))
+  simp only [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, hmcast] at hsub
+  rw [show (E4_cube_sub_E6_sq_form : ℍ → ℂ) =
+      (((ModularForm.mcast (by norm_num) (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))) -
+        ModularForm.mcast (by norm_num) (E₆.mul E₆) : ModularForm 𝒮ℒ 12)) : ℍ → ℂ) from rfl,
+    hsub, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄
+      (ModularForm.mcast rfl (E₄.mul E₄)), hmcast,
+    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄ E₄,
+    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₆ E₆]
+  simp only [map_sub, PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ,
+    Finset.Nat.antidiagonal_zero, Finset.sum_cons, Finset.sum_singleton,
+    Finset.map_singleton, Function.Embedding.prodMap, Prod.map,
+    Function.Embedding.coeFn_mk, Nat.succ_eq_add_one, Nat.zero_add,
+    Function.Embedding.refl_apply, E₄_qExpansion_coeff_one, E₆_qExpansion_coeff_one]
+  norm_num [h0_4, h0_6]
+
+/-- The modular discriminant equals `(E₄³ - E₆²) / 1728`. -/
+theorem ModularForm.discriminant_eq_E4_cube_sub_E6_sq (z : ℍ) :
+    discriminant z = (1 / 1728) * (E₄ z ^ 3 - E₆ z ^ 2) := by
+  obtain ⟨g, hg⟩ := E4_cube_sub_E6_sq_form_isCuspForm
   obtain ⟨c, hc⟩ := cuspForm_twelve_smul_discriminant g
+  have hgF : qExpansion 1 (g : ℍ → ℂ) = qExpansion 1 (E4_cube_sub_E6_sq_form : ℍ → ℂ) := by
+    congr 1; exact congr_arg DFunLike.coe hg
+  have hgΔ : qExpansion 1 (g : ℍ → ℂ) = c • qExpansion 1 (discriminantCuspForm : ℍ → ℂ) := by
+    conv_lhs => rw [show (g : ℍ → ℂ) = ((c • discriminantCuspForm : CuspForm 𝒮ℒ 12) : ℍ → ℂ)
+      from congr_arg DFunLike.coe hc.symm]
+    exact qExpansion_smul one_pos one_mem_strictPeriods_SL c discriminantCuspForm
   have hc_eq : c = 1728 := by
-    have hmcast : ∀ {a b : ℤ} (h : a = b) (f : ModularForm 𝒮ℒ a),
-        qExpansion 1 (ModularForm.mcast h f : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) :=
-      fun _ _ ↦ rfl
-    have hgF : qExpansion 1 (g : ℍ → ℂ) = qExpansion 1 (F : ℍ → ℂ) := by
-      congr 1; exact congr_arg DFunLike.coe hg
-    have hgΔ : qExpansion 1 (g : ℍ → ℂ) =
-        c • qExpansion 1 (discriminantCuspForm : ℍ → ℂ) := by
-      conv_lhs => rw [show (g : ℍ → ℂ) = ((c • discriminantCuspForm : CuspForm 𝒮ℒ 12) : ℍ → ℂ)
-        from congr_arg DFunLike.coe hc.symm]
-      exact qExpansion_smul one_pos one_mem_strictPeriods_SL c discriminantCuspForm
     have h := congr_arg (·.coeff 1) (hgF.symm.trans hgΔ)
     simp only [PowerSeries.coeff_smul, smul_eq_mul, discriminant_qExpansion_coeff_one,
-      mul_one] at h
-    have hsub := (qExpansionAddHom one_pos one_mem_strictPeriods_SL (k := (12 : ℤ))).map_sub
-      (ModularForm.mcast (by norm_num) (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))))
-      (ModularForm.mcast (by norm_num) (E₆.mul E₆))
-    simp only [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, hmcast] at hsub
-    rw [hsub, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄
-      (ModularForm.mcast rfl (E₄.mul E₄))] at h
-    simp only [hmcast] at h
-    rw [ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄ E₄,
-      ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₆ E₆] at h
-    simp only [map_sub, PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ,
-      Finset.Nat.antidiagonal_zero, Finset.sum_cons, Finset.sum_singleton,
-      Finset.map_singleton, Function.Embedding.prodMap, Prod.map,
-      Function.Embedding.coeFn_mk, Nat.succ_eq_add_one, Nat.zero_add,
-      Function.Embedding.refl_apply, E₄_qExpansion_coeff_one,
-      E₆_qExpansion_coeff_one] at h
-    exact h.symm.trans (by norm_num [h0_4, h0_6])
+      mul_one, E4_cube_sub_E6_sq_form_qExpansion_coeff_one] at h
+    exact h.symm
   have h1728 : (1728 : ℂ) * discriminant z = E₄ z ^ 3 - E₆ z ^ 2 :=
     calc (1728 : ℂ) * discriminant z
         = c * discriminant z := by rw [hc_eq]
       _ = (c • discriminantCuspForm) z := rfl
       _ = g z := by rw [← hc]
-      _ = F z := congr_fun (congr_arg DFunLike.coe hg) z
-      _ = E₄ z ^ 3 - E₆ z ^ 2 := hF z
+      _ = E4_cube_sub_E6_sq_form z := congr_fun (congr_arg DFunLike.coe hg) z
+      _ = _ := E4_cube_sub_E6_sq_form_apply z
   linear_combination (norm := ring_nf) (1 / 1728 : ℂ) * h1728
 
-private lemma weight_two_eq_zero_of_not_cuspForm (f : ModularForm 𝒮ℒ (2 : ℤ))
-    (hf : ¬IsCuspForm f) : f = 0 := by
-  exfalso
-  obtain ⟨c4, hc4⟩ := exists_smul_eq_of_rank_one weight_four_rank_one
-    (E_ne_zero _ ⟨2, rfl⟩ : (E₄ : ModularForm 𝒮ℒ 4) ≠ 0) (f.mul f)
-  obtain ⟨c6, hc6⟩ := exists_smul_eq_of_rank_one weight_six_rank_one
-    (E_ne_zero _ ⟨3, rfl⟩ : (E₆ : ModularForm 𝒮ℒ 6) ≠ 0) ((f.mul f).mul f)
-  set p := qExpansion 1 f
-  have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) = p * p := by
-    have hsmul := qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄
-    rw [show (c4 • E₄ : ℍ → ℂ) = (f.mul f : ℍ → ℂ) from congrArg DFunLike.coe hc4] at hsmul
-    rw [← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f]; exact hsmul.symm
-  have hqc6 : c6 • qExpansion 1 (E₆ : ℍ → ℂ) = p * p * p := by
-    have hsmul := qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆
-    have hmul1 := ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL (f.mul f) f
-    rw [show (c6 • E₆ : ℍ → ℂ) = ((f.mul f).mul f : ℍ → ℂ) from
-      congrArg DFunLike.coe hc6] at hsmul
-    rw [ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f] at hmul1
-    rw [← hmul1]; exact hsmul.symm
-  have hp4_0 : (qExpansion 1 (E₄ : ℍ → ℂ)).coeff 0 = 1 :=
-    E_qExpansion_coeff_zero _ ⟨2, rfl⟩
-  have hp6_0 : (qExpansion 1 (E₆ : ℍ → ℂ)).coeff 0 = 1 :=
-    E_qExpansion_coeff_zero _ ⟨3, rfl⟩
+/-- Algebraic core of the weight-2 vanishing argument: if a complex power series `p`
+satisfies `c₄ • p₄ = p²` and `c₆ • p₆ = p³` for power series `p₄`, `p₆` with constant
+terms equal to `1` and first-order coefficients `240` and `-504`, then `p.coeff 0 = 0`. -/
+private lemma coeffZero_eq_zero_of_pow_eq_smul {p p4 p6 : PowerSeries ℂ} {c4 c6 : ℂ}
+    (hp4_0 : p4.coeff 0 = 1) (hp6_0 : p6.coeff 0 = 1)
+    (hp4_1 : p4.coeff 1 = 240) (hp6_1 : p6.coeff 1 = -504)
+    (hqc4 : c4 • p4 = p * p) (hqc6 : c6 • p6 = p * p * p) : p.coeff 0 = 0 := by
   have h0_4 : c4 = p.coeff 0 ^ 2 := by
     have h := congr_arg (·.coeff 0) hqc4
     simp only [PowerSeries.coeff_smul, smul_eq_mul, PowerSeries.coeff_mul,
@@ -353,21 +348,45 @@ private lemma weight_two_eq_zero_of_not_cuspForm (f : ModularForm 𝒮ℒ (2 : �
     rw [show p.coeff 0 ^ 3 = p.coeff 0 * p.coeff 0 * p.coeff 0 by ring]; exact h
   have heq4 : p.coeff 0 ^ 2 * 240 = 2 * p.coeff 0 * p.coeff 1 := by
     have h := congr_arg (·.coeff 1) hqc4
-    simp only [PowerSeries.coeff_smul, smul_eq_mul, E₄_qExpansion_coeff_one] at h
+    simp only [PowerSeries.coeff_smul, smul_eq_mul, hp4_1] at h
     rw [show (p * p).coeff 1 = 2 * p.coeff 0 * p.coeff 1 from by
       simp [PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ]; ring, h0_4] at h
     exact h
   have heq6 : p.coeff 0 ^ 3 * (-504) = 3 * p.coeff 0 ^ 2 * p.coeff 1 := by
     have h := congr_arg (·.coeff 1) hqc6
-    simp only [PowerSeries.coeff_smul, smul_eq_mul, E₆_qExpansion_coeff_one] at h
+    simp only [PowerSeries.coeff_smul, smul_eq_mul, hp6_1] at h
     rw [show (p * p * p).coeff 1 = 3 * p.coeff 0 ^ 2 * p.coeff 1 from by
       simp [PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ]; ring, h0_6] at h
     exact h
-  refine hf ((isCuspForm_iff_coeffZero_eq_zero f).mpr <|
-    pow_eq_zero_iff (n := 3) three_ne_zero |>.mp ?_)
+  refine pow_eq_zero_iff (n := 3) three_ne_zero |>.mp ?_
   have h0 : (1728 : ℂ) * p.coeff 0 ^ 3 = 0 := by
     linear_combination 3 * p.coeff 0 * heq4 - 2 * heq6
   exact (mul_eq_zero.mp h0).resolve_left (by norm_num)
+
+private lemma weight_two_eq_zero_of_not_cuspForm (f : ModularForm 𝒮ℒ (2 : ℤ))
+    (hf : ¬IsCuspForm f) : f = 0 := by
+  exfalso
+  obtain ⟨c4, hc4⟩ := exists_smul_eq_of_rank_one weight_four_rank_one
+    (E_ne_zero _ ⟨2, rfl⟩ : (E₄ : ModularForm 𝒮ℒ 4) ≠ 0) (f.mul f)
+  obtain ⟨c6, hc6⟩ := exists_smul_eq_of_rank_one weight_six_rank_one
+    (E_ne_zero _ ⟨3, rfl⟩ : (E₆ : ModularForm 𝒮ℒ 6) ≠ 0) ((f.mul f).mul f)
+  have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) =
+      qExpansion 1 (f : ℍ → ℂ) * qExpansion 1 (f : ℍ → ℂ) := by
+    have hsmul := qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄
+    rw [show (c4 • E₄ : ℍ → ℂ) = (f.mul f : ℍ → ℂ) from congrArg DFunLike.coe hc4] at hsmul
+    rw [← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f]; exact hsmul.symm
+  have hqc6 : c6 • qExpansion 1 (E₆ : ℍ → ℂ) =
+      qExpansion 1 (f : ℍ → ℂ) * qExpansion 1 (f : ℍ → ℂ) * qExpansion 1 (f : ℍ → ℂ) := by
+    have hsmul := qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆
+    have hmul1 := ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL (f.mul f) f
+    rw [show (c6 • E₆ : ℍ → ℂ) = ((f.mul f).mul f : ℍ → ℂ) from
+      congrArg DFunLike.coe hc6] at hsmul
+    rw [ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f] at hmul1
+    rw [← hmul1]; exact hsmul.symm
+  exact hf <| (isCuspForm_iff_coeffZero_eq_zero f).mpr <|
+    coeffZero_eq_zero_of_pow_eq_smul (E_qExpansion_coeff_zero _ ⟨2, rfl⟩)
+      (E_qExpansion_coeff_zero _ ⟨3, rfl⟩) E₄_qExpansion_coeff_one E₆_qExpansion_coeff_one
+      hqc4 hqc6
 
 /-- Modular forms of weight 2 for `𝒮ℒ` are zero. -/
 theorem ModularForm.levelOne_weight_two_rank_zero :
