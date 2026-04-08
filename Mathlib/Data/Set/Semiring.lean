@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets as a semiring under union
@@ -36,23 +37,13 @@ deriving Inhabited
 
 namespace SetSemiring
 
-instance : SetLike (SetSemiring α) α where
-  coe := toSet
-  coe_injective' _ _ _ := by simp [*, SetSemiring.ext_iff]
-
 /-- The natural equivalence between `SetSemiring` and `Set`. -/
 def equiv : SetSemiring α ≃ Set α where
   toFun := toSet
   invFun := ofSet
 
-instance : PartialOrder (SetSemiring α) :=
-  equiv.partialOrder
-
-lemma le_def {s t : SetSemiring α} : s ≤ t ↔ s.toSet ⊆ t.toSet := Iff.rfl
-
-instance : OrderBot (SetSemiring α) where
-  bot := ⟨∅⟩
-  bot_le _ := le_def.mpr (by simp)
+instance : CompleteAtomicBooleanAlgebra (SetSemiring α) := equiv.completeAtomicBooleanAlgebra
+instance : OrderBot (SetSemiring α) := inferInstance
 
 protected lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
 @[simp] protected lemma ofSet_toSet (s : SetSemiring α) : ofSet s.toSet = s := rfl
@@ -156,11 +147,7 @@ instance [CommMonoid α] : CommMonoid (SetSemiring α) where
   __ := equiv.commSemigroup
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
-  exists_add_of_le {a b} ab := ⟨b, by
-    obtain ⟨a⟩ := a
-    obtain ⟨b⟩ := b
-    simp only [SetSemiring.ext_iff, le_def, add_def] at ab ⊢
-    exact (union_eq_right.2 ab).symm⟩
+  exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext_iff.mpr (union_eq_right.2 ab).symm⟩
   le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
