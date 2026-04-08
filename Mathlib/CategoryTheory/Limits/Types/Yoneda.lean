@@ -118,6 +118,8 @@ noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whisker
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop)
 
+/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
+naturally in `X`. -/
 @[deprecated "Use `(opHomCompWhiskeringLimYonedaIsoCocones _ _).app _` instead"
   (since := "2026-04-08")]
 noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
