@@ -57,6 +57,14 @@ def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One 
     CochainComplex (ModuleCat A) α :=
   ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 
+/-- Given a cochain complex `X` and an object `Y`, this is the chain complex
+which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
+@[simps! X d]
+def CochainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
+    (X : CochainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C) :
+    ChainComplex (ModuleCat A) α :=
+  ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
+
 namespace CategoryTheory
 
 namespace ProjectiveResolution

@@ -297,6 +297,15 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
+theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
+    (Submodule.subtype _) ∘ₗ (map n f) =
+    (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+  linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
+
+@[simp]
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) :
+    map n f x = ExteriorAlgebra.map f x.1 := congr($(subtype_comp_map_eq f) x)
 /-! Exactness properties of the exterior power functor. -/
 
 /-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/

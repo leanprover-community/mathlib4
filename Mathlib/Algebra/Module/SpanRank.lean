@@ -238,6 +238,9 @@ lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) :
   rw [← Cardinal.lt_aleph0_iff_set_finite, Submodule.generators_card]
   exact spanRank_finite_iff_fg.mpr hp
 
+instance finite_generators_of_isNoetherian [IsNoetherian R M] (p : Submodule R M) :
+    p.generators.Finite := FG.finite_generators FG.of_finite
+
 /-- The span of the generators equals the submodule. -/
 lemma span_generators (p : Submodule R M) : span R (generators p) = p :=
   (Classical.choose_spec (exists_span_set_card_eq_spanRank p)).2
@@ -265,6 +268,18 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
   · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
   · by_contra!
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
+
+lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨prin, ne⟩ ↦ ?_⟩
+  · have fg : p.FG := by
+      contrapose h
+      simp [Submodule.spanFinrank_of_not_fg h]
+    obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+    exact ⟨a, ha ▸ (p.span_generators).symm⟩
+  · aesop
+  · rcases prin with ⟨a, rfl⟩
+    apply Submodule.spanFinrank_singleton
+    aesop
 
 end Defs
 

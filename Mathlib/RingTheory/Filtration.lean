@@ -447,6 +447,14 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
+variable (R) in
+lemma IsLocalRing.maximalIdeal_sq_lt_maximalIdeal [IsLocalRing R] [IsNoetherianRing R] :
+    maximalIdeal R ^ 2 < maximalIdeal R ↔ ¬ IsField R := by
+  trans ¬ IsIdempotentElem (maximalIdeal R)
+  · simp [IsIdempotentElem, ← pow_two, lt_iff_le_and_ne, Ideal.pow_le_self]
+  · simp [Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing, Ideal.IsPrime.ne_top,
+      isField_iff_maximalIdeal_eq]
+
 open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
     [IsNoetherianRing R] [Module.IsTorsionFree R M]
