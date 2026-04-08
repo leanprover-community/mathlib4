@@ -999,22 +999,6 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
-/-- Transfer `SupSet` across an `Equiv`. -/
-protected abbrev supSet [SupSet β] : SupSet α where
-  sSup s := e.symm (⨆ a ∈ s, e a)
-
-lemma supSet_def [SupSet β] (s : Set α) :
-    letI := e.supSet
-    sSup s = e.symm (⨆ a ∈ s, e a) := rfl
-
-/-- Transfer `InfSet` across an `Equiv`. -/
-protected abbrev infSet [InfSet β] : InfSet α where
-  sInf s := e.symm (⨅ a ∈ s, e a)
-
-lemma infSet_def [InfSet β] (s : Set α) :
-    letI := e.infSet
-    sInf s = e.symm (⨅ a ∈ s, e a) := rfl
-
 /-- Transfer `CompleteLattice` across an `Equiv`. -/
 protected abbrev completeLattice (e : α ≃ β) [CompleteLattice β] : CompleteLattice α := by
   let top := e.top
