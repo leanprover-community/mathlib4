@@ -11,20 +11,10 @@ import Mathlib
 ## References
 
 * This is from the preprint: https://arxiv.org/pdf/1804.06485
-The version presented here would be somewhat more general, I believe, since we don't need to assume
-that all algebras on `C` have reflective coequalizers.
-TODO: I need to figure out later how references work in mathlib and fix tis one
 
 -/
 
 namespace CategoryTheory
-
-
-def iso_of_adjoint_iso {C D E : Type*} [Category C] [Category D] [Category E] (F : C ⥤ D)
-    (G : D ⥤ E) (H : C ⥤ E) (I : D ⥤ C) (J : E ⥤ D) (K : E ⥤ C)
-    (hIF : I ⊣ F) (hJG : J ⊣ G) (hKH : K ⊣ H) (h : F ⋙ G ≅ H) :
-    J ⋙ I ≅ K := by
-  exact hJG.leftAdjointCompIso hIF hKH h
 
 namespace Monad
 
@@ -107,13 +97,18 @@ instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) :
 
 -- i believe this can be done assuming `[HasReflexiveCoequalizers N.Algebra]` alone but it needs
 -- some extra work
-instance {M N : Monad C} (φ : M ⟶ N) (c : M.Algebra) [HasReflexiveCoequalizers C] :
+
+variable {M N : Monad C} [∀ M : Monad C, HasReflexiveCoequalizers M.Algebra]
+
+instance : HasReflexiveCoequalizers C := by
+  sorry
+
+instance (φ : M ⟶ N) (c : M.Algebra) :
     HasCoequalizer (N.map (φ.app c.A) ≫ N.μ.app c.A) (N.map c.a) := by
   infer_instance
 
 /-- This is the left adjoint diagram corresponding to `algebra_equiv_of_iso_monads_comp_forget`. -/
-noncomputable def directImageFunctor_preserves_free {M N : Monad C} (φ : M ⟶ N)
-    [HasReflexiveCoequalizers N.Algebra] :
+noncomputable def directImageFunctor_preserves_free {M N : Monad C} (φ : M ⟶ N) :
     free _ ⋙ directImageFunctor φ ≅ free _ := by
   apply M.adj.leftAdjointCompIso (directImageFunctor_adj_algebraFunctorOfMonadHom φ) N.adj
   rfl
