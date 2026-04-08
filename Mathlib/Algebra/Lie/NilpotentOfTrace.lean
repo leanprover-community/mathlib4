@@ -18,17 +18,15 @@ public import Mathlib.LinearAlgebra.Trace
 /-!
 # Trace-nilpotency criterion
 
-Let `L` be a Lie algebra over an algebraically closed field `K` of characteristic zero, acting on
-a finite-dimensional `K`-module `M`. If `I` is a Lie ideal of `L` contained in the kernel of the
-trace form `LieModule.traceForm K L M`, then for any `x ∈ I ⊓ ⁅L, L⁆` the action of `x` on `M`
-is nilpotent. This is the key technical lemma in Cartan's criterion for solvability.
+For a Lie ideal `I` contained in the kernel of `LieModule.traceForm K L M`, every element
+`x ∈ I ⊓ ⁅L, L⁆` acts nilpotently on `M`. This is the key technical lemma behind Cartan's
+criterion for solvability.
 
 ## Main results
 
 * `LieModule.isNilpotent_toEnd_of_mem_ker_traceForm`: if `K` is an algebraically closed field of
-  characteristic zero and `M` is a finite-dimensional representation of `L`, then any `x` lying in
-  a Lie ideal `I ⊆ ker (traceForm K L M)` and in the derived ideal `⁅L, L⁆` acts nilpotently on
-  `M`.
+  characteristic zero and `M` is a finite-dimensional `L`-module, then any `x` lying in a Lie
+  ideal `I ≤ (traceForm K L M).ker` and in `⁅L, L⁆` acts nilpotently on `M`.
 
 ## References
 
@@ -88,12 +86,9 @@ end NilpotentOfTrace
 namespace LieModule
 
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
-
-/-- **Trace-nilpotency criterion** (algebraically closed case). Let `L` be a Lie algebra over an
-algebraically closed field of characteristic zero, acting on a finite-dimensional module `M`. If
-`I` is a Lie ideal of `L` contained in the kernel of the trace form `LieModule.traceForm K L M`,
-then any `x ∈ I ⊓ ⁅L, L⁆` acts nilpotently on `M`. -/
-theorem LieModule.foo {K L M : Type*}
+/-- If `I` is a Lie ideal contained in the kernel of `traceForm K L M`, then every
+`x ∈ I ⊓ ⁅L, L⁆` acts nilpotently on `M`. -/
+theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
@@ -146,45 +141,34 @@ theorem LieModule.foo {K L M : Type*}
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
-  -- `ad y = aeval (ad X) (r ∘ p)`, and `(r ∘ p)(0) = 0`, so `r ∘ p = X * q'` for some `q'`.
-  have hp_ad : ad_s = aeval (ad K _ X) p := hp_eq.symm
-  have had_y_X : ad K _ y = aeval (ad K _ X) (r.comp p) := by
-    rw [had_y_eq, hp_ad, ← aeval_comp]
-  obtain ⟨q', hq'⟩ : (Polynomial.X : K[X]) ∣ r.comp p := by
-    rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
-  -- Key step: for every `b ∈ L`, `⁅y, toEnd b⁆ = toEnd c` for some `c ∈ I`. This uses that
-  -- `ad y` factors through `ad X`, that `ad X` preserves the image of `toEnd K L M`, and that
-  -- `x ∈ I` (so the final `ad X` step lands in the image of `I`).
-  let φL : L →ₗ[K] Module.End K M := (toEnd K L M).toLinearMap
-  have h_range_stable : (LinearMap.range φL) ≤
-      (LinearMap.range φL).comap (LieAlgebra.ad K _ X) := by
-    rintro _ ⟨b', rfl⟩
-    exact ⟨⁅x, b'⁆, LieHom.map_lie (toEnd K L M) x b'⟩
-  have h_y_brack : ∀ b : L, ∃ c ∈ I, toEnd K L M c = ⁅y, toEnd K L M b⁆ := by
-    intro b
-    have h_inner : aeval (LieAlgebra.ad K _ X) q' (φL b) ∈ LinearMap.range φL :=
-      aeval_apply_smul_mem_of_le_comap (LinearMap.mem_range_self _ b) q' _ h_range_stable
-    obtain ⟨b', hb'⟩ := h_inner
-    refine ⟨⁅x, b'⁆, lie_mem_left K L I x b' hxI, ?_⟩
-    have hbrack : ⁅y, toEnd K L M b⁆ = (aeval (LieAlgebra.ad K _ X) (r.comp p)) (φL b) := by
-      rw [← had_y_X]; rfl
-    rw [hbrack, hq', map_mul, aeval_X, Module.End.mul_apply, ← hb']
-    exact LieHom.map_lie (toEnd K L M) x b'
-  -- The linear functional `ψ(z) := tr(toEnd z * y)` vanishes on every bracket `⁅a, b⁆`,
-  -- using trace cyclicity and `c_b ∈ I ⊆ ker traceForm`.
-  have hψ_x : trace K M (X * y) = 0 := by
-    let ψ : L →ₗ[K] K := (trace K M).comp ((mulRight K y).comp φL)
-    suffices h : (LieAlgebra.derivedSeries K L 1 : Submodule K L) ≤ LinearMap.ker ψ by
-      have hxψ : ψ x = 0 := h hx_der
-      simpa [ψ, φL, hX_def] using hxψ
+  set A : Submodule K (Module.End K M) :=
+    Submodule.map (toEnd K L M).toLinearMap (I : Submodule K L) with hA_def
+  set B : Submodule K (Module.End K M) := LinearMap.range (toEnd K L M).toLinearMap with hB_def
+  have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
+  have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
+    rintro _ ⟨b, rfl⟩
+    exact ⟨⁅x, b⁆, lie_mem_left K L I x b hxI, LieHom.map_lie (toEnd K L M) x b⟩
+  have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
+    have hp_ad_s : ad_s = aeval (ad K _ X) p := hp_eq.symm
+    have had_y_X : ad K _ y = aeval (ad K _ X) (r.comp p) := by
+      rw [had_y_eq, hp_ad_s, ← aeval_comp]
+    obtain ⟨q', hq'⟩ : (Polynomial.X : K[X]) ∣ r.comp p := by
+      rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
+    intro b hb
+    change (ad K _ y) b ∈ A
+    rw [had_y_X, hq', map_mul, aeval_X, Module.End.mul_apply]
+    exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
+  have htr_xy : trace K M (X * y) = 0 := by
+    let ψ : L →ₗ[K] K := (trace K M).comp ((mulRight K y).comp (toEnd K L M).toLinearMap)
+    suffices h : ψ x = 0 by simpa [ψ, hX_def] using h
+    refine (?_ : (LieAlgebra.derivedSeries K L 1 : Submodule K L) ≤ LinearMap.ker ψ) hx_der
     rw [show (LieAlgebra.derivedSeries K L 1 : Submodule K L) =
         Submodule.span K { z | ∃ a ∈ (⊤ : LieIdeal K L), ∃ b ∈ (⊤ : LieIdeal K L), ⁅a, b⁆ = z }
         from LieSubmodule.lieIdeal_oper_eq_linear_span' (R := K) (L := L) (M := L)
           (I := ⊤) (N := ⊤)]
     refine Submodule.span_le.mpr ?_
     rintro _ ⟨a, _, b, _, rfl⟩
-    obtain ⟨c, hcI, hbc⟩ := h_y_brack b
-    -- `tr(toEnd ⁅a, b⁆ * y) = tr(toEnd a * [toEnd b, y]) = -tr(toEnd a * toEnd c) = 0`.
+    obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
     change trace K M (toEnd K L M ⁅a, b⁆ * y) = 0
     rw [show toEnd K L M ⁅a, b⁆ =
           toEnd K L M a * toEnd K L M b - toEnd K L M b * toEnd K L M a from
@@ -198,14 +182,9 @@ theorem LieModule.foo {K L M : Type*}
         rw [show (⁅y, toEnd K L M b⁆ : Module.End K M) =
           y * toEnd K L M b - toEnd K L M b * y from rfl, neg_sub],
       ← hbc, mul_neg, map_neg, neg_eq_zero]
-    have hca : traceForm K L M c a = 0 := by
-      have := hI hcI
-      rw [LinearMap.mem_ker] at this
-      exact LinearMap.congr_fun this a
+    have hca : traceForm K L M c a = 0 := LinearMap.congr_fun (hI hcI) a
     rw [traceForm_apply_apply, ← Module.End.mul_eq_comp] at hca
     rwa [trace_mul_comm]
-  -- Trace computation: `tr(X * y) = tr(s * y) = ∑ a_i c_i` (since `n` is nilpotent and commutes
-  -- with `y`).
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ adjoin K {s} := by
       rw [adjoin_singleton_eq_range_aeval]
@@ -228,7 +207,7 @@ theorem LieModule.foo {K L M : Type*}
     simp [Matrix.diag, toMatrix_apply, Module.End.mul_apply, hy_diag i, map_smul,
       hv_diag i, smul_smul, mul_comm (c i)]
   have htr_sum : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
-    rw [← htr_sy, ← hψ_x, hX_ns, add_mul, map_add, htr_ny, zero_add]
+    rw [← htr_sy, ← htr_xy, hX_ns, add_mul, map_add, htr_ny, zero_add]
   have h_sum_sq : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), f ⟨a i, ha i⟩ ^ 2 = 0 := by
     have h_sum_E : ∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
       apply_fun E.subtype using Subtype.val_injective
