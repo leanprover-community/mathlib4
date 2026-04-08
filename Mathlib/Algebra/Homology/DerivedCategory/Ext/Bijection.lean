@@ -50,7 +50,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
   | succ n hn =>
     let P : ProjectivePresentation X := Nonempty.some inferInstance
     let S := ShortComplex.mk _ _ (kernel.condition P.f)
-    have : Projective (S.map F).X₂ := by dsimp; infer_instance
+    have : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj P.projective
     have hS : S.ShortExact := { exact := ShortComplex.exact_kernel P.f }
     exact AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact _ _ _ _
       (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n)
@@ -72,7 +72,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
   | succ n hn =>
     let I : InjectivePresentation Y := Nonempty.some inferInstance
     let S := ShortComplex.mk _ _ (cokernel.condition I.f)
-    have : Injective (S.map F).X₂ := by dsimp; infer_instance
+    have : Injective (S.map F).X₂ := Functor.PreservesInjectiveObjects.injective_obj I.injective
     have hS : S.ShortExact := { exact := ShortComplex.exact_cokernel I.f }
     exact AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact _ _ _ _
       (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1))
