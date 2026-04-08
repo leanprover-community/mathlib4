@@ -177,33 +177,29 @@ def inr (c : Chain β) : Chain (α ⊕ β) := c.map OrderEmbedding.inr.toOrderHo
 If the chain contains right values (chains can contain only left values, or only right values),
 then a default value is returned. -/
 @[simps]
-def projL [Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
-  toFun n := Sum.elim id (fun _ ↦ default) (c n)
+def projL (c : Chain (α ⊕ β)) (dflt : α) : Chain α where
+  toFun n := Sum.elim id (fun _ ↦ dflt) (c n)
   monotone' := Monotone.sumElim monotone_snd monotone_const c.monotone
 
 /-- Projects right values out of a chain.
 If the chain contains left values (chains can contain only left values, or only right values),
 then a default value is returned. -/
 @[simps!]
-def projR [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
-  projL (c.map ⟨Sum.swap, Sum.swap_mono⟩)
+def projR (c : Chain (α ⊕ β)) (dflt : β) : Chain β :=
+  projL (c.map ⟨Sum.swap, Sum.swap_mono⟩) dflt
 
 @[simp]
-lemma projL_inl [Inhabited α] : projL (inl c : Chain (α ⊕ β)) = c := by
+lemma projL_inl (dflt : α) : projL (inl c : Chain (α ⊕ β)) dflt = c := by
   ext; simp
 
 @[simp]
-lemma projR_inr [Inhabited α] : projR (inr c : Chain (β ⊕ α)) = c := by
+lemma projR_inr (dflt : α) : projR (inr c : Chain (β ⊕ α)) dflt = c := by
   ext; simp
 
 /-- Splits a chain of sums into a sum of chains. -/
 @[simps symm_apply]
 def toSum : Chain (α ⊕ β) ≃ Chain α ⊕ Chain β where
-  toFun c :=
-    Sum.map
-      (fun d ↦ let : Inhabited α := ⟨d⟩; projL c)
-      (fun d ↦ let : Inhabited β := ⟨d⟩; projR c)
-      (c 0)
+  toFun c := Sum.map (projL c) (projR c) (c 0)
   invFun
     | .inl c => .inl c
     | .inr c => .inr c
@@ -230,12 +226,12 @@ lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr :
   rw [← toSum.symm_apply_apply c]
   cases c.toSum <;> simp [inl, inr]
 
-lemma inl_projL_of_apply_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
-    (hn : c n = .inl x) : inl (projL c) = c := by
+lemma inl_projL_of_apply_eq_inl (c : Chain (α ⊕ β)) {n : ℕ} {x : α} (dflt : α)
+    (hn : c n = .inl x) : inl (projL c dflt) = c := by
   ext; cases c using sum_cases <;> simp_all
 
-lemma inr_projR_of_apply_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
-    (hn : c n = .inr x) : inr (projR c) = c := by
+lemma inr_projR_of_apply_eq_inr (c : Chain (α ⊕ β)) {n : ℕ} {x : β} (dflt : β)
+    (hn : c n = .inr x) : inr (projR c dflt) = c := by
   ext; cases c using sum_cases <;> simp_all
 
 end Chain
