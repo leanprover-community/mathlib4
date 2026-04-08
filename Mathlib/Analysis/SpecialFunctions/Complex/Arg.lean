@@ -641,7 +641,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
     rw [ha]
     replace hs := mem_slitPlane_iff.mpr.mt hs
-    push_neg at hs
+    push Not at hs
     refine
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
         continuousAt_const
