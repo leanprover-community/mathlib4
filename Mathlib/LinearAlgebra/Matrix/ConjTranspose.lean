@@ -61,7 +61,7 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
   rw [conjTranspose, diagonal_transpose, diagonal_map (star_zero _)]
   rfl
 
-@[simp] theorem map_diagonal_star [AddMonoid α] [StarAddMonoid α] (x : n → α) :
+theorem map_diagonal_star [AddMonoid α] [StarAddMonoid α] (x : n → α) :
     (diagonal x).map star = diagonal (star x) := diagonal_map (star_zero _)
 
 end Diagonal
