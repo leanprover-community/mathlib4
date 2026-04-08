@@ -134,12 +134,7 @@ def partDens (g : GenContFract α) : Stream'.Seq α :=
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
 def TerminatedAt (g : GenContFract α) (n : ℕ) : Prop :=
   g.s.TerminatedAt n
-
-/-- It is decidable whether a gcf terminated at a given position. -/
-instance terminatedAtDecidable (g : GenContFract α) (n : ℕ) :
-    Decidable (g.TerminatedAt n) := by
-  unfold TerminatedAt
-  infer_instance
+deriving Decidable
 
 /-- A gcf terminates if its sequence terminates. -/
 def Terminates (g : GenContFract α) : Prop :=

@@ -42,7 +42,6 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by

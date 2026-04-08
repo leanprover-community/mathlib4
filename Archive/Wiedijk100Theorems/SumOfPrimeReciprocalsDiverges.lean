@@ -97,7 +97,7 @@ of `p`.
 theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
   simp only [mem_biUnion, not_and, Finset.mem_sdiff, mem_filter, mem_range, U, M, P]
-  push_neg
+  push Not
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
