@@ -240,8 +240,8 @@ section hadamard
 
 variable {ι : Type*}
 
-/-- **Schur product theorem** (positive semidefinite version): the Hadamard (entrywise) product
-of positive semidefinite matrices is positive semidefinite. -/
+/-- **Schur product theorem** [schur1911] (positive semidefinite version): the Hadamard (entrywise)
+product of positive semidefinite matrices is positive semidefinite. -/
 theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef := by
   classical
