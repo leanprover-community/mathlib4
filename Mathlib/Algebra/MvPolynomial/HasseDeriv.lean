@@ -32,7 +32,7 @@ $\binom{k}{i}$ is the multivariate binomial coefficient `MvPolynomial.mvChoose k
 * `MvPolynomial.hasseDeriv_comp`
 * `MvPolynomial.hasseDeriv_single_one`
 * `MvPolynomial.hasseDeriv_rename`
-* `MvPolynomial.finOneAlgEquiv_hasseDeriv`
+* `MvPolynomial.uniqueAlgEquiv_hasseDeriv`
 * `MvPolynomial.hasseDeriv_eq_zero_of_totalDegree_lt_degree`
 * `MvPolynomial.totalDegree_hasseDeriv_le`
 
@@ -437,11 +437,11 @@ theorem finSuccEquiv_hasseDeriv_mapDomain {n : ℕ}
       simp [Polynomial.coeff_monomial, hb']
     simpa [hkcoeff] using hcoeff.symm
 
-/-- One-variable bridge: under `finOneAlgEquiv`, the multivariate Hasse derivative
-indexed by `single 0 k` agrees with `Polynomial.hasseDeriv k`. -/
-theorem finOneAlgEquiv_hasseDeriv (P : MvPolynomial (Fin 1) R) (k : ℕ) :
-    finOneAlgEquiv R (hasseDeriv (Finsupp.single 0 k) P) =
-      Polynomial.hasseDeriv k (finOneAlgEquiv R P) := by
+/-- One-variable bridge: under `uniqueAlgEquiv (R := R) (Fin 1)`, the multivariate Hasse
+derivative indexed by `single 0 k` agrees with `Polynomial.hasseDeriv k`. -/
+theorem uniqueAlgEquiv_hasseDeriv (P : MvPolynomial (Fin 1) R) (k : ℕ) :
+    MvPolynomial.uniqueAlgEquiv R (Fin 1) (hasseDeriv (Finsupp.single 0 k) P) =
+      Polynomial.hasseDeriv k (MvPolynomial.uniqueAlgEquiv R (Fin 1) P) := by
   classical
   ext n
   have hsingle :
@@ -452,20 +452,22 @@ theorem finOneAlgEquiv_hasseDeriv (P : MvPolynomial (Fin 1) R) (k : ℕ) :
     subst hi
     simp [add_comm]
   calc
-    (finOneAlgEquiv R (hasseDeriv (Finsupp.single 0 k) P)).coeff n
+    (MvPolynomial.uniqueAlgEquiv R (Fin 1) (hasseDeriv (Finsupp.single 0 k) P)).coeff n
         = coeff (Finsupp.single 0 n) (hasseDeriv (Finsupp.single 0 k) P) :=
-      coeff_finOneAlgEquiv R (hasseDeriv (Finsupp.single 0 k) P) n
+      coeff_uniqueAlgEquiv (R := R) (σ := Fin 1) (hasseDeriv (Finsupp.single 0 k) P) n
     _ = (mvChoose (Finsupp.single 0 n + Finsupp.single 0 k) (Finsupp.single 0 k) : R) *
           coeff (Finsupp.single 0 n + Finsupp.single 0 k) P :=
       hasseDeriv_coeff (Finsupp.single 0 k) P (Finsupp.single 0 n)
     _ = ((Nat.choose (n + k) k) : R) * coeff (Finsupp.single 0 (n + k)) P := by
       rw [hsingle]
       simp [mvChoose_single]
-    _ = ((Nat.choose (n + k) k) : R) * (finOneAlgEquiv R P).coeff (n + k) := by
+    _ = ((Nat.choose (n + k) k) : R) *
+          (MvPolynomial.uniqueAlgEquiv R (Fin 1) P).coeff (n + k) := by
       congr 1
-      rw [← coeff_finOneAlgEquiv R P (n + k)]
-    _ = (Polynomial.hasseDeriv k (finOneAlgEquiv R P)).coeff n := by
-      rw [← Polynomial.hasseDeriv_coeff (k := k) (f := finOneAlgEquiv R P) (n := n)]
+      simpa using (coeff_uniqueAlgEquiv (R := R) (σ := Fin 1) P (n + k)).symm
+    _ = (Polynomial.hasseDeriv k (MvPolynomial.uniqueAlgEquiv R (Fin 1) P)).coeff n := by
+      rw [← Polynomial.hasseDeriv_coeff
+        (k := k) (f := MvPolynomial.uniqueAlgEquiv R (Fin 1) P) (n := n)]
 
 /-! ### Degree bounds -/
 
