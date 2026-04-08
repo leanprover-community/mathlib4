@@ -5,7 +5,7 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 
 /-!
@@ -28,6 +28,8 @@ Markov kernels, conditional independence and theorems on sufficient statistics][
 @[expose] public section
 
 open CategoryTheory ProbabilityTheory MeasureTheory
+
+open scoped MonoidalCategory ComonObj
 
 universe u
 
@@ -80,10 +82,10 @@ instance : MonoidalCategory SFinKer.{u} where
       ⟨Kernel.deterministic prodAssoc.symm (by fun_prop), inferInstance⟩, ?_, ?_⟩
     · ext : 1; dsimp
       rw [Kernel.deterministic_comp_deterministic, Kernel.id]
-      congr
+      rfl
     · ext : 1; dsimp
       rw [Kernel.deterministic_comp_deterministic, Kernel.id]
-      congr
+      rfl
   leftUnitor X := by
     let f₁ := fun (x : X) ↦ (PUnit.unit, x)
     have hf₁ : Measurable f₁ := by fun_prop
@@ -125,7 +127,7 @@ instance : MonoidalCategory SFinKer.{u} where
     rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop),
       Kernel.parallelComp_apply' <| measurable_snd hs]
     simp only [Kernel.id_apply, lintegral_dirac]
-    congr
+    rfl
   rightUnitor_naturality κ := by
     ext : 1; dsimp
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
@@ -136,7 +138,7 @@ instance : MonoidalCategory SFinKer.{u} where
       Kernel.parallelComp_apply' <| measurable_fst hs]
     simp only [Kernel.id_apply, MeasurableSpace.measurableSet_top, Measure.dirac_apply']
     rw [← lintegral_indicator_one hs]
-    congr
+    rfl
   tensorHom_comp_tensorHom κ₁ κ₂ η₁ η₂ := by
     ext : 1; dsimp
     simp only [Kernel.id_parallelComp_comp_parallelComp_id]
@@ -151,7 +153,7 @@ instance : MonoidalCategory SFinKer.{u} where
     rw [Measure.prod_apply hs, Measure.prod_apply (by measurability), lintegral_prod]
     · congr with a
       rw [Measure.prod_apply (by measurability)]
-      congr
+      rfl
     · refine Measurable.aemeasurable ?_
       exact measurable_measure_prodMk_left (by measurability)
   pentagon W X Y Z := by
@@ -159,14 +161,14 @@ instance : MonoidalCategory SFinKer.{u} where
     simp only [Kernel.id]
     repeat rw [Kernel.deterministic_parallelComp_deterministic (by fun_prop) (by fun_prop)]
     simp [Kernel.deterministic_comp_deterministic]
-    congr 1
+    rfl
   triangle X Y := by
     ext : 1; dsimp
     simp only [Kernel.id]
     repeat rw [Kernel.deterministic_map (by fun_prop) (by fun_prop)]
     repeat rw [Kernel.deterministic_parallelComp_deterministic (by fun_prop) (by fun_prop)]
     simp [Kernel.deterministic_comp_deterministic]
-    congr 1
+    rfl
 
 @[simps (attr := scoped simp) -isSimp]
 instance : SymmetricCategory SFinKer.{u} where
@@ -186,13 +188,13 @@ instance : SymmetricCategory SFinKer.{u} where
     simp only [Kernel.id, Kernel.swap]
     repeat rw [Kernel.deterministic_parallelComp_deterministic]
     repeat rw [Kernel.deterministic_comp_deterministic]
-    congr 1
+    rfl
   hexagon_reverse X Y Z := by
     ext : 1; dsimp
     simp only [Kernel.id, Kernel.swap]
     repeat rw [Kernel.deterministic_parallelComp_deterministic]
     repeat rw [Kernel.deterministic_comp_deterministic]
-    congr 1
+    rfl
   symmetry X Y := by
     ext : 1; simp
 
@@ -205,18 +207,18 @@ instance {X : SFinKer} : ComonObj X where
     simp only [Kernel.discard, Kernel.copy, Kernel.id]
     rw [Kernel.deterministic_parallelComp_deterministic,
       Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
-    congr 1
+    rfl
   comul_counit := by
     ext : 1; dsimp
     simp only [Kernel.discard, Kernel.copy, Kernel.id]
     rw [Kernel.deterministic_parallelComp_deterministic,
       Kernel.deterministic_comp_deterministic, Kernel.deterministic_map measurable_id (by fun_prop)]
-    congr 1
+    rfl
   comul_assoc := by
     ext : 1; dsimp
     simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
       Kernel.deterministic_parallelComp_deterministic]
-    congr 1
+    rfl
 
 instance : CopyDiscardCategory SFinKer.{u} where
   isCommComonObj X := ⟨by ext : 1; dsimp; exact Kernel.swap_copy⟩
@@ -225,19 +227,70 @@ instance : CopyDiscardCategory SFinKer.{u} where
     simp only [Kernel.copy, Kernel.id, Kernel.swap]
     repeat rw [Kernel.deterministic_parallelComp_deterministic]
     repeat rw [Kernel.deterministic_comp_deterministic]
-    congr 1
+    rfl
   discard_tensor X Y := by
     ext : 1; dsimp
     simp only [Kernel.id_parallelComp_comp_parallelComp_id]
     rw [Kernel.id_map (by fun_prop), Kernel.deterministic_comp_eq_map]
-    ext x s hs
+    ext
     rw [Kernel.map_apply _ (by fun_prop), Kernel.parallelComp_apply]
     simp [Kernel.discard_apply]
   copy_unit := by
     ext : 1; dsimp
-    ext x s hs
+    ext
     rw [Kernel.id_map (by fun_prop)]
     simp [Kernel.copy_apply, Kernel.deterministic_apply]
+
+instance deterministic_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier)
+    (hf : Measurable f) :
+    Deterministic (X := X) (Y := Y) (⟨Kernel.deterministic f hf, inferInstance⟩ : X ⟶ Y) where
+  hom_comul := by
+    ext : 1; dsimp
+    rw [Kernel.id_parallelComp_comp_parallelComp_id,
+      Kernel.deterministic_parallelComp_deterministic]
+    ext _ _ hs
+    rw [Kernel.comp_apply' _ _ _ hs, Kernel.comp_apply' _ _ _ hs, Kernel.deterministic_apply,
+      Kernel.copy_apply, lintegral_dirac', lintegral_dirac', Kernel.copy_apply,
+      Kernel.deterministic_apply]
+    · rfl
+    all_goals exact Kernel.measurable_coe _ hs
+
+instance id_map_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
+    Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
+
+instance {X : SFinKer} : Deterministic (𝟙 X) where
+
+instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).hom :=
+  deterministic_Deterministic ((X ⊗ Y) ⊗ Z)
+      (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
+
+instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).inv :=
+    deterministic_Deterministic (X ⊗ Y ⊗ Z)
+      ((X ⊗ Y) ⊗ Z) (MeasurableEquiv.prodAssoc.symm) (MeasurableEquiv.measurable _)
+
+instance {X : SFinKer} : Deterministic (λ_ X ).hom :=
+  @id_map_Deterministic (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
+
+instance {X : SFinKer} : Deterministic (λ_ X ).inv :=
+  @id_map_Deterministic X (𝟙_ SFinKer ⊗ X) (fun (x : X) ↦ (PUnit.unit, x)) (by fun_prop)
+
+instance {X : SFinKer} : Deterministic (ρ_ X ).hom :=
+  @id_map_Deterministic (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
+
+instance {X : SFinKer} : Deterministic (ρ_ X ).inv :=
+  @id_map_Deterministic X (X ⊗ 𝟙_ SFinKer) (fun (x : X) ↦ (x, PUnit.unit)) (by fun_prop)
+
+instance {X Y : SFinKer} : Deterministic (β_ X Y).hom :=
+  @deterministic_Deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
+
+instance {X Y : SFinKer} : Deterministic (β_ X Y).inv :=
+  @deterministic_Deterministic (Y ⊗ X) (X ⊗ Y) Prod.swap (by fun_prop)
+
+instance {X : SFinKer} : Deterministic (ε[X]) :=
+  @deterministic_Deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
+
+instance {X : SFinKer} : Deterministic (Δ[X]) :=
+  @deterministic_Deterministic X (X ⊗ X) (fun (x : X) ↦ (x, x)) (by fun_prop)
 
 end
 
