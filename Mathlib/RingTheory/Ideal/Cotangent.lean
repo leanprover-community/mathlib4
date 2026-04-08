@@ -223,6 +223,8 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
+namespace Cotangent
+
 section Lift
 
 variable {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S}
@@ -230,7 +232,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Lift a linear map `f : I →ₗ[R] M` that vanishes on products to a linear map on the
 cotangent space `I ⧸ I ^ 2`. -/
-def Cotangent.lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+def lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     I.Cotangent →ₗ[R] M where
   __ := QuotientAddGroup.lift _ f.toAddMonoidHom <| fun x hx ↦ by
     simp only [Submodule.mem_toAddSubgroup, AddMonoidHom.mem_ker] at hx ⊢
@@ -241,16 +243,16 @@ def Cotangent.lift (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     exact map_smul f _ _
 
 @[simp]
-lemma Cotangent.lift_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) (x : I) :
+lemma lift_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) (x : I) :
     Cotangent.lift f hf (I.toCotangent x) = f x :=
   rfl
 
 @[simp]
-lemma Cotangent.lift_comp_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+lemma lift_comp_toCotangent (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     Cotangent.lift f hf ∘ₗ I.toCotangent = f :=
   rfl
 
-lemma Cotangent.lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
+lemma lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0) :
     Function.Surjective (Cotangent.lift f hf) ↔ Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← Cotangent.lift_comp_toCotangent f hf, LinearMap.coe_comp]
@@ -260,7 +262,34 @@ lemma Cotangent.lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (
 
 end Lift
 
-end Ideal
+/-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
+@[expose]
+def equivOfEq (I J : Ideal R) (hIJ : I = J) :
+    I.Cotangent ≃ₗ[R] J.Cotangent where
+  __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by
+    simp [toCotangent_eq_zero, ← hIJ, sq, mul_mem_mul]
+  invFun := Cotangent.lift (I.toCotangent ∘ₗ LinearEquiv.ofEq J I hIJ.symm) <| fun x y ↦ by
+    simp [toCotangent_eq_zero, hIJ, sq, mul_mem_mul]
+  left_inv x := by
+    subst hIJ
+    obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+    simp
+  right_inv x := by
+    subst hIJ
+    obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
+    simp
+
+@[simp]
+lemma equivOfEq_toCotangent (I J : Ideal R) (hIJ : I = J) (x : I) :
+    Cotangent.equivOfEq I J hIJ (I.toCotangent x) = J.toCotangent (LinearEquiv.ofEq I J hIJ x) :=
+  rfl
+
+@[simp]
+lemma equivOfEq_symm (I J : Ideal R) (hIJ : I = J) :
+    (Cotangent.equivOfEq I J hIJ).symm = Cotangent.equivOfEq J I hIJ.symm :=
+  rfl
+
+end Ideal.Cotangent
 
 namespace IsLocalRing
 
