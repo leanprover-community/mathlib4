@@ -51,7 +51,7 @@ theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a b : K}
+variable [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K] {a b : K}
 
 theorem floor_div_eq_one_add_floor_sub_div (k a : K) (ha : 0 < a) (hak : a ≤ k) :
     ⌊k / a⌋₊ = 1 + ⌊(k - a) / a⌋₊ := by
