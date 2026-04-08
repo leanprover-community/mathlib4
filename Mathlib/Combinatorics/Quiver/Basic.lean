@@ -17,6 +17,11 @@ is a generalization of `Digraph V`, which can be thought of as "a proposition `a
 
 -/
 
+-- The category theory library makes extensive use of definitional equality between different
+-- `Hom` types, so `@[simps]` regularly produces lemmas where the LHS and RHS types are not
+-- definitionally equal at `withReducibleAndInstances` transparency.
+disable_simps_defeq_warn
+
 @[expose] public section
 
 open Opposite

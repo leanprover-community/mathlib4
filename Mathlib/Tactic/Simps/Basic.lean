@@ -272,6 +272,20 @@ register_option simps.defeqWarn : Bool := {
   defValue := true
   descr := "Warning when `@[simps]` generates a lemma with mismatched LHS/RHS types" }
 
+/-- Environment extension to persistently disable `simps.defeqWarn`.
+Unlike `set_option simps.defeqWarn false`, this propagates to all downstream files. -/
+initialize simpsDefeqWarnDisabledExt : SimplePersistentEnvExtension Unit Bool ←
+  registerSimplePersistentEnvExtension {
+    addImportedFn := fun a => a.any (·.size > 0)
+    addEntryFn := fun _ _ => true
+  }
+
+/-- Persistently disable `simps.defeqWarn` in this file and all downstream files.
+This is useful in areas of the library where definitional equality abuse in `@[simps]` lemmas
+is widespread and the warnings are not actionable. -/
+elab "disable_simps_defeq_warn" : command =>
+  modifyEnv (simpsDefeqWarnDisabledExt.addEntry · ())
+
 /-- Linter to check that `simps!` is used when needed -/
 register_option linter.simpsNoConstructor : Bool := {
   defValue := true
@@ -1002,14 +1016,19 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let lhsType ← inferType lhs
   let rhsType ← inferType rhs
   let typesMatch ← withReducibleAndInstances <| isDefEq lhsType rhsType
-  if simps.defeqWarn.get (← getOptions) then
+  let opts ← getOptions
+  let disabled := simpsDefeqWarnDisabledExt.getState (← getEnv)
+  -- If the option is explicitly set, use its value.
+  -- Otherwise, warn unless `disable_simps_defeq_warn` is active.
+  let enabled := if opts.contains ``simps.defeqWarn then simps.defeqWarn.get opts else !disabled
+  if enabled then
     unless typesMatch do
       logWarning m!"`@[simps]` generated lemma `{declName}` where the type \
         of the LHS{indentExpr lhsType}\nis not definitionally equal at \
         `withReducibleAndInstances` transparency to the type of the \
         RHS{indentExpr rhsType}"
   else
-    if typesMatch then
+    if !disabled && typesMatch then
       logInfo m!"`set_option simps.defeqWarn false` is not needed here"
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
