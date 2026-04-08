@@ -101,7 +101,7 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
-@[simps]
+@[instance_reducible, simps]
 def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A

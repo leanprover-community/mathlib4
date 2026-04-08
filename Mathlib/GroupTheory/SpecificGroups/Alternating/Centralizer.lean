@@ -210,7 +210,7 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
   ext c : 2
   rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-  exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
+  exact h_count _ (by simp) _ c.prop (mem_range_toPermHom_iff.mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/

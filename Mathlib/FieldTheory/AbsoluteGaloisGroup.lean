@@ -49,6 +49,8 @@ noncomputable instance : Group (G_K K) := AlgEquiv.aut
 /-- `absoluteGaloisGroup` is a topological space with the Krull topology. -/
 noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicClosure K)
 
+instance : IsTopologicalGroup (G_K K) := inferInstanceAs (IsTopologicalGroup (_ ≃ₐ[K] _))
+
 /-! ### The topological abelianization of the absolute Galois group -/
 
 instance absoluteGaloisGroup.commutator_closure_isNormal :

@@ -6,8 +6,10 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ToDual
 public import Batteries.Tactic.Alias
+public import Mathlib.Tactic.ExtendDoc
+
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -49,6 +51,9 @@ abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 
+lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
+  ⟨(·.trans), .mk⟩
+
 instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 
@@ -87,13 +92,13 @@ class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends Is
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
 either `lt a b` or `a = b` or `lt b a` for any `a` and `b`. -/
-class IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop where
-  trichotomous : ∀ a b, lt a b ∨ a = b ∨ lt b a
+@[deprecated Std.Trichotomous (since := "2026-01-24")]
+abbrev IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop := Std.Trichotomous lt
 
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
-that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
+that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
-    extends IsTrichotomous α lt, IsStrictOrder α lt
+    extends Std.Trichotomous lt, IsStrictOrder α lt
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
@@ -121,8 +126,8 @@ lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
 lemma antisymm [Std.Antisymm r] : a ≺ b → b ≺ a → a = b := Std.Antisymm.antisymm _ _
 lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 
-lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
-  IsTrichotomous.trichotomous
+lemma trichotomous [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
+  fun _ _ ↦ Std.Trichotomous.rel_or_eq_or_rel_swap
 
 instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
@@ -155,9 +160,9 @@ instance Std.Total.decide [DecidableRel r] [Std.Total r] :
     Std.Total (fun a b => decide (r a b) = true) where
   total := fun a b => by simpa using total a b
 
-instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
-    IsTrichotomous α (fun a b => decide (r a b) = true) where
-  trichotomous := fun a b => by simpa using trichotomous a b
+instance Std.Trichotomous.decide [DecidableRel r] [Std.Trichotomous r] :
+    Std.Trichotomous (fun a b => decide (r a b) = true) where
+  trichotomous a b := by simpa using trichotomous a b
 
 variable (r)
 
@@ -171,7 +176,7 @@ variable (r)
 lemma total_of [Std.Total r] (a b : α) : a ≺ b ∨ b ≺ a := Std.Total.total _ _
 
 @[elab_without_expected_type]
-lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
+lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
 section
 
@@ -182,15 +187,19 @@ def Reflexive := ∀ x, x ≺ x
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
+@[deprecated IsTrans (since := "2026-02-20")]
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 /-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Irrefl (since := "2026-02-12")]
 def Irreflexive := ∀ x, ¬x ≺ x
 
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Antisymm (since := "2026-02-09")]
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- `Std.Total` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Total (since := "2026-02-10")]
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
@@ -198,16 +207,22 @@ theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
+theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
+  ⟨fun _ _ _ ↦ h.trans⟩
+
+@[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+theorem InvImage.isTrans (h : IsTrans β r) : IsTrans α (InvImage r f) :=
+  ⟨fun _ _ _ ↦ h.trans _ _ _⟩
 
-theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+@[deprecated (since := "2026-02-20")] alias InvImage.trans := InvImage.isTrans
+
+theorem InvImage.irrefl (h : Std.Irrefl r) : Std.Irrefl (InvImage r f) :=
+  ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ h.irrefl (f a) h₁⟩
+
+@[deprecated (since := "2026-02-12")] alias InvImage.irreflexive := InvImage.irrefl
 
 end
 
@@ -352,8 +367,10 @@ protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
 @[deprecated (since := "2026-01-05")] protected alias IsAsymm.isIrrefl := Std.Asymm.irrefl
 @[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
 
-protected theorem Std.Total.isTrichotomous (r) [Std.Total r] : IsTrichotomous α r :=
-  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
+protected theorem Std.Total.trichotomous (r : α → α → Prop) [Std.Total r] : Std.Trichotomous r :=
+  inferInstance
+
+@[deprecated (since := "2026-01-24")] alias Std.Total.isTrichotomous := Std.Total.trichotomous
 
 -- see Note [lower instance priority]
 instance (priority := 100) Std.Total.to_refl (r : α → α → Prop) [Std.Total r] : Std.Refl r :=
@@ -388,24 +405,26 @@ theorem rel_congr [Std.Symm r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h�
     r a c ↔ r b d := by
   rw [rel_congr_left h₁, rel_congr_right h₂]
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+theorem trans_trichotomous_left [IsTrans α r] [Std.Trichotomous r] {a b c : α}
     (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   · exact _root_.trans h₃ h₂
   · exact h₂
   · exact absurd h₃ h₁
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α}
     (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   · exact _root_.trans h₁ h₃
   · exact h₁
   · exact absurd h₃ h₂
 
+set_option linter.deprecated false in
+@[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
-theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [Std.Irrefl r]
+theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [Std.Trichotomous r] [Std.Irrefl r]
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b

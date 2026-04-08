@@ -102,6 +102,7 @@ theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 theorem exists_inv [hI : I.IsMaximal] :
     ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by

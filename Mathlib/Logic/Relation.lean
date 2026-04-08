@@ -12,13 +12,12 @@ public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
-public import Mathlib.Tactic.Basic
 
 /-!
 # Relation closures
 
-This file defines the reflexive, transitive, reflexive transitive and equivalence closures
-of relations and proves some basic results on them.
+This file defines the reflexive, symmetric, transitive, reflexive transitive and equivalence
+closures of relations and proves some basic results on them.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
 the bundled version, see `Rel`.
@@ -27,6 +26,8 @@ the bundled version, see `Rel`.
 
 * `Relation.ReflGen`: Reflexive closure. `ReflGen r` relates everything `r` related, plus for all
   `a` it relates `a` with itself. So `ReflGen r a b ↔ r a b ∨ a = b`.
+* `Relation.SymmGen`: Symmetric closure. This is also the comparability relation,
+  such that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`)
 * `Relation.TransGen`: Transitive closure. `TransGen r` relates everything `r` related
   transitively. So `TransGen r a b ↔ ∃ x₀ ... xₙ, r a x₀ ∧ r x₀ x₁ ∧ ... ∧ r xₙ b`.
 * `Relation.ReflTransGen`: Reflexive transitive closure. `ReflTransGen r` relates everything
@@ -80,8 +81,11 @@ theorem reflexive_ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x
 theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
   grind [Reflexive, Subrelation]
 
-theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
-  grind [Irreflexive, Subrelation]
+theorem irrefl_iff_subrelation_ne : Std.Irrefl r ↔ Subrelation r Ne := by
+  grind [Std.Irrefl, Subrelation]
+
+@[deprecated (since := "2026-02-12")]
+alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
@@ -108,8 +112,10 @@ theorem Reflexive.comap (h : Reflexive r) (f : α → β) : Reflexive (r on f) :
 
 theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab ↦ h hab
 
-theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f) :=
-  fun _ _ _ hab hbc ↦ h hab hbc
+theorem IsTrans.comap (h : IsTrans β r) (f : α → β) : IsTrans α (r on f) :=
+  ⟨fun _ _ _ ↦ h.trans _ _ _⟩
+
+@[deprecated (since := "2026-02-21")] alias Transitive.comap := IsTrans.comap
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
   ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
@@ -236,18 +242,19 @@ lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) 
     Symmetric (Relation.Map r f f) := by
   rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
 
-lemma map_transitive {r : α → α → Prop} (hr : Transitive r) {f : α → β}
-    (hf : ∀ x y, f x = f y → r x y) :
-    Transitive (Relation.Map r f f) := by
-  rintro _ _ _ ⟨x, y, hxy, rfl, rfl⟩ ⟨y', z, hyz, hy, rfl⟩
-  exact ⟨x, z, hr hxy <| hr (hf _ _ hy.symm) hyz, rfl, rfl⟩
+lemma isTrans_map {r : α → α → Prop} (hr : IsTrans α r) {f : α → β}
+    (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
+  refine ⟨fun _ _ _ ⟨x, y, hxy, hx, hy⟩ ⟨y', z, hyz, hy', hz⟩ ↦ ?_⟩
+  exact ⟨x, z, hr.trans x y z hxy <| hr.trans y y' z (hf y y' <| hy' ▸ hy) hyz, hx, hz⟩
+
+@[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
     (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
     Equivalence (Relation.Map r f f) where
   refl := map_reflexive hr.reflexive hf
   symm := @(map_symmetric hr.symmetric _)
-  trans := @(map_transitive hr.transitive hf_ker)
+  trans := @(isTrans_map hr.isTrans hf_ker |>.trans)
 
 -- TODO: state this using `≤`, after adjusting imports.
 lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
@@ -294,7 +301,7 @@ variable {r : α → α → Prop} {a b c : α}
 @[mk_iff ReflTransGen.cases_tail_iff, grind]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
-  | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
+  | tail {b c : α} : ReflTransGen r a b → r b c → ReflTransGen r a c
 
 attribute [refl] ReflTransGen.refl
 
@@ -302,7 +309,12 @@ attribute [refl] ReflTransGen.refl
 @[mk_iff, grind]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
-  | single {b} : r a b → ReflGen r a b
+  | single {b : α} : r a b → ReflGen r a b
+
+/-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
+  that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
+def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
+  r a b ∨ r b a
 
 variable (r) in
 /-- `EqvGen r`: equivalence closure of `r`. -/
@@ -332,6 +344,46 @@ instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
+
+namespace SymmGen
+
+theorem of_rel (h : r a b) : SymmGen r a b :=
+  Or.inl h
+
+theorem of_rel_symm (h : r b a) : SymmGen r a b :=
+  Or.inr h
+
+theorem swap (h : SymmGen r b a) : SymmGen (swap r) a b := by
+  induction h with
+  | inl hba => exact of_rel hba
+  | inr hab => exact of_rel_symm hab
+
+@[simp, refl]
+theorem refl (r : α → α → Prop) [Std.Refl r] (a : α) : SymmGen r a a :=
+  .of_rel (_root_.refl _)
+
+theorem rfl [Std.Refl r] : SymmGen r a a := .refl ..
+
+instance [Std.Refl r] : Std.Refl (SymmGen r) where
+  refl := .refl r
+
+@[symm]
+theorem symm : SymmGen r a b → SymmGen r b a :=
+  Or.symm
+
+instance : Std.Symm (SymmGen r) where
+  symm _ _ := SymmGen.symm
+
+instance decidableRel [DecidableRel r] : DecidableRel (SymmGen r) :=
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
+
+theorem of_le {α : Type*} [LE α] {a b : α} (h : a ≤ b) : SymmGen (· ≤ ·) a b := .of_rel h
+theorem of_ge {α : Type*} [LE α] {a b : α} (h : b ≤ a) : SymmGen (· ≤ ·) a b := .of_rel_symm h
+
+alias _root_.LE.le.symmGen := SymmGen.of_le
+alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
+
+end SymmGen
 
 namespace ReflTransGen
 
@@ -493,6 +545,23 @@ lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x 
 
 end reflGen
 
+section SymmGen
+
+theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
+  funext₂ fun _ _ ↦ propext or_comm
+
+theorem symmGen_swap_apply (r : α → α → Prop) : SymmGen (swap r) a b ↔ SymmGen r a b :=
+  or_comm
+
+theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
+  or_comm
+
+@[simp]
+theorem symmGen_of_total [Std.Total r] (a b : α) : SymmGen r a b :=
+  Std.Total.total a b
+
+end SymmGen
+
 section TransGen
 
 instance : IsTrans α (TransGen r) :=
@@ -511,18 +580,19 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨TransGen.trans_right⟩
 
 @[grind =]
-theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
-  funext fun a ↦ funext fun b ↦ propext <|
+theorem transGen_eq_self (trans : IsTrans α r) : TransGen r = r :=
+  funext₂ fun a b ↦ propext <|
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
-      | tail _ hcd hac => exact trans hac hcd, TransGen.single⟩
+      | tail _ hcd hac => exact trans.trans _ _ _ hac hcd, TransGen.single⟩
 
-theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
+@[deprecated inferInstance (since := "2026-02-21")]
+theorem transitive_transGen : IsTrans α (TransGen r) := inferInstance
 
 @[grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
-  transGen_eq_self transitive_transGen
+  transGen_eq_self inferInstance
 
 theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
     (hab : TransGen r a b) : TransGen p (f a) (f b) := by
@@ -547,7 +617,7 @@ theorem TransGen.mono {p : α → α → Prop} :
     (∀ a b, r a b → p a b) → TransGen r a b → TransGen p a b :=
   TransGen.lift id
 
-lemma transGen_minimal {r' : α → α → Prop} (hr' : Transitive r') (h : ∀ x y, r x y → r' x y)
+lemma transGen_minimal {r' : α → α → Prop} (hr' : IsTrans α r') (h : ∀ x y, r x y → r' x y)
     {x y : α} (hxy : TransGen r x y) : r' x y := by
   simpa [transGen_eq_self hr'] using TransGen.mono h hxy
 
@@ -588,16 +658,14 @@ theorem ReflTransGen.mono {p : α → α → Prop} : (∀ a b, r a b → p a b) 
   ReflTransGen.lift id
 
 @[grind =]
-theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflTransGen r = r :=
+theorem reflTransGen_eq_self (refl : Reflexive r) (trans : IsTrans α r) : ReflTransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
       induction h with
       | refl => apply refl
-      | tail _ h₂ IH => exact trans IH h₂, single⟩
+      | tail _ h₂ IH => exact trans.trans _ _ _ IH h₂, single⟩
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
-
-theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ trans
 
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
@@ -611,9 +679,12 @@ instance : Std.Refl (ReflTransGen r) :=
 instance : IsTrans α (ReflTransGen r) :=
   ⟨@ReflTransGen.trans α r⟩
 
+@[deprecated inferInstance (since := "2026-02-21")]
+theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
+
 @[grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
-  reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
+  reflTransGen_eq_self reflexive_reflTransGen inferInstance
 
 theorem ReflTransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
     (h : ∀ a b, r a b → ReflTransGen p (f a) (f b))
@@ -657,8 +728,7 @@ lemma reflTransGen_eq_transGen (hr : Reflexive r) :
   rw [← transGen_reflGen, reflGen_eq_self hr]
 
 @[grind =]
-lemma reflTransGen_eq_reflGen (hr : Transitive r) :
-    ReflTransGen r = ReflGen r := by
+lemma reflTransGen_eq_reflGen (hr : IsTrans α r) : ReflTransGen r = ReflGen r := by
   rw [← reflGen_transGen, transGen_eq_self hr]
 
 end ReflTransGen
@@ -674,6 +744,7 @@ theorem is_equivalence : Equivalence (@EqvGen α r) :=
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
+@[implicit_reducible]
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
@@ -731,35 +802,40 @@ theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨
 
 theorem reflexive_join (h : Reflexive r) : Reflexive (Join r) := fun a ↦ ⟨a, h a, h a⟩
 
-theorem transitive_join (ht : Transitive r) (h : ∀ a b c, r a b → r a c → Join r b c) :
-    Transitive (Join r) :=
-  fun _ b _ ⟨x, hax, hbx⟩ ⟨y, hby, hcy⟩ ↦
+theorem isTrans_join (ht : IsTrans α r) (h : ∀ a b c, r a b → r a c → Join r b c) :
+    IsTrans α (Join r) :=
+  ⟨fun a b c ⟨x, hax, hbx⟩ ⟨y, hby, hcy⟩ ↦
   let ⟨z, hxz, hyz⟩ := h b x y hbx hby
-  ⟨z, ht hax hxz, ht hcy hyz⟩
+  ⟨z, ht.trans a x z hax hxz, ht.trans c y z hcy hyz⟩⟩
 
-theorem equivalence_join (hr : Reflexive r) (ht : Transitive r)
+@[deprecated (since := "2026-02-21")] alias transitive_join := isTrans_join
+
+theorem equivalence_join (hr : Reflexive r) (ht : IsTrans α r)
     (h : ∀ a b c, r a b → r a c → Join r b c) : Equivalence (Join r) :=
-  ⟨reflexive_join hr, @symmetric_join _ _, @transitive_join _ _ ht h⟩
+  ⟨reflexive_join hr, @symmetric_join α r, isTrans_join ht h |>.trans _ _ _⟩
 
 theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
-  equivalence_join reflexive_reflTransGen transitive_reflTransGen fun _ _ _ ↦ church_rosser h
+  equivalence_join reflexive_reflTransGen inferInstance fun _ _ _ ↦ church_rosser h
 
 theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : ∀ a b, r' a b → r a b) :
     Join r' a b → r a b
   | ⟨_, hac, hbc⟩ => hr.trans (h _ _ hac) (hr.symm <| h _ _ hbc)
 
-theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
-    (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
+theorem reflTransGen_of_isTrans_reflexive {r' : α → α → Prop} (hr : Reflexive r)
+    (ht : IsTrans α r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
   simpa [reflTransGen_eq_self hr ht] using ReflTransGen.mono h h'
+
+@[deprecated (since := "2026-02-21")]
+alias reflTransGen_of_transitive_reflexive := reflTransGen_of_isTrans_reflexive
 
 @[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
   reflTransGen_of_transitive_reflexive
 
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=
-  reflTransGen_of_transitive_reflexive hr.1 (fun _ _ _ ↦ hr.trans)
+  reflTransGen_of_isTrans_reflexive hr.1 hr.isTrans
 
 end Join
 

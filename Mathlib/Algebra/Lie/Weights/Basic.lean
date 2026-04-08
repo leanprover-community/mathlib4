@@ -764,6 +764,17 @@ lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
   erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
   exact this
 
+lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :
+    N = ⨆ χ : Weight K L M, N ⊓ genWeightSpace M χ := by
+  refine le_antisymm ?_ (iSup_le fun χ ↦ inf_le_left)
+  conv_lhs => rw [← N.map_incl_top, ← iSup_genWeightSpace_eq_top' K L N, LieSubmodule.map_iSup]
+  refine iSup_le fun χ_N ↦ ?_
+  have hN := (LieSubmodule.map_mono (le_top : genWeightSpace N χ_N ≤ ⊤)).trans N.map_incl_top.le
+  exact (le_inf hN (map_genWeightSpace_le _)).trans <| by
+    by_cases h : genWeightSpace M (χ_N : L → K) = ⊥
+    · simp [h]
+    · exact le_iSup_of_le ⟨_, h⟩ le_rfl
+
 end field
 
 end LieModule

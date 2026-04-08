@@ -99,7 +99,7 @@ theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
     HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) (insert x s) x := by
-  rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
+  rw [hasFDerivWithinAt_iff_isLittleO, isLittleO_iff]
   intro c hc
   have : Tendsto (fun y ↦ (y, x)) (𝓝[insert x s] x) (𝓝[insert x s ×ˢ insert x s] (x, x)) := by
     rw [nhdsWithin_prod_eq]
@@ -323,7 +323,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [← b.isEmbedding.hasSum_iff]
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h
-  have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_eq_enorm] using hy)
+  have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_right] using hy)
   have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
     exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
@@ -345,7 +345,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn
     (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
-  apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_zero_eq_enorm] using h'y) hy
+  apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_zero_right] using h'y) hy
   · rw [insert_eq_of_mem hx] at hy ⊢
     apply DifferentiableWithinAt.hasFDerivWithinAt
     exact h.differentiableOn _ hy

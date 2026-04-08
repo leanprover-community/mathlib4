@@ -10,7 +10,7 @@ public import Mathlib.Data.List.Monad
 public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 public import Batteries.Tactic.Lint.Simp
 public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
@@ -71,12 +71,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-
--- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem⟩
@@ -119,6 +114,9 @@ lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) 
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
   ⟨fun _ => let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
+
+theorem length_eq_two' {l : List α} (h : l ≠ []) : l.length = 2 ↔ l = [l.head h, l.getLast h] := by
+  rw [length_eq_two]; grind
 
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
@@ -261,10 +259,6 @@ theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.rev
   rw [reverse_append]; rfl
 
 @[simp]
-theorem reverse_singleton (a : α) : reverse [a] = [a] :=
-  rfl
-
-@[simp]
 theorem reverse_involutive : Involutive (@reverse α) :=
   reverse_reverse
 
@@ -316,7 +310,7 @@ theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l +
   | [], h => absurd rfl h
   | [_], _ => rfl
   | a :: b :: l, h => by
-    rw [dropLast_cons₂, cons_append, getLast_cons (cons_ne_nil _ _)]
+    rw [dropLast_cons_cons, cons_append, getLast_cons (cons_ne_nil _ _)]
     congr
     exact dropLast_append_getLast (cons_ne_nil b l)
 
@@ -349,7 +343,7 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
     rw [getLast?_cons_cons] at hc
-    rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
+    rw [dropLast_cons_cons, cons_append, dropLast_append_getLast? _ hc]
 
 theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default
   | [] => by simp [getLastI]
@@ -393,9 +387,6 @@ theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ 
 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
-
-@[deprecated cons_head_tail (since := "2025-08-15")]
-theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by simp
 
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
@@ -475,7 +466,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_swap α]
+  simp [mem_iff_getElem, @forall_comm α]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
@@ -505,9 +496,6 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
-
-theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a :: l₁ <+ a :: l₂ :=
-  Sublist.cons₂ _ s
 
 lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
   grind
@@ -867,88 +855,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
 
-section FoldlEqFoldr
-
--- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α}
-
-theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
-  | _, _, nil => rfl
-  | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
-    rw [hassoc.assoc]
-
-theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm.comm a b
-  | a, b, c :: l => by
-    simp only [foldl_cons]
-    have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
-
-theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
-    ∀ a l, foldl f a l = foldr f a l
-  | _, nil => rfl
-  | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
-    rw [foldl_eq_foldr a l]
-
-end FoldlEqFoldr
-
-section FoldlEqFoldr'
-
-variable {f : α → β → α}
-variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
-
-include hf
-
-theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldl, foldl, foldl, ← foldl_eq_of_comm' .., foldl, hf]
-
-theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
-  | _, [] => rfl
-  | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
-
-end FoldlEqFoldr'
-
-section FoldlEqFoldr'
-
-variable {f : α → β → β}
-
-theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
-    ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
-  | _, _, [] => rfl
-  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
-
-end FoldlEqFoldr'
-
-section
-
-variable {op : α → α → α} [ha : Std.Associative op]
-
-/-- Notation for `op a b`. -/
-local notation a " ⋆ " b => op a b
-
--- Setting `priority := high` means that Lean will prefer this notation to the identical one
--- for `Seq.seq`
-/-- Notation for `foldl op a l`. -/
-local notation (priority := high) l " <*> " a => foldl op a l
-
-theorem foldl_op_eq_op_foldr_assoc :
-    ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
-  | [], _, _ => rfl
-  | a :: l, a₁, a₂ => by
-    simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
-
-variable [hc : Std.Commutative op]
-
-theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ ⋆ l <*> a₂ := by
-  rw [foldl_cons, hc.comm, foldl_assoc]
-
-end
-
 /-! ### foldlM, foldrM, mapM -/
 
 section FoldlMFoldrM
@@ -985,6 +891,7 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
+@[congr]
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
   induction l <;> simp_all [filterMap_cons]
@@ -999,6 +906,11 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       grind
     · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+
+@[simp]
+lemma filterMap_none (l : List α) :
+    l.filterMap (fun _ ↦ @Option.none β) = [] := by
+  induction l <;> simp [*]
 
 /-! ### filter -/
 

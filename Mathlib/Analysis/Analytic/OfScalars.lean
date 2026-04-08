@@ -68,7 +68,7 @@ theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalar
   refine Function.mtr fun h ↦ ?_
   simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.smul_apply]
-  push_neg
+  push Not
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
   simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
@@ -91,6 +91,7 @@ lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ →
     (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
   simp_rw [Pi.add_apply, Pi.add_def _ _]
@@ -99,6 +100,7 @@ theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c
 lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
   ext; simp [ofScalars, sub_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
   unfold ofScalars
   simp [Pi.smul_def x _, smul_smul]
@@ -173,6 +175,7 @@ open scoped Topology NNReal
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
+@[simp]
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
   rw [ofScalars, norm_smul]
@@ -182,9 +185,8 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
   exact (mul_le_of_le_one_right (norm_nonneg _)
     (ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos hn))
 
-@[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
-  simp [ofScalars_norm_eq_mul]
+  simp
 
 end Seminormed
 

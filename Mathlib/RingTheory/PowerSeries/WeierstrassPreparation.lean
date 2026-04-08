@@ -409,7 +409,8 @@ theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
 `A⟦X⟧ / (g) →ₗ[A] A[X]`. -/
 noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ[A] A[X] where
   toFun := Quotient.lift (fun f ↦ H.mod f) fun f f' hf ↦ by
-    simp_rw [HasEquiv.Equiv, Submodule.quotientRel_def, Ideal.mem_span_singleton'] at hf
+    have hf := (Submodule.quotientRel_def (p := Ideal.span {g})).mp hf
+    rw [Ideal.mem_span_singleton'] at hf
     obtain ⟨a, ha⟩ := hf
     obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
     obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod f'
@@ -475,7 +476,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
-      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div _ H.monic]; ring⟩
+      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
       convert H.degree_eq_coe_lift_order_map g 1
         (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
