@@ -131,6 +131,11 @@ noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
   else
     1
 
+/-- The junk value when `𝔸` can't be equipped with a `ℚ`-algebra structure. -/
+@[simp]
+theorem exp_of_isEmpty_algebra_rat [IsEmpty (Algebra ℚ 𝔸)] (x : 𝔸) : exp x = 1 := by
+  rw [exp, dif_neg (not_nonempty_iff.mpr ‹_›)]
+
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
 
@@ -186,14 +191,11 @@ theorem exp_zero : exp (0 : 𝔸) = 1 := by
 @[simp]
 theorem exp_op [T2Space 𝔸] (x : 𝔸) :
     exp (MulOpposite.op x) = MulOpposite.op (exp x) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    rw [exp_eq_tsum ℚ, exp_eq_tsum ℚ]
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · have : IsEmpty (Algebra ℚ 𝔸ᵐᵒᵖ) := ⟨fun _ => h.elim <| (RingEquiv.opOp 𝔸).algebra ℚ⟩
+    simp
+  · rw [exp_eq_tsum ℚ, exp_eq_tsum ℚ]
     simp_rw [← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
-  · have : ¬Nonempty (Algebra ℚ 𝔸ᵐᵒᵖ) := by
-      rintro ⟨h'⟩
-      exact h ⟨(RingEquiv.opOp 𝔸).algebra ℚ⟩
-    rw [exp, exp, dif_neg h, dif_neg this, MulOpposite.op_one]
 
 @[simp]
 theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
@@ -202,10 +204,9 @@ theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
 
 theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
     star (exp x) = exp (star x) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
-  · rw [exp, exp, dif_neg h, dif_neg h, star_one]
+  obtain _ | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
 
 /-- A subalgebra of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `exp`. -/
 theorem exp_mem
@@ -226,12 +227,10 @@ theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 
 
 theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute x (exp y) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    rw [exp_eq_tsum ℚ]
+  obtain _ | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · rw [exp_eq_tsum ℚ]
     exact Commute.tsum_right x fun n => (h.pow_right n).smul_right _
-  · rw [exp, dif_neg h]
-    exact Commute.one_right x
 
 theorem _root_.Commute.exp_left [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute (exp x) y :=
