@@ -45,9 +45,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
-  induction n generalizing X
-  · simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
-  · rename_i n bij
+  induction n generalizing X with
+  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | succ n bij =>
     rcases EnoughProjectives.presentation X with ⟨⟨P, p⟩⟩
     let S := ShortComplex.mk (kernel.ι p) p (kernel.condition p)
     have S_exact : S.ShortExact := { exact := ShortComplex.exact_kernel p }
@@ -87,9 +87,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
-  induction n generalizing Y
-  · simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
-  · rename_i n bij
+  induction n generalizing Y with
+  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | succ n bij =>
     rcases EnoughInjectives.presentation Y with ⟨⟨I, _, i⟩⟩
     let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
     have S_exact : S.ShortExact := { exact := ShortComplex.exact_cokernel i }
