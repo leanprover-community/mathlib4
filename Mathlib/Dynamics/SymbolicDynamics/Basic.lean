@@ -12,22 +12,22 @@ public import Mathlib.Topology.Separation.Basic
 # Symbolic dynamics on cancellative monoids
 
 This file develops a minimal API for symbolic dynamics over a
-**right-cancellative monoid** `G`—formally, a structure carrying `[Monoid G]`
-and `[IsRightCancelMul G]` (which becomes `[AddMonoid G]` and
-`[IsRightCancelAdd G]` in the additive form). Throughout the documentation we use the
+**left-cancellative monoid** `G`—formally, a structure carrying `[Monoid G]`
+and `[IsLeftCancelMul G]` (which becomes `[AddMonoid G]` and
+`[IsLeftCancelAdd G]` in the additive form). Throughout the documentation we use the
 **additive** notations, which are the most common in symbolic dynamics, although
 all the notions introduced are defined in the multiplicative notations and adapted
 to the additive notation.
 
 Given a finite alphabet `A`, the ambient configuration space is the set of
 functions `G → A`, endowed with the product topology. We define the
-right-translation action, cylinders, finite patterns, their occurrences,
+left-translation action, cylinders, finite patterns, their occurrences,
 forbidden sets, and subshifts (closed, shift-invariant subsets). Basic
 topological facts (e.g. cylinders are clopen, occurrence sets are clopen,
 forbidden sets are closed) are proved under discreteness assumptions on
 the alphabet.
 
-The development is generic for right-cancellative monoids. This covers both
+The development is generic for left-cancellative monoids. This covers both
 groups (the standard setting of symbolic dynamics) and more general monoids
 where cancellation holds but inverses may not exist. Geometry specific to
 `ℤ^d` (boxes/cubes and the box-based entropy) is deferred to a separate
@@ -37,16 +37,16 @@ specialization.
 
 Some constructions, such as translating a finite pattern to occur at a point `v`,
 require solving equations of the form `w + v = h`. For this to have a unique
-solution `w` given `h` and `v`, we assume **right-cancellation**:
-if `a + v = b + v` then `a = b`. This allows us to define
+solution `w` given `h` and `v`, we assume **left-cancellation**:
+if `v + a = v + b` then `a = b`. This allows us to define
 `Pattern.extend` (which extends a pattern into a configuration
 using the default value of `A`) without using inverses,
 so that the theory works not only for groups but also for cancellative monoids.
 
 ## Main definitions
 
-* `shift g x` — right translation: in additive notation `(shift v x) u = x (u + v)` (using the
-**right** action of `G` on configurations).
+* `shift g x` — left translation: in additive notation `(shift v x) u = x (v + u)` (using the
+**left** action of `G` on configurations).
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — finite support together with values on that support.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
@@ -101,12 +101,9 @@ between the two viewpoints, since both may naturally want to reuse names like
 
 ## Implementation notes
 
-* Openness/closedness results for cylinders and occurrence sets use
-  `[DiscreteTopology A]`. Closedness proofs that enumerate values additionally
-  require `[Fintype A]` and `[DecidableEq A]`.
+* Openness results for cylinders and occurrence sets use
+  `[DiscreteTopology A]`. Closeness results use `[T1Space A]`.
 -/
-
-set_option linter.style.openClassical false
 
 @[expose] public section
 
@@ -123,51 +120,51 @@ section ShiftDefinition
 
 variable {A G : Type*} [Monoid G]
 
-/-- The **right-translation shift** on configurations.
+/-- The **left-translation shift** on configurations.
 
 We call *configuration* an element of `G → A`.
 
 Given a configuration `x : G → A` and an element `g : G` of the monoid, the shifted configuration
-`mulShift g x` is defined by `(mulShift g x) h = x (h * g)`.
+`mulShift g x` is defined by `(mulShift g x) h = x (g * h)`.
 
 Intuitively, this moves the whole configuration "in the direction of `g`": the value
 at position `h` in the shifted configuration is the value that was at position
-`h * g` in the original one.
+`g * h` in the original one.
 
 For example, if `G = ℤ` (with addition) and `A = {0, 1}`, then
 `mulShift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
-@[to_additive /-- The **right-translation shift** on configurations, in additive notation.
+@[to_additive /-- The **left-translation shift** on configurations, in additive notation.
 
 We call *configuration* an element of `G → A`.
 
 Given a configuration `x : G → A` and an element `g : G` of the additive monoid,
-the shifted configuration `shift g x` is defined by `(shift g x) h = x (h + g)`.
+the shifted configuration `shift g x` is defined by `(shift g x) h = x (g + h)`.
 
 Intuitively, this moves the whole configuration "in the direction of `g`": the value
 at position `h` in the shifted configuration is the value that was at position
-`h + g` in the original one.
+`g + h` in the original one.
 
 For example, if `G = ℤ` and `A = {0, 1}`, then
 `shift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
-  fun h => x (h * g)
+  fun h => x (g * h)
 
 @[to_additive (attr := simp)] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
-  mulShift g x h = x (h * g) := rfl
+    mulShift g x h = x (g * h) := rfl
 
 @[to_additive (attr := simp)] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
-/-- Composition of right-translation shifts corresponds to multiplication in the monoid `G`. -/
+/-- Composition of left-translation shifts corresponds to multiplication in the monoid `G`. -/
 @[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
-    mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
+    mulShift (g₁ * g₂) x = mulShift g₂ (mulShift g₁ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 variable [TopologicalSpace A]
 
-/-- The right-translation shift is continuous. -/
+/-- The left-translation shift is continuous. -/
 @[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
@@ -224,18 +221,13 @@ end Cylinders
 
 /-! ## Patterns and occurrences -/
 
-
-section SubshiftDef
-variable (A : Type*) [TopologicalSpace A]
-variable (G : Type*) [AddMonoid G]
-
 /-- A *subshift* on an alphabet `A` is a closed, shift-invariant subset of `G → A`. Formally, it is
 composed of:
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
-* `mapsTo`: the set is invariant under all right-translation shifts
+* `mapsTo`: the set is invariant under all left-translation shifts
   `(shift g)`. -/
-structure Subshift where
+structure Subshift (A : Type*) [TopologicalSpace A] (G : Type*) [AddMonoid G] where
   /-- The underlying set of configurations (additive monoid version). -/
   carrier : Set (G → A)
   /-- Closedness of `carrier`. -/
@@ -243,18 +235,16 @@ structure Subshift where
   /-- Shift invariance of `carrier` for the additive shift `shift`. -/
   mapsTo : ∀ g : G, MapsTo (shift g) carrier carrier
 
-end SubshiftDef
-
 section MulSubshiftDef
 variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [Monoid G]
 
 /-- A *subshift* on an alphabet `A` over a multiplicative monoid `G` is a closed,
-shift-invariant subset of `G → A`, where the shift is given by right-multiplication.
+shift-invariant subset of `G → A`, where the shift is given by left-multiplication.
 Formally, it is composed of:
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
-* `mapsTo`: the set is invariant under all right-translation shifts
+* `mapsTo`: the set is invariant under all left-translation shifts
   `(mulShift g)`. -/
 @[to_additive existing]
 structure MulSubshift where
@@ -267,12 +257,9 @@ structure MulSubshift where
 
 end MulSubshiftDef
 
-
 /-- Example: the **full shift** on alphabet `A` over the multiplicative monoid `G`.
-
 It is the subshift whose underlying set is the set of all configurations
-`G → A`.
--/
+`G → A`. -/
 @[to_additive fullShift
 /-- Example: the **full shift** on alphabet `A` over the additive monoid `G`.
 
@@ -301,26 +288,6 @@ structure Pattern (A : Type*) (G : Type*) where
   /-- The value (symbol) at each point of the support. -/
   data : support → A
 
-namespace Pattern
-section Dominos
-
-variable (G : Type*)
-
-/-- A *domino* is a pattern supported on exactly two positions (sometimes
-also called cells) `{i, j}`, specifying the value `ai` at `i` and the value `aj` at `j`.
-
-In symbolic dynamics, dominos (two-cell patterns) are the simplest nontrivial
-building blocks: they describe local adjacency conditions between two sites
-of a configuration. -/
-def domino {A : Type*} (i j : G) (ai aj : A) : Pattern A G := by
-  classical
-  exact
-    { support := ({i, j} : Finset G)
-      data := fun ⟨z, _hz⟩ => if z = i then ai else aj }
-
-end Dominos
-end Pattern
-
 section Forbidden
 
 variable {A G : Type*} [Monoid G]
@@ -330,7 +297,7 @@ variable {A G : Type*} [Monoid G]
 at position `g`.
 
 Formally: for every position `h` in the support of `p`, the value of the configuration
-at `h * g` coincides with the value specified by `p` at `h`.
+at `g * h` coincides with the value specified by `p` at `h`.
 
 Intuitively, if you shift the configuration `x` by `g` (using `mulShift g`),
 then on the support of `p` you exactly recover the pattern `p`. This is the basic
@@ -340,13 +307,13 @@ notion of "pattern occurrence" used to define subshifts via forbidden patterns. 
 at position `g`.
 
 Formally: for every position `h` in the support of `p`, the value of the configuration
-at `h + g` coincides with the value specified by `p` at `h`.
+at `g + h` coincides with the value specified by `p` at `h`.
 
 Intuitively, if you shift the configuration `x` by `g` (using `shift g`),
 then on the support of `p` you exactly recover the pattern `p`. This is the basic
 notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/]
 def Pattern.mulOccursInAt (p : Pattern A G) (x : G → A) (g : G) : Prop :=
-  ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
+  ∀ (h) (hh : h ∈ p.support), x (g * h) = p.data ⟨h, hh⟩
 
 /-- `mulForbidden F` is the set of configurations that avoid every pattern in `F`.
 
@@ -372,12 +339,11 @@ end Forbidden
 
 section OccursInAt
 
-
 variable {A : Type*} [Inhabited A]
-variable {G : Type*} [Monoid G] [IsRightCancelMul G]
+variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
 section PatternExtension
--- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v)
+-- We assume left-cancellation throughout this section for uniqueness of preimages under (_ * v)
 -- or (_ + v).
 
 /-- Turn a finite pattern into a configuration, by extending it with
@@ -402,37 +368,37 @@ def Pattern.extendAtOrigin (p : Pattern A G) : G → A := by
 a configuration.
 
 On input `h : G`, we proceed as follows:
-* if `h` lies in the right-translate of the support, i.e. `h ∈ p.support.image (· * v)`,
-  choose (noncomputably) `w ∈ p.support` with `w * v = h` and return `p.data ⟨w, _⟩`;
+* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v * ·)`,
+  choose (noncomputably) `w ∈ p.support` with `v * w = h` and return `p.data ⟨w, _⟩`;
 * otherwise return `default`.
 
-This definition does not assume right-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.mulExtend p v (w * v) = p.data ⟨w, _⟩`)
-require a right-cancellation hypothesis and are proved in separate lemmas.
+This definition does not assume left-cancellation; it only *chooses* a preimage.
+Uniqueness (and the usual equations such as `Pattern.mulExtend p v (v * w) = p.data ⟨w, _⟩`)
+require a left-cancellation hypothesis and are proved in separate lemmas.
 -/
 @[to_additive Pattern.extend
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
 
 On input `h : G`, we proceed as follows:
-* if `h` lies in the right-translate of the support, i.e. `h ∈ p.support.image (· + v)`,
-  choose (noncomputably) `w ∈ p.support` with `w + v = h` and return `p.data ⟨w, _⟩`;
+* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v + ·)`,
+  choose (noncomputably) `w ∈ p.support` with `v + w = h` and return `p.data ⟨w, _⟩`;
 * otherwise return `default`.
 
-This definition does not assume right-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.extend p v (w + v) = p.data ⟨w, _⟩`)
-require a right-cancellation hypothesis and are proved in separate lemmas.
+This definition does not assume left-cancellation; it only *chooses* a preimage.
+Uniqueness (and the usual equations such as `Pattern.extend p v (v + w) = p.data ⟨w, _⟩`)
+require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
 noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A := by
   classical
   intro h
-  if hmem : h ∈ p.support.image (· * v) then
+  if hmem : h ∈ p.support.image (v * ·) then
     -- package existence of a preimage under (_ * v)
-    let ex : ∃ w, w ∈ p.support ∧ w * v = h := by
+    let ex : ∃ w, w ∈ p.support ∧ v * w = h := by
       simpa [Finset.mem_image] using hmem
     let w := Classical.choose ex
     have hw  : w ∈ p.support := (Classical.choose_spec ex).1
-    have hwv : w * v = h := (Classical.choose_spec ex).2
+    have hwv : v * w = h := (Classical.choose_spec ex).2
     exact p.data ⟨w, hw⟩
   else
     exact default
@@ -454,39 +420,39 @@ def fromConfig (x : G → A) (U : Finset G) : Pattern A G where
 
 /-- On the translated support, `p.mulExtend v` agrees with `p` at the preimage.
 
-More precisely, if `w ∈ p.support`, then at the translated site `w * v`,
+More precisely, if `w ∈ p.support`, then at the translated site `v * w`,
 the configuration `p.mulExtend v` takes the value prescribed by `p` at `w`.
 
-This uses `[IsRightCancelMul G]` to identify the unique preimage of `w * v`
-under right-multiplication by `v`. -/
-@[to_additive extend_apply_add_right_of_mem
+This uses `[IsLeftCancelMul G]` to identify the unique preimage of `v * w`
+under left-multiplication by `v`. -/
+@[to_additive extend_apply_add_left_of_mem
   /-- On the translated support, `p.extend v` agrees with `p` at the preimage.
 
-  More precisely, if `w ∈ p.support`, then at the translated site `w + v`,
+  More precisely, if `w ∈ p.support`, then at the translated site `v + w`,
   the configuration `p.extend v` takes the value prescribed by `p` at `w`.
 
-  This uses `[IsRightCancelAdd G]` to identify the unique preimage of `w + v`
-  under right-translation by `v`. -/]
-lemma mulExtend_apply_mul_right_of_mem
+  This uses `[IsLeftCancelAdd G]` to identify the unique preimage of `v + w`
+  under left-translation by `v`. -/]
+lemma mulExtend_apply_mul_left_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
-    p.mulExtend v (w * v) = p.data ⟨w, hw⟩ := by
+    p.mulExtend v (v * w) = p.data ⟨w, hw⟩ := by
   classical
   -- (w*v) is in the translated support
-  have hmem : (w * v) ∈ p.support.image (· * v) :=
+  have hmem : (v * w) ∈ p.support.image (v * ·) :=
     Finset.mem_image.mpr ⟨w, hw, rfl⟩
   -- existential used in the branch
-  have ex : ∃ w', w' ∈ p.support ∧ w' * v = w * v := by
+  have ex : ∃ w', w' ∈ p.support ∧ v * w' = v * w := by
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
   have h1 :
-      p.mulExtend v (w * v)
+      p.mulExtend v (v * w)
         = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := by
     simp [Pattern.mulExtend, hmem]
-  -- name the chosen witness and relate it to `w` by right-cancellation
+  -- name the chosen witness and relate it to `w` by left-cancellation
   let w' := Classical.choose ex
   have hw'  : w' ∈ p.support := (Classical.choose_spec ex).1
-  have hwv' : w' * v = w * v := (Classical.choose_spec ex).2
-  have h_eq : w' = w := by simpa using (mul_right_cancel hwv')
+  have hwv' : v * w' = v * w := (Classical.choose_spec ex).2
+  have h_eq : w' = w := by simpa using (mul_left_cancel hwv')
   -- transport membership along h_eq
   have hw_w : w ∈ p.support := by simpa [h_eq] using hw'
   -- identify the subtype inside `p.data` (first replace the value w' by w)
@@ -501,7 +467,7 @@ lemma mulExtend_apply_mul_right_of_mem
   have h3 : (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := rfl
   -- put the rewrites together
   calc
-    p.mulExtend v (w * v)
+    p.mulExtend v (v * w)
         = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := h1
     _   = p.data ⟨w, hw_w⟩ := by
             -- push h2 through `p.data`
@@ -510,7 +476,6 @@ lemma mulExtend_apply_mul_right_of_mem
     _   = p.data ⟨w, hw⟩ := by
             -- push h3 through `p.data`
             simp [h3]
-
 
 /-- Shifting a configuration commutes with occurrences of a pattern.
 
@@ -524,7 +489,7 @@ Formally: a pattern `p` occurs in the shifted configuration `shift h x` at
 position `g` if and only if it occurs in the original configuration `x` at
 position `g + h`. -/]
 lemma mulOccursInAt_mulShift {A G : Type*} [Monoid G] (p : Pattern A G) (x : G → A) (g h : G) :
-    p.mulOccursInAt (mulShift h x) g ↔ p.mulOccursInAt x (g * h) := by
+    p.mulOccursInAt (mulShift g x) h ↔ p.mulOccursInAt x (g * h) := by
   simp only [mulOccursInAt, mulShift_apply, mul_assoc]
 
 /-- Configurations that avoid a family `F` of patterns are stable under the shift.
@@ -542,7 +507,7 @@ lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Monoid G]
     (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
   -- unfold `MapsTo`
   intro x hx p hp g
-  specialize hx p hp (g * h)
+  specialize hx p hp (h * g)
   contrapose! hx
   simpa [mulOccursInAt_mulShift] using hx
 
@@ -557,10 +522,10 @@ This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
 Equivalently, `p.mulOccursInAt x g` iff on every translated site
-`w * g` (with `w ∈ p.support`)
+`g * w` (with `w ∈ p.support`)
 the configuration `x` agrees with the translated pattern `Pattern.mulExtend p g`.
 
-(This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/
+(This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/
 @[to_additive occursInAt_eq_cylinder
   /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
 in which a pattern `p` occurs at position `g`.
@@ -568,27 +533,27 @@ in which a pattern `p` occurs at position `g`.
 This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
-Equivalently, `p.occursInAt x g` iff on every translated site `w + g` (with `w ∈ p.support`)
+Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w ∈ p.support`)
 the configuration `x` agrees with the translated pattern `Pattern.extend p g`.
 
-(This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/]
+(This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
 lemma mulOccursInAt_eq_cylinder
     (p : Pattern A G) (g : G) :
-    { x | p.mulOccursInAt x g } = cylinder (p.support.image (· * g)) (p.mulExtend g) := by
+    { x | p.mulOccursInAt x g } = cylinder (p.support.image (g * ·)) (p.mulExtend g) := by
   ext x; constructor
   · -- ⇒: from an occurrence, get membership in the cylinder
     intro H u hu
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
     -- want: x (w*g) = Pattern.mulExtend p g (w*g)
-    have hx : x (w * g) = p.data ⟨w, hw⟩ := H w hw
-    simpa [Pattern.mulExtend_apply_mul_right_of_mem (p := p) (v := g) (w := w) hw] using hx
+    have hx : x (g * w) = p.data ⟨w, hw⟩ := H w hw
+    simpa [Pattern.mulExtend_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
-    have hx : x (u * g) = p.mulExtend g (u * g) :=
-      H (u * g) (Finset.mem_image_of_mem (· * g) hu)
+    have hx : x (g * u) = p.mulExtend g (g * u) :=
+      H (g * u) (Finset.mem_image_of_mem (g * ·) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [Pattern.mulExtend_apply_mul_right_of_mem (p := p) (v := g) (w := u) hu] using hx
+    simpa [Pattern.mulExtend_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
 end OccursInAtEqCylinder
 end OccursInAt
 
@@ -597,7 +562,7 @@ end OccursInAt
 section DefSubshiftByForbidden
 
 variable {A : Type*} [TopologicalSpace A] [Inhabited A]
-variable {G : Type*} [Monoid G] [IsRightCancelMul G]
+variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
 /-- Occurrence sets are open. -/
 @[to_additive isOpen_occursInAt]
