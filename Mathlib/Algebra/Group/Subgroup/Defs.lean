@@ -627,10 +627,6 @@ namespace Subgroup
 variable {H : Subgroup G}
 
 @[to_additive]
-instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm]⟩
-
-@[to_additive]
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
 
@@ -714,6 +710,10 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
+
+@[to_additive]
+instance {G : Type*} [CommGroup G] :
+    IsMulCommutative G := ⟨CommMagma.to_isCommutative⟩
 
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive /-- A subgroup of a commutative group is commutative. -/]
