@@ -30,7 +30,7 @@ We prove several specialized tests for linear independence of families of vector
 vectors.
 
 * `linearIndependent_option`, `linearIndependent_finCons`,
-  `linearIndependent_finSucc`, `linearIndependent_finSnoc`: type-specific tests for linear
+  `linearIndependent_finSucc`: type-specific tests for linear
   independence of families of vector fields;
 * `linearIndependent_insert`, `linearIndependent_pair`: linear independence tests for set operations
 
@@ -644,7 +644,8 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
 theorem linearIndependent_finCons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]; rfl
+  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
+  rfl
 
 @[deprecated (since := "2026-04-07")]
 alias linearIndependent_fin_cons := linearIndependent_finCons

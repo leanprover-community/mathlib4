@@ -100,7 +100,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     apply rank_ih
     intro m v hli
     refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-    convert LinearIndependent.finCons' x _ hli ?_
+    convert hli.finCons' x _ ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
     · intro c y hy hc
