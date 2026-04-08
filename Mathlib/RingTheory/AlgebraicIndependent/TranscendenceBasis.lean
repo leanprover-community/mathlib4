@@ -25,10 +25,6 @@ This file defines the transcendence basis as a maximal algebraically independent
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
-
 ## Tags
 transcendence basis, transcendence degree, transcendence
 
