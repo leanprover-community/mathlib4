@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Saul Glasman
 -/
 module
 
@@ -20,7 +20,6 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Module
 ## TODO
 
 * Show that in a Cartesian monoidal category Hopf monoids are exactly group objects.
-* Show that `Hopf (ModuleCat R) ≌ HopfAlgCat R`.
 -/
 
 @[expose] public section
@@ -482,7 +481,6 @@ lemma mul_eq_tensorμ (M : ModuleCat R) [MonObj M] (a b : (M ⊗ M : ModuleCat R
     | tmul w v => simp only [add_mul, hx, hy, TensorProduct.add_tmul, map_add]
     | add w v _ _ => simp only [add_mul, hx, hy, TensorProduct.add_tmul, map_add]
 
-
 instance coalgebraOfComonObj (M : ModuleCat R) [ComonObj M] : Coalgebra R M := {
   comul := Δ[M].hom
   counit := ε[M].hom
@@ -496,7 +494,7 @@ instance coalgebraOfComonObj (M : ModuleCat R) [ComonObj M] : Coalgebra R M := {
 
 instance bialgebraOfBimonObj (M : ModuleCat R) [BimonObj M] : Bialgebra R M := by
   refine Bialgebra.mk' R M ?_ ?_ ?_ ?_
-  · exact DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (BimonObj.one_counit M)) (1: R)
+  · exact DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (BimonObj.one_counit M)) (1 : R)
   · intro a b
     exact DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (BimonObj.mul_counit M)) (a ⊗ₜ b)
   · exact DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (BimonObj.one_comul M)) 1
@@ -604,6 +602,7 @@ instance hopfObjOfHopfAlgebra (A : HopfAlgCat R) : HopfObj (ModuleCat.of R A) wh
   antipode_right := congr_arg ModuleCat.ofHom
     (@HopfAlgebra.mul_antipode_lTensor_comul R A _ _ _)
 
+/-- The functor from Hopf monoids in `ModuleCat R` to the category of `R`-Hopf algebras. -/
 def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R := {
   obj M := HopfAlgCat.of R M.X
 
@@ -615,13 +614,14 @@ def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R := {
       congr_arg CategoryTheory.Mon.Hom.hom (IsComonHom.hom_counit f.hom.hom))
     map_comp_comul := (congr_arg ModuleCat.Hom.hom (congr_arg CategoryTheory.Mon.Hom.hom
       (IsComonHom.hom_comul f.hom.hom))).symm
-    map_one' :=  DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
+    map_one' := DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.one_hom f.hom.hom.hom))
       1
     map_mul' := fun x y ↦
       DFunLike.congr_fun (congr_arg ModuleCat.Hom.hom (IsMonHom.mul_hom f.hom.hom.hom)) (x ⊗ₜ[R] y)
   }
 }
 
+/-- `moduleCatToHopfAlgCat R` is an equivalence of categories. -/
 instance isEquivModuleCatToHopfAlgCat : Functor.IsEquivalence (moduleCatToHopfAlgCat R) := {
   faithful := ⟨by
     intro _ _ f g hfg

@@ -67,7 +67,7 @@ algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : HopfAlgCat.{v} R) where
   /-- The underlying `BialgHom`. -/
-toBialgHom' : V →ₐc[R] W
+  toBialgHom' : V →ₐc[R] W
 
 instance category : Category (HopfAlgCat.{v} R) where
   Hom X Y := Hom X Y

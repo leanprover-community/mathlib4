@@ -32,7 +32,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 (Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
 so we can deduce the facts here from the equivalence `HopfAlgCat R ≌ Hopf (ModuleCat R)` in
-the file /CategoryTheory/Monoidal/Hopf_.lean.)
+the file `Mathlib.CategoryTheory.Monoidal.Hopf_`.)
 
 ## References
 
