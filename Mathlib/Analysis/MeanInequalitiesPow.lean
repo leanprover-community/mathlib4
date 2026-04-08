@@ -84,7 +84,7 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
   all_goals
     apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi
-    apply_rules [mul_nonneg, rpow_nonneg, hw i hi, hz i hi]
+    positivity [hw i hi, hz i hi]
 
 end Real
 
