@@ -25,8 +25,8 @@ open IsLocalRing
 
 variable {R : Type*} [CommRing R]
 
-/-- For surjection `f : M →ₗ[R] N` with `N` being flat and kernel `K`, then for any `I : Ideal R`,
-  `K ⊓ IM = IK`. -/
+/-- For any surjection `f : M →ₗ[R] N`, with `N` a flat `R`-module,
+  we have `K ⊓ IM = IK` for any `I : Ideal R`. -/
 lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) (surj : Function.Surjective f)
     [Module.Flat R N] : f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
