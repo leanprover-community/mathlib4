@@ -29,14 +29,6 @@ public import Mathlib.RingTheory.LocalRing.Module
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false in
-example {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : MaximalSpectrum (p.Fiber S)) :
-    (OreLocalization.instModuleOfIsScalarTower :
-      Module (Localization.AtPrime p) (Localization.AtPrime q.1))
-    = (Localization.AtPrime.instAlgebraOfLiesOver p q.asIdeal).toModule := by
-  sorry
-
 section artinian
 
 open Submodule
@@ -198,24 +190,6 @@ section flatBaseChange
 
 open TensorProduct
 
--- PRed
-theorem Submodule.toBaseChange_injective {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [AddCommMonoid M] [Module R M] [Module.Flat R A] (p : Submodule R M) :
-    Function.Injective (p.toBaseChange A) := by
-  refine (LinearMap.injective_rangeRestrict_iff (LinearMap.baseChange A p.subtype)).mpr ?_
-  rw [LinearMap.baseChange_eq_ltensor]
-  apply Module.Flat.lTensor_preserves_injective_linearMap
-  exact injective_subtype p
-
--- PRed
-@[simps!]
-noncomputable def Submodule.toBaseChangeEquiv
-    {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [AddCommMonoid M] [Module R M] [Module.Flat R A] (p : Submodule R M) :
-    A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
-  LinearEquiv.ofBijective (p.toBaseChange A)
-    ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
-
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
@@ -225,7 +199,8 @@ theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
     length B (q.baseChange B) =
       length B (p.baseChange B) + length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
-  rw [← (p.toBaseChangeEquiv B).length_eq, ← (q.toBaseChangeEquiv B).length_eq]
+  rw [← (Submodule.toBaseChange.toLinearEquiv B p).length_eq,
+    ← (Submodule.toBaseChange.toLinearEquiv B q).length_eq]
   let f : p →ₗ[A] q := inclusion h.le
   have key : IsSimpleModule A (q ⧸ f.range) := by
     rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
