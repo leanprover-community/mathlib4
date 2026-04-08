@@ -223,8 +223,9 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
-theorem rank_submatrix_le [Nontrivial R] [Fintype n₀] (r : m₀ → m) (c : n₀ → n) (A : Matrix m n R) :
+theorem rank_submatrix_le [Fintype n₀] (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).rank ≤ A.rank := by
+  nontriviality R
   have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
   calc
     _ = (((A.submatrix r id)ᵀᵀ.submatrix id c)ᵀᵀ).rank := by simp
