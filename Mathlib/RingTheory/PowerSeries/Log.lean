@@ -78,7 +78,7 @@ theorem HasSubst.log : HasSubst (log A) :=
 theorem HasSubst.exp_sub_one : HasSubst (exp A - 1) :=
   HasSubst.of_constantCoeff_zero' (by simp [constantCoeff_exp])
 
-/-- `logOf f` is `log(f)` when `constantCoeff f = 1`, defined as `log(1+X)` substituted at `f-1`. -/
+/-- `logOf f` is `log(1+X)` substituted at `f - 1`, i.e., `(f-1) - (f-1)²/2 + (f-1)³/3 - ⋯`. -/
 noncomputable def logOf (f : A⟦X⟧) : A⟦X⟧ :=
   (log A).subst (f - 1)
 
