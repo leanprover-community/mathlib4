@@ -55,9 +55,7 @@ instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
 
 lemma mker_inverse [CommGroupWithZero H] :
     MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by
-  ext a
-  simp only [MonoidHom.mem_mker, MonoidWithZero.inverse_apply, Submonoid.mem_bot]
-  rw [Ring.inverse_eq_inv]
-  exact inv_eq_one
+  ext
+  simp
 
 end MonoidWithZeroHom
