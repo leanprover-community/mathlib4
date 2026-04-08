@@ -385,13 +385,8 @@ lemma continuousOn_rpowIntegrand₁₂_uncurry (hp : p ∈ Ioi 1) (s : Set ℝ) 
 
 lemma monotoneOn_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) (ht : 0 < t) :
     MonotoneOn (rpowIntegrand₁₂ p t) (Ici 0) := by
-  refine MonotoneOn.congr (f₁ := fun x => x * rpowIntegrand₀₁ (p - 1) t x) ?_ ?_
-  · refine MonotoneOn.mul ?_ ?_ (by grind) ?_
-    · exact Monotone.monotoneOn (fun ⦃a b⦄ a => a) (Ici 0)
-    · grind [rpowIntegrand₀₁_monotoneOn]
-    · grind [rpowIntegrand₀₁_nonneg]
-  · intro x hx
-    rw [rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ht]
+  refine MonotoneOn.congr ?_ fun x hx ↦ (rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ht).symm
+  apply monotoneOn_id.mul <;> grind [rpowIntegrand₀₁_monotoneOn, rpowIntegrand₀₁_nonneg]
 
 lemma integrableOn_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₁₂ p · x) (Ioi 0) := by
@@ -517,8 +512,6 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
     _ = _ := cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
                 hbound_finite_integral ha.isSelfAdjoint
 
--- Couldn't find `IsScalarTower ℝ≥0 A A`
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (1, 2)`). -/
 lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpace A] {p : ℝ≥0}
@@ -554,17 +547,18 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
   refine ⟨?integrable, ?integral⟩
   case integrable =>
     exact integrableOn_cfcₙ measurableSet_Ioi _ bound a hf hmapzero hbound hbound_finite_integral
-  case integral =>
-    calc a ^ p = cfcₙ (fun x => NNReal.nnrpow x p) a := by
-                rw [CFC.nnrpow_def]
+  case integral => calc
+      a ^ p = cfcₙ (fun x => NNReal.nnrpow x p) a := by
+        rw [CFC.nnrpow_def]
       _ = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₁₂ p t r ∂μ) a := by
-                rw [cfcₙ_nnreal_eq_real ..]
-                refine cfcₙ_congr fun r hr => ?_
-                have hr' : 0 ≤ r := by grind
-                simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
-                exact (hμ r hr').2
-      _ = _ := cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
-                  hbound_finite_integral ha.isSelfAdjoint
+        rw [cfcₙ_nnreal_eq_real ..]
+        refine cfcₙ_congr fun r hr => ?_
+        have hr' : 0 ≤ r := by grind
+        simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
+        exact (hμ r hr').2
+      _ = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₁₂ p t) a ∂μ :=
+        cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
+          hbound_finite_integral ha.isSelfAdjoint
 
 end NonUnitalCFC
 
