@@ -465,14 +465,8 @@ theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r : l → m)
     (c : o → n) : (A.submatrix r c)ᴴ = Aᴴ.submatrix c r :=
   ext fun _ _ => rfl
 
-@[simp] theorem map_submatrix_star [Star α] (A : Matrix m n α) (r : l → m) (c : o → n) :
-    (A.submatrix r c).map star = (A.map star).submatrix r c := ext fun _ _ ↦ rfl
-
 theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᴴ = reindex eₙ eₘ Mᴴ :=
   rfl
-
-theorem map_reindex_star [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
-    (reindex eₘ eₙ M).map star = reindex eₘ eₙ (M.map star) := rfl
 
 end Matrix
