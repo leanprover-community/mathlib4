@@ -672,22 +672,37 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")] alias setNormalizer := normalizer
+@[deprecated (since := "2026-03-19")]
+alias setNormalizer := normalizer
+@[deprecated (since := "2026-03-19")]
+alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
 
-variable {H}
-
-@[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
-  Iff.rfl
-
-@[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
+variable {H} {S : Set G} {g : G}
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
-  ⟨fun h n ↦ by rw [← SetLike.mem_coe, ← SetLike.mem_coe, h, mul_assoc, mul_inv_cancel_right],
-    fun h n ↦ by rw [SetLike.mem_coe, SetLike.mem_coe, mul_assoc, ← h, inv_mul_cancel_right]⟩
+theorem mem_set_normalizer_iff : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g * h * g⁻¹ ∈ S :=
+  .rfl
+
+@[to_additive]
+theorem mem_set_normalizer_iff'' : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g⁻¹ * h * g ∈ S := by
+  rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]
+
+@[to_additive]
+theorem mem_set_normalizer_iff' : g ∈ normalizer S ↔ ∀ h, h * g ∈ S ↔ g * h ∈ S :=
+  ⟨fun h n ↦ by rw [h, mul_assoc, mul_inv_cancel_right],
+    fun h n ↦ by rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+
+@[to_additive]
+theorem mem_normalizer_iff : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+  mem_set_normalizer_iff
+
+@[to_additive]
+theorem mem_normalizer_iff'' : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+  mem_set_normalizer_iff''
+
+@[to_additive]
+theorem mem_normalizer_iff' : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+  mem_set_normalizer_iff'
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
