@@ -42,18 +42,10 @@ theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 
 
 theorem mul_log_StrictAntiOn :
     StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
-  simp only [StrictAntiOn]
-  intro x hex y hey hxy
-  obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
-      deriv (fun x : ℝ ↦ x * log x) c = (y * log y - x * log x) / (y - x) := by
-    apply_rules [exists_deriv_eq_slope]
-    · simp_all [Continuous.continuousOn Real.continuous_mul_log]
-    · exact DifferentiableOn.mono Real.differentiableOn_mul_log (by simp_all)
-  have hc_pos : 0 < c := by linarith [hc.1.1, hex.1]
-  norm_num [hc_pos.ne'] at hc
-  rw [eq_div_iff] at hc <;>
-    nlinarith [Real.log_exp (-1),
-      Real.log_lt_log (by positivity) (by linarith [hex.2, hey.2] : c < Real.exp (-1))]
+  refine strictAntiOn_of_deriv_neg (convex_Icc ..) continuous_mul_log.continuousOn fun x hx ↦ ?_
+  have hgt : x < rexp (-1) := by simp_all [interior_Icc, mem_Ioo]
+  have hpos : 0 < x := by simp_all [interior_Icc, mem_Ioo]
+  grind [deriv_mul_log, Real.log_lt_iff_lt_exp hpos |>.mpr hgt]
 
 theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / x) { x | exp 1 ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
