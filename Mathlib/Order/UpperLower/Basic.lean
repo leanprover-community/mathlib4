@@ -123,7 +123,7 @@ variable [Preorder α] [Preorder β] {s : Set α} {p : α → Prop} (a : α)
 
 @[to_dual]
 theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ici a ⊆ s := by
-  simp [IsUpperSet, subset_def, @forall_swap (_ ∈ s)]
+  simp [IsUpperSet, subset_def, @forall_comm (_ ∈ s)]
 
 @[to_dual] alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 
@@ -171,7 +171,7 @@ theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=
 
 @[simp]
 theorem Set.antitone_mem : Antitone (· ∈ s) ↔ IsLowerSet s :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
@@ -179,7 +179,7 @@ theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
 
 @[simp]
 theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
-  forall_swap
+  forall_comm
 
 @[to_dual]
 lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
@@ -235,7 +235,7 @@ theorem isUpperSet_iff_forall_lt : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a < b �
 
 @[to_dual]
 theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ioi a ⊆ s := by
-  simp [isUpperSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
+  simp [isUpperSet_iff_forall_lt, subset_def, @forall_comm (_ ∈ s)]
 
 end PartialOrder
 

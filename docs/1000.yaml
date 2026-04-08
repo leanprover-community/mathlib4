@@ -135,7 +135,9 @@ Q190391X:
 
 Q190391:
   title: Central limit theorem
-  # in 100.yaml also
+  decl: ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub
+  authors: Thomas Zhu, Rémy Degenne, Etienne Marion
+  date: 2026
 
 Q190556:
   title: De Moivre's theorem
@@ -1714,7 +1716,7 @@ Q1542114:
   title: Bézout's theorem
 
 Q1543149:
-  title: Sokhatsky–Weierstrass theorem
+  title: Sokhotski–Plemelj theorem
 
 Q1547975:
   title: Mermin–Wagner theorem
@@ -2070,7 +2072,7 @@ Q2226803:
   title: Tennenbaum's theorem
 
 Q2226807:
-  title: Vantieghems theorem
+  title: Vantieghem's theorem
 
 Q2226855:
   title: Sharkovskii's theorem

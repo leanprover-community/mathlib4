@@ -866,7 +866,6 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rw [key]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -874,7 +873,6 @@ lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u)
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by

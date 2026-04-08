@@ -34,7 +34,6 @@ public import Mathlib.RingTheory.Trace.Quotient
 -/
 
 @[expose] public section
-set_option backward.isDefEq.respectTransparency false
 
 open Module
 

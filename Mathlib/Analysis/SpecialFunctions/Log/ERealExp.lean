@@ -44,11 +44,9 @@ def exp (x : EReal) : ℝ≥0∞ := EReal.rec 0 (fun x => ENNReal.ofReal (Real.e
 @[simp] lemma exp_top : exp ⊤ = ∞ := rfl
 @[simp] lemma exp_coe (x : ℝ) : exp x = ENNReal.ofReal (Real.exp x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma exp_eq_zero_iff {x : EReal} : exp x = 0 ↔ x = ⊥ := by
   induction x <;> simp [Real.exp_pos]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma exp_eq_top_iff {x : EReal} : exp x = ∞ ↔ x = ⊤ := by
   induction x <;> simp
 

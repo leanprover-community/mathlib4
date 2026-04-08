@@ -35,7 +35,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 /-!## Quantitative bounds -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
 assuming all spaces live in the same universe, to enable an induction. Use instead
@@ -341,7 +340,6 @@ theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Fins
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.
