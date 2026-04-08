@@ -169,10 +169,10 @@ lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (
 
 end ImageHom
 
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up := SetSemiring.ofSet
-@[deprecated (since := "2026-04-07")] alias down := SetSemiring.toSet
-@[deprecated (since := "2026-04-07")] alias down_up := SetSemiring.toSet_ofSet
-@[deprecated (since := "2026-04-07")] alias up_down := SetSemiring.ofSet_toSet
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up := ofSet
+@[deprecated (since := "2026-04-07")] alias down := toSet
+@[deprecated (since := "2026-04-07")] alias down_up := toSet_ofSet
+@[deprecated (since := "2026-04-07")] alias up_down := ofSet_toSet
 @[deprecated (since := "2026-04-07")] alias up_le_up := ofSet_le_ofSet
 @[deprecated (since := "2026-04-07")] alias up_lt_up := ofSet_lt_ofSet
 @[deprecated (since := "2026-04-07")] alias down_subset_down := toSet_subset_toSet
