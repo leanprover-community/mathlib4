@@ -117,8 +117,6 @@ lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
   have hq_lt : ‖q‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hq
   exact (multipliable_one_sub_pow hq_lt).tprod_pow k
 
-/-! ### z-coordinate eta product facts (derived from q-coordinate versions) -/
-
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   have hq : ‖(𝕢 (1 : ℝ) ↑z : ℂ)‖ < 1 := by exact_mod_cast norm_qParam_lt_one 1 z
   simpa only [norm_neg, eta_q, norm_pow] using
@@ -130,7 +128,7 @@ lemma multipliableLocallyUniformlyOn_eta :
       TendstoLocallyUniformlyOn _ _ _ _).comp (Periodic.qParam 1)
     (fun z hz ↦ by simpa [Metric.mem_ball, dist_zero_right] using
       (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
-    (by fun_prop)⟩
+      (by fun_prop)⟩
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_

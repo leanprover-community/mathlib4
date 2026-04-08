@@ -197,8 +197,7 @@ def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
 /-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
 on the open unit disc. -/
 private lemma discriminant_cuspFunction_eqOn :
-    Set.EqOn (cuspFunction 1 (Δ : ℍ → ℂ))
-      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
+    Set.EqOn (cuspFunction 1 Δ) (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
   · simp only [hq0, zero_mul]
@@ -208,14 +207,10 @@ private lemma discriminant_cuspFunction_eqOn :
     have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos hqn hq0
     rw [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
       comp_apply, ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩]
-    have hqr := Periodic.qParam_right_inv one_ne_zero hq0
-    have heta : ∀ n : ℕ, eta_q n (Periodic.invQParam 1 q) = q ^ (n + 1) := fun n ↦ by
-      simp [eta_q, hqr]
-    simp only [hqr, heta]
+    simp [eta_q, Periodic.qParam_right_inv one_ne_zero hq0]
 
 /-- The first q-expansion coefficient of the modular discriminant is 1. -/
-lemma discriminant_qExpansion_coeff_one :
-    (qExpansion 1 (discriminantCuspForm : ℍ → ℂ)).coeff 1 = 1 := by
+lemma discriminant_qExpansion_coeff_one : (qExpansion 1 discriminantCuspForm).coeff 1 = 1 := by
   rw [qExpansion_coeff]
   simp only [Nat.factorial_one, Nat.cast_one, inv_one, one_mul, iteratedDeriv_succ,
     iteratedDeriv_zero]
