@@ -38,7 +38,7 @@ theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp
   suffices -1 < log x by linarith
   simpa using log_lt_log (Real.exp_pos _) hx
 
-@[deprecated "use `Real.mul_log_strictMonoOn`" (since := "2026-04-07")]
+@[deprecated Real.mul_log_strictMonoOn (since := "2026-04-07")]
 theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
   grind [mul_log_strictMonoOn.monotoneOn, MonotoneOn.mono, show exp (-1) < 1 by norm_num]
 
