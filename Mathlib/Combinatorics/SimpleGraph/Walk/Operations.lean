@@ -320,8 +320,8 @@ theorem concat_inj {u v v' w : V} {p : G.Walk u v} {h : G.Adj v w} {p' : G.Walk 
       exact ⟨rfl, rfl⟩
 
 @[simp]
-theorem support_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).support = p.support.concat w := by
+theorem support_concat (p : G.Walk u v) (h : G.Adj v w) :
+    (p.concat h).support = p.support ++ [w] := by
   induction p <;> simp [*, concat_nil]
 
 @[simp]
@@ -346,12 +346,15 @@ theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
   rw [support_append, List.tail_append_of_ne_nil (support_ne_nil _)]
 
-theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
-  cases p with
-  | nil => rfl
-  | cons h p =>
-    obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
-    simp [hq]
+@[simp]
+theorem dropLast_support_concat (p : G.Walk u v) : p.support.dropLast ++ [v] = p.support := by
+  cases p with | nil => rfl | cons h p
+  have ⟨_, _, _, hp⟩ := p.exists_cons_eq_concat h
+  simp [hp]
+
+@[deprecated dropLast_support_concat (since := "2026-03-16")]
+theorem support_eq_concat (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
+  simp
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
   refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
@@ -397,6 +400,17 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
     ← add_assoc, add_tsub_cancel_right]
 
 @[simp]
+theorem ofSupport_support {u v : V} (p : G.Walk u v) :
+    ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
+  match p with
+  | nil => rfl
+  | cons (v := w) h .nil => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p) =>
+    have := p.cons h₂ |>.ofSupport_support
+    simp at this
+    simp [this]
+
+@[simp]
 theorem darts_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
     (p.concat h).darts = p.darts.concat ⟨(v, w), h⟩ := by
   induction p <;> simp [*, concat_nil]
@@ -419,6 +433,17 @@ theorem darts_reverse {u v : V} (p : G.Walk u v) :
 
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
+
+@[simp]
+theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    ofDarts _ (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
+  match p, hp with
+  | nil, hp => simp at hp
+  | cons (v := w) h .nil, _ => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p), _ =>
+    have := p.cons h₂ |>.ofDarts_darts not_nil_cons
+    simp at this
+    simp [this]
 
 @[simp]
 theorem edges_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -685,8 +710,7 @@ lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
   cases p <;> simp at hp ⊢
 
 @[simp]
-lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
-    p.dropLast.concat hp = p := by
+lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast.concat hp = p := by
   induction p with
   | nil => simp at hp
   | cons hadj p hind =>
@@ -694,13 +718,13 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
     | nil => rfl
     | _ => simp [hind]
 
-@[simp] lemma cons_support_tail (p : G.Walk u v) (hp : ¬p.Nil) :
+@[simp] lemma cons_support_tail {p : G.Walk u v} (hp : ¬p.Nil) :
     u :: p.tail.support = p.support := by
   rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support ++ [v] = p.support := by
-  rw [← List.concat_eq_append, ← support_concat _ <| adj_penultimate hp, concat_dropLast]
+  rw [← support_concat _ <| adj_penultimate hp, concat_dropLast]
 
 @[simp]
 theorem support_dropLast {p : G.Walk u v} (hp : ¬p.Nil) :
@@ -744,7 +768,7 @@ lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
-  rw [← cons_support_tail p hp, List.tail_cons]
+  rw [← cons_support_tail hp, List.tail_cons]
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by

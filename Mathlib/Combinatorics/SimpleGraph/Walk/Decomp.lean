@@ -265,7 +265,7 @@ lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.sup
   have : p.getVert n ∈ (p.takeUntil _ h).support.dropLast := by
     simp_rw [p.getVert_takeUntil h hn.le ▸ getVert_eq_support_getElem _ hn.le,
       ← List.getElem_dropLast h₁, List.getElem_mem h₁]
-  have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
+  have := dropLast_support_concat _ ▸ p.count_support_takeUntil_eq_one h
   grind [List.not_mem_of_count_eq_zero]
 
 theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
@@ -319,6 +319,12 @@ theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.da
 
 theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
+
+@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
+  simpa using (rotate_edges c u h).perm.length_eq
+
+@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+  simp [← length_eq_zero_iff]
 
 end WalkDecomp
 

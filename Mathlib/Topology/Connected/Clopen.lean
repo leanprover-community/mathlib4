@@ -405,14 +405,14 @@ variable [TopologicalSpace β] {f : α → β}
 and a subset is closed iff the preimage is. -/
 theorem preimage_connectedComponent_connected
     (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
-    (hcl : ∀ T : Set β, IsClosed T ↔ IsClosed (f ⁻¹' T)) (t : β) :
+    (hcl : Topology.IsCoinducing f) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by
   -- The following proof is essentially https://stacks.math.columbia.edu/tag/0377
   -- although the statement is slightly different
   have hf : Surjective f := Surjective.of_comp fun t : β => (connected_fibers t).1
   refine ⟨Nonempty.preimage connectedComponent_nonempty hf, ?_⟩
   have hT : IsClosed (f ⁻¹' connectedComponent t) :=
-    (hcl (connectedComponent t)).1 isClosed_connectedComponent
+    hcl.isClosed_preimage.mpr isClosed_connectedComponent
   -- To show it's preconnected we decompose (f ⁻¹' connectedComponent t) as a subset of two
   -- closed disjoint sets in α. We want to show that it's a subset of either.
   rw [isPreconnected_iff_subset_of_fully_disjoint_closed hT]
@@ -451,8 +451,8 @@ theorem preimage_connectedComponent_connected
     · refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_left fun h => ?_
       exact uv_disj.subset_compl_left hav (h rfl)
   -- Now we show T₁, T₂ are closed, cover connectedComponent t and are disjoint.
-  have hT₁ : IsClosed T₁ := (hcl T₁).2 (T₁_u.symm ▸ IsClosed.inter hT hu)
-  have hT₂ : IsClosed T₂ := (hcl T₂).2 (T₂_v.symm ▸ IsClosed.inter hT hv)
+  have hT₁ : IsClosed T₁ := hcl.isClosed_preimage.mp (T₁_u.symm ▸ IsClosed.inter hT hu)
+  have hT₂ : IsClosed T₂ := hcl.isClosed_preimage.mp (T₂_v.symm ▸ IsClosed.inter hT hv)
   have T_decomp : connectedComponent t ⊆ T₁ ∪ T₂ := fun t' ht' => by
     rw [mem_union t' T₁ T₂]
     rcases fiber_decomp t' ht' with htu | htv
@@ -477,17 +477,18 @@ theorem preimage_connectedComponent_connected
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f)
+theorem Topology.IsCoinducing.preimage_connectedComponent (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f ⁻¹' connectedComponent (f a) = connectedComponent a :=
-  ((preimage_connectedComponent_connected h_fibers (fun _ => hf.isClosed_preimage.symm)
+  ((preimage_connectedComponent_connected h_fibers hf
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
-lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
+lemma Topology.IsCoinducing.image_connectedComponent {f : α → β} (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
-  rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
+  rw [← hf.preimage_connectedComponent h_fibers,
+    image_preimage_eq _ fun y ↦ (h_fibers y).nonempty]
 
 end Preconnected
 
