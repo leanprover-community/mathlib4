@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Tactic.Zify
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Factorial with big operators

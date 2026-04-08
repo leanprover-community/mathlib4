@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Ordering on topologies and (co)induced topologies

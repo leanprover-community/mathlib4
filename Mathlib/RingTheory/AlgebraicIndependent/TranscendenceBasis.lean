@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Transcendence basis

@@ -13,6 +13,7 @@ public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Atoms, Coatoms, and Simple Lattices

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.RingTheory.Ideal.Span
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Homogeneous polynomials

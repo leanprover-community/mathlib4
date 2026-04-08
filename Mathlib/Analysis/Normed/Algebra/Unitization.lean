@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Operator.Mul
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Unitization norms

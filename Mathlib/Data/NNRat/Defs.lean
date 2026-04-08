@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nonnegative rationals

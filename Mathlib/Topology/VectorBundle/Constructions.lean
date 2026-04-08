@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Analysis.Normed.Operator.Prod
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Standard constructions on vector bundles

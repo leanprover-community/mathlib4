@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Henselian rings

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.ZMod.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Parity in `Fin n`

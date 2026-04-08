@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.Real.GoldenRatio
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Qify
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Sets with very small doubling

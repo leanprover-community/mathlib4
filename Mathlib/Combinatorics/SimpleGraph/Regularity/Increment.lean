@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Increment partition for Szemerédi Regularity Lemma

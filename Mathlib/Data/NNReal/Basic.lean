@@ -15,6 +15,7 @@ public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Algebra.Group.Indicator
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic results on nonnegative real numbers

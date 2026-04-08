@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Hull
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Extreme sets

@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.BigOperators
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Power basis

@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Squarefree elements of monoids

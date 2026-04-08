@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 public import Mathlib.Algebra.Prime.Lemmas
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Theory of degrees of polynomials

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.Set.Card
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Edge Connectivity

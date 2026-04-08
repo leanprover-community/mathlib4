@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Harmonic.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The Euler-Mascheroni constant `γ`

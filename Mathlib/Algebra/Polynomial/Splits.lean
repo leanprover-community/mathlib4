@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Split polynomials

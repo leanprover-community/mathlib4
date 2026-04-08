@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

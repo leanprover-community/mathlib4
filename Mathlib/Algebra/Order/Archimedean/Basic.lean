@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Data.Rat.Floor
 import Mathlib.Algebra.Order.Group.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Archimedean groups and fields.

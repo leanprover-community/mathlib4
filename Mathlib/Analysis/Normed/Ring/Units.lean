@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.RingTheory.Ideal.Nonunits
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The group of units of a complete normed ring

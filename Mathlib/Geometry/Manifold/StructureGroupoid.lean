@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Structure groupoids

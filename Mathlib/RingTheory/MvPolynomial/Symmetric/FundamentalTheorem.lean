@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Algebra.MvPolynomial.Variables
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials

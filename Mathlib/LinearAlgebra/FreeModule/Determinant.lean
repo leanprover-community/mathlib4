@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Determinants in free (finite) modules

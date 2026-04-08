@@ -9,6 +9,7 @@ public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.RingTheory.SimpleRing.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Flag of submodules defined by a basis

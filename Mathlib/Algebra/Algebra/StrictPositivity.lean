@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Strictly positive elements of an algebra

@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`

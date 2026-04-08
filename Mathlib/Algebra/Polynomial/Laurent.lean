@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!  # Laurent polynomials
 

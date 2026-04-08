@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Order.DenselyOrdered
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups

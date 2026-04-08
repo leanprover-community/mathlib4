@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SumOverResidueClass
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Convergence of `p`-series

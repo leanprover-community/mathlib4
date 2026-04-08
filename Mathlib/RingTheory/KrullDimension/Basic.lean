@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Krull dimensions of (commutative) rings

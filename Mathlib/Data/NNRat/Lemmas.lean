@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Tactic.Zify
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Field and action structures on the nonnegative rationals

@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.LinearAlgebra.Matrix.Basis
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Power basis for `R[x]`

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Locally constant functions

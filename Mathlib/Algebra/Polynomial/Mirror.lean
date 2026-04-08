@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 public import Mathlib.Algebra.Polynomial.Reverse
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # "Mirror" of a univariate polynomial

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Topology.ContinuousOn
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Partial homeomorphisms: definitions

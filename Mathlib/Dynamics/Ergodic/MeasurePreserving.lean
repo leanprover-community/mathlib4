@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.Order.Filter.EventuallyConst
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Measure-preserving maps

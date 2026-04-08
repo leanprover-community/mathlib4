@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Normed spaces over R or C

@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Logic.Function.Iterate
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Even and odd elements in rings

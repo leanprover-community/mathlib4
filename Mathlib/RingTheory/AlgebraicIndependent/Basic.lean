@@ -12,6 +12,7 @@ public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Algebraic Independence

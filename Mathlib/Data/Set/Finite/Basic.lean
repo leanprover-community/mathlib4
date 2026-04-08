@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Tactic.Nontriviality
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Finite sets

@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Alternating Groups

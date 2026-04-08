@@ -10,6 +10,7 @@ public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Trivializations

@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Algebraic independence persists to the algebraic closure

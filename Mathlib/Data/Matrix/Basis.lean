@@ -6,6 +6,7 @@ Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 module
 
 public import Mathlib.Data.Matrix.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Matrices with a single non-zero element.

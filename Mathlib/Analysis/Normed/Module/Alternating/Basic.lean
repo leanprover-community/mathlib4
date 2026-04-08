@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Operator norm on the space of continuous alternating maps

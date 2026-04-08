@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Borel sigma algebras on spaces with orders

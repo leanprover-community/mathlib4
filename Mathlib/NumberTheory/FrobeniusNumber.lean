@@ -6,6 +6,7 @@ Authors: Alex Zhao, Daniel Buth, Sebastian Meier, Junyan Xu
 module
 
 public import Mathlib.RingTheory.Ideal.NatInt
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Frobenius Number

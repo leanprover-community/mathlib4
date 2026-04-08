@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Markov Kernels

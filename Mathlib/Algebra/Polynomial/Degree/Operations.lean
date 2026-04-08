@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Degree.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials

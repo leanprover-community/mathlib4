@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Monic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monic polynomials of given degree

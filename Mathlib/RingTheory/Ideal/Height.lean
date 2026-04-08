@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The Height of an Ideal

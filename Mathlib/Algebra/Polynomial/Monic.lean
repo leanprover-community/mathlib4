@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Regular.SMul
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Theory of monic polynomials

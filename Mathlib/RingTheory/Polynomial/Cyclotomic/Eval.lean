@@ -10,6 +10,7 @@ public import Mathlib.Tactic.ByContra
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.Analysis.Complex.Arg
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Evaluating cyclotomic polynomials

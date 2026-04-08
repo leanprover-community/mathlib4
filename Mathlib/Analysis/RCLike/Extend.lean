@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.LinearAlgebra.Dual.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Extending an `ℝ`-linear functional to a `𝕜`-linear functional

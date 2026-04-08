@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Finite products and sums over types and sets

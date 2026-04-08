@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Lemmas on infinite sums and products in topological monoids

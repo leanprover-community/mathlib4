@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Filter.Ultrafilter.Defs
+meta import Mathlib.Tactic.Attr.Register
 /-!
 # Subsingleton filters
 
