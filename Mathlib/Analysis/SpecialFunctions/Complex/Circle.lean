@@ -111,7 +111,7 @@ lemma exp_injOn_Ico {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ico a b
 lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ioc a b) :=
   exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
 
-lemma surjective_exp : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
+lemma exp_surjective : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
 
 end Circle
 
