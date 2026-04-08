@@ -312,12 +312,12 @@ def restrictScalarsIsoOfEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
 
 @[simp]
 lemma restrictScalarsIsoOfEquiv_hom_apply {R S} [Ring R] [Ring S] (e : R ≃+* S) (x : S) :
-    (ModuleCat.restrictScalarsIsoOfEquiv e).hom x = e.symm x :=
+    dsimp% (ModuleCat.restrictScalarsIsoOfEquiv e).hom x = e.symm x :=
   rfl
 
 @[simp]
 lemma restrictScalarsIsoOfEquiv_inv_apply {R S} [Ring R] [Ring S] (e : R ≃+* S) (x : R) :
-    (ModuleCat.restrictScalarsIsoOfEquiv e).inv x = e x :=
+    dsimp% (ModuleCat.restrictScalarsIsoOfEquiv e).inv x = e x :=
   rfl
 
 instance {R S} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
