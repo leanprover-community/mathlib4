@@ -1118,6 +1118,14 @@ noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
 theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
   rfl
 
+variable (K) in
+noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K where
+  __ := ofRealAm
+  map_star' := algebraMap_star_comm
+
+@[simp, rclike_simps]
+theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+
 /-- The ℝ → K coercion, as a linear isometry -/
 noncomputable def ofRealLI : ℝ →ₗᵢ[ℝ] K where
   toLinearMap := ofRealAm.toLinearMap

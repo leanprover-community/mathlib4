@@ -71,6 +71,13 @@ variable (X) in
 @[simp, fun_prop] lemma continuous_realToRCLike : Continuous (realToRCLike 𝕜 (X := X)) :=
   continuous_postcomp { toFun x := RCLike.ofReal x }
 
+variable (X) in
+@[simps!] noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
+  compStarAlgHom X (RCLike.ofRealStarAlgHom 𝕜) RCLike.continuous_ofReal
+
+@[simp] lemma realToRCLikeStarAlgHom_apply (f : C(X, ℝ)) :
+    realToRCLikeStarAlgHom X 𝕜 f = f.realToRCLike 𝕜 := rfl
+
 variable {𝕜} in
 /-- Mapping `C(X, 𝕜)` to `C(X, ℝ)` using `RCLike.re`. -/
 @[simps] def rclikeToReal (f : C(X, 𝕜)) : C(X, ℝ) where toFun x := RCLike.re (f x)
