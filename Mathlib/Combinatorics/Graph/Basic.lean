@@ -103,10 +103,9 @@ structure Graph (α β : Type*) where
   /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
   edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y := by exact fun _ ↦ Iff.rfl
   /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
-  left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
+  left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet := by grind
 
-initialize_simps_projections Graph
-  (as_prefix edgeSet, as_prefix vertexSet, IsLink → isLink, as_prefix isLink)
+initialize_simps_projections Graph (as_prefix edgeSet, as_prefix vertexSet, IsLink → isLink)
 
 namespace Graph
 
@@ -130,9 +129,11 @@ lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
 protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
   G.isLink_symm h.edge_mem h
 
+@[grind →]
 lemma IsLink.left_mem (h : G.IsLink e x y) : x ∈ V(G) :=
   G.left_mem_of_isLink h
 
+@[grind →]
 lemma IsLink.right_mem (h : G.IsLink e x y) : y ∈ V(G) :=
   h.symm.left_mem
 
@@ -476,13 +477,12 @@ def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   isLink_symm := by simp
   eq_or_eq_of_isLink_of_isLink := by simp
   edge_mem_iff_exists_isLink := by simp
-  left_mem_of_isLink := by simp
 
 variable {vertexSet : Set α} {edgeSet : Set β}
 
 lemma edgeSet_eq_empty : E(G) = ∅ ↔ G = noEdge V(G) β := by
   refine ⟨fun h ↦ Graph.ext rfl ?_, fun h ↦ by rw [h, edgeSet_noEdge]⟩
-  simp only [isLink_noEdge, iff_false]
+  simp only [noEdge_isLink, iff_false]
   refine fun e x y he ↦ ?_
   have := h ▸ he.edge_mem
   simp at this
@@ -498,30 +498,29 @@ def banana (u v : α) (edgeSet : Set β) : Graph α β where
   isLink_symm _ _ _ := by aesop
   eq_or_eq_of_isLink_of_isLink := by aesop
   edge_mem_iff_exists_isLink := by aesop
-  left_mem_of_isLink := by aesop
 
 @[simp]
-lemma inc_banana : (banana u v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) := by
-  simp only [Inc, isLink_banana, exists_and_left, and_congr_right_iff]
+lemma banana_inc : (banana u v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) := by
+  simp only [Inc, banana_isLink, exists_and_left, and_congr_right_iff]
   aesop
 
 lemma banana_comm (u v : α) (edgeSet : Set β) : banana u v edgeSet = banana v u edgeSet :=
   Graph.ext_inc (pair_comm ..) <| by simp [or_comm]
 
 @[simp]
-lemma isNonloopAt_banana :
+lemma banana_isNonloopAt :
     (banana u v edgeSet).IsNonloopAt e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) ∧ u ≠ v := by
-  simp_rw [isNonloopAt_iff_inc_not_isLoopAt, ← isLink_self_iff, isLink_banana, inc_banana]
+  simp_rw [isNonloopAt_iff_inc_not_isLoopAt, ← isLink_self_iff, banana_isLink, banana_inc]
   aesop
 
 @[simp]
-lemma isLoopAt_banana : (banana u v edgeSet).IsLoopAt e x ↔ e ∈ edgeSet ∧ x = u ∧ u = v := by
-  simp only [← isLink_self_iff, isLink_banana, and_congr_right_iff]
+lemma banana_isLoopAt : (banana u v edgeSet).IsLoopAt e x ↔ e ∈ edgeSet ∧ x = u ∧ u = v := by
+  simp only [← isLink_self_iff, banana_isLink, and_congr_right_iff]
   aesop
 
 @[simp]
-lemma adj_banana : (banana u v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ s(x, y) = s(u, v) := by
-  simp only [Adj, isLink_banana, exists_and_right, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+lemma banana_adj : (banana u v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ s(x, y) = s(u, v) := by
+  simp only [Adj, banana_isLink, exists_and_right, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
     Prod.swap_prod_mk, and_congr_left_iff]
   exact fun _ ↦ Iff.rfl
 
@@ -539,16 +538,16 @@ abbrev bouquet (v : α) (edgeSet : Set β) : Graph α β :=
 
 lemma vertexSet_bouquet (v : α) (edgeSet : Set β) : V(bouquet v edgeSet) = {v} := by simp
 
-lemma isLink_bouquet (v : α) (edgeSet : Set β) :
+lemma bouquet_isLink (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).IsLink e x y ↔ e ∈ edgeSet ∧ x = v ∧ y = v := by simp
 
-lemma inc_bouquet (v : α) (edgeSet : Set β) :
+lemma bouquet_inc (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ x = v := by simp
 
-lemma adj_bouquet (v : α) (edgeSet : Set β) :
+lemma bouquet_adj (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ x = v ∧ y = v := by simp
 
-lemma isLoopAt_bouquet (v : α) (edgeSet : Set β) :
+lemma bouquet_isLoopAt (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).IsLoopAt e x ↔ e ∈ edgeSet ∧ x = v := by simp
 
 lemma not_isNonloopAt_bouquet : ¬ (bouquet v edgeSet).IsNonloopAt e x := by
@@ -560,7 +559,7 @@ lemma eq_bouquet_of_subsingleton (hv : v ∈ V(G)) (hss : V(G).Subsingleton) :
   have hrw := hss.eq_singleton_of_mem hv
   refine Graph.ext_inc (by simpa) fun e x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp [← mem_singleton_iff, ← hrw, h.edge_mem, h.vertex_mem]
-  simp only [inc_bouquet] at h
+  simp only [bouquet_inc] at h
   obtain ⟨z,w, hzw⟩ := exists_isLink_of_mem_edgeSet h.1
   rw [h.2, ← show z = v from (show z ∈ {v} from hrw ▸ hzw.left_mem)]
   exact hzw.inc_left
