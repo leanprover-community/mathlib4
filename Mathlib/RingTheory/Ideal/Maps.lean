@@ -1185,6 +1185,7 @@ noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
   f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 
+@[simp]
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
     (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
@@ -1195,26 +1196,39 @@ theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
     (f.liftOfRightInverse f_inv hf g).comp f = g :=
   RingHom.ext <| f.liftOfRightInverse_comp_apply f_inv hf g
 
+theorem liftOfRightInverse_symm (hf : Function.RightInverse f_inv f) (h : B →+* C) :
+  (f.liftOfRightInverse f_inv hf).symm h = h.comp f := rfl
+
 theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* C)
     (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
     h = f.liftOfRightInverse f_inv hf ⟨g, hg⟩ := by
   simp_rw [← hh]
   exact ((f.liftOfRightInverse f_inv hf).apply_symm_apply _).symm
 
+lemma liftOfRightInverse_surjective (hf : Function.RightInverse f_inv f) (g : A →+* C)
+    (hg : RingHom.ker f ≤ RingHom.ker g) (hg₂ : Function.Surjective g) :
+    Function.Surjective (f.liftOfRightInverse f_inv hf ⟨g, hg⟩) :=
+  .of_comp (g := f) (by rw [← RingHom.coe_comp, liftOfRightInverse_comp]; exact hg₂)
+
 theorem liftOfSurjective_comp_apply (hf : Function.Surjective f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
     (f.liftOfSurjective hf) g (f x) = (g : A →+* C) x :=
-  RingHom.liftOfRightInverse_comp_apply f _ _ g x
+  liftOfRightInverse_comp_apply ..
 
 theorem liftOfSurjective_comp (hf : Function.Surjective f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :
     ((f.liftOfSurjective hf) g).comp f = (g : A →+* C) :=
-  RingHom.liftOfRightInverse_comp f _ _ g
+  liftOfRightInverse_comp ..
 
 theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
     (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
     h = f.liftOfSurjective hf ⟨g, hg⟩ :=
-  RingHom.eq_liftOfRightInverse f _ _ g _ _ hh
+  eq_liftOfRightInverse _ _ _ _ _ _ hh
+
+lemma liftOfSurjective_surjective (hf : Function.Surjective f) (g : A →+* C)
+    (hg : RingHom.ker f ≤ RingHom.ker g) (hg₂ : Function.Surjective g) :
+    Function.Surjective (f.liftOfSurjective hf ⟨g, hg⟩) :=
+  liftOfRightInverse_surjective _ _ _ _ _ hg₂
 
 end RingHom
 
