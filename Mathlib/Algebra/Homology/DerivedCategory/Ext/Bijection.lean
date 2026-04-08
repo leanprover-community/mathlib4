@@ -55,7 +55,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
     let _ : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj ‹_›
     let f : Ext S.X₂ Y n →+ Ext S.X₁ Y n := (mk₀ S.f).precomp Y (zero_add n)
     let g : Ext S.X₁ Y n →+ Ext S.X₃ Y (n + 1) := S_exact.extClass.precomp Y (add_comm 1 n)
-    have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.contravariant_sequence_exact₁' S_exact Y n (n + 1) (add_comm 1 n))
     have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext S.X₂ Y (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _
@@ -67,17 +67,16 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
       (mk₀ (S.map F).f).precomp (F.obj Y) (zero_add n)
     let g' : Ext (S.map F).X₁ (F.obj Y) n →+ Ext (S.map F).X₃ (F.obj Y) (n + 1) :=
       FS_exact.extClass.precomp (F.obj Y) (add_comm 1 n)
-    have exac2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.contravariant_sequence_exact₁' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n))
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map F).X₂ (F.obj Y) (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _
-        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
+      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_projective _ _ n)
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.contravariant_sequence_exact₃' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n)).epi_f
-      (isz2.eq_zero_of_tgt _))
+        (isz2.eq_zero_of_tgt _))
     apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n) (F.mapExtAddHom S.X₃ Y (n + 1)) _ _
-      exac1 exac2 (bij S.X₂).2 (bij S.X₁) surj1 surj2
+      exact1 exact2 (bij S.X₂).2 (bij S.X₁) surj1 surj2
     · ext x
       simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     · ext x
@@ -97,7 +96,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
     let _ : Injective (S.map F).X₂ := Functor.PreservesInjectiveObjects.injective_obj ‹_›
     let f : Ext X S.X₂ n →+ Ext X S.X₃ n := (mk₀ S.g).postcomp X (add_zero n)
     let g : Ext X S.X₃ n →+ Ext X S.X₁ (n + 1) := S_exact.extClass.postcomp X rfl
-    have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.covariant_sequence_exact₃' X S_exact n (n + 1) rfl)
     have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext X S.X₂ (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _
@@ -109,17 +108,16 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
       (mk₀ (S.map F).g).postcomp (F.obj X) (add_zero n)
     let g' : Ext (F.obj X) (S.map F).X₃ n →+ Ext (F.obj X) (S.map F).X₁ (n + 1) :=
       FS_exact.extClass.postcomp (F.obj X) rfl
-    have exac2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.covariant_sequence_exact₃' (F.obj X) FS_exact n (n + 1) rfl)
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (F.obj X) (S.map F).X₂ (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _
-        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective)
+      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_injective _ _ n)
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.covariant_sequence_exact₁' (F.obj X) FS_exact n (n + 1) rfl).epi_f
-      (isz2.eq_zero_of_tgt _))
+        (isz2.eq_zero_of_tgt _))
     apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1)) _ _
-      exac1 exac2 (bij S.X₂).2 (bij S.X₃) surj1 surj2
+      exact1 exact2 (bij S.X₂).2 (bij S.X₃) surj1 surj2
     · ext x
       simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     · ext x
