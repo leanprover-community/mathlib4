@@ -314,10 +314,10 @@ theorem pseudo_equation :
   · rw [pow_zero, one_mul, zero_mul, zero_add]
   match hc : f.vars.max with
   | ⊥ =>
-    have ⟨r, hr⟩ : ∃ r, f = C r := vars_eq_empty_iff_eq_C.mp <| Finset.max_eq_bot.mp hc
+    have hf_C : f = C (f.coeff 0) := vars_eq_empty_iff_eq_C.mp <| Finset.max_eq_bot.mp hc
     simp only [pow_zero, one_mul, Algebra.smul_mul_assoc, add_zero]
-    simp only [hr, coeff_C, reduceIte] at f_zero ⊢
-    have : r ≠ 0 := C_ne_zero.mp f_zero
+    nth_rw 2 [hf_C]
+    have : f.coeff 0 ≠ 0 := C_ne_zero.mp <| hf_C ▸ f_zero
     rw [mul_comm, ← smul_eq_C_mul, ← mul_smul, inv_mul_cancel₀ this, one_smul]
   | some c => simp only [initial_of_max_vars_isSome' hc]; exact g.pseudoOf_equation c f
 

@@ -104,17 +104,17 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
 theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
     s.support ⊆ p.vars := fun i hi ↦ by
   contrapose! hi
-  have := mem_support_notMem_vars_zero h hi
-  exact Finsupp.notMem_support_iff.mpr this
+  apply Finsupp.notMem_support_iff.mpr
+  exact mem_support_notMem_vars_zero h hi
 
-theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ ∃ r : R, p = C r := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.choose_spec ▸ vars_C⟩
-  classical rewrite [vars_def, Multiset.toFinset_eq_empty] at h
-  have h : p.support = ∅ ∨ p.support = {0} :=
-    Finset.subset_singleton_iff.mp <| degrees_eq_zero_iff_support_subset_zero.mp h
-  use ∑ s ∈ p.support, p.coeff s
-  nth_rewrite 1 [map_sum, as_sum p]
-  apply Or.elim h <;> (intro h; exact h ▸ rfl)
+theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ vars_C⟩
+  apply totalDegree_eq_zero_iff_eq_C.mp
+  apply Nat.eq_zero_of_le_zero
+  suffices p.degrees.card = 0 by exact this ▸ totalDegree_le_degrees_card p
+  classical rw [vars_def, Multiset.toFinset_eq_empty] at h
+  rw [h]
+  rfl
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by

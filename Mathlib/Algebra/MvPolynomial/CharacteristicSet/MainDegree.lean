@@ -63,7 +63,7 @@ theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.vars.max = ⊥ where
       exact absurd hc this
   mpr h := by rw [mainDegree, h]
 
-theorem mainDegree_eq_zero_iff' : p.mainDegree = 0 ↔ (∃ r : R, p = C r) :=
+theorem mainDegree_eq_zero_iff_eq_C : p.mainDegree = 0 ↔ p = C (p.coeff 0) :=
   mainDegree_eq_zero_iff.trans <| Finset.max_eq_bot.trans vars_eq_empty_iff_eq_C
 
 theorem degreeOf_max_vars_ne_zero : p.vars.max = c → p.degreeOf c ≠ 0 := fun h ↦
