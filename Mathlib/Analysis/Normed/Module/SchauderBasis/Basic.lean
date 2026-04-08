@@ -325,12 +325,9 @@ theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m)
 /-- The projection of a finite sum of basis vectors onto an initial segment. -/
 theorem proj_sum_range (m n : ℕ) (a : ℕ → 𝕜) (hmn : m ≤ n) :
     b.proj m (∑ j ∈ Finset.range n, a j • b j) = ∑ j ∈ Finset.range m, a j • b j := by
-  simp only [map_sum, map_smul, proj_apply_basis_mem, smul_ite, smul_zero]
-  rw [← Finset.sum_filter]
-  congr 1
-  ext _
-  simp only [Finset.mem_filter, Finset.mem_range]
-  omega
+  simp only [map_sum, map_smul, proj_apply_basis_mem, smul_ite, smul_zero, ← Finset.sum_filter]
+  congr
+  grind
 
 /-- The projections are uniformly bounded. -/
 theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
