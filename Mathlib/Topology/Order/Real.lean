@@ -33,7 +33,7 @@ We endow `EReal` with the order topology.
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
 
-instance : TopologicalSpace EReal := Preorder.topology EReal
+noncomputable instance : TopologicalSpace EReal := Preorder.topology EReal
 instance : OrderTopology EReal := ⟨rfl⟩
 
 instance : T5Space EReal := inferInstance

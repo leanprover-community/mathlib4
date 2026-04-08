@@ -38,7 +38,7 @@ The two versions of the four functions theorem are
 We deduce a number of corollaries:
 * `Finset.le_card_infs_mul_card_sups`: Daykin inequality. `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
 * `holley`: Holley inequality.
-* `fkg`: Fortuin-Kastelyn-Ginibre inequality.
+* `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
 * `Finset.card_le_card_diffs`: Marica-Schönheim inequality. `|s| ≤ |{a \ b | a, b ∈ s}|`
 
 ## TODO
@@ -361,7 +361,7 @@ lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone �
     rw [sup_comm, inf_comm]
     exact mul_le_mul (hμ le_sup_left) (h _ _) (mul_nonneg (hf.le _) <| hg.le _) <| hμ₀ _
 
-/-- The **Fortuin-Kastelyn-Ginibre Inequality**. -/
+/-- The **Fortuin-Kasteleyn-Ginibre Inequality**. -/
 lemma fkg (hμ₀ : 0 ≤ μ) (hf₀ : 0 ≤ f) (hg₀ : 0 ≤ g) (hf : Monotone f) (hg : Monotone g)
     (hμ : ∀ a b, μ a * μ b ≤ μ (a ⊓ b) * μ (a ⊔ b)) :
     (∑ a, μ a * f a) * ∑ a, μ a * g a ≤ (∑ a, μ a) * ∑ a, μ a * (f a * g a) := by

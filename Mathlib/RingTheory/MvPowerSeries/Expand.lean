@@ -157,7 +157,6 @@ theorem support_expand (φ : MvPowerSeries σ R) :
   rw [Function.mem_support, ← coeff_apply φ, ← coeff_expand_smul p hp, coeff_apply, hc] at hn₁
   contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem order_expand (φ : MvPowerSeries σ R) :
     (φ.expand p hp).order = p • φ.order := by
@@ -241,8 +240,6 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
       simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
-      ext m
-      simp only [MvPolynomial.coeff_coe, MvPolynomial.coeff_map, coeff_map]
     rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
       (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
         trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]

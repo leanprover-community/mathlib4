@@ -777,8 +777,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         simp
       uniq := fun s m w => by
         specialize w default
@@ -813,8 +812,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default

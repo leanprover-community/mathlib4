@@ -41,7 +41,8 @@ but do not depend on the category theory library in mathlib. -/
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
 
-to_dual_insert_cast GaloisConnection := by grind
+to_dual_insert_cast GaloisConnection := by
+  rw [forall_comm]; simp only [Iff.comm]
 
 namespace GaloisConnection
 
