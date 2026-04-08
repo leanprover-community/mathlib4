@@ -268,6 +268,9 @@ grind_pattern card_filter_le => s.filter p, #s
 theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
+theorem eq_of_subset_of_card_eq (hsub : s ⊆ t) (hcard : #s = #t) : s = t := 
+  eq_of_subset_of_card_le hcard (by grind)
+
 theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
   ⟨eq_of_subset_of_card_le hst, (ge_of_eq <| congr_arg _ ·)⟩
 
