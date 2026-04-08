@@ -5,6 +5,7 @@ Authors: Yuyang Zhao
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.Algebra.Group.UniqueProds.VectorSpace
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.Minpoly.ConjRootClass
@@ -190,7 +191,7 @@ theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
     toFinsupp (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 ≠ 0 ↔ x = -y := by
   classical
   simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
-  have : NoZeroSMulDivisors ℕ R := ⟨by simp [← Nat.cast_smul_eq_nsmul F, smul_eq_zero]⟩
+  have : IsAddTorsionFree R := .of_isTorsionFree F R
   simp_rw [Finsupp.indicator_eq_sum_single, AddMonoidAlgebra.ofCoeff_sum,
     sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff_single, AddMonoidAlgebra.single_mul_single,
     toFinsupp_mk_apply_zero_eq, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finset_sum, sum_apply,
