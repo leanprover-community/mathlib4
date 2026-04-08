@@ -18,6 +18,8 @@ This file defines the transcendence basis as a maximal algebraically independent
 ## Main results
 
 * `exists_isTranscendenceBasis`: a ring extension has a transcendence basis
+* `IsTranscendenceBasis.lift_cardinalMk_eq_trdeg`: any transcendence basis of a domain has
+  cardinality equal to transcendental degree.
 * `IsTranscendenceBasis.lift_cardinalMk_eq`: any two transcendence bases of a domain have the
   same cardinality.
 
