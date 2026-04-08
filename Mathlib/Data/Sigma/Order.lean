@@ -11,8 +11,6 @@ public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Orders on a sigma type
