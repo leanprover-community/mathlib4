@@ -23,7 +23,7 @@ pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring
 
 open Set Pointwise
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 /-- A one-field structure enclosing `Set α`, endowed with a semiring structure given by
 `∪` as addition and pointwise multiplication `*` as multiplication. -/
@@ -166,28 +166,28 @@ def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
   map_one' := rfl
   map_mul' _ _ := by simp [mul_def]
 
+section ImageHom
+
+variable [MulOneClass α] [MulOneClass β] [MulOneClass γ] (f : α →* β)
+
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
-def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
+def imageHom : SetSemiring α →+* SetSemiring β where
   toFun s := ⟨f '' s.toSet⟩
   map_zero' := by simp
   map_one' := by simp [singleton_one]
   map_add' := by simp [image_union]
   map_mul' _ _ := by simp [image_mul f]
 
-lemma imageHom_def [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
-    imageHom f s = ⟨f '' s.toSet⟩ :=
-  rfl
+lemma imageHom_def (s : SetSemiring α) : imageHom f s = ⟨f '' s.toSet⟩ := rfl
+@[simp] lemma toSet_imageHom (s : SetSemiring α) : (imageHom f s).toSet = f '' s.toSet := rfl
+@[simp] lemma _root_.Set.ofSet_image (s : Set α) : ⟨f '' s⟩ = imageHom f ⟨s⟩ := rfl
 
-@[simp]
-lemma toSet_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
-    (imageHom f s).toSet = f '' s.toSet :=
-  rfl
+lemma imageHom_comp (g : β →* γ) (s : SetSemiring α) :
+    imageHom (g.comp f) s = (imageHom g) ((imageHom f) s) := by
+  simp_rw [imageHom_def, MonoidHom.coe_comp, image_comp]
 
-@[simp]
-lemma _root_.Set.ofSet_image [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
-    ⟨f '' s⟩ = imageHom f ⟨s⟩ :=
-  rfl
+end ImageHom
 
 @[deprecated (since := "2026-04-07")] alias Set.up := SetSemiring.ofSet
 @[deprecated (since := "2026-04-07")] alias down := SetSemiring.toSet
