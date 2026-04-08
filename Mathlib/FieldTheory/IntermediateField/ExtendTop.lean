@@ -45,16 +45,22 @@ intermediate field of `M/K`.
 abbrev extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
 
 /-- The isomorphism between `F` and its image `F.extendTop M` in `M`. -/
-@[simps! apply_coe]
-noncomputable def extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
+noncomputable abbrev extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
+
+theorem algebraMap_extendTopEquiv (a : F) :
+    algebraMap (F.extendTop M) M (extendTopEquiv F M a) = algebraMap F M a := rfl
+
+theorem algebraMap_extendTopEquiv_symm (a : F.extendTop M) :
+    algebraMap F M ((extendTopEquiv F M).symm a) = a := by
+  rw [← algebraMap_extendTopEquiv, AlgEquiv.apply_symm_apply, algebraMap_apply]
 
 namespace extendTop
 
-variable (R S : Type*) [CommRing R] [CommRing S] [Algebra S F]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra S F]
 
 variable [Algebra S M] [IsScalarTower S F M]
 
-theorem algebraMap_mem (s : S) : (algebraMap S M) s ∈ F.extendTop M := by
+theorem algebraMap_mem (s : S) : algebraMap S M s ∈ F.extendTop M := by
   rw [IsScalarTower.algebraMap_apply S F M, IsScalarTower.algebraMap_apply F L M]
   exact ⟨algebraMap F L (algebraMap S F s), by simp, rfl⟩
 
@@ -62,7 +68,7 @@ instance : SMul S (F.extendTop M) where
   smul s x := by
     refine ⟨s • x, ?_⟩
     rw [Algebra.smul_def]
-    exact (F.extendTop M).mul_mem (algebraMap_mem F M S s) x.prop
+    exact (F.extendTop M).mul_mem (algebraMap_mem F M s) x.prop
 
 @[simp]
 theorem coe_smul (s : S) (x : F.extendTop M) :
@@ -70,7 +76,7 @@ theorem coe_smul (s : S) (x : F.extendTop M) :
 
 -- The algebra instance is defined this way to avoid diamonds, see below
 noncomputable instance algebra : Algebra S (F.extendTop M) where
-  algebraMap := ((algebraMap S M).codRestrict (F.extendTop M) (fun x ↦ algebraMap_mem F M S x))
+  algebraMap := (algebraMap S M).codRestrict (F.extendTop M) fun x ↦ algebraMap_mem F M x
   commutes' _ _ := Subtype.ext <| by simp [Algebra.commutes]
   smul_def' s x := Subtype.ext <| by
     convert_to s • (x : M) = _
@@ -79,14 +85,15 @@ noncomputable instance algebra : Algebra S (F.extendTop M) where
 -- Check there is no diamond
 example [Algebra S K] [IsScalarTower S K M] :
     ((F.extendTop M).algebra' : Algebra S (F.extendTop M)) =
-      (algebra F M S : Algebra S (F.extendTop M)) := rfl
+      (algebra F M : Algebra S (F.extendTop M)) := rfl
 
 instance : IsScalarTower S (F.extendTop M) M := IsScalarTower.of_algebraMap_eq' rfl
 
 instance : IsScalarTower S F (F.extendTop M) := IsScalarTower.to₁₂₃ S F (F.extendTop M) M
 
 instance [Algebra R S] [Algebra R F] [Algebra R M] [IsScalarTower R F M] [IsScalarTower R S M] :
-    IsScalarTower R S (F.extendTop M) := IsScalarTower.to₁₂₃ R S (F.extendTop M) M
+    IsScalarTower R S (F.extendTop M) :=
+  IsScalarTower.to₁₂₃ R S (F.extendTop M) M
 
 /--
 Variant of `extendTopEquiv` giving an `S`-algebra isomorphism `F ≃ₐ[S] F.extendTop M`,
@@ -98,12 +105,12 @@ noncomputable def _root_.IntermediateField.extendTopEquiv' : F ≃ₐ[S] (F.exte
 
 instance isFractionRing [IsFractionRing S F] :
     IsFractionRing S (F.extendTop M) :=
-  .of_algEquiv (R := S) (L := F.extendTop M) (K := F) <| F.extendTopEquiv' M S
+  .of_algEquiv (R := S) (L := F.extendTop M) (K := F) <| F.extendTopEquiv' M
 
 instance isIntegralClosure [Algebra R F] [Algebra R M] [IsScalarTower R F M]
     [IsIntegralClosure S R F] :
     IsIntegralClosure S R (F.extendTop M) := by
-  refine .of_algEquiv S (F.extendTopEquiv' M R) fun x ↦ ?_
+  refine .of_algEquiv S (F.extendTopEquiv' M) fun x ↦ ?_
   rw [Subtype.ext_iff, extendTopEquiv'_apply_coe, ← IsScalarTower.algebraMap_apply,
     ← algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
