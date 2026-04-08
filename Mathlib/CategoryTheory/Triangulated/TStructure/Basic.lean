@@ -29,9 +29,7 @@ use depending on the context.
 
 ## TODO
 
-* promote these truncations to a (functorial) spectral object
-* define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
-  that there are induced t-structures on these full subcategories
+* show that the heart of `t` is an abelian category
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]

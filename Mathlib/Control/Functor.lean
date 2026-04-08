@@ -6,7 +6,6 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.TypeStar
 
 import Mathlib.Tactic.Attr.Register
 

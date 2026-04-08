@@ -31,7 +31,7 @@ public section
 
 
 open ProbabilityTheory Complex Set VectorFourier
-open scoped Nat RealInnerProductSpace
+open scoped Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 
@@ -41,7 +41,6 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
 See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]
@@ -52,7 +51,6 @@ theorem contDiff_charFun {n : ℕ} (hint : MemLp id n μ) :
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
   refine MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a measure with all moments is `C^∞`. See `contDiff_charFun`
 for the version proving only `C^n` by only assuming that the moment of order `n` exists. -/
 @[fun_prop]
@@ -109,7 +107,6 @@ theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp id n μ) :
   rw [iteratedDeriv, iteratedFDeriv_charFun hint]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]
@@ -128,7 +125,6 @@ lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp id n μ) (t : ℝ) :
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
   {X : Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     (hint : MemLp id 2 (P.map X)) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
@@ -144,7 +140,6 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
   simp [field]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
     (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t = 1 - t ^ 2 / 2 := by
@@ -154,6 +149,17 @@ lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
   rw [integral_map]
   any_goals fun_prop
   simp [← Pi.pow_apply, h1]
+
+lemma taylor_charFun_two (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
+    (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
+  simp_rw [← taylorWithinEval_charFun_two_zero' (by fun_prop) h0 h1]
+  convert taylor_isLittleO_univ ?_
+  · simp
+  refine contDiff_charFun <|
+    (memLp_two_iff_integrable_sq (by fun_prop)).2 (.of_integral_ne_zero ?_)
+  rw [integral_map]
+  any_goals fun_prop
+  simp_all
 
 end Real
 

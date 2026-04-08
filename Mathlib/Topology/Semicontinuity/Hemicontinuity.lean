@@ -30,7 +30,7 @@ variable {f g : α → Set β} {s : Set α} {x : α}
 lemma upperHemicontinuousWithinAt_iff_forall_isOpen :
     UpperHemicontinuousWithinAt f s x ↔ ∀ u, IsOpen u → f x ⊆ u → ∀ᶠ x' in 𝓝[s] x, f x' ⊆ u := by
   rw [upperHemicontinuousWithinAt_iff, hasBasis_nhdsSet _ |>.forall_iff ?mono]
-  case mono => exact fun t₁ t₂ ht h ↦ h.mp <| .of_forall fun x' hx' ↦ mem_of_superset hx' ht
+  case mono => exact fun t₁ t₂ ht h ↦ h.mp <| .of_forall fun x' ↦ by gcongr
   simp only [and_imp]
   apply forall₂_congr
   simp +contextual [← subset_interior_iff_mem_nhdsSet, IsOpen.interior_eq]
@@ -67,13 +67,12 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
   simp_rw [upperHemicontinuousWithinAt_iff]
   rw [hasBasis_nhdsSet (f x) |>.forall_iff ?h₁, hasBasis_nhdsSet (f x) |>.forall_iff ?h₂]
   case h₂ =>
-    refine fun s t hst hs ↦ Filter.mem_of_superset hs ?_
+    intro s t hst
     gcongr
     exact hst
   case h₁ =>
-    intro s t hst hs
-    filter_upwards [hs] with x hx
-    exact Filter.mem_of_superset hx hst
+    intro s t hst
+    gcongr
   refine forall₂_congr fun u ⟨hu, hfu⟩ ↦ ?_
   simp [hu.mem_nhdsSet, eventually_iff, Iic]
 
@@ -99,8 +98,8 @@ lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
   conv =>
     enter [1, x]
     rw [hasBasis_nhdsSet (f x) |>.forall_iff <|
-      fun s t hst hs ↦ Filter.mem_of_superset hs <| by gcongr; exact hst]
-  simp [forall_swap (α := α)]
+      fun s t hst ↦ by gcongr; exact hst]
+  simp [forall_comm (α := α)]
 
 /-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *lower inverse*
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
@@ -125,7 +124,7 @@ lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
   simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, this, isOpen_iff_mem_nhds,
-    forall_swap (α := α), mem_setOf, Filter.Eventually]
+    forall_comm (α := α), mem_setOf, Filter.Eventually]
 
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *upper inverse*
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets

@@ -62,6 +62,38 @@ lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
 
 end Equiv
 
+section ContinuousLinearEquiv
+
+variable [Semiring R]
+
+/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
+then so is `α`. -/
+@[to_additive]
+lemma ContinuousMulEquiv.isTopologicalGroup
+    [TopologicalSpace β] [Group β] [IsTopologicalGroup β] [TopologicalSpace α] [Group α]
+    (e : α ≃ₜ* β) : IsTopologicalGroup α where
+  continuous_mul := by
+    let f := (fun q ↦ q.1 * q.2 : β × β → β)
+    have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
+    exact this.congr <| fun p ↦ by simp [f]
+  continuous_inv := by
+    have : Continuous (e.symm ∘ (fun q ↦ q⁻¹) ∘ e) := by fun_prop
+    exact this.congr (fun p ↦ by simp)
+
+/-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
+continuous, then so is it for `α`. -/
+lemma ContinuousLinearEquiv.continuousSMul
+    [TopologicalSpace β] [AddCommGroup β] [Module R β] [TopologicalSpace R] [ContinuousSMul R β]
+    [TopologicalSpace α] [AddCommGroup α] [Module R α]
+    (e : α ≃L[R] β) :
+    ContinuousSMul R α where
+  continuous_smul := by
+    let f : R × α → α := fun p ↦ e.symm <| p.1 • (e p.2)
+    have : Continuous f := by fun_prop
+    exact this.congr (fun p ↦ by simp [f])
+
+end ContinuousLinearEquiv
+
 universe v
 
 variable (R α) in
