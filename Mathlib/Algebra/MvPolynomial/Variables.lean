@@ -107,9 +107,8 @@ theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.supp
   apply Finsupp.notMem_support_iff.mpr
   exact mem_support_notMem_vars_zero h hi
 
-theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ ∃ r : R, p = C r := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.choose_spec ▸ vars_C⟩
-  use p.coeff 0
+theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ vars_C⟩
   apply totalDegree_eq_zero_iff_eq_C.mp
   apply Nat.eq_zero_of_le_zero
   suffices p.degrees.card = 0 by exact this ▸ totalDegree_le_degrees_card p
