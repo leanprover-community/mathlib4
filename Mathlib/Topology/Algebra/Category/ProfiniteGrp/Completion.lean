@@ -5,7 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.GroupTheory.ResiduallyFinite
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 
 /-!
@@ -77,6 +78,18 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   map_one' := rfl
   map_mul' _ _ := rfl
 }
+
+set_option backward.isDefEq.respectTransparency false in
+theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
+  rw [GrpCat.mono_iff_injective, injective_iff_map_eq_one,
+    Group.residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  refine forall_congr' fun g ↦ imp_congr_left ?_
+  rw [Subtype.ext_iff, funext_iff]
+  exact forall_congr' fun H ↦ QuotientGroup.eq_one_iff g
+
+theorem etaFn_injective_iff_residuallyFinite :
+    Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
+  (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma denseRange : DenseRange (etaFn G) := by

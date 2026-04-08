@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.Data.Nat.SuccPred
@@ -605,6 +606,14 @@ lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
 
+/-- `Finset.antidiagonal k` embeds as a subset of `Nat.divisorsAntidiagonal (q ^ k)`. -/
+theorem antidiagonal_map_subset_divisorsAntidiagonal_pow {q : ℕ} (hq : 1 < q) (k : ℕ) :
+    letI ι : ℕ ↪ ℕ :=  ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩
+    (Finset.antidiagonal k).map (.prodMap ι ι) ⊆ (q ^ k).divisorsAntidiagonal := by
+  intro k hk
+  obtain ⟨i, hi, rfl⟩ := Finset.mem_map.mp hk
+  simp [Nat.mem_divisorsAntidiagonal, ← Finset.mem_antidiagonal.mp hi, pow_add, ne_zero_of_lt hq]
+
 end Nat
 
 namespace Int
@@ -629,7 +638,7 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
 @[simp]
 lemma mem_divisorsAntidiag :

@@ -35,7 +35,6 @@ variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
 
 section torsionMapQuot
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
     {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
     (h : letI _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
@@ -87,6 +86,14 @@ theorem Ideal.rootsOfUnityMapQuot_injective (n : ℕ) [NeZero n] (hI₁ : absNor
   rw [Units.ext_iff, rootsOfUnityMapQuot_apply, Units.val_one] at h
   refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
   exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
+
+theorem IsPrimitiveRoot.idealQuotient_mk {n : ℕ} [NeZero n] {ζ : (𝓞 K)} (hζ : IsPrimitiveRoot ζ n)
+    (hI₁ : absNorm I ≠ 1) (hI₂ : (absNorm I).Coprime n) :
+    IsPrimitiveRoot (Ideal.Quotient.mk I ζ) n := by
+  have h : IsPrimitiveRoot hζ.toRootsOfUnity n :=
+    IsPrimitiveRoot.coe_submonoidClass_iff.mp <| IsPrimitiveRoot.coe_units_iff.mp hζ
+  exact IsPrimitiveRoot.coe_units_iff.mpr <|
+    h.map_of_injective <| Ideal.rootsOfUnityMapQuot_injective n hI₁ hI₂
 
 theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime (torsionOrder K)) :

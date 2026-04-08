@@ -183,6 +183,11 @@ theorem irreducibleSpace_def (X : Type*) [TopologicalSpace X] :
     haveI : PreirreducibleSpace X := ⟨h.2⟩
     ⟨⟨h.1.some⟩⟩⟩
 
+lemma PreirreducibleSpace.of_forall_nonempty_inter
+    (H : ∀ ⦃U V : Set X⦄, IsOpen U → IsOpen V → U.Nonempty → V.Nonempty → (U ∩ V).Nonempty) :
+    PreirreducibleSpace X where
+  isPreirreducible_univ _ := by simp_all
+
 theorem nonempty_preirreducible_inter [PreirreducibleSpace X] :
     IsOpen s → IsOpen t → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
   simpa only [univ_inter, univ_subset_iff] using
@@ -192,6 +197,11 @@ theorem nonempty_preirreducible_inter [PreirreducibleSpace X] :
 protected theorem IsOpen.dense [PreirreducibleSpace X] (ho : IsOpen s) (hne : s.Nonempty) :
     Dense s :=
   dense_iff_inter_open.2 fun _t hto htne => nonempty_preirreducible_inter hto ho htne hne
+
+lemma IsOpenMap.denseRange_of_isPreirreducibleSpace {U X : Type*} [TopologicalSpace U]
+    [Nonempty U] [TopologicalSpace X] (f : U → X) (hf : IsOpenMap f) [PreirreducibleSpace X] :
+    DenseRange f :=
+  hf.isOpen_range.dense (Set.range_nonempty f)
 
 theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsPreirreducible (f '' s) := by
@@ -245,6 +255,11 @@ theorem isIrreducible_iff_irreducibleSpace :
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
+instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
+  isPreirreducible_univ u v := by
+    simp only [IndiscreteTopology.isOpen_iff, univ_inter]
+    rintro ⟨h | h⟩ <;> simp_all
+
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
@@ -256,7 +271,7 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
-  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := {s : Set X | IsIrreducible s})
     ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
 
 /-- A set `s` is irreducible if and only if
@@ -409,6 +424,19 @@ lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
     (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
   refine ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
+lemma Topology.IsOpenEmbedding.preirreducibleSpace {f : Y → X} (hf : Topology.IsOpenEmbedding f)
+    [PreirreducibleSpace X] :
+    PreirreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← Set.preimage_univ]
+    exact .preimage PreirreducibleSpace.isPreirreducible_univ hf
+
+lemma Topology.IsOpenEmbedding.irreducibleSpace {f : Y → X} (hf : Topology.IsOpenEmbedding f)
+    [IrreducibleSpace X] [Nonempty Y] :
+    IrreducibleSpace Y where
+  toNonempty := ‹_›
+  __ := hf.preirreducibleSpace
 
 lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
     (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)

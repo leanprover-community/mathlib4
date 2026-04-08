@@ -155,6 +155,10 @@ lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.appTop 
     f = g := by
   rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
 
+instance (P : MorphismProperty Scheme.{u}) {S : Scheme.{u}} (𝒰 : S.AffineCover P) (i : 𝒰.I₀) :
+    IsAffine (𝒰.cover.X i) :=
+  inferInstanceAs <| IsAffine (Spec _)
+
 /-- `Scheme.Γ.rightOp : Scheme ⥤ CommRingCatᵒᵖ` preserves limits of diagrams consisting of
 affine schemes. -/
 instance preservesLimit_rightOp_Γ.{v, w}
@@ -645,7 +649,7 @@ lemma algebraMap_Spec_obj {R : CommRingCat} {U} : algebraMap R Γ(Spec R, U) =
 instance {R : CommRingCat} {f : R} :
     IsLocalization.Away f Γ(Spec R, PrimeSpectrum.basicOpen f) :=
   inferInstanceAs (IsLocalization.Away f
-    ((Spec.structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen f)))
+    ((Spec.structureSheaf R).obj.obj (op <| PrimeSpectrum.basicOpen f)))
 
 /-- Given an affine open U and some `f : U`,
 this is the canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(f))`

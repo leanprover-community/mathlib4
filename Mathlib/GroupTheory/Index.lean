@@ -527,7 +527,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive /-- Finite index implies finite quotient. -/]
+@[to_additive (attr := implicit_reducible) /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -675,15 +675,33 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
   index_ne_zero := relIndex_ne_zero
 
 @[to_additive]
+lemma isFiniteRelIndex_iff_relIndex_ne_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
+  ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
+
+@[to_additive]
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
-theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
-    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
+lemma isFiniteRelIndex_iff_finiteIndex :
+    H.IsFiniteRelIndex K ↔ (H.subgroupOf K).FiniteIndex := by
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero, finiteIndex_iff, relIndex]
+
+@[to_additive]
+theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
+  by simp [finiteIndex_iff]
+
+@[simp]
+theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
+  simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
+
+@[simp]
+theorem _root_.AddSubgroup.finiteIndex_toSubgroup_iff {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    H.toSubgroup.FiniteIndex ↔ H.FiniteIndex := by
+  simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
+@[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 
@@ -745,6 +763,13 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
+@[to_additive]
+lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
+    (h : H₁ ≤ H₂) :
+    H₂.IsFiniteRelIndex H₃ := by
+  rw [isFiniteRelIndex_iff_finiteIndex] at *
+  exact finiteIndex_of_le <| subgroupOf_mono H₃ h
+
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
   Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.index_ne_zero) (index_dvd_of_le h)
@@ -767,6 +792,13 @@ instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range
 instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
+
+instance _root_.AddSubgroup.finiteIndex_normalCore {G : Type*} [AddGroup G] (H : AddSubgroup G)
+    [h : H.FiniteIndex] : H.normalCore.FiniteIndex := by
+  rw [← AddSubgroup.finiteIndex_toSubgroup_iff] at h ⊢
+  exact H.toSubgroup.finiteIndex_normalCore
+
+attribute [to_additive existing] finiteIndex_normalCore
 
 @[to_additive]
 theorem index_range {f : G →* G} [hf : f.ker.FiniteIndex] :

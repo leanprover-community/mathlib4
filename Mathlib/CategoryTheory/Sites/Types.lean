@@ -146,8 +146,8 @@ noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
 
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂) (α : Type u)
     (s : S₁.1.obj (op α)) (x : α) :
-    eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
-  (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm
+    eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.1 α s x) :=
+  (congr_fun (f.hom.naturality (↾fun _ : PUnit => x).op) s).symm
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and

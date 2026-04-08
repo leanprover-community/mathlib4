@@ -225,7 +225,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     (h₁ : Function.Injective f) (x₁ : X₁) (x₂ : X₂) :
     c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
   rw [pushoutCocone_inl_eq_inr_iff_of_iso
-    (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
+    (Cocone.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
     (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
@@ -234,8 +234,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma pushoutCocone_inr_mono_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
     [Mono f] : Mono c.inr := by
   change Mono ((Pushout.inr f g) ≫
-    ((Cocones.forget _).mapIso
-      (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc
+    ((Cocone.forget _).mapIso
+      (Cocone.ext (IsColimit.coconePointUniqueUpToIso hc
         (Pushout.isColimitCocone f g)) (by simp))).inv)
   infer_instance
 

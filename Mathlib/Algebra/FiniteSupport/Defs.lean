@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
-# Make fun_prop work for finite (mulitplicative) support
+# Make fun_prop work for finite (multiplicative) support
 
 We define a new predicate `HasFiniteMulSupport` (and its additivized version) on functions
 and provide the infrastructure so that `fun_prop` can prove it for functions that are

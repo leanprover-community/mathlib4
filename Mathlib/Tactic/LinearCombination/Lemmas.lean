@@ -12,7 +12,7 @@ public import Mathlib.Data.Ineq
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!
-# Lemmas for the linear_combination tactic
+# Lemmas for the `linear_combination` tactic
 
 These should not be used directly in user code.
 -/

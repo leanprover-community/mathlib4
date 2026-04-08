@@ -128,28 +128,28 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
   rfl
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
-  add_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  add_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
-  lie_add := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  lie_add x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
-  lie_self := by
-    intro x'; refine Quotient.inductionOn' x' ?_; intro x
+  lie_self x' := by
+    induction x' using Quotient.inductionOn' with | _ x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
-  leibniz_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+  leibniz_lie x' y' z' := by
+    induction x', y', z' using Quotient.inductionOn₃' with | _ x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -158,8 +158,8 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
     apply congr_arg; apply leibniz_lie
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
-  lie_smul := by
-    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+  lie_smul t x' y' := by
+    induction x', y' using Quotient.inductionOn₂' with | _ x y
     repeat'
       first
       | rw [is_quotient_mk]
