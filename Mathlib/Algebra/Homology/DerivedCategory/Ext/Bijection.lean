@@ -39,82 +39,50 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-open Ext
+attribute [local simp] Ext.mapExactFunctor_comp Ext.mapExactFunctor_mk₀ Ext.mapExactFunctor_extClass
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] Ext.subsingleton_of_projective in
 lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing X with
   | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
-  | succ n bij =>
-    rcases EnoughProjectives.presentation X with ⟨⟨P, p⟩⟩
-    let S := ShortComplex.mk (kernel.ι p) p (kernel.condition p)
-    have S_exact : S.ShortExact := { exact := ShortComplex.exact_kernel p }
-    have FS_exact : (S.map F).ShortExact := S_exact.map_of_exact F
-    let _ : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj ‹_›
-    let f := (mk₀ S.f).precomp Y (zero_add n)
-    let g := S_exact.extClass.precomp Y (add_comm 1 n)
-    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact _).mp
-      (Ext.contravariant_sequence_exact₁' S_exact Y n (n + 1) (add_comm 1 n))
-    have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext S.X₂ Y (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_projective _ _ n)
-    have surj1 : Function.Surjective g := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.contravariant_sequence_exact₃' S_exact Y n (n + 1) (add_comm 1 n)).epi_f
-        (isz1.eq_zero_of_tgt _))
-    let f' := (mk₀ (S.map F).f).precomp (F.obj Y) (zero_add n)
-    let g' := FS_exact.extClass.precomp (F.obj Y) (add_comm 1 n)
-    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact _).mp
-      (Ext.contravariant_sequence_exact₁' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n))
-    have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map F).X₂ (F.obj Y) (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_projective _ _ n)
-    have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.contravariant_sequence_exact₃' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n)).epi_f
-        (isz2.eq_zero_of_tgt _))
-    apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
-      (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n) (F.mapExtAddHom S.X₃ Y (n + 1)) _ _
-      exact1 exact2 (bij S.X₂).2 (bij S.X₁) surj1 surj2
-    · ext x
-      simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
-    · ext x
-      simp [g, g', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass]
+  | succ n hn =>
+    let P : ProjectivePresentation X := (EnoughProjectives.presentation X).some
+    let S := ShortComplex.mk _ _ (kernel.condition P.f)
+    have : Projective (S.map F).X₂ := by dsimp; infer_instance
+    have hS : S.ShortExact := { exact := ShortComplex.exact_kernel P.f }
+    exact AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact _ _ _ _
+      (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n)
+      (F.mapExtAddHom S.X₃ Y (n + 1)) (by cat_disch) (by cat_disch)
+      ((ShortComplex.ab_exact_iff_function_exact _).1
+        (Ext.contravariant_sequence_exact₁' hS Y n (n + 1) (add_comm 1 n)))
+      ((ShortComplex.ab_exact_iff_function_exact _).1
+        (Ext.contravariant_sequence_exact₁' (hS.map F) (F.obj Y) n (n + 1) (add_comm 1 n)))
+      (hn _).surjective (hn _)
+      (fun x₃ ↦ Ext.contravariant_sequence_exact₃ hS _ x₃ (by subsingleton) (add_comm 1 n))
+      (fun y₃ ↦ Ext.contravariant_sequence_exact₃ (hS.map F) _ y₃ (by subsingleton) (add_comm 1 n))
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] Ext.subsingleton_of_injective in
 lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing Y with
   | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
-  | succ n bij =>
-    rcases EnoughInjectives.presentation Y with ⟨⟨I, _, i⟩⟩
-    let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
-    have S_exact : S.ShortExact := { exact := ShortComplex.exact_cokernel i }
-    have FS_exact : (S.map F).ShortExact := S_exact.map_of_exact F
-    let _ : Injective (S.map F).X₂ := Functor.PreservesInjectiveObjects.injective_obj ‹_›
-    let f := (mk₀ S.g).postcomp X (add_zero n)
-    let g := S_exact.extClass.postcomp X (Eq.refl (n + 1))
-    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact _).mp
-      (Ext.covariant_sequence_exact₃' X S_exact n (n + 1) rfl)
-    have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext X S.X₂ (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_injective _ _ n)
-    have surj1 : Function.Surjective g := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.covariant_sequence_exact₁' X S_exact n (n + 1) rfl).epi_f
-        (isz1.eq_zero_of_tgt _))
-    let f' := (mk₀ (S.map F).g).postcomp (F.obj X) (add_zero n)
-    let g' := FS_exact.extClass.postcomp (F.obj X) (Eq.refl (n + 1))
-    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact _).mp
-      (Ext.covariant_sequence_exact₃' (F.obj X) FS_exact n (n + 1) rfl)
-    have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (F.obj X) (S.map F).X₂ (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_injective _ _ n)
-    have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.covariant_sequence_exact₁' (F.obj X) FS_exact n (n + 1) rfl).epi_f
-        (isz2.eq_zero_of_tgt _))
-    apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
-      (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1)) _ _
-      exact1 exact2 (bij S.X₂).2 (bij S.X₃) surj1 surj2
-    · ext x
-      simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
-    · ext x
-      simp [g, g', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass]
+  | succ n hn =>
+    let I : InjectivePresentation Y := (EnoughInjectives.presentation Y).some
+    let S := ShortComplex.mk _ _ (cokernel.condition I.f)
+    have : Injective (S.map F).X₂ := by dsimp; infer_instance
+    have hS : S.ShortExact := { exact := ShortComplex.exact_cokernel I.f }
+    exact AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact _ _ _ _
+      (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1))
+      (by cat_disch) (by cat_disch)
+      ((ShortComplex.ab_exact_iff_function_exact _).mp
+        (Ext.covariant_sequence_exact₃' X hS n (n + 1) rfl))
+      ((ShortComplex.ab_exact_iff_function_exact _).mp
+        (Ext.covariant_sequence_exact₃' (F.obj X) (hS.map F) n (n + 1) rfl))
+      (hn _).surjective (hn _)
+      (fun x₁ ↦ Ext.covariant_sequence_exact₁ _ hS x₁ (by subsingleton) rfl)
+      (fun y₁ ↦ Ext.covariant_sequence_exact₁ _ (hS.map F) y₁ (by subsingleton) rfl)
 
 end CategoryTheory
