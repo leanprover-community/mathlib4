@@ -350,21 +350,9 @@ structure IsRepFun {u : Set α} (P : Partition u) (f : α → α) : Prop where
 
 namespace IsRepFun
 
-variable {u : Set α} {p : α → Prop} {P : Partition u} {f g : α → α} {a b c : α}
-
-/-- Constructor for `IsRepFun` that uses a custom membership predicate. -/
-lemma mk' (P : Partition u) (f : α → α) (hP : ∀ {x}, x ∈ u ↔ p x)
-    (h₁ : ∀ a, ¬ p a → f a = a) (h₂ : ∀ a, p a → P.Rel a (f a))
-    (h₃ : ∀ a b, P.Rel a b → f a = f b) : IsRepFun P f :=
-  ⟨fun a ha ↦ h₁ a (hP.not.mp ha), fun a ha ↦ h₂ a (hP.mp ha), h₃⟩
-
-lemma rel_apply' (hf : IsRepFun P f) (hP : ∀ {x}, x ∈ u ↔ p x) (ha : p a) : P.Rel a (f a) :=
-  hf.rel_apply <| hP.mpr ha
+variable {u : Set α} {P : Partition u} {f g : α → α} {a b c : α}
 
 lemma apply_mem (hf : IsRepFun P f) (ha : a ∈ u) : f a ∈ u := (hf.rel_apply ha).right_mem
-
-lemma apply_mem' (hf : IsRepFun P f) (hP : ∀ {x}, x ∈ u ↔ p x) (ha : p a) : p (f a) :=
-  hP.mp <| hf.apply_mem <| hP.mpr ha
 
 lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
   rintro _ ⟨a, haS, rfl⟩
@@ -375,10 +363,11 @@ lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
 lemma mapsTo (hf : IsRepFun P f) (hs : u ⊆ s) : Set.MapsTo f s s :=
   fun x h ↦ hf.image_subset hs ⟨x, h, rfl⟩
 
-lemma apply_mem_iff (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s := by
-  obtain ha | ha := em (a ∈ u)
-  · simp [hs ha, hs <| hf.apply_mem ha]
-  rw [hf.apply_of_notMem ha]
+lemma mapsTo_of_disjoint (hf : IsRepFun P f) (hs : Disjoint u s) : Set.MapsTo f s s :=
+  fun _ h ↦ (hf.apply_of_notMem <| hs.notMem_of_mem_right h).symm ▸ h
+
+lemma apply_mem_iff (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s :=
+  hf.mapsTo hs |>.mem_iff <| mapsTo_of_disjoint hf hs.disjoint_compl_right
 
 lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ u) : f a = f b ↔ P.Rel a b := by
   refine ⟨fun hab ↦ (hf.rel_apply ha).trans ?_, (hf.apply_eq_apply ·)⟩
