@@ -61,7 +61,7 @@ theorem map_log {A' : Type*} [CommRing A'] [Algebra ℚ A'] (f : A →+* A') :
 theorem coeff_one_log : coeff 1 (log A) = 1 := by simp
 
 theorem order_log [Nontrivial A] : (log A).order = 1 :=
-  order_eq_nat.mpr ⟨by simp, fun i hi => by simp [Nat.lt_one_iff.mp hi]⟩
+  order_eq_nat.mpr ⟨by simp, fun i hi ↦ by simp [Nat.lt_one_iff.mp hi]⟩
 
 /-- The derivative of `log(1+X)` is the geometric series `1 - X + X² - X³ + ⋯ = 1/(1+X)`. -/
 theorem deriv_log : d⁄dX A (log A) = mk fun n ↦ algebraMap ℚ A ((-1 : ℚ) ^ n) := by
