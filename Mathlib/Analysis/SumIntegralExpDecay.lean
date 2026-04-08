@@ -18,6 +18,8 @@ using the Gamma function.
 open scoped Nat
 open Real MeasureTheory Set Filter
 
+@[expose] public section
+
 lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (hc : 0 < c) :
     ∫ x in (0 : ℝ)..M, x ^ k * rexp (- (c * x)) ≤ k ! / c ^ (k + 1) := by
   have hk : (0 : ℝ) < ↑k + 1 := by positivity
@@ -74,3 +76,5 @@ lemma sum_Iic_pow_mul_two_pow_neg_le {k : ℕ} {M : ℕ} {c : ℝ} (hc : 0 < c) 
   simp only [A, neg_mul]
   apply (sum_Iic_pow_mul_exp_neg_le (by positivity)).trans_eq
   rw [exp_mul, exp_log zero_lt_two]
+
+end
