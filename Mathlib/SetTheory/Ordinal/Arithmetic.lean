@@ -124,8 +124,8 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### Limit ordinals -/
 
-theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
-  simp [IsSuccLimit]
+theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
@@ -628,9 +628,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
-    obtain ⟨b, a⟩ := enum _ ⟨_, l⟩
-    exact irrefl _ (this _ _)
+  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) from irrefl _ (this _ _)
   intro a b
   rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
   have := H _ (h.succ_lt (typein_lt_type s b))
@@ -664,15 +662,10 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         Sum.lex_inl_inl] using h
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
-    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h _ l => (mul_le_mul_right l.le _).trans h, fun H =>
-    -- We use the `induction` tactic in order to change `h`/`H` too.
-    le_of_not_gt <| by
-      induction a using inductionOn with
-      | H α r =>
-        induction b using inductionOn with
-        | H β s =>
-          exact mul_le_of_limit_aux h H⟩
+    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
+  refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩
+  induction a, b using inductionOn₂ with | type α r β s
+  exact mul_le_of_limit_aux h H
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
@@ -691,34 +684,6 @@ theorem lt_mul_add_one_iff {a b c : Ordinal} : a < b * (c + 1) ↔ ∃ d < b, a 
 
 instance : PosMulStrictMono Ordinal where
   mul_lt_mul_of_pos_left _a ha := (isNormal_mul_right ha).strictMono
-
-@[deprecated mul_lt_mul_iff_right₀ (since := "2025-08-26")]
-theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  mul_lt_mul_iff_right₀ a0
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  mul_le_mul_iff_right₀ a0
-
-@[deprecated mul_lt_mul_of_pos_left (since := "2025-08-26")]
-protected lemma mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
-  mul_lt_mul_of_pos_left h c0
-
-@[deprecated mul_pos (since := "2025-08-26")]
-protected theorem mul_pos {a b : Ordinal} (h₁ : 0 < a) (h₂ : 0 < b) : 0 < a * b :=
-  mul_pos h₁ h₂
-
-@[deprecated mul_ne_zero (since := "2025-08-26")]
-protected theorem mul_ne_zero {a b : Ordinal} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero ha hb
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < c) : a ≤ b :=
-  (mul_le_mul_iff_right₀ h0).mp h
-
-@[deprecated mul_left_cancel_iff_of_pos (since := "2025-08-26")]
-theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  mul_left_cancel_iff_of_pos a0
 
 instance : IsLeftCancelMulZero Ordinal where
   mul_left_cancel_of_ne_zero h0 _ _ := mul_left_cancel_iff_of_pos h0.pos |>.mp
@@ -1120,10 +1085,21 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]
 
-theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+theorem eq_natCast_of_le_natCast {a : Ordinal} {b : ℕ} (h : a ≤ b) : ∃ c : ℕ, a = c :=
+  lt_omega0.1 (h.trans_lt (natCast_lt_omega0 b))
+
+theorem eq_natCast_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
+
+@[deprecated (since := "2026-03-12")] alias eq_nat_or_omega0_le := eq_natCast_or_omega0_le
+
+@[simp]
+theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordinal) := by
+  ext o
+  have := @eq_natCast_of_le_natCast o
+  grind [Nat.cast_lt]
 
 @[simp]
 theorem omega0_pos : 0 < ω :=

@@ -553,6 +553,27 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
       rcases (hx.eventually_le_atBot i).exists with ⟨n, hn⟩
       exact ⟨n, hs hn⟩
 
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere monotone
+is equal to the infimum of the measures. -/
+theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
+    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
+    (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  obtain ⟨i, hi⟩ := hfin
+  have : Nonempty ι := ⟨i⟩
+  let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
+  have hst (i : ι) : s i =ᵐ[μ] t i := by
+    filter_upwards [hs] with ω hω
+    suffices ω ∈ s i ↔ ω ∈ t i from propext this
+    simpa [t] using fun _ ↦ hω
+  have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
+  rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
+    ← hMono.measure_iInter (fun i ↦ (hsm i).congr (hst i)) ⟨i, by rwa [← measure_congr (hst i)]⟩]
+  refine measure_congr ?_
+  nth_rw 1 [← iInter_inter, ← inter_univ (⋂ i, s i)]
+  exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
+
 /-- **Continuity from above**:
 the measure of the intersection of an antitone family of measurable sets
 indexed by a type with countably generated `atTop` filter
@@ -562,6 +583,16 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
   hs.dual_left.measure_iInter hsm hfin
+
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere antitone
+is equal to the infimum of the measures. -/
+lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
+    (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  refine measure_iInter_of_ae_monotone (ι := ιᵒᵈ) ?_ hsm hfin
+  filter_upwards [hs] with ω hω using hω.dual_left
 
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
@@ -1266,7 +1297,7 @@ theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : Measurabl
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by simp [hs]
 
 @[simp] lemma sum_eq_zero : sum f = 0 ↔ ∀ i, f i = 0 := by
-  simp +contextual [Measure.ext_iff, forall_swap (α := ι)]
+  simp +contextual [Measure.ext_iff, forall_comm (α := ι)]
 
 @[simp]
 lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by

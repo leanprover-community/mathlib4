@@ -166,10 +166,10 @@ instance : SemilatticeInf (IdealSheafData X) where
   le_inf I J K hIJ hIK U := le_inf (hIJ U) (hIK U)
 
 instance : CompleteLattice (IdealSheafData X) where
-  __ := inferInstanceAs (OrderTop (IdealSheafData X))
-  __ := inferInstanceAs (OrderBot (IdealSheafData X))
-  __ := inferInstanceAs (SemilatticeInf (IdealSheafData X))
-  __ := inferInstanceAs (CompleteSemilatticeSup (IdealSheafData X))
+  __ := (inferInstance : OrderTop (IdealSheafData X))
+  __ := (inferInstance : OrderBot (IdealSheafData X))
+  __ := (inferInstance : SemilatticeInf (IdealSheafData X))
+  __ := (inferInstance : CompleteSemilatticeSup (IdealSheafData X))
   __ := IdealSheafData.gci.liftCompleteLattice
 
 @[simp]
@@ -870,7 +870,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
       have inst : QuasiCompact (𝒰.f i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
-        (by change CompactSpace (Spec _); infer_instance)
+        (inferInstanceAs <| CompactSpace (Spec _))
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.f i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f

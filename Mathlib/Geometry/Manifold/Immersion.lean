@@ -330,16 +330,13 @@ def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement :=
   haveI := hf.small
-  unfold smallComplement
-  infer_instance
+  inferInstanceAs <| NormedAddCommGroup (Shrink F)
 
-set_option backward.isDefEq.respectTransparency false in
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement :=
   haveI := hf.small
-  unfold smallComplement
-  infer_instance
+  inferInstanceAs <| NormedSpace 𝕜 (Shrink F)
 
 /-- Given an immersion `f` at `x` w.r.t. a complement `F`, this construction provides
 a continuous linear equivalence from `F` to the small complement of `F`:

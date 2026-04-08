@@ -885,7 +885,7 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     have hkh : (mk' (center G)).ker ≤ H := by simpa using hch
     have hsur : Function.Surjective (mk' (center G)) := Quot.mk_surjective
     let H' := H.map (mk' (center G))
-    have hH' : H'.normalizer = H' := by
+    have hH' : normalizer H' = H' := by
       apply comap_injective hsur
       rw [comap_normalizer_eq_of_surjective _ hsur, comap_map_eq_self hkh]
       exact hH

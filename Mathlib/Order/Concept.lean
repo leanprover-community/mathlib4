@@ -24,10 +24,6 @@ the concept lattice of its `≤`.
 Concept lattices are usually defined from a *context*, that is the triple `(α, β, r)`, but the type
 of `r` determines `α` and `β` already, so we do not define contexts as a separate object.
 
-## TODO
-
-Prove the fundamental theorem of concept lattices.
-
 ## References
 
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
@@ -35,7 +31,7 @@ Prove the fundamental theorem of concept lattices.
 
 ## Tags
 
-concept, formal concept analysis, intent, extend, attribute
+concept, formal concept analysis, intent, extent, object, attribute
 -/
 
 @[expose] public section
@@ -56,6 +52,9 @@ def upperPolar (s : Set α) : Set β :=
 which `r` relates to all elements of `t`. -/
 def lowerPolar (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
+
+@[simp] theorem upperPolar_le [LE α] : upperPolar (· ≤ ·) s = upperBounds s := rfl
+@[simp] theorem lowerPolar_le [LE β] : lowerPolar (· ≤ ·) t = lowerBounds t := rfl
 
 variable {r} {a : α} {b : β}
 
@@ -460,6 +459,32 @@ theorem strictMono_extent : StrictMono (@extent α β r) := fun _ _ =>
 theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
   intent_ssubset_intent_iff.2
 
+@[simp]
+theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
+    IsLowerSet c.extent :=
+  @mem_extent_of_rel_extent _ _ _ _
+
+@[simp]
+theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
+    IsUpperSet c.intent :=
+  @mem_intent_of_intent_rel _ _ _ _
+
+@[simp]
+theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
+    IsLowerSet c.extent := by
+  intro a b hb ha
+  obtain rfl | hb := hb.eq_or_lt
+  · assumption
+  · exact mem_extent_of_rel_extent hb ha
+
+@[simp]
+theorem isUpperSet_intent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
+    IsUpperSet c.intent := by
+  intro a b hb ha
+  obtain rfl | hb := hb.eq_or_lt
+  · assumption
+  · exact mem_intent_of_intent_rel hb ha
+
 @[simps!]
 instance : Max (Concept α β r) where
   max c d := ofIsIntent _ _ (c.isIntent_intent.inter d.isIntent_intent)
@@ -519,6 +544,10 @@ instance : InfSet (Concept α β r) where
 instance : SupSet (Concept α β r) where
   sSup S := ofIsIntent _ _ (.iInter₂ _ fun c (_ : c ∈ S) ↦ c.isIntent_intent)
 
+/-- One half of the **fundamental theorem of concept lattices**: every concept lattice is a complete
+lattice.
+
+See `DedekindCut.principalIso` for the second half. -/
 instance : CompleteLattice (Concept α β r) where
   isLUB_sSup s := by
     refine ⟨fun _ hc ↦ ?_, fun _ hc ↦ ?_⟩

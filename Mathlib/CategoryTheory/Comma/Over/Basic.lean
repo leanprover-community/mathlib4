@@ -768,6 +768,7 @@ demonstrate, for instance, that under categories assemble into a
 functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping by the identity morphism is just the identity functor. -/
 theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
   fapply Functor.ext

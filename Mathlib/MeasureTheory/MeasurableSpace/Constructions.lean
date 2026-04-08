@@ -490,9 +490,6 @@ lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
   change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
   exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
 
-@[deprecated (since := "2025-08-17")]
-alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
-
 /-- For the version where the first space in the product is countable,
 see `measurable_from_prod_countable_right`. -/
 theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
@@ -914,11 +911,11 @@ variable [MeasurableSpace β] {g : β → Set α}
 
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
-instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
+instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
+  inferInstanceAs <| MeasurableSpace (α → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
-  unfold Set; infer_instance
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
+  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
 
 @[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 

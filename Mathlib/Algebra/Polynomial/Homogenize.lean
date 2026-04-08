@@ -209,12 +209,10 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_neg (p : R[X]) (n : ℕ) : (-p).homogenize n = -p.homogenize n :=
   map_neg (homogenizeLM n) p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_sub (p q : R[X]) (n : ℕ) :
     (p - q).homogenize n = p.homogenize n - q.homogenize n :=

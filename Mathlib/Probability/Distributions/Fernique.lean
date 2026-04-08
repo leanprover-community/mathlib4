@@ -555,7 +555,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
   -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
-    push_neg at h_meas_Ioo h_ne
+    push Not at h_meas_Ioo h_ne
     suffices μ .univ ≤ 2⁻¹ by simp at this
     have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
       have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by
