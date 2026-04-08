@@ -64,7 +64,7 @@ def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊆ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabLe
+  annotateGoToDef stx decl_name%
 
 /-- Delaborate `x < y` into `x ⊂ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab LT.lt]
@@ -74,7 +74,7 @@ def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊂ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabLt
+  annotateGoToDef stx decl_name%
 
 /-- Delaborate `x ≥ y` into `x ⊇ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab GE.ge]
@@ -84,7 +84,7 @@ def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊇ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabGe
+  annotateGoToDef stx decl_name%
 
 /-- Delaborate `x > y` into `x ⊃ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab GT.gt]
@@ -94,17 +94,21 @@ def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊃ $y)
-  annotateGoToDef stx `Mathlib.Meta.delabGt
+  annotateGoToDef stx decl_name%
 
 /-! ## Elaboration -/
 
-/-- This relation is an implementation detail of the `⊆` elatorator. -/
+/-- This relation is an implementation detail of the `⊆` elaborator. -/
 opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 
 /-- Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding
 based on their type whether to return `a ⊆ b` or `a ≤ b`.
 Use `a ≤ b` whenever `useSetNotationFor` returns true for the type.
-If the type is not known, elaboration of this term is postponed. -/
+If the type is not known, elaboration of this term is postponed.
+
+We assume that `le` and `sub` are names for declarations of exactly the form
+`decl.{u} {α : Type u} [Cls.{u} α] (a b : α) : Prop`, and that likewise `leCls` and `subCls` are
+names for declarations of exactly the form  `Cls.{u} (α : Type u) : Type u`. -/
 def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Option Expr) :
     TermElabM Expr := do
   let rel ← `(SubsetElabAux $x $y)
@@ -151,7 +155,7 @@ def elabSubsetStx' : TermElab
 
 /-- Elaborator for `x ⊂ y` notation. -/
 @[term_elab ssubsetStx']
-def elabSsubsetStx' : TermElab
+def elabSSubsetStx' : TermElab
   | `($x ⊂ $y), expectedType? =>
     elabSubsetLike x y ``LT.lt ``LT ``SSubset ``HasSSubset expectedType?
   | _, _ => throwUnsupportedSyntax
@@ -165,7 +169,7 @@ def elabSupsetStx' : TermElab
 
 /-- Elaborator for `x ⊃ y` notation. -/
 @[term_elab ssupsetStx']
-def elabSsupsetStx' : TermElab
+def elabSSupsetStx' : TermElab
   | `($x ⊃ $y), expectedType? =>
     elabSubsetLike x y ``GT.gt ``LT ``SSuperset ``HasSSubset expectedType?
   | _, _ => throwUnsupportedSyntax
