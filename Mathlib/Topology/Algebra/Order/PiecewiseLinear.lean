@@ -96,9 +96,7 @@ on `[a + n • h, a + (n + 1) • h)`. -/
 theorem piecewiseLinear_eq_on_Ico (hh : 0 < h) {n : ℤ} {t : ℝ}
     (ht : t ∈ Ico (a + n • h) (a + (n + 1) • h)) :
     piecewiseLinear y c hh a t = y n + (t - (a + n • h)) • c n := by
-  have hmem : t - n • h ∈ Ico a (a + h) := by
-    simp only [mem_Ico, zsmul_eq_mul, Int.cast_add, Int.cast_one] at ht ⊢
-    exact ⟨by linarith [ht.1], by nlinarith [ht.2]⟩
+  have hmem : t - n • h ∈ Ico a (a + h) := by grind
   simp [piecewiseLinear, (toIcoDiv_eq_iff hh).mpr hmem]
 
 /-- A piecewise linear function whose grid values satisfy `y (n + 1) = y n + h • c n`
