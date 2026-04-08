@@ -409,8 +409,8 @@ theorem comap' {mβ : MeasurableSpace β} [TopologicalSpace β] (μ : Measure β
     rw [f_me.comap_apply]
     exact (measure_mono (image_preimage_subset _ _)).trans_lt hμU
 
-theorem subtype (μ : Measure α) [OuterRegular μ] (hU : MeasurbleSet U) :
-    OuterRegular (μ.comap Subtype.val : Measure U) :=
+theorem subtype (μ : Measure α) [OuterRegular μ] {s : Set α} (hU : MeasurableSet s) :
+    OuterRegular (μ.comap Subtype.val : Measure s) :=
   comap' μ continuous_subtype_val (MeasurableEmbedding.subtype_coe hU)
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]

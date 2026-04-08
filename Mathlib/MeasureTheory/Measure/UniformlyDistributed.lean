@@ -6,10 +6,7 @@ Authors: Yongxi Lin
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.HaarToSphere
-public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.MeasureTheory.Measure.Regular
 
 import Mathlib.MeasureTheory.Measure.Prod
@@ -193,32 +190,6 @@ theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
       ⟨c, hci, OuterRegular.ext_isOpen_isBounded fun U hU hb => hc U hU hb⟩
 
 end UniformlyDistributed
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
-  [BorelSpace E] [FiniteDimensional ℝ E]
-
-/-- The spherical measure is uniformly distributed. -/
-instance {m : Measure E} (he : 0 < Module.finrank ℝ E) [m.IsAddHaarMeasure] :
-    UniformlyDistributed m.toSphere := by
-  sorry
-
-instance hausdorffMeasure_outerRegular (d : ℝ) : OuterRegular (μH[d] : Measure E) := by sorry
-
-instance hausdorffMeasure_restirct_sphere_outerRegular : OuterRegular
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
-  refine OuterRegular.comap' μH[↑(Module.finrank ℝ E) - 1] ?_ ?_
-
-instance hausdorffMeasure_restrict_sphere_uniformlydist : UniformlyDistributed
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) := by
-  sorry
-
-/-- The restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional sphere
-coincides with the spherical measure. -/
-theorem hausdorff_eq_measure.toSphere {m : Measure E} [m.IsAddHaarMeasure] :
-    (μH[↑(Module.finrank ℝ E) - 1].comap Subtype.val : Measure (sphere (0 : E) 1)) =
-    m.toSphere := by
-  obtain ⟨c, hc⟩ := eq_smul (μH[↑(Module.finrank ℝ E) - 1].comap
-    Subtype.val : Measure (sphere (0 : E) 1)) m.toSphere
 
 end Measure
 
