@@ -303,6 +303,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
 instance CovBy.irrefl : @Std.Irrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
 
+@[to_dual self]
 theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
   h.wcovBy.Ioo_eq
 
