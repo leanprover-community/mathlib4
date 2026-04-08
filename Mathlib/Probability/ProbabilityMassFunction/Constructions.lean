@@ -65,6 +65,7 @@ theorem map_id : map id p = p :=
 
 theorem map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp [map, Function.comp_def]
 
+@[simp]
 theorem pure_map (a : α) : (pure a).map f = pure (f a) :=
   pure_bind _ _
 
@@ -322,6 +323,13 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
 theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 
 end bernoulli
+
+@[simp]
+lemma elimM_apply {α β} (p : PMF (Option α)) (q : PMF β) (r : α → PMF β) (y : β) :
+    (Option.elimM p q r : PMF β) y =
+      p none * q y + ∑' x, p (some x) * r x y := by
+  classical
+  simp [Option.elimM, PMF.monad_bind_eq_bind, ENNReal.summable.tsum_option_eq_add_tsum]
 
 end
 

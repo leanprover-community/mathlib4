@@ -184,6 +184,12 @@ instance : Monad PMF where
   pure a := pure a
   bind pa pb := pa.bind pb
 
+lemma monad_pure_eq_pure {α} (x : α) :
+    (Pure.pure x : PMF α) = PMF.pure x := rfl
+
+lemma monad_bind_eq_bind {α β}
+      (p : PMF α) (q : α → PMF β) : p >>= q = PMF.bind p q := rfl
+
 section BindOnSupport
 
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.

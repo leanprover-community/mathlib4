@@ -128,6 +128,34 @@ theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
 theorem apply_lt_top (p : PMF α) (a : α) : p a < ∞ :=
   lt_of_le_of_ne le_top (p.apply_ne_top a)
 
+lemma apply_eq_one_sub_tsum_ite [DecidableEq α] (p : PMF α) (x : α) :
+    p x = 1 - (∑' y, if y = x then 0 else p y) := by
+  rw [← p.tsum_coe, Summable.tsum_eq_add_tsum_ite' x ENNReal.summable]
+  refine ENNReal.eq_sub_of_add_eq' ?_ rfl
+  simp_rw [ne_eq, ENNReal.add_eq_top, apply_ne_top, false_or]
+  apply ne_top_of_le_ne_top ENNReal.one_ne_top
+  exact le_trans (ENNReal.tsum_le_tsum fun x => by aesop) (le_of_eq p.tsum_coe)
+
+/-- Two `PMF`s that agree on all but one point are actually equal,
+since any difference would cause a difference in the total sum being `1`. -/
+lemma ext_forall_ne {p q : PMF α} (x : α)
+    (h : ∀ y ≠ x, p y = q y) : p = q := by
+  classical
+  refine PMF.ext fun y => ?_
+  by_cases hy : y = x
+  · rw [p.apply_eq_one_sub_tsum_ite, q.apply_eq_one_sub_tsum_ite]
+    simp_all
+  · exact h y hy
+
+/-- Construct a `PMF α` from a function `f : α → ℝ≥0∞` and a proof that `∑' x, f x = 1`.
+This avoids `HasSum` which is usually harder to work with than sums in `ℝ≥0∞`. -/
+protected def ofFn (f : α → ℝ≥0∞) (hf : ∑' x, f x = 1) : PMF α :=
+  ⟨f, ENNReal.summable.hasSum_iff.2 hf⟩
+
+@[simp, grind =]
+lemma ofFn_apply (f : α → ℝ≥0∞) (hf : ∑' x, f x = 1) (x : α) :
+    PMF.ofFn f hf x = f x := rfl
+
 section OuterMeasure
 
 open OuterMeasure

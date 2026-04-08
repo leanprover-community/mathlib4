@@ -710,6 +710,17 @@ protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι}
     ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
   (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
 
+@[to_additive]
+protected theorem Multipliable.tprod_option_eq_mul_tprod [DecidableEq β]
+    (f : Option β → α) (hf : Multipliable (Function.update f none 1)) :
+    ∏' x : Option β, f x = f none * ∏' x : β, f (some x) := by
+  rw [Multipliable.tprod_eq_mul_tprod_ite' none hf]
+  refine congr_arg (f none * ·) ?_
+  exact tprod_eq_tprod_of_ne_one_bij (fun x ↦ some x.1)
+    (by simp [Function.Injective])
+    (by simp [Option.forall])
+    (by simp)
+
 end ContinuousMul
 
 end tprod
