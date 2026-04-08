@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Exp
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 # Logarithmic Power Series
@@ -81,18 +82,19 @@ theorem HasSubst.exp_sub_one : HasSubst (exp A - 1) :=
 noncomputable def logOf (f : A⟦X⟧) : A⟦X⟧ :=
   (log A).subst (f - 1)
 
+theorem logOf_eq (f : A⟦X⟧) : logOf f = (log A).subst (f - 1) := rfl
+
 theorem constantCoeff_logOf (f : A⟦X⟧) (hf : constantCoeff f = 1) :
     constantCoeff (logOf f) = 0 := by
-  unfold logOf
-  have h : constantCoeff (f - 1) = 0 := by simp only [map_sub, hf, map_one, sub_self]
-  exact constantCoeff_subst_eq_zero h (log A) constantCoeff_log
+  rw [logOf_eq]
+  have h : MvPowerSeries.constantCoeff (f - 1 : A⟦X⟧) = 0 := by
+    rw [show MvPowerSeries.constantCoeff (f - 1) = constantCoeff f - 1 from rfl, hf, sub_self]
+  exact constantCoeff_subst_eq_zero h _ constantCoeff_log
 
 variable (A) in
 @[simp]
 theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
-  simp only [logOf, add_sub_cancel_left]
-  rw [← map_algebraMap_eq_subst_X (S := A), Algebra.algebraMap_self, map_id]
-  rfl
+  rw [logOf_eq, add_sub_cancel_left, subst_self]
 
 end PowerSeries
 
