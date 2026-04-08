@@ -1001,8 +1001,8 @@ lemma iteratedFDeriv_comp_sub (n : ℕ) (a : E) (x : E) :
   simp [iteratedFDeriv_comp_sub']
 
 lemma iteratedFDerivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} (n : ℕ) (a : 𝕜) :
-  iteratedFDerivWithin 𝕜 n (fun x ↦ f (-x)) s a
-    = (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
+    iteratedFDerivWithin 𝕜 n (fun x ↦ f (-x)) s a
+      = (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
   induction n generalizing a with
   | zero => simp [iteratedFDerivWithin]
   | succ n ih =>
