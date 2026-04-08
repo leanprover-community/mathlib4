@@ -347,7 +347,8 @@ lemma commAlgEquiv_single_single (m : M) (n : N) (a : A) :
 lemma commAlgEquiv_single_one (m : M) :
     commAlgEquiv R (single m (1 : A[N])) = single 1 (single m 1) := commRingEquiv_single_one ..
 
-@[to_additive (dont_translate := A) (attr := simp)]
+-- We want this lemma to be tried before `commAlgEquiv_single_single`.
+@[to_additive (dont_translate := R) (attr := simp high)]
 lemma commAlgEquiv_single_one_single (m : M) :
     commAlgEquiv R (single 1 <| single m 1) = (single m (1 : A[N])) :=
   commRingEquiv_single_one_single ..
