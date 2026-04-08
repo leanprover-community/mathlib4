@@ -267,13 +267,13 @@ theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{ma
 
 theorem lift_type_eq_iff : lift (type α) = lift (type β) ↔ Nonempty (α ≃o β) := by
   refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ congrArg lift <| type_congr h⟩
-  rw [← type_uLift, ← type_uLift, type_eq_type] at h
+  rw [← type_ulift, ← type_ulift, type_eq_type] at h
   exact ⟨(ULift.orderIso.symm.trans h.some).trans ULift.orderIso⟩
 
 theorem lift_type_le_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
    ULift.orderIso.symm.toOrderEmbedding⟩
- rw [← type_uLift, ← type_uLift, type_le_type_iff] at h
+ rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
  exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
