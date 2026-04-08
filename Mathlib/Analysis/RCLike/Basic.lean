@@ -1122,8 +1122,8 @@ noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K where
   __ := ofRealAm
   map_star' _ := RCLike.conj_ofReal _ |>.symm
 
-@[simp, rclike_simps]
-theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+@[simp] theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+@[simp] lemma toAlgHom_ofRealStarAlgHom : (ofRealStarAlgHom K).toAlgHom = ofRealAm := rfl
 
 /-- The ℝ → K coercion, as a linear isometry -/
 noncomputable def ofRealLI : ℝ →ₗᵢ[ℝ] K where
