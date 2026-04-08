@@ -290,11 +290,10 @@ private lemma E4_cube_sub_E6_sq_form_qExpansion_coeff_one :
     (ModularForm.mcast (by norm_num) (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))))
     (ModularForm.mcast (by norm_num) (E₆.mul E₆))
   simp only [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, hmcast] at hsub
-  rw [show (E4_cube_sub_E6_sq_form : ℍ → ℂ) =
-      (((ModularForm.mcast (by norm_num) (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))) -
-        ModularForm.mcast (by norm_num) (E₆.mul E₆) : ModularForm 𝒮ℒ 12)) : ℍ → ℂ) from rfl,
-    hsub, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄
-      (ModularForm.mcast rfl (E₄.mul E₄)), hmcast,
+  rw [show (E4_cube_sub_E6_sq_form : ℍ → ℂ) = ((ModularForm.mcast (by norm_num)
+        (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))) -
+      ModularForm.mcast (by norm_num) (E₆.mul E₆) : ModularForm 𝒮ℒ 12) : ℍ → ℂ) from rfl,
+    hsub, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄ _, hmcast,
     ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄ E₄,
     ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₆ E₆]
   simp only [map_sub, PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ,
@@ -309,17 +308,16 @@ theorem ModularForm.discriminant_eq_E4_cube_sub_E6_sq (z : ℍ) :
     discriminant z = (1 / 1728) * (E₄ z ^ 3 - E₆ z ^ 2) := by
   obtain ⟨g, hg⟩ := E4_cube_sub_E6_sq_form_isCuspForm
   obtain ⟨c, hc⟩ := cuspForm_twelve_smul_discriminant g
-  have hgF : qExpansion 1 (g : ℍ → ℂ) = qExpansion 1 (E4_cube_sub_E6_sq_form : ℍ → ℂ) := by
-    congr 1; exact congr_arg DFunLike.coe hg
-  have hgΔ : qExpansion 1 (g : ℍ → ℂ) = c • qExpansion 1 (discriminantCuspForm : ℍ → ℂ) := by
-    conv_lhs => rw [show (g : ℍ → ℂ) = ((c • discriminantCuspForm : CuspForm 𝒮ℒ 12) : ℍ → ℂ)
-      from congr_arg DFunLike.coe hc.symm]
-    exact qExpansion_smul one_pos one_mem_strictPeriods_SL c discriminantCuspForm
   have hc_eq : c = 1728 := by
-    have h := congr_arg (·.coeff 1) (hgF.symm.trans hgΔ)
-    simp only [PowerSeries.coeff_smul, smul_eq_mul, discriminant_qExpansion_coeff_one,
-      mul_one, E4_cube_sub_E6_sq_form_qExpansion_coeff_one] at h
-    exact h.symm
+    have hgΔ : qExpansion 1 (g : ℍ → ℂ) = c • qExpansion 1 (discriminantCuspForm : ℍ → ℂ) := by
+      conv_lhs => rw [show (g : ℍ → ℂ) = ((c • discriminantCuspForm : CuspForm 𝒮ℒ 12) : ℍ → ℂ)
+        from congr_arg DFunLike.coe hc.symm]
+      exact qExpansion_smul one_pos one_mem_strictPeriods_SL c discriminantCuspForm
+    have h := congr_arg (·.coeff 1) <|
+      (show qExpansion 1 (g : ℍ → ℂ) = qExpansion 1 (E4_cube_sub_E6_sq_form : ℍ → ℂ)
+        from congr_arg _ (congr_arg DFunLike.coe hg)).symm.trans hgΔ
+    simpa [PowerSeries.coeff_smul, discriminant_qExpansion_coeff_one,
+      E4_cube_sub_E6_sq_form_qExpansion_coeff_one] using h.symm
   have h1728 : (1728 : ℂ) * discriminant z = E₄ z ^ 3 - E₆ z ^ 2 :=
     calc (1728 : ℂ) * discriminant z
         = c * discriminant z := by rw [hc_eq]
