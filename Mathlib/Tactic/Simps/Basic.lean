@@ -1219,7 +1219,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
