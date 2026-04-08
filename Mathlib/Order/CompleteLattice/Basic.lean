@@ -995,11 +995,17 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [L
   isLUB_sSup _ := .of_image le (by rw [map_sSup]; exact isLUB_biSup)
   isGLB_sInf _ := .of_image le (by rw [map_sInf]; exact isGLB_biInf)
 
+namespace Equiv
+
+variable (e : α ≃ β)
+
 /-- Transfer `CompleteLattice` across an `Equiv`. -/
-protected abbrev Equiv.completeLattice (e : α ≃ β) [CompleteLattice β] : CompleteLattice α := by
+protected abbrev completeLattice (e : α ≃ β) [CompleteLattice β] : CompleteLattice α := by
   let top := e.top
   let bot := e.bot
   let supSet := e.supSet
   let infSet := e.infSet
   let lattice := e.lattice
   apply e.injective.completeLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv

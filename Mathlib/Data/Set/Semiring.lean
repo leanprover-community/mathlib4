@@ -37,10 +37,6 @@ deriving Inhabited
 
 namespace SetSemiring
 
-instance : Membership α (SetSemiring α) where mem s a := a ∈ s.toSet
-instance : Singleton α (SetSemiring α) where singleton a := ⟨{a}⟩
-instance : Insert α (SetSemiring α) where insert a s := ⟨insert a s.toSet⟩
-
 /-- The natural equivalence between `SetSemiring` and `Set`. -/
 def equiv : SetSemiring α ≃ Set α where
   toFun := toSet
