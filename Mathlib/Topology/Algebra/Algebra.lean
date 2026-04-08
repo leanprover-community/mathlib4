@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 
 /-!
 # Topological (sub)algebras
@@ -62,6 +63,16 @@ theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraM
 instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
     [ContinuousSMul A X] : ContinuousSMul S X :=
   Subsemiring.continuousSMul S.toSubsemiring X
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Icc (0 : A) 1) := Topology.IsInducing.continuousMul
+  ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom (Icc (0 : A) 1) A)
+  (by simp [Topology.IsInducing.subtypeVal])
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ico (0 : A) 1) := IsInducing.continuousMul
+  ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom (Ico (0 : A) 1) A)
+  (by simp [Topology.IsInducing.subtypeVal])
 
 section
 variable [ContinuousSMul R A]
