@@ -119,10 +119,8 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     apply Set.singleton_subset_iff.mpr
     rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, cfcₙAux_id hp₁ a ha]
     exact ⟨a, rfl⟩
-  · have : Continuous (Unitization.fst (R := 𝕜) (A := A)) :=
-      Unitization.uniformEquivProd.continuous.fst
-    simp only [NonUnitalStarAlgHom.coe_range]
-    convert IsClosed.preimage this (isClosed_singleton (x := 0))
+  · simp only [NonUnitalStarAlgHom.coe_range]
+    convert IsClosed.preimage (Unitization.continuous_fst (𝕜 := 𝕜)) isClosed_singleton
     aesop
 
 variable [CStarRing A]
@@ -399,7 +397,7 @@ section NNRealEqReal
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
+  [StarOrderedRing A] [Algebra ℝ A] [IsSemitopologicalRing A] [T2Space A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
@@ -426,8 +424,8 @@ section NNRealEqRealNonUnital
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Module ℝ A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
-  [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [StarOrderedRing A] [Module ℝ A] [IsSemitopologicalRing A] [IsScalarTower ℝ A A]
+  [SMulCommClass ℝ A A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
 lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :

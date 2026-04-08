@@ -73,7 +73,9 @@ def equiv : WithGeneratedByTopology X Y ≃ Y := Equiv.refl _
 
 instance {Y : Type v} [TopologicalSpace Y] :
     TopologicalSpace (WithGeneratedByTopology X Y) :=
-  .generatedBy X (Y := Y)
+  -- fast_instance% .generatedBy X (Y := Y) fails
+  letI : TopologicalSpace Y := .generatedBy X (Y := Y)
+  inferInstanceAs <| TopologicalSpace Y
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_iff {U : Set (WithGeneratedByTopology X Y)} :

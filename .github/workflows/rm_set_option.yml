@@ -2,7 +2,8 @@ name: Remove unnecessary set_option lines
 
 on:
   schedule:
-    - cron: "0 4 * * 1" # At 04:00 UTC on Monday.
+    # Run several hours before the technical debt report which runs Mondays at 04:00 UTC
+    - cron: "20 23 * * 0" # At 23:20 UTC on Sunday.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -10,12 +11,25 @@ on:
         required: false
         default: false
         type: boolean
+      auto_merge:
+        description: 'If true, apply the auto-merge-after-CI label when creating a PR'
+        required: false
+        default: true
+        type: boolean
+      global_timeout:
+        description: 'Global timeout in seconds (default: 18000 = 5 hours)'
+        required: false
+        default: '18000'
+        type: string
 
 jobs:
   build:
     name: Remove unnecessary set_option lines
-    runs-on: ubuntu-latest
+    runs-on: pr
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -26,20 +40,69 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
 
+      - name: Restore progress cache
+        if: toJson(inputs.dry_run) != 'true'
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: scripts/.rm_set_option_progress.jsonl
+          # Use run_id in restore-keys so we always pick up the most recent cache
+          # for this toolchain, regardless of which run saved it.
+          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+          restore-keys: |
+            rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-
+
       - name: Remove unnecessary set_option lines
         id: rm_set_option
         shell: bash
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          GLOBAL_TIMEOUT: ${{ inputs.global_timeout }}
         run: |
-          DRY_RUN_FLAG=""
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            DRY_RUN_FLAG="--dry-run"
+          ARGS=()
+          if [ "$DRY_RUN" = "true" ]; then
+            ARGS+=("--dry-run")
           fi
-          python3 scripts/rm_set_option.py $DRY_RUN_FLAG
+          TIMEOUT="${GLOBAL_TIMEOUT:-18000}"
+          python3 scripts/rm_set_option.py "${ARGS[@]}" --global-timeout "$TIMEOUT"
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Save progress cache
+        # Always save (even on failure/timeout) so the next run can resume.
+        # Skip on dry-run (no files are modified) and if the progress file was
+        # cleaned up (meaning the run completed fully).
+        if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: scripts/.rm_set_option_progress.jsonl
+          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+
+      - name: Build PR body
+        id: pr_body
+        if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
+        shell: bash
+        env:
+          LINES_REMOVED: ${{ steps.rm_set_option.outputs.lines_removed }}
+          FILES_MODIFIED: ${{ steps.rm_set_option.outputs.files_modified }}
+          FILES_TIMED_OUT: ${{ steps.rm_set_option.outputs.files_timed_out }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "body<<EOF"
+            echo "I removed ${LINES_REMOVED} unnecessary \`set_option\` line(s) across ${FILES_MODIFIED} file(s)."
+            if [ "${FILES_TIMED_OUT}" != "0" ]; then
+              echo ""
+              echo "⚠️ This is a partial run — ${FILES_TIMED_OUT} file(s) still to be processed. The next scheduled run will continue automatically."
+            fi
+            echo ""
+            echo "---"
+            echo ""
+            echo "[workflow run for this PR](${RUN_URL})"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate app token
         id: app-token
@@ -55,7 +118,7 @@ jobs:
       - name: Create Pull Request
         id: pr
         if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
           author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
           token: "${{ steps.app-token.outputs.token }}"
@@ -63,13 +126,8 @@ jobs:
           branch: "rm-set-option"
           base: master
           title: "chore: remove unnecessary set_option lines"
-          body: |
-            I am happy to remove some unnecessary `set_option` lines for you!
-
-            ---
-
-            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          # labels: "auto-merge-after-CI"
+          body: ${{ steps.pr_body.outputs.body }}
+          labels: ${{ toJson(inputs.auto_merge) == 'true' && 'auto-merge-after-CI' || '' }}
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'
@@ -82,7 +140,7 @@ jobs:
           type: 'stream'
           topic: 'Mathlib `remove unnecessary set_option lines`'
           content: |
-            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes unnecessary set_option lines.
+            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes ${{ steps.rm_set_option.outputs.lines_removed }} unnecessary `set_option` line(s) across ${{ steps.rm_set_option.outputs.files_modified }} file(s).
 
       - name: Send Zulip message (failure)
         if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}

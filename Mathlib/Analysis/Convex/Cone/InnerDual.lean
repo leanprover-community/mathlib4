@@ -84,10 +84,10 @@ lemma innerDual_insert (x : E) (s : Set E) :
 
 lemma innerDual_iUnion {ι : Sort*} (f : ι → Set E) :
     innerDual (⋃ i, f i) = ⨅ i, innerDual (f i) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 /-! ### Farkas' lemma and double dual of a cone in a Hilbert space -/
 
