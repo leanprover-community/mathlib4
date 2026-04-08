@@ -161,8 +161,6 @@ lemma universalFactorizationMap_comp_map :
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
     congr 2 <;> ext <;> simp
-    · congr
-    congr
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
