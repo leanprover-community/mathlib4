@@ -92,7 +92,9 @@ class FunLikeSMul (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul
 class FunLikePow (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
   pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
 
-@[to_additive (attr := simp, grind =)] alias pow_apply := FunLikePow.pow_apply
+@[to_additive] alias pow_apply := FunLikePow.pow_apply
+
+attribute [simp, grind =] pow_apply
 
 end SMul
 
@@ -124,10 +126,12 @@ theorem coe_smul [SMul M F] [SMul M β] [FunLikeSMul M F α β] (n : M) (f : F) 
     ↑(n • f) = n • (f : α → β) := by
   ext; simp
 
-@[to_additive (attr := norm_cast) coe_smul']
+@[to_additive coe_smul']
 theorem coe_pow [Pow F M] [Pow β M] [FunLikePow M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
+
+attribute [norm_cast] coe_pow
 
 end Coercion
 

@@ -49,7 +49,7 @@ variable [Mul F]
 instance instDistrib [Add F] [Distrib β] [FunLikeMul F α β] [FunLikeAdd F α β] : Distrib F :=
   fast_instance% DFunLike.coe_injective.distrib (fun (f : F) ↦ (f : α → β)) coe_add coe_mul
 
-instance instHasDistribNeg [Neg F] [Mul β] [Add β] [HasDistribNeg β] [FunLikeNeg F α β]
+instance instHasDistribNeg [Neg F] [Mul β] [HasDistribNeg β] [FunLikeNeg F α β]
     [FunLikeMul F α β] : HasDistribNeg F :=
   fast_instance% DFunLike.coe_injective.hasDistribNeg (fun (f : F) ↦ (f : α → β)) coe_neg coe_mul
 
@@ -95,7 +95,7 @@ end NegSub
 variable [Pow F ℕ] [NatCast F]
 
 instance [Semiring β] [FunLikeZero F α β] [FunLikeOne F α β] [FunLikeAdd F α β] [FunLikeMul F α β]
-    [FunLikeSMul ℕ F α β] [FunLikeSMul ℕ F α β] [FunLikePow ℕ F α β] [FunLikeNatCast F α β] :
+    [FunLikeSMul ℕ F α β] [FunLikePow ℕ F α β] [FunLikeNatCast F α β] :
     Semiring F :=
   fast_instance% DFunLike.coe_injective.semiring _ coe_zero coe_one coe_add coe_mul
     coe_smul coe_pow coe_natCast
