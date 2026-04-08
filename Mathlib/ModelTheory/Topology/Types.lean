@@ -74,21 +74,21 @@ instance : CompactSpace (T.CompleteType α) := by
   constructor
   rw[isCompact_iff_ultrafilter_le_nhds]
   intros F _
-  refine ⟨⟨{φ | typesWith φ ∈ F}, ?_, ?_⟩, ?_⟩
+  refine ⟨⟨{φ | T.typesWith φ ∈ F}, ?_, ?_⟩, ?_⟩
   · intro φ x
     exact F.mem_of_superset Filter.univ_mem (fun p _ ↦ p.subset x)
   · rw [Theory.IsMaximal, Theory.isSatisfiable_iff_isFinitelySatisfiable]
     refine ⟨?_, ?_⟩
     · rw[Theory.IsFinitelySatisfiable]
       intro x hx
-      have : ∀ φ ∈ x, typesWith φ ∈ F.toFilter := by intro φ hφ; exact hx hφ
+      have : ∀ φ ∈ x, T.typesWith φ ∈ F.toFilter := by intro φ hφ; exact hx hφ
       rw[←Filter.biInter_finset_mem x] at this
       obtain ⟨T, T_inter⟩ := F.neBot.nonempty_of_mem this
       have subset : SetLike.coe x ⊆ T.toTheory := by rwa[Set.mem_iInter₂] at T_inter
       exact Theory.IsSatisfiable.mono T.isMaximal'.1 subset
     · intro φ
       simp only [mem_setOf_eq, typesWith_not]
-      exact Ultrafilter.mem_or_compl_mem F (typesWith φ)
+      exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
   · refine ⟨trivial, ?_⟩
     · rw [nhds_generateFrom]
       apply le_iInf₂
