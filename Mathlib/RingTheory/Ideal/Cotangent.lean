@@ -328,3 +328,38 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
 end IsLocalRing
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+
+lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (algebraMap A B))
+    {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
+    Function.Surjective (Ideal.mapCotangent J I (Algebra.ofId A B)
+      (le_of_le_of_eq le_sup_right eq.symm)) := by
+  intro x
+  rcases I.toCotangent_surjective x with ⟨x', rfl⟩
+  rcases Ideal.exists_of_comap_eq_ker_sup _ surj eq x'.2 with ⟨y', mem, hy'⟩
+  use J.toCotangent ⟨y', mem⟩
+  simpa using I.toCotangent.congr_arg (SetCoe.ext hy')
+
+lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraMap A B))
+    {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
+    (Ideal.mapCotangent J I (Algebra.ofId A B) (le_of_le_of_eq le_sup_right eq.symm)).ker =
+      (Submodule.comap J.subtype ((RingHom.ker (algebraMap A B)) ⊓ J)).map J.toCotangent  := by
+  have eqmap := Ideal.eq_map_of_comap_eq_ker_sup _ surj eq
+  refine le_antisymm (fun x hx ↦ ?_) ?_
+  · rcases J.toCotangent_surjective x with ⟨x', hx'⟩
+    have : Function.Surjective (Algebra.ofId A B) := surj
+    simp only [← hx', LinearMap.mem_ker, Ideal.mapCotangent_toCotangent,
+      Ideal.toCotangent_eq_zero, eqmap, Algebra.ofId_apply] at hx
+    rw [← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ surj] at hx
+    rcases Submodule.mem_sup.mp hx with ⟨y, hy, z, hz, hyz⟩
+    have : y + z ∈ J := by simp [hyz]
+    have zmemJ := (Ideal.add_mem_iff_right J (Ideal.pow_le_self (by omega) hy)).mp this
+    have xeq : x = J.toCotangent ⟨z, zmemJ⟩ := by simpa [← hx', J.toCotangent_eq, ← hyz] using hy
+    rw [xeq]
+    exact Submodule.mem_map_of_mem (Submodule.mem_comap.mpr (Ideal.mem_inf.mpr ⟨hz, zmemJ⟩))
+  · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
+    intro x hx
+    simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
+    convert map_zero I.toCotangent
+    exact (Ideal.mem_inf.mp hx).1
