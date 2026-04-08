@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Order.Module.Pointwise
 public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Pointwise operations on sets of reals
@@ -23,7 +24,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

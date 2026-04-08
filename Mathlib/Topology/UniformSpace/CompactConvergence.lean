@@ -372,7 +372,7 @@ end ContinuousOnRestrict
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalSpace δ₁]
     [TopologicalSpace δ₂] (φ₁ : C(δ₁, α)) (φ₂ : C(δ₂, α)) (h_proper₁ : IsProperMap φ₁)
     (h_proper₂ : IsProperMap φ₂) (h_cover : range φ₁ ∪ range φ₂ = univ) :
-    (inferInstanceAs <| UniformSpace C(α, β)) =
+    ((inferInstance : UniformSpace C(α, β))) =
       .comap (comp · φ₁) inferInstance ⊓
       .comap (comp · φ₂) inferInstance := by
   -- We check the analogous result for `UniformOnFun` using
@@ -395,7 +395,7 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalS
 theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, TopologicalSpace (δ i)]
     (φ : Π i, C(δ i, α)) (h_proper : ∀ i, IsProperMap (φ i))
     (h_lf : LocallyFinite fun i ↦ range (φ i)) (h_cover : ⋃ i, range (φ i) = univ) :
-    (inferInstanceAs <| UniformSpace C(α, β)) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
+    ((inferInstance : UniformSpace C(α, β))) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
   -- We check the analogous result for `UniformOnFun` using
   -- `UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover`...
   set 𝔖 : Set (Set α) := {K | IsCompact K}
@@ -428,9 +428,6 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous
     CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
-
-@[deprecated (since := "2025-06-03")]
-alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
 
 end CompleteSpace
 

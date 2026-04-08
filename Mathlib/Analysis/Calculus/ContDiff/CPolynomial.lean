@@ -15,7 +15,7 @@ We prove that continuously polynomial functions are `C^∞`. In particular, this
 of continuous multilinear maps.
 -/
 
-@[expose] public section
+public section
 
 open Filter Asymptotics
 

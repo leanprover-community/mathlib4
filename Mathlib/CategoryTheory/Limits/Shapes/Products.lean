@@ -118,14 +118,16 @@ def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
   { lift }
 
 /-- Constructor for morphisms to the point of a limit fan. -/
-def Fan.IsLimit.desc {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
+def Fan.IsLimit.lift {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f : ∀ i, A ⟶ F i) : A ⟶ c.pt :=
   hc.lift (Fan.mk A f)
+
+@[deprecated (since := "2026-01-12")] alias Fan.IsLimit.desc := Fan.IsLimit.lift
 
 @[reassoc (attr := simp)]
 lemma Fan.IsLimit.fac {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f : ∀ i, A ⟶ F i) (i : β) :
-    Fan.IsLimit.desc hc f ≫ c.proj i = f i :=
+    Fan.IsLimit.lift hc f ≫ c.proj i = f i :=
   hc.fac (Fan.mk A f) ⟨i⟩
 
 @[reassoc (attr := simp)]
@@ -223,11 +225,11 @@ lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f �
 
 /-- The fan constructed of the projections from the product is limiting. -/
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
-  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _))
+  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cone.ext (Iso.refl _))
 
 /-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
+  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocone.ext (Iso.refl _))
 
 -- TODO?: simp can prove this using `eqToHom_naturality`
 -- but `eqToHom_naturality` applies less easily than this lemma
@@ -246,36 +248,49 @@ theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' :
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
-/-- A version of `Cones.ext` for `Fan`s. -/
+/-- A version of `Cone.ext` for `Fan`s. -/
 @[simps!]
 def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
-  Cones.ext e (fun ⟨j⟩ => w j)
+  Cone.ext e (fun ⟨j⟩ => w j)
+
+/-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
+def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
+    [hc : IsIso (Pi.lift c.proj)] : IsLimit c :=
+  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f))
+    (Fan.ext (@asIso _ _ _ _ _ hc) (fun _ => (limit.lift_π _ _).symm)).symm
+
+lemma Fan.nonempty_isLimit_iff_isIso_piLift {f : β → C} [HasProduct f] (c : Fan f) :
+    Nonempty (IsLimit c) ↔ IsIso (Pi.lift c.proj) :=
+  (limit.isLimit (Discrete.functor f)).nonempty_isLimit_iff_isIso_lift
 
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
 abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) (b : β) :
     Sigma.ι f b ≫ Sigma.desc p = p b := by
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
   convert IsIso.id _
   ext
   simp
 
-/-- A version of `Cocones.ext` for `Cofan`s. -/
+/-- A version of `Cocone.ext` for `Cofan`s. -/
 @[simps!]
 def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by cat_disch) : c₁ ≅ c₂ :=
-  Cocones.ext e (fun ⟨j⟩ => w j)
+  Cocone.ext e (fun ⟨j⟩ => w j)
 
 /-- A cofan `c` on `f` such that the induced map `∐ f ⟶ c.pt` is an iso, is a coproduct. -/
 def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f)
@@ -283,20 +298,12 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
-set_option linter.flexible false in -- simp followed by infer_instance
-lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
-    IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
-  refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
-  have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) := by
-    simp; infer_instance
-  convert this
-  ext
-  simp only [colimit.ι_desc, mk_pt, mk_ι_app, IsColimit.coconePointUniqueUpToIso,
-    coproductIsCoproduct, colimit.cocone_x, Functor.mapIso_hom, IsColimit.uniqueUpToIso_hom,
-    Cocones.forget_map, IsColimit.descCoconeMorphism_hom, IsColimit.ofIsoColimit_desc,
-    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp,
-    IsColimit.desc_self, Category.comp_id]
-  rfl
+lemma Cofan.nonempty_isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
+    Nonempty (IsColimit c) ↔ IsIso (Sigma.desc c.inj) :=
+  (colimit.isColimit (Discrete.functor f)).nonempty_isColimit_iff_isIso_desc
+
+@[deprecated (since := "2026-01-21")]
+alias Cofan.isColimit_iff_isIso_sigmaDesc := Cofan.nonempty_isColimit_iff_isIso_sigmaDesc
 
 /-- A coproduct of coproducts is a coproduct -/
 def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
@@ -321,6 +328,7 @@ from a family of morphisms between the factors.
 abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   limMap (Discrete.natTrans fun X => p X.as)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp high)]
 lemma Pi.map_π {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
     Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp
@@ -403,6 +411,7 @@ def Pi.cone : Cone X where
   pt := ∏ᶜ (fun j => X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cone `Pi.cone X` is a limit cone. -/
 def productIsProduct' :
     IsLimit (Pi.cone X) where
@@ -440,6 +449,7 @@ abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, 
     ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp high)]
 lemma Sigma.ι_map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
     Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b := by simp
@@ -525,6 +535,7 @@ def Sigma.cocone : Cocone X where
   pt := ∐ (fun j => X.obj (Discrete.mk j))
   ι := Discrete.natTrans (fun _ => Sigma.ι (fun j ↦ X.obj ⟨j⟩) _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone `Sigma.cocone X` is a colimit cocone. -/
 def coproductIsCoproduct' :
     IsColimit (Sigma.cocone X) where
@@ -573,6 +584,7 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   hom := Sigma.map' e fun j => (w j).inv
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
@@ -582,6 +594,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (by simp)
         (by intro s (m : _ ⟶ (∏ᶜ fun i ↦ ∏ᶜ g i)) w; aesop (add norm simp Sigma.forall)) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
 def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
@@ -590,6 +603,7 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -601,6 +615,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (by simp)
         (by intro s (m : (∐ fun i ↦ ∐ g i) ⟶ _) w; aesop_cat (add norm simp Sigma.forall)) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
 def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
@@ -625,6 +640,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
     piComparison G f ≫ Pi.π _ b = G.map (Pi.π f b) :=
   limit.lift_π _ (Discrete.mk b)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
@@ -643,6 +659,7 @@ theorem ι_comp_sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f
     Sigma.ι _ b ≫ sigmaComparison G f = G.map (Sigma.ι f b) :=
   colimit.ι_desc _ (Discrete.mk b)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, f j ⟶ P) :
@@ -650,6 +667,18 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
   ext j
   simp only [ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
+
+/-- `F.mapCone c` being limiting is the same as the induced fan being limiting. -/
+def Fan.isLimitMapConeEquiv (F : C ⥤ D) {ι : Type*} (X : ι → C) (c : Fan X) :
+    IsLimit (F.mapCone c) ≃ IsLimit (Fan.mk _ fun i ↦ F.map (c.proj i)) :=
+  (IsLimit.postcomposeHomEquiv Discrete.natIsoFunctor (F.mapCone c)).symm.trans <|
+    IsLimit.equivIsoLimit (Cone.ext (Iso.refl _))
+
+/-- `F.mapCocone c` being colimiting is the same as the induced cofan being colimiting. -/
+def Cofan.isColimitMapCoconeEquiv (F : C ⥤ D) {ι : Type*} (X : ι → C) (c : Cofan X) :
+    IsColimit (F.mapCocone c) ≃ IsColimit (Cofan.mk _ fun i ↦ F.map (c.inj i)) :=
+  (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm (F.mapCocone c)).symm.trans <|
+    IsColimit.equivIsoColimit (Cocone.ext (Iso.refl _))
 
 end Comparison
 
@@ -682,7 +711,7 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
   fun _ : Type w =>
   { has_limit := fun F =>
       HasLimit.mk
-        ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
+        ⟨(Cone.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
 theorem hasCoproducts_of_colimit_cofans (cf : ∀ {J : Type w} (f : J → C), Cofan f)
@@ -690,7 +719,7 @@ theorem hasCoproducts_of_colimit_cofans (cf : ∀ {J : Type w} (f : J → C), Co
   fun _ : Type w =>
   { has_colimit := fun F =>
       HasColimit.mk
-        ⟨(Cocones.precompose Discrete.natIsoFunctor.hom).obj (cf fun j => F.obj ⟨j⟩),
+        ⟨(Cocone.precompose Discrete.natIsoFunctor.hom).obj (cf fun j => F.obj ⟨j⟩),
           (IsColimit.precomposeHomEquiv _ _).symm (cf_isColimit _)⟩ }
 
 instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
@@ -706,6 +735,7 @@ def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
   obj X := { obj n := ∏ᶜ fun _ : (unop n) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
@@ -721,6 +751,7 @@ def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
   obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Sigma.map fun _ ↦ f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
 def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
@@ -746,8 +777,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         simp
       uniq := fun s m w => by
         specialize w default
@@ -782,8 +812,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
@@ -820,6 +849,7 @@ variable [HasProduct f] [HasProduct (f ∘ ε)]
 def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
   HasLimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun _ => Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
   dsimp [Pi.reindex]
@@ -832,6 +862,12 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
 theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [Iso.inv_comp_eq]
 
+variable {f} in
+/-- Being a limiting fan is stable under equivalences in the index type. -/
+def Fan.isLimitEquivOfEquiv (c : Fan f) :
+    IsLimit c ≃ IsLimit (Fan.mk _ fun i : β ↦ c.proj (ε i)) :=
+  IsLimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
+
 end
 
 section
@@ -842,6 +878,7 @@ variable [HasCoproduct f] [HasCoproduct (f ∘ ε)]
 def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
   HasColimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun _ => Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
@@ -854,9 +891,16 @@ theorem Sigma.ι_reindex_hom (b : β) :
   erw [← h, eqToHom_map, eqToHom_map, eqToHom_trans_assoc]
   all_goals { simp }
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_inv (b : β) :
     Sigma.ι f (ε b) ≫ (Sigma.reindex ε f).inv = Sigma.ι (f ∘ ε) b := by simp [Iso.comp_inv_eq]
+
+variable {f} in
+/-- Being a colimiting cofan is stable under equivalences in the index type. -/
+def Cofan.isColimitEquivOfEquiv (c : Cofan f) :
+    IsColimit c ≃ IsColimit (Cofan.mk _ fun i : β ↦ c.inj (ε i)) :=
+  IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
 
 end
 
@@ -866,15 +910,17 @@ section
 
 variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
   right_cancellation _ _ h := by
     refine limit.hom_ext fun j => ?_
     simpa using h =≫ Pi.π _ j
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
   left_cancellation _ _ h := by
     refine colimit.hom_ext fun j => ?_
-    simpa using  Sigma.ι _ j ≫= h
+    simpa using Sigma.ι _ j ≫= h
 
 end
 
@@ -887,7 +933,7 @@ def Fan.IsLimit.prod (c : ∀ i : ι, Fan (fun j : ι' ↦ X i j)) (hc : ∀ i :
     (c' : Fan (fun i : ι ↦ (c i).pt)) (hc' : IsLimit c') :
     (IsLimit <| Fan.mk c'.pt fun p : ι × ι' ↦ c'.proj _ ≫ (c p.1).proj p.2) := by
   refine mkFanLimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
-  · exact Fan.IsLimit.desc hc' fun i ↦ Fan.IsLimit.desc (hc i) fun j ↦ t.proj (i, j)
+  · exact Fan.IsLimit.lift hc' fun i ↦ Fan.IsLimit.lift (hc i) fun j ↦ t.proj (i, j)
   · simp
   · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
     exact Fan.IsLimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
@@ -903,5 +949,25 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
     exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
 
 end Fubini
+
+/-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
+the product of copies of `X` indexed by `α`. -/
+@[simps]
+def piFunctor [HasProducts.{w} C] :
+    C ⥤ (Type w)ᵒᵖ ⥤ C where
+  obj X :=
+    { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
+      map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
+  map f := { app T := Pi.map (fun _ ↦ f) }
+
+/-- The functor `C ⥤ Type w ⥤ C` which sends `X : C` and `α : Type w` to
+the coproduct of copies of `X` indexed by `α`. -/
+@[simps]
+def sigmaFunctor [HasCoproducts.{w} C] :
+    C ⥤ Type w ⥤ C where
+  obj X :=
+    { obj α := ∐ (fun (t : α) ↦ X)
+      map f := Sigma.map' f (fun _ ↦ 𝟙 _) }
+  map f := { app T := Sigma.map (fun _ ↦ f) }
 
 end CategoryTheory.Limits

@@ -15,7 +15,7 @@ Further facts relying on Gauss sums.
 
 -/
 
-@[expose] public section
+public section
 
 
 /-!

@@ -44,6 +44,7 @@ noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where
       map_one' := congr_fun (IsMonHom.one_hom f.hom) PUnit.unit
       map_mul' x y := congr_fun (IsMonHom.mul_hom f.hom) (x, y) }
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
@@ -56,6 +57,16 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
           mul_one := by ext ⟨_, _⟩; simp
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := .mk' f
+    (one_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
+    (mul_f := by
+      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+      this argument was provided by the auto_param. -/
+      simp +instances only
+      cat_disch)
 
 end MonTypeEquivalenceMon
 

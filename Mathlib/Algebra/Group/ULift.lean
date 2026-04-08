@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # `ULift` instances for groups and monoids
@@ -61,19 +60,11 @@ instance inv [Inv α] : Inv (ULift α) :=
 theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
   rfl
 
-@[to_additive]
-instance smul [SMul α β] : SMul α (ULift β) :=
-  ⟨fun n x => up (n • x.down)⟩
-
-@[to_additive (attr := simp)]
-theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
-  rfl
-
-@[to_additive existing smul]
+@[to_additive (attr := to_additive) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
-@[to_additive existing (attr := simp) smul_down]
+@[to_additive (attr := to_additive, simp) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 

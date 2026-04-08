@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Set
 
 /-! ### List.takeWhile and List.dropWhile -/
 
-@[expose] public section
+public section
 
 namespace List
 

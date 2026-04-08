@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Card
 # Cardinalities of pointwise operations on sets
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

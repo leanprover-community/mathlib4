@@ -31,7 +31,7 @@ Here we prove the following:
 sin, cos, tan, angle
 -/
 
-@[expose] public section
+public section
 
 open Set
 

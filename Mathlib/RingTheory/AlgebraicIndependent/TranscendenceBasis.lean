@@ -272,7 +272,7 @@ private def indepMatroid : IndepMatroid A where
       exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
-    simp_rw [id_eq]
+    simp_rw +instances [id_eq]
     rw [Subtype.range_val] at B_base ⊢
     refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h
@@ -342,6 +342,7 @@ theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
     (matroid R A).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
   rw [Matroid.isFlat_iff_closure_eq, matroid_closure_eq]
@@ -418,7 +419,7 @@ variable [Nontrivial R] [NoZeroDivisors A]
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective
-  rw [← matroid_cRank_eq, ← ((matroid_isBase_iff).mpr hx.to_subtype_range).cardinalMk_eq_cRank,
+  rw [← matroid_cRank_eq, ← (matroid_isBase_iff.mpr hx.to_subtype_range).cardinalMk_eq_cRank,
     lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
 
 theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
@@ -454,8 +455,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
 -- TODO: generalize to Nontrivial S
 theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
-  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by
-    simpa using Cardinal.nat_lt_aleph0 _
+  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
 namespace Algebra.IsAlgebraic
 

@@ -5,8 +5,8 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.TermCongr
-public meta import Mathlib.Tactic.WithoutCDot
+public meta import Lean.Meta.Tactic.Rfl
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic

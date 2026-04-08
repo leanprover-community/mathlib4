@@ -136,6 +136,10 @@ instance : (jacobson R).IsTwoSided :=
 
 variable {R R₂}
 
+lemma jacobson_le_of_isMaximal (m : Ideal R) [m.IsMaximal] : jacobson R ≤ m := by
+  rw [Ring.jacobson_eq_sInf_isMaximal]
+  exact sInf_le ‹_›
+
 theorem le_comap_jacobson : jacobson R ≤ Ideal.comap f (jacobson R₂) :=
   Module.le_comap_jacobson f.toSemilinearMap
 
@@ -147,6 +151,7 @@ theorem map_jacobson_of_ker_le (le : RingHom.ker f ≤ jacobson R) :
     Submodule.map f.toSemilinearMap (jacobson R) = jacobson R₂ :=
   Module.map_jacobson_of_ker_le f.surjective le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
     (jacobson (R ⧸ I) : Set (R ⧸ I)) = Module.jacobson R (R ⧸ I) := by
   let f : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨AddHom.id _, fun _ _ ↦ rfl⟩

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Topology.ApproximateUnit
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 
@@ -49,6 +50,7 @@ open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
@@ -123,7 +125,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
     _ = cfcₙ f (cfcₙ g a) := by
       rw [cfcₙ_comp f g a ?_ (by simp [f, tsub_self]) ?_ (by simp [g]) ha₁]
       · fun_prop (disch := intro _ _; positivity)
-      · have (x) (hx : x ∈ σₙ ℝ≥0 a) :  1 - x ≠ 0 := by
+      · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
         fun_prop (disch := assumption)
@@ -249,6 +251,7 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
       ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
 `private` because it is only used to prove `CStarAlgebra.increasingApproximateUnit`. -/
@@ -295,7 +298,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
           exact hm' y hy
         · exact div_le_one (by positivity) |>.mpr le_add_self
       _ = ε ^ 2 := mul_one _
-  rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
+  rw [cfc_mul _ _ m (continuousOn_id' _ |>.fun_mul hg') (continuousOn_id' _),
     cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., hm₁.star_eq]
   congr
   rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm₁,

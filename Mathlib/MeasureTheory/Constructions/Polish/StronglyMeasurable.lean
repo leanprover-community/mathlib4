@@ -21,7 +21,7 @@ can be extended to strongly measurable functions without assuming separability o
 The purpose of this file is to collect those results.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Set TopologicalSpace
 
@@ -50,7 +50,7 @@ theorem measurableSet_exists_tendsto (hf : ∀ i, StronglyMeasurable (f i)) :
     fun ⟨c, hc⟩ ↦ ⟨c, tendsto_subtype_rng.1 hc⟩⟩
   exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
 
-theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f i)) :
+protected theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
   obtain rfl | hl := eq_or_neBot l
   · simpa [limUnder, Filter.map_bot] using stronglyMeasurable_const
@@ -59,8 +59,8 @@ theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f i)) :
   rw [stronglyMeasurable_iff_measurable_separable]; constructor
   · let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
     have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
-    have : (fun x ↦ _root_.limUnder l (f · x)) = ((↑) : conv → X).extend
-        (fun x ↦ _root_.limUnder l (f · x)) (fun _ ↦ e) := by
+    have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
+        (fun x ↦ limUnder l (f · x)) (fun _ ↦ e) := by
       ext x
       by_cases hx : x ∈ conv
       · rw [Function.extend_val_apply hx]

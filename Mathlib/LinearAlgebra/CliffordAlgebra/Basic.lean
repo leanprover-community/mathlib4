@@ -64,7 +64,7 @@ inductive Rel : TensorAlgebra R M → TensorAlgebra R M → Prop
 
 end CliffordAlgebra
 
-/-- The Clifford algebra of an `R`-module `M` equipped with a quadratic_form `Q`.
+/-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
 def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)
@@ -96,11 +96,16 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     IsScalarTower R S (CliffordAlgebra Q) :=
   RingQuot.instIsScalarTower _
 
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+instance : Module R (CliffordAlgebra Q) :=
+  inferInstanceAs <| Module R (RingQuot (CliffordAlgebra.Rel Q))
+
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
 def ι : M →ₗ[R] CliffordAlgebra Q :=
   (RingQuot.mkAlgHom R _).toLinearMap.comp (TensorAlgebra.ι R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
 theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
@@ -256,6 +261,13 @@ theorem ι_mul_ι_comm (a b : M) :
     ι Q a * ι Q b = algebraMap R _ (QuadraticMap.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
 
+/-- A version of `mul_mul_mul_comm` for `ι`. -/
+theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) =
+      algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm,  mul_assoc,
+    mul_assoc]
+
 section isOrtho
 
 @[simp] theorem ι_mul_ι_add_swap_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
@@ -274,6 +286,11 @@ theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrth
 theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
     ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
   rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
+
+theorem mul_ι_mul_ι_mul_comm_of_isOrtho
+    (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) = - ((x * ι Q b) * (ι Q a * y)) := by
+  rw [mul_ι_mul_ι_mul_comm, h.polar_eq_zero, map_zero, zero_mul, zero_sub]
 
 end isOrtho
 

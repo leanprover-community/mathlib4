@@ -13,10 +13,10 @@ public import Mathlib.RingTheory.Localization.Defs
 
 # Extension of algebras
 
-## Main definition
+## Main definitions
 
 - `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
-surjection `P →ₐ[R] R`.
+  surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
   ```
@@ -79,6 +79,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
@@ -160,6 +161,20 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T 
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
     (g := (IsScalarTower.toAlgHom R P.Ring S).toLinearMap) P.algebraMap_surjective)
 
+variable (T) in
+/--
+The ring `T ⊗[R] P.Ring` underlying the extension `P.baseChange T` is a `P.Ring`-algebra
+by action on the right. This causes a (mathematical) diamond when `T = P.Ring`, so it is
+not an instance.
+-/
+@[instance_reducible]
+noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
+  TensorProduct.rightAlgebra
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] algebraBaseChange in
+instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
+  .of_algebraMap_eq fun x ↦ by simp [baseChange, RingHom.algebraMap_toAlgebra]; rfl
 
 end Construction
 
@@ -241,6 +256,16 @@ def Hom.mapKer (f : P.Hom P')
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
 
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- The canonical hom from `P` to its base change `P.baseChange`. -/
+@[simps]
+noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
+    P.Hom (P.baseChange (T := T)) where
+  toRingHom := TensorProduct.includeRight.toRingHom
+  toRingHom_algebraMap x := by simp [baseChange]
+  algebraMap_toRingHom x := rfl
+
 end
 
 end Hom
@@ -315,7 +340,7 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_zero := fun r ↦ ext (smul_zero (P.σ r))
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
+    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
@@ -439,7 +464,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
-  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _

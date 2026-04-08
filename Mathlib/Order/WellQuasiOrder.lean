@@ -52,7 +52,7 @@ theorem IsAntichain.finite_of_wellQuasiOrdered {s : Set α} (hs : IsAntichain r 
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     hs.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
 
-theorem Finite.wellQuasiOrdered (r : α → α → Prop) [Finite α] [IsRefl α r] :
+theorem Finite.wellQuasiOrdered (r : α → α → Prop) [Finite α] [Std.Refl r] :
     WellQuasiOrdered r := by
   intro f
   obtain ⟨m, n, h, hf⟩ := Set.finite_univ.exists_lt_map_eq_of_forall_mem (f := f)

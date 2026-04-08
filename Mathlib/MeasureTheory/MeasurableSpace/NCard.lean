@@ -15,7 +15,7 @@ In this file we prove that `Set.encard` and `Set.ncard` are measurable functions
 provided that the ambient space is countable.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

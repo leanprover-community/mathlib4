@@ -212,7 +212,7 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
 lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
-    (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
+    (hf : IsQuotientMap f) : SequentialSpace Y := hf.isCoinducing.eq_coinduced.symm ▸ .coinduced f
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
@@ -258,7 +258,7 @@ open FirstCountableTopology
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (Eventually.of_forall x_in))
-  ⟨a, a_in, tendsto_subseq ha⟩
+  ⟨a, a_in, MapClusterPt.tendsto_subseq ha⟩
 
 theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
@@ -372,14 +372,14 @@ section MetrizableSpaceSeqCompact
 
 variable [TopologicalSpace X] [PseudoMetrizableSpace X] {s : Set X}
 
-/-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
+/-- In a (pseudo)metrizable space, any sequentially compact set is compact. -/
 protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   letI := pseudoMetrizableSpaceUniformity X
   haveI := pseudoMetrizableSpaceUniformity_countably_generated X
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 
-/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
-(e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
+/-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
+only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 

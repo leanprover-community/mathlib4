@@ -18,7 +18,7 @@ public import Mathlib.Topology.Algebra.Polynomial
 The proof is partially based on [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
 -/
 
-@[expose] public section
+public section
 
 namespace LindemannWeierstrass
 
@@ -27,6 +27,7 @@ noncomputable section
 open scoped Nat
 open Complex Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
@@ -38,6 +39,7 @@ theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
@@ -70,6 +72,7 @@ private theorem P_algebraMap (f : ℤ[X]) (s : ℂ) :
     P (f.map <| algebraMap ℤ ℂ) s = exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.aeval s := by
   simp [P, aeval_sumIDeriv_eq_eval]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a real constant `c` such
 that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there is also a nonnegative
@@ -147,7 +150,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   split_ifs with hx1
   · rw [one_pow]
     exact pow_le_one₀ (mul_nonneg hx.1.le (norm_nonneg _)) hx1
-  · push_neg at hx1
+  · push Not at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
 /--

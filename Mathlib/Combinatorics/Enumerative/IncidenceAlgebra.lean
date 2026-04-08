@@ -65,7 +65,7 @@ Here are some additions to this file that could be made in the future:
 * [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
   VI*][doubilet_rota_stanley_vi]
-* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
+* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
 
@@ -572,6 +572,7 @@ end InversionTop
 section InversionBot
 variable [Ring 𝕜] [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A general form of Möbius inversion. Based on lemma 2.1.3 of Incidence Algebras by Spiegel and
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :

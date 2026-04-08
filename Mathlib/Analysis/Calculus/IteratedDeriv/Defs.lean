@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 
 /-!
 # One-dimensional iterated derivatives
@@ -63,6 +62,7 @@ def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
+@[simp]
 theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv n f := by
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
@@ -183,8 +183,9 @@ theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : U
 
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 differentiating the `n`-th iterated derivative. -/
-theorem iteratedDerivWithin_succ {x : 𝕜} :
-    iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x := by
+theorem iteratedDerivWithin_succ :
+    iteratedDerivWithin (n + 1) f s = derivWithin (iteratedDerivWithin n f s) s := by
+  ext x
   by_cases hxs : AccPt x (𝓟 s)
   · rw [iteratedDerivWithin_eq_iteratedFDerivWithin, iteratedFDerivWithin_succ_apply_left,
       iteratedFDerivWithin_eq_equiv_comp,
@@ -208,9 +209,17 @@ theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
 
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 taking the `n`-th derivative of the derivative. -/
-theorem iteratedDerivWithin_succ' {x : 𝕜} :
-    iteratedDerivWithin (n + 1) f s x = (iteratedDerivWithin n (derivWithin f s) s) x := by
-  rw [iteratedDerivWithin_eq_iterate, iteratedDerivWithin_eq_iterate]; rfl
+theorem iteratedDerivWithin_succ' :
+    iteratedDerivWithin (n + 1) f s = (iteratedDerivWithin n (derivWithin f s) s) := by
+  ext x; rw [iteratedDerivWithin_eq_iterate, iteratedDerivWithin_eq_iterate]; rfl
+
+/-- `C^{n + 1}` is equivalent to `C^n` and the `n`-th derivative being `C^1`. -/
+theorem contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin {n : ℕ}
+    (hs : UniqueDiffOn 𝕜 s) : ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
+      ContDiffOn 𝕜 n f s ∧ ContDiffOn 𝕜 1 (iteratedDerivWithin n f s) s := by
+  simp only [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv, hs,
+    contDiffOn_one_iff_derivWithin, ← iteratedDerivWithin_succ]
+  grind
 
 /-! ### Properties of the iterated derivative on the whole space -/
 
@@ -295,7 +304,6 @@ theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m +
 /-- The `n+1`-th iterated derivative can be obtained by differentiating the `n`-th
 iterated derivative. -/
 theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f) := by
-  ext x
   rw [← iteratedDerivWithin_univ, ← iteratedDerivWithin_univ, ← derivWithin_univ]
   exact iteratedDerivWithin_succ
 
@@ -357,3 +365,27 @@ theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
   induction n generalizing c with
   | zero => simp
   | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
+
+@[simp]
+lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
+  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
+  simp [Pi.zero_def]
+
+@[simp]
+lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
+  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (0 : 𝕜 → F) s x = (0 : F) := by
+  simp [Pi.zero_def]
+
+/-- `C^{n + 1}` is equivalent to `C^n` and the `n`-th derivative being `C^1`. -/
+theorem contDiff_nat_succ_iff_contDiff_one_iteratedDeriv {n : ℕ} : ContDiff 𝕜 (n + 1 : ℕ) f ↔
+    ContDiff 𝕜 n f ∧ ContDiff 𝕜 1 (iteratedDeriv n f) := by
+  simp only [contDiff_nat_iff_iteratedDeriv, contDiff_one_iff_deriv, ← iteratedDeriv_succ]
+  grind

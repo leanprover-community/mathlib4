@@ -252,9 +252,9 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 �
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₁]
     simp
   -- General case
-  lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
+  lift meromorphicOrderAt f₁ x to ℤ using (by lia) with n₁ hn₁
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
-  lift meromorphicOrderAt f₂ x to ℤ using (by aesop) with n₂ hn₂
+  lift meromorphicOrderAt f₂ x to ℤ using (by lia) with n₂ hn₂
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
   rw [WithTop.coe_eq_coe, h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂] at *
@@ -299,16 +299,20 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (
 /--
 The trailing coefficient of a product is the product of the trailing coefficients.
 -/
-theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
-    (h : ∀ σ, MeromorphicAt (f σ) x) :
+theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    {x : 𝕜} (h : ∀ σ ∈ s, MeromorphicAt (f σ) x) :
     meromorphicTrailingCoeffAt (∏ n ∈ s, f n) x = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
   classical
   induction s using Finset.induction with
   | empty =>
     apply meromorphicTrailingCoeffAt_const
   | insert σ s₁ hσ hind =>
-    rw [Finset.prod_insert hσ, Finset.prod_insert hσ, (h σ).meromorphicTrailingCoeffAt_mul
-      (MeromorphicAt.prod h), hind]
+    have : ∀ σ₀ ∈ s₁, MeromorphicAt (f σ₀) x := by
+      intro τ hτ
+      apply h τ (Finset.mem_insert_of_mem hτ)
+    rw [Finset.prod_insert hσ, Finset.prod_insert hσ,
+      (h σ (Finset.mem_insert_self σ s₁)).meromorphicTrailingCoeffAt_mul
+      (MeromorphicAt.prod this), hind this]
 
 /--
 The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
