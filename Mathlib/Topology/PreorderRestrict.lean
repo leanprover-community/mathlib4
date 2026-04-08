@@ -15,7 +15,7 @@ We prove that the map which restricts a function `f : (i : α) → X i` to eleme
 continuous.
 -/
 
-@[expose] public section
+public section
 
 namespace Preorder
 

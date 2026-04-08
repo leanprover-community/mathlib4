@@ -33,7 +33,7 @@ This however is not straightforward.
 Consider `n : ℕ`. We cannot write `(κ n) ⊗ₖ (κ (n + 1))` directly, we need to first
 introduce an equivalence to see `κ (n + 1)` as a kernel with codomain
 `(Π i : Iic n, X i) × X (n + 1)`, and we get a `Kernel (Π i : Iic n, X i) (X (n + 1) × (X (n + 2))`.
-However we want to do multiple composition at ones, i.e. write
+However we want to do multiple composition at once, i.e. write
 `(κ n) ⊗ₖ ... ⊗ₖ (κ m)` for `n < m`. This requires even more equivalences to make sense of, and at
 the end of the day we get kernels which still cannot be composed together.
 
@@ -62,6 +62,8 @@ against `partialTraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 * `partialTraj_comp_partialTraj`: if `a ≤ b` and `b ≤ c` then
   `partialTraj κ b c ∘ₖ partialTraj κ a b = partialTraj κ a c`.
+* `map_partialTraj_succ_self a`: the pushforward of `partialTraj κ a (a + 1)` along the point at
+  time `a + 1` is the kernel `κ a`.
 * `lmarginalPartialTraj_self` : if `a ≤ b` and `b ≤ c` then
   `lmarginalPartialTraj κ b c (lmarginalPartialTraj κ a b f) = lmarginalPartialTraj κ a c`.
 
@@ -226,7 +228,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
         Equiv.coe_fn_mk, Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq,
         Nat.succ_eq_add_one, IocProdIoc]
       split_ifs <;> try rfl
-      omega
+      lia
     nth_rw 1 [← partialTraj_comp_partialTraj h k.le_succ, hk, partialTraj_succ_self, comp_map,
       comap_map_comm, comap_prod, id_comap, ← id_map, map_prod_eq, ← map_comp_right, this,
       map_comp_right, id_prod_eq, prodAssoc_prod, map_comp_right, ← map_prod_map, map_id,
@@ -240,6 +242,17 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
     all_goals fun_prop
 
 variable [∀ n, IsMarkovKernel (κ n)]
+
+/-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
+lemma map_partialTraj_succ_self (a : ℕ) :
+    (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
+  have hp : (fun x : Π n : Iic (a + 1), X n ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ IicProdIoc a (a + 1) =
+      (piSingleton a).symm ∘ Prod.snd := by
+    ext
+    simp [_root_.IicProdIoc, piSingleton]
+  rw [partialTraj_succ_self, ← map_comp_right _ (by fun_prop) (by fun_prop), hp,
+    map_comp_right _ (by fun_prop) (by fun_prop), ← snd_eq, snd_prod,
+    ← map_comp_right _ (by fun_prop) (by fun_prop), symm_comp_self, map_id]
 
 lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (partialTraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = partialTraj κ a b := by
@@ -346,10 +359,7 @@ lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0�
   let η : Kernel (Π n, X n) (Π i : Iic b, X i) :=
     (partialTraj κ a b).comap (frestrictLe a) (measurable_frestrictLe _)
   change Measurable fun x₀ ↦ ∫⁻ z : (i : Iic b) → X i, g (z, x₀) ∂η x₀
-  refine Measurable.lintegral_kernel_prod_left' <| hf.comp ?_
-  simp only [updateFinset, measurable_pi_iff]
-  intro i
-  by_cases h : i ∈ Iic b <;> simp only [h, ↓reduceDIte] <;> fun_prop
+  fun_prop
 
 /-- Integrating `f` against `partialTraj κ a b` and then against `partialTraj κ b c` is the same
 as integrating `f` against `partialTraj κ a c`. -/

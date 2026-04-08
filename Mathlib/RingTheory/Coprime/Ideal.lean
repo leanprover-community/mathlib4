@@ -16,7 +16,7 @@ This lemma generalises `exists_sum_eq_one_iff_pairwise_coprime` to the case of n
 It is on a separate file due to import requirements.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Ideal

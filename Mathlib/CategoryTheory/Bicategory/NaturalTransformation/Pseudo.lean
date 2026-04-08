@@ -20,13 +20,13 @@ In this file we define strong transformations, which require the 2-morphism to b
 ## Main definitions
 
 * `Pseudofunctor.StrongTrans F G`: strong transformations between pseudofunctors `F` and `G`.
-* `Pseudofunctor.mkOfOplax η η'`: Given two pseudofunctors, and a strong transformation `η` between
-  their underlying oplax functors, `mkOfOplax` lifts this to a strong transformation between the
+* `Pseudofunctor.StrongTrans.mkOfOplax η`: given a strong transformation `η` between the
+  underlying oplax functors, `mkOfOplax` lifts this to a strong transformation between the
   pseudofunctors.
 * `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
 
-Using this we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
+Using this, we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
 strong transformations. To access this instance, run `open scoped Pseudofunctor.StrongTrans`.
 See `Pseudofunctor.StrongTrans.categoryStruct`.
 
@@ -82,6 +82,7 @@ namespace StrongTrans
 
 variable {F G : B ⥤ᵖ C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The strong transformation of oplax functors induced by a strong transformation of
 pseudofunctors. -/
 @[simps]
@@ -244,7 +245,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
 @[to_app (attr := reassoc)]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
-      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫
+      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫ (α.naturality f).inv ▷ G.map g ≫
       (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).inv ≫ (α_ _ _ _).inv ≫
       (F.mapComp f g).inv ▷ α.app c := by
   simp [naturality_comp_iso α f g]

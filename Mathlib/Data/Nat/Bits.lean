@@ -5,12 +5,8 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Says
-public import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -115,14 +111,8 @@ lemma div2_val (n) : div2 n = n / 2 := by
 lemma bit_bodd_div2 (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-@[deprecated (since := "2025-09-24")]
-alias bit_decomp := bit_bodd_div2
-
 lemma bit_false_zero : bit false 0 = 0 :=
   rfl
-
-@[deprecated (since := "2025-09-24")]
-alias bit_zero := bit_false_zero
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
 and adds the bit `b` as the least significant bit each time.
@@ -139,8 +129,6 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
-/-- Lean takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
-@[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
@@ -228,7 +216,7 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
   | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> dsimp [bit] <;> omega
+  cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
@@ -256,8 +244,8 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | false, _, _, h => by dsimp [bit]; lia
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
-        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> lia
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
@@ -277,9 +265,7 @@ theorem bit1_bits (n : ℕ) : (2 * n + 1).bits = true :: n.bits :=
   bits_append_bit n true fun _ => rfl
 
 @[simp]
-theorem one_bits : Nat.bits 1 = [true] := by
-  convert bit1_bits 0
-  simp
+theorem one_bits : Nat.bits 1 = [true] := bit1_bits 0
 
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]

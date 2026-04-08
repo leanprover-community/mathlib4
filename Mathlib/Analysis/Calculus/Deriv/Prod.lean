@@ -22,7 +22,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -30,7 +30,7 @@ open Topology Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
+variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
 section CartesianProduct
 
@@ -40,21 +40,21 @@ section CartesianProduct
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
-nonrec theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' x L)
-    (hf₂ : HasDerivAtFilter f₂ f₂' x L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') x L :=
-  hf₁.prodMk hf₂
+theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' L)
+    (hf₂ : HasDerivAtFilter f₂ f₂' L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') L :=
+  HasFDerivAtFilter.prodMk hf₁ hf₂
 
-nonrec theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
+theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
-  hf₁.prodMk hf₂
+  HasDerivAtFilter.prodMk hf₁ hf₂
 
-nonrec theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
+theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.prodMk hf₂
+  HasDerivAtFilter.prodMk hf₁ hf₂
 
-nonrec theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
+theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
     (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.prodMk hf₂
+  HasDerivAtFilter.prodMk hf₁ hf₂
 
 end CartesianProduct
 
@@ -62,18 +62,18 @@ section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
 
-variable {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+variable {ι : Type*} {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
+
+@[simp]
+theorem hasDerivAtFilter_pi :
+    HasDerivAtFilter φ φ' L ↔ ∀ i, HasDerivAtFilter (fun x => φ x i) (φ' i) L :=
+  hasFDerivAtFilter_pi'
 
 @[simp]
 theorem hasStrictDerivAt_pi :
     HasStrictDerivAt φ φ' x ↔ ∀ i, HasStrictDerivAt (fun x => φ x i) (φ' i) x :=
-  hasStrictFDerivAt_pi'
-
-@[simp]
-theorem hasDerivAtFilter_pi :
-    HasDerivAtFilter φ φ' x L ↔ ∀ i, HasDerivAtFilter (fun x => φ x i) (φ' i) x L :=
-  hasFDerivAtFilter_pi'
+  hasDerivAtFilter_pi
 
 theorem hasDerivAt_pi : HasDerivAt φ φ' x ↔ ∀ i, HasDerivAt (fun x => φ x i) (φ' i) x :=
   hasDerivAtFilter_pi
@@ -85,12 +85,18 @@ theorem hasDerivWithinAt_pi :
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x) :
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
-  · exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hsx
-  · simp only [derivWithin_zero_of_not_uniqueDiffWithinAt hsx, Pi.zero_def]
+  · rw [derivWithin, fderivWithin_pi h hsx]
+    simp [derivWithin]
+    -- TODO: restore exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hsx
+  · rw [uniqueDiffWithinAt_iff_accPt] at hsx
+    simp [derivWithin, fderivWithin_zero_of_not_accPt hsx, Pi.zero_def]
+    -- TODO: restore simp only [derivWithin_zero_of_not_uniqueDiffWithinAt hsx, Pi.zero_def]
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
-    deriv φ x = fun i => deriv (fun x => φ x i) x :=
-  (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
+    deriv φ x = fun i => deriv (fun x => φ x i) x := by
+  -- TODO: restore (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
+  simp only [deriv, fderiv_pi h]
+  simp
 
 end Pi
 
@@ -124,21 +130,21 @@ theorem HasStrictDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     HasStrictDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x :=
   hasStrictDerivAt_finCons'.mpr ⟨h, hs⟩
 
-theorem hasDerivAtFilter_finCons {φ' : Π i, F' i} {l : Filter 𝕜} :
-    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' x l ↔
-      HasDerivAtFilter φ (φ' 0) x l ∧ HasDerivAtFilter φs (fun i => φ' i.succ) x l :=
+theorem hasDerivAtFilter_finCons {φ' : Π i, F' i} {l : Filter (𝕜 × 𝕜)} :
+    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' l ↔
+      HasDerivAtFilter φ (φ' 0) l ∧ HasDerivAtFilter φs (fun i => φ' i.succ) l :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasDerivAtFilter_finCons` where the derivative variables are free on the RHS
 instead. -/
-theorem hasDerivAtFilter_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜} :
-    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x l ↔
-      HasDerivAtFilter φ φ' x l ∧ HasDerivAtFilter φs φs' x l :=
+theorem hasDerivAtFilter_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter (𝕜 × 𝕜)} :
+    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') l ↔
+      HasDerivAtFilter φ φ' l ∧ HasDerivAtFilter φs φs' l :=
   hasDerivAtFilter_finCons
 
-theorem HasDerivAtFilter.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜}
-    (h : HasDerivAtFilter φ φ' x l) (hs : HasDerivAtFilter φs φs' x l) :
-    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x l :=
+theorem HasDerivAtFilter.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter (𝕜 × 𝕜)}
+    (h : HasDerivAtFilter φ φ' l) (hs : HasDerivAtFilter φs φs' l) :
+    HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') l :=
   hasDerivAtFilter_finCons'.mpr ⟨h, hs⟩
 
 theorem hasDerivAt_finCons {φ' : Π i, F' i} :

@@ -53,6 +53,7 @@ noncomputable def cotangentComplexAux [Finite σ] (P : PreSubmersivePresentation
   Finsupp.linearEquivFunOnFinite S S σ ∘ₗ Finsupp.lcomapDomain _ P.map_inj ∘ₗ
     P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ P.toExtension.cotangentComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
@@ -74,6 +75,7 @@ namespace SubmersivePresentation
 
 variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x hx
@@ -188,9 +190,6 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   simp only [Basis.repr_self, map_zero, Pi.zero_apply, Finsupp.single_apply] at hi
   grind
 
-@[deprecated (since := "2025-05-23")]
-alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
-
 /--
 Given a submersive presentation of `S` as `R`-algebra, any indexing type `κ` complementary to
 the `σ` in `ι` indexes a basis of `Ω[S⁄R]`.
@@ -214,6 +213,13 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
+    (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :
+    P.basisKaehlerOfIsCompl hf hcompl k = KaehlerDifferential.D _ _ (P.val (f k)) := by
+  simp [basisKaehlerOfIsCompl]
+
 /-- Given a submersive presentation of `S` as `R`-algebra, the images of `dxᵢ`
 for `i` in the complement of `σ` in `ι` form a basis of `Ω[S⁄R]`. -/
 @[stacks 00T7 "(2)"]
@@ -222,6 +228,11 @@ noncomputable def basisKaehler :
   P.basisKaehlerOfIsCompl Subtype.val_injective <| by
     rw [Subtype.range_coe_subtype]
     exact IsCompl.symm isCompl_compl
+
+@[simp]
+lemma basisKaehler_apply (k : ((Set.range P.map)ᶜ : Set _)) :
+    P.basisKaehler k = KaehlerDifferential.D _ _ (P.val k) := by
+  simp [basisKaehler]
 
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra, `Ω[S⁄R]` is free. -/
 @[stacks 00T7 "(2)"]
@@ -305,6 +316,15 @@ theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial
     Module.rank S Ω[S⁄R] = n := by
   obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
+
+lemma IsStandardSmoothOfRelativeDimension.iff_of_isStandardSmooth [Nontrivial S]
+    [IsStandardSmooth R S] (n : ℕ) :
+    IsStandardSmoothOfRelativeDimension n R S ↔ Module.rank S Ω[S⁄R] = n := by
+  refine ⟨fun h ↦ IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential _, fun h ↦ ?_⟩
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  refine ⟨_, _, _, ‹_›, ⟨P, ?_⟩⟩
+  apply Nat.cast_injective (R := Cardinal)
+  rwa [← P.rank_kaehlerDifferential]
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by

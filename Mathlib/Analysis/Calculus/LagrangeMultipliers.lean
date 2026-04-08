@@ -29,7 +29,7 @@ lagrange multiplier, local extremum
 
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set
@@ -45,7 +45,7 @@ at `x₀`, both `f : E → F` and `φ` are strictly differentiable at `x₀`, an
 a complete space, then the linear map `x ↦ (f' x, φ' x)` is not surjective. -/
 theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
-    (hφ' : HasStrictFDerivAt φ φ' x₀) : LinearMap.range (f'.prod φ') ≠ ⊤ := by
+    (hφ' : HasStrictFDerivAt φ φ' x₀) : (f'.prod φ').range ≠ ⊤ := by
   intro htop
   set fφ := fun x => (f x, φ x)
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
@@ -133,7 +133,7 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → StrongDual ℝ E) := by
   cases nonempty_fintype ι
-  rw [Fintype.linearIndependent_iff]; push_neg
+  rw [Fintype.linearIndependent_iff]; push Not
   rcases hextr.exists_multipliers_of_hasStrictFDerivAt hf' hφ' with ⟨Λ, Λ₀, hΛ, hΛf⟩
   refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf

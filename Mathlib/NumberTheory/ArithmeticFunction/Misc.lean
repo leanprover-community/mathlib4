@@ -209,6 +209,12 @@ theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (
   exact prod_congr n.support_factorization fun _ h ↦
     sigma_apply_prime_pow <| prime_of_mem_primeFactors h
 
+/-- A crude upper bound: `σ_k(n) ≤ n ^ (k + 1)`. -/
+theorem sigma_le_pow_succ (k n : ℕ) : σ k n ≤ n ^ (k + 1) := by
+  simp only [sigma_apply, pow_succ']
+  refine (Finset.sum_le_sum fun d hd ↦ Nat.pow_le_pow_left (Nat.divisor_le hd) k).trans ?_
+  simpa [Finset.sum_const] using Nat.mul_le_mul_right (n ^ k) (Nat.card_divisors_le_self n)
+
 end Sigma
 
 open scoped sigma
@@ -226,6 +232,7 @@ theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
+set_option backward.privateInPublic true in
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
   simp [sigma_zero_apply]
@@ -390,8 +397,7 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
   trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
     simp only [mem_Ioc] at hn
-    have hn0 : n ≠ 0 := by exact ne_zero_of_lt hn.1
-    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn.1.ne' hn.2]
   · simp_rw [sum_filter]
     rw [sum_comm]
     exact sum_congr rfl fun _ _ ↦ (by simp_all)
@@ -407,7 +413,7 @@ theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
   intro _
   constructor
   · intro ⟨_, h⟩
-    grw [← h, Nat.mul_div_cancel_left _ (by omega)]
+    grw [← h, Nat.mul_div_cancel_left _ (by lia)]
   · intro hm
     grw [hm]
     simp [mul_div_le, div_le_self]

@@ -131,7 +131,7 @@ lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm
   sq_covBySMul := by
     replace hA := calc (#(A ^ 4 * A) : ℝ)
       _ = #(A ^ 5) := by rw [← pow_succ]
-      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by omega) hA hAsymm
+      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by lia) hA hAsymm
     have hA₀ : A.Nonempty := ⟨1, hA₁⟩
     obtain ⟨F, -, hF, hAF⟩ := ruzsa_covering_mul hA₀ hA
     exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm] using hAF⟩
@@ -154,7 +154,7 @@ lemma pow_inter_pow_covBySMul_sq_inter_sq
       _ ≤ K ^ (m - 1) * L ^ (n - 1) := by gcongr
   · calc
       A ^ m ∩ B ^ n ⊆ (F₁ ^ (m - 1) * A) ∩ (F₂ ^ (n - 1) * B) := by
-        gcongr <;> apply pow_subset_pow_mul_of_sq_subset_mul <;> norm_cast <;> omega
+        gcongr <;> apply pow_subset_pow_mul_of_sq_subset_mul <;> norm_cast <;> lia
       _ = ⋃ (a ∈ F₁ ^ (m - 1)) (b ∈ F₂ ^ (n - 1)), a • A ∩ b • B := by
         simp_rw [← smul_eq_mul, ← iUnion_smul_set, iUnion₂_inter_iUnion₂]; norm_cast
       _ ⊆ ⋃ (a ∈ F₁ ^ (m - 1)) (b ∈ F₂ ^ (n - 1)), f a b • (A⁻¹ * A ∩ (B⁻¹ * B)) := by
@@ -172,7 +172,7 @@ lemma pow_inter_pow (hA : IsApproximateSubgroup K A) (hB : IsApproximateSubgroup
   one_mem := ⟨Set.one_mem_pow hA.one_mem, Set.one_mem_pow hB.one_mem⟩
   inv_eq_self := by simp_rw [inter_inv, ← inv_pow, hA.inv_eq_self, hB.inv_eq_self]
   sq_covBySMul := by
-    refine (hA.pow_inter_pow_covBySMul_sq_inter_sq hB (by omega) (by omega)).subset ?_
+    refine (hA.pow_inter_pow_covBySMul_sq_inter_sq hB (by lia) (by lia)).subset ?_
       (by gcongr; exacts [hA.one_mem, hB.one_mem])
     calc
       (A ^ m ∩ B ^ n) ^ 2 ⊆ (A ^ m) ^ 2 ∩ (B ^ n) ^ 2 := Set.inter_pow_subset
@@ -202,7 +202,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       · simp [hA.nonempty.ne_empty] at hKA
       · rw [Finset.coe_singleton, singleton_smul, sq] at hKA
         use x
-    have hx' : x ⁻¹ • (A * A) ⊆ A := by rwa [← subset_smul_set_iff]
+    have hx' : x⁻¹ • (A * A) ⊆ A := by rwa [← subset_smul_set_iff]
     have hx_inv : x⁻¹ ∈ A := by
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hA.one_mem hA.one_mem))
     have hx_sq : x * x ∈ A := by

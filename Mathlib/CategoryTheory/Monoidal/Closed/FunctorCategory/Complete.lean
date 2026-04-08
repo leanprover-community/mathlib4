@@ -31,6 +31,7 @@ namespace CategoryTheory.Functor
 section
 variable (I : Type u₂) [Category.{v₂} I]
 
+set_option backward.privateInPublic true in
 private abbrev incl : Discrete I ⥤ I := Discrete.functor id
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [MonoidalClosed C]
@@ -38,6 +39,8 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [MonoidalClose
 variable [∀ (F : Discrete I ⥤ C), (Discrete.functor id).HasRightKanExtension F]
 -- is also implied by: `[HasLimitsOfSize.{u₂, max u₂ v₂} C]`
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ReflectsIsomorphisms <| (whiskeringLeft _ _ C).obj (incl I) where
   reflects f h := by
     simp only [NatTrans.isIso_iff_isIso_app] at *
@@ -46,17 +49,26 @@ instance : ReflectsIsomorphisms <| (whiskeringLeft _ _ C).obj (incl I) where
 
 variable [HasLimitsOfShape WalkingParallelPair C]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Comonad.PreservesLimitOfIsCoreflexivePair ((whiskeringLeft _ _ C).obj (incl I)) :=
   ⟨inferInstance⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ComonadicLeftAdjoint ((whiskeringLeft _ _ C).obj (incl I)) :=
   Comonad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms
     ((incl I).ranAdjunction C)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance (F : I ⥤ C) : IsLeftAdjoint (tensorLeft (incl I ⋙ F)) :=
   (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `functorCategoryMonoidalClosed` -/
+@[implicit_reducible]
 def functorCategoryClosed (F : I ⥤ C) : Closed F :=
   have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
   have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
@@ -71,6 +83,7 @@ monoidal closed category.
 Note: this is defined completely abstractly, and does not have any good definitional properties.
 See the TODO in the module docstring.
 -/
+@[implicit_reducible]
 def functorCategoryMonoidalClosed : MonoidalClosed (I ⥤ C) where
   closed F := functorCategoryClosed I C F
 

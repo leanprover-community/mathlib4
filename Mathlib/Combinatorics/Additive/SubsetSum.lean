@@ -5,7 +5,6 @@ Authors: Aviv Bar Natan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Monoid.Defs
@@ -13,6 +12,8 @@ public import Mathlib.Data.Finset.Powerset
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Max
 
 /-!
 # Subset sums
@@ -83,7 +84,7 @@ lemma card_add_card_subsetSum_lt_card_subsetSum_insert_max (hA : ∀ x ∈ A, 0 
   have vadd_subset : a +ᵥ A.subsetSum ⊆ (insert a A).subsetSum :=
     vadd_finset_subsetSum_subset_subsetSum_insert fun ha => (hAa a ha).false
   -- Count the sizes.
-  calc  #A + #A.subsetSum
+  calc #A + #A.subsetSum
     _ < #A + 1 + #A.subsetSum := by gcongr; exact Nat.lt_add_one _
     _ = #(insert 0 A) + #A.subsetSum := by rw [card_insert_of_notMem fun h => (hA 0 h).false]
     _ = #(insert 0 A) + #(a +ᵥ A.subsetSum) := by simp [vadd_finset_def, card_image_of_injOn]
@@ -94,8 +95,8 @@ lemma card_add_card_subsetSum_lt_card_subsetSum_insert_max (hA : ∀ x ∈ A, 0 
 theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < x) :
     (#A + 1).choose 2 < #A.subsetSum := by
   induction A using induction_on_max with
-  | h0 => simp
-  | step a A A_lt_a ih =>
+  | empty => simp
+  | insert a A A_lt_a ih =>
     have A_pos' : ∀ x ∈ A, 0 < x := fun x hx => A_pos x (mem_insert_of_mem hx)
     grw [card_insert_of_notMem fun ha => (A_lt_a a ha).false, Nat.choose_succ_left _ _ (by lia),
       Nat.choose_one_right, add_right_comm, add_assoc, Nat.add_one_le_iff.2 (ih A_pos')]

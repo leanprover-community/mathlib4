@@ -13,13 +13,14 @@ Here we prove general results of the form "the Mellin transform of a power serie
 a Dirichlet series".
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
 
 variable {ι : Type*} [Countable ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Most basic version of the "Mellin transform = Dirichlet series" argument. -/
 lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ}
     (hp : ∀ i, a i = 0 ∨ 0 < p i) (hs : 0 < s.re)

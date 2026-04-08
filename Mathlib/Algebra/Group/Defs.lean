@@ -6,13 +6,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 module
 
 public import Batteries.Logic
+public import Batteries.Util.LibraryNote
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
-public import Mathlib.Tactic.Basic
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -222,6 +224,9 @@ variable [CommMagma G] {a : G}
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
+@[to_additive]
+instance CommMagma.to_isCommutative : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
@@ -262,7 +267,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note2 «lower cancel priority» /--
+library_note «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -312,8 +317,32 @@ class AddZero (M : Type*) extends Zero M, Add M
 
 /-- Bundling a `Mul` and `One` structure together without any axioms about their
 compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
-@[to_additive, ext]
+@[to_additive (attr := ext)]
 class MulOne (M : Type*) extends One M, Mul M
+
+/-- An additive monoid is Dedekind-finite if every left inverse is also a right inverse.
+Also called von Neumann-finite or directly finite. -/
+class IsDedekindFiniteAddMonoid (M : Type*) [AddZero M] : Prop where
+  add_eq_zero_symm {a b : M} : a + b = 0 → b + a = 0
+
+/-- A monoid is Dedekind-finite if every left inverse is also a right inverse.
+It is more common to talk about Dedekind-finite rings, but https://arxiv.org/abs/2102.01598
+does define Dedekind-finite monoids in §2.2. -/
+@[to_additive (attr := mk_iff)] class IsDedekindFiniteMonoid (M : Type*) [MulOne M] : Prop where
+  mul_eq_one_symm {a b : M} : a * b = 1 → b * a = 1
+
+export IsDedekindFiniteMonoid (mul_eq_one_symm)
+export IsDedekindFiniteAddMonoid (add_eq_zero_symm)
+attribute [to_additive existing] isDedekindFiniteMonoid_iff
+
+@[to_additive] theorem mul_eq_one_comm {M} [MulOne M] [IsDedekindFiniteMonoid M] {a b : M} :
+    a * b = 1 ↔ b * a = 1 where
+  mp := mul_eq_one_symm
+  mpr := mul_eq_one_symm
+
+@[to_additive] instance (priority := low) (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (Std.Commutative.comm ..).trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -322,7 +351,6 @@ class AddZeroClass (M : Type u) extends AddZero M where
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
-
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -375,7 +403,7 @@ include hn ha
 
 end
 
-library_note2 «forgetful inheritance» /--
+library_note «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -496,7 +524,7 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     match k' with
     | 0 => rfl
     | 1 => simp [npowRec']
-    | k + 2 => simp [npowRec', ← mul_assoc, Nat.mul_add, ← ih]
+    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
 
 @[to_additive]
 theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :
@@ -524,7 +552,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
     npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
-  replace hk : k' ≠ 0 := by omega
+  replace hk : k' ≠ 0 := by lia
   induction k' using Nat.binaryRecFromOne generalizing n m with
   | zero => simp at hk
   | one => simp [npowRec']
@@ -565,6 +593,14 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
+@[to_additive] theorem npowBinRec_zero {M : Type*} [Mul M] [One M] (m : M) :
+    npowBinRec 0 m = 1 := rfl
+
+@[to_additive] theorem npowBinRec_succ {M : Type*} [Semigroup M] [One M] (n : ℕ) (m : M) :
+    npowBinRec (n + 1) m = npowBinRec n m * m := by
+  iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
+  rfl
+
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number.
@@ -588,13 +624,9 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high, to_additive]
+instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
@@ -615,7 +647,7 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive one_nsmul, simp]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 
 @[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
@@ -667,6 +699,40 @@ lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul
 lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 
+@[to_additive] protected lemma IsLeftRegular.mul_eq_one_symm {a b : M} (reg : IsLeftRegular a)
+    (eq : a * b = 1) : b * a = 1 :=
+  reg <| by simp [← mul_assoc, eq]
+
+@[to_additive] protected lemma IsRightRegular.mul_eq_one_symm {a b : M} (reg : IsRightRegular a)
+    (eq : b * a = 1) : a * b = 1 :=
+  reg <| by simp [mul_assoc, eq]
+
+variable (M)
+
+@[to_additive] instance [IsLeftCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsLeftCancelMul.mul_left_cancel _).mul_eq_one_symm
+
+@[to_additive] instance [IsRightCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsRightCancelMul.mul_right_cancel _).mul_eq_one_symm
+
+namespace IsDedekindFiniteMonoid
+
+/-- A monoid is Dedekind-finite if every element with a left inverse also has a right inverse. -/
+@[to_additive] lemma of_exists_self_mul_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, y * z = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show x = z by simpa [← mul_assoc, h] using congr_arg (x * ·) hz.symm]
+
+/-- A monoid is Dedekind-finite if every element with a right inverse also has a left inverse. -/
+@[to_additive] lemma of_exists_mul_self_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, z * x = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show y = z by simpa [mul_assoc, h] using congr_arg (· * y) hz.symm]
+
+end IsDedekindFiniteMonoid
+
 end Monoid
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
@@ -688,6 +754,11 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+/- This is assigned default rather than low priority because it gives the most common examples
+of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
+priority performs better than low or high priority. -/
+@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
@@ -1109,10 +1180,13 @@ variable [Group G] {a b : G}
 theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=
   Group.inv_mul_cancel a
 
+set_option backward.privateInPublic true in
 @[to_additive]
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_cancel a) h
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   rw [← inv_mul_cancel a⁻¹, inv_eq_of_mul (inv_mul_cancel a)]
@@ -1144,6 +1218,8 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
 theorem div_mul_cancel (a b : G) : a / b * b = a := by
   rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
   { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
@@ -1209,14 +1285,127 @@ class IsMulCommutative (M : Type*) [Mul M] : Prop where
   is_comm : Std.Commutative (α := M) (· * ·)
 
 @[to_additive]
-instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
-    [IsMulCommutative M] :
-    CommMonoid M where
-  mul_comm := IsMulCommutative.is_comm.comm
+lemma isMulCommutative_iff {M : Type*} [Mul M] :
+    IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
+  grind [IsMulCommutative, Std.Commutative]
 
 @[to_additive]
-instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
+alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
+
+/-- An alternative to `mul_comm` which uses the mixin `IsMulCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `mul_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/
+@[to_additive
+/-- An alternative to `add_comm` which uses the mixin `IsAddCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/ ]
+lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
+  IsMulCommutative.is_comm.comm ..
+
+namespace IsMulCommutative
+
+/-- A magma which `IsMulCommutative` is a `CommMagma`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An additive magma which `IsMulCommutative` is a `AddCommMagma`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] :
+    CommMagma M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+/-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An `AddSemigroup` which `IsMulCommutative` is a `AddCommSemigroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Semigroup M] [IsMulCommutative M] :
+    CommSemigroup M where
+
+/-- A `Monoid` which `IsMulCommutative` is a `CommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- A `AddMonoid` which `IsMulCommutative` is a `AddCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Monoid M] [IsMulCommutative M] :
+    CommMonoid M where
+
+/-- A `DivisionMonoid` which `IsMulCommutative` is a `DivisionCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- A `SubtractionMonoid` which `IsMulCommutative` is a `SubtractionCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [DivisionMonoid M] [IsMulCommutative M] :
+    DivisionCommMonoid M where
+
+/-- A `Group` which `IsMulCommutative` is a `CommGroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An `AddGroup` which `IsMulCommutative` is a `AddCommGroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
+
+end IsMulCommutative
 
 end IsCommutative
 

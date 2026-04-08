@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
+public import Mathlib.Tactic.Conv
 
 /-!
 # Group structures on the multiplicative and additive opposites
@@ -94,10 +95,10 @@ instance instRightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigrou
 instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ where
   mul_comm x y := unop_injective <| mul_comm (unop y) (unop x)
 
+@[to_additive] instance instMulOne [MulOne α] : MulOne αᵐᵒᵖ where
+
 @[to_additive]
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
-  toMul := instMul
-  toOne := instOne
   one_mul _ := unop_injective <| mul_one _
   mul_one _ := unop_injective <| one_mul _
 
@@ -169,18 +170,18 @@ instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
 section Monoid
 variable [Monoid α]
 
-@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
+@[to_additive (attr := simp)] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
 
-@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
+@[to_additive (attr := simp)] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
 
 end Monoid
 
 section DivInvMonoid
 variable [DivInvMonoid α]
 
-@[simp] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
+@[to_additive (attr := simp)] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
 
-@[simp] lemma unop_zpow (x : αᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z := rfl
+@[to_additive (attr := simp)] lemma unop_zpow (x : αᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z := rfl
 
 end DivInvMonoid
 
@@ -230,6 +231,14 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
   semiconjBy_unop
 
 attribute [nolint simpComm] AddOpposite.addCommute_unop
+
+@[to_additive] protected theorem isDedekindFiniteMonoid_iff [MulOne α] :
+    IsDedekindFiniteMonoid αᵐᵒᵖ ↔ IsDedekindFiniteMonoid α := by
+  simp_rw [isDedekindFiniteMonoid_iff, ← opEquiv.forall_congr_right]
+  simpa [← op_one, ← op_mul] using forall_comm
+
+@[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
+  MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
 
 end MulOpposite
 

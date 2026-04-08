@@ -14,11 +14,11 @@ In this file we prove several properties of infinite Hausdorff topological space
 
 - `exists_seq_infinite_isOpen_pairwise_disjoint`: there exists a sequence
   of pairwise disjoint infinite open sets;
-- `exists_topology_isEmbedding_nat`: there exista a topological embedding of `ℕ` into the space;
+- `exists_topology_isEmbedding_nat`: there exists a topological embedding of `ℕ` into the space;
 - `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
 
-@[expose] public section
+public section
 
 open Function Filter Set Topology
 
@@ -48,7 +48,7 @@ theorem exists_seq_infinite_isOpen_pairwise_disjoint :
         Pairwise (Disjoint on U) by
       rcases this with ⟨U, hU, hd⟩
       exact ⟨U, fun n ↦ (hU n).1, fun n ↦ (hU n).2.1, hd⟩
-    have : IsSymm (Set X) Disjoint := ⟨fun _ _ h ↦ h.symm⟩
+    have : Std.Symm (α := Set X) Disjoint := ⟨fun _ _ h ↦ h.symm⟩
     refine exists_seq_of_forall_finset_exists' (fun U : Set X ↦ U.Nonempty ∧ IsOpen U ∧ Uᶜ ∈ 𝓝 x)
       Disjoint fun S hS ↦ ?_
     have : (⋂ U ∈ S, interior (Uᶜ)) \ {x} ∈ 𝓝[≠] x := inter_mem_inf ((biInter_finset_mem _).2

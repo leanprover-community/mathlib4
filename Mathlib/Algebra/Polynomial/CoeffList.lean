@@ -5,7 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Data.List.Range
 
@@ -127,18 +127,18 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   have h₂ := withBotSucc_degree_eq_natDegree_add_one hep
   obtain ⟨n, hn, hn2⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d ∧
       d = P.natDegree - P.eraseLead.degree.succ := by
-    use P.natDegree - P.eraseLead.natDegree -  1
+    use P.natDegree - P.eraseLead.natDegree - 1
     have := eraseLead_natDegree_le P
     lia
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
   rintro (_ | k)
-  · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
+  · obtain ⟨w, h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
   simp only [coeffList, List.map_reverse]
   by_cases! hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
-      <;> simpa [hep, h] using by lia
+      <;> simp <;> lia
   obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ hkd)
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
@@ -155,7 +155,8 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
         List.getElem?_range (by lia), Option.map_some]
       congr 2
       lia
-    · simpa using by lia
+    · simp
+      lia
 
 end Semiring
 

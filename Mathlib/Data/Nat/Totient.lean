@@ -5,8 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Two
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Factorization.Induction
@@ -234,12 +237,8 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  rcases eq_zero_or_neZero p with hp | hp
-  · subst hp
-    simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
-    -- the subst created a non-defeq but subsingleton instance diamond; resolve it
-    suffices Fintype.card ℤˣ ≠ 0 by convert this
-    simp
+  rcases eq_zero_or_neZero p with rfl | hp
+  · simp [ZMod, not_prime_zero, zero_tsub]
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]
 
 @[simp]
@@ -297,7 +296,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
     (φ n * ∏ p ∈ n.primeFactors, p) = n * ∏ p ∈ n.primeFactors, (p - 1) := by
   by_cases hn : n = 0; · simp [hn]
   rw [totient_eq_prod_factorization hn]
-  nth_rw 3 [← factorization_prod_pow_eq_self hn]
+  nth_rw 3 [← prod_factorization_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
   refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
   rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
@@ -373,6 +372,49 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
     (p * n).totient = (p - 1) * n.totient := by
   rw [totient_mul _, totient_prime hp]
   simpa [h] using coprime_or_dvd_of_prime hp n
+
+theorem totient_two_mul_of_even {n : ℕ} (hn : Even n) : (2 * n).totient = 2 * n.totient :=
+  totient_mul_of_prime_of_dvd prime_two hn.two_dvd
+
+theorem totient_two_mul_of_odd {n : ℕ} (hn : Odd n) : (2 * n).totient = n.totient := by
+  rw [totient_mul_of_prime_of_not_dvd prime_two hn.not_two_dvd_nat, Nat.add_one_sub_one 1, one_mul]
+
+theorem eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
+    a = b ∨ 2 * a = b := by
+  by_cases ha : a = 0
+  · rw [ha, totient_zero, eq_comm, totient_eq_zero] at h'
+    simp [ha, h']
+  by_cases hb : b = 0
+  · rw [hb, totient_zero, totient_eq_zero] at h'
+    exact False.elim (ha h')
+  obtain ⟨c, rfl⟩ := h
+  suffices a.Coprime c by
+    rw [totient_mul this, eq_comm, mul_eq_left (totient_eq_zero.not.mpr ha),
+      totient_eq_one_iff] at h'
+    obtain rfl | rfl := h'
+    · simp
+    · simp [mul_comm]
+  refine coprime_of_dvd fun p hp hap ↦ ?_
+  rintro ⟨d, rfl⟩
+  suffices a.totient < (p * a * d).totient by
+    rw [← mul_assoc, mul_comm a] at h'
+    exact h'.not_lt this
+  rw [mul_comm p]
+  refine lt_of_lt_of_le ?_ (Nat.le_of_dvd ?_ (totient_dvd_of_dvd ⟨d, rfl⟩))
+  · rw [mul_comm, totient_mul_of_prime_of_dvd hp hap, Nat.lt_mul_iff_one_lt_left]
+    · exact hp.one_lt
+    · exact totient_pos.mpr <| pos_of_ne_zero ha
+  · exact totient_pos.mpr <| zero_lt_of_ne_zero (by rwa [mul_assoc])
+
+theorem _root_.Even.eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Even a)
+    (h' : a.totient = b.totient) : a = b := by
+  by_cases ha' : a = 0
+  · rw [ha', totient_zero, eq_comm, totient_eq_zero] at h'
+    rw [h', ha']
+  refine (eq_or_eq_of_totient_eq_totient h h').resolve_right fun h ↦ ?_
+  rw [← h, totient_mul_of_prime_of_dvd (prime_two) (even_iff_two_dvd.mp ha), eq_comm,
+    mul_eq_right (totient_eq_zero.not.mpr ha')] at h'
+  lia
 
 theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
       (p ^ k : ℕ) ^ φ (p ^ k) / ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) =

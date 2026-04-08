@@ -35,7 +35,7 @@ Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function MulAction
 
@@ -138,7 +138,7 @@ open Basis OnCycleFactors
 theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
-  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by lia
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from
@@ -210,7 +210,7 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
   ext c : 2
   rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-  exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
+  exact h_count _ (by simp) _ c.prop (mem_range_toPermHom_iff.mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/

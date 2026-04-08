@@ -38,6 +38,7 @@ Note: due to the fact that composition of functors in mathlib is reversed compar
 one usually found in the literature, this monoidal structure is in fact the monoidal
 opposite of the one usually considered in the literature.
 -/
+@[instance_reducible]
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
   whiskerLeft X _ _ F := Functor.whiskerLeft X F
@@ -121,7 +122,7 @@ instance : (tensoringRight C).Monoidal :=
 end MonoidalCategory
 
 variable {C}
-variable {M : Type*} [Category M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
+variable {M : Type*} [Category* M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
 
 @[reassoc (attr := simp)]
 theorem μ_δ_app (i j : M) (X : C) [F.Monoidal] :
@@ -156,6 +157,7 @@ theorem μ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) [F.LaxMonoidal] :
     (F.obj n).map ((F.obj m).map f) ≫ (μ F m n).app Y = (μ F m n).app X ≫ (F.obj _).map f :=
   (μ F m n).naturality f
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is a simp lemma in the reverse direction via `NatTrans.naturality`.
 @[reassoc]
 theorem δ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) [F.OplaxMonoidal] :
@@ -202,6 +204,7 @@ theorem left_unitality_app (n : M) (X : C) [F.LaxMonoidal] :
     (F.obj n).map ((ε F).app X) ≫ (μ F (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X = 𝟙 _ :=
   congr_app (left_unitality F n).symm X
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem obj_ε_app (n : M) (X : C) [F.Monoidal] :
     (F.obj n).map ((ε F).app X) = (F.map (λ_ n).inv).app X ≫ (δ F (𝟙_ M) n).app X := by
@@ -210,6 +213,7 @@ theorem obj_ε_app (n : M) (X : C) [F.Monoidal] :
   simp only [Category.id_comp, Category.assoc, μ_δ_app, endofunctorMonoidalCategory_tensorObj_obj,
     Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem obj_η_app (n : M) (X : C) [F.Monoidal] :
     (F.obj n).map ((η F).app X) = (μ F (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X := by
@@ -221,6 +225,7 @@ theorem right_unitality_app (n : M) (X : C) [F.Monoidal] :
     (ε F).app ((F.obj n).obj X) ≫ (μ F n (𝟙_ M)).app X ≫ (F.map (ρ_ n).hom).app X = 𝟙 _ :=
   congr_app (Functor.LaxMonoidal.right_unitality F n).symm X
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ε_app_obj (n : M) (X : C) [F.Monoidal] :
     (ε F).app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (δ F n (𝟙_ M)).app X := by
@@ -229,6 +234,7 @@ theorem ε_app_obj (n : M) (X : C) [F.Monoidal] :
   simp only [Category.id_comp, Category.assoc, μ_δ_app,
     endofunctorMonoidalCategory_tensorObj_obj, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
     (η F).app ((F.obj n).obj X) = (μ F n (𝟙_ M)).app X ≫ (F.map (ρ_ n).hom).app X := by
@@ -236,6 +242,7 @@ theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
   dsimp
   simp only [Category.comp_id, μ_δ_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc]
 theorem associativity_app (m₁ m₂ m₃ : M) (X : C) [F.LaxMonoidal] :
     (F.obj m₃).map ((μ F m₁ m₂).app X) ≫
@@ -245,6 +252,7 @@ theorem associativity_app (m₁ m₂ m₃ : M) (X : C) [F.LaxMonoidal] :
   dsimp at this
   simpa using this
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) [F.Monoidal] :
     (F.obj m₃).map ((μ F m₁ m₂).app X) =
@@ -254,6 +262,7 @@ theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) [F.Monoidal] :
   rw [← associativity_app_assoc]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) [F.Monoidal] :
     (F.obj m₃).map ((δ F m₁ m₂).app X) =
@@ -265,6 +274,7 @@ theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) [F.Monoidal] :
   simp only [Category.id_comp, Category.assoc, μ_δ_app_assoc, μ_δ_app,
     endofunctorMonoidalCategory_tensorObj_obj, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) [F.Monoidal] :
     (F.obj (𝟙_ M)).map f ≫ (μ F m (𝟙_ M)).app _ =
@@ -272,6 +282,7 @@ theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) [F.Mon
   rw [← cancel_epi ((ε F).app _), ← cancel_mono ((δ F _ _).app _)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) [F.Monoidal] :
     (μ F (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (μ F m₁ (𝟙_ M ⊗ m₂)).app X ≫
@@ -287,6 +298,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) [F.Mon
     F.obj m ⋙ F.obj n ≅ 𝟭 C :=
   μIso F m n ≪≫ F.mapIso h ≪≫ (εIso F).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `m ⊗ n ≅ 𝟙_M` and `n ⊗ m ≅ 𝟙_M` (subject to some commuting constraints),
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]

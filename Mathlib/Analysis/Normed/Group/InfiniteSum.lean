@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -33,7 +34,7 @@ In a complete (semi)normed group,
 infinite series, absolute convergence, normed group
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal NNReal
 

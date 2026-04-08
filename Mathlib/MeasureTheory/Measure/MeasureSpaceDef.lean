@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.CountableInter
 /-!
 # Measure spaces
 
-This file defines measure spaces, the almost-everywhere filter and ae_measurable functions.
+This file defines measure spaces, the almost-everywhere filter and `AEMeasurable` functions.
 See `MeasureTheory.MeasureSpace` for their properties and for extended documentation.
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
@@ -37,7 +37,7 @@ This conveniently allows us to apply the measure to sets without proving that th
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
 See the documentation of `MeasureTheory.MeasureSpace` for ways to construct measures and proving
-that two measure are equal.
+that two measures are equal.
 
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
@@ -295,6 +295,7 @@ section ae
 predicate holds for almost every `x : β` and
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
+
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 
@@ -377,7 +378,7 @@ notation3 "∃ᵐ "(...)", "r:(scoped P =>
 
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
 macro "volume_tac" : tactic =>
-  `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
+  `(tactic| exact MeasureTheory.MeasureSpace.volume)
 
 end MeasureSpace
 
@@ -401,7 +402,10 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
-function. -/
+function.
+
+A similar notion is `MeasureTheory.NullMeasurable`. That notion is equivalent to `AEMeasurable` if
+the σ-algebra on the codomain is countably generated, but weaker in general. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g

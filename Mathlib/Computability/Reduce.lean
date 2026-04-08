@@ -62,8 +62,10 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
   manyOneReducible_refl
 
-theorem transitive_manyOneReducible {α} [Primcodable α] : Transitive (@ManyOneReducible α α _ _) :=
-  fun _ _ _ => ManyOneReducible.trans
+theorem isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible :=
+  ⟨fun _ _ _ ↦ ManyOneReducible.trans⟩
+
+@[deprecated (since := "2026-02-21")] alias transitive_manyOneReducible := isTrans_manyOneReducible
 
 /--
 `p` is one-one reducible to `q` if there is an injective computable function translating questions
@@ -105,8 +107,10 @@ theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] 
 theorem reflexive_oneOneReducible {α} [Primcodable α] : Reflexive (@OneOneReducible α α _ _) :=
   oneOneReducible_refl
 
-theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneReducible α α _ _) :=
-  fun _ _ _ => OneOneReducible.trans
+theorem isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible :=
+  ⟨fun _ _ _ ↦ OneOneReducible.trans⟩
+
+@[deprecated (since := "2026-02-21")] alias transitive_oneOneReducible := isTrans_oneOneReducible
 
 namespace ComputablePred
 
@@ -340,6 +344,7 @@ protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ →
     (of p).liftOn₂ (of q) f h = f p q :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
   rw [of, of, Quotient.eq'']
@@ -360,21 +365,26 @@ instance instLE : LE ManyOneDegree :=
 theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
   manyOneReducible_toNat_toNat
 
+set_option backward.privateInPublic true in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
+set_option backward.privateInPublic true in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and]
 
+set_option backward.privateInPublic true in
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
   apply ManyOneReducible.trans
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder ManyOneDegree where
   le_refl := le_refl
   le_trans _ _ _ := le_trans

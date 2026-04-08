@@ -22,7 +22,8 @@ of coherent sheaves on `C` and `D` are equivalent (see
 `CategoryTheory.coherentTopology.equivalence`).
 
 The main application of this equivalence is the characterisation of condensed sets as coherent
-sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/Equivalence.lean`
+sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file
+`Mathlib/Condensed/Equivalence.lean`.
 
 We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).
@@ -37,13 +38,14 @@ namespace CategoryTheory
 
 open Limits Functor regularTopology
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 namespace coherentTopology
 
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -56,9 +58,10 @@ instance : F.IsCoverDense (coherentTopology _) := by
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) ↔
     (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
@@ -114,7 +117,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -138,7 +141,7 @@ def equivalence' (A : Type u₃) [Category.{v₃} A]
     [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end RegularExtensive
 
@@ -149,6 +152,7 @@ namespace regularTopology
 variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [F.Full] [F.Faithful]
   [F.EffectivelyEnough] [Preregular D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (regularTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -158,6 +162,7 @@ instance : F.IsCoverDense (regularTopology _) := by
   rintro ⟨⟩
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔
@@ -212,7 +217,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -238,9 +243,9 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
 noncomputable instance [Preregular C] [FinitaryExtensive C]
-    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
-    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.obj).mp F.property).1
 
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
@@ -257,15 +262,15 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.
 -/
-@[simps]
+@[simps!]
 def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
     Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
-  functor := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
-  inverse := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
+  functor :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mp F.property)
+  inverse :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mpr F.property)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

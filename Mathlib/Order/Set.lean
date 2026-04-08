@@ -10,7 +10,7 @@ public import Mathlib.Order.TypeTags
 
 /-! # `Set.range` on `WithBot` and `WithTop` -/
 
-@[expose] public section
+public section
 
 open Set
 

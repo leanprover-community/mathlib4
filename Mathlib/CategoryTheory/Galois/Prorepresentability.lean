@@ -145,7 +145,7 @@ section Specialized
 variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
-This is a colimit cocone (see `PreGaloisCategory.isColimìt`) -/
+This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
@@ -177,6 +177,7 @@ instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
     apply evaluation_injective_of_isConnected F Z B z
     simp [hhz, hf, hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `cocone F` is a colimit cocone, i.e. `F` is pro-represented by `incl F`. -/
 noncomputable def isColimit : IsColimit (cocone F) := by
   refine evaluationJointlyReflectsColimits _ (fun X ↦ ?_)
@@ -307,6 +308,7 @@ noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
     (Types.sectionsEquiv (incl F ⋙ F')).symm
   i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
     (endEquivSectionsFibers F f).val A = f.app A A.pt := by
@@ -321,15 +323,14 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
-    (fun {A B} f ↦ by
-      ext (φ : Aut A.obj)
-      dsimp
-      erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
-      simp [-Hom.comp, ← f.comp])
+    (fun f ↦ by
+      ext
+      simp [evaluationEquivOfIsGalois, -Hom.comp, ← f.comp])
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=
@@ -342,6 +343,7 @@ noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
   let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
     F.map (AutGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
   dsimp [endEquivAutGalois, AutGalois.π_apply]
@@ -456,16 +458,13 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
       (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
     let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by
       ext x
-      simp only [FintypeCat.comp_apply, FintypeCat.equivEquivIso_apply_hom,
-        Equiv.trans_apply, FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp, e]
+      dsimp [gapp, e]
       erw [FintypeCat.uSwitchEquiv_naturality (F.map f)]
-      rw [← Functor.comp_map, ← FunctorToFintypeCat.naturality]
-      simp only [comp_obj, Functor.comp_map, F']
-      rw [FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
+      rw [← Functor.comp_map]
+      erw [← FunctorToFintypeCat.naturality, FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
+      rfl
     refine ⟨g, show (gapp X).hom x = y from ?_⟩
-    simp only [FintypeCat.equivEquivIso_apply_hom, Equiv.trans_apply,
-      FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp]
-    rw [← hx', hg', hy', Equiv.apply_symm_apply]
+    simp [gapp, ← hx', hg', hy', Equiv.apply_symm_apply]
 
 end General
 

@@ -20,9 +20,9 @@ to `ν`.
 
 ## Main definitions
 
-* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` and a
-  measure `μ` is said to `HaveLebesgueDecomposition` if both the positive part and negative
-  part of `s` `HaveLebesgueDecomposition` with respect to `μ`.
+* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` is said to have
+  Lebesgue decomposition with respect to a measure `μ` if both the positive part and negative part
+  of `s` have Lebesgue decomposition with respect to `μ`.
 * `MeasureTheory.SignedMeasure.singularPart` : The singular part between a signed measure `s`
   and a measure `μ` is simply the singular part of the positive part of `s` with respect to `μ`
   minus the singular part of the negative part of `s` with respect to `μ`.
@@ -458,6 +458,7 @@ theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrabl
     ⟨memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
       memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]

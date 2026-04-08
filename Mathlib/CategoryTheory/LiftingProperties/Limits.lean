@@ -5,7 +5,8 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Lifting properties and (co)limits
@@ -23,7 +24,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y Z W : C}
+variable {C : Type*} [Category* C] {X Y Z W : C}
   {f : X ⟶ Y} {s : X ⟶ Z} {g : Z ⟶ W} {t : Y ⟶ W}
 
 lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)
@@ -59,6 +60,7 @@ instance [HasPullback g t] {T₁ T₂ : C} (p : T₁ ⟶ T₂) [HasLiftingProper
     HasLiftingProperty p (pullback.fst g t) :=
   (IsPullback.of_hasPullback g t).flip.hasLiftingProperty p
 
+set_option backward.isDefEq.respectTransparency false in
 instance {J : Type*} {A B : J → C} [HasProduct A] [HasProduct B]
     (f : (j : J) → A j ⟶ B j) {X Y : C} (p : X ⟶ Y)
     [∀ j, HasLiftingProperty p (f j)] :
@@ -69,6 +71,7 @@ instance {J : Type*} {A B : J → C} [HasProduct A] [HasProduct B]
       ⟨by rw [← Category.assoc, ← sq.w]; simp⟩
     exact ⟨⟨{ l := Pi.lift (fun j ↦ (sq' j).lift) }⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {J : Type*} {A B : J → C} [HasCoproduct A] [HasCoproduct B]
     (f : (j : J) → A j ⟶ B j) {X Y : C} (p : X ⟶ Y)
     [∀ j, HasLiftingProperty (f j) p] :

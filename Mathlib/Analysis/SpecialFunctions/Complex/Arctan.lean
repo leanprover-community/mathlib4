@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Complex arctangent

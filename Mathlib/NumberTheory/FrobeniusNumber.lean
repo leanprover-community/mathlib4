@@ -61,7 +61,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn
   constructor
-  · push_neg
+  · push Not
     intro a b h
     apply cop.mul_add_mul_ne_mul (add_one_ne_zero a) (add_one_ne_zero b)
     simp only [Nat.sub_sub, smul_eq_mul] at h
@@ -215,7 +215,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+      (by lia))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by lia))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
         (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by

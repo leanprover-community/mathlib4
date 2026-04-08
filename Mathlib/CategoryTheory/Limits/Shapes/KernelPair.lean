@@ -6,8 +6,8 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Kernel pairs
@@ -125,6 +125,7 @@ theorem cancel_right_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂]
     (big_k : IsKernelPair (f₁ ≫ f₂) a b) : IsKernelPair f₁ a b :=
   cancel_right (by rw [← cancel_mono f₂, assoc, assoc, big_k.w]) big_k
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `(a,b)` is a kernel pair for `f₁` and `f₂` is mono, then `(a,b)` is a kernel pair for `f₁ ≫ f₂`.
 The converse of `cancel_right_of_mono`.
@@ -142,11 +143,13 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
       · exact (hm WalkingCospan.left).trans (by simp)
       · exact (hm WalkingCospan.right).trans (by simp)⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `(a,b)` is the kernel pair of `f`, and `f` is a coequalizer morphism for some parallel pair, then
 `f` is a coequalizer morphism of `a` and `b`.
 -/
-def toCoequalizer (k : IsKernelPair f a b) (r : RegularEpi f) : IsColimit (Cofork.ofπ f k.w) := by
+noncomputable def toCoequalizer (k : IsKernelPair f a b) (r : RegularEpi f) :
+    IsColimit (Cofork.ofπ f k.w) := by
   let t := k.isLimit.lift (PullbackCone.mk _ _ r.w)
   have ht : t ≫ a = r.left := k.isLimit.fac _ WalkingCospan.left
   have kt : t ≫ b = r.right := k.isLimit.fac _ WalkingCospan.right
@@ -166,6 +169,7 @@ noncomputable def toCoequalizer' (k : IsKernelPair f a b) [IsRegularEpi f] :
     IsColimit (Cofork.ofπ f k.w) :=
   toCoequalizer k <| IsRegularEpi.getStruct f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a₁ a₂ : A ⟶ Y` is a kernel pair for `g : Y ⟶ Z`, then `a₁ ×[Z] X` and `a₂ ×[Z] X`
 (`A ×[Z] X ⟶ Y ×[Z] X`) is a kernel pair for `Y ×[Z] X ⟶ X`. -/
 protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h : IsKernelPair g a₁ a₂)
@@ -189,6 +193,7 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
       · simpa using hm WalkingCospan.left =≫ pullback.snd f g
       · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp)
   rw [IsPullback.cone_fst, ← IsIso.eq_comp_inv, Category.id_comp] at h₁
@@ -197,6 +202,12 @@ theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   intro Z g₁ g₂ e
   obtain ⟨l', rfl, rfl⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit _ _ e
   rw [IsPullback.cone_fst, h₂]
+
+theorem mono_of_eq_fst_snd' (h : IsKernelPair f a a) : Mono f :=
+  ⟨fun g₁ g₂ e ↦ (lift_fst h g₁ g₂ e).symm.trans <| lift_snd h g₁ g₂ e⟩
+
+theorem mono_of_eq_fst_snd (h : IsKernelPair f a b) (e : a = b) : Mono f := by
+  induction e; exact h.mono_of_eq_fst_snd'
 
 theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
   rw [←
@@ -211,6 +222,16 @@ theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
   convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _ )⟩).paste_vert (IsKernelPair.id_of_mono f)
   all_goals { simp }
 
+/-- The kernel pair provided by `HasPullback f f` fits into an `IsKernelPair`. -/
+theorem of_hasPullback (f : X ⟶ Y) [HasPullback f f] :
+    IsKernelPair f (pullback.fst f f) (pullback.snd f f) :=
+  IsPullback.of_hasPullback f f
+
 end IsKernelPair
+
+lemma IsRegularEpi.exists_of_isKernelPair {X Y : C} (π : X ⟶ Y) [IsRegularEpi π] {Z : C}
+    {fst snd : Z ⟶ X} (h : IsKernelPair π fst snd) {W : C} (f : X ⟶ W) (w : fst ≫ f = snd ≫ f) :
+    ∃ (g : Y ⟶ W), π ≫ g = f :=
+  ⟨h.toCoequalizer'.desc (Cofork.ofπ f w), Cofork.IsColimit.π_desc h.toCoequalizer'⟩
 
 end CategoryTheory

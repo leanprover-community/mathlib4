@@ -1,19 +1,23 @@
 /-
 Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
+Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
 public meta import Batteries.Data.String.Matcher
-public meta import Mathlib.Data.Nat.Notation
 public meta import Lake.Util.Casing
+public import Batteries.Data.String.Basic
+public import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
 
 meta section
+
 
 /-!
 ## Text-based linters
@@ -22,12 +26,14 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, all such linters check for code style issues.
 
 Currently, this file contains linters checking
-- if the string "adaptation note" is used instead of the command #adaptation_note,
+- if the string "adaptation note" is used instead of the command `#adaptation_note`,
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
+- for any code containing blocklisted unicode characters
+- bad unicode characters
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -46,7 +52,7 @@ namespace Mathlib.Linter.TextBased
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
   /-- The bare string "Adaptation note" (or variants thereof):
-  instead, the #adaptation_note command should be used. -/
+  instead, the `#adaptation_note` command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
@@ -54,7 +60,14 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
-deriving BEq
+  /-- A unicode character was used that isn't allowed -/
+  | unwantedUnicode (c : Char)
+  /-- Unicode variant selectors are used in a bad way.
+  * `s` is the string containing the unicode character and any unicode variant selector following it
+  * `selector` is the desired selector or `none`
+  -/
+  | unicodeVariant (s : String) (selector: Option Char)
+deriving BEq, Inhabited
 
 /-- How to format style errors -/
 public inductive ErrorFormat
@@ -68,14 +81,44 @@ public inductive ErrorFormat
   | github : ErrorFormat
   deriving BEq
 
-/-- Create the underlying error message for a given `StyleError`. -/
+open UnicodeLinter in
+/--
+Create the underlying error message for a given `StyleError`.
+
+Note: changes to the texts here must be accounted for in `parse?_errorContext`!
+-/
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
-    endings (\n) instead"
+  | windowsLineEnding => "This file contains windows line endings (\\r\\n): please use Unix line\
+    endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
+  | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
+    '{c}' ({c.printCodepointHex})."
+  | StyleError.unicodeVariant s selector =>
+    let variantText := if selector == UnicodeVariant.emoji then
+      "emoji"
+    else if selector == UnicodeVariant.text then
+      "text"
+    else
+      "default"
+    let oldHex := s.printCodepointHex
+    match s.toList, selector with
+    | c₀ :: [], some sel =>
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := s.printCodepointHex
+      s!"Missing unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | c₀ :: _ :: [], some sel =>
+      -- by assumption, the second character is a variant selector
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := s.printCodepointHex
+      s!"Wrong unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | _, _ =>
+      s!"Unexpected unicode variant selector: \"{s}\" ({oldHex}). \
+        Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -85,6 +128,9 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.unwantedUnicode _ => "ERR_UNICODE"
+  | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
+
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -95,6 +141,7 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+deriving BEq
 
 /-- Possible results of comparing an `ErrorContext` to an `existing` entry:
 most often, they are different --- if the existing entry covers the new exception,
@@ -125,7 +172,7 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
     Option ErrorContext :=
-  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
+  exceptions.find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -147,11 +194,21 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
-/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+/-- Removes quotation marks '"' at front and back of string. -/
+def removeQuotations (s : String) : String :=
+  ((s.dropPrefix "\"").toString.dropSuffix "\"").toString
+
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
+This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile`
+Used for, e.g., parsing the "exceptions" file.
+
+Need to ensure (see unit tests in `MathlibTest/LintStyle.lean`) that
+  `∀ (ec : ErrorContext), (parse?_errorContext <| outputMessage ec .exceptionsFile) = some ec`
+-/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.splitToList (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -165,6 +222,26 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_UNICODE" => do
+          -- extract the offending unicode character from `errorMessage`
+          -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
+          -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
+          let str ← errorMessage[7]?
+          let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
+          StyleError.unwantedUnicode c
+        | "ERR_UNICODE_VARIANT" => do
+          match (← errorMessage[0]?).toLower with
+          | "wrong" | "missing" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            let selector := match ← errorMessage[9]? with
+            | "emoji" => UnicodeLinter.UnicodeVariant.emoji
+            | "text" => UnicodeLinter.UnicodeVariant.text
+            | _ => none
+            StyleError.unicodeVariant offending selector
+          | "unexpected" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            StyleError.unicodeVariant offending none
+          | _ => none
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -188,7 +265,7 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. If possible,
+return an array of all style errors with (1-based!) line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
@@ -207,8 +284,14 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
 
   let mut errors := Array.mkEmpty 0
   for h : idx in [:lines.size] do
-    -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
-    if lines[idx].containsSubstr "daptation note" then
+    let line := lines[idx]
+    -- Flag lines that look like a hand-written adaptation note comment
+    -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
+    -- merely reference the concept (e.g. "-- see adaptation note") or that
+    -- use the correct #adaptation_note command.
+    if line.containsSubstr "daptation note" &&
+        !line.containsSubstr "#adaptation_note" &&
+        !line.containsSubstr "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
@@ -225,7 +308,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set idx line.trimRight
+      fixedLines := fixedLines.set idx line.trimAsciiEnd.copy
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
@@ -241,27 +324,117 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
+    if pos != line.endPos && pos.prev!.get! == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
   -- The Python version also excluded multi-line comments: for all files generated by `mk_all`,
-  -- this is in fact not necessary. (It is needed for `Tactic/Linter.lean`, though.)
+  -- this is in fact not necessary. (It is needed for `Mathlib/Tactic/Linter.lean`, though.)
   lines.all (fun line ↦ line.startsWith "import " || line == "" || line.startsWith "-- ")
 
 end
 
+namespace UnicodeLinter
+
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+def findBadUnicodeAux (s : String) (pos : s.Pos) (c : Char)
+    (err : Array StyleError := #[]) : Array StyleError :=
+  if h : pos < s.endPos then
+    let posₙ := pos.next (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
+    match posₙ.get? with
+    | none =>
+      -- `c` is the last character of the string
+      if ! isAllowedCharacter c then
+        -- bad: character not allowed. Add StyleError.
+        (err.push (.unwantedUnicode c))
+      else
+        err
+    | some cₙ =>
+      have : posₙ.remainingBytes < pos.remainingBytes :=
+          (pos.lt_iff_remainingBytes_lt posₙ).mp pos.lt_next
+      if ! isAllowedCharacter c then
+        -- bad: character not allowed.
+        findBadUnicodeAux s posₙ cₙ (err.push (.unwantedUnicode c))
+      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
+        -- bad: unwanted emoji variant selector.
+        let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
+        -- bad: unwanted text variant selector.
+        let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ != UnicodeVariant.emoji && emojis.contains c then
+        -- bad: missing emoji variant selector.
+        let errₙ := err.push (.unicodeVariant c.toString UnicodeVariant.emoji)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
+        -- bad: missing text variant selector.
+        let errₙ := err.push (.unicodeVariant c.toString UnicodeVariant.text)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else
+        -- okay. Continue recursion.
+        findBadUnicodeAux s posₙ cₙ err
+  else
+    err
+termination_by pos.remainingBytes
+
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+@[inline]
+def findBadUnicode (s : String) : Array StyleError :=
+  match s.startPos.get? with
+  | none => #[]
+  | some c =>
+    findBadUnicodeAux s s.startPos c
+
+end UnicodeLinter
+
+/-- Lint a collection of input strings for disallowed unicode characters. -/
+public register_option linter.unicodeLinter : Bool := { defValue := true }
+
+@[inherit_doc linter.unicodeLinter]
+def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.unicodeLinter opts do return (#[], none)
+
+  let mut changed : Array String := #[]
+  let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
+  let mut lineNumber := 1 -- one-based line numbers!
+  for line in lines do
+    let err := UnicodeLinter.findBadUnicode line
+
+    -- try to auto-fix the style error
+    let mut newLine := line
+    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
+      match e with
+      | .unwantedUnicode c =>
+        if let some replacement := UnicodeLinter.replaceDisallowed c then
+            newLine := newLine.replace c replacement
+        else
+            pure ()
+      | .unicodeVariant s sel =>
+        let replacement := match sel, s.startPos.get? with
+        | none, some c => c.toString
+        | some v, some c => String.ofList [c, v]
+        | _, none => unreachable!
+        newLine := newLine.replace s replacement
+      | _ => unreachable!
+
+    changed := changed.push newLine
+    errors := errors.append (err.map (fun e => (e, lineNumber)))
+    lineNumber := lineNumber + 1
+  return (errors, if (changed == lines) then none else some changed)
+
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
+    adaptationNoteLinter,
+    semicolonLinter,
+    trailingWhitespaceLinter,
+    unicodeLinter,
   ]
-
 
 /-- Read a file and apply all text-based linters.
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
@@ -291,13 +464,33 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   let mut changed := lines
 
   for lint in allLinters do
-    let (err, changes) := lint opts changed
-    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
-    -- TODO: auto-fixes do not take style exceptions into account
+    let (new_errors, changes) := lint opts changed
     if let some c := changes then
-      changed := c
+      -- apply linter's suggested changes only where no exceptions apply.
+      -- Each changed line must correspond to line number of at least one error.
+      if changed.size != c.size then
+        throw <| IO.userError "linter's suggested changes must have same number of lines as input"
+      -- For each line in `changed`,
+      changed := Array.ofFn fun (lineIdx : Fin changed.size) ↦
+        -- check if any exception applies:
+        if new_errors.any fun (e, idx) ↦
+          (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
+          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isNone
+        then
+          c[lineIdx]! -- no exception applies. Assign linter's suggestion.
+        else
+          changed[lineIdx]! -- An least one exception applies. Ignore linter's suggested line.
+      -- Note: to keep logic simple, changed lines where an exception applies are left alone,
+      --   even if there are other suggested changes where no exception applies.
+
+    -- append ALL errors to the output. For this, exception filtering happens later below.
+    allOutput := allOutput.append
+      (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) new_errors)
+    if changed != lines then
       changes_made := true
-  -- This list is not sorted: for github, this is fine.
+    -- Note: we ASSUME that the linters' auto-fixes do not introduce new issues!
+
+  -- Filter exceptions. Note: This list is not sorted. For github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
@@ -353,7 +546,8 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
       IO.eprint output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
-    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
+    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
+      Try `lake exe lint-style --fix` to apply automatic fixes."
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/

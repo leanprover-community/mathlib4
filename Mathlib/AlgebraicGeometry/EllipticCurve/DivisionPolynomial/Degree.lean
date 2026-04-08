@@ -50,7 +50,7 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 elliptic curve, division polynomial, torsion point
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

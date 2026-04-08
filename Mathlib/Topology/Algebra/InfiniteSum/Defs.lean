@@ -162,7 +162,7 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 @[to_additive]
 lemma hasProd_bot (hL : ¬L.NeBot) (f : β → α) (a : α) :
     HasProd f a L := by
-  have : L.filter = ⊥ := by contrapose! hL; exact ⟨⟨hL⟩⟩
+  have : L.filter = ⊥ := by contrapose! hL; exact ⟨hL⟩
   rw [HasProd, this]
   exact tendsto_bot
 
@@ -240,8 +240,8 @@ theorem hasProd_subtype_comap_iff_of_mulSupport_subset {s : Set β} (hf : mulSup
 
 @[to_additive]
 theorem hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f ⊆ s) :
-    HasProd (f ∘ (↑) : s → α) a ↔ HasProd f a :=
-  by simpa using hasProd_subtype_comap_iff_of_mulSupport_subset hf (L := unconditional _)
+    HasProd (f ∘ (↑) : s → α) a ↔ HasProd f a := by
+  simpa using hasProd_subtype_comap_iff_of_mulSupport_subset hf (L := unconditional _)
 
 @[to_additive]
 theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilter β) [L.HasSupport]
@@ -259,8 +259,8 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
 
 @[to_additive]
 theorem hasProd_fintype [Fintype β] (f : β → α) (L := unconditional β) [L.LeAtTop] :
-    HasProd f (∏ b, f b) L :=
-  by simpa using hasProd_fintype_support f L
+    HasProd f (∏ b, f b) L := by
+  simpa using hasProd_fintype_support f L
 
 @[to_additive]
 theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := unconditional (s : Set β))
@@ -287,9 +287,7 @@ theorem hasProd_prod_support_of_ne_finset_one (hf : ∀ b ∈ L.support, b ∉ s
     (L.filter.biInter_mem (Set.toFinite _)).mpr (fun b hb ↦ hb.2)
   filter_upwards [h1, L.eventually_le_support] with t ht ht'
   simp only [Set.mem_iInter] at ht
-  apply Finset.prod_congr_of_eq_on_inter <;>
-  · simp only [Set.mem_toFinset]
-    grind
+  apply Finset.prod_congr_of_eq_on_inter <;> grind
 
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive /-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum`
@@ -315,7 +313,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
     · simp only [Set.inter_eq_left.mpr (show ↑h.2.toFinset ⊆ L.support by simp)]
       simp only [Set.Finite.coe_toFinset, Finset.toFinset_coe]
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
-      · exact Finset.prod_congr rfl (by aesop)
+      · exact Finset.prod_congr rfl (by simp_all)
       · simp
     · grind [Set.Finite.mem_toFinset, mem_mulSupport]
     · exact h.1

@@ -48,7 +48,7 @@ namespace MeasureTheory
 
 theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
     MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
-  simp_rw [MeasurableSpace.generateFrom_singleton]
+  simp_rw +instances [MeasurableSpace.generateFrom_singleton]
   unfold MeasurableSet MeasurableSpace.MeasurableSet' MeasurableSpace.comap
   simp_rw [MeasurableSpace.measurableSet_top, true_and]
   constructor
@@ -77,7 +77,7 @@ namespace Filter
 
 variable [MeasurableSpace α]
 
-/-- A filter `f` is measurably generates if each `s ∈ f` includes a measurable `t ∈ f`. -/
+/-- A filter `f` is measurably generated if each `s ∈ f` includes a measurable `t ∈ f`. -/
 class IsMeasurablyGenerated (f : Filter α) : Prop where
   exists_measurable_subset : ∀ ⦃s⦄, s ∈ f → ∃ t ∈ f, MeasurableSet t ∧ t ⊆ s
 
@@ -164,14 +164,14 @@ protected theorem iInter_of_antitone_of_frequently
   rw [← compl_iff, compl_iInter]
   exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
 
-protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
   cases isEmpty_or_nonempty ι with
   | inl _ => simp
   | inr _ => exact .iUnion_of_monotone_of_frequently hsm <| .of_forall hs
 
-protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
   rw [← compl_iff, compl_iInter]
@@ -217,7 +217,7 @@ instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.ext <| insert_empty_eq _⟩
 
-instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instCompl : Compl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
 
 @[simp]
@@ -270,6 +270,10 @@ instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := �
 theorem coe_bot : ↑(⊥ : Subtype (MeasurableSet : Set α → Prop)) = (⊥ : Set α) :=
   rfl
 
+@[simp]
+theorem subtype_bot_eq : (⟨∅, .empty⟩ : Subtype (MeasurableSet : Set α → Prop)) = ⊥ :=
+  rfl
+
 instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨⟨Set.univ, MeasurableSet.univ⟩⟩
 
@@ -279,8 +283,8 @@ theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : 
 
 noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl coe_union coe_inter coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :

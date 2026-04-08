@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
@@ -18,10 +19,10 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 
 -/
 
-@[expose] public section
+public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
 
 local notation "𝕢" => qParam
 
@@ -43,13 +44,22 @@ variable (k) in
 lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) :
     k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) I
-  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ⟨2 * Complex.I, by simp⟩
-  simp_rw [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
-  nth_rw 1 [h2I2] at hI
-  simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
-  refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
-  rwa [← ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
-    zpow_eq_one_iff_right₀ (by simp) (by simp)] at H
+  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ((⟨2, two_pos⟩ : {x : ℝ // 0 < x}) • .I)
+  simp_rw [sl_moeb, hf, Function.const, denom_S] at hI h2I2
+  suffices (2 : ℂ) ^ k = 1 ↔ k = 0 by
+    simpa [mul_zpow, zpow_ne_zero, this] using h2I2.symm.trans hI
+  simpa using ofReal_inj.trans <| zpow_eq_one_iff_right₀ (two_pos.le : (0 : ℝ) ≤ 2) (by norm_num1)
+
+theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
+    (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) : ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
+  intro γ
+  have h𝒮ℒ : 𝒮ℒ = Subgroup.closure ({↑S, ↑T} : Set (GL (Fin 2) ℝ)) := by
+    change (Matrix.SpecialLinearGroup.mapGL ℝ).range = _
+    rw [MonoidHom.range_eq_map, ← SpecialLinearGroup.SL2Z_generators, MonoidHom.map_closure,
+      Set.image_pair]
+    rfl
+  exact (slash_action_generators h𝒮ℒ).mpr (fun g hg ↦ by rcases hg with rfl | rfl <;> assumption)
+    _ (MonoidHom.mem_range.mpr ⟨γ, rfl⟩)
 
 end SlashInvariantForm
 
@@ -102,4 +112,4 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
-  simpa [← DFunLike.coe_injective.eq_iff] using levelOne_neg_weight_eq_zero hk f
+  simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f

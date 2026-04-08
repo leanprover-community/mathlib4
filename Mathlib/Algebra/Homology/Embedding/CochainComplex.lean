@@ -26,7 +26,7 @@ open CategoryTheory Category Limits ComplexShape ZeroObject
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open HomologicalComplex
 
@@ -53,6 +53,22 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 /-- The canonical map `K ⟶ K.truncGE n` for `K : CochainComplex C ℤ`. -/
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
+
+lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (K.ιTruncLE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_ιTruncLE (j := k) _ _ (by simp)
+
+lemma quasiIsoAt_πTruncGE (n q : ℤ) (hq : n ≤ q) :
+    QuasiIsoAt (K.πTruncGE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_πTruncGE (j := k) _ _ (by simp)
+
+instance (n : ℤ) : QuasiIsoAt (K.πTruncGE n) n :=
+  quasiIsoAt_πTruncGE _ _ _ (by lia)
+
+instance (n : ℤ) : QuasiIsoAt (K.ιTruncLE n) n :=
+  quasiIsoAt_ιTruncLE _ _ _ (by lia)
 
 section
 
@@ -210,6 +226,10 @@ variable [HasZeroObject C]
 
 instance (X : CochainComplex C ℕ) :
     CochainComplex.IsStrictlyGE (X.extend embeddingUpNat) 0 where
+  isZero _ _ := isZero_extend_X _ _ _ (by aesop)
+
+instance (X : ChainComplex C ℕ) :
+    CochainComplex.IsStrictlyLE (X.extend embeddingDownNat) 0 where
   isZero _ _ := isZero_extend_X _ _ _ (by aesop)
 
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to

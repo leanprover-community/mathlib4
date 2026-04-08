@@ -95,12 +95,13 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
 @[simps!]
 noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
     IndObjectPresentation B :=
-  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
+  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
 /-- The canonical comparison functor between the indexing category of the presentation and the
 comma category `CostructuredArrow yoneda A`. This functor is always final. -/

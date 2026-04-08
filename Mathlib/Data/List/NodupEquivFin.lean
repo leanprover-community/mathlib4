@@ -162,7 +162,7 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
       obtain ⟨f, hf⟩ := IH
       refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
-    | cons₂ _ _ IH =>
+    | cons_cons _ _ IH =>
       obtain ⟨f, hf⟩ := IH
       refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
@@ -207,15 +207,9 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · lia
       · exact absurd (h.trans hj) hi
       · simpa using h
-    · intro i
-      simp only [OrderEmbedding.coe_ofStrictMono]
-      split_ifs with hi
-      · specialize hf ⟨i, hi⟩
-        simp_all
-      · rw [getElem?_eq_none_iff.mpr, getElem?_eq_none_iff.mpr]
-        · simp
-        · simpa using hi
+    · grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

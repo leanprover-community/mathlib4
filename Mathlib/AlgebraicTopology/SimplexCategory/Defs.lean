@@ -12,15 +12,13 @@ public import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
-We construct a skeletal model of the simplex category, with objects `ℕ` and the
-morphisms `n ⟶ m` being the monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
+We construct a skeletal model of the simplex category, with an object `⦋n⦌` for each `n : ℕ`, and
+morphisms `⦋n⦌ ⟶ ⦋m⦌` identify to monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
 
 In `Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean`, we show that this category
 is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
-
-The definitions `SimplexCategory` and `SimplexCategory.Hom` are marked as irreducible.
 
 We provide the following functions to work with these objects:
 1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
@@ -46,46 +44,28 @@ universe v
 open CategoryTheory
 
 /-- The simplex category:
-* objects are natural numbers `n : ℕ`
-* morphisms from `n` to `m` are monotone functions `Fin (n+1) → Fin (m+1)`
+* for each `n : ℕ`, there is an object `⦋n⦌`;
+* morphisms `⦋n⦌ ⟶ ⦋m⦌` are monotone functions `Fin (n+1) → Fin (m+1)`
 -/
-def SimplexCategory :=
-  ℕ
+@[ext]
+structure SimplexCategory : Type where
+  /-- Constructor `ℕ → SimplexCategory`. -/
+  mk ::
+  /-- The length of an object in `SimplexCategory` -/
+  len : ℕ
 
 namespace SimplexCategory
-
--- The definition of `SimplexCategory` is made irreducible below.
-/-- Interpret a natural number as an object of the simplex category. -/
-def mk (n : ℕ) : SimplexCategory :=
-  n
 
 /-- the `n`-dimensional simplex can be denoted `⦋n⦌` -/
 scoped[Simplicial] notation "⦋" n "⦌" => SimplexCategory.mk n
 
--- TODO: Make `len` irreducible.
-/-- The length of an object of `SimplexCategory`. -/
-def len (n : SimplexCategory) : ℕ :=
-  n
-
-@[ext]
-theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
-  id
-
-attribute [irreducible] SimplexCategory
-
 open Simplicial
 
-@[simp]
-theorem len_mk (n : ℕ) : ⦋n⦌.len = n :=
-  rfl
+theorem len_mk (n : ℕ) : ⦋n⦌.len = n := rfl
 
 @[simp]
 theorem mk_len (n : SimplexCategory) : ⦋n.len⦌ = n :=
   rfl
-
-/-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F ⦋n⦌) : ∀ X, F X := fun n =>
-  h n.len
 
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
@@ -105,8 +85,6 @@ def toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) :
 theorem ext' {a b : SimplexCategory} (f g : SimplexCategory.Hom a b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   id
-
-attribute [irreducible] SimplexCategory.Hom
 
 @[simp]
 theorem mk_toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) : mk f.toOrderHom = f :=
@@ -133,6 +111,8 @@ def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCat
   mk <| f.toOrderHom.comp g.toOrderHom
 
 end Hom
+
+attribute [irreducible] SimplexCategory.Hom
 
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
@@ -176,11 +156,8 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+abbrev inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   ObjectProperty.ι _
-
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := ObjectProperty.full_ι _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := ObjectProperty.faithful_ι _
 
 /-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
@@ -188,12 +165,13 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
   Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b)
+    (h : f.hom.toOrderHom = g.hom.toOrderHom) : f = g :=
+  ObjectProperty.hom_ext _ (SimplexCategory.Hom.ext _ _ h)
 
 /-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 scoped macro "trunc" : tactic =>
-  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> lia)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
@@ -213,7 +191,7 @@ is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
-  f
+  ObjectProperty.homMk f
 
 @[simp]
 lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
@@ -226,10 +204,15 @@ lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c
     tr (f ≫ g) = tr f ≫ tr g :=
   rfl
 
+@[reassoc]
+lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len ≤ n}
+    {hc : c.len ≤ n} (g : (⟨b, hb⟩ : Truncated n) ⟶ ⟨c, hc⟩) (ha : a.len ≤ n := by trunc) :
+    tr (f ≫ g.hom) = tr f ≫ g :=
+  rfl
+
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
-  obj a := ⟨a.1, a.2.trans h⟩
-  map := id
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m :=
+  ObjectProperty.ιOfLE (fun _ h' ↦ h'.trans h)
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
 def inclCompInclusion {n m : ℕ} (h : n ≤ m) :

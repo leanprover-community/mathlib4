@@ -155,8 +155,6 @@ theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
   Finset.notMem_empty _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
 
