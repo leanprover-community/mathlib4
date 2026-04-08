@@ -18,14 +18,9 @@ ia a local ring (complete local ring).
 
 public section
 
-variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
+variable {R : Type*} [CommRing R] (m : Ideal R) [m.IsMaximal]
 
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R :=
-  IsLocalRing.of_unique_max_ideal ⟨m, hmax, fun _ hJ ↦
-    (hmax.eq_of_le hJ.ne_top <|
+  IsLocalRing.of_unique_max_ideal ⟨m, ‹m.IsMaximal›, fun _ hJ ↦
+    (‹m.IsMaximal›.eq_of_le hJ.ne_top <|
       (IsAdicComplete.le_jacobson_bot m).trans <| sInf_le ⟨bot_le, hJ⟩).symm⟩
-
-lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
-    IsUnit r ↔ r ∉ m := by
-  have : IsLocalRing R := isLocalRing_of_isAdicComplete_maximal m
-  simp [IsLocalRing.eq_maximalIdeal hmax]
