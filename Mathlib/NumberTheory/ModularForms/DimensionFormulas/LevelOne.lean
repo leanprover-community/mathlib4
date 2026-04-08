@@ -45,8 +45,7 @@ def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k :=
   have hΔ' : (qExpansion 1 (Δ' : ℍ → ℂ)).coeff 0 = 0 :=
     (qExpansion_coeff_zero Δ' one_pos one_mem_strictPeriods_SL).trans
       (CuspFormClass.zero_at_infty discriminantCuspForm).valueAtInfty_eq_zero
-  rw [show (ModularForm.mcast _ (f.mul Δ')) = (f : ℍ → ℂ) * Δ' from rfl,
-    qExpansion_mul_coeff_zero
+  rw [show (ModularForm.mcast _ (f.mul Δ')) = (f : ℍ → ℂ) * Δ' from rfl, qExpansion_mul_coeff_zero
       (analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL).continuousAt
       (analyticAt_cuspFunction_zero Δ' one_pos one_mem_strictPeriods_SL).continuousAt,hΔ', mul_zero]
 
@@ -70,8 +69,7 @@ private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, �
     show k + -(k - 12) = (12 : ℤ) from by ring]
   exact mul_div_mul_left (f z) (Δ z) (zpow_ne_zero _ hd)
 
-private lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
-    (f : ℍ → ℂ) =O[atImInfty] Δ := by
+private lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] Δ := by
   have hf_decay := CuspFormClass.exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL
   have hΔ_lower : ∀ᶠ τ : ℍ in atImInfty,
       ‖(fun τ : ℍ ↦ Real.exp (-2 * Real.pi * τ.im / 1)) τ‖ ≤ 2 * ‖Δ τ‖ := by
@@ -216,16 +214,12 @@ private lemma weight_six_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ (6 : �
     ((congrArg (1 + ·) (cuspForm_rank_lt_twelve (by norm_num))).trans (by norm_cast))
 
 private lemma E₄_qExpansion_coeff_one : (qExpansion 1 E₄).coeff 1 = 240 := by
-  rw [E_qExpansion_coeff _ ⟨2, rfl⟩]
-  simp only [one_ne_zero, ↓reduceIte]
-  rw [show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) from by
+  rw [E_qExpansion_coeff _ ⟨2, rfl⟩, show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) from by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num)]; exact bernoulli'_four]
   simp [ArithmeticFunction.sigma_one]; norm_num
 
 private lemma E₆_qExpansion_coeff_one : (qExpansion 1 E₆).coeff 1 = -504 := by
-  rw [E_qExpansion_coeff _ ⟨3, rfl⟩]
-  simp only [one_ne_zero, ↓reduceIte]
-  rw [show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) from by
+  rw [E_qExpansion_coeff _ ⟨3, rfl⟩, show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) from by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num), bernoulli'_def]
     norm_num [Finset.sum_range_succ, Finset.sum_range_zero,
       show Nat.choose 6 2 = 15 from by decide, show Nat.choose 6 4 = 15 from by decide,
@@ -242,9 +236,8 @@ private lemma tendsto_valueAtInfty {k : ℤ} (f : ModularForm 𝒮ℒ k) (c : �
 
 /-- The combination `E₄³ - E₆²` viewed as a level-1 modular form of weight 12. -/
 private noncomputable def E4_cube_sub_E6_sq_form : ModularForm 𝒮ℒ 12 :=
-  ModularForm.mcast (show 4 + (4 + 4) = 12 by norm_num)
-      (E₄.mul (ModularForm.mcast rfl (E₄.mul E₄))) -
-    ModularForm.mcast (show 6 + 6 = 12 by norm_num) (E₆.mul E₆)
+    mcast (show 4 + (4 + 4) = 12 by norm_num) (E₄.mul (mcast rfl (E₄.mul E₄))) -
+    mcast (show 6 + 6 = 12 by norm_num) (E₆.mul E₆)
 
 private lemma E4_cube_sub_E6_sq_form_apply (z : ℍ) :
     E4_cube_sub_E6_sq_form z = E₄ z ^ 3 - E₆ z ^ 2 := by

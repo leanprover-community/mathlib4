@@ -216,14 +216,13 @@ lemma discriminant_qExpansion_coeff_one : (qExpansion 1 discriminantCuspForm).co
     iteratedDeriv_zero]
   have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
   change deriv (cuspFunction 1 Δ) 0 = 1
-  rw [← derivWithin_of_isOpen Metric.isOpen_ball hmem,
+  simp [← derivWithin_of_isOpen Metric.isOpen_ball hmem,
     derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem),
     show (fun q : ℂ ↦ q * ∏' n, (1 - q ^ (n + 1)) ^ 24) =
       (fun q ↦ id q * ∏' n, (1 - q ^ (n + 1)) ^ 24) from rfl,
     derivWithin_fun_mul differentiableWithinAt_id
       (differentiableOn_tprod_one_sub_pow_pow 24 0 hmem),
     derivWithin_id _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
-  simp
 
 end
 
