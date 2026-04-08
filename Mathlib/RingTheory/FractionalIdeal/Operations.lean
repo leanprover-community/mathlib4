@@ -925,15 +925,13 @@ variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsD
 local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
   RingHomInvPair.of_ringEquiv f
 
-/-- If `f : R →+* S` is a surjective ring homomorphism and `I : Submodule R K` is fractional
-with respect to `R⁰`, then `I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap`
+/-- If `f : R →+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
+`R⁰`, then `I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap`
 is fractional with respect to `S⁰`.
 
 Do not confuse with `IsFractional.map`. -/
-theorem _root_.IsFractional.map' [RingHomSurjective (f : R →+* S)]
-    {I : Submodule R K} (hI : IsFractional R⁰ I) :
-    IsFractional S⁰
-      (I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap) := by
+theorem _root_.IsFractional.map' {I : Submodule R K} (hI : IsFractional R⁰ I) :
+    IsFractional S⁰ (I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap) := by
   simp only [IsFractional, mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submodule.mem_map,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at hI ⊢
   obtain ⟨r, hr0, hr⟩ := hI
