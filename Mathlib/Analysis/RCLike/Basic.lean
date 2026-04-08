@@ -1108,7 +1108,7 @@ instance (priority := 100) : ContinuousStar K :=
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star
 
-/-- The `ℝ → K` coercion, as a linear map -/
+/-- The `ℝ → K` coercion, as an algebra map. -/
 noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
   Algebra.ofId ℝ K
 
@@ -1117,6 +1117,7 @@ theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
   rfl
 
 variable (K) in
+/-- The `ℝ → K` coercion, as a ⋆-algebra map. -/
 noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K where
   __ := ofRealAm
   map_star' _ := RCLike.conj_ofReal _ |>.symm

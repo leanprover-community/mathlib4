@@ -72,6 +72,7 @@ variable (X) in
   continuous_postcomp { toFun x := RCLike.ofReal x }
 
 variable (X) in
+/-- `ContinuousMap.realToRCLike` as a ⋆-algebra map. -/
 @[simps!] noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
   compStarAlgHom X (RCLike.ofRealStarAlgHom 𝕜) RCLike.continuous_ofReal
 
