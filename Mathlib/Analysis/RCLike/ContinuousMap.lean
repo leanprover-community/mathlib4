@@ -23,7 +23,9 @@ variable {X : Type*} (𝕜 : Type*) [TopologicalSpace X] [RCLike 𝕜]
 /-- Lifting `C(X, ℝ)` to `C(X, 𝕜)` using `RCLike.ofReal`. -/
 @[simps] def realToRCLike (f : C(X, ℝ)) : C(X, 𝕜) where toFun x := RCLike.ofReal (f x)
 
-@[simp] lemma isSelfAdjoint_realToRCLike {f : C(X, ℝ)} : IsSelfAdjoint (f.realToRCLike 𝕜) := by
+@[simp, grind .]
+lemma isSelfAdjoint_realToRCLike {f : C(X, ℝ)} :
+    IsSelfAdjoint (f.realToRCLike 𝕜) := by
   ext; simp
 
 @[simp] lemma spectrum_realToRCLike (f : C(X, ℝ)) :
@@ -43,6 +45,7 @@ variable {𝕜} in
     (f.realToRCLike 𝕜).rclikeToReal = f := by ext; simp
 
 variable {𝕜} in
+@[aesop safe apply, grind =]
 theorem IsSelfAdjoint.realToRCLike_rclikeToReal {f : C(X, 𝕜)} (hf : IsSelfAdjoint f) :
     f.rclikeToReal.realToRCLike 𝕜 = f := by
   ext
@@ -62,7 +65,8 @@ variable (X) in
   .of_dist_eq fun f g ↦ by simp [dist_eq_norm, norm_eq_iSup_norm, ← map_sub]
 
 variable (X) in
-@[simp] lemma continuous_realToRCLike [CompactSpace X] : Continuous (realToRCLike 𝕜 (X := X)) :=
+@[simp, fun_prop]
+lemma continuous_realToRCLike [CompactSpace X] : Continuous (realToRCLike 𝕜 (X := X)) :=
   (isometry_realToRCLike X 𝕜).continuous
 
 end ContinuousMap
