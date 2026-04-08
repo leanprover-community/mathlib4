@@ -274,6 +274,6 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
     refine blimsup_congr' <| Eventually.of_forall fun i hi => ?_
     simp [q, hu i hi]
   rw [hq fun i hi => (Metric.thickening_nonempty_iff.mp <| Set.nonempty_iff_ne_empty.2 hi).1,
-    hq fun i hi => (mul_pos_iff_of_pos_left hM).mp <|
+    hq fun i hi ↦ (mul_pos_iff_of_pos_left hM).mp <|
       (Metric.thickening_nonempty_iff.mp <| Set.nonempty_iff_ne_empty.2 hi).1]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)
