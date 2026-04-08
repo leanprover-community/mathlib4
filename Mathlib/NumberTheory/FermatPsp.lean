@@ -299,7 +299,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
     lia
   exact hA.trans_le (Nat.le_mul_of_pos_right _ hB)
 
-/-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
+/-- For all positive bases, there exist infinitely many **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
 that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/
