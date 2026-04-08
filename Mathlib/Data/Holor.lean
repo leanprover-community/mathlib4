@@ -101,23 +101,30 @@ instance [Add α] : Add (Holor α ds) :=
 instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+instance [AddMonoid α] : AddMonoid (Holor α ds) :=
+  inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+  inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
 
-instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+instance [AddGroup α] : AddGroup (Holor α ds) :=
+  inferInstanceAs <| AddGroup (HolorIndex ds → α)
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+  inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
+instance [Semiring α] : Module α (Holor α ds) :=
+  inferInstanceAs <| Module α (HolorIndex ds → α)
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>

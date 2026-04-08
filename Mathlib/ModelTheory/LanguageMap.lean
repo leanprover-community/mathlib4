@@ -327,15 +327,12 @@ def constantsOnFunc : ℕ → Type u'
 /-- A language with constants indexed by a type. -/
 @[simps]
 def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
+deriving IsAlgebraic
 
 variable {α}
 
 theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
-
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
-  unfold constantsOn
-  infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
   inferInstanceAs (IsEmpty PEmpty)
@@ -509,10 +506,7 @@ variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
 are interpreted via the embedding `f`. -/
 @[nolint unusedArguments]
 def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
-
-instance : L.Structure (f.withConstants A) := by
-  dsimp [Embedding.withConstants]
-  infer_instance
+deriving L.Structure
 
 instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
   constantsOn.structure fun a => f a

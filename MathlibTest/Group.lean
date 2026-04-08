@@ -1,6 +1,8 @@
 module
 import Mathlib.Tactic.Group
 
+open scoped commutatorElement
+
 variable {G : Type} [Group G]
 
 example (a b c : G) : c*(a*b)*(b⁻¹*a⁻¹)*c = c*c := by group

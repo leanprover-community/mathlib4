@@ -200,14 +200,13 @@ end Group
 section One
 
 @[to_additive]
-lemma mulSupport_subsingleton_of_disjoint [One β] {s : γ → Set α} (f : α → β)
-    (hs : Pairwise (Disjoint on s)) (i : α) (j : γ)
-    (hj : i ∈ s j) : Function.mulSupport (fun d ↦ (s d).mulIndicator f i) ⊆ {j} := by
-  intro d
-  by_cases h : d = j
-  · aesop
-  · simp only [Pairwise, ne_eq] at hs
-    simp [h, Disjoint.notMem_of_mem_left (hs fun a ↦ h ((Eq.symm a))) hj]
+lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
+  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+    (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
+  suffices ∀ j', j' ≠ j →  {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
+  intro j' h hj hj' hi
+  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One
 

@@ -222,7 +222,6 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is a point in `X ×[S] Y` above `(x, y, s)`, then this is the image of the unique
 point of `Spec κ(s)` in `Spec κ(x) ⊗[κ(s)] κ(y)`. -/
 def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
@@ -263,7 +262,6 @@ lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     rintro ⟨rfl : T = T', e⟩
     simpa [e]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The points of the underlying topological space of `X ×[S] Y` bijectively correspond to
 pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals of

@@ -127,7 +127,6 @@ theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_ze
   exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
     (fun {_} h => Or.resolve_right (mul_eq_zero.mp h) r_ne_zero) hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
     (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f := by

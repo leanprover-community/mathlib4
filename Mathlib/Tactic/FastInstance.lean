@@ -41,7 +41,7 @@ is `withReducible` with some exceptions.
 -/
 partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
-  withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {expectedType}") do
+  withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
     | error trace m!"Can only be used for classes, but type is{indentExpr expectedType}"
   trace[Elab.fast_instance] "class is {className}"
@@ -91,14 +91,9 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       let argExpectedType ← instantiateMVars mvarDecl.type
       let arg := args[i]!
       if ← isProp argExpectedType then
-        let actualType ← inferType arg
-        if ← withDefault <| isDefEq argExpectedType actualType then
-          if ← withTransparency .instances <| isDefEq argExpectedType actualType then
-            mvarId.assign arg
-          else
-            -- Wrap in an aux theorem if the types differ at instances transparency,
-            -- indicating a binder type mismatch that needs fixing.
-            mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
+        -- For proofs, create an auxiliary theorem of the expected type.
+        if ← withDefault <| isDefEq argExpectedType (← inferType arg) then
+          mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
       -- Recurse into instance arguments of the constructor
@@ -147,6 +142,6 @@ This is preferred over `inferInstanceAs` when the instance can be reduced to
 constructor applications. In that case, the parameters of the constructors will be filled in
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
-  `(fast_instance% inferInstanceAs $source)
+  `(fast_instance% _root_.inferInstanceAs <| $source)
 
 end Mathlib.Elab.FastInstance
