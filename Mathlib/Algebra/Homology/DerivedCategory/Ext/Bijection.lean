@@ -55,7 +55,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
     let _ : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj ‹_›
     let f := (mk₀ S.f).precomp Y (zero_add n)
     let g := S_exact.extClass.precomp Y (add_comm 1 n)
-    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact _).mp
       (Ext.contravariant_sequence_exact₁' S_exact Y n (n + 1) (add_comm 1 n))
     have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext S.X₂ Y (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_projective _ _ n)
@@ -64,7 +64,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
         (isz1.eq_zero_of_tgt _))
     let f' := (mk₀ (S.map F).f).precomp (F.obj Y) (zero_add n)
     let g' := FS_exact.extClass.precomp (F.obj Y) (add_comm 1 n)
-    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact _).mp
       (Ext.contravariant_sequence_exact₁' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n))
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map F).X₂ (F.obj Y) (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_projective _ _ n)
@@ -93,7 +93,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
     let _ : Injective (S.map F).X₂ := Functor.PreservesInjectiveObjects.injective_obj ‹_›
     let f := (mk₀ S.g).postcomp X (add_zero n)
     let g := S_exact.extClass.postcomp X (Eq.refl (n + 1))
-    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact _).mp
       (Ext.covariant_sequence_exact₃' X S_exact n (n + 1) rfl)
     have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext X S.X₂ (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_injective _ _ n)
@@ -102,7 +102,7 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
         (isz1.eq_zero_of_tgt _))
     let f' := (mk₀ (S.map F).g).postcomp (F.obj X) (add_zero n)
     let g' := FS_exact.extClass.postcomp (F.obj X) (Eq.refl (n + 1))
-    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact _).mp
       (Ext.covariant_sequence_exact₃' (F.obj X) FS_exact n (n + 1) rfl)
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (F.obj X) (S.map F).X₂ (n + 1))) :=
       @AddCommGrpCat.isZero_of_subsingleton _ (subsingleton_of_injective _ _ n)
