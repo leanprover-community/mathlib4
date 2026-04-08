@@ -3,7 +3,7 @@ Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
-
+module
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Push
