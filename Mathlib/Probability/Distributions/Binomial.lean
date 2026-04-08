@@ -264,6 +264,21 @@ theorem hasLaw_indicator_one_bernoulliMeasure {M : Type*} [Zero M] [One M] [Meas
     HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
   hasLaw_indicator_bernoulliMeasure 1 hs
 
+omit [IsProbabilityMeasure P] in
+lemma HasLaw.congr_comp {Ω' 𝓧 𝓨 : Type*} {m' : MeasurableSpace Ω'} {m𝓧 : MeasurableSpace 𝓧}
+    {m𝓨 : MeasurableSpace 𝓨} {f : 𝓧 → 𝓨} {P' : Measure Ω'} {μ : Measure 𝓧} {ν : Measure 𝓨}
+    {X : Ω → 𝓧} {Y : Ω' → 𝓧} (hf : AEMeasurable f μ) (hX : HasLaw X μ P) (hY : HasLaw Y μ P')
+    (h : HasLaw (fun ω ↦ f (X ω)) ν P) :
+    HasLaw (fun ω ↦ f (Y ω)) ν P' where
+  aemeasurable := (hY.map_eq ▸ hf).comp_aemeasurable hY.aemeasurable
+  map_eq := by
+    rw [← Function.comp_def,
+      ← AEMeasurable.map_map_of_aemeasurable (hY.map_eq ▸ hf) hY.aemeasurable,
+      hY.map_eq, ← hX.map_eq, AEMeasurable.map_map_of_aemeasurable (hX.map_eq ▸ hf) hX.aemeasurable,
+      Function.comp_def, h.map_eq]
+
+
+
 lemma test {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun X P)
     (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
