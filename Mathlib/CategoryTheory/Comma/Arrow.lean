@@ -106,11 +106,13 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
--- Note: it could be good to add variants of this in the case `f` or `g` is of
--- the form `Arrow.mk _`, so that we do not need to use `dsimp% sq.w` below
 @[reassoc (attr := simp high)]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
   CommaMorphism.w sq
+
+@[reassoc]
+lemma Hom.w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right := by
+  simp
 
 theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.left = φ₂.left := by
   rw [h]
