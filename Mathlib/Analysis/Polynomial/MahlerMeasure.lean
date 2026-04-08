@@ -504,13 +504,8 @@ lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometry v) (hp : p.M
 
 variable {p} in
 theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
-    0 < p.mapMahlerMeasure v := by
-  refine mahlerMeasure_pos_of_ne_zero fun h ↦ ?_
-  apply hp
-  ext i
-  have hci := h ▸ Polynomial.coeff_zero i
-  simp only [coeff_map] at hci
-  exact hv.injective <| hci.trans (map_zero v).symm
+    0 < p.mapMahlerMeasure v :=
+  mahlerMeasure_pos_of_ne_zero <| (Polynomial.map_eq_zero_iff hv.injective).not.mpr hp
 
 theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
     p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
@@ -523,7 +518,7 @@ theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
   have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
     (hv.norm_map_of_map_zero (map_zero _) _).symm
-  have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
+  have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map v).coeff n‖ := by simp
   grw [hv_norm, hcoeff, norm_coeff_le_choose_mul_mahlerMeasure,
     natDegree_map_eq_of_injective hv.injective, mapMahlerMeasure]
 
