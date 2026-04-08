@@ -40,21 +40,17 @@ variable (R : Type u) [CommRing R]
 open IsLocalRing
 
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
-  have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
-    by_contra eq
-    rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
-    exact ringKrullDim_ne_top eq
-  use ((ringKrullDim R).unbot ringKrullDim_ne_bot).toNat
-  exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
-    (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
+  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
+    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
+  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
 
 variable {R} in
 lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
     [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
-    Function.Bijective (ResidueField.map f) := by
-  refine ⟨RingHom.injective _, ?_⟩
-  apply Ideal.Quotient.lift_surjective_of_surjective
-  convert Function.Surjective.comp (Ideal.Quotient.mk_surjective (I := (maximalIdeal S))) surj
+    Function.Bijective (ResidueField.map f) :=
+  ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+    (Ideal.Quotient.mk_surjective.comp surj)⟩
 
 open CategoryTheory Abelian Module
 
