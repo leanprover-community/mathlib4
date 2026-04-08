@@ -168,7 +168,7 @@ lemma hasDerivAt_rpow_div_sub (ha : 0 < a) (hr : 0 < r) {t : ℝ} (ht : t < r) :
   have hquot_ne : r / (r - t) ≠ 0 := div_ne_zero hr.ne' hrt_ne
   have h_inner : HasDerivAt (fun s => r / (r - s)) (r / (r - t) ^ 2) t := by
     have hd : HasDerivAt (fun s => r - s) (-1) t := by
-      convert (hasDerivAt_const t r).sub (hasDerivAt_id t) using 1 ; ring
+      convert (hasDerivAt_const t r).sub (hasDerivAt_id t) using 1; ring
     convert (hasDerivAt_const t r).div hd hrt_ne using 1
     field_simp; ring
   have hderiv := h_inner.rpow_const (p := a) (Or.inl hquot_ne)
