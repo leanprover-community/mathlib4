@@ -84,7 +84,7 @@ noncomputable def logOf (f : A⟦X⟧) : A⟦X⟧ :=
 
 theorem logOf_eq (f : A⟦X⟧) : logOf f = (log A).subst (f - 1) := rfl
 
-theorem constantCoeff_logOf (f : A⟦X⟧) (hf : constantCoeff f = 1) :
+theorem constantCoeff_logOf {f : A⟦X⟧} (hf : constantCoeff f = 1) :
     constantCoeff (logOf f) = 0 := by
   rw [logOf_eq]
   have h : MvPowerSeries.constantCoeff (f - 1 : A⟦X⟧) = 0 := by
