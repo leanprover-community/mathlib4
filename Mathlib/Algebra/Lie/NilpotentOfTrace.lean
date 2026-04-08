@@ -169,22 +169,18 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     refine Submodule.span_le.mpr ?_
     rintro _ ⟨a, _, b, _, rfl⟩
     obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
+    have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c :=
+      (lie_skew _ _).symm.trans (congrArg Neg.neg hbc.symm)
+    have hcyc : trace K M (⁅toEnd K L M a, toEnd K L M b⁆ * y) =
+        trace K M (toEnd K L M a * ⁅toEnd K L M b, y⁆) := by
+      simpa [traceForm_apply_apply, ← Module.End.mul_eq_comp] using
+        traceForm_apply_lie_apply K (Module.End K M) M (toEnd K L M a) (toEnd K L M b) y
     change trace K M (toEnd K L M ⁅a, b⁆ * y) = 0
-    rw [show toEnd K L M ⁅a, b⁆ =
-          toEnd K L M a * toEnd K L M b - toEnd K L M b * toEnd K L M a from
-        LieHom.map_lie (toEnd K L M) a b,
-      sub_mul, map_sub,
-      ← trace_mul_cycle (R := K) (M := M) (toEnd K L M a) y (toEnd K L M b), ← map_sub,
-      show toEnd K L M a * toEnd K L M b * y - toEnd K L M a * y * toEnd K L M b =
-          toEnd K L M a * (toEnd K L M b * y - y * toEnd K L M b) from by
-        simp only [mul_sub, mul_assoc],
-      show toEnd K L M b * y - y * toEnd K L M b = -⁅y, toEnd K L M b⁆ from by
-        rw [show (⁅y, toEnd K L M b⁆ : Module.End K M) =
-          y * toEnd K L M b - toEnd K L M b * y from rfl, neg_sub],
-      ← hbc, mul_neg, map_neg, neg_eq_zero]
-    have hca : traceForm K L M c a = 0 := LinearMap.congr_fun (hI hcI) a
-    rw [traceForm_apply_apply, ← Module.End.mul_eq_comp] at hca
-    rwa [trace_mul_comm]
+    rw [LieHom.map_lie]
+    refine hcyc.trans ?_
+    rw [hbc', mul_neg, map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply,
+      traceForm_comm]
+    exact LinearMap.congr_fun (hI hcI) a
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ adjoin K {s} := by
       rw [adjoin_singleton_eq_range_aeval]
