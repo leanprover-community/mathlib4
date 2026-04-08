@@ -276,7 +276,7 @@ theorem lift_type_le_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α �
  rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
  exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
 
-/-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
+/-- `ω` is the first infinite order type, defined as the order type of `ℕ`. -/
 @[expose]
 def omega0 : OrderType := lift <| type ℕ
 
