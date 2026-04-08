@@ -31,25 +31,16 @@ noncomputable section
 namespace Real
 
 theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp (-1) := by
-  simp only [StrictMonoOn]
-  intro x hex y hey _
-  obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
-      deriv (fun x ↦ x * Real.log x) c = (y * Real.log y - x * Real.log x) / (y - x) := by
-    apply_rules [exists_deriv_eq_slope]
-    · exact continuousOn_of_forall_continuousAt fun z hz ↦
-        ContinuousAt.mul continuousAt_id
-          (Real.continuousAt_log (by linarith [hz.1, Real.exp_pos (-1), hex.out, hey.out]))
-    · exact DifferentiableOn.mul differentiableOn_id
-        (DifferentiableOn.log differentiableOn_id fun z hz ↦
-          ne_of_gt <| lt_trans (Real.exp_pos _) <| hex.out.trans_lt hz.1)
-  have hc_ge_inve : c > Real.exp (-1) := by linarith [hc.1.1, hex.out]
-  have c_ne0 : c ≠ 0 := ne_of_gt <| lt_trans (Real.exp_pos _) hc_ge_inve
-  rw [deriv_mul_log c_ne0, eq_div_iff] at hc
-    <;> nlinarith [Real.log_exp (-1), Real.log_lt_log (by positivity) hc_ge_inve]
+  apply strictMonoOn_of_deriv_pos (convex_Ici _) continuous_mul_log.continuousOn
+  intro x hx
+  simp_all only [nonempty_Iio, interior_Ici', mem_Ioi]
+  rw [deriv_mul_log (by linarith [Real.exp_pos (-1)])]
+  suffices -1 < log x by linarith
+  simpa using log_lt_log (Real.exp_pos _) hx
 
-@[deprecated "use `Real.mul_log_StrictMonoOn`" (since := "2026-04-07")]
+@[deprecated "use `Real.mul_log_strictMonoOn`" (since := "2026-04-07")]
 theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
-  grind [mul_log_StrictMonoOn.monotoneOn, MonotoneOn.mono, show exp (-1) < 1 by norm_num]
+  grind [mul_log_strictMonoOn.monotoneOn, MonotoneOn.mono, show exp (-1) < 1 by norm_num]
 
 theorem mul_log_StrictAntiOn :
     StrictAntiOn (fun x : ℝ ↦ x * log x) (Set.Icc 0 (exp (-1))) := by
