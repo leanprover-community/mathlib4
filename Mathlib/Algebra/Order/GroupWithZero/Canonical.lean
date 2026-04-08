@@ -395,7 +395,7 @@ theorem le_ofAdd_iff
   ⟨toAdd_unzero_le_of_lt_ofAdd ha, le_ofAdd_of_toAdd_unzero_le ha⟩
 
 lemma map_multiplicative_eq_map {α β : Type*} :
-    WithZero.map (α := Multiplicative α) (β := β) = WithZero.map (α := α) (β := β) := rfl
+    WithZero.map (α := Multiplicative α) (β := β) = WithZero.map  := rfl
 
 end Multiplicative
 
