@@ -79,8 +79,12 @@ variable (X) in
 @[simp] lemma realToRCLikeStarAlgHom_apply (f : C(X, ℝ)) :
     realToRCLikeStarAlgHom X 𝕜 f = f.realToRCLike 𝕜 := rfl
 
-lemma star_realToRCLike (f : C(X, ℝ)) : star (f.realToRCLike 𝕜) = (star f).realToRCLike 𝕜 :=
-  realToRCLikeStarAlgHom X 𝕜 |>.map_star' f |>.symm
+lemma realToRCLike_star (f : C(X, ℝ)) : (star f).realToRCLike 𝕜 = star (f.realToRCLike 𝕜) :=
+  map_star (realToRCLikeStarAlgHom X 𝕜) f
+
+@[simp] lemma realToRCLike_mul (f g : C(X, ℝ)) :
+    (f * g).realToRCLike 𝕜 = f.realToRCLike 𝕜 * g.realToRCLike 𝕜 :=
+  map_mul (realToRCLikeStarAlgHom X 𝕜) f g
 
 variable {𝕜} in
 /-- Mapping `C(X, 𝕜)` to `C(X, ℝ)` using `RCLike.re`. -/
