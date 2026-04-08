@@ -29,5 +29,5 @@ theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing
 
 lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     IsUnit r ↔ r ∉ m := by
-  letI : IsLocalRing R := isLocalRing_of_isAdicComplete_maximal m
+  have : IsLocalRing R := isLocalRing_of_isAdicComplete_maximal m
   simp [IsLocalRing.eq_maximalIdeal hmax]
