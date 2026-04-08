@@ -86,6 +86,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
+@[to_dual]
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
 /-- `⊔` distributes over `⨅`. -/
@@ -113,6 +114,8 @@ attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalA
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
+
+attribute [to_dual existing] CompleteDistribLattice.toFrame
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via

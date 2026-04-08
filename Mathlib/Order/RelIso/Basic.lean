@@ -392,8 +392,8 @@ def Quotient.mkRelHom {_ : Setoid α} {r : α → α → Prop}
 @[simps!]
 noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
-  ⟨Embedding.quotientOut α, by
-    refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
+  ⟨Embedding.quotientOut α, fun {x y} ↦ by
+    induction x, y using Quotient.inductionOn₂
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
 @[simp]

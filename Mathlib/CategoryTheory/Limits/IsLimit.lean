@@ -190,7 +190,6 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 
 variable {t : Cone F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
     m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
   h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
@@ -579,7 +578,6 @@ def ofExistsUnique {t : Cocone F}
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative constructor for `IsColimit`,
 providing a morphism of cocones rather than a morphism between the cocone points
 and separately the factorisation condition.
@@ -668,7 +666,6 @@ def ofPointIso {r t : Cocone F} (P : IsColimit r) [i : IsIso (P.desc t)] : IsCol
 
 variable {t : Cocone F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
@@ -929,7 +926,6 @@ def mapCoconeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C �
   apply IsColimit.ofIsoColimit _ (precomposeWhiskerLeftMapCocone h c)
   apply (precomposeInvEquiv (isoWhiskerLeft K h :) _).symm t
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cocone is a colimit cocone exactly if
 there is a unique cocone morphism from any other cocone.
 -/

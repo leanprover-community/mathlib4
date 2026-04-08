@@ -6,9 +6,8 @@ Jireh Loreaux
 -/
 module
 
-public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Elab.Tactic.Conv.Simp
 public import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation

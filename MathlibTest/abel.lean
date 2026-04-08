@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Abel
 
 set_option linter.unusedVariables false

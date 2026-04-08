@@ -837,3 +837,6 @@ theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True
   trivial
 
 end metavariables
+
+example {x y : ℤ} (h : x < y) {a b : Set Nat} (h' : ¬a ≤ b) : x < y := by
+  linarith

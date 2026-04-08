@@ -570,6 +570,39 @@ theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving 
 theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
 
+@[simp]
+theorem compMeasurePreserving_id :
+    compMeasurePreserving (E := E) (p := p) id (.id μb) = AddMonoidHom.id _ := by
+  ext
+  simp
+
+theorem compMeasurePreserving_id_apply (g : Lp E p μb) :
+    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by simp
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
+    compMeasurePreserving (E := E) (p := p) (f ∘ f') (hf.comp hf') =
+    (compMeasurePreserving f' hf').comp (compMeasurePreserving f hf) := by
+  ext g
+  simp [AEEqFun.compMeasurePreserving_comp _ hf hf']
+
+theorem compMeasurePreserving_comp_apply {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
+    (hf' : MeasurePreserving f' μ μb) :
+    (compMeasurePreserving (f ∘ f') (hf.comp hf')) g =
+    (compMeasurePreserving f' hf') ((compMeasurePreserving f hf) g) := by
+  simp [compMeasurePreserving_comp hf hf']
+
+theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving (E := E) (p := p) f hf)^[n] =
+    compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) := by
+  funext
+  induction n with
+  | zero => simp
+  | succ n h =>
+    nth_rewrite 1 [add_comm n 1]
+    simp [Function.iterate_add, h, compMeasurePreserving_comp (hf.iterate n) hf]
+
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/

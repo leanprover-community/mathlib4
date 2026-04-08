@@ -946,7 +946,8 @@ theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
-  simp only [support, erase_def, Finsupp.support_erase]
+  simp only [support, erase_def, Finsupp.support_erase, AddMonoidAlgebra.erase, ofCoeff,
+    AddMonoidAlgebra.coeff]
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
   toFinsupp_injective <| by
@@ -987,7 +988,8 @@ def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
     (p.update n a).coeff = Function.update p.coeff n a := by
   ext
-  simp only [coeff, update, Function.update_apply, coe_update]
+  simp only [coeff, update, Function.update_apply, coe_update, AddMonoidAlgebra.update, ofCoeff,
+    AddMonoidAlgebra.coeff]
 
 theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i := by
@@ -1008,7 +1010,8 @@ theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := 
 theorem support_update (p : R[X]) (n : ℕ) (a : R) [Decidable (a = 0)] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
   classical
-    simp only [support, update, Finsupp.support_update]
+    simp only [support, update, Finsupp.support_update, AddMonoidAlgebra.update, ofCoeff,
+      AddMonoidAlgebra.coeff]
     congr
 
 theorem support_update_zero (p : R[X]) (n : ℕ) : support (p.update n 0) = p.support.erase n := by

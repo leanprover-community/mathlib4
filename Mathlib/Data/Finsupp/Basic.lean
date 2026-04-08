@@ -499,6 +499,15 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
 
+@[simp]
+lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+    (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
+  classical
+  ext a
+  simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
+  rintro rfl
+  simp at hb
+
 section FInjective
 
 section Zero

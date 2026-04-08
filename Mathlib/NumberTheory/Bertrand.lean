@@ -238,6 +238,20 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
 
 alias bertrand := Nat.exists_prime_lt_and_le_two_mul
 
+lemma le_primorial_self {n : ℕ} : n ≤ primorial n := by
+  rcases lt_or_ge n 4 with hn | hn
+  · interval_cases n <;> decide
+  · suffices ∃ p ≥ 3, p.Prime ∧ p ≤ n ∧ n ≤ 2 * p by
+      obtain ⟨p, _, pp, _, hp⟩ := this
+      apply hp.trans
+      have rearr : 2 * p = ∏ q ∈ {2, p}, if q.Prime then q else 1 := by
+        simp (disch := grind) [pp, prime_two]
+      rw [rearr, primorial, Finset.prod_filter]
+      refine Finset.prod_le_prod_of_subset_of_one_le' (by grind) fun _ _ _ ↦ ?_
+      exact iteInduction Prime.one_le fun _ ↦ le_rfl
+    obtain ⟨p, pp, _, _⟩ := bertrand (n / 2) (by lia)
+    exact ⟨p, by lia, pp, by lia, by lia⟩
+
 end Nat
 
 end Nat

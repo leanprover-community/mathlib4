@@ -321,6 +321,13 @@ lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y 
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
   exact ⟨z⟩
 
+instance (priority := low) [Nonempty X] [Nonempty Y] [Subsingleton S] :
+    Nonempty ↑(pullback f g) := by
+  have : Nonempty S := .map f ‹_›
+  rw [← not_isEmpty_iff, AlgebraicGeometry.Scheme.isEmpty_pullback_iff, Set.not_disjoint_iff]
+  exact ⟨Nonempty.some ‹_›, Function.surjective_to_subsingleton _ _,
+    Function.surjective_to_subsingleton _ _⟩
+
 variable (f g)
 
 lemma range_fst : Set.range (pullback.fst f g) = f ⁻¹' Set.range g := by

@@ -74,7 +74,6 @@ theorem discr_prime_pow_eq_unit_mul_pow' [IsCyclotomicExtension {p ^ k} ℚ K]
   rw [hζ.discr_zeta_eq_discr_zeta_sub_one.symm]
   exact discr_prime_pow_eq_unit_mul_pow hζ (cyclotomic.irreducible_rat (NeZero.pos _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is a `p ^ k`-th cyclotomic extension of `ℚ`, then `(adjoin ℤ {ζ})` is the
 integral closure of `ℤ` in `K`. -/
 theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
@@ -160,7 +159,6 @@ section CharZero
 
 variable [CharZero K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `p ^ k`-th root of
 unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
 @[simps!]
@@ -216,7 +214,6 @@ lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k
 
 variable [CharZero K]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integralPowerBasisOfPrimePow_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) :
@@ -840,7 +837,6 @@ namespace IsPrimitiveRoot
 
 variable [NeZero n] [CharZero K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `n`-th root of
 unity and `K` is an `n`-th cyclotomic extension of `ℚ`. -/
 @[simps!]
@@ -865,7 +861,6 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) : PowerBasis ℤ (𝓞 K) :=
   (Algebra.adjoin.powerBasis' (hζ.isIntegral (NeZero.pos _))).map hζ.adjoinEquivRingOfIntegers
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimitiveRoot ζ n) :
     hζ.integralPowerBasis.gen = hζ.toInteger :=

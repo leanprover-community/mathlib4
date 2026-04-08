@@ -80,7 +80,6 @@ The case of Liouville's theorem for algebraic extensions.
 
 variable {F K} [CharZero F]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a Liouville extension of `F` and `B` is a finite-dimensional intermediate
 field `K / B / F`, then it's also a Liouville extension of `F`.

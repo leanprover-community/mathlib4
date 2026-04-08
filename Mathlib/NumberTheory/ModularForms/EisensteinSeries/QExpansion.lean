@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 /-!
 # Eisenstein series q-expansions

@@ -276,6 +276,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
+@[simp]
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f | ⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
   rw [probReal_univ, inv_one, one_smul]

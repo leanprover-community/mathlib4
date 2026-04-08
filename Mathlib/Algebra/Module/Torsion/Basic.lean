@@ -708,6 +708,10 @@ def submodule_torsionBy_orderIso (a : R) :
     left_inv := by intro; ext; simp [restrictScalarsEmbedding]
     right_inv := by intro; ext; simp [restrictScalarsEmbedding] }
 
+instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (I : Ideal R) :
+    Module.Finite (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
+  Module.Finite.of_restrictScalars_finite R _ _
+
 end Submodule
 
 end NeedsGroup

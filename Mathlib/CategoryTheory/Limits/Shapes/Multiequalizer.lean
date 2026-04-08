@@ -566,7 +566,6 @@ def ext {t s : Multifork I} (e : t.pt ≅ s.pt)
 def isoOfι (t : Multifork I) : t ≅ ofι _ t.pt t.ι t.condition :=
   ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This definition provides a convenient way to show that a multifork is a limit. -/
 @[simps]
 def IsLimit.mk (lift : ∀ E : Multifork I, E.pt ⟶ K.pt)

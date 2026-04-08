@@ -48,7 +48,6 @@ lemma ofObjectProperty_inverseImage {D : Type*} [Category* D] (F : D ⥤ C) :
     (ofObjectProperty P Q).inverseImage F := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofObjectProperty_map_le {D : Type*} [Category* D] (F : C ⥤ D) :
     (ofObjectProperty P Q).map F ≤ ofObjectProperty (P.map F) (Q.map F) := by
   intro X Y f ⟨X', Y', f', ⟨hX', hY'⟩, ⟨i⟩⟩

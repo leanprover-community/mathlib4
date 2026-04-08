@@ -517,7 +517,6 @@ theorem ofCMExtension :
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
@@ -565,7 +564,6 @@ namespace IsCyclotomicExtension.Rat
 
 variable (K : Type*) [Field K] [CharZero K]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A nontrivial abelian extension of `ℚ` is CM.

@@ -181,7 +181,6 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma quotTensorEquivQuotSMul_mk_one_tmul (I : Ideal R) (x : M) :
     quotTensorEquivQuotSMul M I (1 ⊗ₜ x) = Submodule.Quotient.mk x := by

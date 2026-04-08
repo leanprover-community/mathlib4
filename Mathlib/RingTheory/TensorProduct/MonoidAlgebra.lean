@@ -68,7 +68,7 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
   refine .ofAlgHom
     (Algebra.TensorProduct.lift
       ((IsScalarTower.toAlgHom A (A ⊗[R] B) _).comp Algebra.TensorProduct.includeLeft)
-      (mapRangeAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
+      (mapAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
       tensorEquiv.invFun ?_ ?_
   · apply AlgHom.toLinearMap_injective
     ext
@@ -81,7 +81,7 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A B) (attr := simp)]
 lemma tensorEquiv_tmul (a : A) (p : B[M]) :
-    tensorEquiv R A B (a ⊗ₜ p) = a • mapRangeAlgHom M Algebra.TensorProduct.includeRight p := by
+    tensorEquiv R A B (a ⊗ₜ p) = a • mapAlgHom M Algebra.TensorProduct.includeRight p := by
   simp [tensorEquiv, Algebra.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -95,11 +95,11 @@ variable (R A) in
 @[to_additive (dont_translate := R A)
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/]
 noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
-  (tensorEquiv ..).trans <| mapRangeAlgEquiv A M <| Algebra.TensorProduct.rid R A A
+  (tensorEquiv ..).trans <| mapAlgEquiv A M <| Algebra.TensorProduct.rid R A A
 
 @[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
-    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapRangeAlgHom M (Algebra.ofId ..) p := by
+    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapAlgHom M (Algebra.ofId ..) p := by
   ext; simp [scalarTensorEquiv]; simp [Algebra.smul_def, Algebra.commutes]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -115,7 +115,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R S B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
   out := .of_equiv ((tensorEquiv (M := M) R S A).trans <|
-      mapRangeAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
+      mapAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
 @[to_additive (dont_translate := R)]

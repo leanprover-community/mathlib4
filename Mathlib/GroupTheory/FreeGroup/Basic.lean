@@ -796,6 +796,24 @@ then the induced map on their additive free groups is also surjective. -/]
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
   rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
+/-- If `α` and `β` are arbitrary types and there is an injection between them,
+then the induced map on their free groups is also injective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is an injection between them,
+then the induced map on their additive free groups is also injective. -/]
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := by
+  by_cases! h : IsEmpty α
+  · exact Function.injective_of_subsingleton _
+  · rw [Function.injective_iff_hasLeftInverse]
+    use map (Function.invFun f)
+    simp [Function.LeftInverse, map.comp, Function.invFun_comp hf]
+
+/-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their free groups is also bijective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their additive free groups is also bijective. -/]
+theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) := by
+  exact ⟨map_injective hf.injective, map_surjective hf.surjective⟩
+
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
 The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`, as

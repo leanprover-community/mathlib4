@@ -815,6 +815,6 @@ noncomputable def directProductOfNormal [Finite G]
       _ = ∏ p ∈ ps, p ^ (Nat.card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
-      _ = Nat.card G := Nat.factorization_prod_pow_eq_self Nat.card_pos.ne'
+      _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
 
 end Sylow

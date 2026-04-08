@@ -405,8 +405,8 @@ instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
     · simp only [val_smul_apply, val_zero]
-      exact Quotient.inductionOn' (x.val n)
-        (fun a ↦ SModEq.zero.2 <| smul_mem_smul hr mem_top)
+      induction x.val n using Quotient.inductionOn' with | _ a
+      exact SModEq.zero.2 <| smul_mem_smul hr mem_top
     · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
 @[simp]

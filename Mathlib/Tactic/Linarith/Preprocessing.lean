@@ -55,47 +55,23 @@ where
 
 /--
 Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
+Negations are pushed into inequalities when possible.
 -/
 partial def filterComparisons : Preprocessor where
   description := "filter terms that are not proofs of comparisons"
   transform h := do
     let tp ← instantiateMVars (← inferType h)
     try
-      let (b, rel, _) ← tp.ineqOrNotIneq?
-      if b || rel != Ineq.eq then pure [h] else pure []
-    catch _ => pure []
-
-section removeNegations
-
-/--
-If `prf` is a proof of `¬ e`, where `e` is a comparison,
-`flipNegatedComparison prf e` flips the comparison in `e` and returns a proof.
-For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns a proof of `a ≥ b`.
--/
-def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
-  match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
-  | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
-  | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
-
-/--
-Replaces proofs of negations of comparisons with proofs of the reversed comparisons.
-For example, a proof of `¬ a < b` will become a proof of `a ≥ b`.
--/
-def removeNegations : Preprocessor where
-  description := "replace negations of comparisons"
-  transform h := do
-    let t : Q(Prop) ← whnfR (← inferType h)
-    match t with
-    | ~q(¬ $p) =>
-      match ← flipNegatedComparison h (← whnfR p) with
-      | some h' =>
-        trace[linarith] "removing negation in {h}"
-        return [h']
-      | _ => return [h]
-    | _ => return [h]
-
-end removeNegations
+      match tp.not? with
+      | some p => match (← p.ineq?).1 with
+        | .le => return [← mkAppM ``lt_of_not_ge #[h]]
+        | .lt => return [← mkAppM ``le_of_not_gt #[h]]
+        | .eq => return []
+      | none =>
+        _ ← tp.ineq?
+        return [h]
+    catch _ =>
+      return []
 
 section natToInt
 
@@ -406,7 +382,7 @@ def nnrealToReal : GlobalPreprocessor where
 The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
-  [filterComparisons, removeNegations, nnrealToReal, natToInt, strengthenStrictInt,
+  [filterComparisons, nnrealToReal, natToInt, strengthenStrictInt,
     compWithZero, cancelDenoms]
 
 /--

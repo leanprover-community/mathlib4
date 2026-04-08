@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Group
 
 variable {G : Type} [Group G]

@@ -79,7 +79,7 @@ theorem map_expand (f : R →+* S) (φ : PowerSeries R) :
     map f (expand p hp φ) = expand p hp (map f φ) := by
   simp [map, expand, MvPowerSeries.map_expand]
 
-theorem expand_subst {f : MvPowerSeries τ S} [Finite τ] (hf : HasSubst f) (φ : PowerSeries S) :
+theorem expand_subst {f : MvPowerSeries τ S} (hf : HasSubst f) (φ : PowerSeries S) :
     (subst f φ).expand p hp = subst (f.expand p hp) φ := by
   rw [PowerSeries.subst, MvPowerSeries.expand_subst _ hp (HasSubst.const hf) (φ := φ),
     PowerSeries.subst]

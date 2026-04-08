@@ -132,7 +132,7 @@ def coshPartialEquiv : PartialEquiv ℝ ℝ where
 theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) :=
   have {x : ℝ} (hx : x ∈ Ici 1) : 0 < x + √(x ^ 2 - 1) :=
     add_pos_of_pos_of_nonneg (show 0 < x by grind) (sqrt_nonneg _)
-  continuousOn_log.comp (Continuous.continuousOn (by continuity)) (by grind [MapsTo])
+  continuousOn_log.comp (by fun_prop) (by grind [MapsTo])
 
 /-- `Real.cosh` as an `OpenPartialHomeomorph` from (0, ∞) to (1, ∞). -/
 def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
@@ -146,7 +146,7 @@ def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   right_inv' _ hr := cosh_arcosh (le_of_lt hr)
   open_source := isOpen_Ioi
   open_target := isOpen_Ioi
-  continuousOn_toFun := continuous_cosh.continuousOn
+  continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_arcosh.mono Ioi_subset_Ici_self
 
 theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :

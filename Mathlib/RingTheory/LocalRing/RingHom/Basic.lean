@@ -93,6 +93,9 @@ theorem local_hom_TFAE (f : R →+* S) :
   tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm
   tfae_finish
 
+lemma maximalIdeal_comap (f : R →+* S) [IsLocalHom f] : (maximalIdeal S).comap f = maximalIdeal R :=
+  ((local_hom_TFAE _).out 0 4).mp ‹_›
+
 end
 
 theorem of_surjective [CommSemiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (f : R →+* S)
@@ -132,6 +135,16 @@ local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
+lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (f : R →+* S) (hf : Function.Surjective f) : (maximalIdeal R).map f = maximalIdeal S := by
+  let := IsLocalHom.of_surjective f hf
+  rw [← maximalIdeal_comap f, Ideal.map_comap_of_surjective f hf]
+
+@[simp]
+lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
+  map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
 
 end IsLocalRing
 

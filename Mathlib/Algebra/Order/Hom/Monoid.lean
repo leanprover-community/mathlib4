@@ -515,7 +515,7 @@ theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f 
 
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive
-/-- Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism. -/]
+/-- Reinterpret an ordered additive monoid isomorphism as an order isomorphism. -/]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
     map_rel_iff' := map_le_map_iff f }

@@ -399,6 +399,7 @@ noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, In
   toFun := SeparationQuotient.lift f hf
   map_add' := Quotient.ind₂ <| map_add f
   map_smul' {r} := Quotient.ind <| map_smulₛₗ f r
+  cont := by continuity
 
 @[simp]
 theorem liftCLM_mk {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)

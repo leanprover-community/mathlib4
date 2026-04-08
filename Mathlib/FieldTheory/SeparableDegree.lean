@@ -695,7 +695,6 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic 
     ← Fintype.card_coe]
   simp_rw [Multiset.mem_toFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
 -- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.
 private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
@@ -726,7 +725,6 @@ end IntermediateField
 
 namespace Field
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
@@ -746,7 +744,6 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
 theorem finSepDegree_le_finrank [FiniteDimensional F E] :
     finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
 When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
@@ -773,7 +770,6 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
 @[stacks 09HA "The equality condition"]
@@ -794,7 +790,6 @@ lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F 
     [Algebra.IsSeparable F L] {x : E} (h : x ∈ L) : IsSeparable F x := by
   simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
 As a consequence, any rational function of `x` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
@@ -806,7 +801,6 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {E K} in
 /-- If `K / E / F` is an extension tower such that `E / F` is separable,
 `x : K` is separable over `E`, then it's also separable over `F`. -/
@@ -845,7 +839,6 @@ theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
   ⟨fun x ↦ IsSeparable.of_algebra_isSeparable_of_isSeparable F
     (Algebra.IsSeparable.isSeparable E x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}

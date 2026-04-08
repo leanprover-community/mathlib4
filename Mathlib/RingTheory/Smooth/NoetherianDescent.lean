@@ -213,7 +213,6 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated exists_subalgebra_fg (since := "2026-01-07")]
 public theorem exists_subalgebra_finiteType [Smooth A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -221,7 +220,6 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
   obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
   exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
@@ -238,7 +236,6 @@ public theorem exists_finiteType [Smooth A B] :
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
     Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
     (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -250,7 +247,6 @@ public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalge
     ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
       P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and an etale `A₀`-algebra `B₀` such that

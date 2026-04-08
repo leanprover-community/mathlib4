@@ -462,49 +462,54 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
   simp [NNReal.rpow_add this _ _]
 
 lemma rpow_rpow [IsTopologicalRing A] [T2Space A]
-    (a : A) (x y : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a : A) (x y : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
-  have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha₁
+  have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha.isUnit
   simp only [rpow_def]
-  rw [← cfc_comp _ _ a ha₂]
+  rw [← cfc_comp _ _ a ha.nonneg]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
 lemma rpow_rpow_inv [IsTopologicalRing A] [T2Space A]
-    (a : A) (x : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
     (a ^ x) ^ x⁻¹ = a := by
-  rw [rpow_rpow a x x⁻¹ ha₁ hx ha₂, mul_inv_cancel₀ hx, rpow_one a ha₂]
+  rw [rpow_rpow a x x⁻¹ hx, mul_inv_cancel₀ hx, rpow_one a ha.nonneg]
 
 lemma rpow_inv_rpow [IsTopologicalRing A] [T2Space A]
-    (a : A) (x : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
     (a ^ x⁻¹) ^ x = a := by
-  simpa using rpow_rpow_inv a x⁻¹ ha₁ (inv_ne_zero hx) ha₂
+  simpa using rpow_rpow_inv a x⁻¹ (inv_ne_zero hx)
 
 lemma rpow_rpow_of_exponent_nonneg [IsTopologicalRing A] [T2Space A] (a : A) (x y : ℝ)
-    (hx : 0 ≤ x) (hy : 0 ≤ y) (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
+    (hx : 0 ≤ x) (hy : 0 ≤ y) (ha : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
   rw [← cfc_comp _ _ a]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
-lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : IsUnit a)
-    (ha' : 0 ≤ a := by cfc_tac) : a ^ x * a ^ (-x) = 1 := by
-  rw [← rpow_add ha, add_neg_cancel, rpow_zero a]
+lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
+    a ^ x * a ^ (-x) = 1 := by
+  rw [← rpow_add ha.isUnit, add_neg_cancel, rpow_zero a]
 
-lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : IsUnit a)
-    (ha' : 0 ≤ a := by cfc_tac) : a ^ (-x) * a ^ x = 1 := by
-  rw [← rpow_add ha, neg_add_cancel, rpow_zero a]
+lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
+    a ^ (-x) * a ^ x = 1 := by
+  rw [← rpow_add ha.isUnit, neg_add_cancel, rpow_zero a]
 
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
-  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 a.isUnit
+  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (a.isStrictlyPositive_iff.mpr ha)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) :
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
   cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
+
+lemma inverse_eq_rpow_neg_one {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
+    Ring.inverse a = a ^ (-1 : ℝ) := by
+  obtain ⟨ax, hax⟩ := ha.isUnit
+  simp only [← hax, Ring.inverse_invertible, invOf_units, CFC.rpow_neg_one_eq_inv ax]
 
 lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
@@ -526,7 +531,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 /-- `a ^ x` bundled as an element of `Aˣ` for `a : Aˣ`. -/
 @[simps]
 noncomputable def _root_.Units.cfcRpow (a : Aˣ) (x : ℝ) (ha : (0 : A) ≤ a := by cfc_tac) : Aˣ :=
-  ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x (by simp), rpow_neg_mul_rpow x (by simp)⟩
+  ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x, rpow_neg_mul_rpow x⟩
 
 @[aesop safe apply, grind ←]
 lemma _root_.IsUnit.cfcRpow {a : A} (ha : IsUnit a) (x : ℝ) (ha_nonneg : 0 ≤ a := by cfc_tac) :
@@ -666,15 +671,17 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
     (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
-    simp only [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow _ _ _ h hx]
+    have : IsStrictlyPositive a := by grind
+    simp [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow _ _ _ hx]
   case neg =>
     simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
 -- TODO: relate to a strict positivity condition
 lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
+  have : IsStrictlyPositive a := by grind
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ h (by simp), inv_mul_eq_div]
+      rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
@@ -720,17 +727,25 @@ lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc
   (isUnit_sqrt_iff a ha).mpr ha_unit
 
 @[aesop safe apply]
-lemma _root_.IsStrictlyPositive.nnrpow {a : A} {y : ℝ≥0} (ha : IsStrictlyPositive a) (hy : y ≠ 0) :
-    IsStrictlyPositive (a ^ y) := by grind
+lemma _root_.IsStrictlyPositive.nnrpow (a : A) (y : ℝ≥0) (hy : y ≠ 0)
+    (ha : IsStrictlyPositive a := by cfc_tac) : IsStrictlyPositive (a ^ y) := by grind
 
 @[aesop safe apply]
-lemma _root_.IsStrictlyPositive.sqrt {a : A} (ha : IsStrictlyPositive a) :
+lemma _root_.IsStrictlyPositive.sqrt (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
     IsStrictlyPositive (sqrt a) := by grind
 
 omit [T2Space A] [IsTopologicalRing A] in
 @[aesop safe apply]
-lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive a) :
+lemma _root_.IsStrictlyPositive.rpow (a : A) (y : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     IsStrictlyPositive (a ^ y) := by grind
+
+lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
+    Ring.inverse (a ^ x) = a ^ (-x) := by
+  have : a ^ (-x) = (a ^ x) ^ (-1 : ℝ) := by
+    rw [rpow_rpow (hx := hx) (ha := by grind)]
+    simp
+  rw [← inverse_eq_rpow_neg_one (by grind)] at this
+  rw [this]
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
 1. `a` is strictly positive,

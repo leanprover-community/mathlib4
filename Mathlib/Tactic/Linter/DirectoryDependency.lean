@@ -198,7 +198,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
   (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
-  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.TypeStar),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?

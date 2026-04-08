@@ -1134,7 +1134,6 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1325,7 +1324,6 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
     simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
 variable (S) in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
 noncomputable
 def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :

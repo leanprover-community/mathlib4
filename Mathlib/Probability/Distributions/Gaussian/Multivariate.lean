@@ -115,7 +115,6 @@ instance isGaussian_stdGaussian : IsGaussian (stdGaussian E) := by
 lemma integral_strongDual_stdGaussian (L : StrongDual ℝ E) : (stdGaussian E)[L] = 0 := by
   rw [L.integral_comp_id_comm IsGaussian.integrable_id, integral_id_stdGaussian, map_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma charFunDual_stdGaussian (L : StrongDual ℝ E) :
     charFunDual (stdGaussian E) L = exp (- ‖L‖ ^ 2 / 2) := by
   simp [IsGaussian.charFunDual_eq, integral_complex_ofReal, variance_dual_stdGaussian, neg_div]

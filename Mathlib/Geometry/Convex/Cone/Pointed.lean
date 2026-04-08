@@ -5,8 +5,11 @@ Authors: Apurva Nakade
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
+
 
 /-!
 # Pointed cones
@@ -33,7 +36,7 @@ abbrev PointedCone (R E)
 
 namespace PointedCone
 
-open Function
+open Function Submodule
 
 section Submodule
 
@@ -287,6 +290,45 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
 
 end OrderedAddCommGroup
 
+section Lineal
+
+open Pointwise
+
+variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+/-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
+@[simps!]
+def lineal (C : PointedCone R E) : Submodule R E where
+  __ := C.support
+  smul_mem' r _ hx := by
+    by_cases hr : 0 ≤ r
+    · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
+    · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
+      simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
+@[simp]
+lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
+  rfl
+
+@[simp]
+lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
+  rfl
+
+@[simp]
+theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
+  rfl
+
+/-- The lineality space of a cone is the largest submodule contained in the cone. -/
+theorem gc_ofSubmodule_lineal :
+    GaloisConnection (α := Submodule R E) ofSubmodule lineal :=
+  fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
+
+lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := gc_ofSubmodule_lineal.l_u_le C
+
+theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
+  simp_rw [gc_ofSubmodule_lineal.le_iff_le, Set.Iic_def, csSup_Iic]
+
+end Lineal
+
 section Salient
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
@@ -297,4 +339,5 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
 
 end Salient
+
 end PointedCone

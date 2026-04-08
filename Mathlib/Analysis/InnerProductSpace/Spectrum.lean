@@ -6,8 +6,9 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
+public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
 
@@ -47,9 +48,15 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
 inner product spaces.
 
+The third part of the file covers properties of compact self-adjoint operators:
+* `orthogonalComplement_iSup_eigenspaces_eq_bot`: the eigenspaces of a compact self-adjoint operator
+  have trivial orthogonal complement.
+* `finite_dimensional_eigenspace`: the eigenspaces of a compact self-adjoint operator are
+  finite-dimensional.
+
 ## TODO
 
-Spectral theory for compact self-adjoint operators, bounded self-adjoint operators.
+Spectral theory for bounded self-adjoint operators.
 
 ## Tags
 
@@ -66,7 +73,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 
-open Module.End WithLp
+open Module End WithLp
 
 namespace LinearMap
 
@@ -368,3 +375,54 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E] {T : E →L[𝕜] E}
+
+theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
+  rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT'.isSelfAdjoint,
+    spectralRadius, ← not_iff_not, ENNReal.iSup_eq_zero]
+  push Not
+  apply exists_congr
+  simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
+self-adjoint operator have trivial orthogonal complement. -/
+theorem orthogonalComplement_iSup_eigenspaces_eq_bot
+    (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
+  let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
+    { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
+      cont := by fun_prop }
+  have hS_compact : IsCompactOperator S :=
+    hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
+  have hS_symm : S.IsSymmetric :=
+    hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
+  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ := by
+    rw [Submodule.eq_bot_iff]
+    intro v hv
+    rw [Subtype.ext_iff, Submodule.coe_zero, ← Submodule.mem_bot 𝕜,
+      ← Submodule.inf_orthogonal_eq_bot (⨆ μ, eigenspace T μ : Submodule 𝕜 E)]
+    refine ⟨Submodule.mem_iSup_of_mem μ ?_, v.2⟩
+    rw [mem_eigenspace_iff] at hv ⊢
+    exact Subtype.ext_iff.mp hv
+  have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
+    simp_all [hasEigenvalue_iff]
+  rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h
+  rw [← Submodule.subsingleton_iff_eq_bot]
+  by_contra! hV
+  simpa [h] using hS 0
+
+/-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
+self-adjoint operator are finite-dimensional. -/
+theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (hμ : μ ≠ 0) :
+    FiniteDimensional 𝕜 (eigenspace T.toLinearMap μ) := by
+  replace hT := hT.restrict'
+    ((mem_invtSubmodule_iff_forall_mem_of_mem _).mp (eigenspace_mem_invtSubmodule T.toLinearMap μ))
+  rw [restrict_eigenspace, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
+  rwa [← isCompactOperator_id_iff_finiteDimensional]
+
+end ContinuousLinearMap

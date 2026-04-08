@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -42,6 +43,12 @@ When the domain is multiplicative, e.g. a group, this will be used to define the
 We introduce the notation `R[M]` for both `MonoidAlgebra R M` and `AddMonoidAlgebra R M`.
 The notations are scoped to their respective namespaces, and which one `R[M]` resolves to therefore
 depends on which of the two namespaces is open.
+
+## TODO
+
+Use `coeff`/`ofCoeff` more widely. See
+https://github.com/leanprover-community/mathlib4/pull/36746
+https://github.com/leanprover-community/mathlib4/pull/25273
 -/
 
 @[expose] public section
@@ -96,6 +103,46 @@ meta def unexpander : Lean.PrettyPrinter.Unexpander
 section Semiring
 variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
+/-- Construct an element of the monoid algebra `R[M]` from its coefficients `M →₀ R`. -/
+@[to_additive
+/-- Construct an element of the additive monoid algebra `R[M]` from its coefficients `M →₀ R`. -/]
+def ofCoeff (x : M →₀ R) : R[M] := x
+
+/-- The coefficients `M →₀ R` of an element of the monoid algebra `R[M]`. -/
+@[to_additive
+/-- The coefficients `M →₀ R` of an element of the additive monoid algebra `R[M]`. -/]
+def coeff (x : R[M]) : M →₀ R := x
+
+@[to_additive (attr := simp)] lemma coeff_ofCoeff (x : M →₀ R) : coeff (ofCoeff x) = x := rfl
+@[to_additive (attr := simp)] lemma ofCoeff_coeff (x : R[M]) : ofCoeff x.coeff = x := rfl
+
+/-- `MonoidAlgebra.coeff` as an equiv. -/
+@[to_additive (attr := simps apply symm_apply)
+/-- `AddMonoidAlgebra.coeff` as an equiv. -/]
+def coeffEquiv : R[M] ≃ (M →₀ R) where
+  toFun := coeff
+  invFun := ofCoeff
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[to_additive] lemma «forall» {P : R[M] → Prop} : (∀ p, P p) ↔ ∀ q, P (ofCoeff q) :=
+  coeffEquiv.forall_congr_left
+
+@[to_additive] lemma «exists» {P : R[M] → Prop} : (∃ p, P p) ↔ ∃ q, P (ofCoeff q) :=
+  coeffEquiv.exists_congr_left
+
+@[to_additive]
+lemma coeff_injective : (coeff : R[M] → M →₀ R).Injective := coeffEquiv.injective
+
+@[to_additive]
+lemma ofCoeff_injective : (ofCoeff : (M →₀ R) → R[M]).Injective := coeffEquiv.symm.injective
+
+@[to_additive (attr := simp)]
+lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeff_injective.eq_iff
+
+@[to_additive]
+lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoeff_injective.eq_iff
+
 @[to_additive] instance inhabited : Inhabited R[M] :=
   inferInstanceAs <| Inhabited <| M →₀ R
 
@@ -111,12 +158,46 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
+-- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
 lemma ext ⦃f g : R[M]⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
+
+/-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
+@[to_additive (attr := simps! apply symm_apply)
+/-- `AddMonoidAlgebra.coeff` as an `AddEquiv`. -/]
+def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
+
+@[to_additive (attr := simp)] lemma coeff_zero : coeff (0 : R[M]) = 0 := rfl
+@[to_additive (attr := simp)] lemma ofCoeff_zero : (ofCoeff 0 : R[M]) = 0 := rfl
+@[to_additive (attr := simp)] lemma coeff_eq_zero : coeff x = 0 ↔ x = 0 := coeff_inj
+@[to_additive (attr := simp)] lemma ofCoeff_eq_zero {x : M →₀ R} : ofCoeff x = 0 ↔ x = 0 :=
+  ofCoeff_inj
+
+@[to_additive (attr := simp)]
+lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sum (s : Finset ι) (f : ι → R[M]) :
+    coeff (∑ i ∈ s, f i) = ∑ i ∈ s, coeff (f i) := map_sum coeffAddEquiv ..
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_sum (s : Finset ι) (f : ι → M →₀ R) :
+    ofCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff (f i) := map_sum coeffAddEquiv.symm ..
+
+@[to_additive (attr := simp)]
+lemma coeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → R[M]) :
+    coeff (f.sum g) = f.sum (fun i n ↦ coeff (g i n)) := map_finsuppSum coeffAddEquiv ..
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M →₀ R) :
+    ofCoeff (f.sum g) = f.sum (fun i n ↦ ofCoeff (g i n)) := map_finsuppSum coeffAddEquiv.symm ..
 
 -- TODO: This definition is very leaky, and we later have frequent problems conflating the two
 -- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
@@ -125,6 +206,39 @@ lemma ext ⦃f g : R[M]⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
 @[to_additive
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
 abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
+
+/-- Remove a term from an element of the monoid algebra. -/
+@[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
+def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
+
+@[to_additive (attr := simp)]
+lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by simp [erase]
+
+@[to_additive (attr := simp)]
+lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by
+  simp [erase, ofCoeff, coeff]; rfl
+
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/
+@[to_additive
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/]
+def update (m : M) (r : R) (x : R[M]) : R[M] :=
+  ofCoeff (x.coeff.update m r)
+
+@[to_additive (attr := simp)]
+lemma coeff_update (m : M) (r : R) (x : R[M]) :
+    (x.update m r).coeff = x.coeff.update m r := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_update (m : M) (r : R) (x : M →₀ R) :
+    ofCoeff (x.update m r) = (ofCoeff x).update m r := rfl
 
 section SMul
 
@@ -142,7 +256,13 @@ variable {A : Type*} [SMulZeroClass A R]
 instance smulZeroClass : SMulZeroClass A R[M] :=
   Finsupp.smulZeroClass
 
-@[to_additive (attr := simp) (dont_translate := A) coeff_smul]
+@[to_additive (dont_translate := A) (attr := simp) coeff_smul]
+lemma coeff_smul (a : A) (x : R[M]) : coeff (a • x) = a • coeff x := rfl
+
+@[to_additive (dont_translate := A) (attr := simp) ofCoeff_smul]
+lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff x := rfl
+
+@[to_additive (attr := simp) (dont_translate := A) smul_apply]
 lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
@@ -586,6 +706,18 @@ variable [Ring R]
 @[to_additive (dont_translate := R)]
 instance addCommGroup : AddCommGroup R[M] :=
   inferInstanceAs <| AddCommGroup <| M →₀ R
+
+@[to_additive (attr := simp)]
+lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_neg (x : M →₀ R) : ofCoeff (-x) = -ofCoeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
 
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
