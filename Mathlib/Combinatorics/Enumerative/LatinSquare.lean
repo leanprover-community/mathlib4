@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Notation
@@ -280,28 +281,6 @@ lemma row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintype n]
   rw [forall_existsUnique_iff] at hrow
   exact hrow
 
-/-- Given an injective map f : k → k' such that k' has cardinality one more than k,
-    there is a unique element of k' not in the image of f.
-
-    This needs to be moved out of this file also. Probably to
-    Mathlib.Data.Fintype.Card in the Function.Embedding.
--/
-lemma Function.Embedding.existsUnique_not_mem_image_of_card_succ {k k' : Type*} [Fintype k]
-    [Fintype k'] [DecidableEq k']
-    (ι : k ↪ k')
-    (h₂ : Fintype.card k' = Fintype.card k + 1) :
-    ∃! x, x ∉ Finset.image ι Finset.univ := by
-  have hcard : (Finset.univ \ Finset.image ι Finset.univ).card = 1 := by
-    have h := Finset.card_image_of_injective Finset.univ ι.inj'
-    simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h
-    simp only [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ, h]
-    lia
-  obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hcard
-  refine ⟨x, ?_, ?_⟩
-  · exact (Finset.mem_sdiff.mp (hx ▸ Finset.mem_singleton_self x)).2
-  · intro y hy
-    exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
-
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
 theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
     [Fintype k] [Nonempty k]
@@ -500,7 +479,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
         have h := h.symm
         contradiction
       · rename_i if_h₁ if_h₂
-        have h := Function.Embedding.existsUnique_not_mem_image_of_card_succ ι h₂
+        have h := Fintype.existsUnique_notMem_image_of_injective_of_card_succ ι h₂
         simp only [Finset.mem_image] at h
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
