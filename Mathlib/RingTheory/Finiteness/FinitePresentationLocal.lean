@@ -110,11 +110,16 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     simp only [Finset.univ_eq_attach, I]
     exact ⟨{∑ g ∈ s.attach, g' g * h' g - 1}, by simp⟩
   have Ht (g : t) : Algebra.FinitePresentation R (Localization.Away (f' g)) := by
-    obtain ⟨i, -, hi⟩ := Finset.mem_image.mp g.2
-    rw [← hi, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
+    have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
+      obtain ⟨g, hg⟩ := g
+      convert hg
+      simp [A, t]
+    obtain ⟨r, hr, hrr⟩ := this
+    simp only [f']
+    rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
     simp_rw +instances [RingHom.coe_coe]
-    rw [hg' i]
-    exact h i
+    rw [hg']
+    apply h
   exact of_span_eq_top_target_aux f' hf' t ht Ht
 
 /-- Finite-presentation can be checked on a standard covering of the target. -/
