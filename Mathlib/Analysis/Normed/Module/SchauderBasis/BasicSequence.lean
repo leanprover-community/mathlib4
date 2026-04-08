@@ -39,13 +39,13 @@ The key criterion for recognizing basic sequences is that all partial sums
 ## Implementation Notes
 
 In the literature, a basic sequence is defined as a sequence that forms a Schauder basis for the
-closure of its linear span. In this file, the `SchauderBasis` lives on the algebraic span
-`Submodule.span 𝕜 (Set.range e)` rather than its topological closure. The construction proceeds by
-building finite-rank partial-sum projections (`IsBasicSequence.proj`), assembling them into a
-`SchauderBasis.RankOneDecomposition`, and converting that into a `SchauderBasis`. Working with the
-algebraic span is easier to verify: the projection bound only needs to be checked on finite linear
-combinations, so the basic sequence condition applies directly without density or extension
-arguments.
+closure of its linear span. Here `IsBasicSequence` is a pure `Prop` (the geometric partial-sum
+bound `‖∑ i < m, a i • e i‖ ≤ K * ‖∑ i < n, a i • e i‖`), and the data — projections, coordinate
+functionals, Schauder basis — is derived from it on demand via `IsBasicSequence.toSchauderBasis`.
+This geometric formula avoids submodules and extensions entirely: the projection bound only needs
+to be checked on finite linear combinations in the algebraic span, so no density or closure
+arguments are required. It keeps the operational API strictly algebraic and avoids forcing a bundled
+data structure where a property is sufficient for the intended constructions.
 
 ## References
 
