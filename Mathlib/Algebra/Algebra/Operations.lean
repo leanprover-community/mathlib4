@@ -703,7 +703,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := span R s.toSet
   map_zero' := span_empty
   map_one' := one_eq_span.symm
-  map_add' s t := by simp
+  map_add' := span_union
   map_mul' s t := by simp_rw [SetSemiring.toSet_mul, span_mul_span]
 
 variable (R) in
