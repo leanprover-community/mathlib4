@@ -29,7 +29,7 @@ variable {α β γ : Type*}
 `∪` as addition and pointwise multiplication `*` as multiplication. -/
 @[ext]
 structure SetSemiring (α : Type*) where
-  /-- Construct a `SetSemiring` from its underlying set. -/
+  /-- Construct an element of the set semiring from its underlying set. -/
   ofSet ::
   /-- The underlying set -/
   toSet : Set α
@@ -60,10 +60,10 @@ instance : Add (SetSemiring α) where add s t := ⟨s.toSet ∪ t.toSet⟩
 
 lemma zero_def : (0 : SetSemiring α) = ⟨∅⟩ := rfl
 @[simp] lemma toSet_zero : (0 : SetSemiring α).toSet = ∅ := rfl
-@[simp] lemma _root_.Set.ofSet_empty : ofSet (∅ : Set α) = 0 := rfl
+@[simp] lemma ofSet_empty : ofSet (∅ : Set α) = 0 := rfl
 lemma add_def (s t : SetSemiring α) : s + t = ⟨s.toSet ∪ t.toSet⟩ := rfl
 @[simp] lemma toSet_add (s t : SetSemiring α) : (s + t).toSet = s.toSet ∪ t.toSet := rfl
-@[simp] lemma _root_.Set.ofSet_union (s t : Set α) : ⟨s ∪ t⟩ = ofSet s + ofSet t := rfl
+@[simp] lemma ofSet_union (s t : Set α) : ⟨s ∪ t⟩ = ofSet s + ofSet t := rfl
 
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc _ _ _ := by simp_rw [add_def, union_assoc]
@@ -72,8 +72,6 @@ instance : AddCommMonoid (SetSemiring α) where
   add_comm _ _ := by simp_rw [add_def, union_comm]
   nsmul := nsmulRec
 
-/-- Since addition on `SetSemiring` is commutative (it is set union), there is no need
-to also have the instance `AddRightMono (SetSemiring α)`. -/
 instance addLeftMono : AddLeftMono (SetSemiring α) where
   elim _ _ _ := union_subset_union_right _
 
@@ -85,7 +83,7 @@ instance : Mul (SetSemiring α) where mul s t := ⟨image2 (· * ·) s.toSet t.t
 
 lemma mul_def (s t : SetSemiring α) : s * t = ⟨s.toSet * t.toSet⟩ := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
-@[simp] lemma _root_.Set.ofSet_mul (s t : Set α) : ofSet (s * t) = ⟨s⟩ * ⟨t⟩ := rfl
+@[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = ⟨s⟩ * ⟨t⟩ := rfl
 
 instance : NonUnitalNonAssocSemiring (SetSemiring α) where
   zero_mul _ := by rw [mul_def, zero_def, empty_mul]
@@ -118,39 +116,32 @@ instance : One (SetSemiring α) where one := ⟨1⟩
 
 lemma one_def : (1 : SetSemiring α) = ⟨1⟩ := rfl
 @[simp] lemma toSet_one : (1 : SetSemiring α).toSet = 1 := rfl
-@[simp] lemma _root_.Set.ofSet_one : ofSet (1 : Set α) = 1 := rfl
+@[simp] lemma ofSet_one : ofSet (1 : Set α) = 1 := rfl
 
 end One
 
-instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
-  fast_instance% {
+instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
   __ := instNonUnitalNonAssocSemiring
-  __ := equiv.mulOneClass }
+  mul_one _ := by rw [one_def, mul_def, mul_one]
+  one_mul _ := by rw [one_def, mul_def, one_mul]
 
-instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
-  fast_instance% {
+instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
   __ := instNonUnitalNonAssocSemiring
-  __ := equiv.semigroup }
+  __ := equiv.semigroup
 
-instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
-  fast_instance% {
+instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
   __ := instNonUnitalSemiring
-  __ := equiv.commSemigroup }
+  __ := equiv.commSemigroup
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
-  fast_instance% {
-  __ := equiv.monoid
-  __ := equiv.commSemigroup }
+instance [CommMonoid α] : CommMonoid (SetSemiring α) := equiv.commMonoid
 
-instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) :=
-  fast_instance% {
+instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) where
   __ := instNonAssocSemiring
-  __ := instNonUnitalSemiring }
+  __ := instNonUnitalSemiring
 
-instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
-  fast_instance% {
+instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
   __ := instIdemSemiring
-  __ := equiv.commMonoid }
+  __ := equiv.commMonoid
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext_iff.mpr (union_eq_right.2 ab).symm⟩
@@ -181,7 +172,7 @@ def imageHom : SetSemiring α →+* SetSemiring β where
 
 lemma imageHom_def (s : SetSemiring α) : imageHom f s = ⟨f '' s.toSet⟩ := rfl
 @[simp] lemma toSet_imageHom (s : SetSemiring α) : (imageHom f s).toSet = f '' s.toSet := rfl
-@[simp] lemma _root_.Set.ofSet_image (s : Set α) : ⟨f '' s⟩ = imageHom f ⟨s⟩ := rfl
+@[simp] lemma ofSet_image (s : Set α) : ⟨f '' s⟩ = imageHom f ⟨s⟩ := rfl
 
 lemma imageHom_comp (g : β →* γ) (s : SetSemiring α) :
     imageHom (g.comp f) s = (imageHom g) ((imageHom f) s) := by
@@ -198,14 +189,14 @@ end ImageHom
 @[deprecated (since := "2026-04-07")] alias down_subset_down := toSet_subset_toSet
 @[deprecated (since := "2026-04-07")] alias down_ssubset_down := toSet_ssubset_toSet
 @[deprecated (since := "2026-04-07")] alias down_zero := toSet_zero
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_empty := Set.ofSet_empty
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_empty := ofSet_empty
 @[deprecated (since := "2026-04-07")] alias down_add := toSet_add
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_union := Set.ofSet_union
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_union := ofSet_union
 @[deprecated (since := "2026-04-07")] alias down_mul := toSet_mul
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_mul := Set.ofSet_mul
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_mul := ofSet_mul
 @[deprecated (since := "2026-04-07")] alias down_one := toSet_one
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_one := Set.ofSet_one
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_one := ofSet_one
 @[deprecated (since := "2026-04-07")] alias down_imageHom := toSet_imageHom
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_image := Set.ofSet_image
+@[deprecated (since := "2026-04-07")] alias _root_.Set.up_image := ofSet_image
 
 end SetSemiring
