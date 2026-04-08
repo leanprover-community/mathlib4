@@ -378,6 +378,7 @@ lemma rpowIntegrand₁₂_nonneg (hp : 1 < p) (ht : 0 ≤ t) (hx : 0 ≤ x) :
 lemma rpowIntegrand₁₂_zero (ht : 0 < t) :
     rpowIntegrand₁₂ p t 0 = 0 := by grind [rpowIntegrand₁₂]
 
+@[fun_prop]
 lemma continuousOn_rpowIntegrand₁₂_uncurry (hp : p ∈ Ioi 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrand₁₂ p).uncurry (Ioi 0 ×ˢ s) := by
   unfold rpowIntegrand₁₂
@@ -419,11 +420,10 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) :
     ∃ μ : Measure ℝ, ∀ x ∈ Ici 0,
       (IntegrableOn (fun t => rpowIntegrand₁₂ p t x) (Ioi 0) μ)
       ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrand₁₂ p t x ∂μ := by
-  let C : ℝ≥0 :=
-    { val := (∫ t in Ioi 0, rpowIntegrand₀₁ (p - 1) t 1)⁻¹
-      property := by
-        rw [inv_nonneg]
-        exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos (by grind) }
+  let C : ℝ≥0 := .mk
+    (∫ t in Ioi 0, rpowIntegrand₀₁ (p - 1) t 1)⁻¹ <| by
+      rw [inv_nonneg]
+      exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos (by grind)
   let μ : Measure ℝ := C • volume
   refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
   · unfold μ IntegrableOn
@@ -431,7 +431,7 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) :
     exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₁₂ hp hx
   · rw [Measure.restrict_smul, integral_smul_nnreal_measure,
       rpow_eq_const_mul_integral_rpowIntegrand₁₂ hp hx]
-    rfl
+    simp [C, NNReal.smul_def]
 
 end OneTwo
 
