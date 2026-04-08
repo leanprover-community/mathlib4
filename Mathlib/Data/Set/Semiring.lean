@@ -157,7 +157,7 @@ def imageHom : SetSemiring α →+* SetSemiring β where
   map_mul' _ _ := image_mul f
 
 @[simp] lemma imageHom_apply (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
-@[simp] lemma ofSet_image (s : Set α) : ofSet (f '' s) = imageHom f s := rfl
+lemma ofSet_image (s : Set α) : ofSet (f '' s) = imageHom f s := rfl
 
 lemma imageHom_id : imageHom (MonoidHom.id α) = RingHom.id (SetSemiring α) := by
   simp [imageHom, RingHom.id, Function.id_def]
