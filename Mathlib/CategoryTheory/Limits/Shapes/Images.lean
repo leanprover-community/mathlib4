@@ -679,7 +679,7 @@ variable {C : Type u} [Category.{v} C]
 section
 
 instance {X Y : C} (f : X ⟶ Y) [HasImage f] : HasImage (Arrow.mk f).hom :=
-  show HasImage f by infer_instance
+  inferInstanceAs <| HasImage f
 
 end
 

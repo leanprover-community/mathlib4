@@ -221,7 +221,6 @@ lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
-set_option backward.isDefEq.respectTransparency false in
 theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
     IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
   have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n

@@ -398,17 +398,11 @@ def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s
   continuousOn_toFun := hf.continuousOn
   continuousOn_invFun := hf.inverse_continuousOn hc
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
-
 @[simp]
 theorem toOpenPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs : E → F) = f :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
 
 @[simp]
 theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -416,17 +410,11 @@ theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L
     (hf.toOpenPartialHomeomorph f s hc hs).source = s :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_source := toOpenPartialHomeomorph_source
-
 @[simp]
 theorem toOpenPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs).target = f '' s :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_target := toOpenPartialHomeomorph_target
 
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)

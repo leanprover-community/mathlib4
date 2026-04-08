@@ -82,6 +82,17 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
     infer_instance
 
+lemma reflectsIsomorphisms_of_iso {F G : C ⥤ D} (α : F ≅ G) [F.ReflectsIsomorphisms] :
+    G.ReflectsIsomorphisms where
+  reflects f _ := by
+    rw [← isIso_iff_of_reflects_iso _ F, ← NatIso.naturality_2 α f]
+    infer_instance
+
+lemma reflectsIsomorphisms_iso_iff {F G : C ⥤ D} (α : F ≅ G) :
+    F.ReflectsIsomorphisms ↔ G.ReflectsIsomorphisms :=
+  ⟨fun _ => reflectsIsomorphisms_of_iso α,
+  fun _ => reflectsIsomorphisms_of_iso α.symm⟩
+
 end ReflectsIso
 
 end CategoryTheory
