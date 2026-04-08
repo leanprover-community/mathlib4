@@ -120,24 +120,21 @@ lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
 /-! ### z-coordinate eta product facts (derived from q-coordinate versions) -/
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
-  simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
+  have hq : ‖(𝕢 (1 : ℝ) ↑z : ℂ)‖ < 1 := by exact_mod_cast norm_qParam_lt_one 1 z
+  simpa only [norm_neg, eta_q, norm_pow] using
+    (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
 
 lemma multipliableLocallyUniformlyOn_eta :
     MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ := by
-  use fun z ↦ ∏' n, (1 - eta_q n z)
-  simp_rw [sub_eq_add_neg]
-  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_upperHalfPlaneSet
-  intro K hK hcK
-  by_cases hN : K.Nonempty
-  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * I * x)‖) K := by fun_prop
-    obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
-    apply (summable_eta_q ⟨z, hK hz⟩).hasProdUniformlyOn_nat_one_add hcK
-    · filter_upwards with n x hx
-      simpa [eta_q, eta_q_eq_pow] using pow_le_pow_left₀ (by simp [norm_nonneg]) (HB x hx) _
-    · simp_rw [eta_q, Periodic.qParam]
-      fun_prop
-  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
+  refine ⟨fun z ↦ ∏' n, (1 - eta_q n z), ?_⟩
+  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn]
+  have h := multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn
+  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
+  exact h.comp (Periodic.qParam 1)
+    (fun z hz ↦ by
+      simpa [Metric.mem_ball, dist_zero_right] using
+        (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
+    (by fun_prop)
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
@@ -179,10 +176,11 @@ lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x)
 
 lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ (fun x ↦ ∏' n, (1 - eta_q n x)) z := by
-  apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
-    isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
-  filter_upwards with b
-  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+  have hq : (𝕢 (1 : ℝ) z : ℂ) ∈ Metric.ball (0 : ℂ) 1 := by
+    simpa [Metric.mem_ball, dist_zero_right] using
+      (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1)
+  exact (((differentiableOn_tprod_one_sub_pow).differentiableAt
+    (Metric.isOpen_ball.mem_nhds hq)).comp z (by fun_prop : DifferentiableAt ℂ (𝕢 (1 : ℝ)) z))
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=
