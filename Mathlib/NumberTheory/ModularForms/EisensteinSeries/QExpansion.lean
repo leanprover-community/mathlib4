@@ -327,10 +327,8 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     if m = 0 then 1 else -(2 * k / bernoulli k : ℂ) * (σ (k - 1) m) := by
   set β : ℂ := -(2 * k / bernoulli k : ℂ)
   set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
-  haveI : ModularFormClass (ModularForm 𝒮ℒ k) (CongruenceSubgroup.Gamma 1) k :=
-    CongruenceSubgroup.Gamma_one_coe_eq_SL ▸ inferInstance
   suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
-    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z this m).symm
+    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL this m).symm
   intro τ
   have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)

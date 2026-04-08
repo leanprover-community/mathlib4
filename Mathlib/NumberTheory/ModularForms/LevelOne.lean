@@ -69,6 +69,9 @@ variable [ModularFormClass F Γ(1) k]
 
 lemma one_mem_strictPeriods_SL2Z : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
 
+lemma one_mem_strictPeriods_SL : (1 : ℝ) ∈ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).strictPeriods :=
+  Gamma_one_coe_eq_SL ▸ one_mem_strictPeriods_SL2Z
+
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)

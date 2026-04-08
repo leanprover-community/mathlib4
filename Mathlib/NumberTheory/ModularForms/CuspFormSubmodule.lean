@@ -63,37 +63,31 @@ namespace ModularForm
 
 /-- The submodule of `ModularForm Γ k` consisting of cusp forms, defined as the range of
 the inclusion `CuspForm.toModularFormₗ`. -/
-def cuspFormSubmodule [Γ.HasDetOne] : Submodule ℂ (ModularForm Γ k) :=
-  LinearMap.range (CuspForm.toModularFormₗ)
+def cuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [Γ.HasDetOne] :
+    Submodule ℂ (ModularForm Γ k) :=
+  LinearMap.range CuspForm.toModularFormₗ
 
 /-- A modular form is a cusp form if it lies in the cusp form submodule. -/
 def IsCuspForm [Γ.HasDetOne] (f : ModularForm Γ k) : Prop :=
-  f ∈ cuspFormSubmodule (Γ := Γ) (k := k)
+  f ∈ cuspFormSubmodule Γ k
 
 /-- The cusp form submodule is linearly equivalent to the type of cusp forms. -/
-def CuspForm.equivCuspFormSubmodule [Γ.HasDetOne] :
-    CuspForm Γ k ≃ₗ[ℂ] cuspFormSubmodule (Γ := Γ) (k := k) :=
+def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [Γ.HasDetOne] :
+    CuspForm Γ k ≃ₗ[ℂ] cuspFormSubmodule Γ k :=
   LinearEquiv.ofInjective CuspForm.toModularFormₗ CuspForm.toModularFormₗ_injective
 
 /-- A modular form is a cusp form if and only if it vanishes at every cusp. This is the
 general characterization valid for any subgroup. -/
 lemma isCuspForm_iff [Γ.HasDetOne] (f : ModularForm Γ k) :
     IsCuspForm f ↔ ∀ {c : OnePoint ℝ}, IsCusp c Γ → c.IsZeroAt f k := by
-  constructor
-  · rintro ⟨g, hg⟩ c hc
-    have : (f : ℍ → ℂ) = (g : ℍ → ℂ) := congr_arg DFunLike.coe hg.symm
-    simpa [this] using g.zero_at_cusps' hc
-  · intro h
-    exact ⟨⟨f.toSlashInvariantForm, f.holo', h⟩, by ext; rfl⟩
+  refine ⟨fun ⟨g, hg⟩ c hc ↦ hg ▸ g.zero_at_cusps' hc, fun h ↦
+    ⟨⟨f.toSlashInvariantForm, f.holo', h⟩, rfl⟩⟩
 
 section SL2Z
 
 open EisensteinSeries
 
 variable {k : ℤ}
-
-lemma one_mem_strictPeriods_SL : (1 : ℝ) ∈ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).strictPeriods :=
-  CongruenceSubgroup.Gamma_one_coe_eq_SL ▸ one_mem_strictPeriods_SL2Z
 
 /-- If an `𝒮ℒ` modular form has `valueAtInfty f = 0`, then it is zero at infinity. -/
 lemma isZeroAtImInfty_of_valueAtInfty_eq_zero
