@@ -278,16 +278,9 @@ theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
 lemma coeff_subst_single {σ : Type*} [DecidableEq σ] (s : σ) (f : R⟦X⟧) (e : σ →₀ ℕ) :
     MvPowerSeries.coeff e (subst (MvPowerSeries.X s) f) =
       if e = Finsupp.single s (e s) then coeff (e s) f else 0 := by
-  rw [coeff_subst (HasSubst.X s), finsum_eq_single _ (e s)]
-  · rw [MvPowerSeries.coeff_X_pow, smul_eq_mul]
-    split_ifs with he
-    · rw [mul_one]
-    · rw [mul_zero]
-  · intro d hd
-    simp only [MvPowerSeries.coeff_X_pow, smul_eq_mul, mul_ite]
-    grind
+  rw [coeff_subst (HasSubst.X s), finsum_eq_single _ (e s)] <;>
+  grind [MvPowerSeries.coeff_X_pow, smul_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
     (p : PowerSeries R) =
       ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
@@ -445,27 +438,18 @@ noncomputable abbrev X₀ {R : Type*} [Semiring R] := MvPowerSeries.X (σ := Fin
 /-- Notation for the second variable of the bivariate power series ring `R⟦X₀, X₁⟧. -/
 noncomputable abbrev X₁ {R : Type*} [Semiring R] := MvPowerSeries.X (σ := Fin 2) (R := R) 1
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeff_subst_X₀_add_X₁ (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
     (MvPowerSeries.coeff e) (subst (X₀ + X₁) f) =
       (e 0 + e 1).choose (e 0) * coeff (e 0 + e 1) f := by
   rw [PowerSeries.subst, MvPowerSeries.coeff_subst
     (MvPowerSeries.hasSubst_of_constantCoeff_zero (fun _ ↦ by simp))]
-  simp only [Fin.isValue, Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton,
-    smul_eq_mul]
-  simp only [← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow,
+  simp_rw [Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton,
+    smul_eq_mul, ← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow,
     MvPolynomial.coeff_coe]
   rw [finsum_eq_single _ (single () (e 0 + e 1)), mul_comm]
-  · apply congr_arg₂
-    · simp only [Fin.isValue, single_add, Finsupp.coe_add, Pi.add_apply, single_eq_same,
-      MvPolynomial.coeff_add_pow, mem_antidiagonal, reduceIte]
-    · simp [coeff]
-  · intro d hd'
-    simp only [Fin.isValue, MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite, cast_zero,
-      mul_ite, mul_zero, ite_eq_right_iff]
-    intro hd
-    have hd_eq : d = single () (e 0 + e 1) := by ext; simp [hd]
-    exact absurd hd_eq hd'
+  · simp [MvPolynomial.coeff_add_pow, coeff]
+  · simp only [MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite]
+    grind
 
 lemma coeff_subst_X₀_mul_X₁ (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
     MvPowerSeries.coeff e (subst X₀ f * subst X₁ f) = coeff (e 0) f * coeff (e 1) f := by
@@ -482,9 +466,7 @@ lemma coeff_subst_X₀_mul_X₁ (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
   · intro he
     have he' : single 0 (e 0) + single 1 (e 1) = e := by
       ext i
-      match i with
-      | 0 => simp
-      | 1 => simp
+      fin_cases i <;> simp
     exact absurd (mem_antidiagonal.mpr he') he
 
 end Bivariate
