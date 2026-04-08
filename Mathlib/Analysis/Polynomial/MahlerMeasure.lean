@@ -261,7 +261,7 @@ is at least 1. This holds in particular for nonzero polynomials with integer coe
 since their leading coefficient is a nonzero integer. -/
 lemma one_le_mahlerMeasure_of_one_le_norm_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : 1 ≤ p.mahlerMeasure :=
-  hlc.trans (leading_coeff_le_mahlerMeasure p)
+  hlc.trans (leadingCoeff_le_mahlerMeasure p)
 
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
