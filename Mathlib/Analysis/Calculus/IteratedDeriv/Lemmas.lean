@@ -228,7 +228,7 @@ theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
 omit hx h in
 theorem iteratedDerivWithin_comp_sub_const (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (z - c)) s =
-    fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
+      fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
   simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const (-c)
 
 omit hx h in
