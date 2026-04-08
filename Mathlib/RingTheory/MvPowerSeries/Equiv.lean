@@ -313,12 +313,12 @@ end sum
 
 section optionEquivLeft
 
-private lemma embDomain_finSuccEquiv_cons_eq_optionElim {n k : ℕ} {x : Fin n →₀ ℕ} :
-    embDomain (_root_.finSuccEquiv n).toEmbedding (cons k x) = optionElim k x := by
+private lemma embDomain_finSuccEquiv_cons {M : Type*} [AddCommMonoid M] {n : ℕ} (i : M)
+    (x : Fin n →₀ M) : embDomain (finSuccEquiv n).toEmbedding (cons i x) = optionElim i x := by
   ext a; cases a <;> simp [embDomain_eq_mapDomain]
 
 open Finset in
-private theorem image_product_antidiagonal_optionElim [DecidableEq σ]
+private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
     {x : σ →₀ ℕ} {n : ℕ} : image (fun ((x, y), z, w) ↦
       (z.optionElim x, w.optionElim y)) (antidiagonal n ×ˢ antidiagonal x) =
     antidiagonal (x.optionElim n) := by
@@ -359,7 +359,7 @@ private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
   classical
   ext
   simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, map_sum, ← sum_product',
-    ← image_product_antidiagonal_optionElim] using sum_image (LeftInverse.injective
+    ← image_optionElim_product_antidiagonal] using sum_image (LeftInverse.injective
       (g := fun (x, y) ↦ ((x none, y none), x.some, y.some)) (fun _ ↦ by simp)).injOn
 
 variable (R σ) in
@@ -446,7 +446,7 @@ private lemma optionFunRight_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunRight σ R (p * q) = optionFunRight σ R p * optionFunRight σ R q := by
   classical
   ext
-  simpa [coeff_coeff_optionFunRight, coeff_mul, ← image_product_antidiagonal_optionElim,
+  simpa [coeff_coeff_optionFunRight, coeff_mul, ← image_optionElim_product_antidiagonal,
     map_sum, PowerSeries.coeff_mul, ← sum_product_right'] using sum_image (LeftInverse.injective
       (g := fun (x, y) ↦ ((x none, y none), x.some, y.some)) (fun _ ↦ by simp)).injOn
 
@@ -505,7 +505,7 @@ theorem coeff_coeff_finSuccEquiv (p : MvPowerSeries (Fin (n + 1)) R) {k x} :
   suffices (coeff x) ((PowerSeries.coeff k) ((optionEquivLeft (Fin n) R)
     ((rename (_root_.finSuccEquiv n)) p))) = (coeff (Finsupp.cons k x)) p by simpa [finSuccEquiv]
   simp_rw [← Equiv.coe_toEmbedding, coeff_coeff_optionEquivLeft,
-    ← embDomain_finSuccEquiv_cons_eq_optionElim, coeff_embDomain_rename]
+    ← embDomain_finSuccEquiv_cons, coeff_embDomain_rename]
 
 theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = .X := by
   ext k x
