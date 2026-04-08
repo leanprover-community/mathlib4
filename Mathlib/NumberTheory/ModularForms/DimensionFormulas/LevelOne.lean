@@ -3,6 +3,7 @@ Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 import Mathlib.NumberTheory.ModularForms.Discriminant
 import Mathlib.Data.Rat.Star
@@ -380,15 +381,6 @@ theorem ModularForm.levelOne_weight_two_rank_zero :
       (cuspForm_rank_lt_twelve (show (2 : ℤ) < 12 by norm_num)) g]
   · exact weight_two_eq_zero_of_not_cuspForm f hf
 
-private lemma floor_lem1 (k a : ℚ) (ha : 0 < a) (hak : a ≤ k) :
-    1 + Nat.floor ((k - a) / a) = Nat.floor (k / a) := by
-  rw [div_sub_same (Ne.symm (ne_of_lt ha))]
-  have := Nat.floor_sub_one (k / a)
-  push_cast at *
-  rw [this]
-  refine Nat.add_sub_cancel' ?_
-  exact Nat.le_floor ((le_div_iff₀ ha).mpr (by simpa using hak))
-
 /-- The dimension formula for `𝒮ℒ` modular forms of even weight `k ≥ 3`. -/
 theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ (k : ℤ)) =
@@ -404,13 +396,16 @@ theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : 
       norm_cast; exact Eq.symm (Int.subNatNat_of_le (by omega))
     rw [hk12] at iH
     rw [iH, show ((k - 12 : ℕ) : ℚ) = (k : ℚ) - 12 from by norm_cast]
-    have hfl := floor_lem1 k 12 (by norm_num)
+    have hfl (hk' : (12 : ℚ) ≤ k) :
+        ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ :=
+      Nat.floor_div_eq_one_add_floor_sub_div (k : ℚ) 12 (by norm_num) hk'
     by_cases h12 : 12 ∣ ((k) : ℤ) - 2
     · simp only [show 12 ∣ (k : ℤ) - 12 - 2 from by omega, ↓reduceIte, h12]
-      norm_cast at *; apply hfl; omega
+      norm_cast at *; rw [hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
     · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 from by omega, ↓reduceIte, h12,
         Nat.cast_add, Nat.cast_one]
-      norm_cast at *; rw [← add_assoc, hfl]; omega
+      norm_cast at *
+      rw [← add_assoc, ← hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
   · simp only [not_le] at HK
     have hkop : k ∈ Finset.filter Even (Finset.Icc 3 14) := by
       simp only [Finset.mem_filter, Finset.mem_Icc, hk2, and_true]; omega
