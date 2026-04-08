@@ -15,28 +15,26 @@ public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 This file allows the use of `⊆` notation while the underlying constant is `≤`.
 Similarly for `⊂`/`<`, `⊇`/`≥` and `⊃`/`>`.
 
-A new copy of the `a ⊆ b` syntax is declared, which overwrites the original one. It tries to
-elaborate to the original `a ⊆ b` notation, and if that doesn't work, then it elaborates to `a ≤ b`.
-
-A new delaborator for `LE.le` is added so that `a ≤ b` prints as `a ⊆ b` whenever the type is
+A new copy of the `a ⊆ b` syntax is declared, which overwrites the original one.
+To elaborate this notation, `a` and `b` are elaborated, and if the type of `a` and `b` is
+tagged with `@[use_set_notation]`, `LE.le` is used instead of `Subset`.
+A new delaborator for `LE.le` is also added so that `a ≤ b` prints as `a ⊆ b` whenever the type is
 tagged with `@[use_set_notation]`. This tag is used for `Set`, `Finset`, `PSet` and `ZFSet`.
 
-`Multiset` has both `≤` and `⊆` defined on it, with different meanings. This still works and is
-unaffected.
-
-Some types in Lean core have instances of `HasSubset`, such as `List`. This also still works.
+`Multiset` and `List` have both `≤` and `⊆` defined on them, with different meanings.
+These still work and are unaffected, as they are not tagged with `@[use_set_notation]`.
 
 TODO: The same trick should allow us to make `∪`/`⊔` and `∩`/`⊓` refer to the same constant.
 -/
 
-public meta section
+meta section
 
-namespace Mathlib.Meta
+namespace Mathlib.Meta.SetNotation
 
 open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
 
-/-- The `@[use_set_notation]` attribute marks that order notation on the given type should be
-pretty printed using set-style notation, i.e. `⊆` instead of `≤`. -/
+/-- The `@[use_set_notation]` attribute marks that order operations on the given type should use
+set-style notation, e.g. `⊆` instead of `≤`. This affects both elaboration and delaboration. -/
 initialize setNotationExt : NameMapExtension Unit ← registerNameMapExtension _
 
 @[inherit_doc setNotationExt]
@@ -58,7 +56,7 @@ def useSetNotationFor (type : Expr) : MetaM Bool := do
 
 /-- Delaborate `x ≤ y` into `x ⊆ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab LE.le]
-def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+public def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr LE.le α _ _ _ := ← getExpr | failure
   guard <| ← useSetNotationFor α
   let x ← withNaryArg 2 delab
@@ -68,7 +66,7 @@ def delabLe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
 
 /-- Delaborate `x < y` into `x ⊂ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab LT.lt]
-def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+public def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr LT.lt α _ _ _ := ← getExpr | failure
   guard <| ← useSetNotationFor α
   let x ← withNaryArg 2 delab
@@ -78,7 +76,7 @@ def delabLt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
 
 /-- Delaborate `x ≥ y` into `x ⊇ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab GE.ge]
-def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+public def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr GE.ge α _ _ _ := ← getExpr | failure
   guard <| ← useSetNotationFor α
   let x ← withNaryArg 2 delab
@@ -88,7 +86,7 @@ def delabGe : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotati
 
 /-- Delaborate `x > y` into `x ⊃ y` if the type is tagged with `@[use_set_notation]`. -/
 @[app_delab GT.gt]
-def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+public def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr GT.gt α _ _ _ := ← getExpr | failure
   guard <| ← useSetNotationFor α
   let x ← withNaryArg 2 delab
@@ -148,28 +146,28 @@ syntax:50 (name := ssupsetStx') (priority := high) term:51 " ⊃ " term:51 : ter
 
 /-- Elaborator for `x ⊆ y` notation. -/
 @[term_elab subsetStx']
-def elabSubsetStx' : TermElab
+public def elabSubsetStx' : TermElab
   | `($x ⊆ $y), expectedType? =>
     elabSubsetLike x y ``LE.le ``LE ``Subset ``HasSubset expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊂ y` notation. -/
 @[term_elab ssubsetStx']
-def elabSSubsetStx' : TermElab
+public def elabSSubsetStx' : TermElab
   | `($x ⊂ $y), expectedType? =>
     elabSubsetLike x y ``LT.lt ``LT ``SSubset ``HasSSubset expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊇ y` notation. -/
 @[term_elab supsetStx']
-def elabSupsetStx' : TermElab
+public def elabSupsetStx' : TermElab
   | `($x ⊇ $y), expectedType? =>
     elabSubsetLike x y ``GE.ge ``LE ``Superset ``HasSubset expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊃ y` notation. -/
 @[term_elab ssupsetStx']
-def elabSSupsetStx' : TermElab
+public def elabSSupsetStx' : TermElab
   | `($x ⊃ $y), expectedType? =>
     elabSubsetLike x y ``GT.gt ``LT ``SSuperset ``HasSSubset expectedType?
   | _, _ => throwUnsupportedSyntax
@@ -190,4 +188,4 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 
-end Mathlib.Meta
+end Mathlib.Meta.SetNotation
