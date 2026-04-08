@@ -88,7 +88,7 @@ theorem constantCoeff_logOf {f : A⟦X⟧} (hf : constantCoeff f = 1) :
     constantCoeff (logOf f) = 0 := by
   rw [logOf_eq]
   have h : MvPowerSeries.constantCoeff (f - 1 : A⟦X⟧) = 0 := by
-    rw [show MvPowerSeries.constantCoeff (f - 1) = constantCoeff f - 1 from rfl, hf, sub_self]
+    rw [map_sub, map_one, ← PowerSeries.constantCoeff, hf, sub_self]
   exact constantCoeff_subst_eq_zero h _ constantCoeff_log
 
 variable (A) in
