@@ -193,6 +193,7 @@ open TensorProduct
 variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
   [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
 
+-- PRed
 variable (B) in
 open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
 theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
@@ -213,6 +214,7 @@ theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
   rw [length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa),
     (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B (maximalIdeal A)).toLinearEquiv.length_eq]
 
+-- PRed
 variable (A B M) in
 open IsLocalRing Module Submodule in
 theorem length_baseChange :
@@ -239,7 +241,7 @@ theorem length_baseChange :
 
 variable [Module B M] [IsScalarTower A B M]
 
-set_option backward.isDefEq.respectTransparency false in
+-- PRed
 variable (A) in
 open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
 theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
@@ -258,8 +260,8 @@ theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
     (by simpa) (by simpa) (by simpa), Module.length_eq_of_surjective (M := ResidueField B)
       (residue_surjective (R := A)), Module.length_eq_rank]
 
+-- PRed
 variable (A B M) in
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing Module Submodule in
 theorem length_restrictScalars :
     length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
@@ -380,6 +382,12 @@ theorem ramificationIdx_of_not_le
     exact disjoint_compl_left_iff.mp h
   · rw [ramificationIdx_of_not_isPrime p q hq]
 
+instance {R : Type*} [CommRing R] (M : Submonoid R)
+    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S] (I : Ideal R) :
+    IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
+  IsLocalization.of_surjective M S (Quotient.mk I) Quotient.mk_surjective
+    (Quotient.mk (I.map (algebraMap R S))) Quotient.mk_surjective rfl (by simp)
+
 theorem ramificationIdx_of_ne
     {R : Type*} [CommRing R] (p q : Ideal R) (h : p ≠ q) [hp : p.IsPrime] :
       p.ramificationIdx q = 0 := by
@@ -407,9 +415,12 @@ theorem ramificationIdx_of_ne
     right
     assumption
   have : IsDomain A := by
-    have : IsLocalization qRp.primeCompl A := by
-      sorry
-    exact IsLocalization.isDomain_of_atPrime A qRp
+    apply IsLocalization.isDomain_of_le_nonZeroDivisors
+      (M := Algebra.algebraMapSubmonoid Rp q.primeCompl) A
+    rintro - ⟨x, hx, rfl⟩
+    simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq]
+    rw [Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem]
+    exact mt (@hpq x) hx
   have : IsField A := IsArtinianRing.isField_of_isDomain A
   have : IsMaximal (p.map (algebraMap R Rq)) := by
     apply Quotient.maximal_of_isField
