@@ -33,6 +33,15 @@ Given a function `f : M → N` between magmas, return the corresponding map `R[M
 by summing the coefficients along each fiber of `f`. -/]
 abbrev mapDomain (f : M → N) (x : R[M]) : R[N] := Finsupp.mapDomain f x
 
+@[to_additive (attr := simp)]
+lemma coeff_mapDomain (f : M → N) (x : R[M]) :
+    (mapDomain f x).coeff = x.coeff.mapDomain f := rfl
+
+/-- This isn't marked as simp to avoid looping with unfolding `coeff`. -/
+@[to_additive /-- This isn't marked as simp to avoid looping with unfolding `coeff`. -/]
+lemma ofCoeff_mapDomain (f : M → N) (x : M →₀ R) :
+    ofCoeff (.mapDomain f x) = mapDomain f (ofCoeff x) := rfl
+
 @[to_additive]
 lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := Finsupp.mapDomain_zero ..
 
@@ -93,6 +102,26 @@ lemma map_id (x : R[M]) : map (.id R) x = x := by simp [map, coeff, ofCoeff]
 @[to_additive (attr := simp)]
 lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) :
     map f (map g x) = map (f.comp g) x := by simp [map, coeff, ofCoeff]
+
+@[to_additive]
+lemma range_map (f : R →+ S) : Set.range (map (M := M) f) = {x | ∀ i, x.coeff i ∈ Set.range f} :=
+  calc
+    _ = coeffEquiv ⁻¹' (Set.range (mapRange f (map_zero f) ∘ coeffEquiv)) := by
+      simp_rw [comp_def, Equiv.eq_preimage_iff_image_eq, ← Set.range_comp', coeffEquiv_apply,
+        coeff_map]
+    _ = _ := by simp [Finsupp.range_mapRange]
+
+/-- `MonoidAlgebra.map` of an injective function is injective. -/
+@[to_additive /-- `AddMonoidAlgebra.map` of an injective function is injective. -/]
+lemma map_injective (f : R →+ S) (he : Injective f) : Injective (map (M := M) f) := by
+  change Injective (coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv)
+  simpa using mapRange_injective _ (map_zero f) he
+
+/-- `MonoidAlgebra.map` of a surjective function is surjective. -/
+@[to_additive /-- `AddMonoidAlgebra.map` of an surjective function is surjective. -/]
+lemma map_surjective (f : R →+ S) (he : Surjective f) : Surjective (map (M := M) f) := by
+  change Surjective (coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv)
+  simpa [comp_def] using mapRange_surjective _ (map_zero f) he
 
 /-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
@@ -298,11 +327,6 @@ noncomputable def mapRingHom (f : R →+* S) : R[M] →+* S[M] where
 lemma coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom M f) = map f := rfl
 
 @[deprecated (since := "2026-03-20")] alias coe_mapRangeRingHom := coe_mapRingHom
-
-@[to_additive]
-lemma coe_mapRangeRingHom (f : R →+* S) :
-    ⇑(mapRangeRingHom M f) = mapRange f (map_zero _) := by
-  simp [mapRangeRingHom]
 
 @[to_additive (attr := simp)]
 lemma mapRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :

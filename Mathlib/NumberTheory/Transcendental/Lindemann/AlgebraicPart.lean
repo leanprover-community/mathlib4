@@ -26,50 +26,6 @@ open scoped AddMonoidAlgebra
 
 open Finset Polynomial
 
-namespace AddMonoidAlgebra
-
--- avoid defeq abuse, see also #25273
-/-- The coefficients `M →₀ R` of an element of the additive monoid algebra `R[M]`. -/
-def coeff {R M} [Semiring R] (f : R[M]) : M →₀ R := f
-/-- Construct an element of the additive monoid algebra `R[M]` from its coefficients `M →₀ R`. -/
-def ofCoeff {R M} [Semiring R] (f : M →₀ R) : R[M] := f
-
-@[simp]
-lemma coeff_ofCoeff {R M} [Semiring R] (f : M →₀ R) :
-    (AddMonoidAlgebra.ofCoeff f).coeff = f :=
-  rfl
-
-@[simp]
-lemma coeff_sum {R M ι} [Semiring R] (s : Finset ι) (f : ι → R[M]) :
-    (∑ i ∈ s, f i).coeff = ∑ i ∈ s, (f i).coeff :=
-  rfl
-
-@[simp]
-lemma ofCoeff_sum {R M ι} [Semiring R] (s : Finset ι) (f : ι → M →₀ R) :
-    ofCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff (f i) :=
-  rfl
-
-@[simp]
-lemma coeff_apply {R M} [Semiring R] (f : R[M]) (i : M) : f.coeff i = f i := rfl
-
-@[simp]
-lemma ofCoeff_apply {R M} [Semiring R] (f : M →₀ R) (i : M) : ofCoeff f i = f i := rfl
-
-@[simp]
-lemma ofCoeff_single {R M} [Semiring R] (i : M) (x : R) :
-    ofCoeff (Finsupp.single i x) = AddMonoidAlgebra.single i x := rfl
-
-@[simp]
-lemma coeff_add {R M} [Semiring R] (f g : R[M]) : (f + g).coeff = f.coeff + g.coeff := rfl
-
--- Why is there already a `coeff_smul`? I think that's a mistake.
-@[simp]
-theorem coeff_smul' {M R A : Type*} [Semiring R] [SMulZeroClass A R]
-    (a : A) (x : R[M]) (m : M) : (a • x).coeff m = a • x.coeff m :=
-  rfl
-
-end AddMonoidAlgebra
-
 section mapDomainFixed
 
 variable {F R K : Type*} [Field F] [CommSemiring R] [Algebra F R] [Field K] [Algebra F K]
@@ -143,7 +99,8 @@ def toFinsupp : mapDomainFixed F R K ≃ₗ[R] ConjRootClass F K →₀ R where
     ext i
     induction i
     simp_rw [Finsupp.coe_smul, Equiv.toFun_as_coe, toFinsuppAux_apply_apply_mk, SetLike.val_smul,
-      RingHom.id_apply, AddMonoidAlgebra.coeff_smul', Pi.smul_apply, toFinsuppAux_apply_apply_mk]
+      RingHom.id_apply, AddMonoidAlgebra.coeff_smul, Pi.smul_apply, toFinsuppAux_apply_apply_mk,
+      Finsupp.smul_apply]
 
 @[simp]
 theorem toFinsupp_apply (f : mapDomainFixed F R K) (i : K) :
@@ -166,7 +123,7 @@ def single (x : ConjRootClass F K) (a : R) :
   ⟨.ofCoeff <| Finsupp.indicator x.carrier.toFinset fun _ _ => a, by
     rw [mem_mapDomainFixed_iff]
     rintro i j h
-    simp_rw [AddMonoidAlgebra.ofCoeff_apply, Finsupp.indicator_apply, Set.mem_toFinset, dite_eq_ite]
+    simp_rw [AddMonoidAlgebra.ofCoeff, Finsupp.indicator_apply, Set.mem_toFinset, dite_eq_ite]
     congr 1
     simp_rw [ConjRootClass.mem_carrier, eq_iff_iff]
     apply Eq.congr_left
@@ -178,7 +135,7 @@ theorem toFinsupp_single (x : ConjRootClass F K) (a : R) :
   ext i; induction i with | h i => ?_
   rw [toFinsupp_apply_mk]
   simp only [single]
-  rw [Finsupp.single_apply, AddMonoidAlgebra.ofCoeff_apply, Finsupp.indicator_apply, dite_eq_ite]
+  rw [Finsupp.single_apply, AddMonoidAlgebra.ofCoeff, Finsupp.indicator_apply, dite_eq_ite]
   congr 1
   rw [Set.mem_toFinset, ConjRootClass.mem_carrier, eq_comm (a := x)]
 
@@ -193,9 +150,9 @@ theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
   simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
   have : IsAddTorsionFree R := .of_isTorsionFree F R
   simp_rw [Finsupp.indicator_eq_sum_single, AddMonoidAlgebra.ofCoeff_sum,
-    sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff_single, AddMonoidAlgebra.single_mul_single,
+    sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff, AddMonoidAlgebra.single_mul_single,
     toFinsupp_mk_apply_zero_eq, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finset_sum, sum_apply,
-    AddMonoidAlgebra.coeff_apply, AddMonoidAlgebra.single_apply, ← sum_product',
+    AddMonoidAlgebra.coeff, AddMonoidAlgebra.single_apply, ← sum_product',
     sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
     iff_true_intro ha, iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff,
     not_forall, not_not, exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
@@ -210,7 +167,7 @@ theorem single_mul_single_apply_zero_eq_zero_iff [CharZero F] [NoZeroDivisors R]
 open Classical in
 theorem lift_eq_sum_toFinsupp (A : Type*) [Semiring A] [Algebra R A]
     (φ : Multiplicative K →* A) (x : mapDomainFixed F R K) :
-    AddMonoidAlgebra.lift R K A φ x =
+    AddMonoidAlgebra.lift R A K φ x =
       (toFinsupp x).sum fun c xc ↦ xc • ∑ a ∈ c.carrier, φ (.ofAdd a) := by
   conv_lhs => rw [← mapDomainFixed.toFinsupp_sum_single x]
   have (s' : Finset K) (b : R) :
@@ -233,36 +190,36 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     [AddCommMonoid G] [Semiring S] [NoZeroDivisors K[G]]
     (f : K[G] →+* S)
     (x : K[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
-    ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeRingHom _ (algebraMap F K)) = 0 := by
+    ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRingHom _ (algebraMap F K)) = 0 := by
   classical
-  let y := ∏ f : Gal(K/F), x.mapRangeAlgAut _ _ f
-  have hy : ∀ f : Gal(K/F), y.mapRangeAlgAut _ _ f = y := by
+  let y := ∏ f : Gal(K/F), x.mapAlgAut _ _ f
+  have hy : ∀ f : Gal(K/F), y.mapAlgAut _ _ f = y := by
     intro f; dsimp only [y]
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
-    exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapRangeAlgAut _ _ g
+    exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapAlgAut _ _ g
   have y0 : y ≠ 0 := by
     dsimp only [y]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [map_ne_zero_iff]
     apply EquivLike.injective
   have hfy : f y = 0 := by
     suffices
-      f (x.mapRangeAlgAut _ _ 1 * ∏ f ∈ univ.erase 1, x.mapRangeAlgAut _ _ f) = 0 by
+      f (x.mapAlgAut _ _ 1 * ∏ f ∈ univ.erase 1, x.mapAlgAut _ _ f) = 0 by
       convert this
       exact (mul_prod_erase (univ : Finset Gal(K/F)) _ (mem_univ _)).symm
     simp [map_one, hfx]
   have y_mem : ∀ i : G, y i ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(K/F)) := by
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
-    replace hy : y.mapRangeAlgAut _ _ f i = y i := by rw [hy f]
+    replace hy : y.mapAlgAut _ _ f i = y i := by rw [hy f]
     simpa using hy
-  obtain ⟨y', hy'⟩ : y ∈ Set.range (AddMonoidAlgebra.mapRangeRingHom _ (algebraMap F K)) := by
+  obtain ⟨y', hy'⟩ : y ∈ Set.range (AddMonoidAlgebra.mapRingHom _ (algebraMap F K)) := by
     simp [((IsGalois.tfae (F := F) (E := K)).out 0 1).mp (by infer_instance),
       IntermediateField.mem_bot] at y_mem
-    rwa [AddMonoidAlgebra.coe_mapRangeRingHom, Finsupp.range_mapRange]
+    rwa [AddMonoidAlgebra.coe_mapRingHom, AddMonoidAlgebra.range_map]
   rw [← hy'] at y0 y_mem hfy
   rw [map_ne_zero_iff _
-    (by simpa [AddMonoidAlgebra.coe_mapRangeRingHom] using
-      Finsupp.mapRange_injective _ _ (algebraMap F K).injective)] at y0
+    (by simpa [AddMonoidAlgebra.coe_mapRingHom] using
+      AddMonoidAlgebra.map_injective _ (algebraMap F K).injective)] at y0
   exact ⟨y', y0, hfy⟩
 
 theorem linearIndependent_exp_aux2_1 {F K S : Type*}
@@ -331,17 +288,20 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
     (h : ∑ i : ι, algebraMap K S (v' i) * φ (.ofAdd (u' i)) = 0) :
     ∃ (f : K[K]), f ≠ 0 ∧ AddMonoidAlgebra.lift _ _ _ φ f = 0 := by
   classical
-  let f : K[K] := (Finsupp.equivFunOnFinite.symm v').mapDomain u'
+  let f : K[K] := (AddMonoidAlgebra.ofCoeff <| Finsupp.equivFunOnFinite.symm v').mapDomain u'
   refine ⟨f, ?_, ?_⟩
-  · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0; push_neg at v0
+  · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0; push Not at v0
     obtain ⟨i, hv'i⟩ := v0
-    have h : f (u' i) ≠ 0 := by
-      rw [Finsupp.mapDomain_apply u'_inj]
+    have h : f.coeff (u' i) ≠ 0 := by
+      unfold f
+      rw [← AddMonoidAlgebra.ofCoeff_mapDomain, AddMonoidAlgebra.coeff_ofCoeff,
+        Finsupp.mapDomain_apply u'_inj]
       simpa
     intro f0
-    rw [f0, Finsupp.zero_apply] at h
+    rw [f0, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply] at h
     exact absurd rfl h
-  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.sum_mapDomain_index_inj u'_inj]
+  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.sum_mapDomain_index_inj u'_inj,
+      AddMonoidAlgebra.ofCoeff]
     simp [Finsupp.sum_fintype, Algebra.smul_def]
 
 theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
@@ -367,6 +327,7 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     simp only [w'', Finsupp.indicator_apply, Finsupp.mem_support_iff, ne_eq]
     intro i
     split_ifs with h0 <;> simp [h0, hx']
+  have : IsCancelMulZero R := .of_faithfulSMul R F
   have x0 : x ≠ 0 := by
     rintro ⟨rfl⟩
     simp [eq_comm, N0, w0] at hx
@@ -407,7 +368,7 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
   rw [Equiv.sum_comp q.equivFin.symm,
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots S).map (φ <| .ofAdd ·)).sum)]
   refine sum_congr rfl fun c _hc => ?_
-  rw [← c.splits_minpoly.aroots_map_algebraMap, c.aroots_minpoly_eq_carrier_val]
+  rw [← c.splits_minpoly.map_aroots_algebraMap, c.aroots_minpoly_eq_carrier_val]
   simp
 
 theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
@@ -418,23 +379,24 @@ theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
     (w' : Fin n → ℤ) (h : w + ∑ j, w' j • (((p j).aroots S).map f).sum = 0) :
     ∃ (p : Fin n → R[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ), w + ∑ j, w' j • (((p j).aroots S).map f).sum = 0 := by
-  choose b hb using
-    fun j ↦ IsLocalization.integerNormalization_map_to_map (nonZeroDivisors R) (p j)
+  choose b hb hbp using
+    fun j ↦ IsLocalization.integerNormalization_spec (nonZeroDivisors R) (p j)
   refine ⟨fun i => IsLocalization.integerNormalization (nonZeroDivisors R) (p i), ?_, w', ?_⟩
   · intro j
     suffices aeval (algebraMap R F 0)
         (IsLocalization.integerNormalization (nonZeroDivisors R) (p j)) ≠ 0 by
       rwa [aeval_algebraMap_apply, map_ne_zero_iff _ (IsFractionRing.injective R F)] at this
-    rw [map_zero, ← eval_map_algebraMap, hb, eval_smul, smul_ne_zero_iff]
-    exact ⟨nonZeroDivisors.coe_ne_zero _, hp j⟩
+    have : IsCancelMulZero R := .of_faithfulSMul R F
+    rw [map_zero, ← eval_map_algebraMap, hbp, eval_smul, smul_ne_zero_iff]
+    exact ⟨nonZeroDivisors.ne_zero (hb _), hp j⟩
   · rw [← h, add_right_inj]
     refine sum_congr rfl fun j _hj => congrArg _ (congrArg _ (Multiset.map_congr ?_ fun _ _ => rfl))
     change roots _ = roots _
-    rw [IsScalarTower.algebraMap_eq R F S, ← Polynomial.map_map, hb,
+    rw [IsScalarTower.algebraMap_eq R F S, ← Polynomial.map_map, hbp,
       Algebra.smul_def, Polynomial.algebraMap_apply, Polynomial.map_mul, map_C, roots_C_mul]
     rw [map_ne_zero_iff _ (algebraMap F S).injective,
       map_ne_zero_iff _ (IsFractionRing.injective R F)]
-    exact nonZeroDivisors.coe_ne_zero _
+    exact nonZeroDivisors.ne_zero (hb _)
 
 theorem linearIndependent_exp_aux {S : Type*}
     [Field S] [Algebra ℚ S] [IsAlgClosed S]
@@ -475,12 +437,12 @@ theorem linearIndependent_exp_aux {S : Type*}
       (φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative) f = 0 := by
     refine linearIndependent_exp_aux_rat _ u' ?_ v' ?_ ?_
     · exact fun i j hij ↦ u_inj (Subtype.mk.inj hij)
-    · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0 ⊢; push_neg at v0 ⊢
+    · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0 ⊢; push Not at v0 ⊢
       exact v0.imp fun i hvi ↦ by rwa [Ne, ← ZeroMemClass.coe_eq_zero]
     · simpa [algebraMap_K_apply, u', v']
   obtain ⟨f, f0, hf⟩ := linearIndependent_range_aux ℚ _ f f0 hf
   rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    AddMonoidAlgebra.lift_mapRangeRingHom_algebraMap] at hf
+    AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
   obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux2_1 _ f f0 hf
   obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux2_2 _ f f0 hf
   obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_int ℤ _ w w0 w' hw' h

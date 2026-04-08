@@ -5,13 +5,16 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.Analysis.Complex.IsIntegral
-public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
-public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.AlgebraicIndependent.Defs
-public import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
-public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Complex.IsIntegral
+import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -75,7 +78,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- The roots of `p j` in `ℂ` are simply the roots in `K` embedded into `ℂ`
   have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) = (((p j).aroots ℂ).map f) := by
-    rw [← (splits_p j).aroots_map_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
+    rw [← (splits_p j).map_aroots_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
   simp_rw [← aroots_K_eq_aroots_ℂ] at h
   -- The following roughly matches Jacobson, p. 286.
   -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).
@@ -107,7 +110,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
         Filter.Tendsto.eventually_lt_const (u := 1) (by simp)
           ((this (‖k‖ ^ P.natDegree * c)).const_mul (L * ∑ i, Multiset.card ((p i).aroots ℂ))))
       (N + 1) using 2
-    rw [ge_iff_le, Nat.succ_le_iff, mul_div_assoc]
+    rw [Nat.succ_le_iff, mul_div_assoc]
   -- And this `q` is in particular large enough to apply `hc'`.
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
