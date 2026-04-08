@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.Data.Finsupp.Interval
 
 /-!
 ## Multivariate polynomials with restricted values
@@ -82,6 +83,42 @@ noncomputable def shiftEquiv (h : σ → R) : MvPolynomial σ R ≃ₐ[R] MvPoly
   commutes' r := by simp
 --#find_home! shiftEquiv --[Mathlib.Algebra.MvPolynomial.CommRing]
 
+/-
+lemma coeff_shiftEquiv [DecidableEq σ] (f : MvPolynomial σ R) (n : σ →₀ ℕ) (h : σ → R) :
+    (f.shiftEquiv h).coeff n = ∑ᶠ k, f.coeff k * ∏ j ∈ n.support,
+      (k j).choose (n j) • (h j) ^ (k j - n j) := by
+  simp only [shiftEquiv_apply, aeval_eq_eval₂Hom, algebraMap_eq, coe_eval₂Hom, eval₂_eq, add_pow,
+    coeff_sum, coeff_C_mul]
+  rw [finsum_eq_finset_sum_of_support_subset _ (s := f.support)]
+  · refine Finset.sum_congr rfl ?_
+    intro i hi
+    congr 1
+    induction i using Finsupp.induction generalizing n with
+    | zero =>
+      by_cases hn : n = 0; · simp [hn]
+      obtain ⟨x, hx⟩ : ∃ x, x ∈ Finsupp.support n := by simpa [Finsupp.ext_iff] using hn
+      rw [Finset.prod_eq_zero hx]
+      · simp [coeff_one]
+        grind
+      · simp [Nat.choose_eq_zero_of_lt (Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hx)]
+    | single_add a b m ha hb ih =>
+      have : (Finsupp.single a b + m).support = {a} ∪ m.support := by
+        rw [← Finsupp.support_single_ne_zero a hb]
+        refine Finsupp.support_add_eq <| Disjoint.symm (Finset.disjoint_right.mpr ?_)
+        intro j hj
+        rw [Finset.mem_singleton.mp <| Finsupp.support_single_subset hj]
+        exact ha
+      rw [this, Finset.prod_union <| Finset.disjoint_singleton_left.mpr ha, Finset.prod_singleton,
+        coeff_mul]
+
+      sorry
+
+  · intro i hi
+    contrapose! hi
+    simp at hi
+    simp [hi]
+-/
+
 open scoped MonomialOrder in
 lemma degree_shiftEquiv (m : MonomialOrder σ) (f : MvPolynomial σ R) (h : σ → R) :
     m.degree (shiftEquiv h f) = m.degree f := by
@@ -91,15 +128,13 @@ lemma degree_shiftEquiv (m : MonomialOrder σ) (f : MvPolynomial σ R) (h : σ �
     by_cases hd : m.degree (monomial a b) ≺[m] m.degree f
     · rw [map_add, add_comm, MonomialOrder.degree_add_of_lt (by rwa [ih2, ih1]), add_comm,
         MonomialOrder.degree_add_of_lt hd, ih1]
-    · by_cases hf : f = 0; · simp_all
+    · by_cases hf : f = 0; · simpa [hf] using ih2
       have : m.degree f ≺[m] m.degree ((monomial a) b) := by
-        refine Std.lt_of_le_of_ne (Std.not_lt.mp hd) ?_
-        classical
-        simp only [MonomialOrder.degree_monomial, hb, ↓reduceIte, ne_eq,
-          EmbeddingLike.apply_eq_iff_eq]
+        refine Std.lt_of_le_of_ne (Std.not_lt.mp hd) <| m.toSyn.injective.ne ?_
         contrapose! ha
-        rw [← ha]
-        exact m.degree_mem_support hf
+        classical
+        have : m.degree f = a := by simpa [MonomialOrder.degree_monomial, hb] using ha
+        exact this ▸ m.degree_mem_support hf
       rw [map_add, MonomialOrder.degree_add_of_lt this,
         MonomialOrder.degree_add_of_lt (by rwa [ih2, ih1]), ih2]
   | mul_X p n ih =>
@@ -124,10 +159,7 @@ lemma degree_shiftEquiv (m : MonomialOrder σ) (f : MvPolynomial σ R) (h : σ �
 
 /-- The forward difference operator on polynomials, as a linear map. -/
 @[simps]
-noncomputable def fwdDiff (h : σ → R) :
-    letI : Module R (MvPolynomial σ R) := module -- I don't understand why this is necessary.
-    MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
-  letI : Module R (MvPolynomial σ R) := module
+noncomputable def fwdDiff (h : σ → R) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   { toFun f := shiftEquiv h f - f
     map_add' f₁ f₂ := by simp; abel
     map_smul' r x := by simp [smul_sub] }
@@ -275,7 +307,7 @@ lemma degree_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
       exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
     · rw [mul_ne_zero_iff, MonomialOrder.leadingCoeff_ne_zero_iff,
         MonomialOrder.leadingCoeff_ne_zero_iff]
-      by_cases hn : n = 0 ; · simp [hn]
+      by_cases hn : n = 0; · simp [hn]
       constructor
       · refine m.ne_zero_of_degree_ne_zero ?_
         rw [ih]
@@ -318,7 +350,7 @@ lemma leadingCoeff_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
       exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
 
 set_option backward.isDefEq.respectTransparency false in
-lemma leadingCoeff_choose_prod (m : MonomialOrder σ) (n : σ →₀ ℕ) :
+lemma leadingCoeff_prod_choose (m : MonomialOrder σ) (n : σ →₀ ℕ) :
     m.leadingCoeff (∏ i ∈ n.support, Ring.choose (X i : MvPolynomial σ ℚ) (n i)) =
       ∏ i ∈ n.support, ((n i).factorial : ℚ)⁻¹ := by
   induction n.support using Finset.cons_induction_on with
@@ -327,6 +359,14 @@ lemma leadingCoeff_choose_prod (m : MonomialOrder σ) (n : σ →₀ ℕ) :
     simp only [Finset.prod_cons, MonomialOrder.leadingCoeff_mul, ih, Finset.prod_inv_distrib,
       mul_inv_rev]
     rw [mul_comm, leadingCoeff_choose]
+
+/-
+lemma leadingCoeff_fwdDiff (m : MonomialOrder σ) (f : MvPolynomial σ R) {i : σ} :
+    (f.fwdDiff (Finsupp.single i 1)).coeff (m.degree f - (Finsupp.single i 1)) =
+      f.degreeOf i • m.leadingCoeff f := by
+  simp only [fwdDiff_apply, shiftEquiv_apply, coeff_sub]
+  sorry
+-/
 
 end IntegerValued
 /-

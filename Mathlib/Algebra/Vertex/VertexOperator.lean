@@ -97,6 +97,7 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
   ext v
   rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) where
   one := {
     toFun v := HahnModule.of R (HahnSeries.single 0 v)
@@ -130,6 +131,7 @@ theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
 
 section HasseDerivative
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `k`th Hasse derivative of a vertex operator `∑ A_i X^i` is `∑ (i.choose k) A_i X^(i-k)`.
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
@@ -358,6 +360,7 @@ theorem resProdLeft_add_left (n : ℤ) (A B C : VertexOperator R V) :
   exact finsum_add_distrib (finite_supp_ncoeff_ncoeff m n A C v)
     (finite_supp_ncoeff_ncoeff m n B C v)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
     A.resProdLeft n (r • B) = r • (A.resProdLeft n B) := by
@@ -368,6 +371,7 @@ theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
   simp_rw [smul_comm _ r]
   rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem resProdLeft_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
     (r • A).resProdLeft n B = r • (A.resProdLeft n B) := by
@@ -500,6 +504,7 @@ theorem resProdRight_add_left (n : ℤ) (A B C : VertexOperator R V) :
   exact finsum_add_distrib (M := V) (finite_supp_ncoeff_ncoeff_right m n A C v)
     (finite_supp_ncoeff_ncoeff_right m n B C v)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem resProdRight_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
     A.resProdRight n (r • B) = r • (A.resProdRight n B) := by
@@ -512,6 +517,7 @@ theorem resProdRight_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
   simp_rw [smul_comm _ r]
   rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff_right m n A B v)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem resProdRight_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
     (r • A).resProdRight n B = r • (A.resProdRight n B) := by
