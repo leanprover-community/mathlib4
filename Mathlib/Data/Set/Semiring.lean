@@ -156,13 +156,13 @@ def imageHom : SetSemiring α →+* SetSemiring β where
   map_add' := image_union _
   map_mul' _ _ := image_mul f
 
-lemma imageHom_def (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
-@[simp] lemma toSet_imageHom (s : SetSemiring α) : (imageHom f s).toSet = f '' s.toSet := rfl
+@[simp] lemma imageHom_apply (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
 @[simp] lemma ofSet_image (s : Set α) : ofSet (f '' s) = imageHom f s := rfl
 
-lemma imageHom_comp (g : β →* γ) (s : SetSemiring α) :
-    imageHom (g.comp f) s = (imageHom g) ((imageHom f) s) := by
-  simp_rw [imageHom_def, MonoidHom.coe_comp, image_comp, toSet_ofSet]
+lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (imageHom f) := by
+  ext s
+  simp_rw [imageHom_apply, MonoidHom.coe_comp]
+  exact image_comp ..
 
 end ImageHom
 
@@ -182,7 +182,8 @@ end ImageHom
 @[deprecated (since := "2026-04-07")] alias _root_.Set.up_mul := ofSet_mul
 @[deprecated (since := "2026-04-07")] alias down_one := toSet_one
 @[deprecated (since := "2026-04-07")] alias _root_.Set.up_one := ofSet_one
-@[deprecated (since := "2026-04-07")] alias down_imageHom := toSet_imageHom
+@[deprecated (since := "2026-04-07")] alias imageHom_def := imageHom_apply
+@[deprecated (since := "2026-04-07")] alias down_imageHom := imageHom_apply
 @[deprecated (since := "2026-04-07")] alias _root_.Set.up_image := ofSet_image
 
 end SetSemiring
