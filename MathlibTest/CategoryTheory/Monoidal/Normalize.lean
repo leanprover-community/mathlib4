@@ -13,16 +13,14 @@ namespace CategoryTheory.MonoidalCategory
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 -/
-local syntax (name := normalizeSyntax) "normalize% " term:51 : term
+local syntax "normalize% " term:51 : term
 
-@[local term_elab normalizeSyntax]
-meta def elabNormalize : Lean.Elab.Term.TermElab
-  | `(normalize% $t), _ => do
+local elab_rules : term
+  | `(normalize% $t) => do
     let e ← Lean.Elab.Term.elabTerm t none
     let ctx : Monoidal.Context ← BicategoryLike.mkContext e
     CoherenceM.run (ctx := ctx) do
       return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e.e
-  | _, _ => Lean.Elab.throwUnsupportedSyntax
 
 universe v u
 
