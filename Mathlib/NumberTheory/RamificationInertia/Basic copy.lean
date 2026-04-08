@@ -469,8 +469,6 @@ theorem ramificationIdx_of_not_liesOver
   rw [ramificationIdx_tower' p (q.under R) q, ramificationIdx_of_ne p (q.under R), zero_mul]
   rwa [liesOver_iff] at h
 
-#exit
-
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] :
     Algebra (IsLocalRing.ResidueField R) (S ⧸ (IsLocalRing.maximalIdeal R).map (algebraMap R S)) :=
   inferInstanceAs (Algebra (R ⧸ IsLocalRing.maximalIdeal R)
