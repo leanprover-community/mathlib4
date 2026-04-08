@@ -56,7 +56,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 class AddMonObj (X : C) where
   /-- The zero morphism of an additive monoid object. -/
   zero : 𝟙_ C ⟶ X
-  /-- The additiion morphism of an additive monoid object. -/
+  /-- The addition morphism of an additive monoid object. -/
   add : X ⊗ X ⟶ X
   zero_add (X) : zero ▷ X ≫ add = (λ_ X).hom := by cat_disch
   add_zero (X) : X ◁ zero ≫ add = (ρ_ X).hom := by cat_disch
@@ -1048,7 +1048,6 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
 @[to_additive (attr := simps)
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to additive
