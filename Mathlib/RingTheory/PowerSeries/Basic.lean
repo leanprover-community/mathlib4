@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Rename
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
@@ -856,23 +857,65 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
-theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
-    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+namespace MvPowerSeries
+
+/-- For a unique variable type, multivariate power series are equivalent to ordinary power
+series. -/
+@[simps! apply symm_apply]
+def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPowerSeries σ R ≃ₐ[R] PowerSeries R :=
+  MvPowerSeries.renameEquiv R (Equiv.ofUnique σ Unit)
+
+@[simp]
+theorem uniqueAlgEquiv_unit : uniqueAlgEquiv (R := R) Unit = AlgEquiv.refl := by
+  have hE : Equiv.ofUnique Unit Unit = Equiv.refl Unit := Subsingleton.elim _ _
+  rw [uniqueAlgEquiv, hE, MvPowerSeries.renameEquiv_refl]
+
+end MvPowerSeries
+
+theorem _root_.MvPolynomial.toMvPowerSeries_uniqueAlgEquiv {σ : Type*} [Unique σ]
+    {f : MvPolynomial σ R} :
+    MvPowerSeries.uniqueAlgEquiv (R := R) σ f.toMvPowerSeries =
+      (MvPolynomial.uniqueAlgEquiv R σ f).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with
   | monomial d r =>
-    --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
-    --by any element.
-    have : single () (d ()) = d := by ext; simp
-    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
-      Polynomial.coe_monomial, PowerSeries.monomial, this]
-  | add f g hf hg => simp [hf, hg]
+    have hmap : d.mapDomain (Equiv.ofUnique σ Unit) = Finsupp.single () (d default) := by
+      simpa using Finsupp.unique_single (d.mapDomain (Equiv.ofUnique σ Unit))
+    rw [MvPolynomial.coe_monomial, MvPowerSeries.uniqueAlgEquiv_apply,
+      MvPowerSeries.rename_monomial, MvPolynomial.uniqueAlgEquiv_monomial, coe_monomial]
+    simp [PowerSeries.monomial, hmap]
+  | add f g hf hg =>
+    rw [MvPolynomial.coe_add, MvPowerSeries.uniqueAlgEquiv_apply, map_add]
+    change (MvPowerSeries.uniqueAlgEquiv (R := R) σ) ↑f
+        + (MvPowerSeries.uniqueAlgEquiv (R := R) σ) ↑g
+        = ↑((MvPolynomial.uniqueAlgEquiv R σ) (f + g))
+    rw [hf, hg]
+    simp only [map_add, coe_add]
+
+theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
+    MvPowerSeries.uniqueAlgEquiv (R := R) PUnit f.toMvPowerSeries =
+      (MvPolynomial.uniqueAlgEquiv R PUnit f).toPowerSeries := by
+  simpa using
+    (MvPolynomial.toMvPowerSeries_uniqueAlgEquiv (R := R) (σ := PUnit) (f := f))
+
+theorem uniqueAlgEquiv_symm_toPowerSeries {σ : Type*} [Unique σ] {f : Polynomial R} :
+    (MvPowerSeries.uniqueAlgEquiv (R := R) σ).symm f.toPowerSeries =
+      ((MvPolynomial.uniqueAlgEquiv R σ).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.uniqueAlgEquiv R σ).symm f
+  have : f = MvPolynomial.uniqueAlgEquiv R σ g := by
+    simp only [g, AlgEquiv.apply_symm_apply]
+  rw [this, ← MvPolynomial.toMvPowerSeries_uniqueAlgEquiv]
+  exact AlgEquiv.symm_apply_apply _ _
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
-    ((f.toPowerSeries) : MvPowerSeries PUnit R)
-      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
-  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
-  rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
+  (MvPowerSeries.uniqueAlgEquiv (R := R) PUnit).symm f.toPowerSeries
+      = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
+  simpa using
+    (uniqueAlgEquiv_symm_toPowerSeries (R := R) (σ := PUnit) (f := f))
+
+attribute [deprecated MvPolynomial.toMvPowerSeries_uniqueAlgEquiv (since := "2026-04-08")]
+  MvPolynomial.toMvPowerSeries_pUnitAlgEquiv
+attribute [deprecated uniqueAlgEquiv_symm_toPowerSeries (since := "2026-04-08")]
+  pUnitAlgEquiv_symm_toPowerSeries
 
 variable (A : Type*) [Semiring A] [Algebra R A]
 

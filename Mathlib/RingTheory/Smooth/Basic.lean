@@ -394,7 +394,7 @@ section Polynomial
 
 open scoped Polynomial in
 instance polynomial (R : Type*) [CommRing R] :
-  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
+  FormallySmooth R R[X] := .of_equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} R PUnit)
 
 instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
 
