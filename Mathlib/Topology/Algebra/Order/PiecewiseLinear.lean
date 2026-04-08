@@ -85,7 +85,7 @@ noncomputable def piecewiseLinear (y : ℤ → E) (c : ℤ → E) {h : ℝ} (hh 
 /-- The piecewise linear interpolation at a regular grid point equals `y n`. -/
 @[simp]
 theorem piecewiseLinear_apply_grid (hh : 0 < h) (a : ℝ) (n : ℤ) :
-    piecewiseLinear y c hh a (a + n • h) = y n := by
+    piecewiseLinear y c hh a (a + n * h) = y n := by
   simp [piecewiseLinear, zsmul_eq_mul]
 
 /-- The piecewise linear interpolation equals `y n + (t - (a + n • h)) • c n`
@@ -105,7 +105,9 @@ theorem piecewiseLinear_continuous (hh : 0 < h)
     refine (show ContinuousOn (fun t => y n + (t - (a + n • h)) • c n) _ by fun_prop).congr ?_
     rintro t ht
     rcases eq_or_lt_of_le ht.2 with rfl | h_lt
-    · rw [piecewiseLinear_apply_grid hh a (n + 1), hstep n]; simp [zsmul_eq_mul]; ring_nf
+    · simp only [zsmul_eq_mul]
+      rw [piecewiseLinear_apply_grid hh a (n + 1), hstep n]
+      push_cast; module
     · exact piecewiseLinear_eq_on_Ico hh ⟨ht.1, h_lt⟩
 
 /-- The right derivative of the piecewise linear function is the piecewise constant slope
