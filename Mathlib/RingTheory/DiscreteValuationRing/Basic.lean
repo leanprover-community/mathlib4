@@ -347,7 +347,7 @@ expressed as `u • (algebraMap R K ϖ) ^ n` for some `u : Rˣ` and `n : ℤ`.
 -/
 lemma exists_units_eq_smul_zpow_of_irreducible
     {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
-    {ϖ : R} (hϖ : Irreducible ϖ) (x : K) (hx : x ≠ 0) :
+    {ϖ : R} (hϖ : Irreducible ϖ) {x : K} (hx : x ≠ 0) :
     ∃ (n : ℤ) (u : Rˣ), x = u • algebraMap R K ϖ ^ n := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible (x := x) (by simp_all) hϖ
