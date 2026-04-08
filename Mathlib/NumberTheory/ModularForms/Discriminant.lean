@@ -194,71 +194,24 @@ def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
     rw [slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant]
     exact discriminant_isZeroAtImInfty
 
-/-- The infinite product `∏ (1 - q^(n+1))` is multipliable for `‖q‖ < 1`. -/
-private lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
-    Multipliable fun i ↦ 1 - q ^ (i + 1) := by
-  rw [show (fun i ↦ 1 - q ^ (i + 1)) = (fun i ↦ 1 + (-q ^ (i + 1))) from by ext; ring]
-  apply multipliable_one_add_of_summable
-  simp only [norm_neg, norm_pow]
-  exact (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
-
 /-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
-on `ball 0 (1/2)`. -/
+on the open unit disc. -/
 private lemma discriminant_cuspFunction_eqOn :
     Set.EqOn (cuspFunction 1 (Δ : ℍ → ℂ))
-      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) := by
+      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
   · simp only [hq0, zero_mul]
     exact Periodic.cuspFunction_zero_of_zero_at_inf one_pos
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
-  · have hqn : ‖q‖ < 1 := lt_trans (by simpa [dist_zero_right] using hq) (by norm_num)
+  · have hqn : ‖q‖ < 1 := by simpa [dist_zero_right] using hq
     have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos hqn hq0
     rw [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
       comp_apply, ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩]
-    -- eta_q n z = (qParam 1 z)^(n+1), and qParam(invQParam(q)) = q
     have hqr := Periodic.qParam_right_inv one_ne_zero hq0
     have heta : ∀ n : ℕ, eta_q n (Periodic.invQParam 1 q) = q ^ (n + 1) := fun n ↦ by
       simp [eta_q, hqr]
     simp only [hqr, heta]
-
-/-- The partial products `∏_{i<n} (1 - q^(i+1))` converge locally uniformly on `ball 0 (1/2)`. -/
-private lemma tendstoLocallyUniformlyOn_eta_prod :
-    TendstoLocallyUniformlyOn (fun n : ℕ ↦ fun q : ℂ ↦ ∏ i ∈ Finset.range n, (1 - q ^ (i + 1)))
-      (fun q ↦ ∏' i, (1 - q ^ (i + 1))) atTop (Metric.ball (0 : ℂ) (1 / 2)) := by
-  apply (TendstoUniformlyOn.tendstoLocallyUniformlyOn _).mono Metric.ball_subset_closedBall
-  have hsum : Summable (fun n : ℕ ↦ (1 / 2 : ℝ) ^ (n + 1)) :=
-    (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (by positivity) (by norm_num))
-  simpa [sub_eq_add_neg] using (hsum.hasProdUniformlyOn_nat_one_add
-    (hK := isCompact_closedBall _ _)
-    (h := .of_forall fun n q hq ↦ by
-      simp only [norm_neg, norm_pow]
-      exact pow_le_pow_left₀ (norm_nonneg _)
-        (by simpa [Metric.mem_closedBall, dist_eq_norm] using hq) _)
-    (hcts := fun _ ↦ by fun_prop)).tendstoUniformlyOn_finsetRange
-
-/-- The product `∏' i, (1 - q^(i+1))^24` is differentiable within `ball 0 (1/2)` at 0. -/
-private lemma differentiableWithinAt_eta_prod_pow :
-    DifferentiableWithinAt ℂ (fun q : ℂ ↦ ∏' i, (1 - q ^ (i + 1)) ^ 24)
-      (Metric.ball 0 (1 / 2)) 0 := by
-  have hdiff : DifferentiableOn ℂ (fun q ↦ ∏' i, (1 - q ^ (i + 1)))
-      (Metric.ball (0 : ℂ) (1 / 2)) :=
-    tendstoLocallyUniformlyOn_eta_prod.differentiableOn
-      (.of_forall fun n ↦ by
-        change DifferentiableOn ℂ (fun q : ℂ ↦ ∏ i ∈ Finset.range n, ((1 : ℂ) - q ^ (i + 1)))
-          (Metric.ball 0 (1 / 2))
-        induction n with
-        | zero => simp [differentiableOn_const]
-        | succ n ih =>
-          simp_rw [Finset.prod_range_succ]; exact ih.mul (by fun_prop))
-      Metric.isOpen_ball
-  have hmem := Metric.mem_ball_self (x := (0 : ℂ)) (by norm_num : (0 : ℝ) < 1 / 2)
-  -- (∏(1-q^(n+1)))^24 is differentiable as a power of a differentiable function
-  have h24 := (hdiff 0 hmem).pow (n := 24)
-  -- ∏(1-q^(n+1))^24 = (∏(1-q^(n+1)))^24 by tprod_pow, so congr gives differentiability
-  refine h24.congr (fun q hq ↦ ?_) (by simp)
-  exact (multipliable_one_sub_pow (lt_trans (by simpa [dist_zero_right] using hq)
-    (by norm_num : (1 : ℝ) / 2 < 1))).tprod_pow 24
 
 /-- The first q-expansion coefficient of the modular discriminant is 1. -/
 lemma discriminant_qExpansion_coeff_one :
@@ -266,15 +219,15 @@ lemma discriminant_qExpansion_coeff_one :
   rw [qExpansion_coeff]
   simp only [Nat.factorial_one, Nat.cast_one, inv_one, one_mul, iteratedDeriv_succ,
     iteratedDeriv_zero]
-  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) (1 / 2 : ℝ) := Metric.mem_ball_self (by norm_num)
+  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
   change deriv (cuspFunction 1 Δ) 0 = 1
-  rw [← derivWithin_of_isOpen Metric.isOpen_ball hmem]
-  rw [derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)]
-  have : derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) 0 =
-      derivWithin id (Metric.ball 0 (1 / 2)) 0 * (∏' i, (1 - (0 : ℂ) ^ (i + 1)) ^ 24) +
-      id 0 * derivWithin (fun q ↦ ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) 0 :=
-    derivWithin_mul differentiableWithinAt_id' differentiableWithinAt_eta_prod_pow
-  rw [this, derivWithin_id _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
+  rw [← derivWithin_of_isOpen Metric.isOpen_ball hmem,
+    derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem),
+    show (fun q : ℂ ↦ q * ∏' n, (1 - q ^ (n + 1)) ^ 24) =
+      (fun q ↦ id q * ∏' n, (1 - q ^ (n + 1)) ^ 24) from rfl,
+    derivWithin_fun_mul differentiableWithinAt_id
+      (differentiableOn_tprod_one_sub_pow_pow 24 0 hmem),
+    derivWithin_id _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
   simp
 
 end

@@ -65,6 +65,60 @@ noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 /-- Notation for the Dedekind eta function. -/
 scoped[ModularForm] notation "η" => eta
 
+/-! ### q-coordinate facts about `∏ (1 - q^(n+1))`
+
+The following lemmas describe the analytic behaviour of the infinite product
+`∏' n, (1 - q^(n+1))` viewed as a function of `q` on the open unit disc, including the
+behaviour at `q = 0` (the cusp at infinity). The eta-side lemmas below derive from these
+by pulling back along `qParam 1 : ℍₒ → 𝔻 \ {0}`.
+-/
+
+/-- For `‖q‖ < 1`, the infinite product `∏ (1 - q^(n+1))` is multipliable. -/
+lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
+    Multipliable fun n : ℕ ↦ 1 - q ^ (n + 1) := by
+  rw [show (fun n : ℕ ↦ 1 - q ^ (n + 1)) = (fun n ↦ 1 + (-q ^ (n + 1))) from by ext; ring]
+  apply multipliable_one_add_of_summable
+  simp only [norm_neg, norm_pow]
+  exact (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
+
+/-- The infinite product `∏ (1 - q^(n+1))` converges locally uniformly on the open unit disc,
+with limit `q ↦ ∏' n, (1 - q^(n+1))`. -/
+lemma multipliableLocallyUniformlyOn_one_sub_pow :
+    MultipliableLocallyUniformlyOn (fun n q ↦ 1 - q ^ (n + 1)) (Metric.ball (0 : ℂ) 1) := by
+  use fun q ↦ ∏' n, (1 - q ^ (n + 1))
+  simp_rw [sub_eq_add_neg]
+  apply hasProdLocallyUniformlyOn_of_forall_compact Metric.isOpen_ball
+  intro K hK hcK
+  by_cases hN : K.Nonempty
+  · have hc : ContinuousOn (fun q : ℂ ↦ ‖q‖) K := by fun_prop
+    obtain ⟨q₀, hq₀, _, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
+    have hq₀_lt : ‖q₀‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hK hq₀
+    have hsum : Summable fun n : ℕ ↦ ‖q₀‖ ^ (n + 1) :=
+      (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq₀_lt)
+    refine hsum.hasProdUniformlyOn_nat_one_add hcK (.of_forall fun n x hx ↦ ?_)
+      (fun _ ↦ by fun_prop)
+    simpa [norm_pow] using pow_le_pow_left₀ (norm_nonneg _) (HB x hx) (n + 1)
+  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
+    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
+
+/-- The infinite product `q ↦ ∏' n, (1 - q^(n+1))` is differentiable on the open unit disc. -/
+lemma differentiableOn_tprod_one_sub_pow :
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) := by
+  apply multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
+    ?_ Metric.isOpen_ball
+  filter_upwards with n
+  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (fun _ _ ↦ by fun_prop)
+
+/-- For any `k`, the function `q ↦ ∏' n, (1 - q^(n+1))^k` is differentiable on the
+open unit disc. -/
+lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) := by
+  refine (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun q hq ↦ ?_
+  have hq_lt : ‖q‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hq
+  exact (multipliable_one_sub_pow hq_lt).tprod_pow k
+
+/-! ### z-coordinate eta product facts (derived from q-coordinate versions) -/
+
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
 
