@@ -221,7 +221,7 @@ theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
 omit hx h in
 theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (z + c)) s =
-    fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
   ext x
   simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_right n c x]
 
