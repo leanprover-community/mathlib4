@@ -189,7 +189,7 @@ theorem mem_singleton_of_eq {x y : α} (H : x = y) : x ∈ ({y} : Set α) :=
 theorem mem_of_eq_singleton {s : Set α} {a : α} : s = {a} → a ∈ s  := by
   grind
 
-theorem not_eq_singleton_of_not_mem {s : Set α} {a : α} (h : a ∉ s) : s ≠ {a} := by 
+theorem not_eq_singleton_of_not_mem {s : Set α} {a : α} (h : a ∉ s) : s ≠ {a} := by
   exact Ne.symm (ne_of_mem_of_not_mem' rfl h)
 
 theorem insert_eq (x : α) (s : Set α) : insert x s = ({x} : Set α) ∪ s :=
