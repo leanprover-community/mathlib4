@@ -228,6 +228,42 @@ lemma l1 {ι : Type*} (u : Set ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, 
   intro
   exact ((Finset.measurable_restrict s).comp_aemeasurable hS.aemeasurable).eval _
 
+variable [IsProbabilityMeasure P]
+
+theorem hasLaw_indicator_bernoulliMeasure {M : Type*} [Zero M] [MeasurableSpace M]
+    [MeasurableSingletonClass M] (c : M) [NeZero c] {s : Set Ω}
+    (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (fun _ ↦ c)) (bernoulliMeasure c 0 ⟨P.real s, by simp⟩) P where
+  aemeasurable := (aemeasurable_indicator_const_iff c).2 hs
+  map_eq := by
+    have := (aemeasurable_indicator_const_iff c).2 hs
+    ext t ht
+    rw [map_apply_of_aemeasurable this ht]
+    by_cases! h1 : 0 ∈ t <;> by_cases h2 : c ∈ t
+    · have : s.indicator (fun _ ↦ c) ⁻¹' t = univ := by
+        ext x; simp; by_cases h : x ∈ s <;> simpa [h]
+      rw [this]
+      simp_all
+    · have : s.indicator (fun _ ↦ c) ⁻¹' t = sᶜ := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
+      rw [this]
+      simp_all [measure_compl₀ hs, ENNReal.coe_nnreal_eq, ENNReal.ofReal_sub]
+    · have : s.indicator (fun _ ↦ c) ⁻¹' t = s := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
+      rw [this]
+      simp_all [ENNReal.coe_nnreal_eq]
+    · have : s.indicator (fun _ ↦ c) ⁻¹' t = ∅ := by ext x; simp; by_cases h : x ∈ s <;> simpa [h]
+      rw [this]
+      simp_all
+
+lemma l2 {ι : Type*} {s t : Finset ι} [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    s.card = ∑ i ∈ t, if i ∈ s then 1 else 0 := by
+  simp; congr; grind
+
+theorem hasLaw_indicator_one_bernoulliMeasure {M : Type*} [Zero M] [One M] [MeasurableSpace M]
+    [MeasurableSingletonClass M] [NeZero (1 : M)] {s : Set Ω}
+    (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
+  hasLaw_indicator_bernoulliMeasure 1 hs
+
 lemma test {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun X P)
     (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
