@@ -123,7 +123,8 @@ theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → 
   ext fun _ _ => star_mul _ _
 
 @[simp] theorem map_vecMulVec_star [Mul α] [StarMul α] (w : m → α) (v : n → α) :
-    (vecMulVec w v).map star = (vecMulVec (star v) (star w))ᵀ := by ext; simp [vecMulVec_apply]
+    (vecMulVec w v).map star = (vecMulVec (star v) (star w))ᵀ := by
+  rw [← conjTranspose_vecMulVec]; rfl
 
 section ConjTranspose
 
