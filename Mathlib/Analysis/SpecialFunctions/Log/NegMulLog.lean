@@ -147,8 +147,14 @@ lemma convexOn_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) 
 lemma mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
 
+lemma mul_log_pos {x : ℝ} (hx : 1 < x) : 0 < x * log x :=
+  mul_pos (zero_lt_one.trans hx) (log_pos hx)
+
 lemma mul_log_nonpos {x : ℝ} (hx₀ : 0 ≤ x) (hx₁ : x ≤ 1) : x * log x ≤ 0 :=
   mul_nonpos_of_nonneg_of_nonpos hx₀ (log_nonpos hx₀ hx₁)
+
+lemma mul_log_neg {x : ℝ} (hx₀ : 0 < x) (hx₁ : x < 1) : x * log x < 0 :=
+    mul_neg_of_pos_of_neg  hx₀ (log_neg hx₀ hx₁)
 
 end mulLog
 
