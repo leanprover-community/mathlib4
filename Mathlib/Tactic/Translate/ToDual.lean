@@ -189,6 +189,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coheyting", ["Heyting"]),
   ("frame", ["Coframe"]),
   ("coframe", ["Frame"]),
+  ("epigraph", ["Hypograph"]),
+  ("hypograph", ["Epigraph"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/

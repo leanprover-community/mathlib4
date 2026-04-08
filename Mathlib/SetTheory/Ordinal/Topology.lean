@@ -97,6 +97,7 @@ theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
+set_option linter.deprecated false in
 @[deprecated mem_closure_iff_iSup (since := "2026-04-05")]
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -126,6 +127,7 @@ theorem isClosed_iff_iSup :
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
+set_option linter.deprecated false in
 @[deprecated isClosed_iff_iSup (since := "2026-04-05")]
 theorem isClosed_iff_bsup :
     IsClosed s ↔
