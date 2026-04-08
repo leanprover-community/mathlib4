@@ -41,6 +41,7 @@ public import Mathlib.Tactic.Check
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
+public import Mathlib.Tactic.ClearUnneeded
 public import Mathlib.Tactic.Clear_
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.CongrExclamation
