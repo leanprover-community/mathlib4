@@ -62,7 +62,7 @@ section
 variable [Algebra R S] [Algebra R R'] [Algebra R' S'] [Algebra S S']
     [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
 
-lemma comap_ker_eq_sup_of_ker_eq_map (surjRS : Function.Surjective (algebraMap R S))
+private lemma comap_ker_eq_sup_of_ker_eq_map (surjRS : Function.Surjective (algebraMap R S))
     (eqmap : RingHom.ker (algebraMap S S') = (RingHom.ker (algebraMap R R')).map (algebraMap R S)) :
     (RingHom.ker (algebraMap R' S')).comap (algebraMap R R') =
       RingHom.ker (algebraMap R R') ⊔ RingHom.ker (algebraMap R S) := by
@@ -70,7 +70,7 @@ lemma comap_ker_eq_sup_of_ker_eq_map (surjRS : Function.Surjective (algebraMap R
       ← RingHom.comap_ker]
   simp [eqmap, Ideal.comap_map_of_surjective' _ surjRS]
 
-lemma mul_le_ker_of_range_le_mul_of_sq_zero {A : Type*} [CommRing A] {J I : Ideal A}
+private lemma mul_le_ker_of_range_le_mul_of_sq_zero {A : Type*} [CommRing A] {J I : Ideal A}
     (sq : I ^ 2 = ⊥) (f : J.Cotangent →ₗ[A] J.Cotangent)
     (le : f.range ≤ (Submodule.comap J.subtype (I * J)).map J.toCotangent) :
     (Submodule.comap J.subtype (I * J)).map J.toCotangent ≤ f.ker := by
