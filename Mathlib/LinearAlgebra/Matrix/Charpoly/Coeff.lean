@@ -403,7 +403,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
     ∑ s ∈ Finset.univ.powersetCard k,
       (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
   simp only [det]
-  let D := (detRowAlternating : (n → R[X]) [⋀^n]→ₗ[R[X]] R[X]).toMultilinearMap
+  let D := (detRowAlternating : (n → R[X]) [⋀^n]→ₗ[R[X]] R[X])
   rw [add_comm]
   change (D (fun i => ((X : R[X]) • M.map C) i + (1 : Matrix n n R[X]) i)).coeff k = _
   conv_lhs => rw [show (fun i ↦ ((X : R[X]) • M.map C) i + (1 : Matrix n n R[X]) i) =
@@ -467,8 +467,8 @@ theorem charpoly_coeff_eq_sum_minors
   rw [hrev, M.reverse_charpoly]
   have hcharpolyRev : M.charpolyRev = det (1 + (X : R[X]) • (-M).map C) := by
     simp only [charpolyRev, sub_eq_add_neg]
-    congr 2; ext i j
-    simp [Matrix.smul_apply, Matrix.map_apply]
+    congr 2
+    rw [Matrix.map_neg C (map_neg C) M, smul_neg]
   rw [hcharpolyRev, coeff_det_one_add_X_smul_eq_sum_minors]
   simp only [submatrix_neg, Pi.neg_apply, det_neg, Fintype.card_coe, mul_sum]
   exact Finset.sum_congr rfl fun s hs => by rw [(Finset.mem_powersetCard.mp hs).2]
