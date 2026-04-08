@@ -13,7 +13,6 @@ public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.Data.ENat.Lattice
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

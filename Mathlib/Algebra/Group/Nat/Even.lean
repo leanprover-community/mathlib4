@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Nat.Sqrt
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # `IsSquare` and `Even` for natural numbers

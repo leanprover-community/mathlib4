@@ -9,7 +9,6 @@ public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.ApplyFun
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sequences (possibly infinite lists)

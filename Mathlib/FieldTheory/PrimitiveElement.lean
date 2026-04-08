@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Primitive Element Theorem

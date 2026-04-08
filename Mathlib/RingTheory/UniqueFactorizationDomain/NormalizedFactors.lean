@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Data.Multiset.OrderedMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Unique factorization and normalization

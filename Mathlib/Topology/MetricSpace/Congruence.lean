@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Dilation
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Congruences

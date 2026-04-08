@@ -18,7 +18,6 @@ public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Order of an element

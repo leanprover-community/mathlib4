@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Normed star rings and algebras

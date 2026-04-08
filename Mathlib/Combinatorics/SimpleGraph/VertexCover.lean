@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Card
 
 import Mathlib.Data.Finite.Card
 import Mathlib.Tactic.ENatToNat
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Vertex cover

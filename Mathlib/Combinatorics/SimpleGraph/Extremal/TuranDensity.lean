@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Tactic.Bound
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Instances.Real.Lemmas
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Turán density

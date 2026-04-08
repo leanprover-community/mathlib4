@@ -6,7 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Data.Set.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Bundle

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 public import Mathlib.Tactic.ComputeDegree
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Division polynomials of Weierstrass curves

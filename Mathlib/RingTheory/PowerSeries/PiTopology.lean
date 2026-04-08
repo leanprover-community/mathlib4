@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Trunc
 public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-meta import Mathlib.Tactic.Attr.Register
 
 /-! # Product topology on power series
 

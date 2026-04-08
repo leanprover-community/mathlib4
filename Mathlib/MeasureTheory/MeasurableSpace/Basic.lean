@@ -10,7 +10,6 @@ public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.SupClosed
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Measurable spaces and measurable functions

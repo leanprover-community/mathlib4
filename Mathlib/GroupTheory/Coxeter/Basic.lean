@@ -12,7 +12,6 @@ public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.Tactic.NormNum.DivMod
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Use
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Coxeter groups and Coxeter systems

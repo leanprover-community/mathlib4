@@ -11,7 +11,6 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Defs
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Digits of a natural number

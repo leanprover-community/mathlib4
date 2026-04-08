@@ -12,7 +12,6 @@ public import Mathlib.Tactic.TFAE
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.OrderClosed
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Theory of topology on ordered spaces

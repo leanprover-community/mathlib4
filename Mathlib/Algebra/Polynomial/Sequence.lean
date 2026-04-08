@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

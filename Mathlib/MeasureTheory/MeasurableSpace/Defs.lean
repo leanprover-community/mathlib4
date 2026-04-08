@@ -9,7 +9,6 @@ public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Measurable spaces and measurable functions

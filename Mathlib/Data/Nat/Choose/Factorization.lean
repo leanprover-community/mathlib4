@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Data.Nat.Digits.Lemmas
 public import Mathlib.Data.Nat.Factorization.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Factorization of Binomial Coefficients

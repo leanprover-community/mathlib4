@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
-meta import Mathlib.Tactic.Attr.Register
 /-!
 # Partial homeomorphisms: composition
 

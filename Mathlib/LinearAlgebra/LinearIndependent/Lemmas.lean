@@ -17,7 +17,6 @@ public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Module.Torsion.Field
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Linear independence

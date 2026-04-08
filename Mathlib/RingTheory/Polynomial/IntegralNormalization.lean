@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Theory of monic polynomials

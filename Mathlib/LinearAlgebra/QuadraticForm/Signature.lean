@@ -7,7 +7,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Signature of a quadratic form

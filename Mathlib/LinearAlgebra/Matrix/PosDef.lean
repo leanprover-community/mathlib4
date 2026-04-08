@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-! # Positive Definite Matrices
 

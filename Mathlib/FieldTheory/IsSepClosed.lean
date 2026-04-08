@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Separably Closed Field

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 public import Mathlib.Algebra.Polynomial.EraseLead
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Reverse of a univariate polynomial

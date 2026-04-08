@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Operator norm as an `NNNorm`

@@ -6,7 +6,6 @@ Authors: Heather Macbeth, Floris van Doorn
 module
 
 public import Mathlib.Topology.VectorBundle.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The vector bundle of continuous (semi)linear maps

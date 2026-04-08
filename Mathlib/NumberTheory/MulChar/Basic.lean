@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.OrderOfElement
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Multiplicative characters of finite rings and fields

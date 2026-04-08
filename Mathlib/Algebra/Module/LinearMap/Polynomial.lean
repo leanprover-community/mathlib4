@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms

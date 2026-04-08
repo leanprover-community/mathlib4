@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Characteristic polynomials

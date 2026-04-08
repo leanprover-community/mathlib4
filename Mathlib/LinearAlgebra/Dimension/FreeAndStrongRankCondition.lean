@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

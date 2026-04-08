@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Order
 public import Mathlib.Topology.Order.IsLUB
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monotone functions on an order topology

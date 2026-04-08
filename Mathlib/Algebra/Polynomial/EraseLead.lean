@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Degree.Monomial
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Erase the leading term of a univariate polynomial

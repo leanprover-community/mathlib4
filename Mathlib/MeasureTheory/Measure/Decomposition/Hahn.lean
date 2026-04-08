@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Loic Simon
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Unsigned Hahn decomposition theorem

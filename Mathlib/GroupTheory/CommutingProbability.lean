@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Qify
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Commuting Probability

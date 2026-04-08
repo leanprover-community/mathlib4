@@ -10,7 +10,6 @@ public import Mathlib.Order.Filter.ListTraverse
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Data.Vector.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Topology on lists and vectors

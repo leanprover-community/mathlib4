@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Formal power series (in one variable)

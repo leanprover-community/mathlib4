@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Almost everywhere measurable functions

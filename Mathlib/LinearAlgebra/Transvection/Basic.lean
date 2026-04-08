@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FixedSubmodule
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Transvections in a module

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.RingTheory.LocalRing.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Approximate roots and polynomials in a normed field

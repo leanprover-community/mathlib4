@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 ## Main definitions

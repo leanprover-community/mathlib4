@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Strongly measurable and finitely strongly measurable functions

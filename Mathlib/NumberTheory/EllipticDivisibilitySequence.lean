@@ -9,7 +9,6 @@ public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
 import Mathlib.Algebra.Group.Int.Even
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Elliptic divisibility sequences

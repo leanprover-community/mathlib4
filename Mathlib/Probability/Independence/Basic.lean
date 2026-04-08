@@ -8,7 +8,6 @@ module
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Group.Convolution
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)

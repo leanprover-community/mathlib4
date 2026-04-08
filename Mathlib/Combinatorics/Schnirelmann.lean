@@ -13,7 +13,6 @@ public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 import Mathlib.Tactic.Rify
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Schnirelmann density

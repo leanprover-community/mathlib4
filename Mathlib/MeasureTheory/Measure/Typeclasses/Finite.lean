@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Restrict
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Classes for finite measures

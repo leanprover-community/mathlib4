@@ -13,7 +13,6 @@ public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Rays in modules

@@ -6,7 +6,6 @@ Authors: Anne Baanen, Devon Tuma
 module
 
 public import Mathlib.Algebra.Polynomial.Splits
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Scaling the roots of a polynomial

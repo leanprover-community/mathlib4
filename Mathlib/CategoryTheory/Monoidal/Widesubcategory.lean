@@ -6,10 +6,9 @@ Authors: Gaëtan Serré
 
 module
 
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic  -- shake: keep
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Widesubcategory
-public import Mathlib.CategoryTheory.Monoidal.Mon_
-public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # Monoidal structures on wide subcategories

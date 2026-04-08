@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Analytic.CPolynomialDef
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Linear functions are analytic

@@ -6,7 +6,6 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic lemmas about the general linear group $GL(n, R)$

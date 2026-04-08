@@ -16,7 +16,6 @@ public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.IntegralDomain
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Finite fields

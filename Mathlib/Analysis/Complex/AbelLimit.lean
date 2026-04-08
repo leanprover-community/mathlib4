@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Positivity
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Abel's limit theorem

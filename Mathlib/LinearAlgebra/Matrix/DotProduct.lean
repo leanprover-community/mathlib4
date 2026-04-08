@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.RowCol
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Dot product of two vectors

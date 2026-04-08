@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Topology.FiberBundle.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Vector bundles

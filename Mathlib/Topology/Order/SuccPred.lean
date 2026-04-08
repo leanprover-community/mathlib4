@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Order topologies of successor or predecessor orders

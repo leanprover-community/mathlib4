@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.ChartedSpace
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Charted spaces with a given structure groupoid

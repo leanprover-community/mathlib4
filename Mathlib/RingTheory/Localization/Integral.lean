@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Localization.Algebra
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Integral and algebraic elements of a fraction field

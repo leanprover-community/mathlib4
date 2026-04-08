@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 ## The Verschiebung operator

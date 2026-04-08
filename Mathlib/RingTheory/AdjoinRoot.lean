@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Adjoining roots of polynomials

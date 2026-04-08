@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.CWComplex.Classical.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Finiteness notions on CW complexes

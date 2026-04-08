@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Higher differentiability of usual operations

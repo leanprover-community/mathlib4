@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Asymptotics

@@ -6,7 +6,6 @@ Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doo
 module
 
 public import Mathlib.Topology.FiberBundle.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Standard constructions on fiber bundles

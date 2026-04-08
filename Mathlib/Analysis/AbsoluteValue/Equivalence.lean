@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence of real-valued absolute values

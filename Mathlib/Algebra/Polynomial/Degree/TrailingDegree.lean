@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Data.ENat.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Trailing degree of univariate polynomials

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Sums of two squares

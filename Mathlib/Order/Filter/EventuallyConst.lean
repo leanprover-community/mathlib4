@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Subsingleton
-meta import Mathlib.Tactic.Attr.Register
 /-!
 # Functions that are eventually constant along a filter
 

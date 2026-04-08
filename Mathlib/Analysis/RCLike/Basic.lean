@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

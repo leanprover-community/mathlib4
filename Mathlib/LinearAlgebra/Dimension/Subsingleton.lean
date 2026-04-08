@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Kim Morrison, Eric Wieser, Junyan Xu, Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Dimension of trivial modules

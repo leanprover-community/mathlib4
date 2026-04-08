@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.Data.Nat.Choose.Sum
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Exponential Function

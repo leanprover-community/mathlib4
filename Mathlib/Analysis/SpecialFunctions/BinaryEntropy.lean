@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions

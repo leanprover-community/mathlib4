@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Conditions for rank to be finite

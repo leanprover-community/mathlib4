@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Degree of polynomials that are units

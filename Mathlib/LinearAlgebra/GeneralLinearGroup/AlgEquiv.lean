@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Algebra.Module.Projective
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner

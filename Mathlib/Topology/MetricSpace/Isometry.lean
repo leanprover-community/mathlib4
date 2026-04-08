@@ -9,7 +9,6 @@ public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.MetricSpace.Antilipschitz
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Isometries

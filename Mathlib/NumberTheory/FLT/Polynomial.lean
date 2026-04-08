@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.Tactic.GCongr
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Fermat's Last Theorem for polynomials over a field

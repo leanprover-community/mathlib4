@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The special linear group of a module

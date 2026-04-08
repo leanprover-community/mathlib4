@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The Borel sigma-algebra on Polish spaces

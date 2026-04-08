@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Lattice
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Division of univariate polynomials

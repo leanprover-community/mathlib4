@@ -8,7 +8,6 @@ module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The radical of a quadratic form

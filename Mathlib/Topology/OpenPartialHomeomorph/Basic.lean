@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 public import Mathlib.Topology.Sets.Opens
-meta import Mathlib.Tactic.Attr.Register
 /-!
 # Partial homeomorphisms: basic theory
 

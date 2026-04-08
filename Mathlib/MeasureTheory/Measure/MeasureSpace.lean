@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.Order.AtTopBotIxx
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Measure spaces

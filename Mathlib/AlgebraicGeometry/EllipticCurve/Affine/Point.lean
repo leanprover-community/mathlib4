@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nonsingular points and the group law in affine coordinates

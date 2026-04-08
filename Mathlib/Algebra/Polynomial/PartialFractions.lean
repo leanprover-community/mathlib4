@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Lemmas
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

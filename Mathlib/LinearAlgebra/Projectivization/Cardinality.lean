@@ -10,7 +10,6 @@ public import Mathlib.Data.Finite.Sum
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Cardinality of projective spaces

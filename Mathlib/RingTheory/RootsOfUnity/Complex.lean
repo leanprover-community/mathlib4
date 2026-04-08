@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Qify
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Complex roots of unity

@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Flat.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

@@ -18,7 +18,6 @@ public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Order.Filter.AtTopBot.ModEq
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.NoncommRing
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # A collection of specific limit computations

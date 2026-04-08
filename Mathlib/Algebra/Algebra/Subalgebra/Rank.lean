@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

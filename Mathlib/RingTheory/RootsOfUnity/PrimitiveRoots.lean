@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Primitive roots of unity

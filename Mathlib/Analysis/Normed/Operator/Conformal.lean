@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Conformal Linear Maps

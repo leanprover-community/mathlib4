@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Analytic functions

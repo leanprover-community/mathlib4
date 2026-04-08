@@ -8,7 +8,6 @@ module
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Charted spaces

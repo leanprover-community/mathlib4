@@ -12,7 +12,6 @@ public import Mathlib.Data.Fintype.Card
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Kraft-McMillan Inequality

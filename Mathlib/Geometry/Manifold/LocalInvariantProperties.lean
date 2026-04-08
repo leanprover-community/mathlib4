@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.HasGroupoid
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Local properties invariant under a groupoid

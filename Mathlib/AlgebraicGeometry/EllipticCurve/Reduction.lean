@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.GroupTheory.ArchimedeanDensely
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Reduction of Weierstrass curves over local fields

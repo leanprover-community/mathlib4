@@ -9,7 +9,6 @@ public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Polynomial.CancelLeads
 public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.FieldDivision
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # GCD structures on polynomials

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.Data.Set.Card
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Dimension of modules and vector spaces

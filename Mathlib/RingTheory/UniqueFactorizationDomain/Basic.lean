@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic results on unique factorization monoids

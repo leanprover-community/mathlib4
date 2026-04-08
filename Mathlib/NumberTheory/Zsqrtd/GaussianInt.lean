@@ -9,7 +9,6 @@ public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.NumberTheory.Zsqrtd.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Gaussian integers

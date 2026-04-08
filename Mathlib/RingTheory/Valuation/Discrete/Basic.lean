@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Discrete Valuations

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # A collection of specific asymptotic results

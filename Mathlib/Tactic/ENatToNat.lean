@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.ENat.Basic
 public meta import Mathlib.Tactic.ToAdditive
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # `enat_to_nat`

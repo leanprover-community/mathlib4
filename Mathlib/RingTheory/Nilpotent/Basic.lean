@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.RingTheory.Nilpotent.Defs
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nilpotent elements

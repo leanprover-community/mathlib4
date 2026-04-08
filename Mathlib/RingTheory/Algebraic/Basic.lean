@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Algebraic elements and algebraic extensions

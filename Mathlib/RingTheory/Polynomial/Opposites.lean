@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Tactic.NoncommRing
-meta import Mathlib.Tactic.Attr.Register
 
 /-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 

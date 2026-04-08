@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Pell's equation and Matiyasevic's theorem

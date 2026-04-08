@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.Ring
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Small tripling implies small powers

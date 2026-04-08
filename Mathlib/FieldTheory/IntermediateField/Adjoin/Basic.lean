@@ -11,7 +11,6 @@ public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
-meta import Mathlib.Tactic.Attr.Register
 
 
 /-!

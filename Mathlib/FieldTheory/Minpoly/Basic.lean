@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johan Commelin
 module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Minimal polynomials

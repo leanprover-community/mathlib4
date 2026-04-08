@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.Tactic.Ring
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Set of factors

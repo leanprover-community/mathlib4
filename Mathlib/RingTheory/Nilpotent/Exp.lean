@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.Tactic.FieldSimp
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Exponential map on algebras

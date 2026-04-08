@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
-meta import Mathlib.Tactic.Attr.Register
 
 /-!
 ## The Frobenius operator
