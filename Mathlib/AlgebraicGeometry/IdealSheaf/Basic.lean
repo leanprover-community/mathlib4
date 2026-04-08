@@ -447,7 +447,6 @@ instance : IdemCommSemiring X.IdealSheafData where
   npow n I := I ^ n
   npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
-  bot_le _ := bot_le
 
 instance : IsOrderedRing X.IdealSheafData where
 
