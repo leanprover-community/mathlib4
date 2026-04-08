@@ -125,16 +125,12 @@ theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
     (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
 
 lemma multipliableLocallyUniformlyOn_eta :
-    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ := by
-  refine ⟨fun z ↦ ∏' n, (1 - eta_q n z), ?_⟩
-  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn]
-  have h := multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn
-  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
-  exact h.comp (Periodic.qParam 1)
-    (fun z hz ↦ by
-      simpa [Metric.mem_ball, dist_zero_right] using
-        (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
-    (by fun_prop)
+    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ :=
+  ⟨_, (multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn :
+      TendstoLocallyUniformlyOn _ _ _ _).comp (Periodic.qParam 1)
+    (fun z hz ↦ by simpa [Metric.mem_ball, dist_zero_right] using
+      (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
+    (by fun_prop)⟩
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
