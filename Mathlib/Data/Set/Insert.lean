@@ -186,7 +186,7 @@ theorem singleton_injective : Injective (singleton : α → Set α) := fun _ _ =
 theorem mem_singleton_of_eq {x y : α} (H : x = y) : x ∈ ({y} : Set α) :=
   H
 
-theorem mem_of_eq_singleton {s : Finset α} {a : α} : s = {a} → a ∈ s  := by
+theorem mem_of_eq_singleton {s : Set α} {a : α} : s = {a} → a ∈ s  := by
   grind
 
 theorem insert_eq (x : α) (s : Set α) : insert x s = ({x} : Set α) ∪ s :=
