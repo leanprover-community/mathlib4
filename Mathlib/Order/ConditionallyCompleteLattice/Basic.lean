@@ -886,6 +886,35 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
   isLUB_csSup := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).isGLB_csInf
   isGLB_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).isLUB_csSup
 
+noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrder α] :
+    ConditionallyCompleteLinearOrder (WithTop α) where
+  le_total
+  toDecidableLE := Classical.decRel _
+  csSup_of_not_bddAbove s := absurd <| OrderTop.bddAbove s
+  csInf_of_not_bddBelow s hs := by
+    rw [WithTop.sInf_empty]
+    dsimp only [sSup, sInf]
+    split_ifs with h
+    · rfl
+    · exact absurd hs <| not_or.mp h |>.right
+
+noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrderBot α] :
+    ConditionallyCompleteLinearOrderBot (WithTop α) where
+  csSup_empty := by simp
+
+noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrder α] :
+    ConditionallyCompleteLinearOrderBot (WithBot α) where
+  le_total
+  toDecidableLE := Classical.decRel _
+  csSup_of_not_bddAbove s hs := by
+    rw [WithBot.sSup_empty]
+    dsimp only [sSup, sInf]
+    split_ifs with h
+    · rfl
+    · exact absurd hs <| not_or.mp h |>.right
+  csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
+  csSup_empty := by simp
+
 noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
   isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ hsa ↦
     s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sSup_empty]; exact bot_le) (csSup_le · hsa)⟩
