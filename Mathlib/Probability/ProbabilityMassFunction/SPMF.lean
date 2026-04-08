@@ -36,6 +36,7 @@ def PMF.toSPMF (p : PMF α) : SPMF α := OptionT.lift p
 to make the total sum over `α` be exactly `1`. -/
 def SPMF.toPMF (p : SPMF α) : PMF (Option α) := OptionT.run p
 
+/-- Convert an `SPMF α` from a `PMF` over `Option α`. -/
 def SPMF.mk (p : PMF (Option α)) : SPMF α := OptionT.mk p
 
 namespace SPMF
@@ -89,7 +90,6 @@ instance : LawfulMonadLift PMF SPMF := OptionT.instLawfulMonadLift (m := PMF)
 @[grind =]
 lemma liftM_def (p : PMF α) : (liftM p : SPMF α) = PMF.toSPMF p := rfl
 
-@[simp, grind =]
 lemma to_PMF_liftM (p : SPMF α) : SPMF.toPMF (liftM p : SPMF α) = p := rfl
 
 lemma toPMF_toSPMF (p : PMF α) : p.toSPMF.toPMF = p.map some := rfl
