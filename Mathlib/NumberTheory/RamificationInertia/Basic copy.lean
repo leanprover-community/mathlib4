@@ -405,6 +405,49 @@ theorem ramificationIdx_of_not_le
     exact disjoint_compl_left_iff.mp h
   · rw [ramificationIdx_of_not_isPrime p q hq]
 
+theorem ramificationIdx_of_ne
+    {R : Type*} [CommRing R] (p q : Ideal R) (h : p ≠ q) [hp : p.IsPrime] :
+      p.ramificationIdx q = 0 := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx_of_not_isPrime p q hq]
+  by_cases hpq : p ≤ q; swap
+  · apply ramificationIdx_of_not_le
+    rwa [Algebra.algebraMap_self, map_id]
+  contrapose! h
+  let Rp := R ⧸ p
+  let qRp := q.map (algebraMap R Rp)
+  have : qRp.IsPrime := Ideal.isPrime_map_quotientMk_of_isPrime hpq
+  let Rq := Localization.AtPrime q
+  let pRq := p.map (algebraMap R Rq)
+  let A := Rq ⧸ pRq
+  have h1 : Module.length Rq A = Module.length A A := by
+    apply Module.length_eq_of_surjective
+    rw [Quotient.algebraMap_eq]
+    exact Quotient.mk_surjective
+  rw [ramificationIdx_def, h1] at h
+  have : IsArtinianRing A := by
+    rw [isArtinianRing_iff_isFiniteLength, ← Module.length_ne_top_iff]
+    contrapose! h
+    rw [ENat.toNat_eq_zero]
+    right
+    assumption
+  have : IsDomain A := by
+    have : IsLocalization qRp.primeCompl A := by
+      sorry
+    exact IsLocalization.isDomain_of_atPrime A qRp
+  have : IsField A := IsArtinianRing.isField_of_isDomain A
+  have : IsMaximal (p.map (algebraMap R Rq)) := by
+    apply Quotient.maximal_of_isField
+    assumption
+  have := IsLocalRing.eq_maximalIdeal this
+  rw [← Localization.AtPrime.map_eq_maximalIdeal] at this
+  replace this := congrArg (comap (algebraMap R Rq)) this
+  rwa [IsLocalization.comap_map_of_isPrime_disjoint q.primeCompl Rq hq disjoint_compl_left,
+    IsLocalization.comap_map_of_isPrime_disjoint q.primeCompl Rq hp] at this
+  have : Disjoint (q.primeCompl : Set R) (q : Set R) := by
+    apply disjoint_compl_left
+  exact Set.disjoint_of_subset_right hpq disjoint_compl_left
+
 /-- See `ramificationIdx_tower'` for a version that does not assume primality. -/
 theorem ramificationIdx_tower
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
@@ -433,6 +476,14 @@ theorem ramificationIdx_tower'
   · rw [Ideal.over_def r q]
     apply ramificationIdx_tower
   · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
+
+theorem ramificationIdx_of_not_liesOver
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S]
+    (p : Ideal R) [p.IsPrime] (q : Ideal S) (h : ¬ q.LiesOver p) : p.ramificationIdx q = 0 := by
+  rw [ramificationIdx_tower' p (q.under R) q, ramificationIdx_of_ne p (q.under R), zero_mul]
+  rwa [liesOver_iff] at h
+
+#exit
 
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] :
     Algebra (IsLocalRing.ResidueField R) (S ⧸ (IsLocalRing.maximalIdeal R).map (algebraMap R S)) :=
