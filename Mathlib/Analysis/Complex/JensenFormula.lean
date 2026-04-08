@@ -43,7 +43,7 @@ of the function `∑ᶠ u, (D u * log ‖· - u‖)` over the boundary of the ba
 -/
 @[simp]
 lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
-    (D : Function.locallyFinsuppWithin (closedBall c |R|) ℤ) :
+    (D : Function.LocallyFinsuppWithin (closedBall c |R|) ℤ) :
     circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R = ∑ᶠ u, D u * log R := by
   have h := D.finiteSupport (isCompact_closedBall c |R|)
   calc circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R

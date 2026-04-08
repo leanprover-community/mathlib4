@@ -55,12 +55,12 @@ Shorthand notation for the restriction of a function with locally finite support
 ball of radius `r`.
 -/
 noncomputable def toClosedBall (r : ℝ) :
-    locallyFinsupp E ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
+    Function.LocallyFinsupp E ℤ →+ Function.LocallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
 
 @[simp]
-lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
+lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : Function.LocallyFinsupp E ℤ)
     (ha : z ∈ closedBall 0 |r|) :
     toClosedBall r f z = f z := by
   unfold toClosedBall
@@ -72,7 +72,7 @@ lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
   simp_all [locallyFinsuppWithin.toClosedBall]
 
 lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
-    (f : locallyFinsupp E ℤ) :
+    (f : Function.LocallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
   simp_all [toClosedBall, restrict_apply]
 
@@ -94,7 +94,7 @@ to the lemma `countingFunction_finsum_eq_finsum_add` in
 `Mathlib/Analysis/Complex/JensenFormula.lean` for a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
-    locallyFinsupp E ℤ →+ (ℝ → ℝ) where
+    Function.LocallyFinsupp E ℤ →+ (ℝ → ℝ) where
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
   map_zero' := by aesop
   map_add' D₁ D₂ := by
@@ -120,7 +120,7 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
 @[simp] lemma logCounting_eval_zero {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
-    (D : locallyFinsupp E ℤ) :
+    (D : Function.LocallyFinsupp E ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]
 
@@ -151,13 +151,13 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 /--
 The logarithmic counting function is even.
 -/
-lemma logCounting_even [ProperSpace E] (D : locallyFinsupp E ℤ) :
+lemma logCounting_even [ProperSpace E] (D : Function.LocallyFinsupp E ℤ) :
     (logCounting D).Even := fun r ↦ by simp [logCounting, toClosedBall, restrict_apply]
 
 /--
 The logarithmic counting function is monotonous.
 -/
-lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D) :
+lemma logCounting_mono [ProperSpace E] {D : Function.LocallyFinsupp E ℤ} (hD : 0 ≤ D) :
     MonotoneOn (logCounting D) (Ioi 0) := by
   intro a ha b hb _
   simp_all only [mem_Ioi, logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
@@ -196,7 +196,7 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
 The logarithmic counting function of a positive function with locally finite support is
 asymptotically strictly monotone.
 -/
-lemma logCounting_strictMono [DecidableEq E] [ProperSpace E] {D : locallyFinsupp E ℤ} {e : E}
+lemma logCounting_strictMono [DecidableEq E] [ProperSpace E] {D : Function.LocallyFinsupp E ℤ} {e : E}
     (hD : single e 1 ≤ D) :
     StrictMonoOn (logCounting D) (Ioi ‖e‖) := by
   rw [(by aesop : logCounting D = logCounting (single e 1) + logCounting (D - single e 1))]
@@ -215,7 +215,7 @@ lemma logCounting_strictMono [DecidableEq E] [ProperSpace E] {D : locallyFinsupp
 For `1 ≤ r`, the logarithmic counting function is non-negative.
 -/
 theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
-    {f : locallyFinsupp E ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
+    {f : Function.LocallyFinsupp E ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
     0 ≤ logCounting f r := by
   have h₃r : 0 < r := by linarith
   suffices ∀ z, 0 ≤ toClosedBall r f z * log (r * ‖z‖⁻¹) from
@@ -233,7 +233,7 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 For `1 ≤ r`, the logarithmic counting function respects the `≤` relation.
 -/
 theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
-    {f₁ f₂ : locallyFinsupp E ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
+    {f₁ f₂ : Function.LocallyFinsupp E ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
     logCounting f₁ r ≤ logCounting f₂ r := by
   rw [← sub_nonneg] at h ⊢
   simpa using logCounting_nonneg h hr
@@ -242,7 +242,7 @@ theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 The logarithmic counting function respects the `≤` relation asymptotically.
 -/
 theorem logCounting_eventuallyLE {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
-    {f₁ f₂ : locallyFinsupp E ℤ} (h : f₁ ≤ f₂) :
+    {f₁ f₂ : Function.LocallyFinsupp E ℤ} (h : f₁ ≤ f₂) :
     logCounting f₁ ≤ᶠ[atTop] logCounting f₂ := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_le h hr
 

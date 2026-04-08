@@ -74,7 +74,7 @@ A non-negative function with locally finite support is zero if and only if its l
 functions is asymptotically bounded.
 -/
 lemma zero_iff_logCounting_bounded [ProperSpace E]
-    {D : locallyFinsuppWithin (univ : Set E) ℤ} (h : 0 ≤ D) :
+    {D : Function.LocallyFinsuppWithin (univ : Set E) ℤ} (h : 0 ≤ D) :
     D = 0 ↔ logCounting D =O[atTop] (1 : ℝ → ℝ) := by
   classical
   refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩
