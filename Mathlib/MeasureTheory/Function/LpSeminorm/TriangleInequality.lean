@@ -95,7 +95,8 @@ theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 
     (z₁ + z₂) ^ p ≤ LpAddConst (ENNReal.ofReal p)⁻¹ * (z₁ ^ p + z₂ ^ p) := by
   unfold LpAddConst
   split_ifs with h
-  · simp at h
+  · simp only [Set.mem_Ioo, ENNReal.inv_pos, ne_eq, ofReal_ne_top, not_false_eq_true,
+      ENNReal.inv_lt_one, one_lt_ofReal, true_and] at h
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]
     exact ENNReal.rpow_add_le_mul_rpow_add_rpow _ _ h.le
