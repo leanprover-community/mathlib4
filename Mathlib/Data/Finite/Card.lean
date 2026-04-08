@@ -212,7 +212,7 @@ theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.ca
     s = t :=
   (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_gt <| ht.card_lt_card h
 
-theorem eq_of_subset_of_card_eq (hsub : s ⊆ t) (hcard : s.card = t.card) : s = t := 
+theorem eq_of_subset_of_card_eq (hsub : s ⊆ t) (hcard : s.card = t.card) : s = t :=
   Finset.eq_of_subset_of_card_le hcard (by grind)
 
 theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
