@@ -97,7 +97,7 @@ public def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getP
 /-! ## Elaboration -/
 
 /-- This relation is an implementation detail of the `⊆` elaborator. -/
-opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
+public opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 
 /-- Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding
 based on their type whether to return `a ⊆ b` or `a ≤ b`.
