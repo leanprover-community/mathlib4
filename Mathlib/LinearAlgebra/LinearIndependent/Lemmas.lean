@@ -521,13 +521,6 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
   simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
 
-/-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
-theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
-    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
-    LinearIndependent R (Fin.snoc v x : Fin m.succ → M) := by
-  rw [Fin.snoc_eq_cons_rotate v x, ← Function.comp_def]
-  exact (linearIndependent_equiv _).mpr (.finCons' x v hli x_ortho)
-
 end Module
 
 /-!
@@ -673,36 +666,6 @@ theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent 
 
 @[deprecated (since := "2026-04-07")]
 alias LinearIndependent.fin_cons := LinearIndependent.finCons
-
-/-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
-only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
-version over a subring of a division ring. -/
-lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
-    (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
-  linearIndependent_finSnoc.2 ⟨hv, hx⟩
-
-/-- If `v` is `R`-linearly independent and `x` is not in the `K`-span of `range v` (where `K` is a
-division ring extending `R` and acting on the same module), then `Fin.snoc v x` is `R`-linearly
-independent.
-
-This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
-`ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
-theorem LinearIndependent.finSnoc_of_not_mem_span_over
-    {R : Type*} {K : Type*} {M : Type*}
-    [CommRing R] [DivisionRing K] [AddCommGroup M]
-    [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
-    {n : ℕ} {v : Fin n → M} (hv : LinearIndependent R v) {x : M}
-    (hx : x ∉ Submodule.span K (Set.range v)) :
-    LinearIndependent R (Fin.snoc v x) := by
-  apply hv.finSnoc' v x
-  intro c y hcy heq
-  by_contra hc
-  apply hx
-  have hc' : algebraMap R K c ≠ 0 := by
-    rwa [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
-  rw [← algebraMap_smul K c x] at heq
-  rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
-  exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
 
 theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
