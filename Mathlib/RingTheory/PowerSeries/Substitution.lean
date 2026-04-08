@@ -275,7 +275,7 @@ theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
   MvPowerSeries.map_algebraMap_eq_subst_X f
 
 @[simp]
-theorem subst_self (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
+theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
   exact congr_fun map_id f
 
