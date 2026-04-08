@@ -6,6 +6,7 @@ Authors: Etienne Marion, David Ledvinka
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -99,6 +100,16 @@ lemma bernoulliMeasure_apply_of_notMem_of_notMem (p : I) {s : Set X}
   classical
   simp_all [bernoulliMeasure_apply]
 
+@[simp]
+lemma bernoulliMeasure_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p) {x} = toNNReal p :=
+  bernoulliMeasure_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
+
+@[simp]
+lemma bernoulliMeasure_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p) {y} = toNNReal (σ p) :=
+  bernoulliMeasure_apply_of_notMem_of_mem p (by simp) (by grind) (by grind)
+
 lemma bernoulliMeasure_real_apply (p : I) {s : Set X}
     (hs : MeasurableSet s) [DecidablePred (· ∈ s)] :
     Ber(x, y, p).real s =
@@ -139,6 +150,16 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   classical
   simp_all [bernoulliMeasure_real_apply]
 
+@[simp]
+lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p).real {x} = p :=
+  bernoulliMeasure_real_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
+
+@[simp]
+lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p).real {y} = 1 - p :=
+  bernoulliMeasure_real_apply_of_notMem_of_mem p (by simp) (by grind) (by grind)
+
 instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]
 
@@ -161,6 +182,15 @@ theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
 
+lemma eq_bernoulliMeasure {μ : Measure X}
+    (h1 : ∀ s, MeasurableSet s → x ∈ s → y ∈ s → μ s = 1)
+    (h2 : ∀ s, MeasurableSet s → x ∈ s → y ∉ s → μ s = toNNReal p)
+    (h3 : ∀ s, MeasurableSet s → x ∉ s → y ∈ s → μ s = toNNReal (σ p))
+    (h4 : ∀ s, MeasurableSet s → x ∉ s → y ∉ s → μ s = 0) :
+    μ = Ber(x, y, p) := by
+  ext s hs
+  by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp_all
+
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -179,5 +209,34 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
   all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
 
 end Integral
+
+section HasLaw
+
+/-! ### Bernoulli random variables -/
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
+    [MeasurableSpace M] [MeasurableSingletonClass M] (c : M) [NeZero c] {s : Set Ω}
+    (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (fun _ ↦ c)) (bernoulliMeasure c 0 ⟨P.real s, by simp⟩) P where
+  aemeasurable := (aemeasurable_indicator_const_iff c).2 hs
+  map_eq := by
+    classical
+    have := (aemeasurable_indicator_const_iff c).2 hs
+    apply eq_bernoulliMeasure
+    all_goals
+      intro t ht h1 h2
+      rw [map_apply_of_aemeasurable this ht]
+      simp_all [Set.indicator_const_preimage_eq_union, measure_compl₀ hs, ENNReal.coe_nnreal_eq,
+        ENNReal.ofReal_sub]
+
+theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
+    [MeasurableSpace M] [MeasurableSingletonClass M] [NeZero (1 : M)] {s : Set Ω}
+    (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (1 : Ω → M)) (bernoulliMeasure 1 0 ⟨P.real s, by simp⟩) P :=
+  hasLaw_indicator_bernoulliMeasure 1 hs
+
+end HasLaw
 
 end ProbabilityTheory
