@@ -231,16 +231,14 @@ private lemma weight_six_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ (6 : �
     ((congrArg (1 + ·) (cuspForm_rank_lt_twelve (by norm_num))).trans (by norm_cast))
 
 private lemma E₄_qExpansion_coeff_one : (qExpansion 1 E₄).coeff 1 = 240 := by
-  rw [show (E₄ : ModularForm 𝒮ℒ 4) = E (by norm_num : (3 : ℕ) ≤ 4) from rfl,
-    E_qExpansion_coeff _ ⟨2, rfl⟩]
+  rw [E_qExpansion_coeff _ ⟨2, rfl⟩]
   simp only [one_ne_zero, ↓reduceIte]
   rw [show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) from by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num)]; exact bernoulli'_four]
   simp [ArithmeticFunction.sigma_one]; norm_num
 
 private lemma E₆_qExpansion_coeff_one : (qExpansion 1 E₆).coeff 1 = -504 := by
-  rw [show (E₆ : ModularForm 𝒮ℒ 6) = E (by norm_num : (3 : ℕ) ≤ 6) from rfl,
-    E_qExpansion_coeff _ ⟨3, rfl⟩]
+  rw [E_qExpansion_coeff _ ⟨3, rfl⟩]
   simp only [one_ne_zero, ↓reduceIte]
   rw [show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) from by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num), bernoulli'_def]
