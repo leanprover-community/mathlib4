@@ -435,8 +435,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
 theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.support :=
   let ⟨x, hx⟩ := hf
   calc
-    Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by
-      {rw [← mul_assoc, mul_def, mul_def, swap_swap, trans_refl]}
+    Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by simp
     _ = -(-1) ^ #f.support :=
       if h1 : f (f x) = x then by
         have h : swap x (f x) * f = 1 := by

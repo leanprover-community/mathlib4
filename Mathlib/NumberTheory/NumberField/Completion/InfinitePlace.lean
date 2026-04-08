@@ -130,9 +130,6 @@ theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x 
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   (v.isometry_embedding_of_isReal hv).extensionHom_coe _
 
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
-
 open UniformSpace.Completion in
 @[simp]
 theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
@@ -149,9 +146,6 @@ theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v
     Isometry (extensionEmbeddingOfIsReal hv) :=
   (v.isometry_embedding_of_isReal hv).completion_extension
 
-@[deprecated (since := "2025-09-24")]
-alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsReal
-
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
   v.isometry_embedding.completion_extension.isClosedEmbedding.isClosed_range
@@ -161,9 +155,6 @@ inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbeddingOfIsReal hv)) :=
   (v.isometry_embedding_of_isReal hv).completion_extension.isClosedEmbedding.isClosed_range
-
-@[deprecated (since := "2025-09-24")]
-alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmbeddingOfIsReal
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
@@ -204,16 +195,10 @@ theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal
   rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed]
   exact isClosed_image_extensionEmbeddingOfIsReal hv
 
-@[deprecated (since := "2025-09-24")]
-alias surjective_extensionEmbedding_of_isReal := surjective_extensionEmbeddingOfIsReal
-
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is bijective. -/
 theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Bijective (extensionEmbeddingOfIsReal hv) :=
   ⟨(extensionEmbeddingOfIsReal hv).injective, surjective_extensionEmbeddingOfIsReal hv⟩
-
-@[deprecated (since := "2025-09-24")]
-alias bijective_extensionEmbedding_of_isReal := bijective_extensionEmbeddingOfIsReal
 
 /-- The ring isomorphism `v.Completion ≃+* ℝ`, when `v` is real, given by the bijection
 `v.Completion →+* ℝ`. -/

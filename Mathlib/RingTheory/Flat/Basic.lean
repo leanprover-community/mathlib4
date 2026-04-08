@@ -295,7 +295,6 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) :=
   iff_lTensor_preserves_injective_linearMap'
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -313,7 +312,6 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -399,6 +397,27 @@ theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algeb
   ext; simp
 
 end Algebra.TensorProduct
+
+variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+namespace Submodule
+
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
+
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
+@[simps! apply]
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+  .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (toBaseChange.toLinearEquiv A p).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
+
+end Submodule
 
 end Injective
 
@@ -591,7 +610,6 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/
