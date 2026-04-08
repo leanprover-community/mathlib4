@@ -335,7 +335,7 @@ namespace IndiscreteTopology
 
 variable {α : Type*} [u : UniformSpace α]
 
-theorem of_top_uniformity (h : uniformity α = ⊤) : IndiscreteTopology α :=
+theorem of_uniformity_eq_top (h : uniformity α = ⊤) : IndiscreteTopology α :=
   ⟨(UniformSpace.ext h.symm : ⊤ = u) ▸ rfl⟩
 
 lemma eq_top_uniformSpace [IndiscreteTopology α] : u = ⊤ := by
