@@ -193,7 +193,7 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
       map_id j := by
         rw [← data.mapZ_id (f.hom.app j)]
         congr <;> simp
-      map_comp _ _ :=by
+      map_comp _ _ := by
         rw [← data.mapZ_comp]
         congr <;> simp }
   map τ :=
