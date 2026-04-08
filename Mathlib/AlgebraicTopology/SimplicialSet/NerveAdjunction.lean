@@ -64,6 +64,7 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
 
 namespace liftOfStrictSegal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm
@@ -136,14 +137,13 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
-  obtain ⟨n, hn⟩ := n
-  induction n using SimplexCategory.rec with | _ n
+  obtain ⟨⟨n⟩, hn⟩ := n
   match n with
   | 0 => exact f₀
   | 1 => exact f₁
   | 2 => exact f₂ f₀ f₁ hδ₁ hδ₀ hY
 
-/-- The property of morphims in `SimplexCategory.Truncated 2` for
+/-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
 abbrev naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (app f₀ f₁ hδ₁ hδ₀ hY)).unop
@@ -272,6 +272,7 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`
 and `X ⟶ (truncation 2).obj (nerve C)` which is part of the adjunction
@@ -300,6 +301,7 @@ def functorEquiv :
         simp only [← f.tgt_eq, FunctorToTypes.naturality]
         rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
     (F : X.HomotopyCategory ⥤ C) (G : C ⥤ D) :
@@ -419,6 +421,7 @@ namespace hoFunctor
 
 instance : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
@@ -431,7 +434,7 @@ instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
 
 instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
-  IsIso.of_isIso_fac_right (prodComparison_natural
+  IsIso.of_isIso_fac_right (prodComparison_natural.{w}
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
 lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
@@ -444,8 +447,9 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+    IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]

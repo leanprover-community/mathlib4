@@ -5,7 +5,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Tower
 /-!
 # Adjoin one single element
@@ -29,31 +29,37 @@ open Polynomial
 
 /-- Ring homomorphism between `A[b]` and `A[↑b]`. -/
 def RingHom.adjoinAlgebraMap :
-    Algebra.adjoin A {b} →+* Algebra.adjoin A {(algebraMap B C) b} :=
+    A[b] →+* A[(algebraMap B C) b] :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp
-    (Subalgebra.val (Algebra.adjoin A {b}))) _
+    (Subalgebra.val A[b])) _
     (fun x ↦ by induction x using adjoin_singleton_induction with
       | f p => aesop (add norm [adjoin_singleton_eq_range_aeval, aeval_algebraMap_apply]))
 
 @[simp]
-theorem RingHom.adjoin_algebraMap_apply (x : Algebra.adjoin A {b}) :
+theorem RingHom.adjoinAlgebraMap_apply (x : A[b]) :
     (RingHom.adjoinAlgebraMap b x (C := C) : C) = algebraMap B C x := rfl
 
-theorem RingHom.adjoin_algebraMap_surjective :
+@[deprecated (since := "2026-02-27")]
+alias RingHom.adjoin_algebraMap_apply := RingHom.adjoinAlgebraMap_apply
+
+theorem RingHom.adjoinAlgebraMap_surjective :
     Function.Surjective (RingHom.adjoinAlgebraMap (A := A) b (C := C)) := by
   intro c
   obtain ⟨p, hp⟩ := adjoin_eq_exists_aeval A (algebraMap B C b) c
   aesop (add safe ((aeval_algebraMap_apply C b p).symm))
 
-instance : Algebra (Algebra.adjoin A {b}) (Algebra.adjoin A {(algebraMap B C) b}) :=
+@[deprecated (since := "2026-02-27")]
+alias RingHom.adjoin_algebraMap_surjective := RingHom.adjoinAlgebraMap_surjective
+
+instance : Algebra A[b] A[(algebraMap B C) b] :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap b)
 
-instance : IsScalarTower (Algebra.adjoin A {b}) (Algebra.adjoin A {(algebraMap B C) b}) C :=
+instance : IsScalarTower A[b] A[(algebraMap B C) b] C :=
   IsScalarTower.of_algebraMap_eq' (by rfl)
 
 /-- If the `algebraMap` injective then we have a Ring isomorphism between A[b] and A[↑b]. -/
 noncomputable def RingHom.adjoinAlgebraMapEquiv [FaithfulSMul B C] :
-    Algebra.adjoin A {b} ≃+* Algebra.adjoin A {(algebraMap B C) b} := by
+    A[b] ≃+* A[(algebraMap B C) b] := by
   apply RingEquiv.ofBijective (RingHom.adjoinAlgebraMap b)
      ((Function.bijective_iff_existsUnique (adjoinAlgebraMap b)).mpr (fun y ↦ ?_))
   induction y using Algebra.adjoin_singleton_induction with | f p =>

@@ -403,7 +403,7 @@ theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
   obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
   rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
   have h : v ∉ G.neighborFinset v :=
-    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+    (G.mem_neighborFinset v v).not.mpr (G.loopless.irrefl v)
   contrapose! h
   rw [eq_of_subset_of_card_le (subset_univ _) h]
   exact mem_univ v
@@ -591,7 +591,7 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
   ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
-    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+    ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v := by
   classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h

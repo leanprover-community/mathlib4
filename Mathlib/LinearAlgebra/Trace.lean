@@ -22,7 +22,7 @@ See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
-linear_map, trace, diagonal
+linear map, trace, diagonal
 -/
 
 @[expose] public section
@@ -206,12 +206,12 @@ theorem trace_prodMap :
   refine (cancel_right h).1 ?_
   ext
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
       contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
       contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]

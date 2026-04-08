@@ -128,6 +128,7 @@ lemma Scheme.IsGermInjective.of_openCover
   rw [← (𝒰.covers x).choose_spec]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 protected
 lemma Scheme.IsGermInjective.Spec
     (H : ∀ I : Ideal R, I.IsPrime →
@@ -141,13 +142,13 @@ lemma Scheme.IsGermInjective.Spec
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
-    (S := ((Spec.structureSheaf R).val.obj (.op <| PrimeSpectrum.basicOpen f))) (.powers f) x
+    (S := ((Spec.structureSheaf R).obj.obj (.op <| PrimeSpectrum.basicOpen f))) (.powers f) x
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
-    RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
+    RingHom.mem_ker] at hx
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
   -- There is an `Opposite.unop (Opposite.op _)` in `hx` which doesn't seem removable using
   -- `simp`/`rw`.
-  erw [StructureSheaf.germ_toOpen] at hx
+  erw [elementwise_of% StructureSheaf.algebraMap_germ] at hx
   obtain ⟨⟨y, hy⟩, hy'⟩ := (IsLocalization.map_eq_zero_iff p.asIdeal.primeCompl
     ((Spec.structureSheaf R).presheaf.stalk p) _).mp hx
   obtain ⟨n, hn⟩ := H x y hy' hy

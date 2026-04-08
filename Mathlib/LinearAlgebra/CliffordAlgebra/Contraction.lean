@@ -58,6 +58,7 @@ section contractLeft
 
 variable (d d' : Module.Dual R M)
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below
 /-- Auxiliary construction for `CliffordAlgebra.contractLeft` -/
 @[simps!]
 def contractLeftAux (d : Module.Dual R M) :

@@ -107,6 +107,8 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S

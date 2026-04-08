@@ -22,15 +22,15 @@ More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
 
 * If `F` satisfies the sheaf condition with respect to the empty sieve on the initial object of `C`,
   then `F` preserves terminal objects.
-See `preservesTerminalOfIsSheafForEmpty`.
+  See `preservesTerminalOfIsSheafForEmpty`.
 
 * If `F` furthermore satisfies the sheaf condition with respect to the presieve consisting of the
   inclusion arrows in a coproduct in `C`, then `F` preserves the corresponding product.
-See `preservesProductOfIsSheafFor`.
+  See `preservesProductOfIsSheafFor`.
 
 * If `F` preserves a product, then it satisfies the sheaf condition with respect to the
   corresponding presieve of arrows.
-See `isSheafFor_of_preservesProduct`.
+  See `isSheafFor_of_preservesProduct`.
 -/
 
 @[expose] public section
@@ -80,6 +80,7 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
@@ -96,6 +97,7 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
@@ -136,6 +138,7 @@ theorem firstMap_eq_secondMap :
     ext ⟨i⟩
     exact i.elim
 
+set_option backward.isDefEq.respectTransparency false in
 include hc hd hF hI in
 /--
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it

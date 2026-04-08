@@ -129,7 +129,7 @@ def leastExt : ι → ι :=
       refine ne_of_lt ?_ this
       let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
-      have := mk_Iio_ord_toType i
+      have := mk_Iio_toType_ord_lt i
       obtain eq | lt := rank_inf.out.eq_or_lt
       · replace this := mk_lt_aleph0_iff.mp (this.trans_eq eq.symm)
         have : FiniteDimensional F (adjoin F s) :=
@@ -183,6 +183,7 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (Algebra.IsAlgebraic.tower_top (K := F) _).of_injective (val _) Subtype.val_injective).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext

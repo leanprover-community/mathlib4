@@ -279,6 +279,39 @@ lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
 
 end fromResidueField
 
+section Spec
+
+variable (R : CommRingCat) (x : Spec R)
+
+/-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/
+noncomputable
+def Spec.residueFieldIso :
+    (Spec R).residueField x ≅ .of x.asIdeal.ResidueField :=
+  (IsLocalRing.ResidueField.mapEquiv
+    (Spec.stalkIso R x).commRingCatIsoToRingEquiv).toCommRingCatIso
+
+@[reassoc (attr := simp)]
+lemma Spec.algebraMap_residueFieldIso_inv :
+    CommRingCat.ofHom (algebraMap R _) ≫ (residueFieldIso R x).inv =
+      (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial ≫ (Spec R).residue x := by
+  rw [← Spec.algebraMap_stalkIso_inv_assoc]; rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.residue_residueFieldIso_hom :
+    (Spec R).residue x ≫ (residueFieldIso R x).hom =
+      (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
+    Spec.map (residueFieldIso _ _).inv ≫
+      Spec.map (CommRingCat.ofHom (algebraMap R x.asIdeal.ResidueField)) =
+    (Spec R).fromSpecResidueField x := by
+  simp only [Scheme.fromSpecResidueField, Spec.fromSpecStalk_eq, ← Spec.map_comp]
+  rw [Spec.map_inj]
+  simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
+
+end Spec
+
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
     {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :

@@ -185,6 +185,13 @@ instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) 
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
 
+lemma nontrivial_iff : Nontrivial (α →₀ M) ↔ Nonempty α ∧ Nontrivial M where
+  mp := by
+    rintro ⟨f, g, hfg⟩
+    obtain ⟨a, ha⟩ := ne_iff.mp hfg
+    exact ⟨⟨a⟩, _, _, ha⟩
+  mpr | ⟨_, _⟩ => inferInstance
+
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm
 
@@ -396,8 +403,8 @@ variable [Zero M] [Zero N] [Zero P]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
-    mapRange f hf (single a b) = single a (f b) :=
-  by classical grind
+    mapRange f hf (single a b) = single a (f b) := by
+  classical grind
 
 end MapRange
 

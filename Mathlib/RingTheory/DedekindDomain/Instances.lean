@@ -55,6 +55,7 @@ variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [I
     [Algebra (FractionRing Rₘ) (FractionRing Sₘ)]
     [IsScalarTower Rₘ (FractionRing Rₘ) (FractionRing Sₘ)]
 
+set_option backward.isDefEq.respectTransparency false in
 include R S in
 theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
     Algebra.IsSeparable (FractionRing Rₘ) (FractionRing Sₘ) := by

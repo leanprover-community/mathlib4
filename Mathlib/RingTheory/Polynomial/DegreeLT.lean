@@ -119,8 +119,8 @@ lemma addLinearEquiv_symm_apply (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + (PQ.2 : R[X]) * X ^ (m : ℕ) := calc
   _ = ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ PQ.1 + LinearMap.inr R _ _ PQ.2) : R[X]) :=
       by rw [LinearMap.inl_apply, LinearMap.inr_apply, Prod.add_def, add_zero, zero_add]
-  _ = _ := by rw [map_add, Submodule.coe_add,
-        addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
+  _ = _ := by
+    rw [map_add, Submodule.coe_add, addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
 
 lemma addLinearEquiv_symm_apply' (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + X ^ (m : ℕ) * (PQ.2 : R[X]) := by

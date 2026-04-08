@@ -35,7 +35,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   have A n : ∃ y ∈ closedBall x (u n) ∩ s, y ≠ x :=
-    (accPt_iff_nhds).mp hx _ (closedBall_mem_nhds _ (u_pos n))
+    accPt_iff_nhds.mp hx _ (closedBall_mem_nhds _ (u_pos n))
   choose v hv hvx using A
   choose hvu hvs using hv
   let d := fun n ↦ v n - x

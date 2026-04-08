@@ -185,13 +185,13 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
-    Disjoint (EMetric.closedBall x r) s := by
+    Disjoint (Metric.closedEBall x r) s := by
   rw [disjoint_left]
   intro y hy h'y
   apply lt_irrefl (infEDist x s)
   calc
     infEDist x s ≤ edist x y := infEDist_le_edist_of_mem h'y
-    _ ≤ r := by rwa [EMetric.mem_closedBall, edist_comm] at hy
+    _ ≤ r := by rwa [Metric.mem_closedEBall, edist_comm] at hy
     _ < infEDist x s := h
 
 /-- The infimum edistance is invariant under isometries -/
@@ -229,7 +229,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
 
 theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEDist x s = edist x y := by
-  have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
+  have A : Continuous fun y => edist x y := by fun_prop
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_edist_of_mem ys) (by rwa [le_infEDist])⟩
 
@@ -408,9 +408,9 @@ theorem nonempty_of_hausdorffEDist_ne_top (hs : s.Nonempty) (fin : hausdorffEDis
 
 theorem empty_or_nonempty_of_hausdorffEDist_ne_top (fin : hausdorffEDist s t ≠ ⊤) :
     (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rcases t.eq_empty_or_nonempty with ht | ht
-    · exact Or.inl ⟨hs, ht⟩
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rcases t.eq_empty_or_nonempty with rfl | ht
+    · exact Or.inl ⟨rfl, rfl⟩
     · rw [hausdorffEDist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEDist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEDist_ne_top hs fin⟩
@@ -827,10 +827,10 @@ theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist
 in each set to the other set -/
 theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, infDist x t ≤ r)
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rwa [hs, hausdorffDist_empty']
-  rcases t.eq_empty_or_nonempty with ht | ht
-  · rwa [ht, hausdorffDist_empty]
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rwa [hausdorffDist_empty']
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · rwa [hausdorffDist_empty]
   have : hausdorffEDist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEDist_le_of_infEDist _ _
     · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEDist_ne_top ht) hr] using H1

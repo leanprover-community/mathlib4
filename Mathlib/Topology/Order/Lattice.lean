@@ -46,15 +46,13 @@ class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
 
--- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Min L]
-    [ContinuousInf L] : ContinuousSup Lᵒᵈ where
-  continuous_sup := @ContinuousInf.continuous_inf L _ _ _
+instance OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Min L]
+    [h : ContinuousInf L] : ContinuousSup Lᵒᵈ where
+  continuous_sup := h.continuous_inf
 
--- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Max L]
-    [ContinuousSup L] : ContinuousInf Lᵒᵈ where
-  continuous_inf := @ContinuousSup.continuous_sup L _ _ _
+instance OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Max L]
+    [h : ContinuousSup L] : ContinuousInf Lᵒᵈ where
+  continuous_inf := h.continuous_sup
 
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
 Then `L` is said to be a *topological lattice*.
@@ -62,8 +60,7 @@ Then `L` is said to be a *topological lattice*.
 class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L] : Prop
   extends ContinuousInf L, ContinuousSup L
 
--- see Note [lower instance priority]
-instance (priority := 100) OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
+instance OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
     [Lattice L] [TopologicalLattice L] : TopologicalLattice Lᵒᵈ where
 
 -- see Note [lower instance priority]

@@ -199,7 +199,7 @@ lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMono
     v i ∈ closure (v '' {i | 1 < f (v i)}) ↔ 1 < f (v i) := by
   refine ⟨fun hi ↦ ?_, fun hi ↦ subset_closure <| mem_image_of_mem v hi⟩
   suffices v i = 1 ∨ 1 < f (v i) from this.resolve_left hv_one
-  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
+  refine closure_induction (by grind) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
   rcases hx with rfl | hx; · simpa
   rcases hy with rfl | hy; · right; simpa
   right
@@ -220,7 +220,7 @@ lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
     simpa [hv_inv] using this v f s hf i⁻¹ (by simpa [hv_inv]) (by simp [hv_inv])
       (by left; simpa [hv_inv]) (by simpa [hv_inv])
   suffices v i ≠ 1 → 1 < f (v i) from (this hv_one).ne'
-  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
+  refine closure_induction (by simp_all) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
   rcases eq_or_ne x 1 with rfl | hx'; · grind
   rcases eq_or_ne y 1 with rfl | hy'; · grind
   simpa using lt_mul_of_lt_of_one_lt (hx hx') (hy hy')
@@ -230,7 +230,6 @@ open Submonoid in
 lemma IsMulIndecomposable.apply_ne_one_iff_mem_closure
     [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (f : G →* S) (i : ι) (hi : v i ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
-    f (v i) ≠ 1 ↔ v i ∈ closure (v '' baseOf v f) ∨
-                 (v i)⁻¹ ∈ closure (v '' baseOf v f) :=
+    f (v i) ≠ 1 ↔ v i ∈ closure (v '' baseOf v f) ∨ (v i)⁻¹ ∈ closure (v '' baseOf v f) :=
   ⟨fun h ↦ mem_or_inv_mem_closure_baseOf v f i h hi',
     apply_ne_one_of_mem_or_inv_mem_closure v f (baseOf v f) (baseOf_subset_one_lt v f) i hi hi'⟩

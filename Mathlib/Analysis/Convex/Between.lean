@@ -1007,6 +1007,38 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
     Sbtw R w x y :=
   ⟨h₁.wbtw.trans_right_left h₂.wbtw, h₁.ne_left, h₂.left_ne⟩
 
+theorem Wbtw.trans_expand_left {w x y z : P} (h₁ : Wbtw R w x y) (h₂ : Wbtw R x y z)
+    (h_ne : x ≠ y) : Wbtw R w x z := by
+  rcases h₁ with ⟨t₁, ht₁, hx⟩
+  rcases h₂ with ⟨t₂, ht₂, hy⟩
+  refine ⟨t₁ * t₂ / (1 - t₁ + t₁ * t₂), ?_, ?_⟩
+  · constructor
+    · apply div_nonneg (mul_nonneg ht₁.1 ht₂.1)
+      nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+    · apply div_le_one_of_le₀
+      · grind
+      · nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+  have h_denom : 1 - t₁ + t₁ * t₂ ≠ 0 := by
+    contrapose h_ne
+    have h1 : t₁ = 1 := by nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+    rw [← hx, h1, lineMap_apply_one]
+  rw [← hy, lineMap_apply, lineMap_apply, eq_comm, eq_vadd_iff_vsub_eq] at hx
+  rw [lineMap_apply, eq_comm, eq_vadd_iff_vsub_eq, div_eq_mul_inv, mul_comm, mul_smul,
+    eq_inv_smul_iff₀ h_denom, add_smul, sub_smul, one_smul]
+  nth_rw 1 [hx]
+  rw [← smul_sub, mul_smul, mul_smul, vsub_sub_vsub_cancel_right, vadd_vsub, ← smul_assoc,
+    ← smul_assoc, ← smul_assoc, ← smul_add, vsub_add_vsub_cancel]
+
+theorem Wbtw.trans_expand_right {w x y z : P} (h₁ : Wbtw R w x y) (h₂ : Wbtw R x y z)
+    (h_ne : x ≠ y) : Wbtw R w y z := Wbtw.trans_right (h₁.trans_expand_left h₂ h_ne) h₂
+
+theorem Sbtw.trans_expand_left {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw R x y z) :
+    Sbtw R w x z :=
+  ⟨Wbtw.trans_expand_left h₁.wbtw h₂.wbtw h₂.left_ne, h₁.left_ne.symm, h₂.left_ne_right⟩
+
+theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw R x y z) :
+    Sbtw R w y z := Sbtw.trans_right (h₁.trans_expand_left h₂) h₂
+
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
@@ -1063,6 +1095,21 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
       smul_add]
     convert (one_smul R (y -ᵥ x)).symm
     field
+
+lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
+    Wbtw R x y z ∨ Wbtw R x z y := by
+  rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
+  · simp_all
+  · simp_all
+  wlog hr : r₂ ≤ r₁ generalizing r₁ r₂ y z
+  · rw [or_comm]
+    apply this r₂ r₁ hr₂ hr₁ h.symm (Std.le_of_not_ge hr)
+  left
+  refine ⟨r₂ / r₁, ⟨div_nonneg hr₂.le hr₁.le, div_le_one_of_le₀ hr hr₁.le⟩, ?_⟩
+  have h' : y = r₁⁻¹ • r₂ • (z -ᵥ x) +ᵥ x := by simp [← h, hr₁.ne']
+  simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, eq_vadd_iff_vsub_eq, vsub_self,
+    add_zero]
+  ring_nf
 
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/
