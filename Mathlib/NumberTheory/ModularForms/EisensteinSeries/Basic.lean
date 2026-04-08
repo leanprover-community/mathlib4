@@ -48,4 +48,10 @@ noncomputable def E {k : ℕ} (hk : 3 ≤ k) : ModularForm 𝒮ℒ k :=
   ((1 / 2 : ℂ) • eisensteinSeriesMF (mod_cast hk) 0).ofSubgroupEq
     CongruenceSubgroup.Gamma_one_coe_eq_SL
 
+/-- The normalised level 1 Eisenstein series of weight 4. -/
+noncomputable abbrev E₄ : ModularForm 𝒮ℒ 4 := E (by norm_num : (3 : ℕ) ≤ 4)
+
+/-- The normalised level 1 Eisenstein series of weight 6. -/
+noncomputable abbrev E₆ : ModularForm 𝒮ℒ 6 := E (by norm_num : (3 : ℕ) ≤ 6)
+
 end ModularForm
