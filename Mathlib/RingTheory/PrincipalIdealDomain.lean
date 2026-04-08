@@ -213,14 +213,14 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
+@[implicit_reducible]
 noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
 instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
   classical exact ⟨toGCDDomain R⟩
 
-theorem associated_gcd_gcd [IsDomain R] [GCDMonoid R] :
-    Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
+theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
   gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
@@ -276,7 +276,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
               (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
                     { x : R | x ∈ S ∧ x ≠ 0 } :=
-                  fun h₁ => WellFounded.not_lt_min wf _ h h₁ (mod_lt x hmin.2)
+                  fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
                   simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
                   exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx

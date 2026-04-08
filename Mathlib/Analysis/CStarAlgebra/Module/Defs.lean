@@ -5,9 +5,13 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Hilbert C⋆-modules
@@ -164,6 +168,7 @@ local notation "⟪" x ", " y "⟫" => inner A x y
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
+@[implicit_reducible]
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
   norm x := √‖⟪x, x⟫_A‖
 
@@ -267,7 +272,7 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
+noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in

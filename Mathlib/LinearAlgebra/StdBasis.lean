@@ -35,15 +35,10 @@ this is a basis over `Fin 3 → R`.
 
 @[expose] public section
 
-open Function Module Set Submodule
+open Function LinearMap Module Set Submodule
 
 namespace Pi
-
-open LinearMap
-
-open Set
-
-variable {R : Type*}
+variable {ι R M : Type*}
 
 section Module
 
@@ -60,12 +55,11 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
-lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+lemma linearIndependent_single_of_ne_zero [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -138,6 +132,18 @@ theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x 
 @[simp]
 theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
   Basis.equivFun_ofEquivFun _
+
+variable {η}
+
+/-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
+def spanSubset (s : Set η) : Submodule R (η → R) :=
+  .span R (Pi.basisFun R η '' s)
+
+variable {R} {s : Set η}
+
+lemma mem_spanSubset_iff {s : Set η} {v : η → R} :
+    v ∈ spanSubset R s ↔ ∀ i ∉ s, v i = 0 := by
+  simp [spanSubset, Module.Basis.mem_span_image, Finsupp.support_subset_iff]
 
 end
 

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Option of a type
@@ -71,11 +72,6 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _ => mem_unique
 
 theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
-
-/-- `Option.map f` is injective if `f` is injective. -/
-theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
-  | none, none, _ => rfl
-  | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 
 @[simp]
 theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=
@@ -243,5 +239,14 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
 lemma getD_comp_some (d : α) : (fun x ↦ x.getD d) ∘ some = id := by
   ext
   simp only [Function.comp_apply, getD_some, id_eq]
+
+@[simp]
+theorem none_eq_map_iff {x : Option α} {f : α → β} : none = x.map f ↔ x = none := by
+  rw [eq_comm, map_eq_none_iff]
+
+@[simp]
+theorem some_eq_map_iff {b : β} {x : Option α} {f : α → β} :
+    some b = x.map f ↔ ∃ (a : α), x = some a ∧ f a = b := by
+  rw [eq_comm, map_eq_some_iff]
 
 end Option

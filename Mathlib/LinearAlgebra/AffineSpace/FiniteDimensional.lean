@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
+import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
+import Mathlib.RingTheory.Finiteness.Prod
+
 /-!
 # Finite-dimensional subspaces of affine spaces.
 
@@ -656,6 +659,16 @@ theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : 
   rw [affineIndependent_iff_not_collinear_set] at ha
   exact ha h2
 
+/-- Replacing a point in an affinely independent triple with another point on the same
+line preserves affine independence. -/
+theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p : P}
+    (hcol : Collinear k {p₂, p, p₃}) (hne1 : p₂ ≠ p) (hne2 : p₂ ≠ p₃) :
+    AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
+  refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
+    fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
+  convert hcol using 1
+  aesop
+
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
 def Coplanar (s : Set P) : Prop :=
@@ -835,3 +848,26 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
 end DivisionRing
 
 end AffineBasis
+
+namespace AffineMap
+
+variable {R S V W P : Type*} [Ring R] [Ring S]
+  [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] [AddTorsor V P]
+  [AddCommGroup W] [Module R W] [Module S W] [Module.Finite S W] [SMulCommClass R S W]
+
+instance : Module.Finite S (P →ᵃ[R] W) :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  .equiv <| (AffineMap.toConstProdLinearMap S).symm ≪≫ₗ (AffineEquiv.vaddConst R p).congrLeftₗ S W
+
+theorem finrank_eq [Module.Free S W] [StrongRankCondition R] [StrongRankCondition S] :
+    Module.finrank S (P →ᵃ[R] W) = (Module.finrank R V + 1) * Module.finrank S W :=
+  calc
+    _ = Module.finrank S (V →ᵃ[R] W) :=
+      have ⟨p⟩ : Nonempty P := inferInstance
+      AffineEquiv.vaddConst R p |>.symm.congrLeftₗ S W |>.finrank_eq
+    _ = Module.finrank S (W × (V →ₗ[R] W)) := (AffineMap.toConstProdLinearMap S).finrank_eq
+    _ = (Module.finrank R V + 1) * Module.finrank S W := by
+      rw [Module.finrank_prod, Module.finrank_linearMap]
+      ring
+
+end AffineMap

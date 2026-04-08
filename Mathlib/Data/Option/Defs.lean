@@ -5,9 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # Extra definitions on `Option`

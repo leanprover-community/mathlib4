@@ -205,8 +205,9 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsSemitopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by `exact le_rfl`
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if

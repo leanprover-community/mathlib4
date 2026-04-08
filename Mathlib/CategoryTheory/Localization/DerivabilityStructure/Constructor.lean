@@ -21,6 +21,7 @@ two following conditions:
 * for any `X₂ : C₂`, the category `Φ.RightResolution X₂` of resolutions of `X₂` is connected
 * any arrow in `C₂` admits a resolution (i.e. `Φ.arrow.HasRightResolutions` holds, where
   `Φ.arrow` is the induced localizer morphism on categories of arrows in `C₁` and `C₂`)
+
 (The dual statement for left derivability structures is also obtained.)
 
 This statement is essentially Lemme 6.5 in
@@ -72,6 +73,7 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
       (Functor.rightUnitor _).inv).CostructuredArrowDownwards y) := by

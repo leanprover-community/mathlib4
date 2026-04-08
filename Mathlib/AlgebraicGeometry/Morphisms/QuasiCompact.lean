@@ -117,6 +117,7 @@ theorem quasiCompact_iff_forall_isAffineOpen :
 @[deprecated (since := "2025-10-14")]
 alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   classical
@@ -156,8 +157,8 @@ instance {X : Scheme} [CompactSpace X] : QuasiCompact X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
 /-
-A quasi-compact scheme over quasi-compact base is also quasi-compact as a topological space.
-For the coverse, see `quasiCompact_of_compactSpace` for the fact that
+A quasi-compact scheme over a quasi-compact base is also quasi-compact as a topological space.
+For the converse, see `quasiCompact_of_compactSpace` for the fact that
 a (topologically) quasi-compact scheme is quasi-compact over a base if the base is quasi-separated.
 -/
 lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
@@ -173,6 +174,7 @@ instance quasiCompact_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @QuasiCompact where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
@@ -195,15 +197,18 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] [CompactSpace Y] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.snd _ _)
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] [CompactSpace X] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
+
 lemma compactSpace_iff_exists :
-    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
-  refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
-  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  refine ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, ?_⟩
-  refine Function.Surjective.comp (g := Sigma.desc 𝒰.f)
-    (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
-  obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨Sigma.ι 𝒰.X (𝒰.idx x) y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
+    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f where
+  mp _ := let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+    ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
+  mpr := fun ⟨_, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩
+
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by
@@ -216,7 +221,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
 @[stacks 01K9]
-lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
+nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
@@ -228,7 +233,6 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     exact IsZariskiLocalAtTarget.of_isPullback
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
   obtain ⟨S, rfl⟩ := hY
-  clear * - H
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
   wlog hX : ∃ R, X = Spec R
@@ -260,6 +264,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   obtain ⟨n, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
@@ -291,7 +296,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
-    change _ = (X.sheaf.val.map _) 0
+    change _ = (X.sheaf.obj.map _) 0
     rw [map_zero]
     apply this
   intro i
@@ -303,6 +308,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   rwa [mul_zero, ← mul_assoc, ← pow_add, tsub_add_cancel_of_le] at hn
   apply Finset.le_sup (Finset.mem_univ i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A section over a compact open of a scheme is nilpotent if and only if its associated
 basic open is empty. -/
 lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
@@ -326,6 +332,7 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
     IsNilpotent f ↔ X.basicOpen f = ⊥ :=
   isNilpotent_iff_basicOpen_eq_bot_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
 lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}

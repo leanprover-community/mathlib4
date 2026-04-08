@@ -6,16 +6,17 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
+
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Module.Submodule.EqLocus
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -159,7 +160,7 @@ Scott continuous for the ω-complete partial order induced by the complete latti
 theorem coe_scott_continuous :
     OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
-    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    ⟨SetLike.coe_mono, fun _ ↦ coe_iSup_of_chain _⟩
 
 section IsScalarTower
 
@@ -210,6 +211,7 @@ theorem span_span_of_tower :
 theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
   le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -231,8 +233,9 @@ theorem span_range_inclusion_restrictScalars_eq_top :
 
 end IsScalarTower
 
-theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] {x y : M} : ((R ∙ x) = R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
+theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [Module.IsTorsionFree R M] {x y : M} :
+    (R ∙ x) = (R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
   constructor
   · simp only [le_antisymm_iff, span_singleton_le_iff_mem, mem_span_singleton]
     rintro ⟨⟨a, rfl⟩, b, hb⟩
@@ -320,7 +323,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
     exact ⟨_, add _ _ _ _ Cx Cy⟩
 
 theorem singleton_span_isCompactElement (x : M) :
-    CompleteLattice.IsCompactElement (span R {x} : Submodule R M) := by
+    IsCompactElement (span R {x} : Submodule R M) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
   have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
@@ -329,7 +332,7 @@ theorem singleton_span_isCompactElement (x : M) :
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finset_span_isCompactElement (S : Finset M) :
-    CompleteLattice.IsCompactElement (span R S : Submodule R M) := by
+    IsCompactElement (span R S : Submodule R M) := by
   rw [span_eq_iSup_of_singleton_spans]
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
@@ -338,7 +341,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
-    CompleteLattice.IsCompactElement (span R S : Submodule R M) :=
+    IsCompactElement (span R S : Submodule R M) :=
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 
 instance : IsCompactlyGenerated (Submodule R M) :=
@@ -429,11 +432,14 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
+    span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
+  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
+
 lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
     (hs : ∀ i, s i ∈ p) :
     span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
-  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
-  simp [map_span, ← Set.range_comp, Function.comp_def]
+  simp [← span_val_image_eq_iff, ← Set.range_comp, Function.comp_def]
 
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
     {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
@@ -635,7 +641,7 @@ theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : Cov
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_swap (β := ¬_),
+  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_comm (β := ¬_),
     s.smul_mem_iff] using ⟨fun h ↦ h _ one_ne_zero, fun h _ _ ↦ h⟩
 
 theorem disjoint_span_singleton' (hx : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s := by
@@ -757,6 +763,9 @@ theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x �
   simp_rw [submoduleOf, mem_comap, subtype_apply, mem_span_singleton]
   aesop
 
+@[simp] lemma ker_toSpanSingleton_eq_bot_iff {x : R} :
+    ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R := le_bot_iff.symm
+
 end
 
 section AddCommMonoid
@@ -799,19 +808,15 @@ theorem ext_on_range {ι : Sort*} {v : ι → M} {f g : M →ₛₗ[σ₁₂] M�
 
 end AddCommMonoid
 
-section NoZeroDivisors
+section IsDomain
 
-variable (R M)
-variable [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] [IsDomain R] [Module.IsTorsionFree R M]
 
+variable (R) in
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
 
-@[simp] theorem ker_toSpanSingleton_eq_bot_iff {x : R} :
-    ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R :=
-  le_bot_iff.symm
-
-end NoZeroDivisors
+end IsDomain
 
 section Field
 
@@ -833,7 +838,8 @@ open LinearMap
 namespace LinearEquiv
 
 variable (R M)
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] (x : M) (h : x ≠ 0)
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M] (x : M)
+  (h : x ≠ 0)
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
 isomorphism from `R` to the span of `x` given by $r \mapsto r \cdot x$. -/
@@ -841,7 +847,7 @@ noncomputable
 def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
-      (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
+      (ker_eq_bot.1 <| ker_toSpanSingleton R h))
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (range_toSpanSingleton x))
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :

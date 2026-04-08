@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -109,6 +109,7 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) 
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
     Epi h.shortComplex.g := by
   rw [Preadditive.epi_iff_cancel_zero]
@@ -186,6 +187,7 @@ noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
     Mono h.shortComplex'.f := by
   rw [Preadditive.mono_iff_cancel_zero]

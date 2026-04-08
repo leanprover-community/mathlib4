@@ -123,8 +123,6 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 @[reassoc]
 lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
@@ -493,7 +491,7 @@ instance : HasTensor tensorUnit X :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
     ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor tensorUnit X)
+  inferInstanceAs <| HasTensor tensorUnit X
 
 /-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
@@ -526,7 +524,7 @@ instance : HasTensor X tensorUnit :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
     ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor X tensorUnit)
+  inferInstanceAs <| HasTensor X tensorUnit
 
 /-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=

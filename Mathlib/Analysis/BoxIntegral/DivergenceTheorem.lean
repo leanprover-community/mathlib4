@@ -170,7 +170,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
   refine HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le ?_ ?_ _ s hs ?_ ?_
-  ·-- We use the volume as an upper estimate.
+  · -- We use the volume as an upper estimate.
     exact (volume : Measure (Fin (n + 1) → ℝ)).toBoxAdditive.restrict _ le_top
   · exact fun J => ENNReal.toReal_nonneg
   · intro c x hx ε ε0

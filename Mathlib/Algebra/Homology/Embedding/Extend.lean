@@ -74,6 +74,7 @@ lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
   subst hi hj
   simp [XIso, X, d]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
     (XOpIso K i).hom ≫ (d K j i).op =
@@ -114,21 +115,21 @@ noncomputable def extend : HomologicalComplex C c' where
   X i' := extend.X K (e.r i')
   d i' j' := extend.d K (e.r i') (e.r j')
   shape i' j' h := by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
+    obtain hi' | ⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi']
-    · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
+    · obtain hj' | ⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
       · rw [extend.d_none_eq_zero' K _ _ hj']
-      · rw [extend.d_eq K hi hj,K.shape, zero_comp, comp_zero]
+      · rw [extend.d_eq K hi hj, K.shape, zero_comp, comp_zero]
         obtain rfl := e.f_eq_of_r_eq_some hi
         obtain rfl := e.f_eq_of_r_eq_some hj
         intro hij
         exact h (e.rel hij)
   d_comp_d' i' j' k' _ _ := by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
+    obtain hi' | ⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi', zero_comp]
-    · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
+    · obtain hj' | ⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
       · rw [extend.d_none_eq_zero K _ _ hj', comp_zero]
-      · obtain hk'|⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
+      · obtain hk' | ⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
         · rw [extend.d_none_eq_zero' K _ _ hk', comp_zero]
         · rw [extend.d_eq K hi hj, extend.d_eq K hj hk, assoc, assoc,
             Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]
@@ -174,6 +175,7 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an embedding `e : c.Embedding c'` of complexes shapes, this is the
 morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 `HomologicalComplex C c`. -/
@@ -204,6 +206,7 @@ lemma extendMap_f {i : ι} {i' : ι'} (h : e.f i = i') :
   rw [extend.mapX_some φ (e.r_eq_some h)]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extendMap_f_eq_zero (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     (extendMap φ e).f i' = 0 := by
   dsimp [extendMap]
@@ -244,6 +247,7 @@ noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
   Hom.isoOfComponents (fun _ ↦ extend.XOpIso _ _) (fun _ _ _ ↦
     extend.XOpIso_hom_d_op _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extend_op_d (i' j' : ι') :
     (K.op.extend e.op).d i' j' =
