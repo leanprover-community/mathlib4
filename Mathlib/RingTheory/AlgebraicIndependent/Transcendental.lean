@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Algebraic Independence

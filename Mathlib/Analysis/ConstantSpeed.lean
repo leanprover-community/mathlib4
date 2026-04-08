@@ -6,8 +6,11 @@ Authors: Rémi Bottinelli
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Constant speed

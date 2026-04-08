@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Integral closure of a subring.

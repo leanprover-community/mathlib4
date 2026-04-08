@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # p-adic integers

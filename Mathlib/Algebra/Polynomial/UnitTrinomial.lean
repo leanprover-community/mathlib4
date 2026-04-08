@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Mirror
 public import Mathlib.Data.Int.Order.Units
 public import Mathlib.RingTheory.Coprime.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Unit Trinomials

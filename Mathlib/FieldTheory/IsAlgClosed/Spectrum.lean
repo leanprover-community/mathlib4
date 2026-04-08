@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Spectrum mapping theorem

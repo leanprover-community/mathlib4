@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Glaisher's theorem

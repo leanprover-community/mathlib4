@@ -9,6 +9,7 @@ public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Zify
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The length function, reduced words, and descents

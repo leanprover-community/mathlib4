@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.Galois.Abelian
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Cyclotomic extensions

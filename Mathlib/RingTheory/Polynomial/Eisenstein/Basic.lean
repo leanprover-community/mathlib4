@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Eisenstein polynomials

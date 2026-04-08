@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.Rify
+meta import Mathlib.Tactic.Attr.Register
 
 /-! # `norm_num` extension for `Irrational`
 

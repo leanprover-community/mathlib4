@@ -11,6 +11,7 @@ public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.MetricSpace.Cauchy
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 ## Boundedness in (pseudo)-metric spaces

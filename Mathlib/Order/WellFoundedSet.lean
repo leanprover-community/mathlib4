@@ -10,6 +10,7 @@ public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.WellQuasiOrder
 public import Mathlib.Tactic.TFAE
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Well-founded sets

@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+meta import Mathlib.Tactic.Attr.Register
 
 
 /-! # The characteristic polynomial of base change -/

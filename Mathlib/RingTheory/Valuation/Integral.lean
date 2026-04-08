@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Valuation.ValuationRing
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Integral elements over the ring of integers of a valuation

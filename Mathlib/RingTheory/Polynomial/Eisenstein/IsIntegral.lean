@@ -9,6 +9,7 @@ public import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Eisenstein polynomials

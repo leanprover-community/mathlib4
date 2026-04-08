@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Trunc
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+meta import Mathlib.Tactic.Attr.Register
 
 
 /-!

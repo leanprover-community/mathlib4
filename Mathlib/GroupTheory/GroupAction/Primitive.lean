@@ -11,6 +11,7 @@ public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Primitive actions

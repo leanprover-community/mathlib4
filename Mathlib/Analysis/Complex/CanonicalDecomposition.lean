@@ -5,7 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Meromorphic.NormalForm
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Canonical Decomposition

@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Fibonacci numbers

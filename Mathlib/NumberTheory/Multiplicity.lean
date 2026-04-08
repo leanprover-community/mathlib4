@@ -9,6 +9,7 @@ public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Multiplicity in Number Theory

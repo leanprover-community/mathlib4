@@ -7,8 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.PiTopology
-public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Construction of L-functions

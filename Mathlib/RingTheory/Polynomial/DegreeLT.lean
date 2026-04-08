@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.Polynomial.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Polynomials with degree strictly less than `n`

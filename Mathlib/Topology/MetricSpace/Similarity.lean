@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Tactic.FinCases
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Similarities

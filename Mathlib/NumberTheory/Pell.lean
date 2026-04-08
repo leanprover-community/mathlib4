@@ -9,6 +9,7 @@ public import Mathlib.Data.ZMod.Basic
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Qify
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Pell's Equation

@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Chunk of the increment partition for Szemerédi Regularity Lemma

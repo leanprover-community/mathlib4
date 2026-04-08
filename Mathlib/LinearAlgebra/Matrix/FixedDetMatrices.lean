@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 public import Mathlib.Data.Int.Interval
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Matrices with fixed determinant

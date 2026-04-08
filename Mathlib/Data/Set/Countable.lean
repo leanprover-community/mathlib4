@@ -10,6 +10,7 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Equiv.List
 public import Mathlib.Order.Preorder.Finite
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Countable sets

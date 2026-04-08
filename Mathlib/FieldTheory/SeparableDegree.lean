@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+meta import Mathlib.Tactic.Attr.Register
 
 
 /-!

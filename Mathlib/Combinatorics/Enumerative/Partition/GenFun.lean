@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Generating functions for partitions

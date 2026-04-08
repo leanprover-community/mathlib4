@@ -6,9 +6,11 @@ Authors: Chris Hughes, Junyan Xu
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
-public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Tactic.NormNum
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

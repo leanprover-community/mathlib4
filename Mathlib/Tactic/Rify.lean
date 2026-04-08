@@ -9,6 +9,7 @@ public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Zify
 public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # `rify` tactic

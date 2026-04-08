@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Data.DFinsupp.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Unique products and related notions

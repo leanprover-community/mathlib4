@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Strongly measurable and finitely strongly measurable functions

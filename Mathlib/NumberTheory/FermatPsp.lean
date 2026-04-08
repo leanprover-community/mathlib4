@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Tactic.GCongr
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Fermat Pseudoprimes

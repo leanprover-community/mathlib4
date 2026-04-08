@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Lagrange's four square theorem

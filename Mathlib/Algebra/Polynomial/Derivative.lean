@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # The derivative map on polynomials

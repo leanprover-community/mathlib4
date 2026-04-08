@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.Choose.Factorization
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Natural number multiplicity

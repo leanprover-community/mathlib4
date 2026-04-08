@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Tactic.Linarith
+meta import Mathlib.Tactic.Attr.Register
 /-!
 # Five-wheel like graphs
 

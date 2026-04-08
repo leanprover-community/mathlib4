@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Tactic.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Diophantine Approximation

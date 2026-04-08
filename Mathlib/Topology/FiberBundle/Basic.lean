@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.Order.LeftRightNhds
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Fiber bundles

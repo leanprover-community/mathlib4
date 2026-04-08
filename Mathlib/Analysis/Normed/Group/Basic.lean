@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # (Semi)normed groups: basic theory

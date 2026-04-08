@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

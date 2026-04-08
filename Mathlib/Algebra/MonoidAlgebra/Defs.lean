@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Algebra.Group.TransferInstance
 
 /-!
 # Monoid algebras

@@ -7,12 +7,11 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Order structures on finite types

@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

@@ -5,7 +5,6 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Hom
 public import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Order.CompleteField
 

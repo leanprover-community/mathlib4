@@ -6,6 +6,7 @@ Authors: Alex J. Best, Riccardo Brasca
 module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Cyclotomic units.

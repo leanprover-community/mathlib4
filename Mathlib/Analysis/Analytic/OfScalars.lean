@@ -6,6 +6,7 @@ Authors: Edward Watine
 module
 
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Scalar series

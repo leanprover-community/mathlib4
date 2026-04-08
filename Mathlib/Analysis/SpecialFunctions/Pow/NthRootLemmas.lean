@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Zify
 public import Mathlib.Algebra.Order.Ring.Pow
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Lemmas about `Nat.nthRoot`

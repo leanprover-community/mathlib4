@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.SeparableClosure
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

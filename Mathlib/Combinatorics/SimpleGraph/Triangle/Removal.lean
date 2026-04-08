@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 public import Mathlib.Data.Finset.CastCard
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Triangle removal lemma

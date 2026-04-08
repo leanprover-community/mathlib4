@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Spectrum.Prime.Module
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

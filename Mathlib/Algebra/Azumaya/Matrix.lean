@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Matrix algebra is an Azumaya algebra over R

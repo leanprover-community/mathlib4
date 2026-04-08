@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Tactic.IntervalCases
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Cubics and discriminants

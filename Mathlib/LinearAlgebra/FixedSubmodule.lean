@@ -8,10 +8,10 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # The fixed submodule of a linear map

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Linear independence

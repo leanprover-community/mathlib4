@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 public import Mathlib.MeasureTheory.Integral.Bochner.L1
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Real
 

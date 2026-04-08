@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Radical of an element of a unique factorization normalization monoid

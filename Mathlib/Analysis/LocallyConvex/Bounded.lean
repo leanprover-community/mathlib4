@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Seminorm
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Von Neumann Boundedness

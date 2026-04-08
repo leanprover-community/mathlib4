@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Integral with respect to a sum of measures

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.ZPow
+meta import Mathlib.Tactic.Attr.Register
 
 /-! # Hermitian matrices
 

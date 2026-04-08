@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # shifted Legendre Polynomials

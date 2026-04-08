@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators

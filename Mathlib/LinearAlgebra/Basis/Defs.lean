@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Bases

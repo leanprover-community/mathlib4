@@ -10,6 +10,7 @@ public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.MvPolynomial.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 ## Polynomials over finite fields
