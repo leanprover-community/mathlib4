@@ -53,8 +53,8 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
     have : Projective (S.map F).X₂ := Functor.PreservesProjectiveObjects.projective_obj P.projective
     have hS : S.ShortExact := { exact := ShortComplex.exact_kernel P.f }
     exact AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact _ _ _ _
-      (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n)
-      (F.mapExtAddHom S.X₃ Y (n + 1)) (by cat_disch) (by cat_disch)
+      (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n) (F.mapExtAddHom S.X₃ Y (n + 1))
+      (by cat_disch) (by cat_disch)
       ((ShortComplex.ab_exact_iff_function_exact _).1
         (Ext.contravariant_sequence_exact₁' hS Y n (n + 1) (add_comm 1 n)))
       ((ShortComplex.ab_exact_iff_function_exact _).1
