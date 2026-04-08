@@ -127,7 +127,7 @@ lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
 
 @[congr]
-lemma expect_congr {t : Finset ι} (hst : s = t) (h : ∀ i ∈ t, f i = g i) :
+lemma expect_congr {t : Finset ι} (hst : s = t) (h : ∀ i ∈ t, binderNameHint i f (f i) = g i) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by rw [expect, expect, sum_congr hst h, hst]
 
 lemma expectWith_congr (hst : s = t) (hpq : ∀ i ∈ t, p i ↔ q i) (h : ∀ i ∈ t, q i → f i = g i) :
