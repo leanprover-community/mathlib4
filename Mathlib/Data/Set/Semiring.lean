@@ -20,7 +20,8 @@ idempotent (commutative) semiring.
 
 @[expose] public section
 
-open Set Pointwise
+open Set
+open scoped Pointwise
 
 variable {α β γ : Type*}
 
