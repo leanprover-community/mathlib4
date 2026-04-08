@@ -20,8 +20,6 @@ public section
 
 variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 
-open Ideal
-
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R :=
   IsLocalRing.of_unique_max_ideal ⟨m, hmax, fun _ hJ ↦
     (hmax.eq_of_le hJ.ne_top <|
