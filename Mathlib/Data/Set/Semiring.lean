@@ -159,6 +159,9 @@ def imageHom : SetSemiring α →+* SetSemiring β where
 @[simp] lemma imageHom_apply (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
 @[simp] lemma ofSet_image (s : Set α) : ofSet (f '' s) = imageHom f s := rfl
 
+lemma imageHom_id : imageHom (.id α) = .id (SetSemiring α) := by
+  simp [imageHom, RingHom.id, Function.id_def]
+
 lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (imageHom f) := by
   ext s
   simp_rw [imageHom_apply, MonoidHom.coe_comp]
