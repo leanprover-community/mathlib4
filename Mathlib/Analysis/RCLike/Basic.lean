@@ -1119,7 +1119,7 @@ theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
 variable (K) in
 noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K where
   __ := ofRealAm
-  map_star' := algebraMap_star_comm
+  map_star' _ := RCLike.conj_ofReal _ |>.symm
 
 @[simp, rclike_simps]
 theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
