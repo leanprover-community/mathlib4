@@ -8,12 +8,14 @@ module
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
+public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
 import Mathlib.Probability.Distributions.TwoValued
+import Mathlib.Probability.HasLawExists
 import Mathlib.Probability.Notation
 
 /-!
@@ -93,6 +95,11 @@ lemma binomial_apply (s : Set ℕ) :
   rw [binomial, map_apply (by fun_prop) (by measurability), setBernoulli_apply_eq_apply_subsets]
   simp
 
+lemma binomial_apply' {ι : Type*} [Countable ι] (u : Set ι) (s : Set ℕ) :
+    (setBer(u, p).map ncard) s = setBer(u, p) {t | t.ncard ∈ s ∧ t ⊆ u} := by
+  rw [map_apply (by fun_prop) (by measurability), setBernoulli_apply_eq_apply_subsets]
+  simp
+
 lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
@@ -125,6 +132,24 @@ lemma binomial_real_singleton (n k : ℕ) (p : I) :
     ← ncard_eq_toFinset_card _ _]
   simp [ncard_powerset_ncard]
 
+lemma binomial_real_singleton' {ι : Type*} [Countable ι] (u : Set ι)
+    (hu : u.Finite) (k : ℕ) (p : I) :
+    (setBer(u, p).map ncard).real {k} = (u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k) := by
+  classical
+  have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ u}.Finite :=
+    hu.finite_subsets.subset (by grind)
+  rw [measureReal_def, binomial_apply', ← measureReal_def, ← biUnion_of_singleton (setOf _)]
+  simp_rw [← this.mem_toFinset]
+  rw [measureReal_biUnion_finset (by simp) (by simp)]
+  have h1 s (hs : s ∈ this.toFinset) :
+      setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
+    simp only [mem_singleton_iff, Finite.mem_toFinset, mem_setOf_eq] at hs
+    rw [setBernoulli_real_singleton _ hs.2 hu,
+      ncard_diff' hs.2 hu, hs.1]
+  rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
+    ← ncard_eq_toFinset_card _ _]
+  simp [ncard_powerset_ncard, hu]
+
 lemma map_cast_binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
     Bin(R, n, p).real {(k : R)} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [map_measureReal_apply (by fun_prop) (by measurability)]
@@ -135,6 +160,14 @@ lemma binomial_singleton (n k : ℕ) (p : I) :
     Bin(n, p) {k} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
   rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
     binomial_real_singleton]
+
+lemma binomial_singleton' {ι : Type*} [Countable ι] (u : Set ι)
+    (hu : u.Finite) (k : ℕ) (p : I) :
+    (setBer(u, p).map ncard) {k} =
+      ENNReal.ofReal ((u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k)) := by
+  rw [← ENNReal.ofReal_toReal (a := (Measure.map _ _) _) (by simp), ← measureReal_def,
+    binomial_real_singleton']
+  exact hu
 
 lemma binomial_real_zero (n : ℕ) (p : I) :
     Bin(n, p).real {0} = (1 - p) ^ n := by simp [binomial_real_singleton]
@@ -277,11 +310,151 @@ lemma HasLaw.congr_comp {Ω' 𝓧 𝓨 : Type*} {m' : MeasurableSpace Ω'} {m�
       hY.map_eq, ← hX.map_eq, AEMeasurable.map_map_of_aemeasurable (hX.map_eq ▸ hf) hX.aemeasurable,
       Function.comp_def, h.map_eq]
 
+omit [IsProbabilityMeasure P] in
+lemma HasLaw.measure_eq {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {X : Ω → 𝓧} {μ : Measure 𝓧}
+    (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
+    P {ω | p (X ω)} = μ {x | p x} := by
+  rw [← hX.map_eq, map_apply_of_aemeasurable hX.aemeasurable hp]
+  simp
 
+theorem _root_.MeasureTheory.map_measureReal_apply_of_aemeasurable {α β : Type*}
+    {_ : MeasurableSpace α} {μ : Measure α}
+    [MeasurableSpace β] {f : α → β} (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    (Measure.map f μ).real s = μ.real (f ⁻¹' s) := by
+  rw [measureReal_def, map_apply_of_aemeasurable hf hs, ← measureReal_def]
 
-lemma test {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun X P)
+omit [IsProbabilityMeasure P] in
+lemma HasLaw.measure_real_eq {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {X : Ω → 𝓧} {μ : Measure 𝓧}
+    (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
+    P.real {ω | p (X ω)} = μ.real {x | p x} := by
+  rw [← hX.map_eq, map_measureReal_apply_of_aemeasurable hX.aemeasurable hp]
+  simp
+
+lemma setBernoulli_mem {ι : Type*} (u : Set ι) {i : ι} (hi : i ∈ u) :
+    setBer(u, p).real {s | i ∈ s} = p := by
+  rw [setBernoulli_eq_map]
+  have : {s : Set ι | i ∈ s} = (i ∈ ·) ⁻¹' {True} := by grind
+  have h1 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i := by ext; simp
+  rw [this, ← map_measureReal_apply, map_map, h1, infinitePi_map_eval, measureReal_def]
+  · simp [hi]
+  any_goals fun_prop
+  simp
+
+lemma setBernoulli_mem' {ι : Type*} (u : Set ι) {i : ι} (hi : i ∉ u) :
+    setBer(u, p).real {s | i ∈ s} = 0 := by
+  rw [setBernoulli_eq_map]
+  have : {s : Set ι | i ∈ s} = (i ∈ ·) ⁻¹' {True} := by grind
+  have h1 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i := by ext; simp
+  rw [this, ← map_measureReal_apply, map_map, h1, infinitePi_map_eval, measureReal_def]
+  · simp [hi]
+  any_goals fun_prop
+  simp
+
+omit [IsProbabilityMeasure P] in
+lemma l3 {ι : Type*} (u : Set ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P)
+    [DecidablePred (· ∈ u)] :
+    HasLaw (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω)
+      (infinitePi (fun i ↦ if i ∈ u then Ber(1, 0, p) else dirac 0)) P where
+  aemeasurable := by
+    classical
+    have : (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω) =
+        (fun s i ↦ if i ∈ s then 1 else 0) ∘ S := by ext ω i; by_cases h : i ∈ S ω <;> simp [h]
+    rw [this]
+    apply Measurable.comp_aemeasurable ?_ hS.aemeasurable
+    apply measurable_pi_lambda
+    intro i
+    apply Measurable.ite
+    measurability
+    all_goals fun_prop
+  map_eq := by
+    have := hS.isProbabilityMeasure
+    rw [(iIndepFun_iff_map_fun_eq_infinitePi_map₀ _).1]
+    · congr
+      ext i : 1
+      rw [(hasLaw_indicator_one_bernoulliMeasure _).map_eq]
+      split_ifs with hi
+      · congr
+        rw [hS.measure_real_eq (p := (i ∈ ·)), setBernoulli_mem _ hi]
+        measurability
+      rw [← bernoulliMeasure_zero (x := 1)]
+      · congr
+        rw [hS.measure_real_eq (p := (i ∈ ·)), setBernoulli_mem' _ hi]
+        measurability
+      change NullMeasurableSet (S ⁻¹' {s | i ∈ s}) P
+      apply hS.aemeasurable.nullMeasurableSet_preimage
+      measurability
+    convert (l1 u hS).comp (g := fun i p ↦ if p then 1 else 0) ?_
+    · fun_prop
+    · classical
+      have : (fun ω i ↦ {ω' | i ∈ S ω'}.indicator 1 ω) =
+          (fun s i ↦ if i ∈ s then 1 else 0) ∘ S := by ext ω i; by_cases h : i ∈ S ω <;> simp [h]
+      rw [this]
+      apply Measurable.comp_aemeasurable ?_ hS.aemeasurable
+      apply measurable_pi_lambda
+      intro i
+      apply Measurable.ite
+      measurability
+      all_goals fun_prop
+
+omit [IsProbabilityMeasure P] in
+lemma l4 {ι : Type*} (u : Finset ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
+    HasLaw (fun ω (i : u) ↦ {ω' | i.1 ∈ S ω'}.indicator 1 ω)
+      (Measure.pi (fun _ ↦ Ber(1, 0, p))) P := by
+  classical
+  have : MeasurePreserving u.restrict (infinitePi (fun i ↦ if i ∈ u then Ber(1, 0, p) else dirac 0))
+      (Measure.pi (fun i ↦ Ber(1, 0, p))) :=
+    { measurable := by fun_prop
+      map_eq := by
+        rw [infinitePi_map_restrict]
+        simp }
+  exact this.hasLaw.comp (l3 (u : Set ι) hS)
+
+omit [IsProbabilityMeasure P] in
+lemma l5 {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)}
+    {μ : (i : ι) → Measure (𝓧 i)} {X : (i : ι) → Ω → 𝓧 i} (hX : ∀ i, HasLaw (X i) (μ i) P)
+    (h : iIndepFun X P) :
+    HasLaw (fun ω i ↦ X i ω) (Measure.pi μ) P where
+  map_eq := by
+    have := h.isProbabilityMeasure
+    rw [(iIndepFun_iff_map_fun_eq_pi_map (by fun_prop)).1 h]
+    simp_rw [fun i ↦ (hX i).map_eq]
+
+lemma l6 {ι : Type*} [Countable ι] (u : Set ι) (hu : u.Finite) :
+    setBer(u, p).map ncard = Bin(u.ncard, p) := by
+  apply ext_of_singleton
+  intro n
+  rw [binomial_singleton, binomial_singleton']
+  exact hu
+
+lemma test {ι : Type*} [Countable ι] {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun X P)
     (lawX : ∀ i, HasLaw (X i) Ber(1, 0, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
+  classical
+  obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((s : Set ι), p).exists_hasLaw
+  have := l4 s hS
+  convert this.congr_comp (f := fun (x : s → ℕ) ↦ ∑ i : s, x i) (Y := fun ω (i : s) ↦ X i ω) ?_ ?_ ?_
+  · simp only [Finset.sum_apply]
+    rw [← Finset.sum_coe_sort]
+  · fun_prop
+  · exact l5 (fun i : s ↦ lawX i) (hX.restrict s)
+  have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' :=
+    { aemeasurable := by
+        apply Measurable.comp_aemeasurable (g := Set.ncard) (by fun_prop) hS.aemeasurable
+      map_eq := by
+        rw [← Set.ncard_coe_finset, ← l6, ← hS.map_eq, AEMeasurable.map_map_of_aemeasurable,
+          Function.comp_def]
+        any_goals fun_prop
+        simp }
+  apply this.congr
+  have lol : ∀ᵐ ω ∂P', S ω ⊆ s := by
+    rw [hS.ae_iff (p := (· ⊆ s))]
+    exact setBernoulli_ae_subset
+    fun_prop
+  filter_upwards [lol] with ω hω
+  have lol' : (S ω).Finite := s.finite_toSet.subset hω
+  rw [Set.ncard_eq_toFinset_card _ lol', l2 (lol'.toFinset_subset.2 hω), ← s.sum_coe_sort]
+  congr with i
+  simp [Set.indicator]
 
 end Integral
 
