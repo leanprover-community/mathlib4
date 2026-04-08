@@ -214,7 +214,7 @@ lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦
 omit hx h in
 theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c + z)) s =
-    fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
   ext x
   simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_left n c x]
 
