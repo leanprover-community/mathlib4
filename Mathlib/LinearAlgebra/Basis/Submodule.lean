@@ -103,8 +103,8 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     convert LinearIndependent.finCons' x _ hli ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
-    · intro c y hcy heq
-      refine x_ortho c y (Submodule.span_le.mpr ?_ hcy) heq
+    · intro c y hy hc
+      refine x_ortho c y (Submodule.span_le.mpr ?_ hy) hc
       rintro _ ⟨z, rfl⟩
       exact (v z).2
 
