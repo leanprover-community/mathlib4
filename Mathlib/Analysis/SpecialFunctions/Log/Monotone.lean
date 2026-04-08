@@ -31,12 +31,10 @@ noncomputable section
 namespace Real
 
 theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp (-1) := by
-  apply strictMonoOn_of_deriv_pos (convex_Ici _) continuous_mul_log.continuousOn
-  intro x hx
-  simp_all only [nonempty_Iio, interior_Ici', mem_Ioi]
-  rw [deriv_mul_log (by linarith [Real.exp_pos (-1)])]
-  suffices -1 < log x by linarith
-  simpa using log_lt_log (Real.exp_pos _) hx
+  refine strictMonoOn_of_deriv_pos (convex_Ici _) continuous_mul_log.continuousOn fun x hx ↦ ?_
+  have hlt : rexp (-1) < x := by simpa using hx
+  have hpos : 0 < x := by grind [Real.exp_pos]
+  grind [deriv_mul_log, Real.lt_log_iff_exp_lt hpos |>.mpr hlt]
 
 @[deprecated Real.mul_log_strictMonoOn (since := "2026-04-07")]
 theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
