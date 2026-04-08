@@ -6128,6 +6128,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Binomial
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 public import Mathlib.Probability.ProbabilityMassFunction.Integrals
 public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Probability.ProbabilityMassFunction.SPMF
 public import Mathlib.Probability.Process.Adapted
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
