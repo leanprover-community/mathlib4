@@ -30,7 +30,7 @@ noncomputable section
 
 namespace Real
 
-theorem mul_log_StrictMonoOn : StrictMonoOn (fun x : ℝ ↦ x * log x) (Set.Ici (exp (-1))) := by
+theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp (-1) := by
   simp only [StrictMonoOn]
   intro x hex y hey _
   obtain ⟨c, hc⟩ : ∃ c ∈ Set.Ioo x y,
