@@ -70,7 +70,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
-  RingQuot.instAlgebra _
+  inferInstanceAs <| Algebra R (RingQuot _)
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -80,18 +80,18 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
-  RingQuot.instSMulCommClass _
+  inferInstanceAs <| SMulCommClass R S (RingQuot _)
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
-  RingQuot.instIsScalarTower _
+  inferInstanceAs <| IsScalarTower R S (RingQuot _)
 
 namespace TensorAlgebra
 
 instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
-  RingQuot.instRing (Rel S M)
+  inferInstanceAs <| Ring (RingQuot _)
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -176,7 +176,6 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
 
-set_option backward.isDefEq.respectTransparency false in
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
@@ -266,7 +265,6 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
   simp [ιInv]
 

@@ -134,6 +134,21 @@ theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike 
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 
+open scoped Pointwise in
+@[to_additive]
+theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass S R M]
+    (r : R) (s : S) : (r • s : Set M) ⊆ s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa using SMulMemClass.smul_mem (r : R) hx
+
+open scoped Pointwise in
+@[to_additive (attr := simp)]
+theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MulAction R M] [SMulMemClass S R M]
+    (s : S) (r : Rˣ) : r • s = (s : Set M) := by
+  apply subset_antisymm (smul_subset_self _ s)
+  rintro x hx
+  exact ⟨r⁻¹ • x, SMulMemClass.smul_mem (↑r⁻¹ : R) hx, by simp [← Units.smul_def]⟩
+
 end SMul
 
 section OfTower
