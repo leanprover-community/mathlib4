@@ -243,7 +243,6 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map F := Arrow.mapAugmentedCechConerve F
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)

@@ -68,7 +68,7 @@ theorem id_left (f : Arrow T) : Arrow.Hom.left (𝟙 f) = 𝟙 f.left :=
   rfl
 
 @[simp]
-theorem id_right (f : Arrow T) : Arrow.Hom.right (𝟙 f) = 𝟙 f.right := by
+theorem id_right (f : Arrow T) : Arrow.Hom.right (𝟙 f) = 𝟙 f.right :=
   rfl
 
 @[simp, reassoc]
@@ -311,7 +311,7 @@ theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ A
 in terms of the inverse of `i`. -/
 theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow.mk i.hom ⟶ p) :
     i.inv ≫ sq.left ≫ p.hom = sq.right := by
-  simp [dsimp% sq.w]
+  simp [Arrow.w_mk_left]
 
 variable {C : Type u} [Category.{v} C]
 
@@ -325,10 +325,10 @@ A  → X
 B  → Z                 B → Z
 ```
 -/
---@[simps!]
+@[simps!]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :
     i ⟶ Arrow.mk g :=
-  Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [dsimp% sq.w])
+  Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [w_mk sq])
 
 /-- The functor sending an arrow to its source. -/
 @[simps!]

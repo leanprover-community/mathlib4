@@ -78,7 +78,7 @@ instance : HasImageMaps (Type u) where
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
-        simp only [Functor.id_map, types_comp_apply] at p
+        simp only [types_comp_apply] at p
         simp [p, Classical.choose_spec x.2]⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
