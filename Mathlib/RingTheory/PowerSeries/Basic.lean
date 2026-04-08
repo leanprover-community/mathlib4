@@ -893,9 +893,8 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniqueAlgEquiv {σ : Type*} [Unique 
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     MvPowerSeries.uniqueAlgEquiv (R := R) PUnit f.toMvPowerSeries =
-      (MvPolynomial.uniqueAlgEquiv R PUnit f).toPowerSeries := by
-  simpa using
-    (MvPolynomial.toMvPowerSeries_uniqueAlgEquiv (R := R) (σ := PUnit) (f := f))
+      (MvPolynomial.uniqueAlgEquiv R PUnit f).toPowerSeries :=
+  MvPolynomial.toMvPowerSeries_uniqueAlgEquiv (R := R) (σ := PUnit)
 
 theorem uniqueAlgEquiv_symm_toPowerSeries {σ : Type*} [Unique σ] {f : Polynomial R} :
     (MvPowerSeries.uniqueAlgEquiv (R := R) σ).symm f.toPowerSeries =
@@ -908,9 +907,8 @@ theorem uniqueAlgEquiv_symm_toPowerSeries {σ : Type*} [Unique σ] {f : Polynomi
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
   (MvPowerSeries.uniqueAlgEquiv (R := R) PUnit).symm f.toPowerSeries
-      = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
-  simpa using
-    (uniqueAlgEquiv_symm_toPowerSeries (R := R) (σ := PUnit) (f := f))
+      = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries :=
+  uniqueAlgEquiv_symm_toPowerSeries (R := R) (σ := PUnit)
 
 attribute [deprecated MvPolynomial.toMvPowerSeries_uniqueAlgEquiv (since := "2026-04-08")]
   MvPolynomial.toMvPowerSeries_pUnitAlgEquiv
