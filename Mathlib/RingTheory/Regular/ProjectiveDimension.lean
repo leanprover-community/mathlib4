@@ -37,7 +37,7 @@ variable {R}
 variable [IsNoetherianRing R] [Small.{v} R]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
+lemma subsingleton_ext_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext M L n)) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N n) := by
   induction n generalizing M with
@@ -116,7 +116,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       simp only [HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff]
       intro i hi
       have : ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N i) := by
-        apply ext_vanish_of_for_all_finite M _
+        apply subsingleton_ext_of_forall_finite M _
         intro L _
         have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
           (n + 1 + 1) (i + 1) (Nat.add_le_add_right hi 1) L
