@@ -384,13 +384,16 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("monObj", "AddMonObj"),
   ("yonedaMon", "yonedaAddMon")]
 
+initialize guessNameExt : GuessName.GuessNameExt ←
+  GuessName.registerGuessNameExt { nameDict, abbreviationDict }
+
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
   ignoreArgsAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
-  guessNameData := { nameDict, abbreviationDict }
+  guessNameExt
 
 initialize registerBuiltinAttribute {
     name := `to_additive
@@ -406,5 +409,10 @@ into the `to_additive` dictionary. This is useful for translating namespaces tha
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   translations.add src.getId { translation := tgt.getId }
+
+/-- `to_additive_name_hint src tgt` lets `to_additive` translate the name segment `src` to `tgt`
+for the rest of the file current. `src` and `tgt` should both be capitalized. -/
+elab "to_additive_name_hint" src:ident tgt:ident : command => do
+  guessNameExt.addTranslation src tgt
 
 end Mathlib.Tactic.ToAdditive

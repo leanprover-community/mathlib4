@@ -224,9 +224,9 @@ structure TranslateData : Type where
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
-  guessNameData : GuessName.GuessNameData
+  guessNameExt : GuessName.GuessNameExt
 
-attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
+attribute [inherit_doc GuessName.GuessNameExt] TranslateData.guessNameExt
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
@@ -548,15 +548,16 @@ where
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+def renameBinderNames (data : GuessName.GuessNameData) (rename : NameMap Name)
+    (src : Expr) : Expr :=
   src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
     | .str p s => .str p <|
-      let s' := GuessName.guessName t.guessNameData s
+      let s' := GuessName.guessName data s
       if s' != s then s' else
       -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
       if let some suffix := s.dropPrefix? 'h' then
-        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+        "h" ++ GuessName.guessName data suffix.toString
       else
         s
     | n => n
@@ -624,7 +625,8 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <|
+    renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -900,7 +902,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
         return tgt
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
-  let tgt_auto := GuessName.guessName t.guessNameData s
+  let tgt_auto := GuessName.guessName (t.guessNameExt.getState (← getEnv)) s
   let depth := cfg.tgt.getNumParts
   let pre := translateNamespace (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)

@@ -44,6 +44,8 @@ def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α)
 to_dual_insert_cast GaloisConnection := by
   rw [forall_comm]; simp only [Iff.comm]
 
+to_dual_name_hint U L
+
 namespace GaloisConnection
 
 section

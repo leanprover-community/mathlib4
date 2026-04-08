@@ -387,3 +387,22 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 @[to_dual (dont_translate := β) le_of_lt_and_le_of_lt']
 theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
   ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩
+
+open Mathlib.Tactic Translate ToDual
+
+/-- info: "leftMono" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "leftMono"
+
+to_dual_name_hint LeftMono FooBar
+
+/-- info: "fooBar" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "leftMono"
+
+to_dual_name_hint Left Right
+to_dual_name_hint Epi Mono
+
+/-- info: "right_epi" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "left_mono"
