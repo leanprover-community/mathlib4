@@ -88,13 +88,13 @@ theorem constantCoeff_logOf {f : A⟦X⟧} (hf : constantCoeff f = 1) :
     constantCoeff (logOf f) = 0 := by
   rw [logOf_eq]
   have h : MvPowerSeries.constantCoeff (f - 1 : A⟦X⟧) = 0 := by
-    rw [map_sub, map_one, ← PowerSeries.constantCoeff, hf, sub_self]
+    rw [map_sub, map_one, ← constantCoeff_eq, hf, sub_self]
   exact constantCoeff_subst_eq_zero h _ constantCoeff_log
 
 variable (A) in
 @[simp]
 theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
-  rw [logOf_eq, add_sub_cancel_left, subst_self]
+  rw [logOf_eq, add_sub_cancel_left, X_subst]
 
 end PowerSeries
 

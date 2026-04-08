@@ -137,6 +137,9 @@ theorem monomial_mul_monomial (m n : ℕ) (a b : R) :
 def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff
 
+theorem constantCoeff_eq (f : R⟦X⟧) :
+    constantCoeff f = MvPowerSeries.constantCoeff f := rfl
+
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
