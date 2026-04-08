@@ -46,8 +46,8 @@ def toModularFormₗ [Γ.HasDetOne] : CuspForm Γ k →ₗ[ℂ] ModularForm Γ k
     { toSlashInvariantForm := f.toSlashInvariantForm
       holo' := f.holo'
       bdd_at_cusps' := fun hc g hg ↦ (f.zero_at_cusps' hc g hg).boundedAtFilter }
-  map_add' _ _ := by ext; rfl
-  map_smul' _ _ := by ext; rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 lemma toModularFormₗ_apply [Γ.HasDetOne] (f : CuspForm Γ k) (z : ℍ) :
