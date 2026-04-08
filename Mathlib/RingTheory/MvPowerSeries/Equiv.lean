@@ -231,32 +231,20 @@ def sumAlgEquiv : MvPowerSeries (σ ⊕ τ) R ≃ₐ[R] MvPowerSeries σ (MvPowe
     ext; simp [coeff_sumToIter, coeff_iterToSumFun, comapDomain_inr_sumElim,
       comapDomain_inl_sumElim]
 
-variable (R σ τ) in
-/-- The map from multivariable power peries in one type,
-with coefficients in multivariable power series in another type,
-to multivariable power series in the sum of the two types. It is an inverse map of `sumToIter`.
-
-See `sumToIterEquiv` for the isomorphism. -/
-abbrev iterToSum : MvPowerSeries σ (MvPowerSeries τ R) →ₐ[R] MvPowerSeries (σ ⊕ τ) R :=
-  (sumAlgEquiv σ τ R).symm
-
-lemma iterToSum_apply (p : MvPowerSeries σ (MvPowerSeries τ R)) :
-    iterToSum σ τ R p = (sumAlgEquiv σ τ R).symm p := rfl
-
-theorem coeff_iterToSum (p : MvPowerSeries σ (MvPowerSeries τ R)) (x : σ ⊕ τ →₀ ℕ) :
-    coeff x (iterToSum σ τ R p) = coeff (comapDomain Sum.inr x Sum.inr_injective.injOn)
-      (coeff (comapDomain Sum.inl x Sum.inl_injective.injOn) p) := rfl
+theorem coeff_sumAlgEquiv_symm_apply (p : MvPowerSeries σ (MvPowerSeries τ R)) (x : σ ⊕ τ →₀ ℕ) :
+    coeff x ((sumAlgEquiv σ τ R).symm p) = coeff (comapDomain Sum.inr x Sum.inr_injective.injOn)
+      (coeff (comapDomain Sum.inl x Sum.inl_injective.injOn) p) := coeff_iterToSumFun ..
 
 @[simp]
-theorem iterToSum_C_C (a : R) : iterToSum σ τ R (C (C a)) = C a := by
+theorem sumAlgEquiv_symm_C_C (a : R) : (sumAlgEquiv σ τ R).symm (C (C a)) = C a := by
   simp [AlgEquiv.symm_apply_eq]
 
 @[simp]
-theorem iterToSumFun_X (b : σ) : iterToSum σ τ R (X b) = X (Sum.inl b) := by
+theorem sumAlgEquiv_symm_X (b : σ) : (sumAlgEquiv σ τ R).symm (X b) = X (Sum.inl b) := by
   simp [AlgEquiv.symm_apply_eq]
 
 @[simp]
-theorem iterToSumFun_C_X (c : τ) : iterToSum σ τ R (C (X c)) = X (Sum.inr c) := by
+theorem sumAlgEquiv_symm_C_X (c : τ) : (sumAlgEquiv σ τ R).symm (C (X c)) = X (Sum.inr c) := by
   simp [AlgEquiv.symm_apply_eq]
 
 theorem sumAlgEquiv_comp_rename_inr : (sumAlgEquiv σ τ R).toAlgHom.comp
@@ -307,8 +295,7 @@ lemma commAlgEquiv_C (p : MvPowerSeries τ R) : commAlgEquiv σ τ R (C p) = map
   by_cases h : y.sumElim x ∈ Set.range (mapDomain (Equiv.sumComm σ τ).toEmbedding)
   · rw [← funext_iff.mpr (embDomain_eq_mapDomain _)] at h
     rcases h with ⟨z, hz⟩
-    simp_rw [← hz, ← Equiv.coe_toEmbedding, coeff_embDomain_rename,
-      ← iterToSum_apply, coeff_iterToSum]
+    simp_rw [← hz, ← Equiv.coe_toEmbedding, coeff_embDomain_rename, coeff_sumAlgEquiv_symm_apply]
     rw [embDomain_eq_mapDomain, Equiv.coe_toEmbedding, Equiv.sumComm_apply,
       ← mapDomain_swap_sumElim (M := ℕ), (mapDomain_injective
         Sum.swap_leftInverse.injective).eq_iff] at hz
@@ -320,7 +307,7 @@ lemma commAlgEquiv_C (p : MvPowerSeries τ R) : commAlgEquiv σ τ R (C p) = map
 
 @[simp]
 lemma commAlgEquiv_X (i : σ) : commAlgEquiv σ τ R (X i) = C (X i) := by
-  simp [commAlgEquiv, ← iterToSum_apply]
+  simp [commAlgEquiv]
 
 end sum
 
