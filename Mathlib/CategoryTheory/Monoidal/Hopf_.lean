@@ -602,7 +602,7 @@ instance hopfObjOfHopfAlgebra (A : HopfAlgCat R) : HopfObj (ModuleCat.of R A) wh
   antipode_right := congr_arg ModuleCat.ofHom
     (@HopfAlgebra.mul_antipode_lTensor_comul R A _ _ _)
 
-/-- The functor from Hopf monoids in `ModuleCat R` to the category of `R`-Hopf algebras. -/
+/-- The functor from Hopf objects in `ModuleCat R` to the category of `R`-Hopf algebras. -/
 def moduleCatToHopfAlgCat : Hopf (ModuleCat R) ⥤ HopfAlgCat R := {
   obj M := HopfAlgCat.of R M.X
 
