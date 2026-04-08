@@ -5353,6 +5353,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.Measure.DiracProba
+public import Mathlib.MeasureTheory.Measure.DiscreteMeasure
 public import Mathlib.MeasureTheory.Measure.Doubling
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
@@ -5383,7 +5384,6 @@ public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 public import Mathlib.MeasureTheory.Measure.Map
-public import Mathlib.MeasureTheory.Measure.MassFunction
 public import Mathlib.MeasureTheory.Measure.MeasureSpace
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
