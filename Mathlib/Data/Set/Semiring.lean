@@ -37,13 +37,16 @@ deriving Inhabited
 
 namespace SetSemiring
 
+instance : Membership α (SetSemiring α) where mem s a := a ∈ s.toSet
+instance : Singleton α (SetSemiring α) where singleton a := ⟨{a}⟩
+instance : Insert α (SetSemiring α) where insert a s := ⟨insert a s.toSet⟩
+
 /-- The natural equivalence between `SetSemiring` and `Set`. -/
 def equiv : SetSemiring α ≃ Set α where
   toFun := toSet
   invFun := ofSet
 
 instance : CompleteAtomicBooleanAlgebra (SetSemiring α) := equiv.completeAtomicBooleanAlgebra
-instance : OrderBot (SetSemiring α) := inferInstance
 
 protected lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
 @[simp] protected lemma ofSet_toSet (s : SetSemiring α) : ofSet s.toSet = s := rfl
@@ -119,32 +122,35 @@ lemma one_def : (1 : SetSemiring α) = ⟨1⟩ := rfl
 
 end One
 
-instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
+instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
+  fast_instance% {
   __ := instNonUnitalNonAssocSemiring
-  mul_one _ := by rw [one_def, mul_def, mul_one]
-  one_mul _ := by rw [one_def, mul_def, one_mul]
+  __ := equiv.mulOneClass }
 
-instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
+instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
+  fast_instance% {
   __ := instNonUnitalNonAssocSemiring
-  __ := equiv.semigroup
+  __ := equiv.semigroup }
 
-instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) where
-  __ := instNonAssocSemiring
+instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
+  fast_instance% {
   __ := instNonUnitalSemiring
-  __ := equiv.semilatticeSup
-  __ := instOrderBot
+  __ := equiv.commSemigroup }
 
-instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
-  __ := instNonUnitalSemiring
-  __ := equiv.commSemigroup
-
-instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
-  __ := instIdemSemiring
-  __ := equiv.commMonoid
-
-instance [CommMonoid α] : CommMonoid (SetSemiring α) where
+instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+  fast_instance% {
   __ := equiv.monoid
-  __ := equiv.commSemigroup
+  __ := equiv.commSemigroup }
+
+instance instIdemSemiring [Monoid α] : IdemSemiring (SetSemiring α) :=
+  fast_instance% {
+  __ := instNonAssocSemiring
+  __ := instNonUnitalSemiring }
+
+instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+  fast_instance% {
+  __ := instIdemSemiring
+  __ := equiv.commMonoid }
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext_iff.mpr (union_eq_right.2 ab).symm⟩
