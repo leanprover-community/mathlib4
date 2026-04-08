@@ -103,8 +103,8 @@ lemma isConnected :
     ext
     dsimp
     rw [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, isoOfHom_hom,
-      isoOfHom_hom_inv_id_assoc, ← L.map_comp_assoc, Arrow.w_mk_right, Arrow.mk_hom,
-      L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
+      isoOfHom_hom_inv_id_assoc, ← L.map_comp_assoc]
+    simp [fac]
 
 end Constructor
 

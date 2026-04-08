@@ -177,10 +177,19 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   right := v
   w := w
 
--- `w_mk_left` is not needed, as it is a consequence of `w` and `mk_hom`.
+@[reassoc]
+theorem w_mk_left {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) :
+    dsimp% sq.left ≫ g.hom = f ≫ sq.right :=
+  sq.w
+
 @[reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
-    sq.left ≫ g = f.hom ≫ sq.right :=
+    dsimp% sq.left ≫ g = f.hom ≫ sq.right :=
+  sq.w
+
+@[reassoc]
+theorem w_mk {X Y X' Y' : T} {f : X ⟶ Y} {g : X' ⟶ Y'} (sq : mk f ⟶ mk g) :
+    dsimp% sq.left ≫ g = f ≫ sq.right :=
   sq.w
 
 theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
@@ -258,7 +267,7 @@ instance mono_left [Mono sq] : Mono sq.left where
     rw [← cancel_mono sq]
     ext
     · exact h
-    · simp [this, ← Arrow.w, reassoc_of% h]
+    · simp [this, ← Arrow.w_mk_right, reassoc_of% h]
 
 instance epi_right [Epi sq] : Epi sq.right where
   left_cancellation {Z} φ ψ h := by
