@@ -87,11 +87,6 @@ end NilpotentOfTrace
 
 namespace LieModule
 
-variable {K L M : Type*}
-  [Field K] [CharZero K] [IsAlgClosed K]
-  [LieRing L] [LieAlgebra K L]
-  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
 
 /-- **Trace-nilpotency criterion** (algebraically closed case). Let `L` be a Lie algebra over an
