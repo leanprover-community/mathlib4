@@ -49,6 +49,7 @@ def of : Type* → PartialFun :=
 instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
+-- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X

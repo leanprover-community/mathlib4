@@ -180,7 +180,7 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 `Profinite`.
 -/
 @[simps obj map]
-abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
+def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
   obj X := X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)
   map f := TypeCat.ofHom (fun g ↦ g ∘ f.unop)
 
@@ -255,7 +255,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Function.comp_apply, toProfinite_obj,
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
 
@@ -472,7 +472,7 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 `LightProfinite`.
 -/
 @[simps]
-abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type u where
+def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type u where
   obj X := X.unop → F.obj (toLightProfinite.op.obj ⟨of PUnit.{u + 1}⟩)
   map f := TypeCat.ofHom fun g ↦ g ∘ f.unop
 
@@ -542,7 +542,7 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Function.comp_apply, toLightProfinite_obj,
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toLightProfinite_obj,
       ← Functor.map_comp_apply]
     rfl
 

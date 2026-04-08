@@ -49,6 +49,8 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
       change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
       aesop  }}
 
+@[deprecated "Use `(rightAdj F).map instead" (since := "2026-04-08")] alias rightAdj_map := rightAdj
+
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] types_tensorObj_def in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
@@ -61,7 +63,7 @@ def adj : tensorLeft F ⊣ rightAdj F where
       ext
       apply Prod.ext
       · rfl
-      · simp [← NatTrans.naturality_apply] }
+      · simp }
   counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
 
 instance closed : Closed F where

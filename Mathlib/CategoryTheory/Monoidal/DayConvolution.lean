@@ -286,7 +286,7 @@ lemma associator_hom_unit_unit (x y z : C) :
   simp only [whiskerLeft_id, Category.comp_id, Category.assoc] at this
   simp only [Category.assoc, this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
-  erw [id_apply] -- regression
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
 
@@ -311,7 +311,7 @@ lemma associator_inv_unit_unit (x y z : C) :
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
-  erw [id_apply] -- regression
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
 
@@ -580,7 +580,7 @@ lemma leftUnitor_inv_app (x : C) :
     Functor.corepresentableByEquiv]
   dsimp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
-  erw [id_apply] -- regression
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -633,7 +633,7 @@ lemma rightUnitor_inv_app (x : C) :
     Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso]
   dsimp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
-  erw [id_apply] -- regression
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
 set_option backward.isDefEq.respectTransparency false in

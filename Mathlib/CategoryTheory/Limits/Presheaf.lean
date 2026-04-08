@@ -454,14 +454,10 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
           (F.op.lanUnit.app (uliftYoneda.obj X))) _) ⟨𝟙 _⟩
       have eq₃ := ConcreteCategory.congr_hom (congr_app (F.op.lanUnit.naturality
         (uliftYoneda.{max w v₂}.map f)) _) ⟨𝟙 _⟩
-      simp only [uliftYoneda, Functor.comp_obj, Functor.whiskeringRight_obj_obj, Functor.op_obj,
-        yoneda_obj_obj, uliftFunctor_obj, uliftYonedaMap, comp_apply, hom_ofHom,
-        TypeCat.Fun.coe_mk, Functor.map_id, Functor.whiskeringLeft_obj_obj, Functor.id_obj,
-        Functor.comp_map, Functor.whiskeringRight_obj_map, Functor.id_map, NatTrans.comp_app,
-        Functor.whiskerRight_app, yoneda_map_app, uliftFunctor_map, id_comp,
-        Functor.whiskeringLeft_obj_map, Functor.whiskerLeft_app, uliftYonedaEquiv, op_unop,
-        Functor.leftKanExtensionUnique, Functor.leftKanExtensionUniqueOfIso_hom, Iso.refl_hom,
-        Equiv.coe_fn_mk] at eq₁ eq₂ eq₃ ⊢
+      dsimp [uliftYoneda, uliftYonedaMap, uliftYonedaEquiv,
+        Functor.leftKanExtensionUnique] at eq₁ eq₂ eq₃ ⊢
+      simp only [Functor.map_id] at eq₂
+      simp only [id_comp] at eq₃
       simp [eq₁, eq₂, eq₃])
 
 set_option backward.isDefEq.respectTransparency false in

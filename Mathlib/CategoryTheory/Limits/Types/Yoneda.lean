@@ -30,7 +30,7 @@ variable {J C : Type*} [Category* J] [Category* C]
 
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
-@[deprecated "No replacement" (since := "2026-02-24")]
+@[simps]
 def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F ⋙ coyoneda.obj (op X)).sections ≃ ((const J).obj X ⟶ F) where
   toFun s :=
@@ -44,7 +44,7 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
 set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
-@[deprecated "No replacement" (since := "2026-02-24")]
+@[simps]
 def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F.op ⋙ yoneda.obj X).sections ≃ (F ⟶ (const J).obj X) where
   toFun s :=
@@ -57,7 +57,7 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
 
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
-@[deprecated "No replacement" (since := "2026-02-24")]
+@[simps]
 def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where
   toFun s :=
@@ -117,5 +117,11 @@ variable (J) (C) in
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop)
+
+@[deprecated "Use `(opHomCompWhiskeringLimYonedaIsoCocones _ _).app _` instead"
+  (since := "2026-04-08")]
+noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
+    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
+  (opHomCompWhiskeringLimYonedaIsoCocones _ _).app (op F)
 
 end CategoryTheory.Limits

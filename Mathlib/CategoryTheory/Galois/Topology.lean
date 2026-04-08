@@ -63,20 +63,12 @@ lemma obj_discreteTopology (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
 scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 
 /-- We give `F.obj X  ⟶ F.obj Y` the product topology. -/
-scoped instance {X Y : C} : TopologicalSpace (F.obj X  ⟶ F.obj Y) :=
-  .induced (fun f ↦ (f : F.obj X → F.obj Y)) inferInstance
+@[local simp]
+scoped instance {X Y : C} : TopologicalSpace (F.obj X ⟶ F.obj Y) :=
+  .coinduced (fun f ↦ ObjectProperty.homMk (TypeCat.ofHom f)) inferInstance
 
-scoped instance {X Y : C} : DiscreteTopology (F.obj X  ⟶ F.obj Y) := by
-  have : IsHomeomorph (fun (f : F.obj X ⟶ F.obj Y) ↦ (f : F.obj X → F.obj Y)) := by
-    rw [isHomeomorph_iff_isEmbedding_surjective, isEmbedding_iff]
-    refine ⟨⟨⟨rfl⟩, ?_⟩, ?_⟩
-    · intro _ _ _
-      aesop
-    · intro a
-      use ⟨TypeCat.ofHom (a)⟩
-      aesop
-  exact DiscreteTopology.of_continuous_injective this.homeomorph.continuous
-    this.homeomorph.injective
+scoped instance {X Y : C} : DiscreteTopology (F.obj X ⟶ F.obj Y) :=
+  ⟨by simp [DiscreteTopology.eq_bot]⟩
 
 @[scoped instance]
 lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩

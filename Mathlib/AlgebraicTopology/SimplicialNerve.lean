@@ -76,7 +76,7 @@ lemma Path.le {J : Type*} [LinearOrder J] {i j : J} (f : Path i j) : i ≤ j :=
 instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
   inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
-@[simps] -- consider making these lemmas `-isSimp` and just local `simp` in this file
+@[simps -isSimp]
 instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
   Hom i j := Path i.as j.as
   id i := { I := {i.as} }
@@ -90,6 +90,8 @@ instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) w
     le_right l := by
       rintro (h | h)
       exacts [(f.le_right _ h).trans (Path.le g), (g.le_right l h)] }
+
+attribute [local simp] SimplicialThickening.comp_I SimplicialThickening.id_I
 
 instance {J : Type*} [LinearOrder J] (i j : SimplicialThickening J) : Category (i ⟶ j) :=
   inferInstanceAs (Category (Path i.as j.as))

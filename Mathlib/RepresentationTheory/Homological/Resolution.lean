@@ -373,7 +373,6 @@ private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : 
 
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
 unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
-attribute [local simp] types_tensorObj_def in
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
@@ -385,9 +384,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
       Representation.linearizeOfMulActionIso_symm_apply,
       Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
-      -types_tensorObj_def, Representation.μ_apply_single_single_leftRegular _,
+      Representation.μ_apply_single_single_leftRegular _,
       Representation.linearizeMap_single_diagonal _]
-    simp
     simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V, eq3]
 
 end barComplex

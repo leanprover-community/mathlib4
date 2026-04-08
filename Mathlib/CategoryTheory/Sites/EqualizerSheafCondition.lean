@@ -359,10 +359,8 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
   simp only [FirstObj]
   rw [← Equiv.forall_congr_right ((equivShrink _).trans (Types.Small.productIso _).toEquiv.symm)]
-  simp_rw [← compatible_iff_of_small]
-  conv => enter [2, a, 1, 3, 2]; rw [← Iso.toEquiv_apply]
-  simp_rw [Equiv.trans_apply, Equiv.apply_symm_apply,
-    Equiv.symm_apply_apply]
+  simp_rw [← compatible_iff_of_small, ← Iso.toEquiv_apply, Equiv.trans_apply,
+    Equiv.apply_symm_apply, Equiv.symm_apply_apply]
   apply forall₂_congr
   intro x _
   apply existsUnique_congr

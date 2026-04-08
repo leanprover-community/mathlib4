@@ -215,7 +215,6 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
 
 variable [Group G]
 
-attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -230,7 +229,7 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
       ext _
       simp only [tensorObj_V, tensor_ρ]
-      simp
+      simp [types_tensorObj_def]
       rfl
 
 
@@ -251,7 +250,6 @@ noncomputable def diagonalSuccIsoTensorTrivial :
 
 variable {G}
 
-attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
@@ -262,11 +260,10 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
   | succ n hn =>
     refine Prod.ext rfl (funext fun x => ?_)
     induction x using Fin.cases
-    <;> simp_all [diagonalSuccIsoTensorTrivial]
+    <;> simp_all [diagonalSuccIsoTensorTrivial, types_tensorObj_def]
     <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
     dsimp% (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
@@ -275,7 +272,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
   | zero =>
     funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
-      ofMulAction_V]
+      ofMulAction_V, types_tensorObj_def, types_tensorUnit_def]
   | succ n hn =>
     funext x
     induction x using Fin.cases with

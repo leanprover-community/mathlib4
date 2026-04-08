@@ -57,7 +57,7 @@ theorem Presieve.isSheaf_yoneda' {α : Type u} :
   ⟨TypeCat.ofHom (fun y => (x _ (hs y)).hom PUnit.unit) , fun γ f h =>
     ConcreteCategory.hom_ext _ _ fun z => by
       convert ConcreteCategory.congr_hom (hx (𝟙 _) (TypeCat.ofHom (fun _ => z))
-      (hs <| f z) h rfl) PUnit.unit using 1,
+        (hs <| f z) h rfl) PUnit.unit using 1,
       fun f hf => ConcreteCategory.hom_ext _ _ fun y => by
         convert ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
 
@@ -82,7 +82,7 @@ open Opposite
 /-- Given a presheaf `P` on the category of types, construct
 a map `P(α) → (α → P(*))` for all type `α`. -/
 def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) :
-  α ⟶ P.obj (op PUnit) :=
+    α ⟶ P.obj (op PUnit) :=
   TypeCat.ofHom (fun x ↦ P.map (TypeCat.ofHom (fun _ => x)).op s)
 
 open Presieve

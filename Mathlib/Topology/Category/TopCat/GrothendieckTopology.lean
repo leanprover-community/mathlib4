@@ -125,8 +125,8 @@ lemma precoverage_le_comap_uliftFunctor :
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
-    Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom, Set.mem_range,
-    TypeCat.Fun.coe_mk]
+      Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom,
+      Set.mem_range, TypeCat.Fun.coe_mk]
     intro ⟨x⟩
     obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
     use i, ⟨y⟩
