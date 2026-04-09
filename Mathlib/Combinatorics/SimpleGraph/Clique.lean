@@ -135,7 +135,7 @@ theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
   · simp [hs, IsClique.of_subsingleton]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
 
-theorem isClique_induce_iff (s : Set α) (t : Set s) :
+theorem isClique_induce_iff {s : Set α} {t : Set s} :
     (G.induce s).IsClique t ↔ G.IsClique t := by
   simp [Set.Pairwise]
 
@@ -331,7 +331,7 @@ theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) 
   exact ⟨isClique_range_copy_top f, rfl⟩
 
 theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
-    (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (Embedding.subtype _)) := by
+    (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (.subtype _)) := by
   simp [isNClique_iff, isClique_induce_iff]
 
 end NClique
@@ -540,25 +540,6 @@ lemma exists_of_maximal_cliqueFree_not_adj [DecidableEq α]
       insert_erase <| mem_erase_of_ne_of_mem hne h1]
   exact ⟨(edge_comm .. ▸ hc).erase_of_sup_edge_of_mem h2, hc.erase_of_sup_edge_of_mem h1⟩
 
-theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
-    (G.induce s).CliqueFree n ↔ ∀ t, ↑t ⊆ s → ¬G.IsNClique n t := by
-  classical
-  simp +contextual only [CliqueFree, isNClique_induce_iff]
-  constructor
-  · intro h t ht
-    let t' : Finset s := Finset.subtype _ t
-    have htt' : map (Embedding.subtype _) t' = t := by
-      simp only [subtype_map, filter_eq_self, t']
-      exact fun _ ↦ Set.mem_of_subset_of_mem ht
-    have := h t'
-    simp only [htt', t'] at this
-    exact this
-  · intro h t'
-    let t : Finset α := t'.map (Embedding.subtype _)
-    have htt' : t'.map (Embedding.subtype _) = t := rfl
-    simp only [htt']
-    exact h t (map_subtype_subset t')
-
 end CliqueFree
 
 section CliqueFreeOn
@@ -619,7 +600,12 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
 
 theorem cliqueFreeOn_iff_cliqueFree_subgraph (s : Set α) (n : ℕ) :
     G.CliqueFreeOn s n ↔ (G.induce s).CliqueFree n := by
-  rw [CliqueFreeOn, cliqueFree_induce_iff]
+  classical
+  unfold CliqueFreeOn
+  simp only [CliqueFree, isNClique_induce_iff]
+  refine ⟨(· <| map_subtype_subset ·), fun h t ht ↦ ?_⟩
+  have := h <| t.subtype _
+  rwa [← filter_eq_self.mpr ht, ← subtype_map]
 
 end CliqueFreeOn
 
@@ -722,10 +708,8 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
 
 theorem cliqueNum_induce_le_cliqueNum [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by
-  obtain ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
-  let t : Finset α := t'.map (Embedding.subtype _)
-  have htt' : t'.map (Embedding.subtype _) = t := rfl
-  simp only [isNClique_induce_iff, htt'] at tc
+  have ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
+  rw [isNClique_induce_iff] at tc
   exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
