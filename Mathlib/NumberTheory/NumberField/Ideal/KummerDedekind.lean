@@ -233,7 +233,7 @@ The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]`
 -/
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)})
+    ramificationIdx (span {(p : ℤ)})
       ((primesOverSpanEquivMonicFactorsMod hp).symm
         ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
           multiplicity (Q.map (Int.castRingHom (ZMod p)))
@@ -251,7 +251,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
 
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)})
+    ramificationIdx (span {(p : ℤ)})
       ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
         multiplicity Q ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q

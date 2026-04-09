@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Invertible.Defs
-public meta import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
@@ -25,18 +25,31 @@ This file adds `norm_num` plugins for
 See other files in this directory for many more plugins.
 -/
 
-public meta section
+public section
 
 universe u
 
-namespace Mathlib
-open Lean
-open Meta
+namespace Mathlib.Meta.NormNum
 
-namespace Meta.NormNum
-open Qq
+/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[implicit_reducible]
+def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
+    ∀ (a : α) [Invertible a], a = k * b → Invertible b
+  | _, ⟨c, hc1, hc2⟩, rfl => by
+    rw [← mul_assoc] at hc1
+    rw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
+    exact ⟨_, hc1, hc2⟩
+
+/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[implicit_reducible]
+def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
+    (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
+
+meta section
+
+open Lean Meta Qq
 
 /-! ### Constructors and constants -/
 
@@ -179,18 +192,6 @@ theorem isInt_add {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' 
     f = HAdd.hAdd → IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
 
-/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
-    ∀ (a : α) [Invertible a], a = k * b → Invertible b
-  | _, ⟨c, hc1, hc2⟩, rfl => by
-    rw [← mul_assoc] at hc1
-    rw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
-    exact ⟨_, hc1, hc2⟩
-
-/-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
-def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
-    (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
-
 -- see note [norm_num lemma function equality]
 theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsNNRat a na da → IsNNRat b nb db →
@@ -235,13 +236,14 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 /-- Consider an `Option` as an object in the `MetaM` monad, by throwing an error on `none`. -/
+@[expose, instance_reducible]
 def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   monadLift
   | none => failure
   | some e => pure e
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of adding two norm_num results. -/
+/-- The result of adding two `norm_num` results. -/
 def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Add $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a + $b)) := do
@@ -330,7 +332,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of negating a norm_num result. -/
+/-- The result of negating a `norm_num` result. -/
 def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
     (rα : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q(-$a)) := do
@@ -382,7 +384,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of subtracting two norm_num results. -/
+/-- The result of subtracting two `norm_num` results. -/
 def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a - $b)) := do
@@ -480,7 +482,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of multiplying two norm_num results. -/
+/-- The result of multiplying two `norm_num` results. -/
 def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a * $b)) := do
@@ -731,8 +733,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
 
-end NormNum
+end
 
-end Meta
-
-end Mathlib
+end Mathlib.Meta.NormNum

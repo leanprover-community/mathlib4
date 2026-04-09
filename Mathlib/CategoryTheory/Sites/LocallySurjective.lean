@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.Subsheaf
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
+public import Mathlib.CategoryTheory.ShrinkYoneda
 /-!
 
 # Locally surjective morphisms
@@ -29,9 +30,9 @@ public import Mathlib.CategoryTheory.Sites.LocallyInjective
 @[expose] public section
 
 
-universe v u w v' u' w'
+universe w v u v' u' w'
 
-open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor
+open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor Limits
 
 namespace CategoryTheory
 
@@ -51,6 +52,13 @@ def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (o
     rintro V W i ⟨t, ht⟩ j
     refine ⟨F.map j.op t, ?_⟩
     rw [op_comp, G.map_comp, ConcreteCategory.comp_apply, ← ht, NatTrans.naturality_apply f]
+
+lemma pullback_imageSieve
+    {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U)))
+    {V : C} (g : V ⟶ U) :
+    (imageSieve f s).pullback g = imageSieve f (G.map g.op s) := by
+  ext W g
+  simp [imageSieve]
 
 theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C}
     (s : ToType (G.obj (op U))) :
@@ -116,6 +124,7 @@ theorem isLocallySurjective_of_surjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
     rw [imageSieve_app]
     exact J.top_mem _
 
+set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f] :
     IsLocallySurjective J f := by
   apply isLocallySurjective_of_surjective
@@ -289,6 +298,7 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     ext ⟨Z, g, hg⟩
     simpa using x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
 
+set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
@@ -316,19 +326,20 @@ variable {F₁ F₂ F₃ : Sheaf J A} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- If `φ : F₁ ⟶ F₂` is a morphism of sheaves, this is an abbreviation for
 `Presheaf.IsLocallySurjective J φ.val`. -/
-abbrev IsLocallySurjective := Presheaf.IsLocallySurjective J φ.val
+abbrev IsLocallySurjective := Presheaf.IsLocallySurjective J φ.hom
 
 lemma isLocallySurjective_sheafToPresheaf_map_iff :
     Presheaf.IsLocallySurjective J ((sheafToPresheaf J A).map φ) ↔ IsLocallySurjective φ := by rfl
 
 instance isLocallySurjective_comp [IsLocallySurjective φ] [IsLocallySurjective ψ] :
     IsLocallySurjective (φ ≫ ψ) :=
-  Presheaf.isLocallySurjective_comp J φ.val ψ.val
+  Presheaf.isLocallySurjective_comp J φ.hom ψ.hom
 
 instance isLocallySurjective_of_iso [IsIso φ] : IsLocallySurjective φ := by
-  have : IsIso φ.val := (inferInstance : IsIso ((sheafToPresheaf J A).map φ))
+  have : IsIso φ.hom := (inferInstance : IsIso ((sheafToPresheaf J A).map φ))
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective (Sheaf.toImage f) := by
   dsimp [Sheaf.toImage]
@@ -338,7 +349,7 @@ variable [J.HasSheafCompose (forget A)]
 
 instance [IsLocallySurjective φ] :
     IsLocallySurjective ((sheafCompose J (forget A)).map φ) :=
-  (Presheaf.isLocallySurjective_iff_whisker_forget J φ.val).1 inferInstance
+  (Presheaf.isLocallySurjective_iff_whisker_forget J φ.hom).1 inferInstance
 
 theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective f ↔ IsIso (Sheaf.imageι f) := by
@@ -352,11 +363,11 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
   left_cancellation {Z} f₁ f₂ h := by
     ext X x
     apply (((isSheaf_iff_isSheaf_of_type _ _).1 Z.2).isSeparated _
-      (Presheaf.imageSieve_mem J φ.val x)).ext
-    rintro Y f ⟨s : F₁.val.obj (op Y), hs : φ.val.app _ s = F₂.val.map f.op x⟩
+      (Presheaf.imageSieve_mem J φ.hom x)).ext
+    rintro Y f ⟨s : F₁.obj.obj (op Y), hs : φ.hom.app _ s = F₂.obj.map f.op x⟩
     dsimp
-    have h₁ := congr_fun (f₁.val.naturality f.op) x
-    have h₂ := congr_fun (f₂.val.naturality f.op) x
+    have h₁ := congr_fun (f₁.hom.naturality f.op) x
+    have h₂ := congr_fun (f₂.hom.naturality f.op) x
     dsimp at h₁ h₂
     rw [← h₁, ← h₂, ← hs]
     exact congr_fun (congr_app ((sheafToPresheaf J _).congr_map h) (op Y)) s
@@ -394,5 +405,98 @@ lemma isAmalgamation_map_localPreimage :
   fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm
 
 end Presieve.FamilyOfElements
+
+namespace Presheaf
+
+variable {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C} (f : ∀ i, X i ⟶ S)
+
+variable [LocallySmall.{w} C]
+
+lemma imageSieve_cofanIsColimitDesc_shrinkYoneda_map
+    {c : Cofan (fun i ↦ shrinkYoneda.{w}.obj (X i))} (hc : IsColimit c)
+    {U : C} (g : U ⟶ S) :
+    Presheaf.imageSieve
+      (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i))) (U := U)
+        (shrinkYonedaObjObjEquiv.symm g) = Sieve.pullback g (Sieve.ofArrows X f) := by
+  ext V v
+  simp only [Sieve.pullback_apply, Sieve.generate_apply]
+  refine ⟨fun hv ↦ ?_, ?_⟩
+  · obtain ⟨w, hw⟩ := hv
+    obtain ⟨⟨i⟩, a, rfl⟩ := Types.jointly_surjective_of_isColimit
+      (isColimitOfPreserves ((evaluation _ _).obj (op V)) hc) w
+    obtain ⟨a : V ⟶ X i, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective a
+    refine ⟨_, a, _, ⟨i⟩, shrinkYonedaObjObjEquiv.symm.injective ?_⟩
+    rw [← shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
+    convert hw using 1
+    · exact (congr_fun (NatTrans.congr_app
+        ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))
+          (shrinkYonedaObjObjEquiv.symm a)).symm
+    · exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm v.op g).symm
+  · rintro ⟨_, a, _, ⟨i⟩, fac⟩
+    refine ⟨(c.inj i).app (op V) (shrinkYonedaObjObjEquiv.symm a),
+      (congr_fun (NatTrans.congr_app
+      ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))
+        (shrinkYonedaObjObjEquiv.symm a)).trans ?_⟩
+    rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm a (f i), fac]
+    exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm v.op g).symm
+
+end Presheaf
+
+namespace GrothendieckTopology
+
+lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map
+    [LocallySmall.{w} C] {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C}
+    (f : ∀ i, X i ⟶ S)
+    {c : Cofan (fun i ↦ shrinkYoneda.{w}.obj (X i))} (hc : IsColimit c) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J
+        (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i))) := by
+  refine ⟨fun hf ↦ ⟨fun {U u} ↦ ?_⟩, fun hf ↦ ?_⟩
+  · obtain ⟨u, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective u
+    replace hf := J.pullback_stable u hf
+    rwa [← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f hc u] at hf
+  · rw [← Sieve.pullback_id (S := Sieve.ofArrows X f),
+      ← Presheaf.imageSieve_cofanIsColimitDesc_shrinkYoneda_map f hc (𝟙 S)]
+    exact Presheaf.imageSieve_mem J (Cofan.IsColimit.desc hc (fun i ↦ shrinkYoneda.{w}.map (f i)))
+      (shrinkYonedaObjObjEquiv.symm (𝟙 S))
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map
+    {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C}
+    (f : ∀ i, X i ⟶ S)
+    {c : Cofan (fun i ↦ uliftYoneda.{w}.obj (X i))} (hc : IsColimit c) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J
+        (Cofan.IsColimit.desc hc (fun i ↦ uliftYoneda.{w}.map (f i))) := by
+  let e : Discrete.functor (fun i ↦ uliftYoneda.{w}.obj (X i)) ≅
+      Discrete.functor (fun i ↦ shrinkYoneda.{max w v}.obj (X i)) :=
+    Discrete.natIso (fun i ↦ uliftYonedaIsoShrinkYoneda.{w}.app (X i.as))
+  let hc' := (IsColimit.precomposeInvEquiv e _).2 hc
+  rw [ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map.{max w v} J f hc']
+  have :
+      Cofan.IsColimit.desc hc (fun i ↦ uliftYoneda.map (f i)) ≫
+        uliftYonedaIsoShrinkYoneda.hom.app _ =
+      Cofan.IsColimit.desc hc' (fun i ↦ shrinkYoneda.map (f i)) :=
+    Cofan.IsColimit.hom_ext hc _ _ (fun i ↦ by
+      rw [Cofan.IsColimit.fac_assoc, NatTrans.naturality,
+        ← Cofan.IsColimit.fac hc' (fun i ↦ shrinkYoneda.map (f i)) i]
+      simp [Cofan.inj, e])
+  rw [← this, Presheaf.isLocallySurjective_comp_iff J]
+
+lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map [LocallySmall.{w} C]
+    {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i))) :=
+  ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map J f
+    (coproductIsCoproduct _)
+
+lemma ofArrows_mem_iff_isLocallySurjective_sigmaDesc_uliftYoneda_map
+    {S : C} {ι : Type*} [Small.{max w v} ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ uliftYoneda.{w}.map (f i))) :=
+  ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map J f
+    (coproductIsCoproduct _)
+
+end GrothendieckTopology
 
 end CategoryTheory

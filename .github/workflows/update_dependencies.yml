@@ -9,17 +9,23 @@ jobs:
   update-dependencies:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      pull-requests: read
+      id-token: write
     env:
       BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         with:
           app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_PRIVATE_KEY }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-update-dependencies-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -64,6 +70,27 @@ jobs:
         env:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
+
+      - name: Get latest mathlib-ci SHA
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: mathlib-ci-sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=$(gh api repos/leanprover-community/mathlib-ci/commits/HEAD --jq '.sha')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Update mathlib-ci ref in get-mathlib-ci action
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: update-mathlib-ci-ref
+        run: |
+          sed -i "s|^\( *default: \)[0-9a-f]\{40\}|\1${{ steps.mathlib-ci-sha.outputs.sha }}|" \
+            .github/actions/get-mathlib-ci/action.yml
+          if git diff --quiet .github/actions/get-mathlib-ci/action.yml; then
+            echo "modified=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "modified=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
@@ -110,6 +137,10 @@ jobs:
             create_pr=true
             echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
           fi
+          if [ "${{ steps.update-mathlib-ci-ref.outputs.modified }}" == "true" ]; then
+            create_pr=true
+            echo "mathlib-ci ref was updated, need to run create-pull-request"
+          fi
           # Otherwise, there's no reason to run create-pull-request
           echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
 
@@ -124,6 +155,8 @@ jobs:
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
+          # this needs to be set, otherwise the last person who edited the `cron` line may get tagged
+          author: "mathlib-update-dependencies[bot] <258990618+mathlib-update-dependencies[bot]@users.noreply.github.com>"
           token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml

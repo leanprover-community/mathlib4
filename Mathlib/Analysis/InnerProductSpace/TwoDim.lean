@@ -171,6 +171,7 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
@@ -511,6 +512,7 @@ namespace Complex
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation

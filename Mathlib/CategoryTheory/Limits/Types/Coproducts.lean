@@ -73,6 +73,7 @@ lemma isColimit_mk (c : CofanTypes.{w} F)
       obtain ⟨i, y, rfl⟩ := h₁ x
       exact ⟨(Discrete.functor F).ιColimitType ⟨i⟩ y, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 lemma isColimit_sigma : Functor.CoconeTypes.IsColimit (sigma F) :=
   isColimit_mk _ (by aesop)
@@ -86,6 +87,7 @@ from the Sigma type to the point of the cofan. -/
 def fromSigma (c : CofanTypes.{w} F) (x : Σ (i : C), F i) : c.pt :=
   c.inj x.1 x.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_iff_bijective_fromSigma (c : CofanTypes.{w} F) :
     c.IsColimit ↔ Function.Bijective c.fromSigma := by
   rw [(isColimit_sigma F).iff_bijective]
@@ -257,6 +259,7 @@ theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
 
 open Function (Injective)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
