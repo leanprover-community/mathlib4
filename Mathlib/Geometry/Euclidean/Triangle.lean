@@ -103,11 +103,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
   · rw [hxy]
   · rw [← norm_neg (y - x), neg_sub, mul_comm, mul_comm ‖y‖, div_eq_mul_inv, div_eq_mul_inv,
       mul_inv_rev, mul_inv_rev, ← mul_assoc, ← mul_assoc] at h
-    replace h :=
-      mul_right_cancel₀ (inv_ne_zero fun hz => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 hz))) h
-    rw [inner_sub_right, inner_sub_right, real_inner_comm x y, real_inner_self_eq_norm_mul_norm,
-      real_inner_self_eq_norm_mul_norm, mul_sub_right_distrib, mul_sub_right_distrib,
-      mul_self_mul_inv, mul_self_mul_inv, sub_eq_sub_iff_sub_eq_sub, ← mul_sub_left_distrib] at h
+    simp [inner_sub_right, real_inner_comm] at h
     grind [cos_angle_mul_norm_mul_norm, cos_eq_neg_one_iff_angle_eq_pi]
 
 /-- The cosine of the sum of two angles in a possibly degenerate
