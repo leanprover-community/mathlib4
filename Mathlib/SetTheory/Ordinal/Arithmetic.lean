@@ -244,20 +244,6 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
-@[simp]
-theorem typein_ordinal (o : Ordinal.{u}) :
-    @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  induction o using Quotient.inductionOn with | _ w
-  obtain ⟨α, r, wo⟩ := w
-  apply Quotient.sound
-  constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
-
-@[simp]
-theorem mk_Iio_ordinal (o : Ordinal.{u}) :
-    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
-  rw [lift_card, ← typein_ordinal]
-  rfl
-
 /-! ### The predecessor of an ordinal -/
 
 /-- The ordinal predecessor of `a` is `b` if `a = succ b`, and `a` otherwise. -/
