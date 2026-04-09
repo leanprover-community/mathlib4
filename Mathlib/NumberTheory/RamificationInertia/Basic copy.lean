@@ -718,19 +718,19 @@ noncomputable def _root_.PrimeSpectrum.localRank
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) : ℕ :=
   Module.finrank p.1.ResidueField (p.1.Fiber S)
 
-noncomputable def _root_.PrimeSpectrum.localRank_apply
+theorem _root_.PrimeSpectrum.localRank_apply
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
     p.localRank R S = Module.finrank p.1.ResidueField (p.1.Fiber S) :=
   rfl
 
-noncomputable def _root_.PrimeSpectrum.localRank_apply_of_flat
+theorem _root_.PrimeSpectrum.localRank_apply_of_flat
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : PrimeSpectrum R) :
     p.localRank R S = Module.finrank (Localization.AtPrime p.1)
       (Localization (Algebra.algebraMapSubmonoid S p.1.primeCompl)) :=
   p.1.finrank_fiber_eq_finrank_localization S
 
-noncomputable def _root_.PrimeSpectrum.locallyConstant_localRank
+theorem _root_.PrimeSpectrum.locallyConstant_localRank
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Projective R S] :
     IsLocallyConstant (PrimeSpectrum.localRank R S) := by
@@ -780,7 +780,6 @@ theorem sum_ramification_inertia'
     exact IsFractionRing.isFractionRing_of_algEquiv (AlgEquiv.quotientBot R R').symm
   let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
   let M₂ := nonZeroDivisors S
-
   let e : Localization M₂ ≃ₐ[S] Localization M₁ :=
   { __ := IsLocalization.liftAlgHom (M := M₂) (f := Algebra.ofId S (Localization M₁))
       fun x ↦ by
