@@ -271,11 +271,9 @@ variable (T) in
 instance algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
   fast_instance% .compHom T (equiv v).toRingHom
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
     algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_injective (v : AbsoluteValue R S)
     (h : Function.Injective (algebraMap R T)) :
     Function.Injective (algebraMap (WithAbs v) T) :=
@@ -291,7 +289,6 @@ theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
   (toAbs_injective v).comp h
 
-attribute [local instance] algebraLeft in
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 

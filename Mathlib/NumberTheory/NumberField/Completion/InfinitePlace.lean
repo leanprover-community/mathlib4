@@ -203,8 +203,6 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
 
-attribute [local instance] WithAbs.algebraLeft
-
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
   [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
@@ -251,8 +249,6 @@ namespace LiesOver
 open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
-
-attribute [local instance] WithAbs.algebraLeft
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
