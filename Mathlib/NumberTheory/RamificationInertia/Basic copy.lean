@@ -383,6 +383,7 @@ theorem ramificationIdx_of_not_le
     exact disjoint_compl_left_iff.mp h
   · rw [ramificationIdx_of_not_isPrime p q hq]
 
+-- PRed
 instance {R : Type*} [CommRing R] (M : Submonoid R)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S] (I : Ideal R) :
     IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
@@ -510,6 +511,7 @@ noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_symm_apply_tm
       (Ideal.Quotient.mk _ x) ⊗ₜ[R] y :=
   rfl
 
+-- PRed
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 open Algebra Algebra.TensorProduct in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
@@ -598,6 +600,7 @@ noncomputable def foo9 :
 
 open TensorProduct
 
+-- PRed
 noncomputable def _root_.Localization.localRingEquiv
     {R P : Type*} [CommSemiring R] [CommSemiring P]
     (I : Ideal R) [I.IsPrime] (J : Ideal P) [J.IsPrime]
@@ -609,6 +612,7 @@ noncomputable def _root_.Localization.localRingEquiv
   left_inv x := by simp [Localization.localRingHom, IsLocalization.map_map]
   right_inv x := by simp [Localization.localRingHom, IsLocalization.map_map]
 
+-- PRed
 noncomputable def _root_.Localization.localAlgEquiv
     {R S P : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring P]
     [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime] (f : S ≃ₐ[R] P)
@@ -738,20 +742,11 @@ theorem _root_.PrimeSpectrum.locallyConstant_localRank
   have (p : Ideal R) [p.IsPrime] : Module.Finite (Rp p) (Sp p) := inferInstance
   sorry
 
+-- PRed
 theorem _root_.Ideal.primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
     (⊥ : Ideal R).primeCompl = nonZeroDivisors R := by
   ext
   simp
-
-theorem _root_.IsFractionRing.isFractionRing_of_algEquiv {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [CommSemiring B] [Algebra R A] [Algebra R B] [IsFractionRing R A]
-    (e : A ≃ₐ[R] B) : IsFractionRing R B :=
-  IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R) e
-
-theorem _root_.IsFractionRing.isFractionRing_iff_of_algEquiv {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [CommSemiring B] [Algebra R A] [Algebra R B]
-    (e : A ≃ₐ[R] B) : IsFractionRing R A ↔ IsFractionRing R B :=
-  IsLocalization.isLocalization_iff_of_algEquiv (nonZeroDivisors R) e
 
 theorem sum_ramification_inertia'
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMul R S]
@@ -771,7 +766,8 @@ theorem sum_ramification_inertia'
   have : IsFractionRing R κR := by
     change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
     rw [IsLocalRing.maximalIdeal_eq_bot]
-    exact IsFractionRing.isFractionRing_of_algEquiv (AlgEquiv.quotientBot R R').symm
+    exact IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R)
+      (AlgEquiv.quotientBot R R').symm
   let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
   let M₂ := nonZeroDivisors S
   let e : Localization M₂ ≃ₐ[S] Localization M₁ :=
@@ -793,7 +789,7 @@ theorem sum_ramification_inertia'
     e.trans <| (Localization.tensor_localization_algEquiv (nonZeroDivisors R) S).symm.trans <|
       (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
         (Algebra.TensorProduct.commRight R S κR)
-  have := IsFractionRing.isFractionRing_of_algEquiv e'
+  have := IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors S) e'
   rw [← sum_ramification_inertia]
   exact (Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS).symm.trans <|
     (PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace ⊥ ⟨p, ‹_›⟩
