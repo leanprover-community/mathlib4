@@ -101,6 +101,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
+      rw [RingHom.id_apply, zero_smul]
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

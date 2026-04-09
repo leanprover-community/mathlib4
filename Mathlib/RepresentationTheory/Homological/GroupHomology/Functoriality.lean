@@ -109,7 +109,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
   ext; simp [chainsMap_f, LinearMap.zero_apply (M₂ := B)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
   simpa [ModuleCat.mono_iff_injective] using
@@ -121,7 +120,6 @@ instance chainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : �
     Mono ((chainsMap (MonoidHom.id G) φ).f i) :=
   chainsMap_f_map_mono (MonoidHom.id G) φ (fun _ _ h => h) _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
   simpa [ModuleCat.epi_iff_surjective] using
@@ -206,7 +204,6 @@ noncomputable abbrev chainsMap₃ :
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ
     lmapDomain A k (Prod.map f (Prod.map f f))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_0_comp_chainsIso₀ :
     (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.toModuleCatHom := by
@@ -214,21 +211,18 @@ lemma chainsMap_f_0_comp_chainsIso₀ :
   simp [chainsMap_f, Unique.eq_default (α := Fin 0 → G), Unique.eq_default (α := Fin 0 → H),
     chainsIso₀]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_1_comp_chainsIso₁ :
     (chainsMap f φ).f 1 ≫ (chainsIso₁ B).hom = (chainsIso₁ A).hom ≫ chainsMap₁ f φ := by
   ext x
   simp [chainsMap_f, chainsIso₁]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_2_comp_chainsIso₂ :
     (chainsMap f φ).f 2 ≫ (chainsIso₂ B).hom = (chainsIso₂ A).hom ≫ chainsMap₂ f φ := by
   ext
   simp [chainsMap_f, chainsIso₂]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_3_comp_chainsIso₃ :
     (chainsMap f φ).f 3 ≫ (chainsIso₃ B).hom = (chainsIso₃ A).hom ≫ chainsMap₃ f φ := by
@@ -276,7 +270,6 @@ end H0
 
 section H1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex `(G × G →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A`
 to `(H × H →₀ B) --d₂₁--> (H →₀ B) --d₁₀--> B`. -/
@@ -379,7 +372,6 @@ lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapCycles₁ f φ ≫ H1π B := by
   simp [H1π, Iso.inv_comp_eq, ← cyclesMap_comp_isoCycles₁_hom_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₁_one (φ : A ⟶ res (1 : G →* H) B) :
     map (1 : G →* H) φ 1 = 0 := by
@@ -690,7 +682,6 @@ end H1
 
 section H2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex
 `(G × G × G →₀ A) --d₃₂--> (G × G →₀ A) --d₂₁--> (G →₀ A)` to

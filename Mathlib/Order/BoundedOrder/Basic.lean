@@ -219,13 +219,12 @@ namespace OrderDual
 variable (α)
 
 @[to_dual]
-instance instTop [Bot α] : Top αᵒᵈ :=
-  ⟨(⊥ : α)⟩
+instance [h : Bot α] : Top αᵒᵈ :=
+  ⟨h.bot⟩
 
 @[to_dual]
-instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
-  __ := (inferInstance : Top αᵒᵈ)
-  le_top := @bot_le α _ _
+instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
+  le_top := h.bot_le
 
 @[to_dual (attr := simp)] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
 @[to_dual (attr := simp)] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
@@ -257,8 +256,6 @@ attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
 attribute [to_dual existing] BoundedOrder.toOrderTop
 
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
-  __ := (inferInstance : OrderTop αᵒᵈ)
-  __ := (inferInstance : OrderBot αᵒᵈ)
 
 section PartialOrder
 variable [PartialOrder α]

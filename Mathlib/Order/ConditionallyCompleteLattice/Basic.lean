@@ -514,6 +514,15 @@ theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :
 theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 
+lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
+     sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
+  have : OrderBot α := WellFoundedLT.toOrderBot α
+  constructor
+  · intro rfl
+    exact ⟨csInf_mem hs, fun _ ↦ csInf_le (OrderBot.bddBelow s)⟩
+  · intro ⟨hn, hle⟩
+    exact le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
+
 theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
@@ -683,11 +692,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   by_cases hs : BddBelow s
   · exact isGLB_sInf' hs
-  · exfalso
-    apply hs
-    use ⊥
-    intro _ _
-    exact bot_le
+  · exact isGLB_sInf' (OrderBot.bddBelow _)
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder

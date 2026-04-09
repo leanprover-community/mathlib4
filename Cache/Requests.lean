@@ -526,8 +526,12 @@ def downloadFiles
     if warnOnMissing && s.success + s.failed < s.done then
       IO.eprintln "Warning: some files were not found in the cache."
       IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-      IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-      IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+      IO.eprintln ""
+      IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
+      IO.eprintln "    (use a draft PR if it is not ready for review),"
+      IO.eprintln "    then CI will build the oleans and they will be available later."
+      IO.eprintln "  * If you have already opened a PR, this may mean"
+      IO.eprintln "    the CI build has failed part-way through building."
     pure (s.failed, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
@@ -641,61 +645,15 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
-def getProofWidgets (buildDir : FilePath) : IO Unit := do
-  if (← buildDir.pathExists) then
-    -- Check if the ProofWidgets build is out-of-date via `lake`.
-    -- This is done through Lake as cache has no simple heuristic
-    -- to determine whether the ProofWidgets JS is out-of-date.
-    let out ← IO.Process.output
-      {cmd := "lake", args := #["-v", "build", "--no-build", "proofwidgets:release"]}
-    if out.exitCode == 0 then -- up-to-date
-      return
-    else if out.exitCode == 3 then -- needs fetch (`--no-build` triggered)
-      pure ()
-    else
-      printLakeOutput out
-      throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: \
-        lake failed with error code {out.exitCode}"
-  -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
-  IO.print "Fetching ProofWidgets cloud release..."
-  let out ← IO.Process.output
-     {cmd := "lake", args := #["-v", "build", "proofwidgets:release"]}
-  if out.exitCode == 0 then
-    IO.println " done!"
-  else
-    IO.print "\n"
-    printLakeOutput out
-    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: \
-      lake failed with error code {out.exitCode}"
-  -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
-  try
-    IO.FS.removeDirAll (buildDir / "lib")
-    IO.FS.removeDirAll (buildDir / "ir")
-  catch e =>
-    throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
-where
-  printLakeOutput out := do
-    unless out.stdout.isEmpty do
-      IO.eprintln "lake stdout:"
-      IO.eprint out.stdout
-    unless out.stderr.isEmpty do
-      IO.eprintln "lake stderr:"
-      IO.eprint out.stderr
-
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
+    (forceDownload forceUnpack parallel decompress : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
     checkForManifestMismatch
-  if skipProofWidgets then
-    IO.println "Skipping ProofWidgets release fetch"
-  else
-    getProofWidgets (← read).proofWidgetsBuildDir
 
   let mathlibDepPath := (← read).mathlibDepPath
 

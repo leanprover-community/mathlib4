@@ -22,7 +22,6 @@ variable (p : Ideal A) (q : Ideal B) [q.LiesOver p]
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
     Algebra.IsSeparable p.ResidueField q.ResidueField := by
   refine Algebra.IsSeparable.of_equiv_equiv
@@ -31,7 +30,6 @@ instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
   ext x
   simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable p.ResidueField q.ResidueField] :
     Algebra.IsSeparable (A ⧸ p) (B ⧸ q) := by
   refine Algebra.IsSeparable.of_equiv_equiv
@@ -46,17 +44,14 @@ instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable p.ResidueField q.Resid
     RingEquiv.apply_symm_apply]
   simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {p q} in
 lemma Algebra.isSeparable_residueField_iff [p.IsMaximal] [q.IsMaximal] :
     Algebra.IsSeparable p.ResidueField q.ResidueField ↔ Algebra.IsSeparable (A ⧸ p) (B ⧸ q) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance [p.IsPrime] : Algebra.IsAlgebraic (A ⧸ p) p.ResidueField :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (A ⧸ p))
 
-set_option backward.isDefEq.respectTransparency false in
 instance [p.IsPrime] [q.IsPrime] [Algebra.IsIntegral A B] :
     Algebra.IsAlgebraic p.ResidueField q.ResidueField := by
   have : Algebra.IsIntegral (A ⧸ p) (B ⧸ q) :=

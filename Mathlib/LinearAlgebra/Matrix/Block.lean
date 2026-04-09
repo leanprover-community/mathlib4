@@ -80,7 +80,7 @@ protected theorem BlockTriangular.transpose :
 @[simp]
 protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
     Mᵀ.BlockTriangular b ↔ M.BlockTriangular (ofDual ∘ b) :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl

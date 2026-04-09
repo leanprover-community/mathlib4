@@ -24,6 +24,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`.
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -72,7 +73,7 @@ theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p 
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx p P = 0 :=
-  dif_neg (by push_neg; exact h)
+  dif_neg (by push Not; exact h)
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx p P = n := by
@@ -160,7 +161,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
   · intro he
     have : 1 ≤ Nat.find H := Nat.find_spec H 1 (by simpa)
     have := Nat.find_min H (m := 1) (by lia)
-    push_neg at this
+    push Not at this
     obtain ⟨k, hk, h1k⟩ := this
     exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he

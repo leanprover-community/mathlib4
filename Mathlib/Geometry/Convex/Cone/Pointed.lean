@@ -117,9 +117,7 @@ theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointe
 
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
 
-instance instZero (C : PointedCone R E) : Zero C :=
-  ⟨0, C.zero_mem⟩
-
+@[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
@@ -157,7 +155,7 @@ lemma _root_.ConvexCone.coe_toPointedCone (C : ConvexCone R E) (hC : C.Pointed) 
 @[simp]
 lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone trivial = ⊤ := rfl
 
-instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
+instance : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
 
 end ConvexCone
@@ -169,6 +167,7 @@ variable {C : PointedCone R E} {x : E}
 
 /-- Construct a pointed cone from closure under two-element conical combinations.
 I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
+@[simps!]
 def ofConeComb (C : Set E) (nonempty : C.Nonempty)
     (coneComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a : R, 0 ≤ a → ∀ b : R, 0 ≤ b → a • x + b • y ∈ C) :
     PointedCone R E :=
