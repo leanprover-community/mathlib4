@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.TensorProduct.Pi
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Transcendental separable extensions
@@ -33,7 +34,7 @@ variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 class Algebra.IsSeparablyGenerated : Prop where
   isSeparable' : ∃ (ι : Type v) (f : ι → K),
     IsTranscendenceBasis k f ∧
-    Algebra.IsSeparable (Algebra.adjoin k (Set.range f)) K
+    Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K
 
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
@@ -88,10 +89,36 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
 
 variable (k : Type*) [Field k]
 
+open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
     (S : Type*) [CommRing S] [Algebra k S] [IsDomain S]
     (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
     [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
+  classical
+  obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
+  set K' := IntermediateField.adjoin k (Set.range f)
+  have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
+  have : Algebra.EssFiniteType K' K := Algebra.EssFiniteType.of_comp k K' K
+  have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
+  obtain ⟨y, hy⟩ := Field.exists_primitive_element K' K
+  let kx := Algebra.adjoin k (Set.range f)
+  let e : TensorProduct k kx S ≃ₐ[k] MvPolynomial ι S :=
+    (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv isT.1).symm AlgEquiv.refl).trans
+      MvPolynomial.scalarRTensorAlgEquiv
+  have isd1 : IsDomain (TensorProduct k kx S) := e.injective.isDomain
+  let nz := nonZeroDivisors kx
+  have : IsLocalization nz K' := inferInstanceAs (IsFractionRing _ K')
+  have isl := IsLocalization.tensorRight K' nz (S := TensorProduct k kx S)
+  let : Algebra (kx ⊗[k] S) (K' ⊗[kx] (kx ⊗[k] S)) := Algebra.TensorProduct.rightAlgebra
+  have le_nz : nz.map (algebraMap kx (kx ⊗[k] S)) ≤ nonZeroDivisors (↥kx ⊗[k] S) := by
+    rw [Submonoid.map_le_iff_le_comap]
+    intro x
+    simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submonoid.mem_comap, nz]
+    exact fun hx ↦ (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective kx (kx ⊗[k] S))).mpr hx
+  have isd2 := @IsLocalization.isDomain_of_le_nonZeroDivisors _ _ _ _ _ _ isl isd1 le_nz
+  have isd3 : IsDomain (K' ⊗[k] S) :=
+    (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
+
   sorry
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
