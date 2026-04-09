@@ -625,92 +625,107 @@ theorem equiv_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) 
     (equiv p) q = q.1.comap Algebra.TensorProduct.includeRight := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-noncomputable def foo8 (q : MaximalSpectrum (p.Fiber S)) : -- generalize to prime ideal
-    letI r := q.1.comap Algebra.TensorProduct.includeRight
-    letI Sr := Localization.AtPrime r
-    Localization.AtPrime q.1 ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) := by
+noncomputable def foo9 :
+    letI Rp := Localization p.primeCompl
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pS := p.map (algebraMap R S)
+    letI pSp := pS.map (algebraMap S Sp)
+    ∀ (q : Ideal (Sp ⧸ pSp)) (r : Ideal S) [q.IsPrime] [r.IsPrime] [q.LiesOver r] [r.LiesOver p],
+      letI Sr := Localization.AtPrime r
+      Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) := by
+  intro q r hq hr hqr hrp
   let Rp := Localization p.primeCompl
-  let pRp := IsLocalRing.maximalIdeal Rp
   let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   let pS := p.map (algebraMap R S)
   let pSp := pS.map (algebraMap S Sp)
-  let r := q.1.comap Algebra.TensorProduct.includeRight
   let Sr := Localization.AtPrime r
-  change Localization.AtPrime q.1 ≃ₐ[Rp] Sr ⧸ p.map (algebraMap R Sr)
-  have : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
-      (Sr ⧸ pS.map (algebraMap S Sr)) := by
-    infer_instance
-  have : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS)
-      (Algebra.algebraMapSubmonoid S p.primeCompl)) (Sp ⧸ pSp) := by
-    infer_instance
+  have h1 : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
+      (Localization.AtPrime q) := by
+    suffices Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl = (q.under (S ⧸ pS)).primeCompl by
+      convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
+        (Algebra.algebraMapSubmonoid (S ⧸ pS) (Algebra.algebraMapSubmonoid S p.primeCompl))
+            (Localization.AtPrime q) q
+    ext x
+    obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
+    rw [mem_primeCompl_iff, mem_comap, ← Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
+      ← mem_comap, ← under_def, ← hqr.over]
+    refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
+    rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
+    contrapose! hy
+    simpa [r.sub_mem_iff_left hy] using map_le_iff_le_comap.mpr hrp.over.le hx
+  have := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Localization.AtPrime q)
+  have := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Sr ⧸ map (algebraMap S Sr) pS)
+  let e := (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
+    (Localization.AtPrime q) ((Sr ⧸ pS.map (algebraMap S Sr)))).restrictScalars R
+  exact
+    { __ := e
+      commutes' := by
+        let f := e.toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
+        let g := IsScalarTower.toAlgHom R Rp (Sr ⧸ pS.map (algebraMap S Sr))
+        suffices f = g by rwa [DFunLike.ext_iff] at this
+        apply Localization.algHom_ext
+        suffices f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) by
+          rwa [DFunLike.ext_iff] at this ⊢
+        simp }
+
+open TensorProduct
+
+noncomputable def _root_.Localization.localRingEquiv
+    {R P : Type*} [CommSemiring R] [CommSemiring P]
+    (I : Ideal R) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : R ≃+* P) (hIJ : I = Ideal.comap f J) : -- todo: use LiesOver
+    Localization.AtPrime I ≃+* Localization.AtPrime J where
+  __ := Localization.localRingHom I J f hIJ
+  invFun := Localization.localRingHom J I f.symm sorry
+  left_inv := by
+    simp
+    sorry
+  right_inv := sorry
+
+noncomputable def _root_.Localization.localAlgEquiv
+    {R S P : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring P]
+    [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime] (f : S ≃ₐ[R] P)
+    (hIJ : I = Ideal.comap f J) :
+    Localization.AtPrime I ≃ₐ[R] Localization.AtPrime J where
+  __ := Localization.localAlgHom I J f.toAlgHom hIJ
+  invFun := Localization.localAlgHom J I f.symm.toAlgHom sorry
+  left_inv := sorry
+  right_inv := sorry
+
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    letI r := q.comap Algebra.TensorProduct.includeRight
+    letI Sr := Localization.AtPrime r
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) := by
+  let Rp := Localization p.primeCompl
+  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  let pS := p.map (algebraMap R S)
+  let pSp := pS.map (algebraMap S Sp)
+  let r := q.comap Algebra.TensorProduct.includeRight
+  let Sr := Localization.AtPrime r
+  change Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ p.map (algebraMap R Sr)
   let eq : p.Fiber S ≃ₐ[S] (Sp ⧸ pSp) := by
     refine (Fiber.algEquivQuotient p).trans (quotientEquivAlgOfEq S ?_)
     rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map]
     dsimp only [pSp, pS]
     rw [map_map, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-  let q' : Ideal (Sp ⧸ pSp) := q.1.comap eq.symm
+  let q' : Ideal (Sp ⧸ pSp) := q.comap eq.symm
   have : r = q'.comap (algebraMap S (Sp ⧸ pSp)) := by
     dsimp only [q']
     rw [← comap_coe eq.symm, comap_comap, ← AlgEquiv.toAlgHom_toRingHom,
       AlgHom.comp_algebraMap, Algebra.TensorProduct.algebraMap_eq_includeRight, comap_coe]
-  have : Localization.AtPrime q.1 ≃ₐ[Rp] Localization.AtPrime q' := by
+  have : q'.LiesOver r := by
+    dsimp only [q']
+    rw [liesOver_iff, under_def, ← comap_coe eq.symm, comap_comap,
+      ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
+    rfl
+  have : Localization.AtPrime q ≃ₐ[Rp] Localization.AtPrime q' := by
     sorry
-  refine this.trans ?_
-  have h3 : (Sr ⧸ pS.map (algebraMap S Sr)) ≃ₐ[Rp] Sr ⧸ p.map (algebraMap R Sr) :=
-    quotientEquivAlgOfEq Rp (by rw [map_map, ← IsScalarTower.algebraMap_eq])
-  refine AlgEquiv.trans ?_ h3
-  -- `Sp ⧸ pSp` is already a localization of `S ⧸ pS`. If you localize further at `q'`, then you still
-  -- have a localization of `S ⧸ pS`. So now you have two localizations of `S ⧸ pS`, so they are
-  -- isomorphic!
-  have h1 : IsLocalization.AtPrime (Localization.AtPrime q')
-      (q'.comap (algebraMap (S ⧸ pS) (Sp ⧸ pSp))) :=
-    IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
-      (Algebra.algebraMapSubmonoid (S ⧸ pS)
-        (Algebra.algebraMapSubmonoid S p.primeCompl))
-          (Localization.AtPrime q') q'
-  have : (r.map (algebraMap S (S ⧸ pS))).IsPrime := by
-    rw [Quotient.algebraMap_eq]
-    apply map_isPrime_of_surjective Quotient.mk_surjective
-    dsimp only [r]
-    rw [mk_ker, map_le_iff_le_comap, ← comap_coe Algebra.TensorProduct.includeRight,
-      ← Algebra.TensorProduct.algebraMap_eq_includeRight, comap_comap,
-      ← IsScalarTower.algebraMap_eq]
-    exact LiesOver.over.le
-  replace h1 : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
-      (Localization.AtPrime q') := by
-    have : (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl) =
-        (q'.comap (algebraMap (S ⧸ pS) (Sp ⧸ pSp))).primeCompl := by
-      sorry
-    sorry
-  have : (Localization.AtPrime q') ≃ₐ[S ⧸ pS] (Sr ⧸ pS.map (algebraMap S Sr)) := by
-    apply IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
-  exact
-    { __ := this
-      commutes' x := sorry }
+  refine this.trans <| (foo9 p q' r).trans <|
+    quotientEquivAlgOfEq Rp <| by rw [map_map, ← IsScalarTower.algebraMap_eq]
 
 #exit
-
-open TensorProduct
-
-set_option backward.isDefEq.respectTransparency false in
-theorem diamond1 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    (Localization.AtPrime.instAlgebraOfLiesOver p q) = OreLocalization.instAlgebra := by
-  apply Algebra.algebra_ext
-  rw [← DFunLike.ext_iff]
-  apply Localization.localRingHom_unique _
-  · exact Ideal.LiesOver.over
-  · intro x
-    rfl
-
-set_option backward.isDefEq.respectTransparency false in
-theorem diamond2 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    (Localization.AtPrime.instAlgebraOfLiesOver p q).toModule = OreLocalization.instModuleOfIsScalarTower := by
-  rw [diamond1]
-  rfl
 
 section
 
