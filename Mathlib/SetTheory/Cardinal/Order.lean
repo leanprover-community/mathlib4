@@ -535,6 +535,15 @@ theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
   exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
 
+variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**):
+every type has a linear order which satisfies `WellFoundedGT` -/
+lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
+  classical
+  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
+    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+
 namespace Cardinal
 
 /-! ### Bounds on suprema -/
