@@ -221,7 +221,7 @@ theorem isCountablyCompact_iff_countablyCompactSpace :
 /-- If `x : ℕ → E` has no convergent subsequence, then `⋃ i, closure {x i}` is closed. -/
 private lemma isClosed_of_not_tendsto {x : ℕ → E} [SequentialSpace E]
     (hx : ∀ (l : E) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
-  IsClosed (⋃ i, closure {x i}) := by
+    IsClosed (⋃ i, closure {x i}) := by
   refine IsSeqClosed.isClosed fun y l hy hy' => ?_
   by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
   · obtain ⟨m, pm⟩ := hm
