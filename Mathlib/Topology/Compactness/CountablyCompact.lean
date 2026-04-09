@@ -256,7 +256,7 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   let A := ⋃ i, closure {x i}
   have : IsCountablyCompact A :=
     (isCountablyCompact_univ_iff.2 inferInstance).of_isClosed_subset
-    (isClosed_of_not_tendsto hx) (by simp)
+      (isClosed_of_not_tendsto hx) (by simp)
   -- We use the countably compactness of `A` to find a cluster point `a`. Eventually `a` does not
   -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradicts `a`
   -- being a cluster point.
