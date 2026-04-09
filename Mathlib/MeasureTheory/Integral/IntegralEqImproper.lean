@@ -627,15 +627,17 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 
-theorem tendsto_integral_Iic_zero (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
-    (ha : Tendsto a l atBot) :
+theorem tendsto_integral_Iic_zero (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Iic b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ :=  h
   have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
     rw [sub_eq_iff_comm,
-      intervalIntegral.integral_Iic_sub_Iic (hfi.mono_set (Iic_subset_Iic.2 hi)) hfi]
+      intervalIntegral.integral_Iic_sub_Iic (hb.mono_set (Iic_subset_Iic.2 hi)) hb]
   rw [← sub_self (∫ x in Iic b, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Iic b hfi ha)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Iic b hb ha)
 
 theorem tendsto_integral_Ico_integral_Iio (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
     (ha : Tendsto a l atBot) :
@@ -643,15 +645,17 @@ theorem tendsto_integral_Ico_integral_Iio (b : ℝ) (hfi : IntegrableOn f (Iio b
   ((aecover_Iio_of_Ico tendsto_const_nhds ha).integral_tendsto_of_countably_generated hfi).congr'
     (by simp)
 
-theorem tendsto_integral_Iio_zero (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
-    (ha : Tendsto a l atBot) :
+theorem tendsto_integral_Iio_zero (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in Iio (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Iio b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ :=  h
   have : ∀ᶠ i in l, ∫ x in Iio b, f x ∂μ - ∫ x in Ico (a i) b, f x ∂μ =
       ∫ x in Iio (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
-    rw [sub_eq_iff_comm, intervalIntegral.integral_Iio_sub_Iio hfi hi]
+    rw [sub_eq_iff_comm, intervalIntegral.integral_Iio_sub_Iio hb hi]
   rw [← sub_self (∫ x in Iio b, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Iio b hfi ha)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Iio b hb ha)
 
 theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
@@ -664,30 +668,34 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
     inter_comm]
   rfl
 
-theorem tendsto_integral_Ioi_zero (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
-    (hb : Tendsto b l atTop) :
+theorem tendsto_integral_Ioi_zero (hb : Tendsto b l atTop) :
     Tendsto (fun i => ∫ x in Ioi (b i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ a, ¬ IntegrableOn f (Ioi a) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (b i))).symm)
+  obtain ⟨a, ha⟩ :=  h
   have : ∀ᶠ i in l, ∫ x in Ioi a, f x ∂μ - ∫ x in a..b i, f x ∂μ = ∫ x in Ioi (b i), f x ∂μ := by
     filter_upwards [hb.eventually_mem (Ici_mem_atTop a)] with i hi
     rw [sub_eq_iff_eq_add',
-      intervalIntegral.integral_interval_add_Ioi hfi (hfi.mono_set (Ioi_subset_Ioi hi))]
+      intervalIntegral.integral_interval_add_Ioi ha (ha.mono_set (Ioi_subset_Ioi hi))]
   rw [← sub_self (∫ x in Ioi a, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Ioi a hfi hb)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Ioi a ha hb)
 
 theorem tendsto_integral_Ico_integral_Ici (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
     (ha : Tendsto a l atTop) :
     Tendsto (fun i => ∫ x in Ico b (a i), f x ∂μ) l (𝓝 <| ∫ x in Ici b, f x ∂μ) :=
   ((aecover_Ici_of_Ico ha).integral_tendsto_of_countably_generated hfi).congr' (by simp)
 
-theorem tendsto_integral_Ici_zero (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
-    (ha : Tendsto a l atTop) :
+theorem tendsto_integral_Ici_zero (ha : Tendsto a l atTop) :
     Tendsto (fun i => ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Ici b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ := h
   have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ =
       ∫ x in Ici (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Ici_mem_atTop b)] with i hi
-    rw [sub_eq_iff_comm, intervalIntegral.integral_Ici_sub_Ici hfi hi]
+    rw [sub_eq_iff_comm, intervalIntegral.integral_Ici_sub_Ici hb hi]
   rw [← sub_self (∫ x in Ici b, f x ∂μ)]
-  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Ici b hfi ha)
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Ici b hb ha)
 
 end IntegralOfIntervalIntegral
 
