@@ -87,13 +87,55 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
     Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable (k : Type*) [Field k]
+variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K] (S : Type*) [CommRing S]
+
+open scoped Polynomial
+
+lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X])
+    (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
+  sorry
+
+noncomputable def polynomialTensorProductEquiv [Algebra k S] : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X] :=
+  ((((Algebra.TensorProduct.congr (polyEquivTensor' k K) AlgEquiv.refl).trans
+    (Algebra.TensorProduct.assoc k k K K k[X] S)).trans
+      (Algebra.TensorProduct.congr AlgEquiv.refl (Algebra.TensorProduct.comm k k[X] S))).trans
+        (Algebra.TensorProduct.assoc k k K K S k[X]).symm).trans
+          ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
+
+lemma polynomialTensorProductEquiv_map_algebraMap [Algebra k S] (f : K[X]) :
+    f.map (algebraMap K (K ⊗[k] S)) =
+    (polynomialTensorProductEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) := by
+  obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
+  induction g with
+  | zero => simp
+  | add g1 g2 hg1 hg2 => simp only [map_add, Polynomial.map_add, hg1, hg2]
+  | tmul x y =>
+    have : Polynomial.map (algebraMap K (K ⊗[k] S)) ((polyEquivTensor k K).symm (x ⊗ₜ[k] y)) =
+      (polyEquivTensor k (K ⊗[k] S)).symm (x ⊗ₜ[k] 1 ⊗ₜ[k] y) := by
+      simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+    simpa [- polyEquivTensor_symm_apply_tmul_eq_smul, polynomialTensorProductEquiv]
+
+noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) [Algebra k S] :
+    (K[X] ⧸ Ideal.span {f}) ⊗[k] S ≃ₐ[K]
+    (K ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K (K ⊗[k] S))} :=
+  let : IsScalarTower K (K[X] ⧸ Ideal.span {f})
+    (K[X] ⊗[k] S ⧸ Ideal.map (algebraMap K[X] (K[X] ⊗[k] S)) (Ideal.span {f})) :=
+    IsScalarTower.of_algebraMap_eq' rfl
+  let e : (K[X] ⧸ Ideal.span {f}) ⊗[K[X]] (K[X] ⊗[k] S) ≃ₐ[K]
+    (K[X] ⊗[k] S) ⧸ ((Ideal.span {f}).map (algebraMap K[X] (K[X] ⊗[k] S))) :=
+      (Algebra.TensorProduct.quotIdealMapEquivQuotTensor _ _).symm.restrictScalars K
+  (((Algebra.TensorProduct.cancelBaseChange k K[X] K[X] (K[X] ⧸ Ideal.span {f})
+    S).symm.restrictScalars K).trans
+      ((Algebra.TensorProduct.quotIdealMapEquivQuotTensor _ _).symm.restrictScalars K)).trans
+        (Ideal.quotientEquivAlg _ _ (polynomialTensorProductEquiv k K S) (by
+          simp only [Ideal.map_span, Set.image_singleton, RingHom.coe_coe,
+            polynomialTensorProductEquiv_map_algebraMap]))
 
 open IntermediateField.algebraAdjoinAdjoin in
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
     (S : Type*) [CommRing S] [Algebra k S] [IsDomain S]
-    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
-    [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
+    [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K] :
+    IsReduced (TensorProduct k K S) := by
   classical
   obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
   set K' := IntermediateField.adjoin k (Set.range f)
@@ -118,13 +160,22 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
   have isd2 := @IsLocalization.isDomain_of_le_nonZeroDivisors _ _ _ _ _ _ isl isd1 le_nz
   have isd3 : IsDomain (K' ⊗[k] S) :=
     (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
-
-  sorry
+  let f := minpoly K' y
+  have fsep : f.Separable := sep.1 y
+  let eK : K ≃ₐ[K'] K'[X] ⧸ Ideal.span {f} :=
+    (IntermediateField.topEquiv.symm.trans (IntermediateField.equivOfEq hy).symm).trans
+    (IntermediateField.adjoinRootEquivAdjoin K' (Algebra.IsIntegral.isIntegral y)).symm
+  let eTen : K ⊗[k] S ≃ₐ[K'] (K' ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K' (K' ⊗[k] S))} :=
+    (Algebra.TensorProduct.congr eK AlgEquiv.refl).trans
+    (quotientPolynomialTensorProductEquiv k K' S f)
+  have red : IsReduced ((K' ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K' (K' ⊗[k] S))}) :=
+    isReduced_of_quotient_separable _ _ fsep.map
+  exact isReduced_of_injective _ eTen.injective
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
     (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
-    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K]
-    [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
+    [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K] :
+    IsReduced (TensorProduct k K S) := by
   classical
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
   have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
@@ -139,7 +190,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFi
     letI := Ideal.minimalPrimes_isPrime p.2
     IsReduced (K ⊗[k] Localization.AtPrime p.1) := by
     let := (localization_minimal_isField p.1 p.2).toField
-    exact tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain k _ K
+    exact tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain k K _
   have : IsReduced (K ⊗[k] ((p : (minimalPrimes S)) →
     letI := Ideal.minimalPrimes_isPrime p.2
     Localization.AtPrime p.1)) := by
@@ -160,7 +211,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
     refine IsReduced.tensorProduct_of_forall_fg_intermediateField (fun L hL ↦ ?_)
     rw [← IntermediateField.essFiniteType_iff] at hL
     have := Algebra.IsTranscendentalSeparable.forall_isSeparablyGenerated L hL
-    have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType k B L
+    have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType k L B
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
