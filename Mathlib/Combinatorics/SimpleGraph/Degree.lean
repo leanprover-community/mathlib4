@@ -89,15 +89,15 @@ theorem coe_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edeg
 variable {G v} in
 theorem edegree_eq_coe_iff [Fintype <| G.neighborSet v] {n : ℕ} :
     G.edegree v = n ↔ G.degree v = n := by
-  simp [← encard_neighborSet, ← Set.coe_fintypeCard]
+  simp [← coe_degree_eq_edegree]
+
+@[simp]
+theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.degree v := by
+  simp [← coe_degree_eq_edegree]
 
 theorem coe_toNat_edegree_eq_self :
     (G.edegree v).toNat = G.edegree v ↔ (G.neighborSet v).Finite := by
   simp [edegree_ne_top_iff_finite_neighborSet]
-
-@[simp]
-theorem toNat_edegree [Fintype <| G.neighborSet v] : (G.edegree v).toNat = G.degree v := by
-  simp [← encard_neighborSet, ← Set.ncard_def]
 
 theorem edegree_le_card : G.edegree v ≤ ENat.card V := by
   grw [← encard_neighborSet, Set.encard_le_card]
