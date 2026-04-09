@@ -110,9 +110,7 @@ lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
   simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
 
 lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '' s) := by
-  refine .of_nhdsWithin ?_
-  rintro _ ⟨x, hx, rfl⟩
-  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+  simp_all [isDiscrete_iff_nhdsWithin, ← hf.map_nhdsWithin_eq s]
 
 lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
