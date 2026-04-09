@@ -144,9 +144,8 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
     apply (IntervalIntegrable.add (by simp) (by continuity)).add ?_ |>.const_mul
-    exact .abs <| circleIntegrable_log_norm_meromorphicOn (f := fun z ↦ z - ρ) (by intro; fun_prop)
+    exact .abs <| MeromorphicOn.circleIntegrable_log_norm (f := fun z ↦ z - ρ) (by intro; fun_prop)
   · -- Pointwise convergence outside a null set
-    have h_measure_zero :
     have h_measure_zero : volume {θ : ℝ | circleMap 0 R θ = w ∨ circleMap 0 R θ = ρ} = 0 :=
       countable_singleton w |>.preimage_circleMap 0 (hR.ne') |>.union
         ((countable_singleton ρ).preimage_circleMap 0 (hR.ne')) |>.measure_zero _
