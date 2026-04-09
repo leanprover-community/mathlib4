@@ -521,7 +521,7 @@ lemma subst_substInv_right : P.subst (substInv P) = X := by
 lemma constantCoeff_substInv : P.substInv.constantCoeff = 0 := by
   simp [substInv, substInvFun]
 
-lemma hasSubst_substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
+lemma HasSubst.substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
 
 @[simp]
 lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟ (P.coeff 1) := by
@@ -531,14 +531,14 @@ include hP in
 lemma subst_substInv_left : P.substInv.subst P = X := by
   haveI : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
   let Q := P.substInv.substInv
-  have hQ : HasSubst Q := hasSubst_substInv P.substInv
+  have hQ : HasSubst Q := HasSubst.substInv P.substInv
   have eq_aux : P.substInv.subst Q = X := subst_substInv_right P.substInv P.constantCoeff_substInv
   suffices h : Q = P from by simp_rw [← h, eq_aux]
   calc
     _ = PowerSeries.subst Q (P.subst P.substInv) := by
       rw [subst_substInv_right _ hP, subst_X hQ]
     _ = P := by
-      simp [subst_comp_subst_apply P.hasSubst_substInv hQ, eq_aux]
+      simp [subst_comp_subst_apply (HasSubst.substInv P) hQ, eq_aux]
 
 end Invertible
 
@@ -561,7 +561,7 @@ lemma substInv'_eq_substInv :
 lemma constantCoeff_substInv' : (P.substInv' hP').constantCoeff = 0 := by
   simp [substInv'_eq_substInv]
 
-lemma hasSubst_substInv' : HasSubst (P.substInv' hP') := by
+lemma HasSubst.substInv' : HasSubst (P.substInv' hP') := by
   simp [HasSubst, ← constantCoeff.eq_def]
 
 @[simp]
