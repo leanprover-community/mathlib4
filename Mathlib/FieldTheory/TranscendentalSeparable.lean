@@ -87,13 +87,55 @@ lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field 
     Module.Flat.lTensor_preserves_injective_linearMap _ (Subalgebra.inclusion_injective le)
   exact isReduced_of_injective _ this
 
-variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K] (S : Type*) [CommRing S]
+variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K]
 
 open scoped Polynomial
 
+lemma isReduced_of_quotient_separable_of_field (S : Type*) [Field S] (f : S[X])
+    (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
+  generalize deg : f.natDegree = n
+  induction n using Nat.case_strong_induction_on generalizing f with
+  | hz =>
+    rcases Polynomial.natDegree_eq_zero.mp deg with ⟨s, rfl⟩
+    by_cases eq0 : s = 0
+    · have : (Ideal.span {Polynomial.C s}).IsPrime := by simpa [eq0] using Ideal.isPrime_bot
+      infer_instance
+    · have : Subsingleton (S[X] ⧸ Ideal.span {Polynomial.C s}) := by simp [eq0]
+      infer_instance
+  | hi n ih =>
+    have nu : ¬IsUnit f := Polynomial.not_isUnit_of_natDegree_pos f (by simp [deg])
+    have ne0 : f ≠ 0 := Polynomial.Separable.ne_zero sep
+    rcases WfDvdMonoid.exists_irreducible_factor nu ne0 with ⟨p, irr, ⟨g, rfl⟩⟩
+    rw [← Ideal.span_singleton_mul_span_singleton]
+    have cop : IsCoprime (Ideal.span {p}) (Ideal.span {g}) := by
+      rw [Ideal.isCoprime_span_singleton_iff, Irreducible.coprime_iff_not_dvd irr]
+      by_contra ⟨h, rfl⟩
+      absurd sep.squarefree
+      simp only [Squarefree, not_forall]
+      use p
+      simp [← mul_assoc, irr.not_isUnit]
+    have red1 : (Ideal.span {p}).IsPrime := (Ideal.span_singleton_prime irr.ne_zero).mpr irr.prime
+    have red2 : IsReduced (S[X] ⧸ Ideal.span {g}) := by
+      have : p.natDegree > 0 := Irreducible.natDegree_pos irr
+      have := deg.symm.trans (Polynomial.natDegree_mul irr.ne_zero (right_ne_zero_of_mul ne0))
+      exact ih g.natDegree (by linarith) g sep.of_mul_right rfl
+    exact isReduced_of_injective _ (Ideal.quotientMulEquivQuotientProd _ _ cop).injective
+
+variable (S : Type*) [CommRing S]
+
 lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X]) (mon : f.Monic)
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
-  sorry
+  let iS := (algebraMap S (FractionRing S))
+  have eq : (Ideal.span {f.map iS}).comap (Polynomial.mapRingHom iS) = Ideal.span {f} := by
+    ext g
+    simpa [Ideal.map_span, Ideal.mem_span_singleton] using
+      Polynomial.map_dvd_map iS (FaithfulSMul.algebraMap_injective _ _) mon
+  let iQ : (S[X] ⧸ Ideal.span {f}) →+* ((FractionRing S)[X] ⧸ Ideal.span {f.map iS}) :=
+    Ideal.Quotient.lift _ ((Ideal.Quotient.mk _).comp (Polynomial.mapRingHom iS)) (fun x hx ↦ by
+      simpa [Ideal.Quotient.eq_zero_iff_mem] using le_of_eq eq.symm hx)
+  have := isReduced_of_quotient_separable_of_field _ (f.map iS) sep.map
+  apply isReduced_of_injective iQ ((Ideal.injective_lift_iff _).mpr _)
+  simp [← RingHom.comap_ker, eq]
 
 noncomputable def polynomialTensorProductEquiv [Algebra k S] : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X] :=
   ((((Algebra.TensorProduct.congr (polyEquivTensor' k K) AlgEquiv.refl).trans
@@ -216,6 +258,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
+/-
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
   sorry
+-/
