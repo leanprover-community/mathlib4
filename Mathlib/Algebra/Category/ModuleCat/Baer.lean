@@ -87,8 +87,7 @@ lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : �
     intro N
     exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
   · rename_i n ih
-    let ei : EnoughInjectives (ModuleCat R) := inferInstance
-    rcases ei.1 M with ⟨ip⟩
+    let ip : InjectivePresentation M := (EnoughInjectives.presentation M).some
     let S := ip.shortComplex
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
       Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
