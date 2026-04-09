@@ -270,6 +270,12 @@ theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries 
   · simp [hd, hf]
   · simp [ha, zero_pow hd]
 
+theorem constantCoeff_subst_of_constantCoeff_zero (ha : a.constantCoeff = 0) (f : PowerSeries R) :
+    MvPowerSeries.constantCoeff (subst a f) = algebraMap R S f.constantCoeff := by
+  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha),
+    finsum_eq_single _ 0 (fun d hd ↦ by rw [map_pow, ha, zero_pow hd, smul_zero])]
+  simp [Algebra.algebraMap_eq_smul_one, coeff_zero_eq_constantCoeff_apply]
+
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
   MvPowerSeries.map_algebraMap_eq_subst_X f
