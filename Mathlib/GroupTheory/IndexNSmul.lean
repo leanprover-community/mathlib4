@@ -35,22 +35,26 @@ open QuotientAddGroup in
 variable (M) in
 /-- The index of the image of the multiplication-by-`n` map on an additive group `M` that is free
 and finitely generated as a `ℤ`-module is `n ^ finrank ℤ M`. -/
-lemma index_nsmul [Free ℤ M] [Module.Finite ℤ M] (n : ℕ) :
-    (nsmulAddMonoidHom (α := M) n).range.index = n ^ finrank ℤ M := by
-  rw [← index_map_equiv _ (Module.finBasis ℤ M).equivFun.toAddEquiv,
-    AddEquiv.map_range_nsmulAddMonoidHom]
-  simp [index_eq_card, Nat.card_congr (addEquivPiModRangeNSMulAddMonoidHom _ n).toEquiv,
-    Nat.card_fun, Int.range_nsmulAddMonoidHom,
-    Nat.card_congr (Int.quotientZMultiplesNatEquivZMod n).toEquiv]
+lemma index_range_nsmul [Free ℤ M] [Module.Finite ℤ M] (n : ℕ) :
+    (nsmulAddMonoidHom (α := M) n).range.index = n ^ finrank ℤ M :=
+  calc
+    _ = (nsmulAddMonoidHom (α := (Fin (finrank ℤ M) → ℤ)) n).range.index := by
+      simpa [AddEquiv.map_range_nsmulAddMonoidHom]
+        using (index_map_equiv (nsmulAddMonoidHom (α := M) n).range
+                (Module.finBasis ℤ M).equivFun.toAddEquiv).symm
+    _ = _ := by
+      simp [index_eq_card, Nat.card_congr (addEquivPiModRangeNSMulAddMonoidHom _ n).toEquiv,
+        Nat.card_fun, Int.range_nsmulAddMonoidHom,
+        Nat.card_congr (Int.quotientZMultiplesNatEquivZMod n).toEquiv]
 
 /-- The relative index in `S` of the image of the multiplication-by-`n` map
 on an additive subgroup `S` of an additive group such that `S` is free
 and finitely generated as a `ℤ`-module is `n ^ finrank ℤ S`. -/
-lemma relIndex_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmodule]
+lemma relIndex_map_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmodule]
     [Module.Finite ℤ ↥S.toIntSubmodule] :
     (S.map (nsmulAddMonoidHom (α := M) n)).relIndex S = n ^ finrank ℤ S := by
   simpa only [relIndex, addSubgroupOf_map_nsmulAddMonoidHom_eq_range]
-    using index_nsmul S.toIntSubmodule n
+    using index_range_nsmul S.toIntSubmodule n
 
 /-- On an additive group that is torsion-free as a `ℤ`-module, the linear map given by
 multiplication by `n : ℕ` is injective (when `n ≠ 0`). -/
@@ -70,8 +74,10 @@ lemma finrank_eq_of_finiteIndex [Module.Finite ℤ M] [IsTorsionFree ℤ M] (A :
     [A.FiniteIndex] :
     finrank ℤ A = finrank ℤ M := by
   refine le_antisymm A.toIntSubmodule.finrank_le ?_
-  rw [← (DistribSMul.toLinearMap ℤ M A.index).finrank_range_of_inj <|
-    distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero]
+  have : finrank ℤ (DistribSMul.toLinearMap ℤ M A.index).range = finrank ℤ M :=
+    (DistribSMul.toLinearMap ..).finrank_range_of_inj <|
+      distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero
+  rw [← this]
   refine Submodule.finrank_mono <| (OrderIso.symm_apply_le toIntSubmodule).mp fun m hm ↦ ?_
   obtain ⟨x, rfl⟩ : ∃ x, A.index • x = m := by simpa using hm
   exact A.nsmul_index_mem x
