@@ -75,7 +75,7 @@ simproc eqComm (_ = _) := fun e => do
   | Eq _ y' x' =>
     if (y' == y && x' == x) || (y' == x && x' == y) then do
       trace[Meta.Tactic.simp] m!"nothing to do here with {e}"
-      return .done { expr := e }
+      return .continue none
   | _ => pure ()
   trace[Meta.Tactic.simp] m!"{e} became {symmExpr} became {r.expr}"
   let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
@@ -90,7 +90,7 @@ simproc eqComm (_ = _) := fun e => do
     return .done symmR
 
 /-- On a goal of the form of `x ↔ y`, first tries to apply lemmas to `y ↔ x`. -/
-simproc ↓ iffComm (_ ↔ _) := fun e => do
+simproc iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
   let r ← withoutTheorems #[`iffComm,
