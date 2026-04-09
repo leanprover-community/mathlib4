@@ -111,7 +111,7 @@ theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ vars_C⟩
   apply totalDegree_eq_zero_iff_eq_C.mp
   apply Nat.eq_zero_of_le_zero
-  suffices p.degrees.card = 0 by exact this ▸ totalDegree_le_degrees_card p
+  suffices p.degrees.card = 0 from this ▸ totalDegree_le_degrees_card p
   classical rw [vars_def, Multiset.toFinset_eq_empty] at h
   rw [h]
   rfl
