@@ -694,7 +694,7 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact isCyclic_of_prime_card h
 
 @[deprecated inferInstance (since := "2026-04-09")]
-instance IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
+theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
   inferInstance
 
 end Algebra
