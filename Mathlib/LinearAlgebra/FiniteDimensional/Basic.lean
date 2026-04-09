@@ -79,7 +79,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, Submodule.map_top (Submodule.subtype S), range_subtype]
 
-theorem exists_linearEquiv_restrict_eq
+theorem _root_.Submodule.exists_linearEquiv_restrict_eq
     {W W' : Submodule K V} [FiniteDimensional K W] (f : W ≃ₗ[K] W') :
     ∃ g : V ≃ₗ[K] V, ∀ x : W, f x = g x := by
   obtain ⟨Q, hQ⟩ := Submodule.exists_isCompl W

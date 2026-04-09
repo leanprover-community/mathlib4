@@ -238,7 +238,7 @@ theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
     suffices a ≠ 0 by refine ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
     exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
 
-theorem linearIndependentOn_pair (D D' : ℙ K V) :
+theorem linearIndepOn_pair (D D' : ℙ K V) :
     LinearIndepOn K id {D.rep, D'.rep} := by
   by_cases h : D = D'
   · simpa [h] using D'.rep_nonzero

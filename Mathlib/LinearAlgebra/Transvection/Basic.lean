@@ -318,7 +318,6 @@ noncomputable def dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v))
   map_add' x y := by simp [map_add]
   map_smul' r x := by simp
   left_inv x := by
-    -- Is this better than
     nth_rewrite 3 [← one_smul R v]
     rw [← LinearMap.comp_apply, Units.smul_def, LinearMap.transvection.comp_smul_smul]
     simp only [Units.val_neg, one_mul, mul_neg, ← sub_eq_add_neg]
@@ -326,26 +325,14 @@ noncomputable def dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v))
     rw [sub_eq_zero, neg_add_eq_iff_eq_add]
     nth_rewrite 1 [← one_mul (h.unit⁻¹), Units.val_mul, ← add_mul]
     simp
-    -- that other proof ?
-/-    -- maybe one wants a general composition lemma
-    simp only [LinearMap.transvection.apply, add_assoc, add_eq_left,
-      Units.smul_def]
-    rw [smul_smul, ← add_smul]
-    convert zero_smul R v
-    rw [LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
-    nth_rewrite 2 [← mul_one (f x)]
-    rw [← mul_add]
-    nth_rewrite 1 [← mul_one (f x), mul_assoc, ← mul_add]
-    simp-/
   right_inv x := by
     simp only [LinearMap.transvection.apply, add_assoc, add_eq_left,
       Units.smul_def]
     rw [smul_smul, ← add_smul]
-    convert zero_smul R v
+    suffices (f x * ↑(-h.unit⁻¹) + f (x + (f x * ↑(-h.unit⁻¹)) • v)) = 0 by rw [this, zero_smul]
     rw [LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
     nth_rewrite 2 [← mul_one (f x)]
     rw [mul_assoc, ← mul_add, ← mul_add]
-    convert mul_zero _
     rw [← add_assoc, add_comm _ 1, add_assoc]
     nth_rewrite 1 [← mul_one (-h.unit⁻¹), Units.val_mul, Units.val_one, ← mul_add]
     simp
