@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-# Definition of Cayley graphs
+### Definition of Cayley graphs
 
 This file defines and proves several fact about Cayley graphs.
 A Cayley graph over type `M` with generators `s : Set M` is a graph in which two vertices `u ≠ v`
@@ -20,14 +20,19 @@ The elements of `s` are called generators.
 
 * `SimpleGraph.mulCayley s`: the Cayley graph over `M` induced by `[Mul M]` with generators `s`.
 * `SimpleGraph.addCayley s`: the Cayley graph over `M` induced by `[Add M]` with generators `s`.
+
+## TODOS
+* Add API describing behaviour w/r/t `MulOpposite`.
+* Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
+
 -/
 
 @[expose] public section
 
 namespace SimpleGraph
 
-/-- the Cayley graph induced by an operation `[Mul M]` with generators `s` -/
-@[to_additive /-- the Cayley graph induced by an operation `[Add M]` with generators `s` -/]
+/-- The Cayley graph induced by an operation `[Mul M]` with generators `s` -/
+@[to_additive /-- The Cayley graph induced by an operation `[Add M]` with generators `s` -/]
 def mulCayley {M : Type*} (s : Set M) [Mul M] : SimpleGraph M :=
   fromRel (∃ g ∈ s, · * g = ·)
 
@@ -36,7 +41,8 @@ variable {M : Type*} (s : Set M)
 section Mul
 variable [Mul M]
 
-@[to_additive]
+/-- See `mulCayley_adj` for the more convenient form in a `Group`. -/
+@[to_additive /-- See `addCayley_adj` for the more convenient form in an `AddGroup`. -/]
 lemma mulCayley_adj' (u v : M) :
     (mulCayley s).Adj u v ↔ u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g := by
   simp [mulCayley, ← exists_or, ← and_or_left, eq_comm]
@@ -63,13 +69,17 @@ variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
 @[to_additive]
 lemma mulCayley_gc :
-    GaloisConnection (mulCayley ·) ({g : M | ∀ a , a * g ≠ a → ·.Adj (a * g) a}) := by
+    GaloisConnection (mulCayley ·) {g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a} := by
   intro S G
   simp [mulCayley_le_iff, Set.subset_def]
 
+@[to_additive]
+theorem mulCayley_monotone : Monotone (mulCayley (M := M)) :=
+  (mulCayley_gc M).monotone_l
+
 @[to_additive (attr := gcongr)]
-theorem mulCayley_mono ⦃U V : Set M⦄ (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V :=
-  (mulCayley_gc M).monotone_l hUV
+theorem mulCayley_mono {U V : Set M} (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V :=
+  mulCayley_monotone hUV
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
@@ -80,6 +90,11 @@ theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCay
   (mulCayley_gc M).l_sup
 
 end Mul
+
+section MulCommClass
+end MulCommClass
+
+
 section Semigroup
 variable [Semigroup M]
 
@@ -89,6 +104,7 @@ theorem mulCayley_adj_mul_iff_right [IsLeftCancelMul M] {s : Set M} {u v d : M} 
   simp [mulCayley_adj', mul_assoc]
 
 end Semigroup
+
 section MulOneClass
 variable [MulOneClass M]
 
