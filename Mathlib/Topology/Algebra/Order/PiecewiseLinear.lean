@@ -81,7 +81,6 @@ noncomputable def piecewiseLinear (y : ℤ → E) (c : ℤ → E) {h : ℝ} (hh 
     (a : ℝ) (t : ℝ) : E :=
   let n := toIcoDiv hh a t
   y n + (t - (a + n • h)) • c n
-#check toIcoMod
 
 /-- The piecewise linear interpolation at a regular grid point equals `y n`. -/
 @[simp]
