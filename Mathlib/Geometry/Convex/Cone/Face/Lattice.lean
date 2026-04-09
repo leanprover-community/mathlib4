@@ -29,16 +29,16 @@ namespace PointedCone
 
 variable {R M N : Type*}
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
+section Semiring
+
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
+
 /-- The face lattice of a pointed cone `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
   isFaceOf : IsFaceOf toSubmodule C
 
 namespace Face
 
-section Semiring
-
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
 -- TODO: This should not be required if we say
@@ -87,7 +87,7 @@ instance : InfSet (Face C) where
         simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂]
         intros _ _ a xc yc a0 _ h
-        simpa [xc] using fun F Fs => F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
+        simpa [xc] using fun F Fs ↦ F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
     }
 
 instance : SemilatticeInf (Face C) where
@@ -102,7 +102,7 @@ instance : CompleteSemilatticeInf (Face C) where
     constructor <;> intro f fS
     · rw [← toPointedCone_le_toPointedCone]
       refine inf_le_of_right_le ?_
-      simpa [LE.le] using fun _ xs => xs f fS
+      simpa [LE.le] using fun _ xs ↦ xs f fS
     · simp only [sInf, Set.mem_setOf_eq, Set.iInter_exists, Set.biInter_and',
       Set.iInter_iInter_eq_right, ← toPointedCone_le_toPointedCone, toPointedCone, le_inf_iff]
       refine ⟨f.isFaceOf.le, ?_⟩
@@ -117,9 +117,13 @@ instance : Inhabited (Face C) := ⟨⊤⟩
 
 instance : Nonempty (Face C) := ⟨⊤⟩
 
+end Face
+
 end Semiring
 
 section DivisionRing
+
+namespace Face
 
 variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
@@ -127,7 +131,7 @@ variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Mo
 /-- The bottom face of `C` is its lineality space. -/
 theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by
   apply le_antisymm _ (⊥ : Face C).isFaceOf.lineal_le
-  exact fun x hx => bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
+  exact fun x hx ↦ bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
 
 /-!
 ### Product
@@ -149,12 +153,12 @@ def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 @[simp]
 theorem prod_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
-  simpa [fst, prod, ← mem_coe, toPointedCone] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [fst, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
 theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
-  simpa [snd, prod, ← mem_coe, toPointedCone] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [snd, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₁.toSubmodule.zero_mem⟩
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
@@ -189,10 +193,12 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
     · simpa [fst_prod_snd, toPointedCone_le_toPointedCone] using Face.prod_mono a.1 a.2
     · constructor; all_goals
       try simpa only [prod_left, prod_right]
-      exact fun _ d => Submodule.map_mono a d
+      exact fun _ d ↦ Submodule.map_mono a d
 
 end Prod
 
+end Face
+
 end DivisionRing
 
-end PointedCone.Face
+end PointedCone
