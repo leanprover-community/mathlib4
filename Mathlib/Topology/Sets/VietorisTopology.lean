@@ -233,10 +233,7 @@ theorem _root_.Topology.IsEmbedding.image_vietoris (hf : IsEmbedding f) : IsEmbe
   injective := hf.injective.image_injective
 
 instance [T1Space α] : T0Space (Set α) := by
-  constructor
-  suffices ∀ {s t : Set α}, Inseparable s t → s ⊆ t from
-    fun _ _ h => (this h).antisymm (this h.symm)
-  intro s t h x hx
+  refine .of_antisymm (· ⊆ ·) fun s t h x hx => ?_
   have := h.mem_closed_iff <| isClosed_inter_nonempty_of_isClosed <| isClosed_singleton (x := x)
   simp_rw [inter_singleton_nonempty] at this
   exact this.mp hx
@@ -476,9 +473,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
     preimage_setOf_eq, Filter.disjoint_iff]
   rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩) K hK
   · obtain ⟨V, W, hV, hW, hKV, hUW, hVW⟩ :=
-      SeparatedNhds.of_isCompact_isClosed
-        K.isCompact
-        hU.isClosed_compl
+      SeparatedNhds.of_isCompact_isClosed K.isCompact hU.isClosed_compl
         (disjoint_compl_right_iff_subset.mpr hK)
     refine ⟨{K | (↑K ∩ W).Nonempty}, ?_, {K | ↑K ⊆ V},
       (isOpen_subsets_of_isOpen hV).mem_nhds_iff.mpr hKV, by grind [Set.Nonempty]⟩
@@ -487,9 +482,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
     grw [hUW]
   · obtain ⟨x, hx₁, hx₂⟩ := hK
     obtain ⟨V, W, hV, hW, hxV, hUW, hVW⟩ :=
-      SeparatedNhds.of_isCompact_isClosed
-        (isCompact_singleton (x := x))
-        hU.isClosed_compl
+      SeparatedNhds.of_isCompact_isClosed (isCompact_singleton (x := x)) hU.isClosed_compl
         (by simpa)
     refine ⟨{K | ↑K ⊆ W}, ?_, {K | (↑K ∩ V).Nonempty}, ?_, by grind [Set.Nonempty]⟩
     · simp_rw [(isOpen_subsets_of_isOpen hW).mem_nhdsSet, compl_setOf, not_nonempty_iff_eq_empty,
@@ -501,8 +494,6 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
 @[simp]
 theorem regularSpace_iff : RegularSpace (Compacts α) ↔ RegularSpace α :=
   ⟨fun _ => isEmbedding_singleton.regularSpace, fun _ => inferInstance⟩
-
-instance [T3Space α] : T3Space (Compacts α) where
 
 @[simp]
 theorem t3Space_iff : T3Space (Compacts α) ↔ T3Space α :=
@@ -710,8 +701,6 @@ instance [RegularSpace α] : RegularSpace (NonemptyCompacts α) :=
 @[simp]
 theorem regularSpace_iff : RegularSpace (NonemptyCompacts α) ↔ RegularSpace α :=
   ⟨fun _ => isEmbedding_singleton.regularSpace, fun _ => inferInstance⟩
-
-instance [T3Space α] : T3Space (NonemptyCompacts α) where
 
 @[simp]
 theorem t3Space_iff : T3Space (NonemptyCompacts α) ↔ T3Space α :=
