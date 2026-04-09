@@ -1,5 +1,6 @@
 module
 import Mathlib.Tactic.PNatToNat
+meta import Mathlib.Tactic.Attr.Register
 
 example (a b : PNat) (h : a < b) : 1 < b := by
   pnat_to_nat

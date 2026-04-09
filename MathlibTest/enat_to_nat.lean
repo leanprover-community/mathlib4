@@ -1,5 +1,6 @@
 module
 import Mathlib.Tactic.ENatToNat
+meta import Mathlib.Tactic.Attr.Register
 
 example (a b : ENat) (h : a = b) : a - b = b - a := by
   enat_to_nat

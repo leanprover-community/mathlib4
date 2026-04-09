@@ -7,6 +7,7 @@ module
 import Mathlib.Tactic.Zify
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
+meta import Mathlib.Tactic.Attr.Register
 
 set_option linter.unusedVariables false
 

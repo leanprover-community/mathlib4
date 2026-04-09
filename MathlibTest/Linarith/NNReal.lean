@@ -2,6 +2,7 @@ module
 import Mathlib.Tactic.Linarith.NNRealPreprocessor
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Inv
+meta import Mathlib.Tactic.Attr.Register
 
 open NNReal
 
