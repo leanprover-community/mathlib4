@@ -71,7 +71,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C 
   rfl
 
 /-- Returns `true` on `some x` and false on `⊥`. -/
-@[to_dual]
+@[to_dual /-- Returns `true` on `some x` and false on `⊤`. -/]
 def isSome : WithBot α → Bool
   | ⊥ => false
   | (_ : α) => true
