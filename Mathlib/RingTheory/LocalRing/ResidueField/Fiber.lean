@@ -72,6 +72,26 @@ lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, 
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
+  letI Rp := Localization p.primeCompl
+  letI pRp := IsLocalRing.maximalIdeal Rp
+  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI pSp := pRp.map (algebraMap Rp Sp)
+  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S Rp S pRp).trans <|
+    { __ := Ideal.quotientEquiv _ _ (Localization.tensor_localization_algEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensor_localization_algEquiv_apply_one_tmul p.primeCompl])
+      commutes' := by simp }
+
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
