@@ -263,7 +263,6 @@ lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r �
   · simpa [max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toNNReal_neg_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (-(r • f)).toNNReal = r • (-f).toNNReal := by
   rw [NNReal.smul_def, ← smul_neg, ← NNReal.smul_def, toNNReal_smul]
@@ -294,7 +293,6 @@ section IsTopologicalRing
 
 variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
 star `ℝ`-algebra homomorphism. -/
@@ -362,7 +360,6 @@ end NonUnitalStarAlgHom
 
 open ContinuousMapZero
 
-set_option backward.isDefEq.respectTransparency false in
 instance NNReal.instContinuousMapZero.UniqueHom
     [TopologicalSpace A] [IsSemitopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :

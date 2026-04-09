@@ -151,12 +151,14 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
     (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [lift_umax, c.ord.lift_id', hc.cof_ord]
 
+set_option linter.deprecated false in
 @[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
