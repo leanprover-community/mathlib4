@@ -683,6 +683,7 @@ lemma _root_.WithTop.isSome_mono : Monotone (fun x : WithBot α ↦ x.isSome) :=
   intro x y h
   cases x <;> cases y <;> simp_all
 
+@[to_dual]
 lemma bind_mono
     {f : α → WithBot β} (hf : Monotone f)
     {g : α → β → WithBot γ} (hg : Monotone (Function.uncurry g)) :
