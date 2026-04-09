@@ -193,11 +193,11 @@ theorem integral_lineDeriv_mul_eq
   simp_rw [_root_.sub_mul, _root_.mul_sub]
   rw [integral_sub, integral_sub, S3]
   · apply Continuous.integrable_of_hasCompactSupport
-    · exact hf.continuous.mul (hg.continuous.comp (continuous_add_right _))
+    · exact hf.continuous.mul (hg.continuous.comp (continuous_add_const _))
     · exact (h'g.comp_homeomorph (Homeomorph.addRight (t • (-v)))).mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
   · apply Continuous.integrable_of_hasCompactSupport
-    · exact (hf.continuous.comp (continuous_add_right _)).mul hg.continuous
+    · exact (hf.continuous.comp (continuous_add_const _)).mul hg.continuous
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
@@ -316,7 +316,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
     _ = ε * ‖v‖ := by rw [hδ, hρ]
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
-differentiable almost everywere. Superseded by
+differentiable almost everywhere. Superseded by
 `LipschitzWith.ae_differentiableAt` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
@@ -335,7 +335,7 @@ variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [IsAddHaarMeasure �
 namespace LipschitzOnWith
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz on a set is
-differentiable almost everywere in this set. Superseded by
+differentiable almost everywhere in this set. Superseded by
 `LipschitzOnWith.ae_differentiableWithinAt_of_mem` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_of_real (hf : LipschitzOnWith C f s) :
@@ -345,7 +345,7 @@ theorem ae_differentiableWithinAt_of_mem_of_real (hf : LipschitzOnWith C f s) :
   exact hx.differentiableWithinAt.congr hg (hg xs)
 
 /-- A function on a finite-dimensional space which is Lipschitz on a set and taking values in a
-product space is differentiable almost everywere in this set. Superseded by
+product space is differentiable almost everywhere in this set. Superseded by
 `LipschitzOnWith.ae_differentiableWithinAt_of_mem` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_pi
@@ -359,7 +359,7 @@ theorem ae_differentiableWithinAt_of_mem_pi
   exact differentiableWithinAt_pi.2 (fun i ↦ hx i xs)
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywere in this set. -/
+Lipschitz on a set is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f s) :
     ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   have A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
@@ -373,7 +373,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
   exact A.lipschitz.comp_lipschitzOnWith hf
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywere in this set. -/
+Lipschitz on a set is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt {f : E → F} (hf : LipschitzOnWith C f s)
     (hs : MeasurableSet s) :
     ∀ᵐ x ∂(μ.restrict s), DifferentiableWithinAt ℝ f s x := by

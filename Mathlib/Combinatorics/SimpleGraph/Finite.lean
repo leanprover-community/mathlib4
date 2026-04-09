@@ -311,6 +311,11 @@ variable {G}
 theorem IsRegularOfDegree.degree_eq {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) : G.degree v = d :=
   h v
 
+/-- The empty graph is regular of any degree `d` -/
+@[simp]
+theorem IsRegularOfDegree.of_isEmpty [IsEmpty V] {d : ℕ} : G.IsRegularOfDegree d :=
+  IsEmpty.elim ‹_›
+
 theorem IsRegularOfDegree.compl [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj]
     {k : ℕ} (h : G.IsRegularOfDegree k) : Gᶜ.IsRegularOfDegree (Fintype.card V - 1 - k) := by
   intro v
@@ -352,6 +357,10 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
   intro v
   simp
+
+@[simp]
+theorem IsRegularOfDegree.bot : (⊥ : SimpleGraph V).IsRegularOfDegree 0 :=
+  bot_degree
 
 /-- The minimum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_minimal_degree_vertex`, `minDegree_le_degree`
@@ -403,7 +412,7 @@ theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
   obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
   rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
   have h : v ∉ G.neighborFinset v :=
-    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+    (G.mem_neighborFinset v v).not.mpr (G.loopless.irrefl v)
   contrapose! h
   rw [eq_of_subset_of_card_le (subset_univ _) h]
   exact mem_univ v
@@ -444,9 +453,19 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
   · obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
+theorem IsRegularOfDegree.maxDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : ℕ}
+    (h : G.IsRegularOfDegree d) : G.maxDegree = d := by
+  simp [maxDegree, h.degree_eq, Finset.image_const]
+
 @[simp]
 lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
   Nat.le_zero.1 <| maxDegree_le_of_forall_degree_le _ _ (by simp)
+
+@[simp]
+lemma maxDegree_top [DecidableEq V] : (⊤ : SimpleGraph V).maxDegree = Fintype.card V - 1 := by
+  cases isEmpty_or_nonempty V
+  · simp
+  exact IsRegularOfDegree.top.maxDegree_eq
 
 @[simp]
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
@@ -454,9 +473,19 @@ lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree 
   · simp
   · exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
+theorem IsRegularOfDegree.minDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : ℕ}
+    (h : G.IsRegularOfDegree d) : G.minDegree = d := by
+  simp [minDegree, h.degree_eq, Finset.image_const]
+
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
   Nat.le_zero.1 <| (minDegree_le_maxDegree _).trans (by simp)
+
+@[simp]
+lemma minDegree_top [DecidableEq V] : (⊤ : SimpleGraph V).minDegree = Fintype.card V - 1 := by
+  cases isEmpty_or_nonempty V
+  · simp
+  exact IsRegularOfDegree.top.minDegree_eq
 
 theorem degree_lt_card_verts [DecidableRel G.Adj] (v : V) : G.degree v < Fintype.card V := by
   classical
@@ -591,7 +620,7 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
   ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
-    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+    ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v := by
   classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h

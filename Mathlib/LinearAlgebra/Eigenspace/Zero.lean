@@ -132,7 +132,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
       ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
-  push_neg at this
+  push Not at this
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
   have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
@@ -198,9 +198,6 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   generalize_proofs h'
   clear hx
   induction n <;> simp [pow_succ', *]
-
-@[deprecated (since := "2025-09-07")] alias finrank_maxGenEigenspace :=
-  finrank_maxGenEigenspace_zero_eq
 
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
     finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by

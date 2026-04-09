@@ -129,11 +129,21 @@ into `Πʳ i, [R i, A i]_[𝓕]`. -/
 def structureMap (x : Π i, A i) : Πʳ i, [R i, A i]_[𝓕] :=
   ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
 
+@[simp]
+lemma structureMap_apply {x : Π i, A i} (i : ι) :
+    structureMap R A 𝓕 x i = x i :=
+  rfl
+
 /-- If `𝓕 ≤ 𝓖`, the restricted product `Πʳ i, [R i, A i]_[𝓖]` is naturally included in
 `Πʳ i, [R i, A i]_[𝓕]`. This is the corresponding map. -/
 def inclusion (h : 𝓕 ≤ 𝓖) (x : Πʳ i, [R i, A i]_[𝓖]) :
     Πʳ i, [R i, A i]_[𝓕] :=
   ⟨x, x.2.filter_mono h⟩
+
+@[simp]
+lemma inclusion_apply (h : 𝓕 ≤ 𝓖) {x : Πʳ i, [R i, A i]_[𝓖]} (i : ι) :
+    inclusion R A h x i = x i :=
+  rfl
 
 variable (𝓕) in
 lemma inclusion_eq_id : inclusion R A (le_refl 𝓕) = id := rfl
@@ -153,10 +163,24 @@ lemma range_inclusion (h : 𝓕 ≤ 𝓖) :
   subset_antisymm (range_subset_iff.mpr fun x ↦ x.2)
     (fun _ hx ↦ mem_range.mpr <| exists_inclusion_eq_of_eventually R A h hx)
 
+@[simp]
+lemma coe_comp_inclusion (h : 𝓕 ≤ 𝓖) :
+    DFunLike.coe ∘ inclusion R A h = DFunLike.coe :=
+  rfl
+
+lemma image_coe_preimage_inclusion_subset (h : 𝓕 ≤ 𝓖)
+    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' (inclusion R A h ⁻¹' U) ⊆ (⇑) '' U :=
+  fun _ ⟨x, hx, hx'⟩ ↦ ⟨inclusion R A h x, hx, hx'⟩
+
 lemma range_structureMap :
     Set.range (structureMap R A 𝓕) = {f | ∀ i, f.1 i ∈ A i} :=
   subset_antisymm (range_subset_iff.mpr fun x i ↦ (x i).2)
     (fun _ hx ↦ mem_range.mpr <| exists_structureMap_eq_of_forall R A hx)
+
+@[simp]
+lemma coe_comp_structureMap :
+    DFunLike.coe ∘ structureMap R A 𝓕 = fun x i ↦ (x i).val :=
+  rfl
 
 section Algebra
 /-!
@@ -217,12 +241,8 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x / y) i = x i / y i :=
   rfl
 
-instance instNSMul [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
-    SMul ℕ (Πʳ i, [R i, B i]_[𝓕]) where
-  smul n x := ⟨fun i ↦ n • (x i), x.2.mono fun _ hi ↦ nsmul_mem hi n⟩
-
-@[to_additive existing instNSMul]
-instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+@[to_additive]
+instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
@@ -241,12 +261,8 @@ instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance instZSMul [Π i, SubNegMonoid (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
-    SMul ℤ (Πʳ i, [R i, B i]_[𝓕]) where
-  smul n x := ⟨fun i ↦ n • x i, x.2.mono fun _ hi ↦ zsmul_mem hi n⟩
-
-@[to_additive existing instZSMul]
-instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+@[to_additive]
+instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
 
@@ -483,6 +499,9 @@ lemma mulSingle_inj {x y : G i} : mulSingle A i x = mulSingle A i y ↔ x = y :=
   (mulSingle_injective A i).eq_iff
 
 @[to_additive]
+lemma mulSingle_eq_same (r : G i) : mulSingle A i r i = r := Pi.mulSingle_eq_same i r
+
+@[to_additive]
 lemma mulSingle_eq_of_ne {i j : ι} (r : G i) (h : j ≠ i) : mulSingle A i r j = 1 :=
   Pi.mulSingle_eq_of_ne h r
 
@@ -546,7 +565,7 @@ lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)]
 @[to_additive]
 lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
     (i : ι) (r : G i) (n : ℤ) :
-    mulSingle A i (r  ^ n) = mulSingle A i r ^ n := by
+    mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]
 
 end single

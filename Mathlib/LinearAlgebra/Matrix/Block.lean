@@ -80,7 +80,7 @@ protected theorem BlockTriangular.transpose :
 @[simp]
 protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
     Mᵀ.BlockTriangular b ↔ M.BlockTriangular (ofDual ∘ b) :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
@@ -262,7 +262,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
-      Equiv.subtypeSubtypeEquivSubtype @(hc)
+      Equiv.subtypeSubtypeEquivSubtype @hc
     simp only [toSquareBlock_def]
     erw [← Matrix.det_reindex_self he.symm fun i j : { a // b a = l } => M ↑i ↑j]
     rfl
@@ -332,6 +332,7 @@ theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockT
   inv_eq_left_inv <| hM.toBlock_inverse_mul_toBlock_eq_one k
 
 /-- An upper-left subblock of an invertible block-triangular matrix is invertible. -/
+@[implicit_reducible]
 def BlockTriangular.invertibleToBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) : Invertible (M.toBlock (fun i => b i < k) fun i => b i < k) :=
   invertibleOfLeftInverse _ ((⅟M).toBlock (fun i => b i < k) fun i => b i < k) <| by

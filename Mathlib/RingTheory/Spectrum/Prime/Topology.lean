@@ -272,9 +272,12 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
+lemma irreducibleSpace_iff_isPrime_nilradical :
+    IrreducibleSpace (PrimeSpectrum R) ↔ (nilradical R).IsPrime := by
+  simp [irreducibleSpace_def, isIrreducible_iff_vanishingIdeal_isPrime]
+
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
-  rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.isPrime_bot
+  simpa [irreducibleSpace_iff_isPrime_nilradical] using Ideal.isPrime_bot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
@@ -532,6 +535,7 @@ theorem basicOpen_eq_zeroLocus_compl (r : R) :
 theorem basicOpen_one : basicOpen (1 : R) = ⊤ :=
   TopologicalSpace.Opens.ext <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_zero : basicOpen (0 : R) = ⊥ :=
   TopologicalSpace.Opens.ext <| by simp
@@ -561,6 +565,9 @@ theorem basicOpen_mul_le_right (f g : R) : basicOpen (f * g) ≤ basicOpen g := 
 theorem basicOpen_pow (f : R) (n : ℕ) (hn : 0 < n) : basicOpen (f ^ n) = basicOpen f :=
   TopologicalSpace.Opens.ext <| by simpa using zeroLocus_singleton_pow f n hn
 
+lemma le_basicOpen_pow (r : R) (n : ℕ) : basicOpen r ≤ basicOpen (r ^ n) := by
+  cases n <;> simp
+
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : R => (basicOpen r : Set (PrimeSpectrum R))) := by
@@ -584,6 +591,7 @@ theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicO
   rw [← Set.range_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
   rw [← TopologicalSpace.Opens.coe_inj, basicOpen_eq_zeroLocus_compl]
@@ -673,6 +681,7 @@ section DiscreteTopology
 
 variable (R) [DiscreteTopology (PrimeSpectrum R)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toPiLocalization_surjective_of_discreteTopology :
     Function.Surjective (toPiLocalization R) := fun x ↦ by
   have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=
@@ -1016,7 +1025,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
-  rw [isClopen_iff_mul_add, exists_swap]
+  rw [isClopen_iff_mul_add, exists_comm]
   refine exists₂_congr fun e f ↦ ?_
   rw [mul_comm, add_comm, ← and_assoc, ← and_assoc, and_congr_right]
   intro ⟨mul, add⟩
@@ -1024,6 +1033,7 @@ lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
 
 open TopologicalSpace (Clopens)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Clopen subsets in the prime spectrum of a commutative semiring are in order-preserving
 bijection with pairs of elements with product 0 and sum 1. (By definition, `(e₁, f₁) ≤ (e₂, f₂)`
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
@@ -1131,13 +1141,21 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']
 
-lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
-    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
-  algebraize [f]
+variable (R S) in
+lemma _root_.Algebra.IsIntegral.comap_surjective [Algebra R S] [Algebra.IsIntegral R S]
+    [FaithfulSMul R S] :
+    Function.Surjective (comap (algebraMap R S)) := by
   intro ⟨p, hp⟩
+  have hinj : Function.Injective (algebraMap R S) := FaithfulSMul.algebraMap_injective _ _
   obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
     (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
   exact ⟨⟨Q, hQ⟩, rfl⟩
+
+lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
+    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
+  algebraize [f]
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hinj
+  exact Algebra.IsIntegral.comap_surjective _ _
 
 @[deprecated (since := "2025-12-10")]
 alias _root_.RingHom.IsIntegral.specComap_surjective := _root_.RingHom.IsIntegral.comap_surjective
@@ -1239,6 +1257,7 @@ theorem comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S] (f : R �
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=
   (PrimeSpectrum.le_iff_specializes _ _).mp (IsLocalRing.le_maximalIdeal x.2.1)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
     closedPoint R ∈ U ↔ U = ⊤ := by
   constructor
@@ -1247,6 +1266,7 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
   · rintro rfl
     exact TopologicalSpace.Opens.mem_top _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
     closedPoint R ∈ U ↔ U = ⊤ :=
   ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩

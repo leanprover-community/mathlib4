@@ -309,13 +309,13 @@ lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by aesop_mat) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.IsCircuit C :=
   ⟨Dep.exists_isCircuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the supportedness hypothesis
+/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the ground-set hypothesis
 as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_isCircuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.IsCircuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_isCircuit_subset, h.subset_ground⟩,
     fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the supportedness
+/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the ground-set
 hypothesis as part of the equivalence, rather than a hypothesis. -/
 lemma indep_iff_forall_subset_not_isCircuit' :
     M.Indep I ↔ (∀ C, C ⊆ I → ¬M.IsCircuit C) ∧ I ⊆ M.E := by
@@ -497,7 +497,7 @@ section Finitary
 
 lemma IsCircuit.finite [Finitary M] (hC : M.IsCircuit C) : C.Finite := by
   have hi := hC.dep.not_indep
-  rw [indep_iff_forall_finite_subset_indep] at hi; push_neg at hi
+  rw [indep_iff_forall_finite_subset_indep] at hi; push Not at hi
   obtain ⟨J, hJC, hJfin, hJ⟩ := hi
   rwa [← hC.eq_of_not_indep_subset hJ hJC]
 
@@ -581,9 +581,9 @@ lemma isCocircuit_iff_minimal :
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
   convert isCocircuit_iff_minimal with K
-  simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
-    not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-    inter_comm K]
+  rw [spanning_iff_exists_isBase_subset]
+  simp_rw [not_exists, subset_diff, not_and, not_disjoint_iff_nonempty_inter, ← and_imp,
+    and_iff_left_of_imp IsBase.subset_ground, inter_comm K]
 
 /-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :
@@ -726,8 +726,8 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   obtain hfB | hfB := em' <| f ∈ B
   · rw [fundCocircuit, fundCircuit_eq_of_mem (by simp [hfE, hfB])] at he
     contradiction
-  obtain ⟨heE, heB⟩ : e ∈ M.E \ B :=
-    by simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
+  obtain ⟨heE, heB⟩ : e ∈ M.E \ B := by
+    simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
   -- Use basis exchange to argue the equivalence.
   rw [fundCocircuit, hB'.indep.mem_fundCircuit_iff (by rwa [hB'.closure_eq]) (by simp [hfB])] at he
   rw [hB.indep.mem_fundCircuit_iff (by rwa [hB.closure_eq]) heB]

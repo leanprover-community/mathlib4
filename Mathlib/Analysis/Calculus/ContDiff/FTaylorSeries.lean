@@ -541,9 +541,19 @@ theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (
     refine this.mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
 
+variable (𝕜) in
+/-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ s =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f s :=
   h.iteratedFDerivWithin' Subset.rfl n
+
+variable (𝕜) in
+/-- If two functions agree in a neighborhood within `s`, then so do their Taylor series. -/
+protected theorem Filter.EventuallyEq.ftaylorSeriesWithin (h : f₁ =ᶠ[𝓝[s] x] f) :
+    ftaylorSeriesWithin 𝕜 f₁ s =ᶠ[𝓝[s] x] ftaylorSeriesWithin 𝕜 f s := by
+  filter_upwards [eventually_eventually_nhdsWithin.2 h, self_mem_nhdsWithin] with x₁ h₁x₁ h₂x₁
+  ext n : 1
+  apply (Filter.EventuallyEq.iteratedFDerivWithin (𝕜 := 𝕜) h₁x₁ n).eq_of_nhdsWithin h₂x₁
 
 /-- If two functions coincide in a neighborhood of `x` within a set `s` and at `x`, then their
 iterated differentials within this set at `x` coincide. -/
@@ -693,13 +703,17 @@ Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries
 structure HasFTaylorSeriesUpTo
   (n : ℕ∞ω) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) : Prop where
   zero_eq : ∀ x, (p x 0).curry0 = f x
-  fderiv : ∀ m : ℕ, m < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
+  protected fderiv : ∀ m : ℕ, m < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
   cont : ∀ m : ℕ, m ≤ n → Continuous fun x => p x m
 
 theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :
     p x 0 = (continuousMultilinearCurryFin0 𝕜 E F).symm (f x) := by
   rw [← h.zero_eq x]
   exact (p x 0).uncurry0_curry0.symm
+
+lemma HasFTaylorSeriesUpTo.fderiv_eq (h : HasFTaylorSeriesUpTo n f p)
+    {m : ℕ} (hmn : m < n) (x : E) : fderiv 𝕜 (p · m) x = (p x m.succ).curryLeft :=
+  h.fderiv m hmn x |>.fderiv
 
 theorem hasFTaylorSeriesUpToOn_univ_iff :
     HasFTaylorSeriesUpToOn n f p univ ↔ HasFTaylorSeriesUpTo n f p := by
@@ -774,6 +788,27 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
             (p x).shift := by
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
+
+lemma HasFTaylorSeriesUpTo.tsupport_mono {k m : ℕ} (h : k ≤ m) (h2 : m ≤ n)
+    (hf : HasFTaylorSeriesUpTo n f p) :
+    tsupport (p · m) ⊆ tsupport (p · k) := by
+  induction h with
+  | refl => rfl
+  | @step l h ih =>
+    have hl : l < n := lt_of_lt_of_le (mod_cast lt_add_one l) h2
+    refine subset_trans ?_ (ih hl.le)
+    refine Eq.trans_subset ?_ (tsupport_fderiv_subset 𝕜)
+    rw [funext <| hf.fderiv_eq (mod_cast hl)]
+    refine tsupport_comp_eq (g := ContinuousMultilinearMap.curryLeft) (fun {x} ↦ ?_) _ |>.symm
+    exact (continuousMultilinearCurryLeftEquiv _ _ _).map_eq_zero_iff (x := x)
+
+lemma HasFTaylorSeriesUpTo.tsupport_subset {m : ℕ} (h : m ≤ n)
+    (hf : HasFTaylorSeriesUpTo n f p) :
+    tsupport (p · m) ⊆ tsupport f := by
+  refine (hf.tsupport_mono (zero_le _) h).trans_eq ?_
+  rw [← funext hf.zero_eq]
+  refine tsupport_comp_eq (g := ContinuousMultilinearMap.curry0) (fun {x} ↦ ?_) _ |>.symm
+  exact (continuousMultilinearCurryFin0 _ _ _).map_eq_zero_iff (x := x)
 
 /-! ### Iterated derivative -/
 
@@ -864,6 +899,14 @@ theorem Filter.EventuallyEq.iteratedFDeriv
     iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
   simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
     Filter.EventuallyEq.iteratedFDerivWithin]
+
+variable (𝕜) in
+/-- If two functions agree in a neighborhood, then so do their Taylor series. -/
+protected theorem Filter.EventuallyEq.ftaylorSeries (h : f₁ =ᶠ[𝓝 x] f) :
+    ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f := by
+  filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
+  ext n : 1
+  exact (Filter.EventuallyEq.iteratedFDeriv 𝕜 he₁ n).eq_of_nhds
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :

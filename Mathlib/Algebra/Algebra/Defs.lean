@@ -349,7 +349,7 @@ Compose an `Algebra` with a `RingHom`, with action `f s • m`.
 This is the algebra version of `Module.compHom`.
 -/
 abbrev compHom : Algebra S A where
-  smul s a := f s • a
+  __ := Module.compHom A f
   algebraMap := (algebraMap R A).comp f
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
@@ -404,14 +404,6 @@ lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
 
-@[deprecated algebraMap_self (since := "2025-07-17")]
-theorem map_eq_id : algebraMap R R = RingHom.id _ :=
-  rfl
-
-@[deprecated algebraMap_self_apply (since := "2025-07-17")]
-theorem map_eq_self (x : R) : algebraMap R R x = x :=
-  rfl
-
 @[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
   rfl
@@ -435,5 +427,11 @@ theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a
 theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
     (a • b : B) = a • (b : C) := by
   simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
+
+theorem algebraMap.smul [SMul A C] [IsScalarTower A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul _ _ _
+
+theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
 
 end algebraMap
