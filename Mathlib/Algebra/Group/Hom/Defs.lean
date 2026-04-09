@@ -490,7 +490,7 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 /-- Group homomorphisms preserve integer power.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := 9 10)
+@[to_additive (attr := simp mid, grind =) (reorder := g n)
 /-- Additive group homomorphisms preserve integer scaling. -/]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -1031,7 +1031,7 @@ protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : �
   map_inv f _
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive /-- Additive group homomorphisms preserve integer scaling. -/]
+@[to_additive (reorder := g n) /-- Additive group homomorphisms preserve integer scaling. -/]
 protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
     f (g ^ n) = f g ^ n := map_zpow f g n
 
