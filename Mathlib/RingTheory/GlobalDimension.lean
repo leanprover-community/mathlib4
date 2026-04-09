@@ -59,9 +59,8 @@ noncomputable def globalDimension : WithBot ℕ∞ :=
 lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{v} R = ⊥ ↔ Subsingleton R := by
   simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
     ModuleCat.isZero_iff_subsingleton]
-  refine ⟨fun h ↦ ?_, fun h M ↦ Module.subsingleton R M⟩
-  let _ := h (ModuleCat.of R (Shrink.{v} R))
-  exact (equivShrink.{v} R).subsingleton
+  exact ⟨fun h ↦ (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R))),
+    fun h M ↦ Module.subsingleton R M⟩
 
 lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
@@ -96,9 +95,8 @@ lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDi
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
-    refine ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦ ?_⟩
-    let _ := h (ModuleCat.of R (Shrink.{v} R)) (Module.Finite.equiv (Shrink.linearEquiv R R).symm)
-    exact (equivShrink.{v} R).subsingleton
+    exact ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦
+      (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)) inferInstance)⟩
   | coe N =>
     induction N with
     | top => simp
@@ -114,9 +112,8 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
-    refine ⟨fun h M ↦ Module.subsingleton R M, fun h ↦ ?_⟩
-    let _ := h (ModuleCat.of R (Shrink.{v} R))
-    exact (equivShrink.{v} R).subsingleton
+    exact ⟨fun h M ↦ Module.subsingleton R M,
+      fun h ↦ (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)))⟩
   | coe N =>
     induction N with
     | top => simp
