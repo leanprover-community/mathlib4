@@ -3,7 +3,9 @@ Copyright (c) 2026 J. York Seale. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. York Seale
 -/
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
@@ -48,6 +50,8 @@ corresponding to the five Platonic solids:
 
 platonic solid, regular polyhedron, Schläfli symbol, classification
 -/
+
+@[expose] public section
 
 /-- The five Platonic solids (regular convex polyhedra). -/
 inductive PlatonicSolid where
@@ -205,3 +209,5 @@ theorem schlafli_constraint_iff_exists_solid {p q : ℕ} :
     · right; right; left; rfl
     · right; right; right; left; rfl
     · right; right; right; right; rfl
+
+end
