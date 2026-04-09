@@ -27,8 +27,9 @@ poles of `g` within the ball.
 
 public section
 
-open Filter MeromorphicAt MeromorphicOn Metric Real
-open Filter Metric Real MeasureTheory Set Topology
+open Filter MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology
+open scoped ComplexConjugate
+
 
 /-!
 ## Preparatory Material
@@ -40,7 +41,7 @@ some of the terms that appear in the formula and its proof.
 -- Auxiliary definitition for `circleAverage_re_herglotzRieszKernel_mul_log`. Shorthand for the
 -- integrand in our computations
 private noncomputable def herglotzLogIntegrand (w ρ : ℂ) : ℂ → ℝ :=
-  (Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)
+  (Complex.re ∘ herglotzRieszKernel 0 w) • (Real.log ‖· - ρ‖)
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
 -- herglotzLogIntegrand.
@@ -62,6 +63,7 @@ private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (h
     by_contra h
     grind [norm_circleMap_zero, lt_of_le_of_lt (Complex.norm_nonneg w) hwr]
 
+open Complex in
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
 -- boundedness required by the dominated convergence theorem, Part I.
 private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R)
