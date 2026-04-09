@@ -653,27 +653,27 @@ def mkOfAdjoinEqTop'
     [Module.Finite R S] [Module.Free R S] [Nontrivial R]
     {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) where
-  map := aeval α
-  ker_map := by
-    set f := minpoly R α
+  __ : IsAdjoinRoot S (minpoly R α) :=
+    let f := minpoly R α
     have hf := minpoly.monic (Algebra.IsIntegral.isIntegral (R := R) α)
     let φ : AdjoinRoot f →ₐ[R] S :=
       AdjoinRoot.liftAlgHom f (Algebra.ofId R S) α (minpoly.aeval R α)
-    have hφ : Function.Surjective φ := by
-      rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
-      intro s; obtain ⟨p, hp⟩ := hα s
-      exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
-    refine IsAdjoinRoot.ofAdjoinRootEquiv (AlgEquiv.ofBijective φ ⟨?_, hφ⟩) |>.ker_map
-    haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
-    letI : Module R (AdjoinRoot f) := Algebra.toModule
-    have e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
-      le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le')
-      (LinearMap.finrank_le_finrank_of_surjective (f:=φ.toLinearMap) hφ)
-    exact fun x y h => OrzechProperty.injective_of_surjective_endomorphism
-      (e.symm.toLinearMap.comp φ.toLinearMap)
-      (e.symm.surjective.comp hφ) (congr_arg e.symm h)
-  map_surjective := by
-    rwa [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at *
+    IsAdjoinRoot.ofAdjoinRootEquiv <| AlgEquiv.ofBijective φ <| by
+      have hφ : Function.Surjective φ := by
+        rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+        intro s; obtain ⟨p, hp⟩ := hα s
+        exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
+      haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
+      letI : Module R (AdjoinRoot f) := Algebra.toModule
+      -- exact OrzechProperty.bijective_of_surjective_of_finrank_le
+      --  (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le' α) φ hφ
+      have e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
+        le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le' α)
+        (LinearMap.finrank_le_finrank_of_surjective (f:=φ.toLinearMap) hφ)
+      exact ⟨fun x y h => OrzechProperty.injective_of_surjective_endomorphism
+        (e.symm.toLinearMap.comp φ.toLinearMap)
+        (e.symm.surjective.comp hφ) (congr_arg e.symm h), hφ⟩
+  map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 
 end IsAdjoinRootMonic
