@@ -595,8 +595,7 @@ lemma le_exp_log {x : Gᵐ⁰} :
   · simp
   · rfl
 
-lemma map'_apply [MulOneClass α] [MulOneClass β] (f : α →* β) (x) :
-    WithZero.map' f x = x.map f := by
-  cases x <;> simp only [map'_coe, map_coe, map_zero, map_bot]
+lemma map'_apply [MulOneClass α] [MulOneClass β] (f : α →* β) (x : WithZero α) :
+    WithZero.map' f x = x.map f := by cases x <;> simp
 
 end WithZero

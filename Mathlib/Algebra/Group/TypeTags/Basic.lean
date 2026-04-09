@@ -519,6 +519,10 @@ lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*
   · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,
       one_apply, ofMul_one]
 
-lemma Multiplicative.ofAdd_cast_toAdd_eq_ofAdd_cast {R : Type*} [NatCast R] :
-    ⇑Multiplicative.ofAdd ∘ (@Nat.cast R _) ∘ ⇑Multiplicative.toAdd =
+lemma Multiplicative.ofAdd_comp_cast_comp_toAdd_eq_ofAdd_comp_cast [NatCast α] :
+    ⇑Multiplicative.ofAdd ∘ (Nat.cast (R := α)) ∘ ⇑Multiplicative.toAdd =
     ⇑Multiplicative.ofAdd ∘ Nat.cast := rfl
+
+lemma Multiplicative.ofAdd_comp_cast_comp_toAdd_eq_ofAdd_comp_cast_apply [NatCast α] (n : ℕ) :
+    (⇑Multiplicative.ofAdd ∘ (Nat.cast (R := α)) ∘ ⇑Multiplicative.toAdd) n =
+    (⇑Multiplicative.ofAdd ∘ Nat.cast) n := rfl

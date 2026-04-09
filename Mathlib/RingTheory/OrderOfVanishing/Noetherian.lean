@@ -186,7 +186,7 @@ lemma ordMonoidWithZeroHom_eq_intValutation {R : Type u_1} [CommRing R] [IsDomai
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
   simp [ordMonoidWithZeroHom_eq_ord h, ord_eq_addVal,
     IsDiscreteValuationRing.intValuation_maximalIdeal,
-    WithZero.map'_apply, Multiplicative.ofAdd_cast_toAdd_eq_ofAdd_cast,
+    WithZero.map'_apply, Multiplicative.ofAdd_comp_cast_comp_toAdd_eq_ofAdd_comp_cast,
     WithZero.map_multiplicative_eq_map]
 
 lemma ordFrac_eq_intValuation {R K : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
