@@ -124,7 +124,10 @@ theorem div_smul_div_comm [Group G] [GroupWithZero G₀] [MulAction G G₀]
   have (x : G) : x • (0 : G₀) = 0 := by simpa using (smul_assoc x (0 : G₀) (0 : G₀)).symm
   by_cases hb : b = 0
   · simp [hb, this]
-  rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa [this])), smul_mul_smul_comm]
+  have : h • b ≠ 0 := by
+    refine (ne_of_apply_ne (h⁻¹ • ·) ?_)
+    simpa [this]
+  rw [eq_div_iff_mul_eq this, smul_mul_smul_comm]
   simp [hb]
 
 @[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
