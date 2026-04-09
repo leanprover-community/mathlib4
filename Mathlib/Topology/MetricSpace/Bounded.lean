@@ -82,11 +82,6 @@ theorem isBounded_ball : IsBounded (ball x r) :=
 /-- Every open set in a metric space is a countable union of bounded open sets. -/
 theorem eq_countable_union_of_isBounded_of_isOpen {U : Set α} (hU : IsOpen U) :
     ∃ f : ℕ → Set α, Monotone f ∧ ⋃ i, f i = U ∧ (∀ i, IsBounded (f i) ∧ IsOpen (f i)) := by
-  by_cases! hn : U.Nonempty
-  · refine ⟨fun i ↦ U ∩ ball hn.some i, fun i j hij ↦ ?_, ?_, fun i ↦ ⟨?_, hU.inter isOpen_ball⟩⟩
-    · exact inter_subset_inter_right _ (ball_subset_ball (Nat.cast_le.2 hij))
-    · simp [← inter_iUnion]
-    · exact isBounded_ball.subset inter_subset_right
   obtain rfl | ⟨x, -⟩ := U.eq_empty_or_nonempty
   · exact ⟨fun i ↦ ∅, monotone_const, by simp_all⟩
   refine ⟨fun i ↦ U ∩ ball x i, fun i j hij ↦ ?_, ?_, fun i ↦ ⟨?_, hU.inter isOpen_ball⟩⟩
