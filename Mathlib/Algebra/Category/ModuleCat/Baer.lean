@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
@@ -79,30 +80,28 @@ lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v
   exact fun I ↦ (ext_quotient_one_subsingleton_iff M I).mp (h I)
 
 open Limits in
-lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
+lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M (n + 1)) := by
+    HasInjectiveDimensionLE M n := by
   induction n generalizing M
   · have : Injective M := injective_of_subsingleton_ext_quotient_one M h
-    intro N
-    exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
+    infer_instance
   · rename_i n ih
-    let ei : EnoughInjectives (ModuleCat R) := inferInstance
-    rcases ei.1 M with ⟨ip⟩
+    let ip : InjectivePresentation M := (EnoughInjectives.presentation M).some
     let S := ip.shortComplex
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
       Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
-      let _ := Ext.subsingleton_of_injective N S.X₂
+      have := Ext.subsingleton_of_injective N S.X₂
       have := (Ext.covariantSequence_exact N ip.shortExact_shortComplex (n + 1) (n + 2)
         rfl).isIso_map' 1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
         ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt  _)
       exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
-    simp only [this] at h ⊢
-    exact ih (cokernel ip.3) h
+    simp only [this] at h
+    exact (ip.shortExact_shortComplex.hasInjectiveDimensionLT_X₃_iff n inferInstance).mp (ih _ h)
 
-lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
+lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M n) := by
+    HasInjectiveDimensionLT M n := by
   match n with
   | 0 =>
     let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans (Submodule.quotEquivOfEqBot _ rfl)
@@ -110,8 +109,7 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
     rw [ModuleCat.homAddEquiv.subsingleton_congr,
       ((e₀.congrLeft M R).trans (LinearMap.ringLmapEquivSelf R R M)).subsingleton_congr,
       ← ModuleCat.isZero_iff_subsingleton] at this
-    intro N
-    exact Ext.homEquiv₀.subsingleton_congr.mpr (subsingleton_of_forall_eq 0 this.eq_zero_of_tgt)
-  | n + 1 => exact ext_subsingleton_of_quotients' M n  h
+    exact this.hasInjectiveDimensionLT_zero
+  | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n  h
 
 end ModuleCat

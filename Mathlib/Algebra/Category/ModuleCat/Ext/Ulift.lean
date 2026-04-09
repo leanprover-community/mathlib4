@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.Ulift
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 
 /-!
 
