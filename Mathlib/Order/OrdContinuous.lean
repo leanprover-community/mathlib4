@@ -59,10 +59,15 @@ protected theorem id : LeftOrdContinuous (id : α → α) where
 
 variable {α}
 
-@[to_dual orderDual]
-protected theorem rightOrdContinuous_dual (h : LeftOrdContinuous f) :
+@[to_dual]
+protected theorem dual (h : LeftOrdContinuous f) :
     RightOrdContinuous (toDual ∘ f ∘ ofDual) where
   isGLB_image := h.isLUB_image
+
+@[deprecated (since := "2026-04-08")] alias rightOrdContinuous_dual := LeftOrdContinuous.dual
+
+@[deprecated (since := "2026-04-08")] alias _root_.RightOrdContinuous.orderDual :=
+  RightOrdContinuous.dual
 
 @[to_dual]
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
@@ -108,8 +113,7 @@ variable (f)
 
 /-- Convert an injective left order continuous function to an order embedding. -/
 @[to_dual
-/-- Convert an injective right order continuous function to an order embedding. -/
-]
+/-- Convert an injective right order continuous function to an order embedding. -/]
 def toOrderEmbedding (hf : LeftOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 
