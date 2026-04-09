@@ -162,11 +162,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     let ψ : L →ₗ[K] K := (trace K M).comp ((mulRight K y).comp (toEnd K L M).toLinearMap)
     suffices h : ψ x = 0 by simpa [ψ, hX_def] using h
     refine (?_ : (LieAlgebra.derivedSeries K L 1 : Submodule K L) ≤ LinearMap.ker ψ) hx_der
-    rw [show (LieAlgebra.derivedSeries K L 1 : Submodule K L) =
-        Submodule.span K { z | ∃ a ∈ (⊤ : LieIdeal K L), ∃ b ∈ (⊤ : LieIdeal K L), ⁅a, b⁆ = z }
-        from LieSubmodule.lieIdeal_oper_eq_linear_span' (R := K) (L := L) (M := L)
-          (I := ⊤) (N := ⊤)]
-    refine Submodule.span_le.mpr ?_
+    rw [show (LieAlgebra.derivedSeries K L 1 : Submodule K L) = _ from
+      LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤, Submodule.span_le]
     rintro _ ⟨a, _, b, _, rfl⟩
     obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
     have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c :=
