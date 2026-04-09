@@ -373,18 +373,18 @@ theorem eventually_le_const_iff_forall_gt_eventually_lt_const {α β} [LinearOrd
     exact h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
   intro h
   rcases exists_glb_Ioi b with ⟨d, hd⟩
-  obtain rfl | H1 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
-  · obtain _ | H0 := isTop_or_exists_gt d
+  obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
+  · obtain _ | _ := isTop_or_exists_gt d
     · exact .of_forall (by aesop)
-    obtain ⟨u, -, -, hua, hu⟩ := hd.exists_seq_antitone_tendsto H0
+    obtain ⟨u, -, -, hu_tt, hu_gt⟩ := hd.exists_seq_antitone_tendsto (by aesop)
     replace h := fun n ↦ h (u n) (by aesop)
     rw [← eventually_countable_forall] at h
     filter_upwards [h] with x hx
-    apply ge_of_tendsto hua <| .of_forall <| fun n ↦ le_of_lt <| hx n
-  · specialize h d <| by simp [← Set.mem_Ioi, H1]
+    exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
+  · specialize h d <| by simp [← Set.mem_Ioi, H0]
     filter_upwards [h] with x hx
-    rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H1
-    simpa [← Set.mem_Iic, ← Set.mem_Iio, H1] using hx
+    rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
+    simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
 
 theorem eventually_const_le_iff_forall_lt_eventually_const_lt {α β} [LinearOrder β]
     [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {l : Filter α}
