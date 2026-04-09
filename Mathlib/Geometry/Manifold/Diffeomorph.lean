@@ -337,9 +337,6 @@ theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn
     h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)

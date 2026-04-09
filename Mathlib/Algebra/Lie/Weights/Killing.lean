@@ -686,6 +686,12 @@ This represents the image of the coroot space under the inclusion `H ↪ L`. -/
 noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
   LieSubmodule.map H.toLieSubmodule.incl (corootSpace α)
 
+omit [CharZero K] in
+lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
+    (coroot α : L) ∈ corootSubmodule α :=
+  (LieSubmodule.mem_map _).mpr
+    ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
+
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by

@@ -1152,7 +1152,7 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
 /-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
 * such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
-* where `f : A →+* B` has a right_inverse `f_inv` (`hf`),
+* where `f : A →+* B` has a right inverse `f_inv` (`hf`),
 * and `g : B →+* C` satisfies `hg : f.ker ≤ g.ker`.
 
 See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
@@ -1293,3 +1293,20 @@ lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
   rw [Ideal.mem_span_singleton]
   use x + Pi.single i 1
   simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
+
+lemma Ideal.exists_of_comap_eq_ker_sup {A B : Type*} [Ring A] [Ring B] (f : A →+* B)
+    (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap f = RingHom.ker f ⊔ J) {x : B} (hx : x ∈ I) : ∃ y ∈ J, f y = x := by
+  rcases surj x with ⟨x', hx'⟩
+  rw [← hx', ← Ideal.mem_comap, eq] at hx
+  rcases Submodule.mem_sup.mp hx with ⟨y, hy, z, hz, hyz⟩
+  use z, hz
+  simpa [← hx', ← hyz, ← RingHom.mem_ker] using hy
+
+lemma Ideal.eq_map_of_comap_eq_ker_sup {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
+    (surj : Function.Surjective f) {I : Ideal B} {J : Ideal A}
+    (eq : I.comap f = RingHom.ker f ⊔ J) : I = J.map f := by
+  refine le_antisymm (fun x hx ↦ ?_)
+    (Ideal.map_le_iff_le_comap.mpr (le_of_le_of_eq le_sup_right eq.symm))
+  rcases Ideal.exists_of_comap_eq_ker_sup _ surj eq hx with ⟨y, mem, hy⟩
+  simpa [← hy] using Ideal.mem_map_of_mem _ mem

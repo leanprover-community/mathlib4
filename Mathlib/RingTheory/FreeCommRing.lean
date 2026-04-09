@@ -161,7 +161,6 @@ def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
 theorem lift_of (x : α) : lift f (of x) = f x :=
   (FreeAbelianGroup.lift_apply_of _ _).trans <| mul_one _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
   RingHom.ext fun x =>
@@ -386,7 +385,7 @@ def subsingletonEquivFreeCommRing [Subsingleton α] : FreeRing α ≃+* FreeComm
     apply Equiv.bijective)
 
 instance instCommRing [Subsingleton α] : CommRing (FreeRing α) :=
-  { inferInstanceAs (Ring (FreeRing α)) with
+  { (inferInstance : Ring (FreeRing α)) with
     mul_comm := fun x y => by
       rw [← (subsingletonEquivFreeCommRing α).symm_apply_apply (y * x),
         (subsingletonEquivFreeCommRing α).map_mul, mul_comm,

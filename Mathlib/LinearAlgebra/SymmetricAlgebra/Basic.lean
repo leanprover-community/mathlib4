@@ -85,8 +85,8 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | add b c hb hc => exact hb.add_right hc
 
 instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
-  __ := inferInstanceAs (CommSemiring (SymmetricAlgebra R M))
-  __ := inferInstanceAs (Ring (RingQuot (SymRel R M)))
+  __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
+  __ := (inferInstance : Ring (RingQuot (SymRel R M)))
 
 variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
