@@ -45,6 +45,10 @@ lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
     (∑ x ∈ s, if p x then 1 else 0 : R) = #{x ∈ s | p x} :=
   (natCast_card_filter _ _).symm
 
+lemma card_eq_sum_ite {s t : Finset ι} [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    s.card = ∑ i ∈ t, if i ∈ s then 1 else 0 := by
+  simp; congr; grind
+
 end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
