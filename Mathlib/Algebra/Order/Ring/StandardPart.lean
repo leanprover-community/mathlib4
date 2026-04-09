@@ -12,6 +12,7 @@ public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.Data.Real.Hom
+import Mathlib.Algebra.Order.Archimedean.Hom
 
 /-!
 # Standard part function

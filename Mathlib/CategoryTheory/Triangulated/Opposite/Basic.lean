@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Shift.Opposite
 public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # The shift on the opposite category of a pretriangulated category

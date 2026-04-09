@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.SpecialFunctions.Bernstein
 
 
 /-! # The Fuglede–Putnam–Rosenblum theorem

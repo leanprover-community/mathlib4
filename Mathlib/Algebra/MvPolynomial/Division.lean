@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Division of `MvPolynomial` by monomials

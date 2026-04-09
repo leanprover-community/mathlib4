@@ -5,8 +5,11 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
 module
 
-public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Conjugacy of group elements

@@ -9,6 +9,7 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 public import Mathlib.Tactic.Ring.Common
 meta import Mathlib.Tactic.Ring.Common
+public meta import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic

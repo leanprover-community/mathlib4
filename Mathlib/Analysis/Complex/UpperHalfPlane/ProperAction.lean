@@ -8,7 +8,9 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.Algebra.Group.Matrix
-public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
+public import Mathlib.Topology.Algebra.ProperAction.Basic
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # Transitivity and properness of actions

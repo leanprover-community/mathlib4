@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.RatFunc.Degree
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
-public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Function fields

@@ -5,6 +5,6 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Data.Real.Hom
+public import Mathlib.Data.Real.Sqrt
 
 deprecated_module (since := "2026-03-05")

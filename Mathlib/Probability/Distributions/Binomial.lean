@@ -12,8 +12,6 @@ public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Distributions.TwoValued
-import Mathlib.Probability.Notation
 
 /-!
 # Binomial random variables

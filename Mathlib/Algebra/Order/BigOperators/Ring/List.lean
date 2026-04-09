@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Batteries.Data.List.Lemmas
+public import Batteries.Data.List
 
 /-!
 # Big operators on a list in ordered rings
