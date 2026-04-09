@@ -3453,7 +3453,6 @@ public import Mathlib.Combinatorics.Matroid.Sum
 public import Mathlib.Combinatorics.Nullstellensatz
 public import Mathlib.Combinatorics.Optimization.ValuedCSP
 public import Mathlib.Combinatorics.Pigeonhole
-public import Mathlib.Combinatorics.RegularTiling
 public import Mathlib.Combinatorics.Quiver.Arborescence
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Cast
@@ -3469,6 +3468,7 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.Combinatorics.RegularTiling
 public import Mathlib.Combinatorics.Schnirelmann
 public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
