@@ -505,7 +505,7 @@ lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree 
 
 theorem IsRegularOfDegree.minDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : ℕ}
     (h : G.IsRegularOfDegree d) : G.minDegree = d := by
-  simp [minDegree, h.degree_eq, Finset.image_const]
+  simp [minDegree, h.degree_eq, Finset.image_const, -ENat.some_eq_coe]
 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
