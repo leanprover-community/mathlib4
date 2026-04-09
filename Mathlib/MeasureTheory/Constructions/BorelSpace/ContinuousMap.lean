@@ -103,10 +103,6 @@ theorem borel_eq_iSup_comap_eval :
   -- Therefore, we obtain that
   -- `M(K, U) = ⋃_{u ∈ V, closure u ⊆ U}, M(K, closure u)`.
   have : {f : C(X, Y) | K.MapsTo f U} =
-      ⋃ u, ⋃ (_ : closure u ⊆ U), {f : C(X, Y) | K.MapsTo f (closure u)} := by
-    ext f
-    simpa using ⟨by grind, fun ⟨u, hu1, hu2⟩ ↦ hu2.mono_right hu1⟩
-  have : {f : C(X, Y) | K.MapsTo f U} =
       ⋃ u ∈ V, ⋃ (_ : closure u ⊆ U), {f : C(X, Y) | K.MapsTo f (closure u)} := by
     ext f
     simpa using ⟨by grind, fun ⟨u, hu1, hu2, hu3⟩ ↦ hu3.mono_right hu1⟩

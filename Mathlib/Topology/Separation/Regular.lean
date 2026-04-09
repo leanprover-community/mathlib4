@@ -215,7 +215,7 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
 
 /-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
 of the sets in `B` whose closures are contained in `U`. -/
-theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_of_closure_subset {B : Set (Set X)}
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_iUnion_of_closure_subset {B : Set (Set X)}
     (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
     U = ⋃ v ∈ B, ⋃ (_ : closure v ⊆ U), v := by
   ext x
@@ -226,16 +226,12 @@ theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_of_closure_subset {B 
   exact ⟨v, hv2, hv3, hv1⟩
 
 /-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
-of the closures of the sets in `B` whose closures are contained in `U`. -/
-theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_closure
-    {B : Set (Set X)} (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
-    U = ⋃ u ∈ B, ⋃ (_ : closure u ⊆ U), closure u := by
-  ext x
-  simp only [mem_iUnion, exists_prop]
-  refine ⟨fun hx ↦ ?_, fun ⟨t, ht1, ht2, hx⟩ ↦ ht2 hx⟩
-  obtain ⟨u, ⟨hu1, hu2⟩, hu3⟩ : ∃ u, (x ∈ u ∧ u ∈ B) ∧ closure u ⊆ U :=
-    hB.nhds_basis_closure x |>.mem_iff.1 <| hU.mem_nhds hx
-  exact ⟨u, hu2, hu3, subset_closure hu1⟩
+of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_of_closure_subset {B : Set (Set X)}
+    (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃₀ {v | v ∈ B ∧ closure v ⊆ U} := by
+  convert hB.open_eq_iUnion_of_closure_subset hU
+  ext; simp; grind
 
 protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X}
     (hf : IsInducing f) : RegularSpace Y :=
