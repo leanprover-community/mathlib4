@@ -142,8 +142,6 @@ instance : Finite 𝓀[K] :=
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
 
-proof_wanted isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K]
-
 end TopologicalSpace
 
 section UniformSpace
@@ -168,6 +166,25 @@ instance : CompleteSpace 𝒪[K] :=
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
+
+open scoped Topology in
+open AdicCompletion Filter in
+instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] := by
+  refine AdicCompletion.of_bijective_iff.mp ⟨of_injective _ _, ?_⟩
+  refine of_surjective_iff.mpr {
+    prec' f h := by
+      let f' := atTop.map f
+      have cauchy_f' : Cauchy f' := by
+        change CauchySeq f
+        refine cauchySeq_iff.mpr fun V hV => ?_
+        sorry
+      obtain ⟨L, hL⟩ := cauchy_map_iff_exists_tendsto.mp cauchy_f'
+      refine ⟨L, fun n => ?_⟩
+      refine sub_smodEq_zero.mp ?_
+      refine SModEq.zero.mpr ?_
+      sorry
+  }
+
 
 end UniformSpace
 
