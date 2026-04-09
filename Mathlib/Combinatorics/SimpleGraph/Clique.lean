@@ -598,12 +598,11 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
   push_cast
   exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
 
-theorem cliqueFreeOn_iff_cliqueFree_subgraph (s : Set α) (n : ℕ) :
-    G.CliqueFreeOn s n ↔ (G.induce s).CliqueFree n := by
+theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
+    (G.induce s).CliqueFree n ↔ G.CliqueFreeOn s n := by
   classical
-  unfold CliqueFreeOn
   simp only [CliqueFree, isNClique_induce_iff]
-  refine ⟨(· <| map_subtype_subset ·), fun h t ht ↦ ?_⟩
+  refine ⟨fun h t ht ↦ ?_, (· <| map_subtype_subset ·)⟩
   have := h <| t.subtype _
   rwa [← filter_eq_self.mpr ht, ← subtype_map]
 
@@ -706,7 +705,7 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
 
-theorem cliqueNum_induce_le_cliqueNum [Finite α] (s : Set α) :
+theorem cliqueNum_induce_le [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by
   have ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
   rw [isNClique_induce_iff] at tc
