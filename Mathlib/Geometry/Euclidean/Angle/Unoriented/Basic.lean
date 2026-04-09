@@ -277,7 +277,7 @@ if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
   refine ⟨?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
-  grind [inner_eq_mul_norm_iff_angle_eq_zero, norm_add_pow_two_real]
+  grind [inner_eq_mul_norm_iff_angle_eq_zero hx hy, norm_add_pow_two_real]
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
