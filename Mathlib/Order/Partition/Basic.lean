@@ -30,6 +30,7 @@ of `Q`.
 * `Partition s` has a top element, consisting of just `s` if `s ≠ ⊥` or nothing otherwise.
 * `Partition s` has finite meets `P ⊓ Q` when `α` is a frame, given by the collection of all
   non-bottom infima `p ⊓ q` of parts of the two partitions
+* `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
 
 ## TODO
 
@@ -255,5 +256,103 @@ lemma mem_inf_iff {α : Type*} [Order.Frame α] {s a : α} {P Q : Partition s} :
   exact and_comm
 
 end Order
+
+variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
+
+section Set
+
+@[simp] protected lemma sUnion_eq (P : Partition s) : ⋃₀ P = s := P.sSup_eq
+
+lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty := notMem_singleton_empty.1 <| P.ne_bot_of_mem ht
+
+lemma empty_notMem : ∅ ∉ P := P.bot_notMem
+
+lemma subset_of_mem (ht : t ∈ P) : t ⊆ u := P.le_of_mem ht
+
+lemma mem_iff_exists : x ∈ u ↔ ∃ t ∈ P, x ∈ t := by
+  refine ⟨fun hx ↦ ?_, fun ⟨t, htP, hxt⟩ ↦ subset_of_mem htP hxt⟩
+  rwa [← P.sUnion_eq, mem_sUnion] at hx
+
+lemma eq_of_mem_inter (ht : t ∈ P) (hs : s ∈ P) (hx : x ∈ t ∩ s) : t = s :=
+  PairwiseDisjoint.elim P.pairwiseDisjoint ht hs fun
+    (hdj : Disjoint t s) ↦ by simp [hdj.inter_eq] at hx
+
+lemma eq_of_mem_of_mem (ht : t ∈ P) (hus : s ∈ P) (hxt : x ∈ t) (hxs : x ∈ s) : t = s :=
+  eq_of_mem_inter ht hus ⟨hxt, hxs⟩
+
+lemma mem_iff_unique : x ∈ u ↔ ∃! t, t ∈ P ∧ x ∈ t := by
+  refine ⟨fun hx ↦ ?_, fun ⟨_, ⟨htP, hxt⟩, _⟩ ↦ subset_of_mem htP hxt⟩
+  rw [← P.sUnion_eq, mem_sUnion] at hx
+  obtain ⟨t, ht, hxt⟩ := hx
+  exact ⟨t, ⟨ht, hxt⟩, fun s ⟨hsP, hxs⟩ ↦ P.eq_of_mem_of_mem hsP ht hxs hxt⟩
+
+lemma subset_sUnion_and_mem_iff_mem (hSP : S ⊆ P) : t ⊆ ⋃₀ S ∧ t ∈ P ↔ t ∈ S := by
+  refine ⟨fun ⟨htsu, htP⟩ ↦ ?_, fun htS ↦ ⟨subset_sUnion_of_mem htS, hSP htS⟩⟩
+  obtain ⟨x, hxt⟩ := nonempty_of_mem htP
+  obtain ⟨s, hsS, hxs⟩ := htsu hxt
+  obtain rfl := eq_of_mem_of_mem htP (hSP hsS) hxt hxs
+  exact hsS
+
+lemma subset_sUnion_iff_mem (ht : t ∈ P) (hSP : S ⊆ P.parts) : t ⊆ ⋃₀ S ↔ t ∈ S := by
+  rw [← subset_sUnion_and_mem_iff_mem hSP]
+  simp [ht]
+
+end Set
+
+/-! ### Induced relation -/
+
+section Rel
+
+/-- Every partition of `s : Set α` induces a transitive, symmetric binary relation on `α`
+  whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
+def Rel (P : Partition s) (a b : α) : Prop :=
+  ∃ t ∈ P, a ∈ t ∧ b ∈ t
+
+lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
+  refine ⟨fun h S hS ↦ ?_, fun h a b ⟨t, ht, ha, hb⟩ ↦ ?_⟩
+  · obtain ⟨x, hxS⟩ := nonempty_of_mem hS
+    obtain ⟨T, hT, hxT, -⟩ := h x x ⟨S, hS, hxS, hxS⟩
+    refine ⟨T, hT, fun a haS ↦ ?_⟩
+    obtain ⟨T', hT', haT', hxT'⟩ := h a x ⟨S, hS, haS, hxS⟩
+    obtain rfl := eq_of_mem_of_mem hT hT' hxT hxT'
+    exact haT'
+  obtain ⟨t', ht', htt'⟩ := h ht
+  use t', ht', htt' ha, htt' hb
+
+lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
+
+lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
+  obtain ⟨t, ht', hx, hy⟩ := h
+  exact ⟨fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hx],
+    fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hy]⟩
+
+@[simp]
+lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨t, ht, hxP, -⟩ := hx
+    exact subset_of_mem ht hxP
+  obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
+  exact ⟨t, ht, hxt, hxt⟩
+
+instance (P : Partition u) : Std.Symm P.Rel where
+  symm _ _ := fun ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
+
+instance (P : Partition u) : IsTrans α P.Rel where
+  trans _ _ _ := fun ⟨t, ht, ha, hb⟩ ⟨t', ht', hb', hc⟩ ↦
+    ⟨t, ht, ha, by rwa [eq_of_mem_of_mem ht ht' hb hb']⟩
+
+lemma Rel.symm (h : P.Rel x y) : P.Rel y x := symm_of P.Rel h
+
+lemma rel_comm : P.Rel x y ↔ P.Rel y x := ⟨Rel.symm, Rel.symm⟩
+
+lemma Rel.trans (hxy : P.Rel x y) (hyz : P.Rel y z) : P.Rel x z := trans_of P.Rel hxy hyz
+
+lemma Rel.left_mem (h : P.Rel x y) : x ∈ u := by
+  obtain ⟨t, htP, hxt, -⟩ := h
+  exact subset_of_mem htP hxt
+
+lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
+
+end Rel
 
 end Partition

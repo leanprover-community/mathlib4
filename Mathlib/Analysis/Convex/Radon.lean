@@ -46,7 +46,7 @@ are affinely dependent (see `finrank_vectorSpan_le_iff_not_affineIndependent`). 
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩ := h
   let I : Finset ι := {i ∈ s | 0 ≤ w i}
   let J : Finset ι := {i ∈ s | w i < 0}
