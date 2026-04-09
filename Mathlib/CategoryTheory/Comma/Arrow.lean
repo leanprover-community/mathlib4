@@ -121,9 +121,7 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
   simp [h]
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
-  have eq := Arrow.hom.congr_right e.inv_hom_id
-  rw [Arrow.comp_right, Arrow.id_right] at eq
-  rw [Arrow.w_assoc, eq, Category.comp_id]
+  simp [← Arrow.comp_right]
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
     g = e.inv.left ≫ f ≫ e.hom.right :=
