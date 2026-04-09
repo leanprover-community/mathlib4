@@ -272,7 +272,7 @@ protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : �
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
-  intro x y h
+  intro x
   grind [imp]
 
 protected theorem StrictMono.ite (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}

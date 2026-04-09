@@ -226,16 +226,12 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   simp only [smul']
   have h₀ := ore_eq r₁ s₂; set v₀ := oreNum r₁ s₂; set u₀ := oreDenom r₁ s₂
   rcases oreCondition (u₀ : R) u with ⟨r₃, s₃, h₃⟩
-  have :=
-    calc
-      r₃ * v * s₂ = r₃ * (u * r₁) := by rw [mul_assoc, ← huv]
-      _ = s₃ * (u₀ * r₁) := by rw [← mul_assoc, ← mul_assoc, h₃]
-      _ = s₃ * v₀ * s₂ := by rw [mul_assoc, h₀]
+  have : r₃ * v * ↑s₂ = ↑s₃ * v₀ * ↑s₂ := by grind => ac
   rcases ore_right_cancel _ _ _ this with ⟨s₄, hs₄⟩
   symm; rw [oreDiv_eq_iff]
   use s₄ * s₃
   use s₄ * r₃
-  simp only [Submonoid.coe_mul, Submonoid.smul_def]
+  simp [Submonoid.smul_def]
   grind [smul_smul]
 
 set_option backward.privateInPublic true in
