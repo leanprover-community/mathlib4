@@ -210,7 +210,6 @@ theorem toUniformSpace_eq : _u =
   convert v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
       ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by

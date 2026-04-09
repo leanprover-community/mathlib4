@@ -60,7 +60,7 @@ instance : CommRing (InfiniteAdeleRing K) := fast_instance% Pi.commRing
 instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
 
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
-  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
+  (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 

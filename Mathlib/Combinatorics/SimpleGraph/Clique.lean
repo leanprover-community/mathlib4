@@ -453,7 +453,6 @@ theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
   fun hf ↦ not_cliqueFree_of_top_embedding (topEmbedding V f |>.comp
             <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_cliqueFree_of_le_enatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n := by
   by_cases h : Infinite ι
@@ -824,7 +823,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   classical
   by_contra nind
   rw [IsIndepSet, Set.Pairwise] at nind
-  push_neg at nind
+  push Not at nind
   simp_rw [mem_neighborSet] at nind
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
