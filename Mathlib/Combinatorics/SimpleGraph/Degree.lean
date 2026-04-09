@@ -68,7 +68,8 @@ theorem nontrivial_of_edegree_ne_zero (h : G.edegree v ≠ 0) : Nontrivial V := 
   exact ⟨_, _, hadj.ne⟩
 
 @[simp]
-theorem edegree_eq_zero_of_subsingleton [Subsingleton V] : G.edegree v = 0 := by
+theorem edegree_eq_zero_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.edegree v = 0 := by
   by_contra!
   exact not_nontrivial V <| nontrivial_of_edegree_ne_zero this
 
@@ -80,7 +81,7 @@ variable {G v} in
 theorem edegree_ne_top_iff_finite_neighborSet : G.edegree v ≠ ⊤ ↔ (G.neighborSet v).Finite :=
   Set.encard_ne_top_iff
 
-theorem edegree_ne_top_of_finite [Finite V] : G.edegree v ≠ ⊤ :=
+theorem edegree_ne_top_of_finite [Finite V] (G : SimpleGraph V) (v : V) : G.edegree v ≠ ⊤ :=
   edegree_ne_top_iff_finite_neighborSet.mpr <| Set.toFinite _
 
 theorem coe_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edegree v := by
@@ -172,7 +173,8 @@ variable {G} in
 theorem minEDegree_eq_top_iff : G.minEDegree = ⊤ ↔ ∀ v, G.edegree v = ⊤ :=
   iInf_eq_top
 
-theorem exists_edegree_eq_minEDegree [Nonempty V] : ∃ v, G.edegree v = G.minEDegree :=
+theorem exists_edegree_eq_minEDegree [Nonempty V] (G : SimpleGraph V) :
+    ∃ v, G.edegree v = G.minEDegree :=
   ciInf_mem G.edegree
 
 theorem edegree_le_maxEDegree : G.edegree v ≤ G.maxEDegree :=
@@ -196,19 +198,20 @@ theorem le_minEDegree_of_forall_le_edegree {n : ℕ∞} (h : ∀ v, n ≤ G.edeg
   le_iInf h
 
 @[simp]
-theorem maxEDegree_of_subsingleton [Subsingleton V] : G.maxEDegree = 0 := by
+theorem maxEDegree_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.maxEDegree = 0 := by
   simp [maxEDegree_eq_iSup]
 
 @[simp]
-theorem minEDegree_of_isEmpty [IsEmpty V] : G.minEDegree = ⊤ :=
+theorem minEDegree_of_isEmpty [IsEmpty V] (G : SimpleGraph V) : G.minEDegree = ⊤ :=
   iInf_of_empty G.edegree
 
 @[simp]
-theorem minEDegree_of_subsingleton_of_nonempty [Subsingleton V] [Nonempty V] :
+theorem minEDegree_of_subsingleton_of_nonempty [Subsingleton V] [Nonempty V] (G : SimpleGraph V) :
     G.minEDegree = 0 := by
   simp [minEDegree_eq_iInf]
 
-theorem minEDegree_ne_top_of_finite [Nonempty V] [Finite V] : G.minEDegree ≠ ⊤ := by
+theorem minEDegree_ne_top_of_finite [Nonempty V] [Finite V] (G : SimpleGraph V) :
+    G.minEDegree ≠ ⊤ := by
   rw [minEDegree_eq_iInf, ne_eq, iInf_eq_top, not_forall]
   have ⟨v⟩ := ‹Nonempty V›
   exact ⟨v, G.edegree_ne_top_of_finite v⟩
@@ -248,7 +251,7 @@ theorem minEDegree_mono (hle : G ≤ G') : G.minEDegree ≤ G'.minEDegree :=
 theorem maxEDegree_le_card : G.maxEDegree ≤ ENat.card V :=
   G.maxEDegree_le_of_forall_edegree_le G.edegree_le_card
 
-theorem minEDegree_le_card [Nonempty V] : G.minEDegree ≤ ENat.card V := by
+theorem minEDegree_le_card [Nonempty V] (G : SimpleGraph V) : G.minEDegree ≤ ENat.card V := by
   have ⟨v⟩ := ‹Nonempty V›
   grw [G.minEDegree_le_edegree v, edegree_le_card]
 
@@ -260,30 +263,32 @@ theorem minEDegree_lt_card_of_ne_top (h : G.minEDegree ≠ ⊤) : G.minEDegree <
   rw [← hv] at h ⊢
   exact G.edegree_lt_card_of_ne_top h
 
-theorem minEDegree_le_encard_edgeSet [Nonempty V] : G.minEDegree ≤ G.edgeSet.encard := by
+theorem minEDegree_le_encard_edgeSet [Nonempty V] (G : SimpleGraph V) :
+    G.minEDegree ≤ G.edgeSet.encard := by
   have ⟨v, hv⟩ := G.exists_edegree_eq_minEDegree
   exact hv ▸ G.edegree_le_encard_edgeSet v
 
-theorem minEDegree_le_maxEDegree [Nonempty V] : G.minEDegree ≤ G.maxEDegree := by
+theorem minEDegree_le_maxEDegree [Nonempty V] (G : SimpleGraph V) :
+    G.minEDegree ≤ G.maxEDegree := by
   have ⟨v⟩ := ‹Nonempty V›
   grw [G.minEDegree_le_edegree v, edegree_le_maxEDegree]
 
 @[simp]
-theorem maxEDegree_top : (⊤ : SimpleGraph V).maxEDegree = ENat.card V - 1 := by
+theorem maxEDegree_top : (completeGraph V).maxEDegree = ENat.card V - 1 := by
   cases isEmpty_or_nonempty V
   · simp [ENat.card_eq_zero_iff_empty V |>.mpr ‹_›]
   simp [maxEDegree_eq_iSup]
 
 @[simp]
-theorem minEDegree_top [Nonempty V] : (⊤ : SimpleGraph V).minEDegree = ENat.card V - 1 := by
+theorem minEDegree_top [Nonempty V] : (completeGraph V).minEDegree = ENat.card V - 1 := by
   simp [minEDegree_eq_iInf]
 
 @[simp]
-theorem maxEDegree_bot : (⊥ : SimpleGraph V).maxEDegree = 0 := by
+theorem maxEDegree_bot : (emptyGraph V).maxEDegree = 0 := by
   simp [maxEDegree_eq_iSup]
 
 @[simp]
-theorem minEDegree_bot [Nonempty V] : (⊥ : SimpleGraph V).minEDegree = 0 := by
+theorem minEDegree_bot [Nonempty V] : (emptyGraph V).minEDegree = 0 := by
   simp [minEDegree_eq_iInf]
 
 variable {G} in
