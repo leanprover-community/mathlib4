@@ -844,26 +844,40 @@ end LinearOrder
 section ConditionallyCompleteLinearOrder
 variable {X : Type*} [ConditionallyCompleteLinearOrder X] [TopologicalSpace X] [OrderTopology X]
 variable {Y : Type*} [ConditionallyCompleteLinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
-variable [DenselyOrdered X] {f : X → Y} {x : X}
+variable {f : X → Y} {x : X}
 
 /-- An order-theoretically left-continuous function is topologically left-continuous, assuming
-the function is between conditionally complete linear orders with order topologies, and the domain
-is densely ordered. -/
+the function is between conditionally complete linear orders with order topologies. -/
 lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     ContinuousWithinAt f (Iic x) x := by
   rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
   simp_rw [TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_nhdsWithin]
   rintro V ⟨z, rfl | rfl⟩ hxz
   -- The case `V = Ioi z`.
-  · obtain ⟨_, ⟨a, hax, rfl⟩, hza⟩ := (lt_isLUB_iff <| hf isLUB_Iio).mp hxz
-    exact ⟨Ioi a, isOpen_Ioi, hax, fun b hab ↦ hza.trans_le <| hf.mono hab.1.le⟩
+  · rcases (em (f ⁻¹' Iic z).Nonempty).symm with hz|ne
+    · exact ⟨univ, isOpen_univ, mem_univ _, fun a ha ↦ not_le.mp fun h ↦ hz ⟨a, h⟩⟩
+    have bdd : BddAbove (f ⁻¹' Iic z) := ⟨x, fun a ha ↦ (hf.mono.reflect_lt (ha.trans_lt hxz)).le⟩
+    have u_eq : Ioi (sSup (f ⁻¹' Iic z)) = f ⁻¹' (Ioi z) := Set.ext fun a ↦
+      ⟨fun ha ↦ not_le.mp fun h ↦ ha.not_ge (le_csSup bdd h),
+        fun ha ↦ lt_of_le_of_ne
+          (csSup_le ne fun b hb ↦ (hf.mono.reflect_lt (hb.trans_lt ha)).le)
+          fun h ↦ ((h ▸ ha).trans_eq (hf.map_csSup ne bdd)).not_ge
+            (csSup_le (.image _ ne) fun _ ⟨b, hb, heq⟩ ↦ heq ▸ hb)⟩
+    exact ⟨f ⁻¹' (Ioi z), u_eq ▸ isOpen_Ioi, hxz, fun _ h ↦ h.1⟩
   -- The case `V = Iio z`.
   · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
 
 /-- An order-theoretically right-continuous function is topologically right-continuous, assuming
-the function is between conditionally complete linear orders with order topologies, and the domain
-is densely ordered. -/
+the function is between conditionally complete linear orders with order topologies. -/
+@[to_dual existing]
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
     ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
+
+/-- A function that is order-theoretically both left- and right-continuous is continuous, assuming
+the function is between conditionally complete linear orders with order topologies. -/
+lemma Continuous.of_ordContinuous (hl : LeftOrdContinuous f) (hr : RightOrdContinuous f) :
+    Continuous f :=
+  continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_iff_continuous_left_right.mpr
+    ⟨hl.continuousWithinAt_Iic, hr.continuousWithinAt_Ici⟩
 
 end ConditionallyCompleteLinearOrder
