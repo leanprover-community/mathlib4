@@ -21,6 +21,7 @@ public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Ramification index
@@ -700,15 +701,81 @@ theorem sum_ramification_inertia
   intros
   apply foo2
 
+noncomputable def _root_.PrimeSpectrum.localRank
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) : ℕ :=
+  Module.finrank p.1.ResidueField (p.1.Fiber S)
+
+noncomputable def _root_.PrimeSpectrum.localRank_apply
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
+    p.localRank R S = Module.finrank p.1.ResidueField (p.1.Fiber S) :=
+  rfl
+
+noncomputable def _root_.PrimeSpectrum.locallyConstant_localRank
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Projective R S] :
+    IsLocallyConstant (PrimeSpectrum.localRank R S) := by
+  sorry
+
+theorem _root_.Ideal.primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
+    (⊥ : Ideal R).primeCompl = nonZeroDivisors R := by
+  ext
+  simp
+
+theorem _root_.IsFractionRing.isFractionRing_of_algEquiv {R A B : Type*} [CommSemiring R] [CommSemiring A]
+    [CommSemiring B] [Algebra R A] [Algebra R B] [IsFractionRing R A]
+    (e : A ≃ₐ[R] B) : IsFractionRing R B :=
+  IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R) e
+
+theorem _root_.IsFractionRing.isFractionRing_iff_of_algEquiv {R A B : Type*} [CommSemiring R] [CommSemiring A]
+    [CommSemiring B] [Algebra R A] [Algebra R B]
+    (e : A ≃ₐ[R] B) : IsFractionRing R A ↔ IsFractionRing R B :=
+  IsLocalization.isLocalization_iff_of_algEquiv (nonZeroDivisors R) e
+
 theorem sum_ramification_inertia'
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Projective R S] (p : Ideal R) [p.IsPrime] :
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMul R S]
+    [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Projective R S]
+    (p : Ideal R) [p.IsPrime] :
     Module.finrank R S =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
+  let κR := (⊥ : Ideal R).ResidueField
+  let κS := (⊥ : Ideal R).Fiber S
+  let : Algebra S κS := Algebra.TensorProduct.rightAlgebra
+  let R' := Localization.AtPrime (⊥ : Ideal R)
+  have : IsFractionRing R R' := by
+    convert Localization.isLocalization
+    exact (Ideal.primeCompl_bot R).symm
+  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
+  have : IsFractionRing R κR := by
+    change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
+    rw [IsLocalRing.maximalIdeal_eq_bot]
+    exact IsFractionRing.isFractionRing_of_algEquiv (AlgEquiv.quotientBot R R').symm
+  let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
+  let M₂ := nonZeroDivisors S
+
+  let e : Localization M₂ ≃ₐ[S] Localization M₁ :=
+  { __ := IsLocalization.liftAlgHom (M := M₂) (f := Algebra.ofId S (Localization M₁))
+      fun x ↦ by
+        sorry
+    invFun := Localization.mapToFractionRing (Localization M₂) M₁ (Localization M₁) (by
+      rintro - ⟨x, hx, rfl⟩
+      exact map_mem_nonZeroDivisors (algebraMap R S) (FaithfulSMul.algebraMap_injective R S) hx)
+    left_inv x := by
+      simp
+      -- use uniqueness of lift?
+      sorry
+    right_inv x := by
+      simp
+      -- use uniqueness of lift?
+      sorry }
+  let e' : FractionRing S ≃ₐ[S] κS :=
+    e.trans <| (Localization.tensor_localization_algEquiv (nonZeroDivisors R) S).symm.trans <|
+      (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
+        (Algebra.TensorProduct.commRight R S κR)
+  have := IsFractionRing.isFractionRing_of_algEquiv e'
   rw [← sum_ramification_inertia]
-  -- might need to also assume `[Domain R]` (to get connected base)?
-  sorry
+  exact (Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS).symm.trans <|
+    (PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace ⊥ ⟨p, ‹_›⟩
 
 theorem sum_ramification_inertia''
     {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
