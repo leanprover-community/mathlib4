@@ -85,6 +85,7 @@ instance [P.IsMonoidalStable] : MonoidalCategory (WideSubcategory P) :=
     { εIso := Iso.refl _
       μIso _ _ := Iso.refl _ }
 
+@[simps]
 instance [BraidedCategory C] [P.IsStableUnderBraiding] :
     BraidedCategory (WideSubcategory P) where
   braiding _ _ :=

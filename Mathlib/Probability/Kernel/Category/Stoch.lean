@@ -30,7 +30,7 @@ Markov kernels, conditional independence and theorems on sufficient statistics][
 
 open CategoryTheory ProbabilityTheory MeasureTheory
 
-open scoped MonoidalCategory SFinKer
+open scoped MonoidalCategory SFinKer ComonObj
 
 universe u
 
@@ -63,3 +63,21 @@ instance {X Y : Stoch} (κ : X ⟶ Y) : IsMarkovKernel κ.hom.hom := κ.2
 noncomputable
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by ext : 2; simp
+
+variable {X Y Z : Stoch}
+
+instance : Deterministic (α_ X Y Z).hom where
+
+instance : Deterministic (λ_ X).hom where
+
+instance : Deterministic (ρ_ X).hom where
+
+instance : Deterministic (β_ X Y).hom where
+
+instance : Deterministic (ε[X]) where
+  hom_comul := by
+    ext : 1
+    simp only [WideSubcategory.comp_def, MorphismProperty.counit_hom,]
+    cat_disch
+
+instance : Deterministic (Δ[X]) where
