@@ -63,15 +63,13 @@ theorem edegree_eq_zero_iff_notMem_support : G.edegree v = 0 ↔ v ∉ G.support
   rw [← edegree_ne_zero_iff_mem_support, not_ne_iff]
 
 variable {G v} in
-theorem nontrivial_of_edegree_ne_zero (h : G.edegree v ≠ 0) : Nontrivial V := by
-  have ⟨u, hadj⟩ := edegree_ne_zero_iff_exists_adj.mp h
-  exact ⟨_, _, hadj.ne⟩
+theorem nontrivial_of_edegree_ne_zero (h : G.edegree v ≠ 0) : Nontrivial V :=
+  G.nontrivial_of_nonempty_neighborSet <| edegree_ne_zero_iff_nonempty_neighborSet.mp h
 
 @[simp]
 theorem edegree_eq_zero_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
-    G.edegree v = 0 := by
-  by_contra!
-  exact not_nontrivial V <| nontrivial_of_edegree_ne_zero this
+    G.edegree v = 0 :=
+  edegree_eq_zero_iff_neighborSet_eq_empty.mpr <| G.neighborSet_eq_empty_of_subsingleton v
 
 variable {G v} in
 theorem edegree_eq_one_iff_existsUnique_adj : G.edegree v = 1 ↔ ∃! u, G.Adj v u := by

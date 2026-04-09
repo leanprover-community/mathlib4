@@ -449,6 +449,10 @@ theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
 
+variable {G} in
+theorem nonempty_neighborSet : (G.neighborSet v).Nonempty ↔ ∃ u, G.Adj v u :=
+  .rfl
+
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
@@ -805,6 +809,14 @@ theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
     G.neighborSet v ⊆ G'.neighborSet v :=
   fun _ hadj ↦ hle hadj
 
+variable {G} in
+theorem mem_support_iff_nonempty_neighborSet : v ∈ G.support ↔ (G.neighborSet v).Nonempty :=
+  .rfl
+
+variable {G} in
+theorem notMem_support_iff_neighborSet_eq_empty : v ∉ G.support ↔ G.neighborSet v = ∅ := by
+  rw [mem_support_iff_nonempty_neighborSet, Set.not_nonempty_iff_eq_empty]
+
 @[simp]
 theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
@@ -815,6 +827,20 @@ theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
 
 theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
   simp [eq_bot_iff_forall_not_adj, Set.eq_empty_iff_forall_notMem]
+
+variable {G} in
+theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
+  ⟨u, v, hadj.ne⟩
+
+variable {G} in
+theorem nontrivial_of_nonempty_neighborSet (h : (G.neighborSet v).Nonempty) : Nontrivial V :=
+  h.elim fun _ ↦ Adj.nontrivial
+
+@[simp]
+theorem neighborSet_eq_empty_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.neighborSet v = ∅ := by
+  by_contra!
+  exact not_nontrivial V <| nontrivial_of_nonempty_neighborSet this
 
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
