@@ -38,7 +38,7 @@ instance : HImp (Set α) where
   himp s t := {x | x ∈ s → x ∈ t}
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { inferInstanceAs (BooleanAlgebra (α → Prop)) with }
+  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..

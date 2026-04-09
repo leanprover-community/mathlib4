@@ -114,18 +114,14 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated toList_one (since := "2026-03-26"))]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
+
+@[to_additive (attr := deprecated toList_mul (since := "2026-03-26"))]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl

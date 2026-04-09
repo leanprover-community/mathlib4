@@ -26,6 +26,8 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
   irreducible scheme is irreducible (by infer_instance).
 -/
 
+universe u
+
 @[expose] public section
 
 open CategoryTheory MorphismProperty Limits
@@ -123,5 +125,23 @@ lemma GeometricallyIrreducible.comp
   refine ⟨geometrically_iff_of_isClosedUnderIsomorphisms.mpr fun K _ x ↦ ?_⟩
   rw [← (pullbackRightPullbackFstIso g x f).hom.homeomorph.irreducibleSpace_iff]
   infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If an open subscheme `U` of `X` surjects onto `S` and `X` is geometrically irreducible over `S`,
+then also `U` is geometrically irreducible over `S`. -/
+instance {U : Scheme.{u}} {f : U ⟶ X} {g : X ⟶ S} [IsOpenImmersion f] [GeometricallyIrreducible g]
+    [Surjective (f ≫ g)] :
+    GeometricallyIrreducible (f ≫ g) := by
+  rw [GeometricallyIrreducible.iff_geometricallyIrreducible_fiber]
+  intro s
+  refine ⟨geometrically_iff_of_isClosedUnderIsomorphisms.mpr fun K _ x ↦ ?_⟩
+  let i : pullback ((f ≫ g).fiberToSpecResidueField s) x ⟶
+      pullback (g.fiberToSpecResidueField s) x :=
+    pullback.map _ _ _ _ (pullback.map _ _ _ _ f (𝟙 _) (𝟙 _) (by simp) (by simp)) (𝟙 _) (𝟙 _)
+      (by simp [Scheme.Hom.fiberToSpecResidueField]) (by simp)
+  have : Nonempty ((f ≫ g).fiber s) := by
+    rw [((f ≫ g).fiberHomeo s).nonempty_congr, Set.nonempty_coe_sort]
+    exact (Set.singleton_nonempty s).preimage (f ≫ g).surjective
+  exact i.isOpenEmbedding.irreducibleSpace
 
 end AlgebraicGeometry
