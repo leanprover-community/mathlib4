@@ -423,12 +423,6 @@ lemma not_disjoint_of_mem_mem (h : x ∈ V(G)) (h' : x ∈ V(H)) : ¬ Disjoint G
   use noEdge {x} β
   simp [h, h']
 
-lemma vertexSet_disjoint_of_disjoint (h : Disjoint G H) : Disjoint V(G) V(H) := by
-  contrapose! h
-  rw [not_disjoint_iff] at h
-  obtain ⟨x, hx₁, hx₂⟩ := h
-  exact not_disjoint_of_mem_mem hx₁ hx₂
-
 end OrderBot
 
 end Graph
