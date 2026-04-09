@@ -105,7 +105,7 @@ lemma HasLaw.isProbabilityMeasure [IsProbabilityMeasure μ] (hX : HasLaw X μ P)
     IsProbabilityMeasure P := hX.isProbabilityMeasure_iff.2 ‹_›
 
 @[fun_prop]
-lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
+lemma HasLaw.comp {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {ν : Measure 𝓨} {Y : 𝓧 → 𝓨}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (Y ∘ X) ν P where
   aemeasurable := (hX.map_eq ▸ hY.aemeasurable).comp_aemeasurable hX.aemeasurable
   map_eq := by
@@ -113,17 +113,17 @@ lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure �
     rw [hX.map_eq]; exact hY.aemeasurable
 
 @[fun_prop]
-lemma HasLaw.fun_comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
+lemma HasLaw.fun_comp {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {ν : Measure 𝓨} {Y : 𝓧 → 𝓨}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (fun ω ↦ Y (X ω)) ν P :=
   hY.comp hX
 
-lemma _root_.MeasureTheory.MeasurePreserving.comp_hasLaw {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴}
-    {ν : Measure 𝒴} {Y : 𝓧 → 𝒴} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+lemma _root_.MeasureTheory.MeasurePreserving.comp_hasLaw {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
+    {ν : Measure 𝓨} {Y : 𝓧 → 𝓨} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
     HasLaw (Y ∘ X) ν P :=
   hY.hasLaw.comp hX
 
-lemma _root_.MeasureTheory.MeasurePreserving.fun_comp_hasLaw {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴}
-    {ν : Measure 𝒴} {Y : 𝓧 → 𝒴} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+lemma _root_.MeasureTheory.MeasurePreserving.fun_comp_hasLaw {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
+    {ν : Measure 𝓨} {Y : 𝓧 → 𝓨} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
     HasLaw (fun ω ↦ Y (X ω)) ν P :=
   hY.comp_hasLaw hX
 
