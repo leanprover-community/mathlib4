@@ -774,7 +774,7 @@ def relHomCongr {α₁ β₁ α₂ β₂}
 
 /-- Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
 
-This is `Equiv.arrowCongr` for `RelEmbedding`. -/
+This is `Equiv.embeddingCongr` for `RelEmbedding`. -/
 @[simps]
 def relEmbeddingCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
@@ -787,7 +787,7 @@ def relEmbeddingCongr {α₁ β₁ α₂ β₂}
 
 /-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
 
-This is `Equiv.arrowCongr` for `RelIso`. -/
+This is `Equiv.equivCongr` for `RelIso`. -/
 @[simps]
 def relIsoCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
