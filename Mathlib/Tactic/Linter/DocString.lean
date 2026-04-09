@@ -94,12 +94,13 @@ def checkVersoSyntax (fileName : Option String := none) (docComment : String) :
   let s := Doc.Parser.document.run ictx pmctx (getTokenTable env) s
   return s.allErrors
 
-/-- Determines if a given Verso parse error should be silenced in the Verso syntax linter.
+/--
+Determines if a given Verso parse error should be silenced in the Verso syntax linter.
 This happens when it is valid Markdown syntax that we will migrate all at once.
 -/
-def isSilencedVersoWarning (err : Parser.Error) : Bool := Id.run do
+def isSilencedVersoWarning (err : Parser.Error) : Bool :=
   -- Ignore Markdown link/reference syntax (this should be fixed automatically and all at once).
-  return "link target '(url)' or '[ref]' (use '\\[' for a literal '[')" ∈ err.expected
+  "link target '(url)' or '[ref]' (use '\\[' for a literal '[')" ∈ err.expected
 
 open Parser in
 /--
@@ -111,15 +112,19 @@ elaborated).
 -/
 def lintVersoSyntax (fileName : Option String := none) (docComment : String) :
     Elab.TermElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
-  -- Drop anything that looks like an autolink: this is not supported by Verso adding full links
+  -- Drop anything that looks like an autolink: this is not supported by Verso. Adding full links
   -- everywhere would be very noisy.
-  let trimmedStr := String.join <| Std.Iter.toList <| docComment.splitInclusive Char.isWhitespace |>.map fun str =>
-    if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL" else str.toString
+  let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
+    docComment.splitInclusive Char.isWhitespace |>.map fun str =>
+      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL" 
+      else str.toString
   -- Drop anything between LaTeX `$$`s.
-  let trimmedStr := String.join <| Std.Iter.toList <| trimmedStr.split "$$" |>.zip (0...<docComment.length).iter
-    |>.map fun (str, i) => if i % 2 == 0 then str.toString else "LaTeX"
+  let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
+    trimmedStr.split "$$"
+      |>.zip (0...docComment.length).iter
+      |>.map fun (str, i) => if i % 2 == 0 then str.toString else "LaTeX"
   let errs ← checkVersoSyntax fileName trimmedStr
-  return errs.filter (fun (_, _, err) => !isSilencedVersoWarning err)
+  return errs.filter fun (_, _, err) => !isSilencedVersoWarning err
 
 namespace Style
 
