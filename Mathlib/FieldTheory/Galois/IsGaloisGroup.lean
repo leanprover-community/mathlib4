@@ -124,13 +124,13 @@ theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] 
   refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGAB.faithful
     exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L y)
-  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
     simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul']
   · have := hGAB.isInvariant.isIntegral
     have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
     have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
-    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
     have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
     obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
     rw [mul_comm, Algebra.smul_def, mul_comm] at hb
@@ -152,7 +152,7 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
   refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ IsFractionRing.injective B L ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGKL.faithful
     refine eq_of_smul_eq_smul fun (y : L) ↦ ?_
-    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective B y
     simp only [smul_div₀', ← algebraMap.coe_smul', h]
   · simp [Algebra.smul_def, algebraMap.coe_smul', ← hc]
   · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)

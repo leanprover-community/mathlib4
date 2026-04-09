@@ -5,6 +5,7 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 module
 
+public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Tactic.TermCongr
 
 /-!
