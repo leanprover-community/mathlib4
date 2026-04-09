@@ -652,11 +652,16 @@ variable {G : Type*}
 
 /-- Patterns with support exactly `U` form a finite set. -/
 lemma finite_setOf_pattern_support_eq
-    {A G : Type*} [Fintype A]
+    {A G : Type*} [Finite A]
     (U : Finset G) :
     ({p : Pattern A G | p.support = U}).Finite := by
+  -- 1. Upgrade Finite A to Fintype A locally
+  cases nonempty_fintype A
+  -- 2. Explicitly provide the Fintype instance for the Finset U
+  -- This is often the missing link for the (U → A) synthesis
+  letI : Fintype U := U.fintypeCoeSort
   classical
-  -- Local equivalence between the subtype and functions on U
+  -- Now Lean should be able to synthesize Fintype (U → A)
   let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
   { toFun := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
     invFun := fun f => ⟨{ support := U, data := f }, rfl⟩
@@ -666,27 +671,19 @@ lemma finite_setOf_pattern_support_eq
       cases hU
       rfl
     right_inv := fun _ => rfl}
-  -- Give a Fintype structure to the subtype via this equivalence
+  -- Now this should synthesize without issue
   haveI : Fintype { p : Pattern A G // p.support = U } :=
     Fintype.ofEquiv (U → A) e.symm
-  -- Now prove finiteness of `{ p : Pattern A G | p.support = U }` by
-  -- viewing it as the image of `univ` in that finite subtype
   let T := { p : Pattern A G // p.support = U }
-  have h_univ : (Set.univ : Set T).Finite :=
-    Set.finite_univ
+  have h_univ : (Set.univ : Set T).Finite := Set.finite_univ
   let coeT : T → Pattern A G := fun p => (p : Pattern A G)
-  have h_image : (Set.image coeT (Set.univ : Set T)).Finite :=
-    h_univ.image _
+  have h_image : (Set.image coeT (Set.univ : Set T)).Finite := h_univ.image _
   have himage_eq :
       Set.image coeT (Set.univ : Set T)
         = ({ p : Pattern A G | p.support = U } : Set (Pattern A G)) := by
     ext p; constructor
-    · intro hp
-      rcases hp with ⟨p', -, rfl⟩
-      exact p'.property
-    · intro hp
-      refine ⟨⟨p, hp⟩, ?_, rfl⟩
-      simp
+    · intro hp; rcases hp with ⟨p', -, rfl⟩; exact p'.property
+    · intro hp; refine ⟨⟨p, hp⟩, ?_, rfl⟩; simp
   simpa [himage_eq] using h_image
 
 /-- The language of a set of configurations `X` on a finite shape `U`.
