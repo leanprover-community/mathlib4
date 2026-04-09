@@ -2336,6 +2336,7 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Analysis.SpecificLimits.RCLike
 public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.Analysis.SumIntegralExpDecay
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -6337,6 +6338,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Flat.TorsionFree
@@ -6728,6 +6730,7 @@ public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Smooth.Locus
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
+public import Mathlib.RingTheory.Smooth.Quotient
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
