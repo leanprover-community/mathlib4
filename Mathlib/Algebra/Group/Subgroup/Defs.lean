@@ -711,6 +711,10 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
+@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H := inferInstance
+
 @[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a :=
