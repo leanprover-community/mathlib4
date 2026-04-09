@@ -124,7 +124,7 @@ end IsEdgeCut
 section IsBridge
 
 /-- A bridge is a singleton edge separation -/
-def IsBridge (G : Graph α β) (e : β) : Prop := G.IsEdgeCut {e}
+@[expose] def IsBridge (G : Graph α β) (e : β) : Prop := G.IsEdgeCut {e}
 
 lemma IsBridge.isEdgeCut (he : G.IsBridge e) : G.IsEdgeCut {e} := he
 
@@ -154,6 +154,7 @@ end IsBridge
 section IsBond
 
 /-- A bond of a graph is a minimal nonempty edge-cut. -/
+@[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 
 @[grind →]
