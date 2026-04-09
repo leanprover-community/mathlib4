@@ -248,9 +248,9 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   -- We prove by contradiction. If `E` is not sequentially compact, then there exists a sequence
   -- `x : ℕ → E` with no convergent subsequence.
   by_contra!
-  simp_all only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall]
+  simp only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall, 
+    true_and, not_exists, not_and, exists_const] at this
   obtain ⟨x, hx⟩ := this
-  simp only [true_and, not_exists, not_and, exists_const] at hx
   -- Consider the set `A = ⋃ i, closure {x i}`. It is closed by `isClosed_of_not_tendsto` and thus
   -- countably compact.
   let A := ⋃ i, closure {x i}
