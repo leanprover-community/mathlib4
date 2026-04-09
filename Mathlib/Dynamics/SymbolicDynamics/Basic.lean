@@ -343,27 +343,6 @@ variable {A : Type*} [Inhabited A]
 variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
 section PatternExtension
--- We assume left-cancellation throughout this section for uniqueness of preimages under (_ * v)
--- or (_ + v).
-
-/-- Turn a finite pattern into a configuration, by extending it with
-the default symbol outside its support.
-
-Formally: given a pattern `p` with finite support in `G`, we define a configuration
-`Pattern.extendAtOrigin p : G → A` by setting
-* `Pattern.extendAtOrigin p i = p.data ⟨i, h⟩` if `i ∈ p.support`,
-* `Pattern.extendAtOrigin p i = default` otherwise.
-
-This produces a canonical "completion" of the pattern to a configuration,
-filling all unspecified positions with `default`. -/
-def Pattern.extendAtOrigin (p : Pattern A G) : G → A := by
-  classical
-  exact fun i ↦
-    if h : i ∈ p.support then
-      p.data ⟨i, h⟩
-    else
-      default
-
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
 
