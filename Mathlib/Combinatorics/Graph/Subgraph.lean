@@ -105,6 +105,9 @@ lemma IsSubgraph.isLink_eqOn (hHG : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
   ext x y
   exact isLink_iff hHG he
 
+lemma IsSubgraph.isLink_iff' (hHG : H ≤ G) : H.IsLink e x y ↔ G.IsLink e x y ∧ e ∈ E(H) := by
+  grind [hHG.isLink_iff, IsLink.edge_mem]
+
 /-- Two subgraphs of the same graph are compatible. -/
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
   fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
