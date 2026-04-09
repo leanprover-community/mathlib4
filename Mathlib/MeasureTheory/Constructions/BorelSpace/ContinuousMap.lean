@@ -53,11 +53,19 @@ instance ContinuousMap.measurableSpace : MeasurableSpace C(X, Y) := borel _
 instance ContinuousMap.borelSpace : BorelSpace C(X, Y) where
   measurable_eq := rfl
 
+/-- The coarsest sigma-algebra over `C(X, Y)` making the evaluation maps `f ↦ f x` is
+smaller than the Borel sigma-algebra coming from the compact-open topology. -/
 lemma ContinuousMap.iSup_comap_le_borel [MeasurableSpace Y] [BorelSpace Y] :
     ⨆ x : X, (borel Y).comap (fun f ↦ f x) ≤ borel C(X, Y) := by
   refine iSup_le fun x ↦ ?_
   rw [← measurable_iff_comap_le, ← BorelSpace.measurable_eq, ← BorelSpace.measurable_eq]
   exact Continuous.measurable (by fun_prop)
+
+lemma ContinuousMap.measurable_eval [MeasurableSpace Y] [BorelSpace Y] (x : X) :
+    Measurable (fun f : C(X, Y) ↦ f x) := by
+  refine .le iSup_comap_le_borel <| .le (le_iSup _ x) ?_
+  rw [← BorelSpace.measurable_eq]
+  exact comap_measurable _
 
 variable [SecondCountableTopology X] [SecondCountableTopology Y]
   [LocallyCompactSpace X] [RegularSpace Y] [MeasurableSpace Y] [BorelSpace Y]
@@ -69,7 +77,7 @@ for all `x : X`.
 
 The proof follows the one presented on <https://math.stackexchange.com/questions/4789531/when-does-the-borel-sigma-algebra-of-compact-convergence-coincide-with-the-pr>. -/
 theorem borel_eq_iSup_comap_eval :
-    borel C(X, Y) = ⨆ a : X, (borel Y).comap fun b ↦ b a := by
+    borel C(X, Y) = ⨆ x : X, (borel Y).comap fun f ↦ f x := by
   refine le_antisymm ?_ iSup_comap_le_borel
   -- Denote `M(K, U)` the set of functions `f` such that `Set.MapsTo f K U`. These form a
   -- basis for the compact-open topology when `K` is compact and `U` is open.
