@@ -89,6 +89,14 @@ lemma iIndepFun.hasLaw_infinitePi {μ : (i : ι) → Measure (𝓧 i)} (hX : ∀
     rw [(iIndepFun_iff_map_fun_eq_infinitePi_map₀ h2).1 h1]
     simp_rw [fun i ↦ (hX i).map_eq]
 
+lemma iIndepFun_iff_hasLaw_Pi_infinitePi {μ : (i : ι) → Measure (𝓧 i)}
+    (hX : ∀ i, HasLaw (X i) (μ i) P) (hm : AEMeasurable (fun ω i ↦ X i ω) P) :
+    iIndepFun X P ↔ HasLaw (fun ω i ↦ X i ω) (infinitePi μ) P where
+  mp h := h.hasLaw_infinitePi hX hm
+  mpr h := by
+    rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀ hm, h.map_eq]
+    simp_rw [fun i ↦ (hX i).map_eq]
+
 /-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
 variables defined on the product space `Π i, Ω i`. -/
 lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
