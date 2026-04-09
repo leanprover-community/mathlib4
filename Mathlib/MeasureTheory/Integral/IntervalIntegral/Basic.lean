@@ -861,19 +861,19 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
 
 end ContinuousLinearMap
 
-section Complex
+section RCLike
 
-variable {f : ℝ → ℂ} {a b : ℝ}
+variable {𝕜 : Type*} [RCLike 𝕜] {f : ℝ → 𝕜} {a b : ℝ}
 
 theorem intervalIntegral_re (hf : IntervalIntegrable f volume a b) :
-    (∫ x in a..b, f x).re = ∫ x in a..b, (f x).re :=
-  (Complex.reCLM.intervalIntegral_comp_comm hf).symm
+    ∫ x in a..b, RCLike.re (f x) = RCLike.re (∫ x in a..b, f x) :=
+  RCLike.reCLM.intervalIntegral_comp_comm hf
 
 theorem intervalIntegral_im (hf : IntervalIntegrable f volume a b) :
-    (∫ x in a..b, f x).im = ∫ x in a..b, (f x).im :=
-  (Complex.imCLM.intervalIntegral_comp_comm hf).symm
+    ∫ x in a..b, RCLike.im (f x) = RCLike.im (∫ x in a..b, f x) :=
+  RCLike.imCLM.intervalIntegral_comp_comm hf
 
-end Complex
+end RCLike
 
 /-!
 ## Basic arithmetic
