@@ -811,7 +811,7 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
 
 @[simp]
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
-  grind
+  grind [mem_neighborSet, bot_adj]
 
 theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
   simp [eq_bot_iff_forall_not_adj, Set.eq_empty_iff_forall_notMem]
