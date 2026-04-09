@@ -229,4 +229,9 @@ theorem of_hasPullback (f : X ⟶ Y) [HasPullback f f] :
 
 end IsKernelPair
 
+lemma IsRegularEpi.exists_of_isKernelPair {X Y : C} (π : X ⟶ Y) [IsRegularEpi π] {Z : C}
+    {fst snd : Z ⟶ X} (h : IsKernelPair π fst snd) {W : C} (f : X ⟶ W) (w : fst ≫ f = snd ≫ f) :
+    ∃ (g : Y ⟶ W), π ≫ g = f :=
+  ⟨h.toCoequalizer'.desc (Cofork.ofπ f w), Cofork.IsColimit.π_desc h.toCoequalizer'⟩
+
 end CategoryTheory

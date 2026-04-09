@@ -187,7 +187,6 @@ theorem r_eq_r' : r S = r' S :=
 
 variable {S}
 
-set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.1) = c * (x.2 * y.1) := by
   simp only [r_eq_r' S, r', Con.rel_mk]
@@ -220,7 +219,6 @@ class of `(x, y)` in the localization of `M` at `S`. -/
 the equivalence class of `(x, y)` in the localization of `M` at `S`. -/]
 def mk (x : M) (y : S) : Localization S := x /ₒ y
 
-set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 theorem mk_eq_mk_iff {a c : M} {b d : S} : mk a b = mk c d ↔ r S ⟨a, b⟩ ⟨c, d⟩ := by
   simp +instances only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
@@ -859,7 +857,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
   simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
     Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
-  exact forall₂_swap
+  exact forall₂_comm
 
 @[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
     Injective f ↔ IsCancelMul M := by

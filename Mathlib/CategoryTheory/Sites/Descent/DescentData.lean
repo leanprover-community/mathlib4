@@ -611,7 +611,7 @@ noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArro
       isPrestackFor_iff_isSheafFor]
     intro M N
     refine ((isSheaf_iff_isSheaf_of_type _ _).1
-      (IsPrestack.isSheaf J M N)).isSheafFor _ _ ?_
+      (IsPrestack.isSheaf J M N)).isSheafFor _ ?_
     rwa [GrothendieckTopology.mem_over_iff, Sieve.generate_sieve, Equiv.apply_symm_apply])
 
 lemma isPrestackFor [F.IsPrestack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :

@@ -100,7 +100,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     tauto
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
-  have ic : IsCompatible (sheaf X).val V g := by
+  have ic : IsCompatible (sheaf X).obj V g := by
     intro x y
     apply section_ext X.sheaf (V x ⊓ V y)
     rintro z ⟨hzVx, hzVy⟩
@@ -115,11 +115,11 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
     -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
-    ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
+    ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).obj.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
   -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
-  change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
+  change ((sheaf X).obj.map (iVU i).op).hom (f * gl) = ((sheaf X).obj.map (iVU i).op) 1
   rw [map_one, map_mul, gl_spec]
   exact hg i
 

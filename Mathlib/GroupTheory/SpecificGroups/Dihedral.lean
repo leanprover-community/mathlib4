@@ -66,8 +66,6 @@ private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
-set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
@@ -132,34 +130,33 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
-set_option backward.privateInPublic true in
-private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun
+/-- The equivalence between the dihedral group and the sum of `ZMod`s. -/
+@[simps]
+def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
+  toFun
     | r j => .inl j
     | sr j => .inr j
-  toFun
+  invFun
     | .inl j => r j
     | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
-  Fintype.ofEquiv _ fintypeHelper
+  Fintype.ofEquiv _ equivSum.symm
 
 instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+  equivSum.symm.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by by_contra h; injection h⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
-  rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
+  rw [← Fintype.card_eq.mpr ⟨equivSum.symm⟩, Fintype.card_sum, ZMod.card, two_mul]
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n

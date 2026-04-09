@@ -32,7 +32,7 @@ namespace ZFSet
 `V_ a` for `a < o`. It satisfies the following properties:
 
 - `vonNeumann_zero`: `V_ 0 = ∅`
-- `vonNeumann_succ`: `V_ (succ a) = powerset (V_ a)`
+- `vonNeumann_add_one`: `V_ (a + 1) = powerset (V_ a)`
 - `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
@@ -117,8 +117,12 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
   (eq_empty _).2 (by simp [mem_vonNeumann])
 
 @[simp]
+theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
+  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
+
+-- TODO: deprecate
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
-  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
+  vonNeumann_add_one o
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=

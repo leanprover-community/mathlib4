@@ -247,7 +247,6 @@ instance isArtinian_of_quotient_of_artinian
     (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
   isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
   wellFounded_lt_exact_sequence (LinearMap.range f)
@@ -259,7 +258,6 @@ theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →�
     (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
     (by simp [Submodule.comap_map_eq, h])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
     IsArtinian R P ↔ IsArtinian R S ∧ IsArtinian R (P ⧸ S) := by
   refine ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
@@ -269,7 +267,6 @@ theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
 instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
   isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) (LinearMap.range_inl R M P)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
     IsArtinian R ↥(M₁ ⊔ M₂) := by
   have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
@@ -436,7 +433,6 @@ instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R
   have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
   isArtinian_of_surjective _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
   rw [← Module.Finite.iff_fg] at hN; infer_instance
@@ -445,11 +441,9 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsNoetherianRing R] :
     IsNoetherianRing (Matrix n n R) := .of_finite R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsArtinianRing R] :
     IsArtinianRing (Matrix n n R) := .of_finite R _
 
@@ -538,8 +532,6 @@ variable (R)
 theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
 
-@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
-
 theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
@@ -596,6 +588,9 @@ instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
+
+theorem mem_minimalPrimes {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : p ∈ I.minimalPrimes :=
+  ⟨⟨hp, hIp⟩, fun q ⟨_, _⟩ hqp ↦ ((isMaximal_of_isPrime q).eq_of_le hp.ne_top hqp).ge⟩
 
 /-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]

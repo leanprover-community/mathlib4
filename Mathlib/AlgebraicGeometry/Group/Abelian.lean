@@ -117,12 +117,12 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         simp [Set.range_comp, Scheme.Pullback.range_map, x]
       · exact ⟨y, subset_closure (by simp), rfl⟩
       · refine ⟨xe, subset_closure ?_, ?_⟩
-        · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
+        · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
         · simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
           congr 6; ext <;> simp
     convert congr((snd G G).left $this) using 1
     · simp [γ, ← Scheme.Hom.comp_apply]
-    · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
+    · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp
 
 set_option backward.isDefEq.respectTransparency false in

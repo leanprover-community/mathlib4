@@ -204,7 +204,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
         · rwa [Ne, toENatAux_eq_zero]
-        · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
+        · exact le_mul_of_one_le_of_le (Cardinal.one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
     cases lt_or_ge y ℵ₀ with

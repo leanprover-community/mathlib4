@@ -133,7 +133,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
         CostructuredArrow.mk (Y := ⟨Y, P.le_colimitsCardinalClosure  _ _ hY⟩) (by exact g)
       exact ⟨colimit.ι (CostructuredArrow.proj _ _ ⋙ (P.colimitsCardinalClosure κ).ι) γ,
         by simp [γ, E]⟩)
-    exact ⟨IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext
+    exact ⟨IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext
       (asIso (colimit.desc _ (E.coconeAt X))))⟩
 
 lemma ObjectProperty.colimitsCardinalClosure_le_isCardinalPresentable

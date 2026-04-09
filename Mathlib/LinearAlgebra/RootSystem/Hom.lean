@@ -230,7 +230,7 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
         ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
     exact congrFun (congrArg DFunLike.coe this) x
   · dsimp [coweightHom] at hfg
-    simp_all only [MulOpposite.op_inj]
+    simp_all
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
     set y := f.indexEquiv x with hy

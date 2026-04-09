@@ -1,0 +1,158 @@
+name: Remove unnecessary set_option lines
+
+on:
+  schedule:
+    # Run several hours before the technical debt report which runs Mondays at 04:00 UTC
+    - cron: "20 23 * * 0" # At 23:20 UTC on Sunday.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'If true, only scan and report without modifying files or opening a PR'
+        required: false
+        default: false
+        type: boolean
+      auto_merge:
+        description: 'If true, apply the auto-merge-after-CI label when creating a PR'
+        required: false
+        default: true
+        type: boolean
+      global_timeout:
+        description: 'Global timeout in seconds (default: 18000 = 5 hours)'
+        required: false
+        default: '18000'
+        type: string
+
+jobs:
+  build:
+    name: Remove unnecessary set_option lines
+    runs-on: pr
+    if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: Restore progress cache
+        if: toJson(inputs.dry_run) != 'true'
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: scripts/.rm_set_option_progress.jsonl
+          # Use run_id in restore-keys so we always pick up the most recent cache
+          # for this toolchain, regardless of which run saved it.
+          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+          restore-keys: |
+            rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-
+
+      - name: Remove unnecessary set_option lines
+        id: rm_set_option
+        shell: bash
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          GLOBAL_TIMEOUT: ${{ inputs.global_timeout }}
+        run: |
+          ARGS=()
+          if [ "$DRY_RUN" = "true" ]; then
+            ARGS+=("--dry-run")
+          fi
+          TIMEOUT="${GLOBAL_TIMEOUT:-18000}"
+          python3 scripts/rm_set_option.py "${ARGS[@]}" --global-timeout "$TIMEOUT"
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save progress cache
+        # Always save (even on failure/timeout) so the next run can resume.
+        # Skip on dry-run (no files are modified) and if the progress file was
+        # cleaned up (meaning the run completed fully).
+        if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: scripts/.rm_set_option_progress.jsonl
+          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+
+      - name: Build PR body
+        id: pr_body
+        if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
+        shell: bash
+        env:
+          LINES_REMOVED: ${{ steps.rm_set_option.outputs.lines_removed }}
+          FILES_MODIFIED: ${{ steps.rm_set_option.outputs.files_modified }}
+          FILES_TIMED_OUT: ${{ steps.rm_set_option.outputs.files_timed_out }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "body<<EOF"
+            echo "I removed ${LINES_REMOVED} unnecessary \`set_option\` line(s) across ${FILES_MODIFIED} file(s)."
+            if [ "${FILES_TIMED_OUT}" != "0" ]; then
+              echo ""
+              echo "⚠️ This is a partial run — ${FILES_TIMED_OUT} file(s) still to be processed. The next scheduled run will continue automatically."
+            fi
+            echo ""
+            echo "---"
+            echo ""
+            echo "[workflow run for this PR](${RUN_URL})"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate app token
+        id: app-token
+        if: steps.rm_set_option.outputs.changed == 'true'
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-nolints-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      - name: Create Pull Request
+        id: pr
+        if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
+          token: "${{ steps.app-token.outputs.token }}"
+          commit-message: "chore: remove unnecessary set_option lines"
+          branch: "rm-set-option"
+          base: master
+          title: "chore: remove unnecessary set_option lines"
+          body: ${{ steps.pr_body.outputs.body }}
+          labels: ${{ toJson(inputs.auto_merge) == 'true' && 'auto-merge-after-CI' || '' }}
+
+      - name: Send Zulip message (success)
+        if: steps.pr.outcome == 'success'
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `remove unnecessary set_option lines`'
+          content: |
+            Please review #${{ steps.pr.outputs.pull-request-number }}, which removes ${{ steps.rm_set_option.outputs.lines_removed }} unnecessary `set_option` line(s) across ${{ steps.rm_set_option.outputs.files_modified }} file(s).
+
+      - name: Send Zulip message (failure)
+        if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `remove unnecessary set_option lines`'
+          content: |
+            [`remove unnecessary set_option lines` workflow run failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            triggered by: `${{ github.event_name }}`

@@ -253,11 +253,13 @@ theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g�
 /-- If `B` contains `C` and `A` contains `B`, then `A` contains `C`. -/
 theorem IsContained.trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip IsContained.trans
 
+@[gcongr]
 lemma IsContained.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
   h_isub.trans <| IsContained.of_le h_sub
 
 alias IsContained.trans_le := IsContained.mono_right
 
+@[gcongr]
 lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
   (IsContained.of_le h_sub).trans h_isub
 
@@ -275,6 +277,15 @@ alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
 lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
 
 alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
+
+instance : IsPreorder (SimpleGraph α) IsContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsContained IsContained IsContained where
+  trans := .trans
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -299,6 +310,22 @@ theorem isContained_iff_exists_iso_subgraph :
 
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
+
+theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
+    [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
+  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+
+theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
+  cases isEmpty_or_nonempty V
+  · simp
+  obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
+  grind [degree_le_maxDegree H (f v), f.degree_le v]
+
+theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  have ⟨f⟩ := h
+  exact f.max_degree_le
 
 end IsContained
 
@@ -366,6 +393,15 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 lemma IsIndContained.rfl : G ⊴ G := .refl _
 @[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
+instance : IsPreorder (SimpleGraph α) IsIndContained where
+  refl := .refl
+  trans _ _ _ := .trans
+
+instance :
+    Trans (α := SimpleGraph α) (β := SimpleGraph β) (γ := SimpleGraph γ)
+      IsIndContained IsIndContained IsIndContained where
+  trans := .trans
+
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim
      inj' := isEmptyElim
@@ -391,6 +427,12 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   Embedding.complEquiv.symm.nonempty_congr
 
 protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
+
+theorem isContained_iff_exists_le_comap : H ⊑ G ↔ ∃ (f : W ↪ V), H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
+
+theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.comap f = H :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
 
 /-!
 ### Counting the copies
@@ -521,12 +563,11 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
       G.deleteEdges (⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}) := by
   rw [killCopies]; exact dif_neg hH
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `G.killCopies H` has no effect on `G` if and only if `G` already contained no copies of `H`. See
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
-    @forall_swap _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
+    @forall_comm _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
     not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
     (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
@@ -582,12 +623,10 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #(G.killCopies H).edgeFinset := ?_
   · simp only [edgeFinset, Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [edgeFinset, killCopies_of_ne_bot, hH, Ne, not_false_iff,
-    Set.toFinset_card, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
-    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
-    Fintype.card_ofFinset, f]
+  congr 1
+  ext e
+  induction e using Sym2.inductionOn with | hf v w
+  simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
 we've removed is at most the number of copies of `G` in `H`. -/

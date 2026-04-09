@@ -282,7 +282,7 @@ theorem one_snd : (1 : X q).2 = 0 :=
   rfl
 
 instance : Monoid (X q) :=
-  { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
+  { (inferInstance : Mul (X q)), (inferInstance : One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
@@ -303,8 +303,8 @@ instance : NatCast (X q) where
   rfl
 
 instance : AddGroupWithOne (X q) :=
-  { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (NatCast (X q)) with
+  { (inferInstance : Monoid (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
     intCast := fun n => ⟨n, 0⟩
@@ -318,15 +318,15 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
 
 instance : Ring (X q) :=
-  { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (Monoid (X q)) with
+  { (inferInstance : AddGroupWithOne (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
 instance : CommRing (X q) :=
-  { inferInstanceAs (Ring (X q)) with
+  { (inferInstance : Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
@@ -359,7 +359,6 @@ theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
 theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction i with
@@ -383,7 +382,7 @@ def α : X q := (0, 1)
   ext <;> simp [α, sq]
 
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
-  ext <;> simpa [α, ω, sq] using by norm_num
+  ext <;> simp [α, ω, sq] <;> norm_num
 
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]
@@ -462,11 +461,11 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance : Fintype (X q) := inferInstanceAs <| Fintype (ZMod q × ZMod q)
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
-  dsimp [X]
+  change Fintype.card (ZMod q × ZMod q) = q ^ 2
   rw [Fintype.card_prod, ZMod.card q, sq]
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
@@ -632,24 +631,11 @@ def sModNat (q : ℕ) : ℕ → ℕ
   | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
-  have h1 := calc
-    4 = 2 ^ 2 := by simp
-    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
-  | zero =>
-    rw [sModNat, sMod, Int.natCast_emod]
-    simp [h2]
-  | succ k ih =>
-    rw [sModNat, sMod, ← ih]
-    have h3 : 2 ≤ 2 ^ p - 1 := by
-      zify [h2]
-      calc (2 : ℤ)
-        _ ≤ 4 - 1 := by simp
-        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
-    zify [h2, h3]
-    rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_right, ← sub_eq_add_neg]
+  | zero => grind [sModNat, sMod]
+  | succ =>
+    have : 2 ^ 2 ≤ 2 ^ p := Nat.pow_le_pow_right (by lia) hp
+    grind [sModNat, sMod, Int.emod_eq_add_self_emod]
 
 /-- Tail-recursive version of `sModNat`. -/
 meta def sModNatTR (q k : ℕ) : ℕ :=

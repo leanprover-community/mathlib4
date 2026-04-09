@@ -54,7 +54,6 @@ variable (n : ℕ) (B₁ B₂ : Fin (n + 1) → ℝ)
 construction is used as part of our proof of Northcott's theorem. -/
 def boxPoly : Set ℤ[X] := {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
   trans Set.ncard (α := Fin (n + 1) → ℤ) (Finset.Icc (⌈B₁ ·⌉) (⌊B₂ ·⌋))
   · refine Set.ncard_congr' ⟨fun p ↦ ⟨toFn (n + 1) p, ?_⟩, fun p ↦ ⟨ofFn (n + 1) p, ?_⟩, ?_, ?_⟩
@@ -177,7 +176,6 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are

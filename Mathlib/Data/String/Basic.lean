@@ -35,7 +35,6 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
 instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂)⟩
 
-set_option backward.whnf.reducibleClassField false in
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
 instance decidableLT' : DecidableLT String := by
   simp +instances only [DecidableLT, LT']
@@ -71,12 +70,12 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
     · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
-    · simpa [Legacy.Iterator.curr, get_cons_addChar] using h
+    · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
-    · simp [Legacy.Iterator.curr, get_cons_addChar]
-    · simpa [Legacy.Iterator.curr, get_cons_addChar] using h
+    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList, decide_eq_decide]
+    · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_neg (by simpa using h₂)]
@@ -125,7 +124,6 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-set_option backward.whnf.reducibleClassField false in
 instance decidableLE : DecidableLE String := by
   simp +instances only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
@@ -142,6 +140,8 @@ theorem asString_nil : ofList [] = "" :=
 theorem asString_toList (s : String) : ofList s.toList = s :=
   ofList_toList
 
+set_option linter.deprecated false in
+@[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
     ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
   | s, h => by
@@ -154,7 +154,6 @@ theorem toList_nonempty :
 theorem head_empty : "".toList.head! = default :=
   rfl
 
-set_option backward.whnf.reducibleClassField false in
 instance : LinearOrder String where
   le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by

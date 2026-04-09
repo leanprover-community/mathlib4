@@ -78,7 +78,6 @@ instance extensiveTopology.subcanonical : (extensiveTopology C).Subcanonical :=
 
 variable [FinitaryExtensive C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
@@ -129,7 +128,7 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
 
-instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond
+instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).mp F.property
 
 end CategoryTheory
