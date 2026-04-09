@@ -182,22 +182,22 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
+    · exact IsLocalization.under_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
-    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]
+    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_under_iff S]
       refine ⟨hp.1.1, ?_⟩
       rintro rfl
       exact hp.1.1.ne_top rfl
     · intro I hI e
-      rw [← IsLocalization.map_comap S A I, ← IsLocalization.map_comap S A p]
+      rw [← IsLocalization.map_under S A I, ← IsLocalization.map_under S A p]
       haveI := hI.1
       exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
         (Ideal.comap_mono e))
 
 theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
     (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
-  conv_rhs => rw [← map_comap S A J, minimalPrimes_map S]
+  conv_rhs => rw [← map_under S A J, minimalPrimes_map S]
   refine (Set.image_preimage_eq_iff.mpr ?_).symm
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
 
@@ -208,12 +208,12 @@ theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
   have : IsLocalRing A := AtPrime.isLocalRing A q
   rw [← Ideal.sInf_minimalPrimes, IsLocalization.minimalPrimes_map q.primeCompl A I]
   refine le_antisymm (sInf_le ?_) (le_sInf fun J hJ ↦ ?_)
-  · rwa [Set.mem_preimage, AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
-  · rw [← IsLocalization.comap_le_comap_iff q.primeCompl A,
-      AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
+  · rwa [Set.mem_preimage, map_eq_maximalIdeal q A, ← Ideal.under_def, under_maximalIdeal A q]
+  · rw [← IsLocalization.under_le_under_iff q.primeCompl A,
+      AtPrime.map_eq_maximalIdeal q A, AtPrime.under_maximalIdeal A q]
     apply hIq.2 hJ.1
     have := hJ.1.1.ne_top
-    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_comap_iff q.primeCompl A J] at this
+    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_under_iff q.primeCompl A J] at this
     exact Set.disjoint_compl_left_iff_subset.mp this
 
 end
