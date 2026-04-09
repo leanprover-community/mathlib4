@@ -69,12 +69,12 @@ variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
 @[to_additive]
 lemma mulCayley_gc :
-    GaloisConnection (mulCayley ·) {g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a} := by
+    GaloisConnection (mulCayley ·) ({g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a}) := by
   intro S G
   simp [mulCayley_le_iff, Set.subset_def]
 
 @[to_additive]
-theorem mulCayley_monotone : Monotone (mulCayley (M := M)) :=
+theorem mulCayley_monotone : Monotone (mulCayley (M := M) ·) :=
   (mulCayley_gc M).monotone_l
 
 @[to_additive (attr := gcongr)]
