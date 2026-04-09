@@ -701,6 +701,19 @@ theorem sum_ramification_inertia
   intros
   apply foo2
 
+variable (S) in
+theorem finrank_fiber_eq_finrank_localization [Module.Finite R S] [Module.Flat R S] :
+    Module.finrank p.ResidueField (p.Fiber S) = Module.finrank (Localization.AtPrime p)
+      (Localization (Algebra.algebraMapSubmonoid S p.primeCompl)) := by
+  let Rp := Localization.AtPrime p
+  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  have : Module.Flat Rp Sp :=
+    Module.Flat.of_isLocalizedModule Rp p.primeCompl (IsScalarTower.toAlgHom R S Sp).toLinearMap
+  have : Module.Free Rp Sp := Module.free_of_flat_of_isLocalRing
+  exact ((Algebra.TensorProduct.cancelBaseChange R Rp p.ResidueField p.ResidueField S).symm.trans
+    (Algebra.TensorProduct.congr AlgEquiv.refl (Localization.localization_tensor_algEquiv
+      p.primeCompl S))).toLinearEquiv.finrank_eq.trans Module.finrank_baseChange
+
 noncomputable def _root_.PrimeSpectrum.localRank
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) : ℕ :=
   Module.finrank p.1.ResidueField (p.1.Fiber S)
@@ -710,10 +723,25 @@ noncomputable def _root_.PrimeSpectrum.localRank_apply
     p.localRank R S = Module.finrank p.1.ResidueField (p.1.Fiber S) :=
   rfl
 
+noncomputable def _root_.PrimeSpectrum.localRank_apply_of_flat
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Flat R S] (p : PrimeSpectrum R) :
+    p.localRank R S = Module.finrank (Localization.AtPrime p.1)
+      (Localization (Algebra.algebraMapSubmonoid S p.1.primeCompl)) :=
+  p.1.finrank_fiber_eq_finrank_localization S
+
 noncomputable def _root_.PrimeSpectrum.locallyConstant_localRank
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Projective R S] :
     IsLocallyConstant (PrimeSpectrum.localRank R S) := by
+  let Rp (p : Ideal R) [p.IsPrime] := Localization.AtPrime p
+  let Sp (p : Ideal R) [p.IsPrime] := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  have (p : Ideal R) [p.IsPrime] : Module.Projective (Rp p) (Sp p) := -- should be instance
+    Module.projective_of_isLocalizedModule p.primeCompl
+      (IsScalarTower.toAlgHom R S (Sp p)).toLinearMap
+  have (p : Ideal R) [p.IsPrime] : Module.Free (Rp p) (Sp p) :=
+    Module.free_of_flat_of_isLocalRing
+  have (p : Ideal R) [p.IsPrime] : Module.Finite (Rp p) (Sp p) := inferInstance
   sorry
 
 theorem _root_.Ideal.primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
