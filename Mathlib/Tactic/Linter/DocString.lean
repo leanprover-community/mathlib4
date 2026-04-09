@@ -119,6 +119,8 @@ def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
       if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL"
       else str.toString
   -- Drop anything between LaTeX `$$`s.
+  -- We keep single `$`s, since those also occur in `backquoted` code snippets (e.g. as `· <$> ·`),
+  -- and so we'd need to build an actual parser to figure out if they are in a snippet or not.
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
     trimmedStr.split "$$"
       |>.zip (0...docComment.length).iter
