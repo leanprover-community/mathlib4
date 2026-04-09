@@ -26,6 +26,7 @@ $\binom{k}{i}$ is the multivariate binomial coefficient `MvPolynomial.mvChoose k
 
 * `MvPolynomial.hasseDeriv`
 * `MvPolynomial.hasseDeriv_monomial`
+* `MvPolynomial.hasseDeriv_monomial_eq_prod_choose`
 * `MvPolynomial.hasseDeriv_coeff`
 * `MvPolynomial.hasseDeriv_zero`
 * `MvPolynomial.hasseDeriv_comp`
@@ -73,6 +74,8 @@ theorem hasseDeriv_monomial (i k : σ →₀ ℕ) (r : R) :
         (f := fun k ↦ (mvChoose k i : R) • MvPolynomial.monomial (k - i)) k r
   simpa [LinearMap.smul_apply, MvPolynomial.smul_monomial, smul_eq_mul] using h
 
+/-- Over a finite index type, the monomial formula for `hasseDeriv` can be written with
+the full coordinate product `∏ j, (k j).choose (i j)`. -/
 lemma hasseDeriv_monomial_eq_prod_choose [Fintype σ] (i k : σ →₀ ℕ) (r : R) :
     hasseDeriv i (MvPolynomial.monomial k r) =
       MvPolynomial.monomial (k - i) (((∏ j : σ, (k j).choose (i j)) : R) * r) := by
@@ -241,8 +244,8 @@ theorem hasseDeriv_mul [DecidableEq σ] (i : σ →₀ ℕ) (P Q : MvPolynomial 
     rw [← add_mul]
     simp
 
-/-- The Hasse derivative indexed by `Finsupp.single i 1` is the partial derivative
-`pderiv i`. -/
+/-- First-order compatibility: the Hasse derivative indexed by `Finsupp.single i 1`
+coincides with the usual partial derivative `pderiv i`. -/
 theorem hasseDeriv_single_one (i : σ) :
     hasseDeriv (R := R) (Finsupp.single i 1) = pderiv (R := R) i := by
   classical
@@ -434,8 +437,8 @@ theorem finSuccEquiv_hasseDeriv_mapDomain {n : ℕ}
       simp [Polynomial.coeff_monomial, hb']
     simpa [hkcoeff] using hcoeff.symm
 
-/-- Under `finOneAlgEquiv`, one-variable Hasse derivatives agree with the univariate Hasse
-derivatives. -/
+/-- One-variable bridge: under `finOneAlgEquiv`, the multivariate Hasse derivative
+indexed by `single 0 k` agrees with `Polynomial.hasseDeriv k`. -/
 theorem finOneAlgEquiv_hasseDeriv (P : MvPolynomial (Fin 1) R) (k : ℕ) :
     finOneAlgEquiv R (hasseDeriv (Finsupp.single 0 k) P) =
       Polynomial.hasseDeriv k (finOneAlgEquiv R P) := by

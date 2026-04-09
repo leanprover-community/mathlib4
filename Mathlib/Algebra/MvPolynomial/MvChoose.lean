@@ -18,8 +18,10 @@ identities used for Hasse derivatives and related algebra.
 ## Main declarations
 
 * `MvPolynomial.mvChoose`
+* `MvPolynomial.mvChoose_of_le`, `MvPolynomial.mvChoose_of_not_le`
 * `MvPolynomial.mvChoose_mul`
 * `MvPolynomial.mvChoose_add`
+* `MvPolynomial.mvChoose_mapDomain_equiv`
 
 Hasse derivatives that use these coefficients are in `Mathlib.Algebra.MvPolynomial.HasseDeriv`.
 
@@ -49,6 +51,8 @@ variable {σ τ R : Type*} [CommSemiring R]
 def mvChoose (k i : σ →₀ ℕ) : ℕ :=
   i.prod (fun j m ↦ (k j).choose m)
 
+/-- If `i ≤ k` coordinatewise, then `mvChoose k i` is the product
+`∏_{j ∈ k.support} (k j).choose (i j)`. -/
 lemma mvChoose_of_le {k i : σ →₀ ℕ} (h : i ≤ k) :
     mvChoose k i = k.prod (fun j n ↦ n.choose (i j)) := by
   classical
@@ -56,6 +60,8 @@ lemma mvChoose_of_le {k i : σ →₀ ℕ} (h : i ≤ k) :
   refine Finset.prod_subset (Finsupp.support_mono h) fun j _ hj ↦ ?_
   rw [Finsupp.notMem_support_iff.mp hj, Nat.choose_zero_right]
 
+/-- If `i` is not coordinatewise bounded by `k`, then one coordinate has
+`(k j).choose (i j) = 0`, so `mvChoose k i = 0`. -/
 lemma mvChoose_of_not_le {k i : σ →₀ ℕ} (h : ¬ i ≤ k) : mvChoose k i = 0 := by
   classical
   simp only [Finsupp.le_def, not_forall] at h
@@ -209,6 +215,8 @@ lemma mvChoose_eq_prod_choose [Fintype σ] (k i : σ →₀ ℕ) :
       simpa using (Finset.prod_eq_zero (i := x) (by simp) hx0)
     simp [hprod]
 
+/-- Reindexing by an equivalence preserves multivariate binomial coefficients:
+`mvChoose (k.mapDomain e) (i.mapDomain e) = mvChoose k i`. -/
 lemma mvChoose_mapDomain_equiv (e : σ ≃ τ) (k i : σ →₀ ℕ) :
     mvChoose (k.mapDomain e) (i.mapDomain e) = mvChoose k i := by
   by_cases h : i ≤ k
@@ -279,6 +287,9 @@ private lemma mvChoose_eq_prod_choose_of_support_subset
     refine (Finset.prod_eq_zero (i := ⟨a, has⟩) (by simp) ?_).symm
     simpa using Nat.choose_eq_zero_of_lt hlt
 
+/-- Multivariate Vandermonde identity:
+`mvChoose (a + b) i = ∑_{p+q=i} mvChoose a p * mvChoose b q`,
+implemented as a sum over `Finset.antidiagonal i`. -/
 theorem mvChoose_add (a b i : σ →₀ ℕ) [DecidableEq σ] :
     mvChoose (a + b) i = ∑ p ∈ Finset.antidiagonal i, mvChoose a p.1 * mvChoose b p.2 := by
   classical
