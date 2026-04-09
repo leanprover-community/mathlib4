@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.SetToL1
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Lemmas
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Integral of vector-valued function against vector measure
@@ -17,7 +17,7 @@ measure) to vector measures through a bilinear pairing.
 Let `E`, `F` be normed vector spaces, and `G` be a Banach space (complete normed vector space).
 We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] → G` and an `F`-valued vector measure `μ`
 on a measurable space `α`.
-The vector measure `μ` gives the total variation measure `μ.totalvariation.ennrealToMeasure` on `α`.
+The vector measure `μ` gives the total variation measure `μ.totalvariation` on `α`.
 For an L1 function `f : α → E` with respect to this total variation measure,
 we define the `G`-valued integral, which is informally written `∫ B (f x) ∂μ x`.
 
@@ -45,7 +45,7 @@ The pairing integral is defined through the extension process described in the f
 
 Let be `Bμ : VectorMeasureWithPairing`.
 We often consider L1 functions with respect to the total variation of `Bμ.vectorMeasure`:
-* `α →₁[Bμ.vectorMeasure.variation.ennrealToVectorMeasure] E` : `E`-valued functions in L1 space.
+* `α →₁[Bμ.vectorMeasure.variation] E` : `E`-valued functions in L1 space.
 
 -/
 
@@ -66,7 +66,7 @@ variable {α E F G : Type*} [MeasurableSpace α]
 /-- Given a set `s`, return the continuous linear map `fun x : E => B x (μ s)`, where the `B` is a
 `G`-valued bilinear form on `E` `F` and `μ` is an `F`-valued vector measure. The extension of that
 set function through `setToL1` gives the pairing integral of L1 functions. -/
-def weightedVectorSMul (s : Set α) : E →L[ℝ] G where
+noncomputable def weightedVectorSMul (s : Set α) : E →L[ℝ] G where
   toFun x := B x (μ s)
   map_add' _ _ := map_add₂ B _ _ (μ s)
   map_smul' _ _ := map_smulₛₗ₂ B _ _ (μ s)
@@ -76,11 +76,9 @@ theorem weightedVectorSMul_apply (s : Set α) (x : E) : weightedVectorSMul B μ 
 
 theorem weightedVectorSMul_union (s t : Set α) (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hdisj : Disjoint s t) :
-    (weightedVectorSMul B μ (s ∪ t) : E →L[ℝ] G)
-    = weightedVectorSMul B μ s + weightedVectorSMul B μ t := by
+    weightedVectorSMul B μ (s ∪ t) = weightedVectorSMul B μ s + weightedVectorSMul B μ t := by
   ext x
-  simp only [weightedVectorSMul_apply, ContinuousLinearMap.add_apply]
-  rw [← (B x).map_add]
+  simp only [weightedVectorSMul_apply, ContinuousLinearMap.add_apply, ← (B x).map_add]
   congr
   exact of_union hdisj hs ht
 
@@ -95,15 +93,14 @@ theorem norm_weightedVectorSMul_le (s : Set α) :
   exact le_opNorm B x
 
 theorem dominatedFinMeasAdditive_weightedVectorSMul :
-    DominatedFinMeasAdditive (μ.variation.ennrealToMeasure)
+    DominatedFinMeasAdditive (μ.variation)
     (weightedVectorSMul B μ : Set α → E →L[ℝ] G) ‖B‖ := by
   refine ⟨fun s t hs ht _ _ hdisj => weightedVectorSMul_union B μ s t hs ht hdisj, ?_⟩
   intro s hs hsf
   apply (fun s _ _ => (norm_weightedVectorSMul_le B μ s).trans)
   gcongr
-  rw [Measure.real, ← ofReal_le_iff_le_toReal (LT.lt.ne_top hsf), ennrealToMeasure_apply hs,
-    ofReal_norm]
-  exact norm_measure_le_variation μ s
+  rw [Measure.real, ← ofReal_le_iff_le_toReal (LT.lt.ne_top hsf), ofReal_norm]
+  exact enorm_measure_le_variation μ s
 
 end weightedVectorSMul
 
@@ -135,35 +132,35 @@ variable {α E F G : Type*} [MeasurableSpace α]
   (Bμ : VectorMeasureWithPairing α E F G)
 
 /-- The pairing integral in L1 space as a continuous linear map. -/
-noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=
-    setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
+noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation] E) →L[ℝ] G :=
+  setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
 
 @[integral_simps]
-theorem integral_add (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+theorem integral_add (f g : α →₁[Bμ.vectorMeasure.variation] E) :
     Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
   simp [integral]
 
 @[integral_simps]
-theorem integral_neg (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+theorem integral_neg (f : α →₁[Bμ.vectorMeasure.variation] E) :
     Bμ.integral (-f) = -Bμ.integral f := by
   simp [integral]
 
 @[integral_simps]
-theorem integral_sub (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+theorem integral_sub (f g : α →₁[Bμ.vectorMeasure.variation] E) :
     Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g := by
   simp [integral]
 
 @[integral_simps]
-theorem integral_smul (c : ℝ) (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+theorem integral_smul (c : ℝ) (f : α →₁[Bμ.vectorMeasure.variation] E) :
     Bμ.integral (c • f) = c • Bμ.integral f := by
   simp [integral]
 
 @[simp]
-lemma integral_apply (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
+lemma integral_apply (f : (α →₁[Bμ.vectorMeasure.variation] E)) :
     Bμ.integral f
     = setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure) f := rfl
 
-theorem integral_le (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
+theorem integral_le (f : (α →₁[Bμ.vectorMeasure.variation] E)) :
     ‖Bμ.integral f‖ ≤ ‖Bμ.pairing‖ * ‖f‖:= by
   simp only [integral_apply]
   exact norm_setToL1_le_mul_norm
@@ -177,12 +174,12 @@ theorem norm_integral_le_norm_pairing : ‖Bμ.integral‖ ≤ ‖Bμ.pairing‖
 theorem nnnorm_integral_le_nnNnorm : ‖Bμ.integral‖₊ ≤ ‖Bμ.pairing‖₊ :=
   norm_integral_le_norm_pairing Bμ
 
-theorem nnnorm_integral_le (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+theorem nnnorm_integral_le (f : α →₁[Bμ.vectorMeasure.variation] E) :
     ‖Bμ.integral f‖₊ ≤ ‖Bμ.pairing‖₊ * ‖f‖₊ := integral_le Bμ f
 
 @[continuity]
 theorem continuous_integral :
-    Continuous fun f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E =>
+    Continuous fun f : α →₁[Bμ.vectorMeasure.variation] E =>
     Bμ.integral f :=
   (setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)).continuous
 
@@ -215,7 +212,7 @@ noncomputable def withPairing : VectorMeasureWithPairing α ℝ F F where
 
 /-- The `F`-valued integral with respect to an `F`-valued vector measure as a continuous linear map,
 defined as the pairing integral where the pairing is `scalarSMulCLM`. -/
-noncomputable def integral : (α →₁[μ.variation.ennrealToMeasure] ℝ) →L[ℝ] F :=
+noncomputable def integral : (α →₁[μ.variation] ℝ) →L[ℝ] F :=
     μ.withPairing.integral
 
 end VectorMeasure
