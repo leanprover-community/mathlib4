@@ -261,13 +261,12 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp
-          simp [field, div_pow, -eqComm]
+          simp [field, div_pow]
           ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
-      refine le_trans (le_of_eq (by simp [field, -eqComm]; norm_num))
-        (one_add_mul_le_pow ?_ (2 * m))
+      refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/

@@ -62,7 +62,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
   apply Tendsto.congr' _ Z
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
   filter_upwards [this] with y hy
-  simp [field, sub_ne_zero.2 hy, -eqComm]
+  simp [field, sub_ne_zero.2 hy]
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/

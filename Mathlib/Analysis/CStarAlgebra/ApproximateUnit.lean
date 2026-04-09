@@ -91,11 +91,11 @@ lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fu
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
     ext x : 1
-    simp [field, mul_tsub, -eqComm]
+    simp [field, mul_tsub]
   rw [← this]
   constructor <;> intro x (hx : x < 1)
   · have : 0 < 1 - x := tsub_pos_of_lt hx
-    simp [field, tsub_add_cancel_of_le hx.le, -eqComm]
+    simp [field, tsub_add_cancel_of_le hx.le]
   · simp [mul_assoc, ← mul_inv, mul_tsub]
     field_simp
     simp
@@ -288,7 +288,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
     rw [this]
     refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
     calc
-      y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field, -eqComm]
+      y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field]
       _ ≤ ε ^ 2 * 1 := by
         gcongr
         · refine mul_le_of_le_one_left (zero_le _) ?_

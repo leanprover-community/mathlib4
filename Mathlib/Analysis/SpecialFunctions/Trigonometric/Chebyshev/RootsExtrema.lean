@@ -94,7 +94,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), T_real_cos,
       Int.cast_natCast, abs_cos_eq_one_iff] at hTx
     obtain ⟨k, hk⟩ := hTx
-    have hk' : k = n * (arccos x / π) := by simpa [field, -eqComm]
+    have hk' : k = n * (arccos x / π) := by simpa [field]
     lift k to ℕ using (by rw [← Int.cast_nonneg_iff (R := ℝ), hk']; positivity [arccos_nonneg x])
     simp only [Int.cast_natCast] at hk hk'
     have hkn : (k : ℝ) ≤ n := by
@@ -106,13 +106,13 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [mul_div_cancel_left₀ _ (by simpa), cos_arccos (by grind) (by grind)]
   · rintro ⟨k, hk, rfl⟩
     rw [T_real_cos, abs_cos_eq_one_iff]
-    exact ⟨k, by simp [field, -eqComm]⟩
+    exact ⟨k, by simp [field]⟩
 
 theorem eval_T_real_cos_int_mul_pi_div {k : ℕ} {n : ℕ} (hn : n ≠ 0) :
     (T ℝ n).eval (cos (k * π / n)) = (k : ℤ).negOnePow := by
   rw [T_real_cos, Int.cast_negOnePow]
   convert Real.cos_int_mul_pi k using 2
-  simp [field, -eqComm]
+  simp [field]
 
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = 1 ↔ ∃ k ≤ n, Even k ∧ x = cos (k * π / n) := by

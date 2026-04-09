@@ -277,9 +277,9 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     · rfl
     · simp only [addX]
       ring1
-    · simp [field, -eqComm]
+    · simp [field]
       ring1
-    · linear_combination (norm := (simp [field, -eqComm]; ring1)) -h₁
+    · linear_combination (norm := (simp [field]; ring1)) -h₁
   · rw [equation_iff] at h₁ h₂
     rw [slope_of_X_ne hx]
     simp only [addX]
@@ -361,7 +361,7 @@ lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
       (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
   simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
-  simp [field, -eqComm]
+  simp [field]
   ring1
 
 -- Non-terminal simp, used to be field_simp
@@ -374,7 +374,7 @@ lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x�
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
-  simp [field, sub_ne_zero.mpr hx, -eqComm]
+  simp [field, sub_ne_zero.mpr hx]
   ring1
 
 /-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,

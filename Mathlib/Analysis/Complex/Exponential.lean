@@ -578,7 +578,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  · simp [field, -eqComm]
+  · simp [field]
   · lia
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)

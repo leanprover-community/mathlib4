@@ -137,12 +137,12 @@ instance : ValuationRing A where
     · use ⟨a / b, hh⟩
       right
       ext
-      simp [field, -eqComm]
+      simp [field]
     · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
-      simp [field, -eqComm]
+      simp [field]
 
 instance : Algebra A K := inferInstance
 
@@ -206,7 +206,7 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
     refine .of_mul_eq_one ⟨a⁻¹, ha'⟩ ?_
     ext
-    simp [field, -eqComm]
+    simp [field]
 
 theorem eq_top_iff : A = ⊤ ↔ ¬ A.valuation.IsNontrivial := by
   simp [Valuation.IsNontrivial_iff_exists_one_lt, SetLike.ext_iff]
@@ -351,7 +351,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       refine .of_mul_eq_one (⟨x, hx⟩ : S) ?_
       ext
-      simp [field, -eqComm]
+      simp [field]
     · simp
 
 @[simp]

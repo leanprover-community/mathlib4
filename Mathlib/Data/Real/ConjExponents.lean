@@ -201,7 +201,7 @@ end HolderConjugate
 lemma holderConjugate_comm : p.HolderConjugate q ↔ q.HolderConjugate p := ⟨.symm, .symm⟩
 
 lemma holderConjugate_iff_eq_conjExponent (hp : 1 < p) : p.HolderConjugate q ↔ q = p / (p - 1) :=
-  ⟨HolderConjugate.conjugate_eq, fun h ↦ holderConjugate_iff.mpr ⟨hp, by simp [field, h, -eqComm]⟩⟩
+  ⟨HolderConjugate.conjugate_eq, fun h ↦ holderConjugate_iff.mpr ⟨hp, by simp [field, h]⟩⟩
 
 lemma HolderConjugate.conjExponent (h : 1 < p) : p.HolderConjugate (conjExponent p) :=
   (holderConjugate_iff_eq_conjExponent h).2 rfl

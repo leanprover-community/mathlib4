@@ -330,7 +330,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
         _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; lia]
-        _ = b := by simp [field, ε', -eqComm]
+        _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all
     simp only [Finset.sum_add_distrib, Finset.sum_add_distrib,

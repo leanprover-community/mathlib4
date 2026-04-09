@@ -283,7 +283,7 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp; rfl
-  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field, -eqComm]; rw [mul_comm, hp.sub_one_mul_conj]
+  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field]; rw [mul_comm, hp.sub_one_mul_conj]
   rw [h4]
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
@@ -496,7 +496,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
-      simp [field, n', NNReal.conjExponent, *, -eqComm]
+      simp [field, n', NNReal.conjExponent, *]
     · norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       simp only [n, NNReal.coe_one] at hnp
@@ -519,11 +519,11 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hn.coe.pos
   have h2γ : γ * n' = p' := by
     rw [← NNReal.coe_inj, ← inv_inj, hp', NNReal.coe_mul, h0γ, hn.coe.conjugate_eq]
-    simp [field, -eqComm]
+    simp [field]
   have h3γ : (γ - 1) * q = p' := by
     rw [← inv_inj, hp', h0γ, hq.conjugate_eq]
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
-    simp [field, this, -eqComm]
+    simp [field, this]
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   by_cases h3u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ = 0
   · rw [eLpNorm_nnreal_eq_lintegral hp'0, h3u, ENNReal.zero_rpow_of_pos] <;> positivity

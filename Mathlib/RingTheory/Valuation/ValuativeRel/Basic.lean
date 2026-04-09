@@ -1127,7 +1127,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
     intro x y z hz w hw
     split_ifs
     all_goals try simp_all
-    simp [field, ← WithZero.coe_mul, ← Units.val_inj, -eqComm]
+    simp [field, ← WithZero.coe_mul, ← Units.val_inj]
 
 /-- The element `.mk x s` in `ValueGroupWithZero R` is sent to `v x / v s` in the
 image group of `v`. -/

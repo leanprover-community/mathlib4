@@ -210,7 +210,7 @@ theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0)
   simp_rw [div_pow, mul_pow]
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
-  simp [field, ← exp_nsmul, -eqComm]
+  simp [field, ← exp_nsmul]
   ring_nf
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.
@@ -242,7 +242,7 @@ lemma factorial_isEquivalent_stirling :
   nth_rewrite 2 [← div_self this]
   convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
   ext n
-  simp [field, stirlingSeq, mul_right_comm, -eqComm]
+  simp [field, stirlingSeq, mul_right_comm]
 
 /-! ### Global bounds -/
 

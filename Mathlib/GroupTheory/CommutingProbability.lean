@@ -189,7 +189,7 @@ theorem commProb_reciprocal (n : ℕ) :
   rcases Nat.even_or_odd n with h2 | h2
   · rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
-    simp [field, h2.two_dvd, -eqComm]
+    simp [field, h2.two_dvd]
     norm_num
   · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have hn : Odd (n % 4) := by grind

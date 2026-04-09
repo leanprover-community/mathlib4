@@ -243,7 +243,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert nonZ2 using 1; ring
   have H := congr(Int.cast (R := ℂ) $(det_fin_two g))
   simp at H
-  simp [field, -eqComm]
+  simp [field]
   linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
 set_option backward.isDefEq.respectTransparency false in

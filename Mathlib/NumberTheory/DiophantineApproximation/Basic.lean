@@ -473,9 +473,9 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     exact h.1
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
     have Hv : (v * (2 * v - 1) : ℝ)⁻¹ + (v : ℝ)⁻¹ = 2 / (2 * v - 1) := by
-      simp [field, -eqComm]
+      simp [field]
     have Huv : (u / v : ℝ) = ⌊ξ⌋ + (v : ℝ)⁻¹ := by
-      rw [sub_eq_iff_eq_add'.mp huv]; simp [field, -eqComm]
+      rw [sub_eq_iff_eq_add'.mp huv]; simp [field]
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),

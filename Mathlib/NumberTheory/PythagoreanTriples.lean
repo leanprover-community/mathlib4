@@ -265,7 +265,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     have h3 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2, h2]
-    simp [field, hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm, -eqComm]
+    simp [field, hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
   right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
     change x ^ 2 + y ^ 2 = 1 at hxy
     have h2 : y + 1 ≠ 0 := mt eq_neg_of_add_eq_zero_left hy
@@ -278,8 +278,8 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       ring
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
-    · simp [field, h3, -eqComm]
-    · simp [field, h3, -eqComm]
+    · simp [field, h3]
+    · simp [field, h3]
       rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
       ring
 
@@ -433,10 +433,10 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    simp [field, v, w, -eqComm]
+    simp [field, v, w]
     simp only [sq]
     norm_cast
-  have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0, -eqComm]
+  have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq

@@ -59,7 +59,7 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
     rayleighQuotient T (c • x) = rayleighQuotient T x := by
   by_cases hx : x = 0
   · simp [hx]
-  simp [field, norm_smul, T.reApplyInnerSelf_smul, -eqComm]
+  simp [field, norm_smul, T.reApplyInnerSelf_smul]
 
 theorem rayleighQuotient_add (S : E →L[𝕜] E) {x : E} :
     (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
@@ -89,7 +89,7 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     let c : 𝕜 := ‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine ⟨c • x, ?_, ?_⟩
-    · simp [field, c, norm_smul, abs_of_pos hr, -eqComm]
+    · simp [field, c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
   · rintro ⟨x, hx, hxT⟩
@@ -246,7 +246,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc
-  simpa [field, inner_smul_left, mul_comm a, -eqComm] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
 

@@ -241,7 +241,7 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   rw [← coe_nnnorm]
   norm_cast at ⊢ ht
   rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
-  congr <;> simp [field, ht.ne', -eqComm]
+  congr <;> simp [field, ht.ne']
 
 local notation "𝕢" => Function.Periodic.qParam
 
@@ -283,7 +283,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   · apply Continuous.intervalIntegrable
     fun_prop (disch := simp [Function.Periodic.qParam_ne_zero])
   · exact continuous_const.intervalIntegrable ..
-  · simp [field, intervalIntegral.integral_const, hne, -eqComm]
+  · simp [field, intervalIntegral.integral_const, hne]
 
 /-- Bound for the coefficients of a modular form: if `f` is a weight `k` modular form for an
 arithmetic subgroup, then its `q`-expansion coefficients are `O (n ^ k)`.

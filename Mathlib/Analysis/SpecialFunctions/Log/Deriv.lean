@@ -230,7 +230,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     convert this using 1
     calc
       -y ^ n / (1 - y) = ∑ i ∈ Finset.range n, y ^ i + -1 / (1 - y) := by
-        simp [field, geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne', -eqComm]
+        simp [field, geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
         ring
       _ = ∑ i ∈ Finset.range n, ↑(i + 1) * y ^ i / (↑i + 1) + -1 / (1 - y) := by
         congr with i
@@ -275,10 +275,10 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
   have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) =
       (∑ i ∈ range n, (y ^ 2) ^ i) := by
     congr with i
-    simp [field, mul_comm, ← pow_mul, -eqComm]
+    simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
   have hy₄ : (1 - y) * (1 + y) = 1 - y ^ 2 := by ring
-  simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm, -eqComm]
+  simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm]
   ring
 
 /-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
@@ -409,11 +409,11 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
   have h₃ := h.ne'
   rw [← log_div]
   · congr
-    simp [field, -eqComm]
+    simp [field]
     ring
   · field_simp
     positivity
-  · simp [field, h₃, -eqComm]
+  · simp [field, h₃]
 
 /-- Expansion of `log (1 + a)` as a series in powers of `a / (a + 2)`. -/
 theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
@@ -422,15 +422,15 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
   obtain (rfl | ha0) := eq_or_ne a 0
   · simp [hasSum_zero]
   · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
-    all_goals simp [field, add_comm, -eqComm]
+    all_goals simp [field, add_comm]
 
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
   convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
-  simp [field, -eqComm]
+  simp [field]
 
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
   convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
     1 (by positivity) (by positivity) using 1
-  simp [field, -eqComm]
+  simp [field]
 
 end Real

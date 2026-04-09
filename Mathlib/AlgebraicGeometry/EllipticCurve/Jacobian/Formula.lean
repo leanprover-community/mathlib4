@@ -237,7 +237,7 @@ private lemma toAffine_slope_of_eq [DecidableEq F] {P Q : Fin 3 → F}
       -W.dblU P / W.dblZ P := by
   simp only [X_eq_iff hPz hQz, ne_eq, Y_eq_iff' hPz hQz] at hx hy
   rw [Affine.slope_of_Y_ne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz, dblU_eq, dblZ]
-  simp [field, -eqComm]
+  simp [field]
 
 variable (W') in
 /-- The `X`-coordinate of a representative of `2 • P` for a Jacobian point representative `P` on a
@@ -266,7 +266,7 @@ set_option linter.flexible false in
 private lemma toAffine_addX_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : F} (hd : d ≠ 0) :
     W.toAffine.addX (P x / P z ^ 2) (P x / P z ^ 2) (-n / (P z * d)) =
       (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2) / (P z * d) ^ 2 := by
-  simp [field, -eqComm]
+  simp [field]
   ring1
 
 lemma dblX_of_Z_ne_zero [DecidableEq F]
@@ -304,7 +304,7 @@ private lemma toAffine_negAddY_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : 
       (-n * (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2 - P x * d ^ 2)
         + P y * d ^ 3) / (P z * d) ^ 3 := by
   rw [Affine.negAddY, toAffine_addX_of_eq hPz hd]
-  simp [field, -eqComm]
+  simp [field]
 
 lemma negDblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
@@ -402,7 +402,7 @@ def addU (P Q : Fin 3 → F) : F :=
 
 lemma addU_smul {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) {u v : F} (hu : u ≠ 0)
     (hv : v ≠ 0) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
-  simp [field, addU, smul_fin3_ext, -eqComm]
+  simp [field, addU, smul_fin3_ext]
 
 lemma addU_of_Z_eq_zero_left {P Q : Fin 3 → F} (hPz : P z = 0) : addU P Q = 0 := by
   rw [addU, hPz, zero_mul, div_zero, neg_zero]
@@ -457,7 +457,7 @@ private lemma toAffine_slope_of_ne [DecidableEq F] {P Q : Fin 3 → F} (hPz : P 
       (P y * Q z ^ 3 - Q y * P z ^ 3) / (P z * Q z * addZ P Q) := by
   rw [Affine.slope_of_X_ne <| by rwa [ne_eq, ← X_eq_iff hPz hQz],
     div_sub_div _ _ (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz), mul_comm <| _ ^ 2, addZ]
-  simp [field, -eqComm]
+  simp [field]
 
 variable (W') in
 /-- The `X`-coordinate of a representative of `P + Q` for two distinct Jacobian point
@@ -521,7 +521,7 @@ private lemma toAffine_addX_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q
     (hd : d ≠ 0) : W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2) (n / (P z * Q z * d)) =
       (n ^ 2 + W.a₁ * n * P z * Q z * d - W.a₂ * P z ^ 2 * Q z ^ 2 * d ^ 2 - P x * Q z ^ 2 * d ^ 2
         - Q x * P z ^ 2 * d ^ 2) / (P z * Q z) ^ 2 / d ^ 2 := by
-  simp [field, -eqComm]
+  simp [field]
 
 lemma addX_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
     (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
@@ -596,7 +596,7 @@ private lemma toAffine_negAddY_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz 
         - P x * Q z ^ 2 * d ^ 2 - Q x * P z ^ 2 * d ^ 2 - P x * Q z ^ 2 * d ^ 2)
         + P y * Q z ^ 3 * d ^ 3) / (P z * Q z) ^ 3 / d ^ 3 := by
   rw [Affine.negAddY, toAffine_addX_of_ne hPz hQz hd]
-  simp [field, -eqComm]
+  simp [field]
 
 lemma negAddY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) :

@@ -292,7 +292,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
     show (2 * (m + 1))! = 2 * (m + 1) * (2 * m + 1)! by grind [Nat.factorial_succ],
     show 2 * (m + 1) - 1 = 2 * m + 1 by grind, mul_pow, mul_pow, pow_mul I, I_sq]
   norm_cast
-  simp [field, -eqComm]
+  simp [field]
   grind
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/

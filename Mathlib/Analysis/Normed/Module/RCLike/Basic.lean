@@ -45,13 +45,13 @@ variable [NormedSpace 𝕜 E]
 @[simp]
 theorem norm_smul_inv_norm {x : E} (hx : x ≠ 0) : ‖(‖x‖⁻¹ : 𝕜) • x‖ = 1 := by
   have : ‖x‖ ≠ 0 := by simp [hx]
-  simp [field, norm_smul, -eqComm]
+  simp [field, norm_smul]
 
 /-- Lemma to normalize a vector in a normed space `E` over either `ℂ` or `ℝ` to length `r`. -/
 theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0) :
     ‖((r : 𝕜) * (‖x‖ : 𝕜)⁻¹) • x‖ = r := by
   have : ‖x‖ ≠ 0 := by simp [hx]
-  simp [field, norm_smul, r_nonneg, rclike_simps, -eqComm]
+  simp [field, norm_smul, r_nonneg, rclike_simps]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :

@@ -346,7 +346,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     exact (ht.ne' h.1).elim
   · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
-    simp [field, Real.exp_neg, rpow_neg ht, -eqComm]
+    simp [field, Real.exp_neg, rpow_neg ht]
 
 theorem isLittleO_exp_mul_rpow_of_lt (k : ℝ) {a b : ℝ} (ha' : a < b) :
     (fun t ↦ Real.exp (a * t) * t ^ k) =o[atTop] fun t ↦ Real.exp (b * t) := by

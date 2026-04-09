@@ -390,7 +390,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
       intro z hz
       convert (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _)
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
-      simp [field, -eqComm]
+      simp [field]
     convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
     · ring
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
@@ -459,7 +459,7 @@ theorem integral_sin_pow :
 
 @[simp]
 theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * cos b + b - a) / 2 := by
-  simp [field, integral_sin_pow, add_sub_assoc, -eqComm]
+  simp [field, integral_sin_pow, add_sub_assoc]
 
 theorem integral_sin_pow_odd :
     (∫ x in 0..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i : ℝ) + 2) / (2 * i + 3) := by
@@ -532,7 +532,7 @@ theorem integral_cos_pow :
 
 @[simp]
 theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * sin a + b - a) / 2 := by
-  simp [field, integral_cos_pow, add_sub_assoc, -eqComm]
+  simp [field, integral_cos_pow, add_sub_assoc]
 
 /-! ### Integral of `sin x ^ m * cos x ^ n` -/
 

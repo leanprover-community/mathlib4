@@ -108,7 +108,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1
-      simp [field, -eqComm]
+      simp [field]
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction N with

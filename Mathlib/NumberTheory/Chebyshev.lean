@@ -311,7 +311,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   · refine sum_congr rfl fun n hn ↦ ?_
     split_ifs with h
     · have : log n ≠ 0 := log_ne_zero_of_pos_of_ne_one (mod_cast h.pos) (mod_cast h.ne_one)
-      simp [a, h, field, -eqComm]
+      simp [a, h, field]
     · simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
@@ -319,7 +319,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
-      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field, -eqComm]
+      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability

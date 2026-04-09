@@ -427,7 +427,7 @@ theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
   · simp [variableChange_a₁]
   · simp [variableChange_a₃]
   · have ha₂ : W'.a₂ ≠ 0 := W.toShortNFOfCharThree_a₂ ▸ hb₂
-    simp [field, variableChange_a₄, -mul_eq_zero, -eqComm]
+    simp [field, variableChange_a₄, -mul_eq_zero]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
 theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThreeNF • W).IsShortNF := by
@@ -671,9 +671,9 @@ theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
     (W.toCharTwoJNeZeroNF ha₁ • W).IsCharTwoJNeZeroNF := by
   constructor
   · simp [toCharTwoJNeZeroNF, ha₁, variableChange_a₁]
-  · simp [field, toCharTwoJNeZeroNF, variableChange_a₃, -mul_eq_zero, -eqComm]
+  · simp [field, toCharTwoJNeZeroNF, variableChange_a₃, -mul_eq_zero]
     linear_combination (W.a₃ * W.a₁ ^ 3 + W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) * CharP.cast_eq_zero F 2
-  · simp [field, toCharTwoJNeZeroNF, variableChange_a₄, -mul_eq_zero, -eqComm]
+  · simp [field, toCharTwoJNeZeroNF, variableChange_a₄, -mul_eq_zero]
     linear_combination (W.a₃ ^ 2 + W.a₁ * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,

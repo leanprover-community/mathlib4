@@ -82,7 +82,7 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
         rw [sub_ne_zero]
         rintro rfl
         simp_all [s]
-      simp [← Complex.conj_mul', field, -eqComm]
+      simp [← Complex.conj_mul', field]
     _ = conj (P.roots.map fun x ↦ 1 / (z - x)).sum := by
       simp only [Finset.sum_multiset_map_count, P.count_roots, s]
     _ = 0 := by

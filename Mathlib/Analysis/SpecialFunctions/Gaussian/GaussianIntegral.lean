@@ -339,7 +339,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
       norm_num
       rw [rpow_neg (le_of_lt hx), rpow_one]
     rw [smul_eq_mul, this]
-    simp [field, (ne_of_lt (show 0 < x from hx)).symm, -eqComm]
+    simp [field, (ne_of_lt (show 0 < x from hx)).symm]
     norm_num
   · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 

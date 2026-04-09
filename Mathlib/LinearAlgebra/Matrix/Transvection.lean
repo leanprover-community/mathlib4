@@ -404,7 +404,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp [h]
       simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
           listTransvecCol_mul_last_row_drop _ _ hn]
-      simp [field, -eqComm]
+      simp [field]
     · have hni : n ≠ i := by
         rintro rfl
         cases i

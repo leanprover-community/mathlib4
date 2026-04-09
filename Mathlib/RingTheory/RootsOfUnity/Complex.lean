@@ -41,7 +41,7 @@ theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi 
   simp only [← exp_nat_mul, exp_eq_one_iff]
   constructor
   · use i
-    simp (discharger := norm_cast) [field, -eqComm]
+    simp (discharger := norm_cast) [field]
   · simp only [forall_exists_index]
     have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
     rintro l k hk
@@ -117,7 +117,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
   · rintro ⟨i, _, H⟩
     rw [← H, ← exp_nat_mul, exp_eq_one_iff]
     use i
-    simp [field, -eqComm]
+    simp [field]
 
 theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity

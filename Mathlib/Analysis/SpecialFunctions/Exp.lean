@@ -82,7 +82,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
-    simp [field, -eqComm]
+    simp [field]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=

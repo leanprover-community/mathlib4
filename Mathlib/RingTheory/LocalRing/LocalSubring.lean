@@ -116,7 +116,7 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext
-  simp [field, H t, this, mul_comm, -eqComm]
+  simp [field, H t, this, mul_comm]
 
 instance : IsLocalization.AtPrime (ofPrime A P).toSubring P :=
   IsLocalization.isLocalization_of_algEquiv _ (ofPrimeEquiv A P)

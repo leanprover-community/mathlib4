@@ -197,7 +197,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
       (by push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
-    simp [field, -eqComm]
+    simp [field]
   | succ n hn =>
     rw [hn, Finset.prod_range_succ]
     set A := ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
@@ -234,7 +234,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         convert (Nat.cast_add_one_ne_zero (2 * n) : (↑(2 * n) + 1 : ℂ) ≠ 0)
         simp
       have : (n : ℂ) + 1 ≠ 0 := Nat.cast_add_one_ne_zero n
-      simp [field, -eqComm]
+      simp [field]
     convert integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]
 

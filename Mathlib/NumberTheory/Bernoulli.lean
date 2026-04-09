@@ -156,7 +156,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
   have := factorial_mul_factorial_dvd_factorial_add i j
-  simp [field, add_choose, *, -eqComm]
+  simp [field, add_choose, *]
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
 theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
@@ -246,7 +246,7 @@ theorem bernoulli_spec' (n : ℕ) :
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
-  · simp [field, h₃, -eqComm]
+  · simp [field, h₃]
     norm_num
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
@@ -269,7 +269,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
-  simp [field, mul_comm _ (bernoulli x.1), mul_assoc, -eqComm]
+  simp [field, mul_comm _ (bernoulli x.1), mul_assoc]
 
 section Faulhaber
 
@@ -336,7 +336,7 @@ theorem sum_range_pow (n p : ℕ) :
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine sum_congr rfl fun x _ => ?_
-  simp [field, factorial, -eqComm]
+  simp [field, factorial]
 
 /-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
 numbers:

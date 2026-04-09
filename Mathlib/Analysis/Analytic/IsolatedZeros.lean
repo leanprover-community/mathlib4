@@ -68,7 +68,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
     convert h2.const_smul (z⁻¹ ^ n) using 2 with x
     · match_scalars
-      simp [field, pow_add, -eqComm]
+      simp [field, pow_add]
     · simp only [inv_pow]
 
 end HasSum
@@ -83,8 +83,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by
-      simp [field, _root_.pow_succ, -eqComm]
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
     simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹

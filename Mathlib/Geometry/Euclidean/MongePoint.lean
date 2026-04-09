@@ -150,7 +150,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
-  simp [field, -eqComm]
+  simp [field]
   ring
 
 /-- The Monge point of an (n+2)-simplex, in terms of
@@ -172,7 +172,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
   · rw [if_pos (mem_univ _), card_fin]
     field
-  · simp [field, -eqComm]
+  · simp [field]
     ring
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the

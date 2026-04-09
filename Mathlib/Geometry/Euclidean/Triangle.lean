@@ -75,7 +75,7 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
-    simp [field, mul_assoc, sin_angle_mul_norm_mul_norm, -eqComm]
+    simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
   simp only [inner_sub_left, inner_sub_right, real_inner_comm x y]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
@@ -85,7 +85,7 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  simp [field, sin_angle_mul_norm_eq_sin_angle_mul_norm x y, -eqComm]
+  simp [field, sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -269,7 +269,7 @@ set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
 theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
-  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..), -eqComm]
+  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..)]
   exact law_sin _ _ _
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/

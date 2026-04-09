@@ -120,7 +120,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
     | inr fract_ne_zero =>
       -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
       simp [field, contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue,
-        IntFractPair.of, fract_ne_zero, -eqComm]
+        IntFractPair.of, fract_ne_zero]
   | succ n IH =>
     intro ifp_succ_n succ_nth_stream_eq
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :

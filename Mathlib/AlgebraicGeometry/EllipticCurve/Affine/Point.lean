@@ -291,7 +291,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
-    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx, -eqComm]
+    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]

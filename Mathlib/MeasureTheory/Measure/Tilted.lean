@@ -261,7 +261,7 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
     congr 1
     simp only [Pi.add_apply]
     have := (integral_exp_pos hf).ne'
-    simp [field, -eqComm]
+    simp [field]
 
 lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}
     (hg : Integrable (fun x ↦ exp (g x)) μ) :

@@ -494,7 +494,7 @@ set_option linter.unusedSimpArgs false in
 /-- The determinant of `f.symm` is the inverse of that of `f` when `f` is a linear equiv. -/
 theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
     LinearMap.det (f.symm : M →ₗ[𝕜] M) = (LinearMap.det (f : M →ₗ[𝕜] M))⁻¹ := by
-  simp [field, IsUnit.ne_zero f.isUnit_det', -eqComm]
+  simp [field, IsUnit.ne_zero f.isUnit_det']
 
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]

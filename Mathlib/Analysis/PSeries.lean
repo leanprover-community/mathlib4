@@ -465,7 +465,7 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
       refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
       filter_upwards [eventually_gt_atTop (-c)] with x hx
-      simp [field, (by linarith : 0 < x + c).ne', -eqComm]
+      simp [field, (by linarith : 0 < x + c).ne']
     apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'
     filter_upwards [eventually_gt_atTop (-b), eventually_gt_atTop (-c)] with x hb hc
     rw [neg_lt_iff_pos_add] at hb hc

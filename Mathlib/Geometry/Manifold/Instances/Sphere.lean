@@ -240,7 +240,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
   match_scalars
-  simp [field, -eqComm]
+  simp [field]
   ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;

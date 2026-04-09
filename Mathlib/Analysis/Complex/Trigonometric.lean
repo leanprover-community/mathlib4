@@ -494,7 +494,7 @@ theorem one_add_tan_sq_mul_cos_sq_eq_one {x : ℂ} (h : cos x ≠ 0) :
 
 theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 := by
   rw [tan_eq_sin_div_cos, div_pow]
-  simp [field, -eqComm]
+  simp [field]
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by

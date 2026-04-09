@@ -105,7 +105,7 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
       · simp [g]
       · refine eventually_mem_nhdsWithin.mono fun w hw ↦ ?_
         rw [mem_compl_singleton_iff, ← sub_ne_zero] at hw
-        simp [pow_succ, field, -eqComm]
+        simp [pow_succ, field]
   -- Finally, we apply the maximum modulus principle to this function.
   -- On the sphere `dist w c = R₁`, its norm is bounded by `R₂ / R₁ ^ (n + 1)`,
   -- thus it's bounded by the same constant on the whole closed ball,
@@ -191,7 +191,7 @@ theorem dist_le_div_mul_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c
   refine dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO (n := 0) hd h_maps ?_ hz |>.trans_eq ?_
   · simpa using hd.continuousOn.continuousAt
       (ball_mem_nhds _ <| nonempty_ball.mp ⟨_, hz⟩) |>.sub_const (f c)
-  · simp [field, -eqComm]
+  · simp [field]
 
 /-- The **Schwarz Lemma**. Let `f : E → F` be a complex analytic function
 on an open ball with center `c` and positive radius `R₁`.

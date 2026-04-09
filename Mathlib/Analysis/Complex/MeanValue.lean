@@ -58,7 +58,7 @@ theorem circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable (hs : 
   _ = f w := by
     rw [circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw h₁f h₂f]
     match_scalars
-    simp [field, -eqComm]
+    simp [field]
 
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is

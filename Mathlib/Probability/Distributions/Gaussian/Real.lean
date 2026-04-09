@@ -114,7 +114,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
-  · simp [field, -eqComm]
+  · simp [field]
   · positivity
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -440,7 +440,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [one_mul]
       congr 1
       have : (v : ℂ) ≠ 0 := by simpa
-      simp [field, -eqComm]
+      simp [field]
       ring
 
 /-- The complex moment-generating function of a random variable with Gaussian distribution
