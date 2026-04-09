@@ -145,13 +145,6 @@ namespace Matrix.GeneralLinearGroup
 
 variable {K : Type*} [Field K] [DecidableEq K]
 
-lemma smul_eq_self_iff {g : GL (Fin 2) K} {x : OnePoint K} :
-    g • x = x ↔ ∃ a : K,
-      (equivProjectivization K x).submodule ≤ Module.End.eigenspace (toLin g).val a := by
-  set y := equivProjectivization K x
-  rw [show g • x = x ↔ g • y = y by rw [← equivProjectivization_smul, (Equiv.injective _).eq_iff]]
-  apply Projectivization.smul_eq_self_iff
-
 /-- The roots of `g.fixpointPolynomial` are the fixed points of `g ∈ GL(2, K)` acting on the finite
 part of `OnePoint K`. -/
 lemma fixpointPolynomial_aeval_eq_zero_iff {c : K} {g : GL (Fin 2) K} :
