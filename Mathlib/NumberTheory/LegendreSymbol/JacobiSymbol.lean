@@ -338,8 +338,9 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
 
 /-- If `b` is odd, then `J(4 | b) = 1`. -/
 theorem at_four {b : ℕ} (hb : Odd b) : J(4 | b) = 1 := by
-  simpa [one_left] using
+  have h : J((4 : ℤ) | b) = J((4 : ℤ) / 4 | b) :=
     (div_four_left (a := (4 : ℤ)) (b := b) (by decide) (Nat.odd_iff.mp hb)).symm
+  simpa [one_left] using h
 
 theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
