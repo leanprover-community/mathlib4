@@ -292,8 +292,8 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
       ∂μHE[finrank ℝ s.direction] := by
   obtain p := hs.some
   rw [← (s.direction.measurePreserving_measurableEquivProd p.val).symm.measure_preimage_equiv,
-    volume_eq_prod, prod_apply (by measurability),
-    EuclideanGeometry.euclideanHausdorffMeasure_eq, MeasurableEmbedding.lintegral_map
+    volume_eq_prod, prod_apply (by measurability), euclideanHausdorffMeasure_eq,
+    MeasurableEmbedding.lintegral_map
         (by simpa using (IsometryEquiv.vaddConst p).toHomeomorph.measurableEmbedding)]
   congr with x
   let u : Set (mk' (x +ᵥ p).val s.directionᗮ) := Subtype.val ⁻¹' (t ∩ mk' (x +ᵥ p).val s.directionᗮ)
