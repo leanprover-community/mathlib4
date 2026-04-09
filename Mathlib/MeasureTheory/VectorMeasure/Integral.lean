@@ -185,18 +185,6 @@ theorem continuous_integral :
 
 end VectorMeasureWithPairing
 
-section ScalarSMul
-
-/-- The embedding of `ℝ` to the multiple of the identity map as an `F`-valued pairing of
-`ℝ` and `F`. -/
-noncomputable def scalarSMulCLM (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] :
-    ℝ →L[ℝ] F →L[ℝ] F where
-  toFun c := lsmul ℝ ℝ c
-  map_add' _ _ := ContinuousLinearMap.map_add _ _ _
-  map_smul' _ _ := map_smul_of_tower (lsmul ℝ ℝ) _ _
-
-end ScalarSMul
-
 namespace VectorMeasure
 
 variable {α F : Type*} [MeasurableSpace α]
@@ -207,11 +195,11 @@ variable {α F : Type*} [MeasurableSpace α]
 where `pairing` is just the `ℝ`-multiplication, so that `μ.withPairing.integral` is the
 `F`-valued integral of `μ`. -/
 noncomputable def withPairing : VectorMeasureWithPairing α ℝ F F where
-  pairing := scalarSMulCLM F
+  pairing := lsmul (E := F) ℝ ℝ
   vectorMeasure := μ
 
 /-- The `F`-valued integral with respect to an `F`-valued vector measure as a continuous linear map,
-defined as the pairing integral where the pairing is `scalarSMulCLM`. -/
+defined as the pairing integral where the pairing is `lsmul`. -/
 noncomputable def integral : (α →₁[μ.variation] ℝ) →L[ℝ] F :=
     μ.withPairing.integral
 
