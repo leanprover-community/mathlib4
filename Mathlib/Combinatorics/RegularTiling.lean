@@ -73,11 +73,16 @@ structure RegularTilingData (chi : ℤ) where
     This is the angle defect condition in integer form. -/
 theorem schlafli_constraint_of_spherical (t : RegularTilingData 2) :
     2 * t.p + 2 * t.q > t.p * t.q := by
-  -- V = 4p/(2p+2q-pq), so V > 0 requires 2p+2q > pq.
-  -- Mixed ℕ/ℤ arithmetic; nlinarith needs help with casts.
-  -- V(2p + 2q - pq) = 4p > 0 and V > 0, so 2p + 2q - pq > 0.
-  -- Mixed ℤ/ℕ: Euler is ℤ, edge relations are ℕ.
-  sorry -- Requires cast lemmas to bridge ℤ/ℕ arithmetic
+  -- Lift ℕ edge relations to ℤ, combine with Euler (already ℤ).
+  have hef : (2 * t.E : ℤ) = t.p * t.F := by exact_mod_cast t.edge_face
+  have hev : (2 * t.E : ℤ) = t.q * t.V := by exact_mod_cast t.edge_vertex
+  have heu := t.euler  -- (V : ℤ) - E + F = 2
+  have hV : (0 : ℤ) < t.V := by exact_mod_cast t.hV
+  have hp : (3 : ℤ) ≤ t.p := by exact_mod_cast t.hp
+  have hq : (3 : ℤ) ≤ t.q := by exact_mod_cast t.hq
+  -- From Euler + edge relations: V(2p + 2q - pq) = 4p.
+  -- Since V > 0 and p ≥ 3: 4p ≥ 12 > 0, so 2p + 2q - pq > 0.
+  nlinarith
 
 /-- For spherical tilings, `p ≤ 5`. -/
 theorem spherical_p_le_five (t : RegularTilingData 2) : t.p ≤ 5 := by
@@ -198,9 +203,34 @@ there is a unique `RegularTilingData 2` (up to the data). -/
 theorem schlafli_determines_spherical (t₁ t₂ : RegularTilingData 2)
     (hp : t₁.p = t₂.p) (hq : t₁.q = t₂.q) :
     t₁.V = t₂.V ∧ t₁.E = t₂.E ∧ t₁.F = t₂.F := by
-  -- From 2E = pF, 2E = qV, V - E + F = χ:
-  -- V = 4p/(2p+2q-pq), uniquely determined by (p,q).
-  sorry -- Requires ℤ/ℕ cast reasoning
+  -- Lift everything to ℤ
+  have h1 : (2 * t₁.E : ℤ) = t₁.p * t₁.F := by exact_mod_cast t₁.edge_face
+  have h2 : (2 * t₁.E : ℤ) = t₁.q * t₁.V := by exact_mod_cast t₁.edge_vertex
+  have h3 := t₁.euler  -- (t₁.V : ℤ) - t₁.E + t₁.F = 2
+  have h4 : (2 * t₂.E : ℤ) = t₂.p * t₂.F := by exact_mod_cast t₂.edge_face
+  have h5 : (2 * t₂.E : ℤ) = t₂.q * t₂.V := by exact_mod_cast t₂.edge_vertex
+  have h6 := t₂.euler
+  -- Cast hp, hq to ℤ and substitute into h1, h2
+  have hpp : (t₁.p : ℤ) = t₂.p := by exact_mod_cast hp
+  have hqq : (t₁.q : ℤ) = t₂.q := by exact_mod_cast hq
+  -- Replace t₁.p with t₂.p in h1, t₁.q with t₂.q in h2
+  have h1' : (2 * t₁.E : ℤ) = ↑t₂.p * ↑t₁.F := hpp ▸ h1
+  have h2' : (2 * t₁.E : ℤ) = ↑t₂.q * ↑t₁.V := hqq ▸ h2
+  -- Now: h1': 2E₁ = p₂·F₁, h4: 2E₂ = p₂·F₂ → p₂(F₁-F₂) = 2(E₁-E₂)
+  -- h2': 2E₁ = q₂·V₁, h5: 2E₂ = q₂·V₂ → q₂(V₁-V₂) = 2(E₁-E₂)
+  -- h3: V₁-E₁+F₁=2, h6: V₂-E₂+F₂=2 → (V₁-V₂)-(E₁-E₂)+(F₁-F₂)=0
+  -- From h1' and h4: p*(F₁-F₂) = 2*(E₁-E₂)
+  -- From h2' and h5: q*(V₁-V₂) = 2*(E₁-E₂)
+  -- From h3 and h6: (V₁-V₂) - (E₁-E₂) + (F₁-F₂) = 0
+  -- Three equations in three unknowns ΔV, ΔE, ΔF with p,q ≥ 3.
+  -- Unique solution: ΔV = ΔE = ΔF = 0.
+  have hsc := schlafli_constraint_of_spherical t₂
+  have hp2 : (t₂.p : ℤ) ≥ 3 := by exact_mod_cast t₂.hp
+  have hq2 : (t₂.q : ℤ) ≥ 3 := by exact_mod_cast t₂.hq
+  have hE : (t₁.E : ℤ) = t₂.E := by nlinarith [h1', h2', h4, h5, h3, h6]
+  have hF : (t₁.F : ℤ) = t₂.F := by nlinarith [h1', h4, hE]
+  have hV : (t₁.V : ℤ) = t₂.V := by nlinarith [h2', h5, hE]
+  exact ⟨by exact_mod_cast hV, by exact_mod_cast hE, by exact_mod_cast hF⟩
 
 /-! ## Duality -/
 
