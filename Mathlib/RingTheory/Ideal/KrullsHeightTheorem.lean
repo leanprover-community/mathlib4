@@ -109,10 +109,10 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
   have := hp.1.1
   let f := algebraMap R (Localization.AtPrime p)
   have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing (I.map f) ?_
-  · rwa [← IsLocalization.height_comap p.primeCompl,
-      Localization.AtPrime.comap_maximalIdeal] at this
+  · rwa [← IsLocalization.height_under p.primeCompl,
+      Localization.AtPrime.under_maximalIdeal] at this
   · rwa [IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I,
-      Set.mem_preimage, Localization.AtPrime.comap_maximalIdeal]
+      Set.mem_preimage, Localization.AtPrime.under_maximalIdeal]
 
 theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
@@ -184,8 +184,8 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       simp_all
     | succ n =>
       wlog hR : ∃ (_ : IsLocalRing R), p = maximalIdeal R
-      · rw [← Localization.AtPrime.comap_maximalIdeal (I := p)] at hp ⊢
-        rw [IsLocalization.height_comap p.primeCompl]
+      · rw [← Localization.AtPrime.under_maximalIdeal (I := p)] at hp ⊢
+        rw [IsLocalization.height_under p.primeCompl]
         rw [← Set.mem_preimage, ← IsLocalization.minimalPrimes_map p.primeCompl, map_span] at hp
         exact this _ (s.image (algebraMap R (Localization p.primeCompl))) (by simpa using hp)
           inferInstance _ H (Finset.card_image_le.trans hn) ⟨inferInstance, rfl⟩

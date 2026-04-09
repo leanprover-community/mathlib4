@@ -179,8 +179,8 @@ theorem mk_mem_carrier (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers 
     HomogeneousLocalization.mk z ∈ carrier x ↔ z.num.1 ∈ x.1.asHomogeneousIdeal := by
   rw [carrier, Ideal.mem_comap, HomogeneousLocalization.algebraMap_apply,
     HomogeneousLocalization.val_mk, Localization.mk_eq_mk', IsLocalization.mk'_eq_mul_mk'_one,
-    mul_comm, Ideal.unit_mul_mem_iff_mem, ← Ideal.mem_comap,
-    IsLocalization.comap_map_of_isPrime_disjoint (.powers f)]
+    mul_comm, Ideal.unit_mul_mem_iff_mem, ← Ideal.mem_comap, ← Ideal.under_def,
+    IsLocalization.under_map_of_isPrime_disjoint (.powers f)]
   · rfl
   · infer_instance
   · exact (disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2

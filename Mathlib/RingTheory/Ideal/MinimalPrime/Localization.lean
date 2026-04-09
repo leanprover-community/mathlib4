@@ -170,7 +170,7 @@ section
 variable {R : Type*} [CommSemiring R] (S : Submonoid R) (A : Type*) [CommSemiring A] [Algebra R A]
 
 theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
-    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
+    (J.map (algebraMap R A)).minimalPrimes = Ideal.under R ⁻¹' J.minimalPrimes := by
   ext p
   constructor
   · intro hp
@@ -208,7 +208,7 @@ theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
   have : IsLocalRing A := AtPrime.isLocalRing A q
   rw [← Ideal.sInf_minimalPrimes, IsLocalization.minimalPrimes_map q.primeCompl A I]
   refine le_antisymm (sInf_le ?_) (le_sInf fun J hJ ↦ ?_)
-  · rwa [Set.mem_preimage, map_eq_maximalIdeal q A, ← Ideal.under_def, under_maximalIdeal A q]
+  · rwa [Set.mem_preimage, map_eq_maximalIdeal q A, under_maximalIdeal A q]
   · rw [← IsLocalization.under_le_under_iff q.primeCompl A,
       AtPrime.map_eq_maximalIdeal q A, AtPrime.under_maximalIdeal A q]
     apply hIq.2 hJ.1

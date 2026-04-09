@@ -410,11 +410,11 @@ lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
   have H := QuasiFinite.eq_of_le_of_under_eq (R := R)
     (Ideal.map (algebraMap S (Localization.AtPrime Q)) P) _
     (IsLocalRing.le_maximalIdeal_of_isPrime _) (by
-      convert h₂ <;> rw [← Ideal.under_under (B := S), Ideal.under_def S]
-      · rw [IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
-      · rw [Localization.AtPrime.comap_maximalIdeal])
-  rw [← Localization.AtPrime.comap_maximalIdeal (I := Q), ← H,
-    IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+      convert h₂ <;> rw [← Ideal.under_under (B := S)]
+      · rw [IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+      · rw [Localization.AtPrime.under_maximalIdeal])
+  rw [← Localization.AtPrime.under_maximalIdeal (I := Q), ← H,
+    IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
 
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P] :
     Module.Finite p.ResidueField P.ResidueField := by
@@ -452,7 +452,7 @@ lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
   ext1
   dsimp
   rw [Ideal.comap_comap, ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
-  exact IsLocalization.AtPrime.comap_maximalIdeal _ _
+  exact IsLocalization.AtPrime.under_maximalIdeal _ _
 
 /-- If `R` is an artinian ring, and `S` is a finite type `R`-algebra `R`-quasi-finite at `p`,
 then `{p}` is clopen in `Spec S`. -/
