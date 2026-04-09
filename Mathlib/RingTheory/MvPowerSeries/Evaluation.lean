@@ -135,13 +135,11 @@ variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
-set_option backward.privateInPublic true in
-private instance : UniformSpace (MvPolynomial σ R) :=
-  comap toMvPowerSeries (Pi.uniformSpace _)
+local instance : UniformSpace (MvPolynomial σ R) :=
+  comap toMvPowerSeries inferInstance
 
-set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
-private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
+local instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
 
 theorem _root_.MvPolynomial.toMvPowerSeries_isUniformInducing :
