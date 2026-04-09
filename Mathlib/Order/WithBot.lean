@@ -197,7 +197,8 @@ lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.ma
 lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
-@[to_dual]
+/-- Sequencing of `WithBot` computations. -/
+@[to_dual /-- Sequencing of `WithTop` computations. -/]
 def bind (x : WithBot α) (f : α → WithBot β) : WithBot β := Option.bind x f
 
 @[to_dual (attr := simp)]
