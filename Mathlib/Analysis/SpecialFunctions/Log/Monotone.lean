@@ -75,11 +75,9 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
   · convert rpow_le_rpow (by positivity) hex (le_of_lt ha) using 1
     · rw [← exp_mul]
       field_simp
-      rfl
   · convert rpow_le_rpow (by positivity) (hex.trans hxy) (le_of_lt ha) using 1
     · rw [← exp_mul]
       field_simp
-      rfl
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / √x) <| .Ici (exp 2) := by
   simp_rw [sqrt_eq_rpow]
