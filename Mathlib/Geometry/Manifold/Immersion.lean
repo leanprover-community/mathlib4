@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep
 public import Mathlib.Topology.Algebra.Module.TransferInstance
-public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 /-! # Smooth immersions
 
