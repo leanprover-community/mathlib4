@@ -364,23 +364,38 @@ theorem exists_seq_tendsto_liminf [NeBot f] {u : β → α} [IsCountablyGenerate
 
 variable [CountableInterFilter f] {u : β → α}
 
+theorem eventually_le_const_iff_forall_gt_eventually_lt_const {α β} [LinearOrder β]
+    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {l : Filter α}
+    [CountableInterFilter l] {f : α → β} {b : β} :
+    (∀ᶠ x in l, f x ≤ b) ↔ ∀ c, b < c → ∀ᶠ x in l, f x < c := by
+  constructor
+  · intro h c hbc
+    exact h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
+  intro h
+  rcases exists_glb_Ioi b with ⟨d, hd⟩
+  obtain rfl | H1 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
+  · obtain _ | H0 := isTop_or_exists_gt d
+    · exact .of_forall (by aesop)
+    obtain ⟨u, -, -, hua, hu⟩ := hd.exists_seq_antitone_tendsto H0
+    replace h := fun n ↦ h (u n) (by aesop)
+    rw [← eventually_countable_forall] at h
+    filter_upwards [h] with x hx
+    apply ge_of_tendsto hua <| .of_forall <| fun n ↦ le_of_lt <| hx n
+  · specialize h d <| by simp [← Set.mem_Ioi, H1]
+    filter_upwards [h] with x hx
+    rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H1
+    simpa [← Set.mem_Iic, ← Set.mem_Iio, H1] using hx
+
+theorem eventually_const_le_iff_forall_lt_eventually_const_lt {α β} [LinearOrder β]
+    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {l : Filter α}
+    [CountableInterFilter l] {f : α → β} {b : β} :
+    (∀ᶠ x in l, b ≤ f x) ↔ ∀ c, c < b → ∀ᶠ x in l, c < f x :=
+  eventually_le_const_iff_forall_gt_eventually_lt_const (β := βᵒᵈ)
+
 theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
-  obtain ha | ha := isTop_or_exists_gt (f.limsup u)
-  · exact Eventually.of_forall fun _ => ha _
-  by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
-  · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
-    have := fun n => eventually_lt_of_limsup_lt (hu n) hf
-    exact
-      (eventually_countable_forall.2 this).mono fun b hb =>
-        ge_of_tendsto hua <| Eventually.of_forall fun n => (hb _).le
-  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
-      simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
-        not_and, not_forall, not_le, exists_prop] at H
-      exact H fun x => le_of_lt
-    filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
-    contrapose! hy
-    exact hx hy
+  rw [eventually_le_const_iff_forall_gt_eventually_lt_const]
+  exact fun _ hc ↦ eventually_lt_of_limsup_lt hc
 
 theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, f.liminf u ≤ u b :=
