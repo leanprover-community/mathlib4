@@ -212,8 +212,7 @@ lemma apply_sum_eq_of_lt {α β F : Type*} [AddCommGroup α] [FunLike F α R]
       apply add_eq_left_of_lt nonarch
       grw [apply_sum_le_sup_of_isNonarchimedean nonarch hs]
       grind [sup'_lt_iff]
-    · simp only [mem_cons, false_or, forall_eq_or_imp, ha] at hk hmax
-      grind [add_eq_right_of_lt nonarch]
+    · grind [add_eq_right_of_lt nonarch]
 
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and

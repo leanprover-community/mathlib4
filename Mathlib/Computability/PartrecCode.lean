@@ -457,9 +457,9 @@ end
 * `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
   * If `n = 0`, returns `eval cf a`.
   * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
-* `Nat.Partrec.Code.rfind'`: Minimization. For `f` an argument of the form `Nat.pair a m`,
-  `rfind' f m` returns the least `a` such that `f a m = 0`, if one exists and `f b m` terminates
-  for `b < a`
+* `Nat.Partrec.Code.rfind'`: Minimization starting at a provided value. Given an argument of the
+  form `Nat.pair a m`, returns the least `n ≥ m` such that `eval cf (pair a n) = 0`, if such an `n`
+  exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
   | zero => pure 0

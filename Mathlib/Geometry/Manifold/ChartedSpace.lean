@@ -644,9 +644,6 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
         exact inter_comm _ _
       simpa [f, PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
 
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorph := ChartedSpaceCore.openPartialHomeomorph
-
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/
 @[implicit_reducible]
