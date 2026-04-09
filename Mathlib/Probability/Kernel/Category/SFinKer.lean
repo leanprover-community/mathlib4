@@ -258,8 +258,6 @@ instance deterministic_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrie
 instance id_map_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
 
-instance {X : SFinKer} : Deterministic (𝟙 X) where
-
 instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).hom :=
   deterministic_Deterministic ((X ⊗ Y) ⊗ Z)
       (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
