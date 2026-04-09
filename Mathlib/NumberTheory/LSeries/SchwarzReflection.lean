@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 interleaves. All rights reserved.
+Copyright (c) 2026 J. York Seale. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: interleaves
+Authors: J. York Seale
 -/
 module
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
@@ -45,26 +45,6 @@ open Complex HurwitzZeta MeasureTheory Set
 
 section SchwarzReflection
 
-private lemma conj_ofReal_two : (starRingEnd ℂ) (2 : ℂ) = 2 := by
-  exact_mod_cast conj_ofReal 2
-
-private lemma arg_pos_real_ne_pi (t : ℝ) (ht : 0 < t) : ((t : ℂ)).arg ≠ Real.pi := by
-  rw [arg_ofReal_of_nonneg (le_of_lt ht)]
-  exact Real.pi_pos.ne
-
-private lemma cpow_conj_pos_real (t : ℝ) (ht : 0 < t) (w : ℂ) :
-    (↑t : ℂ) ^ (starRingEnd ℂ w) = starRingEnd ℂ (t ^ w) := by
-  rw [cpow_conj _ _ (arg_pos_real_ne_pi t ht)]
-  simp [conj_ofReal]
-
-private lemma conj_div_two (s : ℂ) :
-    starRingEnd ℂ (s / 2) = starRingEnd ℂ s / 2 := by
-  rw [map_div₀, conj_ofReal_two]
-
-private lemma conj_half_sub_one (s : ℂ) :
-    starRingEnd ℂ s / 2 - 1 = starRingEnd ℂ (s / 2 - 1) := by
-  rw [map_sub, conj_div_two, map_one]
-
 /-- The modified kernel of the Hurwitz even FE pair at `a = 0` is real-valued:
 its complex conjugate equals itself. This is because it is built from
 real-valued functions (exponentials of real quadratic forms). -/
@@ -86,7 +66,7 @@ theorem completedRiemannZeta₀_conj (s : ℂ) :
     completedRiemannZeta₀ (starRingEnd ℂ s) = starRingEnd ℂ (completedRiemannZeta₀ s) := by
   change mellin (hurwitzEvenFEPair 0).f_modif (starRingEnd ℂ s / 2) / 2 =
     starRingEnd ℂ (mellin (hurwitzEvenFEPair 0).f_modif (s / 2) / 2)
-  rw [map_div₀, conj_ofReal_two]
+  rw [map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by exact_mod_cast conj_ofReal 2]
   congr 1
   simp only [mellin]
   have hpt {t : ℝ} (ht : t ∈ Ioi 0) :
@@ -94,8 +74,13 @@ theorem completedRiemannZeta₀_conj (s : ℂ) :
       (starRingEnd ℂ) ((↑t : ℂ) ^ (s / 2 - 1) • (hurwitzEvenFEPair 0).f_modif t) := by
     simp only [smul_eq_mul, map_mul]
     congr 1
-    · rw [conj_half_sub_one]
-      exact cpow_conj_pos_real t ht (s / 2 - 1)
+    · -- Inline conj_half_sub_one + cpow_conj_pos_real
+      have harg : ((t : ℂ)).arg ≠ Real.pi := by
+        rw [arg_ofReal_of_nonneg (le_of_lt ht)]; exact Real.pi_pos.ne
+      rw [show starRingEnd ℂ s / 2 - 1 = starRingEnd ℂ (s / 2 - 1) from by
+        rw [map_sub, map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by
+          exact_mod_cast conj_ofReal 2, map_one]]
+      rw [cpow_conj _ _ harg]; simp [conj_ofReal]
     · exact hurwitzEvenFEPair_f_modif_conj_fixed t
   calc ∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ ((starRingEnd ℂ) s / 2 - 1) •
         (hurwitzEvenFEPair 0).f_modif t
