@@ -141,9 +141,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
-  set A : Submodule K (Module.End K M) :=
-    Submodule.map (toEnd K L M).toLinearMap (I : Submodule K L) with hA_def
-  set B : Submodule K (Module.End K M) := LinearMap.range (toEnd K L M).toLinearMap with hB_def
+  let A : Submodule K (Module.End K M) := Submodule.map (toEnd K L M).toLinearMap I
+  let B : Submodule K (Module.End K M) := LinearMap.range (toEnd K L M).toLinearMap
   have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
   have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
     rintro _ ⟨b, rfl⟩
