@@ -631,7 +631,7 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
   let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   let pS := p.map (algebraMap R S)
   let pSp := pS.map (algebraMap S Sp)
-  let r := q.comap Algebra.TensorProduct.includeRight
+  let r := q.under S
   let Sr := Localization.AtPrime r
   change Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ p.map (algebraMap R Sr)
   let eq : p.Fiber S ≃ₐ[S] (Sp ⧸ pSp) := by
@@ -640,15 +640,6 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
     dsimp only [pSp, pS]
     rw [map_map, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let q' : Ideal (Sp ⧸ pSp) := q.comap eq.symm
-  have : r = q'.comap (algebraMap S (Sp ⧸ pSp)) := by
-    dsimp only [q']
-    rw [← comap_coe eq.symm, comap_comap, ← AlgEquiv.toAlgHom_toRingHom,
-      AlgHom.comp_algebraMap, Algebra.TensorProduct.algebraMap_eq_includeRight, comap_coe]
-  have : q'.LiesOver r := by
-    dsimp only [q']
-    rw [liesOver_iff, under_def, ← comap_coe eq.symm, comap_comap,
-      ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
-    rfl
   have : Localization.AtPrime q' ≃ₐ[Rp] Localization.AtPrime q :=
     { __ := Localization.localAlgEquiv q' q eq.symm rfl
       commutes' := by
@@ -664,34 +655,22 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
   refine this.symm.trans <| (foo9 p q' r).trans <|
     quotientEquivAlgOfEq Rp <| by rw [map_map, ← IsScalarTower.algebraMap_eq]
 
-theorem diamond1 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+theorem diamond {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
     (q : Ideal (p.Fiber S)) [q.IsPrime] :
     (Localization.AtPrime.instAlgebraOfLiesOver p q) = OreLocalization.instAlgebra := by
   apply Algebra.algebra_ext
   rw [← DFunLike.ext_iff]
-  apply Localization.localRingHom_unique _
-  · exact Ideal.LiesOver.over
-  · intro x
-    rfl
+  exact Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun x ↦ rfl
 
-theorem diamond2 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    (Localization.AtPrime.instAlgebraOfLiesOver p q).toModule = OreLocalization.instModuleOfIsScalarTower := by
-  rw [diamond1]
-  rfl
-
-theorem foo3 (q : MaximalSpectrum (p.Fiber S)) :
-    letI r := q.1.comap Algebra.TensorProduct.includeRight
+theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    letI r := q.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
-    Module.length (Localization.AtPrime p) (Localization.AtPrime q.1) =
+    Module.length (Localization.AtPrime p) (Localization.AtPrime q) =
       Module.length (Localization.AtPrime p) (Sr ⧸ p.map (algebraMap R Sr)) := by
-  let Rp := Localization.AtPrime p
-  let r := q.1.comap (Algebra.TensorProduct.includeRight)
-  let Sr := Localization.AtPrime r
   apply LinearEquiv.length_eq
-  convert (foo8 p q.1).toLinearEquiv
-  symm
-  apply diamond2
+  convert (foo8 p q).toLinearEquiv
+  rw [diamond]
+  rfl
 
 theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
     Module.finrank p.ResidueField (Localization.AtPrime q.1) =
