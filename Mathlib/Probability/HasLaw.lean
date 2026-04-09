@@ -117,6 +117,16 @@ lemma HasLaw.fun_comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measur
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (fun ω ↦ Y (X ω)) ν P :=
   hY.comp hX
 
+lemma _root_.MeasureTheory.MeasurePreserving.comp_hasLaw {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴}
+    {ν : Measure 𝒴} {Y : 𝓧 → 𝒴} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+    HasLaw (Y ∘ X) ν P :=
+  hY.hasLaw.comp hX
+
+lemma _root_.MeasureTheory.MeasurePreserving.fun_comp_hasLaw {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴}
+    {ν : Measure 𝒴} {Y : 𝓧 → 𝒴} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+    HasLaw (fun ω ↦ Y (X ω)) ν P :=
+  hY.comp_hasLaw hX
+
 @[to_additive]
 lemma IndepFun.hasLaw_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
     {μ ν : Measure M} [SigmaFinite μ] [SigmaFinite ν] {X Y : Ω → M}

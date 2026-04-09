@@ -217,39 +217,32 @@ lemma l1 {ι : Type*} (u : Set ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, 
   intro
   exact ((Finset.measurable_restrict s).comp_aemeasurable hS.aemeasurable).eval _
 
-lemma l2 {ι : Type*} {s t : Finset ι} [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
-    s.card = ∑ i ∈ t, if i ∈ s then 1 else 0 := by
-  simp; congr; grind
+lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countable ι] {u : Set ι}
+    (hu : u.Finite) :
+    MeasurePreserving ncard setBer(u, p) Bin(u.ncard, p) where
+  measurable := by fun_prop
+  map_eq := by
+    refine ext_of_singleton fun k ↦ ?_
+    rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
 
-lemma l6 {ι : Type*} [Countable ι] {u : Set ι} (hu : u.Finite) :
-    setBer(u, p).map ncard = Bin(u.ncard, p) := by
-  apply ext_of_singleton
-  intro n
-  rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
-
-lemma test {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ} (hX : iIndepFun (s.restrict X) P)
+/-- A sum of `n` independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finset_sum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+    (hX : iIndepFun (s.restrict X) P)
     (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
   classical
   obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((Finset.univ (α := s) : Set s), p).exists_hasLaw
-  have := hS.hasLaw_indicator_pi_of_setBernoulli
-  convert this.comp_of_hasLaw_comp (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) ?_ ?_ ?_
+  convert hS.hasLaw_indicator_pi_of_setBernoulli.comp_of_hasLaw_comp
+    (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
   · simp only [Finset.sum_apply]
     rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
-  · fun_prop
   · exact iIndepFun.hasLaw_pi (fun i ↦ lawX i i.1.2) (hX.precomp (fun _ _ _ ↦ by grind))
-  have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' :=
-    { aemeasurable := by
-        apply Measurable.comp_aemeasurable (g := Set.ncard) (by fun_prop) hS.aemeasurable
-      map_eq := by
-        rw [← Set.ncard_coe_finset, ← Nat.card_coe_set_eq, ← Set.ncard_univ, ← l6,
-          ← Finset.coe_univ, ← hS.map_eq, AEMeasurable.map_map_of_aemeasurable,
-          Function.comp_def]
-        any_goals fun_prop
-        simp }
+  have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
+    convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS
+    simp
   convert this with ω
-  have lol' : (S ω).Finite := toFinite (S ω)
-  rw [Set.ncard_eq_toFinset_card _ lol', l2 (Finset.subset_univ _), ← Finset.univ.sum_coe_sort]
+  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), l2 (Finset.subset_univ _),
+    ← Finset.univ.sum_coe_sort]
   congr with i
   simp [Set.indicator]
 
