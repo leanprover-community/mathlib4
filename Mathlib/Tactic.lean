@@ -282,6 +282,7 @@ public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.SpecializeAndDsimp
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.StacksAttribute
