@@ -64,7 +64,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
-    simp [mem_commonNeighbors]
+    simp
 
 /-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
