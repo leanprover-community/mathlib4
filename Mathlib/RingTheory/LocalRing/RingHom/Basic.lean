@@ -167,3 +167,6 @@ end RingEquiv
 instance {R : Type*} [CommRing R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
     IsLocalHom f :=
   (ZMod.ringHom_surjective f).isLocalHom
+
+instance {R : Type*} [CommSemiring R] [IsLocalRing R] : IsLocalRing (ULift R) :=
+  RingEquiv.isLocalRing (ULift.ringEquiv.symm)
