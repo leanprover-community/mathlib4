@@ -470,11 +470,6 @@ theorem ramificationIdx_of_not_liesOver
   rw [ramificationIdx_tower' p (q.under R) q, ramificationIdx_of_ne p (q.under R), zero_mul]
   rwa [liesOver_iff] at h
 
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] :
-    Algebra (IsLocalRing.ResidueField R) (S ⧸ (IsLocalRing.maximalIdeal R).map (algebraMap R S)) :=
-  inferInstanceAs (Algebra (R ⧸ IsLocalRing.maximalIdeal R)
-    (S ⧸ (IsLocalRing.maximalIdeal R).map (algebraMap R S)))
-
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
@@ -528,14 +523,13 @@ noncomputable def Fiber.algEquivQuotient :
   letI pRp := IsLocalRing.maximalIdeal Rp
   letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   letI pSp := pRp.map (algebraMap Rp Sp)
-  (commRight R S p.ResidueField).symm.trans <|
-    (tensorQuotientEquiv S Rp S pRp).trans <|
+  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S Rp S pRp).trans <|
     { __ := quotientEquiv _ _ (Localization.tensor_localization_algEquiv p.primeCompl S) (by
         rw [← Ideal.map_coe includeRight, Ideal.map_map]
         congr
         ext
         simp [Localization.tensor_localization_algEquiv_apply_one_tmul p.primeCompl])
-      commutes' x := by simp }
+      commutes' := by simp }
 
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (MaximalSpectrum (p.Fiber S)) :=
   Fintype.ofFinite (MaximalSpectrum (p.Fiber S))
