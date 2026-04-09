@@ -133,29 +133,26 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ i ≥ n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
     ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M i) := by
-  intro i hi N
-  apply ModuleCat.ext_subsingleton_of_quotients
+  refine fun i hi N ↦ (M.hasInjectiveDimensionLT_of_quotients _ ?_).subsingleton _ _ i hi N
   intro I
   apply ext_subsingleton_of_support_subset
   intro p foo
   clear foo
   simp only [Set.mem_setOf_eq]
-  have (n : ℕ) : ringKrullDim (R ⧸ p.1) ≤ n →
-    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M i) := by
-    induction n generalizing i hi p with
+  have (m : ℕ) (j : ℕ) (hj : j ≥ n) : ringKrullDim (R ⧸ p.1) ≤ m →
+    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M j) := by
+    induction m generalizing j hj p with
     | zero =>
       intro hp
       have : p.1 = maximalIdeal R := by
         rw [← isMaximal_iff, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
-        rw [← Ring.krullDimLE_iff] at hp
-        exact Ring.KrullDimLE.isField_of_isDomain
-      exact this ▸ h i hi
+        exact (Ring.krullDimLE_iff.mpr hp).isField_of_isDomain
+      exact this ▸ h j hj
     | succ n ih =>
       intro hp
       by_cases hpm : p.1 = maximalIdeal R
-      · rw [hpm]
-        exact h i hi
-      · apply ext_subsingleton_of_all_gt M i p.1 hpm
+      · exact hpm ▸ h j hj
+      · apply ext_subsingleton_of_all_gt M j p.1 hpm
         intro q hqp hq
         let q : PrimeSpectrum R := ⟨q, hq⟩
         have : ringKrullDim (R ⧸ q.1) ≤ n := by
@@ -166,10 +163,10 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
             (Ideal.Quotient.factor hqp.le) (Ideal.Quotient.factor_surjective hqp.le)
           · simpa using Ideal.Quotient.eq_zero_iff_mem.not.mpr hrp
           · simpa using Ideal.Quotient.eq_zero_iff_mem.mpr hrq
-        apply ih (i + 1) (Nat.le_add_right_of_le hi) this
-  rcases exist_nat_eq' R with ⟨n, hn⟩
-  apply this n
-  simpa [← hn] using ringKrullDim_quotient_le p.1
+        apply ih (j + 1) (Nat.le_add_right_of_le hj) this
+  rcases exist_nat_eq' R with ⟨m, hm⟩
+  apply this m n (le_refl n)
+  simpa [← hm] using ringKrullDim_quotient_le p.1
 
 set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] :
