@@ -242,11 +242,6 @@ instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (R
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 
-/-- This instance is about `LinearOrder.swap`. -/
-instance WellFoundedGT.swap {l : LinearOrder α} [WellFoundedLT α] :
-    letI : LinearOrder α := l.swap _; WellFoundedGT α :=
-  ‹WellFoundedLT α›
-
 @[to_dual wellFounded_gt]
 lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
 
