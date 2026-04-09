@@ -135,9 +135,9 @@ theorem IsOpen.preperfect [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
 /-
 Closures of open subsects in perfect spaces are preperfect, hence perfect.
 -/
-theorem PerfectSpace.preperfect_closure_of_isOpen [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
-    Preperfect (closure U) :=
-  hU.preperfect.perfect_closure.2
+theorem IsOpen.perfect_closure [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Perfect (closure U) :=
+  hU.preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
