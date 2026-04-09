@@ -538,6 +538,8 @@ abbrev bouquet (v : α) (edgeSet : Set β) : Graph α β :=
 
 lemma vertexSet_bouquet (v : α) (edgeSet : Set β) : V(bouquet v edgeSet) = {v} := by simp
 
+@[deprecated (since := "2026-04-09")] alias bouquet_vertexSet := vertexSet_bouquet
+
 lemma bouquet_isLink (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).IsLink e x y ↔ e ∈ edgeSet ∧ x = v ∧ y = v := by simp
 
