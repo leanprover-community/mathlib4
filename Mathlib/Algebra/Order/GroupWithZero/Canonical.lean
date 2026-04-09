@@ -36,11 +36,6 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 
 variable {α β : Type*}
 
--- TODO: This instance has nothing to do in this file
-instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
-
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
     PosMulStrictMono α, OrderBot α where
@@ -115,12 +110,12 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
   top_add' a := by ext; simp [bot_eq_zero'']
-  isAddLeftRegular_of_ne_top := by simp +contextual [isRegular_of_ne_zero, bot_eq_zero'']
+  isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero'']
 
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero'' (α := α)]
-  isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero'', isRegular_of_ne_zero]
+  isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero'', IsRegular.of_ne_zero]
 
 variable [NoZeroDivisors α]
 
@@ -184,19 +179,19 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
       exact ⟨z, by simp [hz, hz']⟩
 
 -- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
-instance [DenselyOrdered α] : Nontrivial αˣ :=
+instance [DenselyOrdered α] : Nontrivial αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 -- Counterexample with monoid:
 -- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
-instance [DenselyOrdered α] : DenselyOrdered αˣ :=
+instance [DenselyOrdered α] : DenselyOrdered αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
-lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α :=
+lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 end LinearOrderedCommGroupWithZero
 
@@ -465,8 +460,8 @@ instance decidableLT [Preorder α] [DecidableLT α] : DecidableLT (WithZero α)
   | 0, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [Preorder α] [IsTotal α (· ≤ ·)] : IsTotal (WithZero α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance total_le [Preorder α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithZero α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {a b c : α} {x y : WithZero α}
@@ -492,7 +487,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 

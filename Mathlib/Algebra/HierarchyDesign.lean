@@ -6,7 +6,7 @@ Authors: Kim Morrison, Eric Wieser
 module
 
 public import Mathlib.Init
-public import Mathlib.Tactic.Basic
+public import Batteries.Util.LibraryNote
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -22,7 +22,7 @@ TODO: Add sections about interactions with topological typeclasses, and order ty
 @[expose] public section
 
 
-library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
+library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
@@ -101,12 +101,13 @@ when applicable:
   instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib/Algebra/Pointwise.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
+  See `Mathlib/Algebra/Group/TransferInstance.lean` for more examples. See also the `transport`
+  tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -188,7 +189,7 @@ Hopefully this document makes it easy to assemble this list.
 Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
-library_note2 «reducible non-instances» /--
+library_note «reducible non-instances» /--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
@@ -205,7 +206,7 @@ sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
 
-library_note2 «implicit instance arguments» /--
+library_note «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
 arguments to the type of one of the other arguments. There are several reasons for doing so.
@@ -225,7 +226,7 @@ abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ
 one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
-library_note2 «lower instance priority» /--
+library_note «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
 `AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
@@ -242,7 +243,7 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
-library_note2 «instance argument order» /--
+library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
 ```
@@ -260,4 +261,49 @@ instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 ```
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
+-/
+
+library_note «commutative subobjects» /--
+The algebraic hierarchy is designed so that commutativity (e.g., of multiplication) is bundled
+into the type class, so that we have, for example `Group` and `CommGroup`, `Ring` and `CommRing`,
+etc.
+
+It is often the case that one may desire to work with a commutative subobject inside an
+ambient noncommutative type. In cases like `Subgroup.center` or `Subring.center`, the subobject is
+*always* commutative, and in these cases one should simply imbue those subobjects (coerced to
+`Type`) with the appropriate `Comm*` instance. However, in other cases, the commutativity of the
+subobject may be conditional on commutativity of some other object. For example,
+`Subgroup.closure s` is not always commutative, but it is when `s` is a commutative subset.
+Likewise, if `S : Subgroup G` is a commutative subgroup, then `S.topologicalClosure` is also
+commutative.
+
+For such scenarios, users should prefer to use the unbundled `IsMulCommutative` typeclass, and to
+provide theorems such as:
+```
+theorem isMulCommutative_closure {G : Type*} [Group G] {k : Set G}
+    (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    IsMulCommutative (closure k)
+```
+or even *instances* such as
+```
+instance Subgroup.instIsMulCommutative_closure {S G : Type*} [Group G] [SetLike S G]
+    [MulMemClass S G] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set G))
+```
+and
+```
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure
+```
+Note that we prefer to name these instances manually because they are occasionally useful as
+theorems. For example, the proof of the topological closure instance for subgroups above is proved
+immediately from the one for monoids via: `s.toSubmonoid.isMulCommutative_topologicalClosure`.
+
+In practice, we wish to be able to use the library of theorems about (bundled) commutativity for
+subobjects as well, and so we also provide instances which take as input the unbundled
+`Group G` and `IsMulCommutative G` and produce the bundled `CommGroup G`. However, to avoid
+deleterious effects to type class synthesis for bundled commutativity (by forcing Lean to search
+the entirery of both the bundled and unbundled hierarchies), these instances are only
+available inside the `IsMulCommutative` scope and are simultaneously given the very low priority
+`50`.
 -/

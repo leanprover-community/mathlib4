@@ -320,7 +320,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I
     exact (H.and self_mem_nhdsWithin).exists
-  have : Iio (⟨ε, εpos.le⟩ : ℝ≥0) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
+  have : Iio (.mk ε εpos.le) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
   filter_upwards [this]
   -- fix a function `f` which is close enough to `A`.
   intro δ hδ s f hf
@@ -1181,7 +1181,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
 /-! ### Change of variable formulas in integrals -/
 
 
-/- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `g : E → ℝ≥0∞` on `f '' s` coincides with the integral of `|(f' x).det| * g ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/

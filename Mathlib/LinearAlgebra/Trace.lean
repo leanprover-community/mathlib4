@@ -22,7 +22,7 @@ See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
-linear_map, trace, diagonal
+linear map, trace, diagonal
 -/
 
 @[expose] public section
@@ -206,12 +206,12 @@ theorem trace_prodMap :
   refine (cancel_right h).1 ?_
   ext
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
       contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
   · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
+      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
       curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
       map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
       contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]
@@ -369,3 +369,22 @@ lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
 end
 
 end LinearMap
+
+/-- If `S` is an `R-algebra that is free of rank `1` over `R`, the map `R →+* S` is an
+isomorphism. -/
+lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing R] [Ring S]
+    [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :
+    Function.Bijective (algebraMap R S) := by
+  have : Module.Finite R S := finite_of_finrank_pos (by grind)
+  have : Free R (Module.End R S) := .of_equiv (dualTensorHomEquiv R S S)
+  let f : S →ₐ[R] (S →ₗ[R] S) := Algebra.lmul R S
+  have h1 : LinearMap.trace R S ∘ₗ f ∘ₗ Algebra.linearMap R S = LinearMap.id := by ext; simp [h]
+  let b : Basis (Unit × Unit) R (End R S) :=
+    .map (.tensorProduct (.dualBasis <| basisUnique Unit h) (basisUnique Unit h))
+      (dualTensorHomEquiv R S S)
+  have h2 : (f ∘ₗ Algebra.linearMap R S) ∘ₗ LinearMap.trace R S = LinearMap.id :=
+    b.ext fun i ↦
+      (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct])
+  let eq : R ≃ₗ[R] End R S := .ofLinear (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
+  have hf : Function.Bijective f := ⟨Algebra.lmul_injective, .of_comp eq.surjective⟩
+  exact (Function.Bijective.of_comp_iff' hf _).mp eq.bijective

@@ -6,8 +6,8 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Data.List.Lex
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.
@@ -88,8 +88,8 @@ theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
 
 namespace Shortlex
 
-instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
-  ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
+instance trichotomous [Std.Trichotomous r] : Std.Trichotomous (Shortlex r) :=
+  ⟨(InvImage.trichotomous (by simp [Function.Injective])).trichotomous⟩
 
 instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
   inferInstanceAs <| Std.Asymm (InvImage _ _)

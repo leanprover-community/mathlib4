@@ -178,11 +178,8 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  revert s s'
-  intro s s'
-  apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
-  intro l l' hl hl'
-  simpa using formPerm_eq_formPerm_iff hl hl'
+  induction s, s' using Quotient.inductionOn₂'
+  simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle
 
@@ -497,6 +494,7 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))

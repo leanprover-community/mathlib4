@@ -45,6 +45,7 @@ lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
   exact Functor.isCardinalAccessible_of_natIso
     (show G ⋙ _ ≅ _ from (Adjunction.compUliftCoyonedaIso.{0} adj).symm.app (op X)) κ
 
+set_option backward.isDefEq.respectTransparency false in
 variable {κ} in
 lemma isCardinalFilteredGenerator
     {P : ObjectProperty C} (hP : P.IsCardinalFilteredGenerator κ)

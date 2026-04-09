@@ -134,12 +134,14 @@ lemma mulSupport_one : mulSupport (1 : ι → M) = ∅ := mulSupport_eq_empty_if
 @[to_additive (attr := simp)]
 lemma mulSupport_fun_one : mulSupport (fun _ ↦ 1 : ι → M) = ∅ := mulSupport_one
 
-@[deprecated (since := "2025-07-31")] alias support_zero' := support_zero
-@[deprecated (since := "2025-07-31")] alias mulSupport_one' := mulSupport_one
-
 @[to_additive]
 lemma mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : ι ↦ c) = Set.univ := by
   ext x; simp [hc]
+
+/-- The multiplicative support of a function that is everywhere non-one is the whole space. -/
+@[to_additive /-- The support of a function that is everywhere nonzero is the whole space. -/]
+lemma mulSupport_eq_univ (hf : ∀ x, f x ≠ 1) : mulSupport f = Set.univ :=
+  Set.eq_univ_of_forall hf
 
 @[to_additive]
 lemma mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : ι → M) (g : ι → N) :
@@ -180,11 +182,6 @@ lemma mulSupport_prodMk' (f : ι → M × N) :
     mulSupport f = (mulSupport fun x ↦ (f x).1) ∪ mulSupport fun x ↦ (f x).2 := by
   simp only [← mulSupport_prodMk]
 
-@[deprecated (since := "2025-07-31")] alias support_prod_mk := support_prodMk
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk := mulSupport_prodMk
-@[deprecated (since := "2025-07-31")] alias support_prod_mk' := support_prodMk'
-@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk' := mulSupport_prodMk'
-
 @[to_additive]
 lemma mulSupport_along_fiber_subset (f : ι × κ → M) (i : ι) :
     (mulSupport fun j ↦ f (i, j)) ⊆ (mulSupport f).image Prod.snd :=
@@ -197,9 +194,6 @@ lemma mulSupport_curry (f : ι × κ → M) : (mulSupport f.curry) = (mulSupport
 @[to_additive]
 lemma mulSupport_fun_curry (f : ι × κ → M) :
     mulSupport (fun i j ↦ f (i, j)) = (mulSupport f).image Prod.fst := mulSupport_curry f
-
-@[deprecated (since := "2025-07-31")] alias support_curry' := support_fun_curry
-@[deprecated (since := "2025-07-31")] alias mulSupport_curry' := mulSupport_fun_curry
 
 end Function
 

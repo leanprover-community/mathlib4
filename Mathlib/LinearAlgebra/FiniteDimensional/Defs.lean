@@ -111,6 +111,7 @@ theorem _root_.Module.Basis.finiteDimensional_of_finite {ι : Type w} [Finite ι
 alias of_fintype_basis := Module.Basis.finiteDimensional_of_finite
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
+@[implicit_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
     Fintype ι :=
   @Fintype.ofFinite _ (Module.Finite.finite_basis b)
@@ -237,7 +238,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  (fg_top s).symm.trans Module.finite_def.symm
+  Module.Finite.iff_fg.symm
 
 end DivisionRing
 

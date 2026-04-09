@@ -136,7 +136,7 @@ of the cone points and check it commutes with the legs to `left` and `right`. -/
 def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.pt)
     (w₁ : s.π.app WalkingCospan.left = i.hom ≫ t.π.app WalkingCospan.left)
     (w₂ : s.π.app WalkingCospan.right = i.hom ≫ t.π.app WalkingCospan.right) : s ≅ t := by
-  apply Cones.ext i _
+  apply Cone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.π.naturality WalkingCospan.Hom.inl
     dsimp at h₁
@@ -148,13 +148,14 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₁
   · exact w₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
 def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
     (w₁ : s.ι.app WalkingCospan.left ≫ i.hom = t.ι.app WalkingCospan.left)
     (w₂ : s.ι.app WalkingCospan.right ≫ i.hom = t.ι.app WalkingCospan.right) : s ≅ t := by
-  apply Cocones.ext i _
+  apply Cocone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.ι.naturality WalkingSpan.Hom.fst
     dsimp at h₁
@@ -335,7 +336,7 @@ def cospanHomMk {F G : WalkingCospan ⥤ C}
     (hl : F.map inl ≫ z = l ≫ G.map inl := by cat_disch)
     (hr : F.map inr ≫ z = r ≫ G.map inr := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between cospans. -/
 @[simps!]
@@ -401,7 +402,7 @@ def spanHomMk {F G : WalkingSpan ⥤ C}
     (hl : F.map fst ≫ l = z ≫ G.map fst := by cat_disch)
     (hr : F.map snd ≫ r = z ≫ G.map snd := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between spans. -/
 @[simps!]

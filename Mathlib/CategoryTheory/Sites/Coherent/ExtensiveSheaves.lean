@@ -102,10 +102,7 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
       · ext b
         cases b
       · simp only [eq_iff_true_of_subsingleton]
-    · refine ⟨Fin n, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
-      suffices Sigma.desc (fun i ↦ Sigma.ι Z i) = 𝟙 _ by rw [this]; infer_instance
-      ext
-      simp
+    · exact ⟨Fin n, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, instIsIsoDescι⟩
   · rw [extensiveTopology, Presieve.isSheaf_coverage]
     intro X R ⟨Y, α, Z, π, hR, hi⟩
     have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
@@ -131,7 +128,7 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
 
-instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond
+instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).mp F.property
 
 end CategoryTheory

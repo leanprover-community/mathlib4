@@ -5,7 +5,6 @@ Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.RingTheory.Jacobson.Radical
@@ -167,12 +166,12 @@ theorem eq_jacobson_iff_notMem :
   constructor
   · intro h x hx
     rw [← h, Ideal.jacobson, mem_sInf] at hx
-    push_neg at hx
+    push Not at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
     rw [Ideal.jacobson, mem_sInf]
-    push_neg
+    push Not
     exact h x hx
 
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
@@ -241,7 +240,7 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
     by_cases r𝔪 : r ∈ 𝔪
     · apply 𝔪.smul_mem _ r𝔪
     -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
-    let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
+    let 𝔪₀ : Ideal R := Submodule.comap (DistribSMul.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
     suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
     have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
       𝔪_mem.left (I.mul_mem_right _ iI)
@@ -374,19 +373,6 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x
 
 end IsLocal
-
-theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    I.IsPrimary :=
-  have : radical I = jacobson I :=
-    le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
-      (sInf_le ⟨le_radical, hi⟩)
-  isPrimary_iff.mpr
-  ⟨ne_top_of_lt <| lt_of_le_of_lt le_radical (lt_top_iff_ne_top.2 hi.1.1), fun {x y} hxy =>
-    ((isLocal_of_isMaximal_radical hi).mem_jacobson_or_exists_inv y).symm.imp
-      (fun ⟨z, hz⟩ => by
-        rw [← mul_one x, ← sub_sub_cancel (z * y) 1, mul_sub, mul_left_comm]
-        exact I.sub_mem (I.mul_mem_left _ hxy) (I.mul_mem_left _ hz))
-      (this ▸ id)⟩
 
 end Ideal
 

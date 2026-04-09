@@ -31,14 +31,14 @@ section sort
 /-- `sort s` constructs a sorted list from the unordered set `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
   Multiset.sort s.1 r
 
 section
 
 variable (f : α ↪ β) (s : Finset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [Std.Total r']
 
 @[simp]
 theorem sort_val : Multiset.sort s.val r = sort s r :=
@@ -103,7 +103,7 @@ end
 section
 
 variable {m : Multiset α} {s : Finset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
 
 @[simp]
 theorem sort_mk (h : m.Nodup) : sort ⟨m, h⟩ r = m.sort r := rfl
@@ -192,7 +192,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -356,3 +356,47 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   haveI := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
+
+@[elab_as_elim]
+lemma LinearOrder.strong_induction_of_finite
+    {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
+    (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
+    motive i := by
+  have := Fintype.ofFinite α
+  let e := Fintype.orderIsoFinOfCardEq α rfl
+  revert i
+  rw [e.surjective.forall]
+  refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
+  simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
+
+lemma OrderEmbedding.range_eq_iff
+    {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
+    {f g : α ↪o β} :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
+  let ef := (f.strictMono.strictMonoOn .univ).orderIso
+  let eg := (g.strictMono.strictMonoOn .univ).orderIso
+  let i : f '' .univ ≃o g '' .univ :=
+    { __ := Equiv.setCongr (by simpa using h)
+      map_rel_iff' := by rfl }
+  have : (ef.trans i).trans eg.symm = .refl _ := by
+    exact Subsingleton.elim _ _
+  ext x
+  simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
+    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
+
+lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
+    [Finite α] {f g : α →o β}
+    (hf : Function.Injective f) (hg : Function.Injective g) :
+    Set.range f = Set.range g ↔ f = g := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
+  ext : 2
+  exact DFunLike.congr_fun ((OrderEmbedding.range_eq_iff
+    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
+    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
+
+lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
+    (hf : Function.Injective f) :
+    f = .id :=
+  (range_eq_iff hf Function.injective_id).1 (by
+    simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)

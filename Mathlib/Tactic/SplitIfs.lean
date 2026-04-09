@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.SplitIf
 public meta import Lean.Elab.Tactic.Simp
-public meta import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Core
 
 /-!
 Tactic to split if-then-else expressions.
@@ -114,7 +114,7 @@ private def valueKnown (cond : Expr) : TacticM Bool := do
     if not_cond == ty then return true
   return false
 
-/-- Main loop of split_ifs. Pulls names for new hypotheses from `hNames`.
+/-- Main loop of `split_ifs`. Pulls names for new hypotheses from `hNames`.
 Stops if it encounters a condition in the passed-in `List Expr`.
 -/
 private partial def splitIfsCore

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 
 A category `(C : Type u) [Category.{v} C]` is `[WellPowered.{w} C]`
 if `C` is locally small relative to `w` and for every `X : C`,
-we have `Small.{w} (Subobject X)`. The most common cases if when `w = v`,
+we have `Small.{w} (Subobject X)`. The most common case is when `w = v`,
 in which case, it only involves the condition `Small.{v} (Subobject X)`
 
 (Note that in this situation `Subobject X : Type (max u v)`,
@@ -25,7 +25,7 @@ This is equivalent to the category `MonoOver X` being `EssentiallySmall.{w}` for
 When a category is well-powered, you can obtain nonconstructive witnesses as
 `Shrink (Subobject X) : Type w`
 and
-`equivShrink (Subobject X) : Subobject X ≃ Shrink (subobject X)`.
+`equivShrink (Subobject X) : Subobject X ≃ Shrink (Subobject X)`.
 -/
 
 @[expose] public section

@@ -5,11 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 module
 
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Attr.Register
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.Eqns
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # General operations on functions

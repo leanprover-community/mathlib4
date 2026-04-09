@@ -183,8 +183,8 @@ end MultiplicationLinear
 
 section SMulLinear
 
-variable (𝕜) (R : Type*) [NormedField R]
-variable [NormedAlgebra 𝕜 R] [NormedSpace R E] [IsScalarTower 𝕜 R E]
+variable (𝕜) (R : Type*) [SeminormedRing R]
+variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 𝕜 R E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
@@ -200,8 +200,6 @@ variable {𝕜} in
 theorem lsmul_flip_apply (x : E) :
     (lsmul 𝕜 𝕜).flip x = toSpanSingleton 𝕜 x :=
   rfl
-
-@[deprecated (since := "29-08-2025")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
 
 variable {𝕜} in
 theorem lsmul_flip_inj {x y : E} :
@@ -253,7 +251,7 @@ end
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
-theorem opNorm_lsmul [NormedField R] [NormedAlgebra 𝕜 R] [NormedSpace R E]
+theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ = 1 := by
   refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]
