@@ -111,9 +111,9 @@ lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Com
   fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
 
 lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
-alias IsSubgraph.compatible := Compatible.of_le
-
 lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG
+
+alias IsSubgraph.compatible := Compatible.of_le
 alias IsSubgraph.compatible' := Compatible.of_ge
 
 lemma Compatible.anti_left (hG₁G : G₁ ≤ G) (h : Compatible G H) : Compatible G₁ H :=
