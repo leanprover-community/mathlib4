@@ -3,7 +3,12 @@ Copyright (c) 2026 J. York Seale. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. York Seale
 -/
-import Mathlib.Tactic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.DeriveFintype
+import Mathlib.Order.Basic
 
 /-!
 # Classification of Platonic Solids
@@ -150,10 +155,10 @@ theorem PlatonicSolid.satisfies_constraint (s : PlatonicSolid) :
 
 /-- The key finiteness lemma: if `p ≥ 3` and `q ≥ 3` and `2p + 2q > pq`,
 then `p ≤ 5`. -/
-theorem schlafli_p_le_five {p q : ℕ} (hp : 3 ≤ p) (hq : 3 ≤ q)
+theorem schlafli_p_le_five {p q : ℕ} (_hp : 3 ≤ p) (hq : 3 ≤ q)
     (h : 2 * p + 2 * q > p * q) : p ≤ 5 := by
   by_contra h_gt
-  push_neg at h_gt
+  push Not at h_gt
   have hp6 : 6 ≤ p := h_gt
   have h1 : p * q ≥ 6 * q := Nat.mul_le_mul_right q hp6
   have h2 : 6 * q ≥ 6 * 3 := Nat.mul_le_mul_left 6 hq
@@ -175,8 +180,7 @@ theorem schlafli_constraint_iff {p q : ℕ} :
   · intro ⟨hp, hq, h⟩
     have hp5 := schlafli_p_le_five hp hq h
     have hq5 := schlafli_q_le_five hp hq h
-    interval_cases p <;> interval_cases q <;>
-      simp_all [SchlafliConstraint] <;> omega
+    interval_cases p <;> interval_cases q <;> simp_all
   · intro h
     rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
       exact ⟨by omega, by omega, by omega⟩
@@ -195,7 +199,7 @@ theorem schlafli_constraint_iff_exists_solid {p q : ℕ} :
     · exact ⟨.dodecahedron, rfl⟩
     · exact ⟨.icosahedron, rfl⟩
   · rintro ⟨s, hs⟩
-    cases s <;> simp [PlatonicSolid.schlafli] at hs <;> obtain ⟨rfl, rfl⟩ := hs
+    cases s <;> simp only [PlatonicSolid.schlafli, Prod.mk.injEq] at hs <;> obtain ⟨rfl, rfl⟩ := hs
     · left; rfl
     · right; left; rfl
     · right; right; left; rfl
