@@ -230,7 +230,7 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp
 
 @[to_additive]
