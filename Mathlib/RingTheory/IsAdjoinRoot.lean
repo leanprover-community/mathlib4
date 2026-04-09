@@ -665,14 +665,8 @@ def mkOfAdjoinEqTop'
         exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
       haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
       letI : Module R (AdjoinRoot f) := Algebra.toModule
-      -- exact OrzechProperty.bijective_of_surjective_of_finrank_le
-      --  (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le' α) φ hφ
-      have e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
-        le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le' α)
-        (LinearMap.finrank_le_finrank_of_surjective (f:=φ.toLinearMap) hφ)
-      exact ⟨fun x y h => OrzechProperty.injective_of_surjective_endomorphism
-        (e.symm.toLinearMap.comp φ.toLinearMap)
-        (e.symm.surjective.comp hφ) (congr_arg e.symm h), hφ⟩
+      exact OrzechProperty.bijective_of_surjective_of_finrank_le
+       (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le' α) φ.toLinearMap hφ
   map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 
