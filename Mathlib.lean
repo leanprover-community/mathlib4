@@ -490,6 +490,7 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Group.Units.Opposite
+public import Mathlib.Algebra.Group.Units.ULift
 public import Mathlib.Algebra.Group.WithOne.Basic
 public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.Group.WithOne.Map
