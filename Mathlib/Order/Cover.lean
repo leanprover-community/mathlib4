@@ -444,6 +444,16 @@ theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
     ⟨fun ⟨hxa, hxb⟩ ↦ le_antisymm (hcb.le_of_lt hxb) (hac.ge_of_gt hxa),
       fun | rfl => ⟨hac.lt, hcb.lt⟩⟩
 
+@[to_dual]
+theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
+  mp h :=
+    have h := Set.ext_iff.mp h
+    have hb : a < b := (h b).mpr rfl
+    ⟨fun c ↦ not_lt.mp fun hc ↦ hc.ne.symm ((h c).mp (hb.trans hc)),
+      ⟨hb, fun c hac hcb ↦ hcb.ne ((h c).mp hac)⟩⟩
+  mpr := fun ⟨hb, ha⟩ ↦ Set.ext_iff.mpr fun c ↦
+    ⟨fun hc ↦ le_antisymm (hb c) (ha.ge_of_gt hc), fun | rfl => ha.lt⟩
+
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
   (hb.le_of_lt ha.lt).antisymm <| ha.le_of_lt hb.lt
