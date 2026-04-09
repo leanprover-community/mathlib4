@@ -247,7 +247,7 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
     SeqCompactSpace E := by
   -- We prove by contradiction. If `E` is not sequentially compact, then there exists a sequence
   -- `x : ℕ → E` with no convergent subsequence.
-  by_contra!
+  by_contra
   simp only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall,
     true_and, not_exists, not_and, exists_const] at this
   obtain ⟨x, hx⟩ := this
