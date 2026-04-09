@@ -262,27 +262,14 @@ instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).hom :=
   deterministic_Deterministic ((X ⊗ Y) ⊗ Z)
       (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
 
-instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).inv :=
-    deterministic_Deterministic (X ⊗ Y ⊗ Z)
-      ((X ⊗ Y) ⊗ Z) (MeasurableEquiv.prodAssoc.symm) (MeasurableEquiv.measurable _)
-
 instance {X : SFinKer} : Deterministic (λ_ X ).hom :=
   id_map_Deterministic (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
-
-instance {X : SFinKer} : Deterministic (λ_ X ).inv :=
-  id_map_Deterministic X (𝟙_ SFinKer ⊗ X) (fun (x : X) ↦ (PUnit.unit, x)) (by fun_prop)
 
 instance {X : SFinKer} : Deterministic (ρ_ X ).hom :=
   id_map_Deterministic (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 
-instance {X : SFinKer} : Deterministic (ρ_ X ).inv :=
-  id_map_Deterministic X (X ⊗ 𝟙_ SFinKer) (fun (x : X) ↦ (x, PUnit.unit)) (by fun_prop)
-
 instance {X Y : SFinKer} : Deterministic (β_ X Y).hom :=
   deterministic_Deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
-
-instance {X Y : SFinKer} : Deterministic (β_ X Y).inv :=
-  deterministic_Deterministic (Y ⊗ X) (X ⊗ Y) Prod.swap (by fun_prop)
 
 instance {X : SFinKer} : Deterministic (ε[X]) :=
   deterministic_Deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
