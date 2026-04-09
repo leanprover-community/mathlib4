@@ -68,13 +68,12 @@ private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ
     (hr₀ : 0 < r₀) (hR : 0 < R) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) :
     sqrt (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ≤ ‖circleMap 0 r θ - ρ‖ := by
   have h_cos_law (r₁ : ℝ) :
-      ‖circleMap 0 r₁ θ - ρ‖ ^ 2 = r₁ ^ 2 + R ^ 2 - 2 * r₁ * R * cos (θ - Complex.arg ρ) := by
-    norm_num [ Complex.normSq, Complex.sq_norm, circleMap ];
-    rw [← Complex.norm_mul_cos_arg ρ, ← Complex.norm_mul_sin_arg ρ]
-    ring_nf
-    norm_num [sin_sub, cos_sub, hρ]
-    rw [sin_sq, sin_sq]
-    ring
+      ‖circleMap 0 r₁ θ - ρ‖ ^ 2 = r₁ ^ 2 + R ^ 2 - 2 * r₁ * R * Real.cos (θ - Complex.arg ρ) := by
+    rw [← ofReal_inj, ← normSq_eq_norm_sq, normSq_sub ]
+    suffices (circleMap 0 r₁ θ * (conj) ρ).re = r₁ * ‖ρ‖ * Real.cos (θ - ρ.arg) by
+      simp [normSq_eq_norm_sq, hρ, -mul_re, this, mul_assoc]
+    conv_lhs => rw [← norm_mul_exp_arg_mul_I ρ, ← circleMap_zero, conj_circleMap_zero,
+      circleMap_zero_mul, circleMap_zero_re, ← sub_eq_add_neg]
   have : (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ^ 2 ≤ ‖circleMap 0 r θ - ρ‖ ^ 2 := by
     rw [div_mul_eq_mul_div, div_le_iff₀ hR]
     nlinarith [h_cos_law r, h_cos_law R, mul_le_mul_of_nonneg_left hr₀r hR.le,
