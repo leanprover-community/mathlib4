@@ -400,6 +400,11 @@ theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
     f.compr₂ g m n = g (f m n) := rfl
 
 omit [Module R M] in
+@[simp]
+theorem compr₂_id [Module R A] [Module A M] [IsScalarTower R A Pₗ] (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) :
+    f.compr₂ LinearMap.id = f := rfl
+
+omit [Module R M] in
 theorem compr₂_comp {Tₗ : Type*} [AddCommMonoid Tₗ] [Module R Tₗ] [Module A Tₗ] [Module R A]
     [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [SMulCommClass R A Tₗ]
     [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ] [IsScalarTower R A Tₗ]
