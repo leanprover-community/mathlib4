@@ -255,6 +255,11 @@ theorem isIrreducible_iff_irreducibleSpace :
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
+instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
+  isPreirreducible_univ u v := by
+    simp only [IndiscreteTopology.isOpen_iff, univ_inter]
+    rintro ⟨h | h⟩ <;> simp_all
+
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
