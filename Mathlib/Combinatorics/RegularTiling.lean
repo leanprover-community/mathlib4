@@ -50,12 +50,17 @@ regular tiling, Platonic solid, Schläfli symbol, Euler characteristic
     faces per vertex. The counts `V, E, F` satisfy Euler's formula and the
     edge-incidence relations. -/
 structure RegularTilingData (chi : ℤ) where
+  /-- Number of sides per face (e.g. 3 for triangles). -/
   p : ℕ
+  /-- Number of faces meeting at each vertex. -/
   q : ℕ
   hp : 3 ≤ p
   hq : 3 ≤ q
+  /-- Number of vertices. -/
   V : ℕ
+  /-- Number of edges. -/
   E : ℕ
+  /-- Number of faces. -/
   F : ℕ
   hV : V > 0
   euler : (V : ℤ) - E + F = chi
