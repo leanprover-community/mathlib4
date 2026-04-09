@@ -32,12 +32,11 @@ lemma hasInjectiveDimensionLT_of_linearEquiv [Small.{v} R] [Small.{v'} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
     (e' : M ≃ₗ[R] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
     HasInjectiveDimensionLT N n := by
-  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ @Subsingleton.eq_zero _ _ ?_ x)
-  apply ModuleCat.ext_subsingleton_of_quotients N i (fun I ↦ ?_)
+  apply ModuleCat.hasInjectiveDimensionLT_of_quotients N n (fun I ↦ ?_)
   let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ I))) ≃ₗ[R] (ModuleCat.of R (Shrink.{v'} (R ⧸ I))) :=
     (Shrink.linearEquiv.{v} R (R ⧸ I)).trans (Shrink.linearEquiv.{v'} R (R ⧸ I)).symm
-  rw [← (ModuleCat.extLinearEquivOfLinearEquiv e'' e' i).subsingleton_congr]
-  exact HasInjectiveDimensionLT.subsingleton.{v} M n i hi _
+  rw [← (ModuleCat.extLinearEquivOfLinearEquiv e'' e' n).subsingleton_congr]
+  exact HasInjectiveDimensionLT.subsingleton.{v} M n n (le_refl _) _
 
 lemma injectiveDimension_eq_of_linearEquiv [Small.{v} R] [Small.{v'} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R} (e : M ≃ₗ[R] N) :
@@ -67,8 +66,7 @@ lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
     (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
     HasInjectiveDimensionLT N n := by
-  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ @Subsingleton.eq_zero _ _ ?_ x)
-  apply ModuleCat.ext_subsingleton_of_quotients N i (fun I ↦ ?_)
+  apply ModuleCat.hasInjectiveDimensionLT_of_quotients N n (fun I ↦ ?_)
   let e''' : (R ⧸ (I.comap e)) ≃ₛₗ[RingHomClass.toRingHom e] (R' ⧸ I) := {
     __ := Ideal.quotientEquiv (I.comap e) I e (I.map_comap_eq_self_of_equiv e).symm
     map_smul' r x := by
@@ -77,8 +75,8 @@ lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
   let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ (I.comap e)))) ≃ₛₗ[RingHomClass.toRingHom e]
     (ModuleCat.of R' (Shrink.{v', u'} (R' ⧸ I))) :=
     ((Shrink.linearEquiv.{v} R _).trans e''').trans (Shrink.linearEquiv.{v'} R' _).symm
-  rw [(ModuleCat.extSemiLinearEquivOfSemiLinearEquiv e e'' e' i).subsingleton_congr]
-  exact HasInjectiveDimensionLT.subsingleton.{v} M n i hi _
+  rw [(ModuleCat.extSemiLinearEquivOfSemiLinearEquiv e e'' e' n).subsingleton_congr]
+  exact HasInjectiveDimensionLT.subsingleton.{v} M n n (le_refl _) _
 
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}

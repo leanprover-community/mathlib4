@@ -801,8 +801,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
   | hz =>
     let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
-      apply hasInjectiveDimensionLT_of_enoughProjectives (ModuleCat.of R R) k
-      apply ModuleCat.ext_subsingleton_of_quotients _ _ (fun I ↦ ?_)
+      apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
       rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
       exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
@@ -894,8 +893,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       by_contra! ntr
       exact empty ⟨p, ⟨‹_›, ntr⟩⟩
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
-      apply hasInjectiveDimensionLT_of_enoughProjectives
-      apply ModuleCat.ext_subsingleton_of_quotients _ _ (fun I ↦ ?_)
+      apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
       apply (((extFunctor k).mapIso (e p.1).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp (ext_zero p.1)
