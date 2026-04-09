@@ -59,13 +59,14 @@ not modulized: MathlibTest/LibrarySearch/observe.lean
 not modulized: MathlibTest/Lint.lean
 not modulized: MathlibTest/MathlibTestExecutable.lean
 not modulized: MathlibTest/MaxPowDiv.lean
+not modulized: MathlibTest/MessageDataForExprs.lean
 not modulized: MathlibTest/MfldSetTac.lean
 not modulized: MathlibTest/MinImports.lean
 not modulized: MathlibTest/MkIffOfInductive.lean
 not modulized: MathlibTest/MonCat.lean
 not modulized: MathlibTest/Multigoal.lean
 not modulized: MathlibTest/PrivateModuleLinter/nonModule.lean (This test shouldn't be modulized)
-not modulized: MathlibTest/Real.lean (meta error!)
+not modulized: MathlibTest/Real.lean
 not modulized: MathlibTest/Recall.lean
 not modulized: MathlibTest/RegularMeasure.lean
 not modulized: MathlibTest/Set.lean
@@ -74,7 +75,7 @@ not modulized: MathlibTest/Simproc/ExistsAndEq.lean
 not modulized: MathlibTest/Simproc/ProdUnivMany.lean
 not modulized: MathlibTest/Simproc/VecPerm.lean
 not modulized: MathlibTest/Simps.lean
-not modulized: MathlibTest/SplitIfs.lean (cannot use `#print axioms` in a `module`)
+not modulized: MathlibTest/SplitIfs.lean (private name error!)
 not modulized: MathlibTest/StacksAttribute.lean
 not modulized: MathlibTest/StringDiagram.lean
 not modulized: MathlibTest/TacticAnalysis.lean
@@ -152,7 +153,6 @@ not modulized: MathlibTest/ring_compare.lean
 not modulized: MathlibTest/runCmd.lean
 not modulized: MathlibTest/says.lean
 not modulized: MathlibTest/says_whitespace.lean
-not modulized: MathlibTest/search/BestFirst.lean
 not modulized: MathlibTest/simp_intro.lean
 not modulized: MathlibTest/slim_check.lean
 not modulized: MathlibTest/sqrt.lean (disabled test)
@@ -169,5 +169,3 @@ not modulized: MathlibTest/willRoundTrip.lean
 not modulized: MathlibTest/zmod.lean (compiler bug!)
 
 modulized: MathlibTest/Split.lean (What test is this?)
-
-modulized but error: MathlibTest/Quaternion.lean
