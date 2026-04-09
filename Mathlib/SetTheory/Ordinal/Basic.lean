@@ -718,6 +718,13 @@ theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : lift.{u} (typein s f.top) = lift (type r) :=
   f.subrelIso.ordinal_lift_type_eq
 
+@[simp]
+theorem typein_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
+  nth_rw 2 [← o.type_toType]
+  rw [← ToType.mk.toRelIsoLT.ordinal_lift_type_eq, lift_id'.{u, u + 1}, type_Iio_lt]
+
+theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
+
 /-- Initial segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
 `Ordinal.{v}` as an initial segment when `u ≤ v`. -/
 def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
@@ -760,6 +767,14 @@ theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
+
+@[simp]
+theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
+  rw [lift_card, ← typein_ordinal]
+  rfl
+
+@[deprecated (since := "2026-03-13")] alias mk_Iio_ordinal := Cardinal.mk_Iio_ordinal
 
 /-! ### The first infinite ordinal ω -/
 
