@@ -30,7 +30,7 @@ rather the entire `≤` relation with `StarOrderedRing.le_iff`. However, notice 
 `StarOrderedRing.of_nonneg_iff`).
 
 It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMonoid` it is often
-*not* an `OrderedSemiring`.
+*not* an `IsOrderedRing`.
 
 ## TODO
 

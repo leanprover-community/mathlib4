@@ -34,24 +34,10 @@ For short,
 
 ## Typeclasses
 
-* `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
-* `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects
-  `<`.
-* `OrderedCommSemiring`: Commutative semiring with a partial order such that `+` and `*` respect
-  `≤`.
-* `StrictOrderedCommSemiring`: Nontrivial commutative semiring with a partial order such that `+`
-  and `*` respect `<`.
-* `OrderedRing`: Ring with a partial order such that `+` respects `≤` and `*` respects `<`.
-* `OrderedCommRing`: Commutative ring with a partial order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedSemiring`: Nontrivial semiring with a linear order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedCommSemiring`: Nontrivial commutative semiring with a linear order such that `+`
-  respects `≤` and `*` respects `<`.
-* `LinearOrderedRing`: Nontrivial ring with a linear order such that `+` respects `≤` and `*`
-  respects `<`.
-* `LinearOrderedCommRing`: Nontrivial commutative ring with a linear order such that `+` respects
-  `≤` and `*` respects `<`.
+* `IsOrderedRing`: Semiring with a partial order such that addition and multiplication by a
+  nonnegative number are both monotone.
+* `IsStrictOrderedRing`: Nontrivial semiring with a partial order such that addition and
+  multiplication by a positive number are both strictly monotone.
 
 ## Hierarchy
 
@@ -59,49 +45,13 @@ The hardest part of proving order lemmas might be to figure out the correct gene
 corresponding typeclass. Here's an attempt at demystifying it. For each typeclass, we list its
 immediate predecessors and what conditions are added to each of them.
 
-* `OrderedSemiring`
-  - `OrderedAddCommMonoid` & multiplication & `*` respects `≤`
-  - `Semiring` & partial order structure & `+` respects `≤` & `*` respects `≤`
-* `StrictOrderedSemiring`
-  - `OrderedCancelAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommSemiring`
-  - `OrderedSemiring` & commutativity of multiplication
-  - `CommSemiring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommSemiring`
-  - `StrictOrderedSemiring` & commutativity of multiplication
-  - `OrderedCommSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedRing`
-  - `OrderedSemiring` & additive inverses
-  - `OrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedRing`
-  - `StrictOrderedSemiring` & additive inverses
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommRing`
-  - `OrderedRing` & commutativity of multiplication
-  - `OrderedCommSemiring` & additive inverses
-  - `CommRing` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommRing`
-  - `StrictOrderedCommSemiring` & additive inverses
-  - `StrictOrderedRing` & commutativity of multiplication
-  - `OrderedCommRing` & `+` respects `<` & `*` respects `<` & nontriviality
-* `LinearOrderedSemiring`
-  - `StrictOrderedSemiring` & totality of the order
-  - `LinearOrderedAddCommMonoid` & multiplication & nontriviality & `*` respects `<`
-* `LinearOrderedCommSemiring`
-  - `StrictOrderedCommSemiring` & totality of the order
-  - `LinearOrderedSemiring` & commutativity of multiplication
-* `LinearOrderedRing`
-  - `StrictOrderedRing` & totality of the order
-  - `LinearOrderedSemiring` & additive inverses
-  - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & `IsDomain` & linear order structure
-* `LinearOrderedCommRing`
-  - `StrictOrderedCommRing` & totality of the order
-  - `LinearOrderedRing` & commutativity of multiplication
-  - `LinearOrderedCommSemiring` & additive inverses
-  - `CommRing` & `IsDomain` & linear order structure
+* `PartialOrder` + `Semiring` + `IsOrderedRing`
+  - `IsOrderedAddCommMonoid` & multiplication & `*` respects `≤`
+* `PartialOrder` + `Semiring` + `IsStrictOrderedRing`
+  - `IsOrderedCancelAddMonoid` & multiplication & `*` respects `<` & nontriviality
+* `LinearOrder` + `Ring` + `IsOrderedRing`
+  - `IsStrictOrderedRing` & totality of the order
+  - `IsDomain` & linear order structure
 -/
 
 @[expose] public section
