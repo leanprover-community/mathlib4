@@ -133,12 +133,10 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
     Function.Commute (map f) (map g) :=
   Function.Semiconj.finset_map h
 
-@[simp]
+@[simp, gcongr]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
   ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
 
 /-- The `Finset` version of `Equiv.subset_symm_image`. -/
 theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
@@ -164,10 +162,8 @@ theorem map_inj {s₁ s₂ : Finset α} : s₁.map f = s₂.map f ↔ s₁ = s�
 theorem map_injective (f : α ↪ β) : Injective (map f) :=
   (mapEmbedding f).injective
 
-@[simp]
+@[simp, gcongr]
 theorem map_ssubset_map {s t : Finset α} : s.map f ⊂ t.map f ↔ s ⊂ t := (mapEmbedding f).lt_iff_lt
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_ssubset⟩ := map_ssubset_map
 
 @[simp]
 theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
@@ -239,6 +235,9 @@ theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
 
 @[simp]
 theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (map_empty f)
+
+@[simp]
+theorem empty_eq_map : ∅ = s.map f ↔ s = ∅ := by rw [eq_comm, map_eq_empty]
 
 @[simp]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
@@ -432,6 +431,9 @@ theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Fin
 @[simp]
 theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)
 
+@[simp]
+theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq_empty]
+
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff hf s t
@@ -470,6 +472,7 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → �
     fun ⟨i, hi, ha⟩ =>
     ⟨i, by rw [Int.emod_eq_of_lt (Int.natCast_nonneg _) (Int.ofNat_lt_ofNat_of_lt hi), ha]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]

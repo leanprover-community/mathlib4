@@ -23,7 +23,7 @@ This file proves the Bourbaki-Witt Theorem.
 ## Main statements
 
 - `nonempty_fixedPoints_of_inflationary` : The Bourbaki-Witt Theorem : If $X$ is a chain complete
-partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
+  partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
 
 ## References
 
@@ -45,6 +45,8 @@ structure NonemptyChain (α : Type*) [LE α] where
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
   coe_injective' _ _ := NonemptyChain.ext
+
+instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
 
 /-- A chain complete partial order (CCPO) is a nonempty partial order such that every
 nonempty chain has a supremum (which we call `cSup`) -/

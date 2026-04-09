@@ -33,7 +33,7 @@ The proof and motivation are described in the paper
 p-adic, p adic, padic, p-adic integer
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -149,7 +149,7 @@ private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_no
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
-/-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
+/-- We will construct a sequence of elements of `ℤ_p` satisfying successive values of `ih`. -/
 private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.aeval z‖ = ‖F.derivative.aeval a‖ ∧ ‖F.aeval z‖ ≤
     ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n

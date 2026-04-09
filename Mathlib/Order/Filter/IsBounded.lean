@@ -18,7 +18,7 @@ This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 
@@ -69,7 +69,7 @@ theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
     (hu : IsBoundedUnder (· ≥ ·) l u) (hv : u ≤ᶠ[l] v) : IsBoundedUnder (· ≥ ·) l v :=
   IsBoundedUnder.mono_le (β := βᵒᵈ) hu hv
 
-theorem isBoundedUnder_const [IsRefl α r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
+theorem isBoundedUnder_const [Std.Refl r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
   ⟨a, eventually_map.2 <| Eventually.of_forall fun _ => refl _⟩
 
 theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
@@ -277,6 +277,7 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   exact not_lt_of_ge ht ht'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
 lemma IsCobounded.frequently_le [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≥ ·) f) :
@@ -476,13 +477,13 @@ theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) 
   OrderIso.isBoundedUnder_le_comp e.dual
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_le_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_le_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_ge_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_ge_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
@@ -665,11 +666,13 @@ lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monoto
   obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
   exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≥ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≤ ·) f :=

@@ -137,7 +137,7 @@ def polarSym2 (f : M → N) : Sym2 M → N :=
   Sym2.lift ⟨polar f, polar_comm _⟩
 
 @[simp]
-lemma polarSym2_sym2Mk (f : M → N) (xy : M × M) : polarSym2 f (.mk xy) = polar f xy.1 xy.2 := rfl
+lemma polarSym2_sym2Mk (f : M → N) (x y : M) : polarSym2 f s(x, y) = polar f x y := rfl
 
 end QuadraticMap
 
@@ -248,6 +248,13 @@ theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTow
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← map_mul, algebraMap_smul]
 
+/-- Restrict the domain of a quadratic map -/
+@[simps] def restrict (Q : QuadraticMap R M N) (V : Submodule R M) : QuadraticMap R V N where
+  toFun v := Q v
+  toFun_smul a v := Q.toFun_smul a v.val
+  exists_companion' := match Q.exists_companion with
+    | ⟨b, hb⟩ => ⟨b.domRestrict₁₂ V V, fun x y ↦ hb x.val y.val⟩
+
 end CommSemiring
 
 section CommRing
@@ -357,8 +364,8 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add,
-      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, if_false, zero_add,
+      Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply]
     congr 2
     rw [add_comm]
@@ -372,7 +379,7 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply,
-      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply, polar_self]
     abel_nf
 
@@ -849,10 +856,6 @@ section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance : SMulCommClass R (Submonoid.center R) M where
-  smul_comm r r' m := by
-    simp_rw [Submonoid.smul_def, smul_smul, ((Set.mem_center_iff.1 r'.prop).1 _).eq]
-
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
   invOf := (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
@@ -1061,7 +1064,7 @@ alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
     B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
-  letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
+  letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_eq_left (a := B x x + B y y), ← h.eq, RingHom.id_apply, add_self_eq_zero]
@@ -1294,7 +1297,6 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   induction d generalizing V with
   | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
   | succ d ih =>
-  haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := Module.finBasis K V

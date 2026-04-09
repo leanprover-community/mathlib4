@@ -15,7 +15,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
 
-@[expose] public section
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise

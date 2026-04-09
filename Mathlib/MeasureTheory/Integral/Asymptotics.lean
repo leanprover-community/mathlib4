@@ -27,7 +27,7 @@ We establish integrability of `f` from `f = O(g)`.
   `g` integrable `atTop`, then `f` is integrable.
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics MeasureTheory Set Filter
 

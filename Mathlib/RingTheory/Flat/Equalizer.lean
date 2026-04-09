@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
 # Base change along flat modules preserves equalizers
@@ -184,6 +185,61 @@ lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M
     (lTensor M (eqLocus f g).subtype) ((tensorEqLocusEquiv S M f g).symm x) = x :=
   lTensor_eqLocus_subtype_tensorEqLocusInv S M f g x
 
+variable {M}
+
+/--
+Given a short exact sequence `0 → M → N → P → 0` with `P` flat,
+then any `A ⊗ M → A ⊗ N` is injective.
+-/
+lemma LinearMap.lTensor_injective_of_exact_of_flat [Module.Flat R P]
+    (f : N →ₗ[R] P) (hf : Function.Surjective f) (g : M →ₗ[R] N) (hg : Function.Injective g)
+    (H : Function.Exact g f) (A : Type*) [AddCommGroup A] [Module R A] :
+    Function.Injective (g.lTensor A) := by
+/-
+The proof is taking a resolution `0 → K → Q → A → 0` with `Q` flat,
+and applying snake lemma on the following diagram to
+```
+                      0
+                      ↓
+    K ⊗ M → K ⊗ N → K ⊗ P → 0
+      ↓       ↓       ↓
+0 → Q ⊗ M → Q ⊗ N → Q ⊗ P
+      ↓       ↓
+    A ⊗ M → A ⊗ N
+      ↓       ↓
+      0       0
+```
+to get `0 → A ⊗ K → A ⊗ M` exact.
+-/
+  let Q := A →₀ R
+  let π : Q →ₗ[R] A := Finsupp.linearCombination R fun a ↦ a
+  have hπ : Function.Surjective π := Finsupp.linearCombination_surjective _ Function.surjective_id
+  let K := LinearMap.ker π
+  have := SnakeLemma.exact_δ'_left (K.subtype.rTensor M) (K.subtype.rTensor N) (K.subtype.rTensor P)
+    (g.lTensor K) (f.lTensor K) (lTensor_exact K H hf) (g.lTensor Q) (f.lTensor Q)
+    (lTensor_exact Q H hf) (by simp) (by simp) (K₃ := Unit) 0
+    (by simpa using Module.Flat.rTensor_preserves_injective_linearMap _ K.subtype_injective)
+    (π.rTensor M) (rTensor_exact _ (exact_subtype_ker_map π) hπ) (π.rTensor N)
+    (rTensor_exact _ (exact_subtype_ker_map π) hπ) (lTensor_surjective K hf)
+    (Module.Flat.lTensor_preserves_injective_linearMap _ hg) (g.lTensor A)
+    (by simp) (rTensor_surjective _ hπ)
+  rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
+  simpa using this
+
+/-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
+Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
+def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
+    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] :
+    LinearMap.ker (f.lTensor A) ≃ₗ[R] A ⊗[R] LinearMap.ker f := by
+  refine .ofEq _ _ ?_ ≪≫ₗ (LinearEquiv.ofInjective _ (LinearMap.lTensor_injective_of_exact_of_flat
+    f hf _ (LinearMap.ker f).subtype_injective (LinearMap.exact_subtype_ker_map _) _)).symm
+  rw [LinearMap.exact_iff.mp (lTensor_exact _ (LinearMap.exact_subtype_ker_map _) hf)]
+
+@[simp]
+lemma LinearMap.tensorKerEquivOfSurjective_symm_tmul [Module.Flat R P]
+    (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] (a y) :
+    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
+
 end Module
 
 section Algebra
@@ -251,5 +307,58 @@ lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
     (x : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerEquiv S T f g x = AlgHom.tensorEqualizer S T f g x :=
   rfl
+
+#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
+set_option maxHeartbeats 400000 in -- see note
+variable (R A) in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/--
+Given a surjection of `R`-algebras `S → T` with kernel `I`, such that `T` is flat,
+the kernel of the map `A ⊗ S → A ⊗ T` is the base change of `I` along `S → A ⊗ S`.
+-/
+def Algebra.kerTensorProductMapIdToAlgHomEquiv
+    [Module.Flat R T] (h₁ : Function.Surjective (algebraMap S T)) :
+    RingHom.ker (Algebra.TensorProduct.map (.id A A) (IsScalarTower.toAlgHom R S T)) ≃ₗ[A ⊗[R] S]
+      (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) := by
+  let φ : A ⊗[R] S →ₐ[A] A ⊗[R] T :=
+    Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
+  let ePp : A ⊗[R] S ≃ₐ[S] S ⊗[R] A :=
+    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+  let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
+    (LinearMap.kerLTensorEquivOfSurjective (IsScalarTower.toAlgHom R S T).toLinearMap
+      h₁ A).restrictScalars R
+  let e₄' : (RingHom.ker φ) ≃ₗ[R] (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) :=
+    e₃ ≪≫ₗ _root_.TensorProduct.comm _ _ _ ≪≫ₗ
+      (AlgebraTensorModule.cancelBaseChange _ _ S _ _).symm.restrictScalars R ≪≫ₗ
+      (AlgebraTensorModule.congr (.refl S _) ePp.symm.toLinearEquiv).restrictScalars R ≪≫ₗ
+      (_root_.TensorProduct.comm _ _ _).restrictScalars R
+  let e₄ : (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) ≃ₗ[A ⊗[R] S] (RingHom.ker φ) :=
+    { __ := e₄'.symm, map_smul' r' x := by
+        dsimp
+        induction x with
+        | zero => simp only [smul_zero, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
+        | tmul x y =>
+        induction x with
+        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
+        | tmul x z =>
+        induction r' with
+        | zero => simp only [zero_smul, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
+        | tmul r s =>
+        rw [smul_tmul']
+        ext1
+        dsimp [e₄', ePp, φ]
+        change ((r * x) ⊗ₜ[R] ((s * z) * y.1)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.1))
+        rw [Algebra.TensorProduct.tmul_mul_tmul, mul_assoc] }
+  exact e₄.symm
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma Algebra.kerTensorProductMapIdToAlgHomEquiv_symm_apply [Module.Flat R T]
+    (h₁ : Function.Surjective (algebraMap S T)) (x y z) :
+    ((kerTensorProductMapIdToAlgHomEquiv R S T A h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).1 =
+      x ⊗ₜ (y * z.1) := rfl
 
 end Algebra

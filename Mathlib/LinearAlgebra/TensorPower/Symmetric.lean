@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
@@ -26,7 +27,7 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
   associative and commutative, and that `n ↦ Sym[R]^n M` is a graded (semi)ring and algebra.
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
-* Relate to homogneous (multivariate) polynomials of degree `n`.
+* Relate to homogeneous (multivariate) polynomials of degree `n`.
 
 -/
 

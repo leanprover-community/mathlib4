@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Nakayama
 
+
 /-!
 
 We gather results about the quotients of local rings.
@@ -47,7 +48,7 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     · rw [Ideal.smul_top_eq_map]
       rintro x -
       have : LinearMap.ker (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) =
-          restrictScalars R pS := by
+          Submodule.restrictScalars R pS := by
         ext; simp [Ideal.Quotient.eq_zero_iff_mem]
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
@@ -64,8 +65,6 @@ variable [Module.Free R S] {ι : Type*}
 theorem finrank_quotient_map :
     finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
   classical
-  have : Module.Finite R (S ⧸ pS) := Module.Finite.of_surjective
-    (IsScalarTower.toAlgHom R S (S ⧸ pS)).toLinearMap (Ideal.Quotient.mk_surjective (I := pS))
   have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
   apply le_antisymm
   · let b := Module.Free.chooseBasis R S

@@ -5,8 +5,9 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 /-!
 # Graph products
@@ -31,7 +32,7 @@ Define all other graph products!
 
 @[expose] public section
 
-variable {α β γ : Type*}
+variable {α β γ V V₁ V₂ W W₁ W₂ : Type*}
 
 namespace SimpleGraph
 
@@ -42,7 +43,7 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
   symm x y := by simp [and_comm, eq_comm, adj_comm]
-  loopless x := by simp
+  loopless := ⟨fun x ↦ by simp⟩
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -93,6 +94,24 @@ def boxProdRight (a : α) : H ↪g G □ H where
   inj' _ _ := congr_arg Prod.snd
   map_rel_iff' {_ _} := boxProd_adj_right
 
+namespace Iso
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def boxProdSumDistrib (G : SimpleGraph V) (H₁ : SimpleGraph W₁) (H₂ : SimpleGraph W₂) :
+    G □ (H₁ ⊕g H₂) ≃g G □ H₁ ⊕g G □ H₂ where
+  toEquiv := .prodSumDistrib ..
+  map_rel_iff' := by simp
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def sumBoxProdDistrib (G₁ : SimpleGraph V₁) (G₂ : SimpleGraph V₂) (H : SimpleGraph W) :
+    (G₁ ⊕g G₂) □ H ≃g G₁ □ H ⊕g G₂ □ H where
+  toEquiv := .sumProdDistrib ..
+  map_rel_iff' := by simp
+
+end Iso
+
 namespace Walk
 
 variable {G}
@@ -127,6 +146,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
       (fun hH => w.ofBoxProdRight.cons hH.1)
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
@@ -136,6 +156,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     · simp [ofBoxProdLeft_boxProdLeft]
     · exact ⟨h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
@@ -242,6 +263,7 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by

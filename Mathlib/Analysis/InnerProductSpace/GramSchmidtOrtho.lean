@@ -28,7 +28,7 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidtBasis`: the basis produced by the Gram-Schmidt process when given a basis as input
 - `gramSchmidtNormed`:
   the normalized `gramSchmidt` process, i.e each vector in `gramSchmidtNormed` has unit length
-- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthornormal system of vectors.
+- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthonormal system of vectors.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
@@ -218,7 +218,7 @@ theorem gramSchmidt_triangular {i j : ι} (hij : i < j) (b : Basis ι 𝕜 E) :
   have : gramSchmidt 𝕜 b i ∈ span 𝕜 (b '' Set.Iio j) := by rwa [← span_gramSchmidt_Iio 𝕜 b j]
   have : ↑(b.repr (gramSchmidt 𝕜 b i)).support ⊆ Set.Iio j :=
     Basis.repr_support_subset_of_mem_span b (Set.Iio j) this
-  exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported 𝕜 _).2 this) j Set.notMem_Iio_self
+  exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported 𝕜 _).2 this) j Set.self_notMem_Iio
 
 /-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
 theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
@@ -255,7 +255,7 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
   simpa using hn
 
 /-- **Gram-Schmidt Orthonormalization**:
-`gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthornormal
+`gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthonormal
 system of vectors. -/
 theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
@@ -268,10 +268,8 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 
-@[deprecated (since := "2025-07-10")] alias gramSchmidt_orthonormal := gramSchmidtNormed_orthonormal
-
 /-- **Gram-Schmidt Orthonormalization**:
-`gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
+`gramSchmidtNormed` produces an orthonormal system of vectors after removing the vectors which
 become zero in the process. -/
 theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
@@ -279,9 +277,6 @@ theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
-
-@[deprecated (since := "2025-07-10")]
-alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
 
 open Submodule Set Order
 

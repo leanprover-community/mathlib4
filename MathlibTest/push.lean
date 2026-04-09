@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
@@ -101,3 +102,49 @@ set_option pp.numericTypes true in
 #pull (disch := positivity) Real.log => (4 : Nat) * Real.log a + -Real.log c - b * Real.log a + b
 
 end log
+
+section membership
+
+example (x : Nat) (A : Set Nat) : x ∈ ∅ ∪ Set.univ ∩ ({a | a = 4} \ Aᶜ) := by
+  push _ ∈ _
+  guard_target =ₛ (False ∨ True ∧ x = 4 ∧ ¬x ∉ A)
+  exact test_sorry
+
+example (A : Set Nat) : A ∈ 𝒫 A := by
+  push _ ∈ _
+  rfl
+
+example (x y : Nat) (A B : Set Nat) : (x, y) ∈ A ×ˢ B := by
+  push _ ∈ _
+  -- `push _ ∈ _` can unpack the pair `(x, y)` because a specialized lemma has been tagged
+  guard_target =ₛ x ∈ A ∧ y ∈ B
+  exact test_sorry
+
+example (p : Nat × Nat) (A B : Set Nat) : p ∈ A ×ˢ B := by
+  push _ ∈ _
+  guard_target =ₛ p.1 ∈ A ∧ p.2 ∈ B
+  pull _ ∈ _
+  guard_target =ₛ p ∈ A ×ˢ B
+  exact test_sorry
+
+example (p : Nat × Nat) (A : Set Nat) : p ∈ Set.diagonal Nat ∪ Set.offDiag A := by
+  push _ ∈ _
+  guard_target =ₛ p.1 = p.2 ∨ p.1 ∈ A ∧ p.2 ∈ A ∧ p.1 ≠ p.2
+  exact test_sorry
+
+example (x y z : Nat) : x ∈ ({x, y, z, y, x} : Set Nat) := by
+  push _ ∈ _
+  guard_target =ₛ x = x ∨ x = y ∨ x = z ∨ x = y ∨ x = x
+  exact test_sorry
+
+example (x : Nat) (A B C : Set Nat) : x ∈ A ∧ ¬ x ∈ B ∨ x ∈ C := by
+  pull _ ∈ _
+  guard_target =ₛ x ∈ A ∩ Bᶜ ∪ C
+  exact test_sorry
+
+example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜᶜ) ∪ {b | b = a}))) := by
+  push _ ∈ _
+  guard_target =ₛ False ∨ True ∧ ((a = b ∨ a = c) ∧ ¬¬a ∉ s ∨ a = a)
+  exact test_sorry
+
+end membership

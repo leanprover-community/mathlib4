@@ -32,7 +32,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   have hdeg_f : f.natDegree = 4 := by unfold f; compute_degree!
   have hf_lC : f.leadingCoeff = 1 := by
     simp only [f, leadingCoeff, hdeg_f]; compute_degree!
-  set q : ℤ [X] := X ^ 2 + 1 with hq_eq
+  set q : ℤ[X] := X ^ 2 + 1 with hq_eq
   have hq_deg : q.natDegree = 2 := by unfold q; compute_degree!
   have hq_monic : q.Monic := by unfold q; monicity!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring

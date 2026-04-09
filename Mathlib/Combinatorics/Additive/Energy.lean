@@ -157,8 +157,6 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
       rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
     _ ≤ #(s * t) * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
 
-@[deprecated (since := "2025-07-07")] alias le_card_add_mul_mulEnergy := le_card_mul_mul_mulEnergy
-
 end Mul
 
 open scoped Combinatorics.Additive

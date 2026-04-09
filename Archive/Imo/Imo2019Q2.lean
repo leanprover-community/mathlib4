@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note2 «IMO geometry formalization conventions» /--
+library_note «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -96,6 +96,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
+@[implicit_reducible]
 def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 

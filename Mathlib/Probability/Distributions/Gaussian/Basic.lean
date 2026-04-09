@@ -36,7 +36,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 @[expose] public section
 
-open MeasureTheory Complex NormedSpace
+open MeasureTheory Complex
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
@@ -108,7 +108,15 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 
 /-- Dirac measures are Gaussian. -/
 instance {x : E} : IsGaussian (Measure.dirac x) where
-  map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
+  map_eq_gaussianReal L := by simp
+
+omit [IsGaussian μ] in
+lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
+    IsGaussian μ := by
+  convert instIsGaussianDirac (x := (0 : E))
+  ext s -
+  apply Subsingleton.set_cases (p := fun s ↦ μ s = _)
+  all_goals simp
 
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
@@ -156,6 +164,7 @@ lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
     · simp only [sup_eq_left]
       exact variance_nonneg _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite measure is Gaussian iff its characteristic function has value
 `exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
 theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :

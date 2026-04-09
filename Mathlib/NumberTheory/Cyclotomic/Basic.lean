@@ -209,7 +209,7 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
   by_cases hn : n = 0
   · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
   rw [iff_adjoin_eq_top]
-  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by simp) ?_⟩
   · obtain hm₁ | rfl := hm₁
     · exact exists_isPrimitiveRoot A B hm₁ hm₂
     · use r
@@ -677,21 +677,17 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
+deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance : Field (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
-
-instance algebra : Algebra K (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
-
-instance : Inhabited (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
+instance algebra : Algebra K (CyclotomicField n K) :=
+  inferInstanceAs <| Algebra K (cyclotomic n K).SplittingField
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   have : NeZero (n : CyclotomicField n K) :=
@@ -715,7 +711,7 @@ instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
         Polynomial.isSplittingField_C 1
       let e : K ≃ₗ[K] (CyclotomicField 0 K) :=
         (Polynomial.IsSplittingField.algEquiv K (Polynomial.cyclotomic 0 K)).toLinearEquiv
-      simp [←LinearEquiv.finrank_eq e, finrank_self]
+      simp [← LinearEquiv.finrank_eq e, finrank_self]
     simp [Subalgebra.bot_eq_top_iff_finrank_eq_one.mpr finrank]
 
 omit [NeZero n]
@@ -749,8 +745,8 @@ example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBas
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.instIsScalarTower _
 
-instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
-  rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
+instance [IsDomain A] [IsFractionRing A K] : Module.IsTorsionFree A (CyclotomicField n K) := by
+  rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
     IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
     (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
@@ -762,50 +758,42 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
+deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
 
-instance : CommRing (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
-instance : IsDomain (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
-instance : Inhabited (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
-  (adjoin A _).algebra
+  inferInstanceAs <| Algebra A (adjoin A _)
 
 -- Ensure that there is no diamonds with ℤ.
 -- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example {n : ℕ} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
-instance [IsFractionRing A K] :
-    NoZeroSMulDivisors A (CyclotomicRing n A K) :=
-  (adjoin A _).noZeroSMulDivisors_bot
+instance [IsDomain A] [IsFractionRing A K] : IsTorsionFree A (CyclotomicRing n A K) :=
+  (adjoin A _).instIsTorsionFree
 
 omit [NeZero n] in
-theorem algebraBase_injective [IsFractionRing A K] :
+theorem algebraBase_injective [IsDomain A] [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
-  (adjoin A _).toAlgebra
+  inferInstanceAs <| Algebra (adjoin A _) (CyclotomicField n K)
 
 omit [NeZero n] in
 theorem adjoin_algebra_injective :
     Function.Injective <| algebraMap (CyclotomicRing n A K) (CyclotomicField n K) :=
   Subtype.val_injective
 
-instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
+instance : IsTorsionFree (CyclotomicRing n A K) (CyclotomicField n K) :=
+  isTorsionFree_iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
-  IsScalarTower.subalgebra' _ _ _ _
+  inferInstanceAs <| IsScalarTower A (adjoin A _) (CyclotomicField n K)
 
-instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
+set_option backward.isDefEq.respectTransparency false in
+instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_isPrimitiveRoot {a} han _ := by
     rw [mem_singleton_iff] at han
@@ -823,7 +811,7 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     obtain ⟨x, hx⟩ := x
     refine
       adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
-        (fun y z  _ _ hy hz => ?_) hx
+        (fun y z _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       exact ⟨NeZero.ne n, by rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]⟩
@@ -831,6 +819,7 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units := fun ⟨x, hx⟩ => by
