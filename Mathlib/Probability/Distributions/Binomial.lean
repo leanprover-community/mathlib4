@@ -241,7 +241,7 @@ lemma iIndepFun.hasLaw_finset_sum_binomial {ι : Type*} {s : Finset ι} {X : ι 
     convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS
     simp
   convert this with ω
-  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), l2 (Finset.subset_univ _),
+  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _),
     ← Finset.univ.sum_coe_sort]
   congr with i
   simp [Set.indicator]
