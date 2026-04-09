@@ -91,7 +91,7 @@ variable (k : Type*) [Field k] (K : Type*) [Field K] [Algebra k K] (S : Type*) [
 
 open scoped Polynomial
 
-lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X])
+lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X]) (mon : f.Monic)
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
   sorry
 
@@ -162,6 +162,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
     (Algebra.TensorProduct.cancelBaseChange k kx kx K' S).symm.injective.isDomain
   let f := minpoly K' y
   have fsep : f.Separable := sep.1 y
+  have fmon : f.Monic := minpoly.monic (Algebra.IsIntegral.isIntegral y)
   let eK : K ≃ₐ[K'] K'[X] ⧸ Ideal.span {f} :=
     (IntermediateField.topEquiv.symm.trans (IntermediateField.equivOfEq hy).symm).trans
     (IntermediateField.adjoinRootEquivAdjoin K' (Algebra.IsIntegral.isIntegral y)).symm
@@ -169,7 +170,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isDomain
     (Algebra.TensorProduct.congr eK AlgEquiv.refl).trans
     (quotientPolynomialTensorProductEquiv k K' S f)
   have red : IsReduced ((K' ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K' (K' ⊗[k] S))}) :=
-    isReduced_of_quotient_separable _ _ fsep.map
+    isReduced_of_quotient_separable _ _ (fmon.map _) fsep.map
   exact isReduced_of_injective _ eTen.injective
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
