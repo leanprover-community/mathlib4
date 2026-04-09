@@ -1,16 +1,19 @@
 /-
 Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Stevens, Yury Kudryashov
+Authors: Patrick Stevens, Yury Kudryashov, Bhavik Mehta
 -/
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.Nat.Prime.Basic
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Primorial
@@ -37,8 +40,22 @@ def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
 
+@[simp] theorem primorial_zero : 0 # = 1 := by decide
+
+@[simp] theorem primorial_one : 1 # = 1 := by decide
+
+@[simp] theorem primorial_two : 2 # = 2 := by decide
+
 theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
+
+theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
+  prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
+
+theorem primorial_monotone : Monotone primorial := fun _ _ ↦ primorial_mono
+
+theorem primorial_dvd_primorial {m n : ℕ} (h : m ≤ n) : m# ∣ n# :=
+  prod_dvd_prod_of_subset _ _ _ (by gcongr)
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
@@ -63,22 +80,58 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
 theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
 
-theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
+lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Prime p) : p ∣ n# ↔ p ≤ n := by
+  refine ⟨?_, fun h ↦ dvd_prod_of_mem _ (by grind)⟩
+  intro h
+  simp only [primorial, hp.prime.dvd_finset_prod_iff, mem_filter, mem_range_succ_iff] at h
+  obtain ⟨q, ⟨hqn, hq⟩, hpq⟩ := h
+  exact (Nat.le_of_dvd hq.pos hpq).trans hqn
+
+lemma Nat.Prime.dvd_primorial {p : ℕ} (hp : Prime p) : p ∣ p# :=
+  hp.dvd_primorial_iff.2 le_rfl
+
+lemma Squarefree.dvd_primorial {n : ℕ} (hn : Squarefree n) : n ∣ n# := by
+  have : (∏ p ∈ n.primeFactors, p) ∣ (∏ p ∈ range (n + 1) with p.Prime, p) :=
+    Finset.prod_dvd_prod_of_subset _ _ _ (by grind [le_of_dvd])
+  rwa [Nat.prod_primeFactors_of_squarefree hn] at this
+
+lemma lt_primorial_self {n : ℕ} (hn : 2 < n) : n < n# := by
+  have : 3 ≤ n# := single_le_prod' (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
+  let q := (n# - 1).minFac
+  have : n < q := by
+    by_contra! h1
+    replace h1 : q ∣ n# := (minFac_prime (by lia)).dvd_primorial_iff.2 h1
+    grind [minFac_eq_one_iff, dvd_one, dvd_sub_iff_right, minFac_dvd]
+  grind [Nat.minFac_le]
+
+lemma le_primorial_self {n : ℕ} : n ≤ n# := by
+  obtain hn | hn := le_or_gt n 2
+  · decide +revert
+  · exact (lt_primorial_self hn).le
+
+theorem primorial_lt_four_pow (n : ℕ) (hn : n ≠ 0) : n# < 4 ^ n := by
   induction n using Nat.strong_induction_on with | h n ihn =>
-  rcases n with - | n; · rfl
-  rcases n.even_or_odd with (⟨m, rfl⟩ | ho)
-  · rcases m.eq_zero_or_pos with (rfl | hm)
+  rcases n with - | n; · grind
+  rcases n.even_or_odd with ⟨m, rfl⟩ | ho
+  · rcases m.eq_zero_or_pos with rfl | hm
     · decide
     calc
       (m + m + 1)# = (m + 1 + m)# := by rw [add_right_comm]
       _ ≤ (m + 1)# * choose (m + 1 + m) (m + 1) := primorial_add_le m.le_succ
       _ = (m + 1)# * choose (2 * m + 1) m := by rw [choose_symm_add, two_mul, add_right_comm]
-      _ ≤ 4 ^ (m + 1) * 4 ^ m :=
-        mul_le_mul' (ihn _ <| succ_lt_succ <| (lt_add_iff_pos_left _).2 hm) (choose_middle_le_pow _)
+      _ < 4 ^ (m + 1) * 4 ^ m :=
+        Nat.mul_lt_mul_of_lt_of_le (ihn _ (by lia) (by lia)) (choose_middle_le_pow _) (by simp)
       _ ≤ 4 ^ (m + m + 1) := by rw [← pow_add, add_right_comm]
-  · rcases Decidable.eq_or_ne n 1 with (rfl | hn)
+  · rcases Decidable.eq_or_ne n 1 with rfl | hn
     · decide
     · calc
         (n + 1)# = n# := primorial_succ hn ho
-        _ ≤ 4 ^ n := ihn n n.lt_succ_self
+        _ < 4 ^ n := ihn n n.lt_succ_self (by grind)
         _ ≤ 4 ^ (n + 1) := Nat.pow_le_pow_right four_pos n.le_succ
+
+theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
+  obtain rfl | hn := eq_or_ne n 0
+  · decide
+  · exact (primorial_lt_four_pow n hn).le
+
+@[deprecated (since := "2026-03-21")] alias primorial_le_4_pow := primorial_le_four_pow

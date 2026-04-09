@@ -52,7 +52,6 @@ variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
     let e := (asEquivalence G).symm
@@ -79,7 +78,6 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isDenseSubsite_functor_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
     e.functor.IsDenseSubsite J K where
@@ -132,7 +130,6 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of sheaf categories. -/
 @[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where

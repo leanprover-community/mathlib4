@@ -121,6 +121,14 @@ protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBound
 theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
   ⟨fun h => h.subset subset_closure, fun h => h.closure⟩
 
+theorem hasBasis_nhds_isOpen_isBounded (x : α) :
+    (𝓝 x).HasBasis (fun a ↦ x ∈ a ∧ IsOpen a ∧ Bornology.IsBounded a) id := by
+  simp_rw [← and_assoc]
+  apply (nhds_basis_opens x).restrict fun s hs ↦ ?_
+  exact ⟨s ∩ Metric.ball x 1,
+    by aesop (add safe apply IsOpen.inter),
+    by simpa using Metric.isBounded_ball.subset Set.inter_subset_right⟩
+
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩
@@ -174,6 +182,8 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
+
+instance (priority := low) [CompactSpace α] : BoundedSpace α := ⟨isCompact_univ.isBounded⟩
 
 theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
   hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded

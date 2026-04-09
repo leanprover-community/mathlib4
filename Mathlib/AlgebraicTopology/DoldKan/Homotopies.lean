@@ -34,7 +34,7 @@ a big enough `q` will be contained in the normalized subcomplex. This
 construction is done in `Projections.lean`.
 
 It would be easy to define the `P q` degreewise (similarly as it is done
-in *Simplicial Homotopy Theory* by Goerrs-Jardine p. 149), but then we would
+in *Simplicial Homotopy Theory* by Goerss-Jardine p. 149), but then we would
 have to prove that they are compatible with the differential (i.e. they
 are chain complex maps), and also that they are homotopic to the identity.
 These two verifications are quite technical. In order to reduce the number
@@ -49,7 +49,7 @@ are obtained in `Faces.lean`.
 
 In this file `Homotopies.lean`, we define the null homotopic maps
 `Hσ q : K[X] ⟶ K[X]`, show that they are natural (see `natTransHσ`) and
-compatible the application of additive functors (see `map_Hσ`).
+compatible with the application of additive functors (see `map_Hσ`).
 
 ## References
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
@@ -108,7 +108,11 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
-  grind [hσ', hσ]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind [hσ', hσ]` -/
+  simp [hσ', hσ, ha]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
@@ -143,8 +147,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
-  have h : n + 1 = m := hnm
-  subst h
+  obtain rfl : n + 1 = m := hnm
   simp only [hσ', eqToHom_refl, comp_id]
   unfold hσ
   split_ifs
