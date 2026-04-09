@@ -306,7 +306,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   have hrank : finrank ℝ s.directionᗮ = finrank ℝ (mk' (x +ᵥ p).val s.directionᗮ).direction := by
     rw [direction_mk']
   rw [IsometryEquiv.vaddConst_apply, hinter, euclideanHausdorffMeasure_coe_image, hrank,
-    EuclideanGeometry.euclideanHausdorffMeasure_eq ⟨x +ᵥ p, hxp⟩, map_apply (by fun_prop) hu]
+    euclideanHausdorffMeasure_eq ⟨x +ᵥ p, hxp⟩, map_apply (by fun_prop) hu]
   /- we have ⊢ volume (a : Set A) = volume (b : Set B). We'd like show a = b, but A and B are
     non-defeq subspaces!
     Lucky we have just developed euclideanHausdorffMeasure, which allows us to move the measure to
