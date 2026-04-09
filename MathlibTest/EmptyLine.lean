@@ -159,31 +159,31 @@ example : True := by  -- The following empty line is not reported, since the com
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
                        ↓
-  ⏎example : True := by⏎⏎-- Here I start⏎⏎
+  ⏎example : True := by⏎⏎  -- Here I start⏎⏎
 
 Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-         ↓
-  ⏎--stop⏎⏎trivial⏎⏎
+           ↓
+  ⏎  --stop⏎⏎  trivial⏎⏎
 
 Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 example : True := by
 
--- Here I start
+  -- Here I start
 
-/-
+  /-
 
--/
+  -/
 
---stop
+  --stop
 
-trivial -- also a comment
+  trivial -- also a comment
 
--- with a line break
+  -- with a line break
 
 -- Check that `where` fields allow empty lines.
 structure F where
