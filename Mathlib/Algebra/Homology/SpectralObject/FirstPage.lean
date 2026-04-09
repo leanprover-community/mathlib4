@@ -16,7 +16,8 @@ Assume that `X.HasSpectralSequence data` holds. In this file,
 we introduce a property `data.HasFirstPageComputation` which allows
 to "compute" the objects of the `r₀`th page of the spectral
 sequence attached to `X` in terms of objects of the form `X.H`,
-and we compute the differential on the first page in terms of `X.δ`.
+and we compute the differential on the first page in terms of `X.δ`,
+see `spectralSequence_first_page_d_eq`.
 
 -/
 
