@@ -106,6 +106,7 @@ every type to `α`. When `α` has an additive monoid structure,
 multiplicative monoid structure, see `Functor.Const`.) -/
 def AddConst (α : Type*) :=
   Const α
+deriving Functor, LawfulFunctor
 
 /-- `AddConst.mk` is the canonical map `α → AddConst α β`, which is the identity,
 where `AddConst α β = Const α β`. It can be used as a pattern to extract this value. -/
@@ -116,12 +117,6 @@ def AddConst.mk {α β} (x : α) : AddConst α β :=
 /-- Extract the element of `α` from the constant functor. -/
 def AddConst.run {α β} : AddConst α β → α :=
   id
-
-instance AddConst.functor {γ} : Functor (AddConst γ) :=
-  @Const.functor γ
-
-instance AddConst.lawfulFunctor {γ} : LawfulFunctor (AddConst γ) :=
-  @Const.lawfulFunctor γ
 
 instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
   ⟨(default : α)⟩
