@@ -239,6 +239,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
+  ("relIsoLT", "RelIsoGT"),
+  ("relIsoGT", "RelIsoLT"),
   ("succColimit", "SuccLimit"),
   ("predColimit", "PredLimit"),
   ("codirectedOrder", "DirectedOrder"),
