@@ -376,8 +376,11 @@ meta def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nz ← synthInstanceQ q(NeZero (1 : $α))
-    pure (.positive q(Nat.cast_pos'.2 $pa))
+    try
+      let _nz ← synthInstanceQ q(NeZero (1 : $α))
+      pure (.positive q(Nat.cast_pos'.2 $pa))
+    catch _ =>
+      pure (.nonnegative q(Nat.cast_nonneg' _))
   | _ =>
     pure (.nonnegative q(Nat.cast_nonneg' _))
 
