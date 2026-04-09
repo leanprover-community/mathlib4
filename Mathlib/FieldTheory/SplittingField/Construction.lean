@@ -234,14 +234,14 @@ def algEquivSplittingFieldAux (f : K[X]) :
 
 public section
 
-@[no_expose]
-instance : Inv (SplittingField f) where
-  inv a := (algEquivSplittingFieldAux f).symm ((algEquivSplittingFieldAux f) a)⁻¹
+def inv (a : SplittingField f) : SplittingField f :=
+  (algEquivSplittingFieldAux f).symm ((algEquivSplittingFieldAux f) a)⁻¹
 
 instance instGroupWithZero : GroupWithZero (SplittingField f) where
-  inv_zero := by unfold instInv; simp
+  inv := inv f
+  inv_zero := by simp [inv]
   mul_inv_cancel a ha := private (algEquivSplittingFieldAux f).injective <| by
-    unfold instInv; simp [EmbeddingLike.map_ne_zero_iff.2 ha]
+    simp [inv, EmbeddingLike.map_ne_zero_iff.2 ha]
   __ := private (algEquivSplittingFieldAux f).surjective.nontrivial
 
 instance instField : Field (SplittingField f) where
@@ -306,7 +306,7 @@ instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
 instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
   inferInstance
 
-/-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
+/-- Any splitting field is isomorphic to `SplittingField f`. -/
 def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
   AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
     have := finiteDimensional L f
