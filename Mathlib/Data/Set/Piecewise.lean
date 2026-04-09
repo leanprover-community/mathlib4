@@ -41,7 +41,8 @@ variable [∀ j, Decidable (j ∈ s)]
 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  grind [piecewise]
+  ext i
+  by_cases i = j <;> grind [piecewise]
 
 @[simp]
 theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
