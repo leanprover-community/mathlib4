@@ -487,7 +487,7 @@ theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] [MeasurableSpac
     {μ ν : Measure α} [OuterRegular μ] [OuterRegular ν]
     (hμν : ∀ U, IsOpen U → Bornology.IsBounded U → μ U = ν U) : μ = ν := by
   refine ext_isOpen fun U hU ↦ ?_
-  obtain ⟨f, hm, hu, hf⟩ := Metric.eq_countable_union_of_bounded_of_isOpen hU
+  obtain ⟨f, hm, hu, hf⟩ := Metric.eq_countable_union_of_isBounded_of_isOpen hU
   rw [← hu, hm.measure_iUnion, hm.measure_iUnion]
   exact iSup_congr fun i ↦ hμν (f i) (hf i).2 (hf i).1
 
