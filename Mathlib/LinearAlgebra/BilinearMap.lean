@@ -173,6 +173,12 @@ theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.comp
   ext
   rw [compl₂_apply, id_coe, _root_.id]
 
+theorem compl₂_comp {R₆ Q' : Type*} [Semiring R₆] [AddCommMonoid Q'] [Module R₆ Q']
+    {σ₆₂ : R₆ →+* R₂} {σ₆₃ : R₆ →+* R₃} {σ₆₄ : R₆ →+* R₄}
+    [RingHomCompTriple σ₆₂ σ₂₃ σ₆₃] [RingHomCompTriple σ₆₄ σ₄₂ σ₆₂] [RingHomCompTriple σ₆₄ σ₄₃ σ₆₃]
+    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (f : Q' →ₛₗ[σ₆₄] Q) :
+    h.compl₂ (g ∘ₛₗ f) = (h.compl₂ g).compl₂ f := rfl
+
 end Semiring
 
 section lcomp
@@ -303,10 +309,9 @@ end Semiring
 section CommSemiring
 
 variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
-variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable {A : Type*} [Semiring A]
+variable {M : Type*} {N : Type*} {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
+variable [AddCommMonoid M] [AddCommMonoid N]
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
 variable [Module R M]
@@ -348,6 +353,19 @@ theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] 
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
+theorem compl₁₂_comp₁ {Tₗ : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ] [Module R₁ Tₗ]
+    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) :
+    f.compl₁₂ (g ∘ₗ h) g' = (f.compl₁₂ g g') ∘ₗ h := rfl
+
+theorem compl₁₂_comp₂ {Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ'] [Module R₂ Tₗ']
+    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h' : Tₗ' →ₗ[R₂] Qₗ') :
+    f.compl₁₂ g (g' ∘ₗ h') = (f.compl₁₂ g g').compl₂ h' := rfl
+
+theorem compl₁₂_comp₁₂ {Tₗ Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ]
+    [AddCommMonoid Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ'] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ)
+    (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) (h' : Tₗ' →ₗ[R₂] Qₗ') :
+    f.compl₁₂ (g ∘ₗ h) (g' ∘ₗ h') = (f.compl₁₂ g g').compl₁₂ h h' := rfl
+
 theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     {f₁ f₂ : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ} {g : Qₗ →ₗ[R₁] Mₗ} {g' : Qₗ' →ₗ[R₂] N}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
@@ -380,6 +398,13 @@ theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
+
+omit [Module R M] in
+theorem compr₂_comp {Tₗ : Type*} [AddCommMonoid Tₗ] [Module R Tₗ] [Module A Tₗ] [Module R A]
+    [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [SMulCommClass R A Tₗ]
+    [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ] [IsScalarTower R A Tₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (h : Qₗ →ₗ[A] Tₗ) :
+    f.compr₂ (h ∘ₗ g) = (f.compr₂ g).compr₂ h := rfl
 
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
 theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
