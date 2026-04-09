@@ -258,8 +258,8 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
     (isCountablyCompact_univ_iff.2 inferInstance).of_isClosed_subset
     (isClosed_of_not_tendsto hx) (by simp)
   -- We use the countably compactness of `A` to find a cluster point `a`. Eventually `a` does not
-  -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradict with
-  -- `a` being a cluster point.
+  -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradicts `a`
+  -- being a cluster point.
   obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
     refine isCountablyCompact_iff_seq_clusterPt.1 this _ (.of_forall fun n => ?_)
     exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
