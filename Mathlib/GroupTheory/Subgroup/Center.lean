@@ -27,10 +27,9 @@ variable (G)
 @[to_additive
       /-- The center of an additive group `G` is the set of elements that commute with
       everything in `G` -/]
-def center : Subgroup G :=
-  { Submonoid.center G with
-    carrier := Set.center G
-    inv_mem' := Set.inv_mem_center }
+def center : Subgroup G where
+  __ := Submonoid.center G
+  inv_mem' := Set.inv_mem_center
 
 @[to_additive]
 theorem coe_center : ↑(center G) = Set.center G :=
@@ -95,11 +94,12 @@ section Normalizer
 
 @[to_additive]
 instance instNormalCenter : (center G).Normal :=
-  ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
+  ⟨fun a ha b ↦ by simpa [mem_center_iff.mp ha b]⟩
 
 @[to_additive]
-theorem center_le_normalizer : center G ≤ normalizer H := fun x hx y => by
-  simp [← mem_center_iff.mp hx y, mul_assoc]
+theorem center_le_normalizer (s : Set G) : center G ≤ normalizer s := by
+  intro x hx y
+  simp [← mem_center_iff.mp hx y]
 
 end Normalizer
 
