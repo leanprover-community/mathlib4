@@ -105,7 +105,6 @@ end EquivEven
 
 open EquivEven
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
@@ -119,14 +118,12 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
 def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
   /-

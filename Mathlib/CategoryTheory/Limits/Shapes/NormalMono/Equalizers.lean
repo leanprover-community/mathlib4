@@ -50,10 +50,7 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
         _ = 0 := zero_comp
   HasLimit.mk
     { cone :=
-        PullbackCone.mk a' b' <| by
-          simp? at ha' hb' says
-            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
-          rw [ha', hb']
+        PullbackCone.mk a' b' <| by rw [dsimp% ha', dsimp% hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>

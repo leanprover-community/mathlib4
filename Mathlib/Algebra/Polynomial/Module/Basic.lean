@@ -40,7 +40,10 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-deriving Inhabited, FunLike, CoeFun
+deriving Inhabited, FunLike
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for PolynomialModule
 
 noncomputable section
 deriving instance AddCommGroup for PolynomialModule

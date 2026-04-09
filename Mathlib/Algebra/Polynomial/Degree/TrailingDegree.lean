@@ -94,7 +94,6 @@ theorem trailingDegree_eq_natTrailingDegree (hp : p ≠ 0) :
     trailingDegree p = (natTrailingDegree p : ℕ∞) :=
   .symm <| ENat.coe_toNat <| mt trailingDegree_eq_top.1 hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trailingDegree_eq_iff_natTrailingDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.trailingDegree = n ↔ p.natTrailingDegree = n := by
   rw [trailingDegree_eq_natTrailingDegree hp, Nat.cast_inj]
@@ -159,7 +158,6 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n :=
   mt fun h => by rw [natTrailingDegree, h, ENat.toNat_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
     (H : (n : ℕ∞) ≤ trailingDegree p) : n ≤ natTrailingDegree p := by
   rwa [trailingDegree_eq_natTrailingDegree hp, Nat.cast_le] at H

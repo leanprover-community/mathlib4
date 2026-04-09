@@ -37,7 +37,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
@@ -799,8 +799,6 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
   coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
 
-@[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
-
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
 theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
@@ -1358,13 +1356,9 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
-
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 
 end topDualPairing

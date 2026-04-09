@@ -457,7 +457,7 @@ For `1 ≤ r`, the logarithmic counting function for the poles of a sum `∑ a �
 equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
-    (h₁f : ∀ a, Meromorphic (f a)) (hr : 1 ≤ r) :
+    (h₁f : ∀ a ∈ s, Meromorphic (f a)) (hr : 1 ≤ r) :
     logCounting (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
   classical
   induction s using Finset.induction with
@@ -467,16 +467,17 @@ theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 →
     rw [Finset.sum_insert ha, Finset.sum_insert ha]
     calc logCounting (f a + ∑ x ∈ s, f x) ⊤ r
       _ ≤ (logCounting (f a) ⊤ + logCounting (∑ x ∈ s, f x) ⊤) r :=
-        logCounting_add_top_le (h₁f a) (Meromorphic.sum h₁f) hr
+        logCounting_add_top_le (h₁f a (Finset.mem_insert_self a s))
+          (Meromorphic.sum (fun σ hσ ↦ h₁f σ (Finset.mem_insert_of_mem hσ))) hr
       _ ≤ (logCounting (f a) ⊤ + ∑ x ∈ s, logCounting (f x) ⊤) r :=
-        add_le_add (by trivial) hs
+        add_le_add (by trivial) (hs (fun a ha ↦ h₁f a (Finset.mem_insert_of_mem ha)))
 
 /--
 Asymptotically, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than
 or equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
-    (h₁f : ∀ a, Meromorphic (f a)) :
+    (h₁f : ∀ a ∈ s, Meromorphic (f a)) :
     logCounting (∑ a ∈ s, f a) ⊤ ≤ᶠ[atTop] ∑ a ∈ s, (logCounting (f a) ⊤) := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 

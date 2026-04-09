@@ -209,7 +209,6 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc _ _ _ := fun ⟨h₁, h₂⟩ ↦ by lia
   hc₀₂ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
-    ext
     grind
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
