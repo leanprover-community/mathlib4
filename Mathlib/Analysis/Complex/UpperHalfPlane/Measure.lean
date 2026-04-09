@@ -48,11 +48,12 @@ lemma measurable_coe : Measurable UpperHalfPlane.coe :=
 
 /-- The invariant measure on the upper half-plane, defined by `dx dy / y ^ 2`. -/
 instance : MeasureSpace ℍ :=
-  ⟨(volume.comap UpperHalfPlane.coe).withDensity fun z ↦ ↑((1 / ⟨z.im, z.im_pos.le⟩ : ℝ≥0) ^ 2)⟩
+  ⟨(volume.comap UpperHalfPlane.coe).withDensity
+    fun z ↦ ↑((1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2)⟩
 
 theorem volume_def :
     (volume : Measure ℍ) = (volume.comap UpperHalfPlane.coe).withDensity fun z ↦
-      ↑((1 / ⟨z.im, z.im_pos.le⟩ : ℝ≥0) ^ 2) :=
+      ↑((1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2) :=
   rfl
 
 instance : IsFiniteMeasureOnCompacts (volume.comap UpperHalfPlane.coe) :=
