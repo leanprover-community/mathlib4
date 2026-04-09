@@ -292,27 +292,10 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
 
 /-- For a topological basis `B`, the finite unions of sets in `B` also form a topological basis. -/
 lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
-    IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) where
-  exists_subset_inter := by
-    rintro - ⟨f₁, ⟨ff₁, hf₁⟩, rfl⟩ - ⟨f₂, ⟨ff₂, hf₂⟩, rfl⟩ x hx
-    simp only [mem_inter_iff, mem_sUnion] at hx
-    obtain ⟨⟨t₁, ht₁, hx₁⟩, ⟨t₂, ht₂, hx₂⟩⟩ := hx
-    obtain ⟨t₃, ht₃, hx₃, st₃⟩ := hB.exists_subset_inter t₁ (hf₁ ht₁) t₂ (hf₂ ht₂) x ⟨hx₁, hx₂⟩
-    exact ⟨t₃, ⟨{t₃}, ⟨by simp, by grind⟩, by simp⟩, hx₃, by grind⟩
-  sUnion_eq := by
-    simp only [sUnion_image, mem_setOf_eq, eq_univ_iff_forall, mem_iUnion, mem_sUnion, exists_prop]
-    intro x
-    have := hB.sUnion_eq
-    simp only [eq_univ_iff_forall, mem_sUnion] at this
-    obtain ⟨t, ht, hx⟩ := this x
-    exact ⟨{t}, ⟨by simp, by grind⟩, by grind⟩
-  eq_generateFrom := by
-    rw [hB.eq_generateFrom]
-    refine le_antisymm (le_generateFrom ?_)
-      (generateFrom_anti fun s hs ↦ ⟨{s}, ⟨by simp, by grind⟩, by simp⟩)
-    rw [← hB.eq_generateFrom]
-    rintro - ⟨f, ⟨ff, hf⟩, rfl⟩
-    exact isOpen_sUnion (fun s hs ↦ hB.isOpen (hf hs))
+    IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) := by
+  refine hB.of_isOpen_of_subset ?_ (fun u hu ↦ ⟨{u}, by simpa⟩)
+  rintro - ⟨f, ⟨hf1, hf2⟩, rfl⟩
+  exact isOpen_sUnion fun u hu ↦ hB.isOpen (hf2 hu)
 
 variable (α)
 

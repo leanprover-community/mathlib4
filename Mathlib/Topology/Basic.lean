@@ -174,8 +174,8 @@ theorem Set.Finite.isClosed_biUnion {s : Set α} {f : α → Set X} (hs : s.Fini
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
 
-lemma Set.Finite.isClosed_sUnion {s : Set (Set X)}
-    (hs : s.Finite) (h : ∀ t ∈ s, IsClosed t) : IsClosed (⋃₀ s) := by
+lemma Set.Finite.isClosed_sUnion {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsClosed t) :
+    IsClosed (⋃₀ s) := by
   rw [Set.sUnion_eq_biUnion]
   exact hs.isClosed_biUnion h
 

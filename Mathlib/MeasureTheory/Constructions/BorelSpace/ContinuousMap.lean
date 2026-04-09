@@ -103,18 +103,18 @@ theorem borel_eq_iSup_comap_eval :
   -- Therefore, we obtain that
   -- `M(K, U) = ⋃_{u ∈ V, closure u ⊆ U}, M(K, closure u)`.
   have : {f : C(X, Y) | K.MapsTo f U} =
-      ⋃₀ {v | ∃ u ∈ V, closure u ⊆ U ∧ v = {f : C(X, Y) | K.MapsTo f (closure u)}} := by
+      ⋃ u, ⋃ (_ : closure u ⊆ U), {f : C(X, Y) | K.MapsTo f (closure u)} := by
     ext f
-    simp only [Set.mem_setOf_eq, Set.mem_sUnion, ↓existsAndEq, and_true]
-    exact ⟨by grind, fun ⟨u, ⟨hu1, hu2⟩, hu3⟩ ↦ hu3.mono_right hu2⟩
+    simpa using ⟨by grind, fun ⟨u, hu1, hu2⟩ ↦ hu2.mono_right hu1⟩
+  have : {f : C(X, Y) | K.MapsTo f U} =
+      ⋃ u ∈ V, ⋃ (_ : closure u ⊆ U), {f : C(X, Y) | K.MapsTo f (closure u)} := by
+    ext f
+    simpa using ⟨by grind, fun ⟨u, hu1, hu2, hu3⟩ ↦ hu3.mono_right hu1⟩
   simp_rw [this]
   -- In particular, because `V` is countable, this is a countable union.
   -- To show measurability it is therefore enough to show the measurability of each term.
-  apply MeasurableSet.sUnion
-  · let f : (Set Y) → Set C(X, Y) := fun v ↦ {f : C(X, Y) | Set.MapsTo (⇑f) K (closure v)}
-    exact (cV.image f).mono (by grind)
+  refine .biUnion cV (fun v hv1 ↦ .iUnion (fun hv2 ↦ ?_))
   -- Consider now `v ∈ V` such that `closure v ⊆ U`.
-  rintro - ⟨v, hv1, hv2, rfl⟩
   -- Consider `Q` a countable dense subset of `K`, which exists by second-countability assumption.
   obtain ⟨Q, cQ, hQ, dQ⟩ := exists_countable_dense_subset K
   -- Because `f` is continuous and `closure v` is closed and `Q` is dense in `K`, having
