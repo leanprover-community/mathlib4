@@ -35,6 +35,8 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 lemma ord_ne_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
   simp [isFiniteLength_quotient_span_singleton R ha, Ring.ord, Module.length_ne_top_iff]
 
+lemma ord_lt_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a < ⊤ := (ord_ne_top ha).lt_top
+
 open scoped nonZeroDivisors
 /--
 Order of vanishing function as a monoid homomorphism
@@ -57,11 +59,8 @@ lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
     .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
   simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
     OneHom.coe_mk, toAdd_ofAdd]
-  have := ord_ne_top x.2
-  generalize ord R x.1 = a at *
-  induction a
-  · contradiction
-  · rfl
+  rw [← ENat.coe_lift (ord R x.1) (ord_lt_top x.2), ENat.recTopCoe_coe,
+    ENat.coe_lift, ENat.lift_eq_toNat_of_lt_top]
 
 /--
 Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
@@ -184,10 +183,8 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 lemma ordMonoidWithZeroHom_eq_intValutation {R : Type u_1} [CommRing R] [IsDomain R]
     [IsDiscreteValuationRing R] (x : R) (h : x ∈ nonZeroDivisors R) :
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  simp [ordMonoidWithZeroHom_eq_ord h, ord_eq_addVal,
-    IsDiscreteValuationRing.intValuation_maximalIdeal,
-    WithZero.map'_apply, Multiplicative.ofAdd_comp_cast_comp_toAdd_eq_ofAdd_comp_cast,
-    WithZero.map_multiplicative_eq_map]
+  simp only [ordMonoidWithZeroHom_eq_ord h, ord_eq_addVal,
+    IsDiscreteValuationRing.intValuation_maximalIdeal, inv_inv]
 
 lemma ordFrac_eq_intValuation {R K : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
     [Field K] [Algebra R K] [IsFractionRing R K]

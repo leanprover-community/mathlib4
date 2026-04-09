@@ -238,19 +238,21 @@ meaning in this case `0` will not be mapped to `⊤`.
 noncomputable
 def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
   toFun x := if x ∈ nonZeroDivisors R
-             then WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x)
+             then (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x))
              else 0
-  map_zero' := by
-    simp [nonZeroDivisors, exists_ne]
-  map_one' := by
-    simp [nonZeroDivisors]
-    rfl
+  map_zero' := by simp [nonZeroDivisors, exists_ne]
+  map_one' := by simp [nonZeroDivisors]
   map_mul' := by
     intro x y
     split_ifs with _ _ b
-    · rw [← MonoidWithZeroHom.map_mul]
-      congr
-      exact ord_mul R b
+    · rw [ord_mul _ b]
+      generalize ord R x = x'
+      generalize ord R y = y'
+      cases x' <;> cases y'
+      case pos.coe.coe =>
+        simp only [← ENat.coe_add, ENat.recTopCoe_coe, Nat.cast_add (R := ℤ),
+          ofAdd_add, WithZero.coe_mul]
+      all_goals simp
     all_goals simp_all [mul_mem_nonZeroDivisors]
 
 
@@ -262,7 +264,7 @@ of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 @[simp]
 theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
-  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x) := dif_pos h
+  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dif_pos h
 
 @[simp]
 lemma _root_.ENat.map'_toMultiplicative_cast_eq_ofAdd {n : ℕ} :
@@ -314,8 +316,9 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
     simp only [isUnit_iff_ne_zero, ne_eq]
     simp [ordMonoidWithZeroHom, ord]
     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
-    have : ∀ k,
-      (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) k = 0 ↔ k = 0 := by
+    have : ∀ k : ℕ∞,
+      ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd <| Nat.cast (R := ℤ) ·) k =
+          (0 : WithZero _) ↔ k = ⊤ := by
         intro k
         cases k
         all_goals simp

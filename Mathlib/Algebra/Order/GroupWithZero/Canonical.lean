@@ -394,9 +394,6 @@ theorem le_ofAdd_iff
     a ≤ ofAdd b ↔ toAdd (unzero ha) ≤ b :=
   ⟨toAdd_unzero_le_of_lt_ofAdd ha, le_ofAdd_of_toAdd_unzero_le ha⟩
 
-lemma map_multiplicative_eq_map {α β : Type*} :
-    WithZero.map (α := Multiplicative α) (β := β) = WithZero.map (α := α) := rfl
-
 end Multiplicative
 
 end Preorder
@@ -594,8 +591,5 @@ lemma le_exp_log {x : Gᵐ⁰} :
   cases x
   · simp
   · rfl
-
-lemma map'_apply [MulOneClass α] [MulOneClass β] (f : α →* β) (x : WithZero α) :
-    WithZero.map' f x = x.map f := by cases x <;> simp
 
 end WithZero
