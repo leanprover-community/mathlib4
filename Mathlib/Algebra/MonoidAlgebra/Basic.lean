@@ -395,15 +395,15 @@ noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) :
-    (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
+lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) : (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
 
 @[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
-    mapAlgEquiv R M (e₁.trans e₂) =
-      (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
+    mapAlgEquiv R M (e₁.trans e₂) = (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+
+@[deprecated (since := "2026-03-27")] alias mapRangeAlgEquiv_trans := mapAlgEquiv_trans
 
 end mapRange
 

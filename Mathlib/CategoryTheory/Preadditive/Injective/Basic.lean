@@ -66,6 +66,9 @@ class EnoughInjectives : Prop where
 
 attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
+instance (priority := low) [EnoughInjectives C] (X : C) : Nonempty (InjectivePresentation X) :=
+  EnoughInjectives.presentation X
+
 end
 
 namespace Injective
