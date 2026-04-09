@@ -128,10 +128,9 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
 /-
 Open subsects in perfect spaces are preperfect.
 -/
-theorem PerfectSpace.preperfect_of_isOpen [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+theorem IsOpen.preperfect [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
     Preperfect U := by
-  rw [← inter_univ (a := U)]
-  exact Preperfect.open_inter univ_preperfect hU
+  simpa using PerfectSpace.univ_preperfect.open_inter hU
 
 /-
 Closures of open subsects in perfect spaces are preperfect, hence perfect.
