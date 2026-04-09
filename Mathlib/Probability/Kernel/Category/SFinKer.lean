@@ -255,26 +255,29 @@ instance deterministic_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrie
     · rfl
     all_goals exact Kernel.measurable_coe _ hs
 
-instance id_map_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
+lemma id_map_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
+  hom_comul := by cat_disch
 
-instance {X Y Z : SFinKer} : Deterministic (α_ X Y Z).hom :=
+variable {X Y Z : SFinKer}
+
+instance : Deterministic (α_ X Y Z).hom :=
   deterministic_Deterministic ((X ⊗ Y) ⊗ Z)
       (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
 
-instance {X : SFinKer} : Deterministic (λ_ X ).hom :=
+instance : Deterministic (λ_ X ).hom :=
   id_map_Deterministic (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
 
-instance {X : SFinKer} : Deterministic (ρ_ X ).hom :=
+instance : Deterministic (ρ_ X ).hom :=
   id_map_Deterministic (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 
-instance {X Y : SFinKer} : Deterministic (β_ X Y).hom :=
+instance : Deterministic (β_ X Y).hom :=
   deterministic_Deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
 
-instance {X : SFinKer} : Deterministic (ε[X]) :=
+instance : Deterministic (ε[X]) :=
   deterministic_Deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
 
-instance {X : SFinKer} : Deterministic (Δ[X]) :=
+instance : Deterministic (Δ[X]) :=
   deterministic_Deterministic X (X ⊗ X) (fun (x : X) ↦ (x, x)) (by fun_prop)
 
 end
