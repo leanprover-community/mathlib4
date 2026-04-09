@@ -651,7 +651,8 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
 theorem linearIndependent_finCons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]; rfl
+  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
+  rfl
 
 @[deprecated (since := "2026-04-07")]
 alias linearIndependent_fin_cons := linearIndependent_finCons
