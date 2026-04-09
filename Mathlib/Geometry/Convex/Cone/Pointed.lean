@@ -175,6 +175,10 @@ Pointed cones being defined as submodules over nonnegative scalars, this is impl
 the submodule span of `s` w.r.t. nonnegative scalars. -/
 abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
+/- Note that the character `∙` U+2219 used below is different from the scalar multiplication
+character `•` U+2022. -/
+notation:70 R:70 " ∙₊ " x:70 => hull R (singleton x)
+
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
 @[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
