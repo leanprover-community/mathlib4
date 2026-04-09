@@ -116,7 +116,7 @@ def lintVersoSyntax (fileName : Option String := none) (docComment : String) :
   -- everywhere would be very noisy.
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
     docComment.splitInclusive Char.isWhitespace |>.map fun str =>
-      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL" 
+      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL"
       else str.toString
   -- Drop anything between LaTeX `$$`s.
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
