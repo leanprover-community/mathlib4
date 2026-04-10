@@ -559,13 +559,13 @@ theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M 
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
 @[implicit_reducible]
 def IsTorsionBySet.module [I.IsTwoSided] (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
-  letI := hM.hasSMul; I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
+  letI := hM.hasSMul; fast_instance% I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 
 instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
-    @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
+    @IsScalarTower S (R ⧸ I) M _ hM.hasSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
-  @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
+  @IsScalarTower.mk S (R ⧸ I) M _ hM.hasSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
 /-- If an `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
@@ -578,9 +578,9 @@ def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
     map_smul' := fun _ _ ↦ rfl }
 
 theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
-    (hM : Module.IsTorsionBySet R M I) : let _ := hM.module
+    (hM : Module.IsTorsionBySet R M I) : letI := hM.module
     IsSemisimpleModule (R ⧸ I) M ↔ IsSemisimpleModule R M :=
-  let _ := hM.module
+  letI := hM.module
   (hM.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).symm
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
