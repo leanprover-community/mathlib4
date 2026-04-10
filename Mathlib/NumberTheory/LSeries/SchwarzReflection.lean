@@ -62,43 +62,61 @@ theorem hurwitzEvenFEPair_f_modif_conj (t : ℝ) :
 
 end RealKernel
 
-/-! ## Schwarz reflection and real-on-reals -/
+/-! ## General Schwarz reflection for Mellin transforms with real kernels -/
+
+section MellinConj
+
+/-- **Mellin transform commutes with conjugation for real-valued kernels.**
+If `φ : ℝ → ℂ` satisfies `conj(φ(t)) = φ(t)` for all `t`, then
+`mellin φ (conj s) = conj (mellin φ s)`. -/
+theorem mellin_conj_of_real_kernel {φ : ℝ → ℂ}
+    (hreal : ∀ t : ℝ, starRingEnd ℂ (φ t) = φ t) (s : ℂ) :
+    mellin φ (starRingEnd ℂ s) = starRingEnd ℂ (mellin φ s) := by
+  simp only [mellin]
+  have hpt {t : ℝ} (ht : t ∈ Ioi 0) :
+    (↑t : ℂ) ^ (starRingEnd ℂ s - 1) • φ t =
+      starRingEnd ℂ ((↑t : ℂ) ^ (s - 1) • φ t) := by
+    simp only [smul_eq_mul, map_mul]
+    congr 1
+    · have harg : ((t : ℂ)).arg ≠ Real.pi := by
+        rw [arg_ofReal_of_nonneg (le_of_lt ht)]; exact Real.pi_pos.ne
+      rw [show starRingEnd ℂ s - 1 = starRingEnd ℂ (s - 1) from by
+        rw [map_sub, map_one]]
+      rw [cpow_conj _ _ harg]; simp [conj_ofReal]
+    · exact (hreal t).symm
+  calc ∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ (starRingEnd ℂ s - 1) • φ t
+      = ∫ t in Ioi (0 : ℝ), starRingEnd ℂ ((↑t : ℂ) ^ (s - 1) • φ t) :=
+          setIntegral_congr_fun measurableSet_Ioi fun t ht => hpt ht
+    _ = starRingEnd ℂ (∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ (s - 1) • φ t) :=
+          integral_conj
+
+/-- **Schwarz reflection for `Λ₀` of a `WeakFEPair` with real-valued kernel.**
+If `P.f_modif` is real-valued, then `P.Λ₀ (conj s) = conj (P.Λ₀ s)`. -/
+theorem WeakFEPair.Λ₀_conj (P : WeakFEPair ℂ)
+    (hreal : ∀ t : ℝ, starRingEnd ℂ (P.f_modif t) = P.f_modif t) (s : ℂ) :
+    P.Λ₀ (starRingEnd ℂ s) = starRingEnd ℂ (P.Λ₀ s) :=
+  mellin_conj_of_real_kernel hreal s
+
+end MellinConj
+
+/-! ## Schwarz reflection for `completedRiemannZeta₀` -/
 
 section SchwarzReflection
 
 /-- **Schwarz reflection for the completed Riemann zeta function.**
 `Λ₀(conj(s)) = conj(Λ₀(s))` for all `s : ℂ`.
 
-This follows from the Mellin representation: the kernel is real-valued,
-positive-real powers conjugate correctly, and the integral commutes
-with conjugation. -/
+Specialization of `WeakFEPair.Λ₀_conj` to `hurwitzEvenFEPair 0`,
+composed with the `s/2` and `/2` rescaling. -/
 theorem completedRiemannZeta₀_conj (s : ℂ) :
     completedRiemannZeta₀ (starRingEnd ℂ s) = starRingEnd ℂ (completedRiemannZeta₀ s) := by
-  change mellin (hurwitzEvenFEPair 0).f_modif (starRingEnd ℂ s / 2) / 2 =
-    starRingEnd ℂ (mellin (hurwitzEvenFEPair 0).f_modif (s / 2) / 2)
+  change (hurwitzEvenFEPair 0).Λ₀ (starRingEnd ℂ s / 2) / 2 =
+    starRingEnd ℂ ((hurwitzEvenFEPair 0).Λ₀ (s / 2) / 2)
   rw [map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by exact_mod_cast conj_ofReal 2]
   congr 1
-  simp only [mellin]
-  have hpt {t : ℝ} (ht : t ∈ Ioi 0) :
-    (↑t : ℂ) ^ ((starRingEnd ℂ) s / 2 - 1) • (hurwitzEvenFEPair 0).f_modif t =
-      (starRingEnd ℂ) ((↑t : ℂ) ^ (s / 2 - 1) • (hurwitzEvenFEPair 0).f_modif t) := by
-    simp only [smul_eq_mul, map_mul]
-    congr 1
-    · have harg : ((t : ℂ)).arg ≠ Real.pi := by
-        rw [arg_ofReal_of_nonneg (le_of_lt ht)]; exact Real.pi_pos.ne
-      rw [show starRingEnd ℂ s / 2 - 1 = starRingEnd ℂ (s / 2 - 1) from by
-        rw [map_sub, map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by
-          exact_mod_cast conj_ofReal 2, map_one]]
-      rw [cpow_conj _ _ harg]; simp [conj_ofReal]
-    · exact (hurwitzEvenFEPair_f_modif_conj t).symm
-  calc ∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ ((starRingEnd ℂ) s / 2 - 1) •
-        (hurwitzEvenFEPair 0).f_modif t
-      = ∫ t in Ioi (0 : ℝ), (starRingEnd ℂ) ((↑t : ℂ) ^ (s / 2 - 1) •
-        (hurwitzEvenFEPair 0).f_modif t) :=
-          setIntegral_congr_fun measurableSet_Ioi fun t ht => hpt ht
-    _ = (starRingEnd ℂ) (∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ (s / 2 - 1) •
-        (hurwitzEvenFEPair 0).f_modif t) :=
-          integral_conj
+  rw [show starRingEnd ℂ s / 2 = starRingEnd ℂ (s / 2) from by
+    rw [map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by exact_mod_cast conj_ofReal 2]]
+  exact (hurwitzEvenFEPair 0).Λ₀_conj hurwitzEvenFEPair_f_modif_conj (s / 2)
 
 /-- **`completedRiemannZeta₀` is real-valued on `ℝ`.**
 For `r : ℝ`, `Im(Λ₀(r)) = 0`. This follows from Schwarz reflection
