@@ -122,7 +122,8 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
 
-theorem primeCompl_bot [IsDomain α] : (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
   ext
   simp
 
