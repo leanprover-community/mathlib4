@@ -108,7 +108,7 @@ theorem uniqueAlgEquiv_monomial {σ : Type*} [Unique σ] {d : σ →₀ ℕ} {r 
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R PUnit) (MvPolynomial.monomial d r)
       = Polynomial.monomial (d default) r :=
-  uniqueAlgEquiv_monomial (R := R) (σ := PUnit)
+  uniqueAlgEquiv_monomial R
 
 theorem uniqueAlgEquiv_symm_monomial {σ : Type*} [Unique σ] {d : σ →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R σ).symm (Polynomial.monomial (d default) r)
@@ -118,7 +118,7 @@ theorem uniqueAlgEquiv_symm_monomial {σ : Type*} [Unique σ] {d : σ →₀ ℕ
 theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R PUnit).symm (Polynomial.monomial (d default) r)
       = MvPolynomial.monomial d r :=
-  uniqueAlgEquiv_symm_monomial (R := R) (σ := PUnit)
+  uniqueAlgEquiv_symm_monomial R
 
 theorem coeff_uniqueAlgEquiv {σ : Type*} [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
     ((MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n) =
@@ -140,7 +140,7 @@ theorem coeff_uniqueAlgEquiv {σ : Type*} [Unique σ] (P : MvPolynomial σ R) (n
 theorem coeff_pUnitAlgEquiv (P : MvPolynomial PUnit R) (n : ℕ) :
     ((MvPolynomial.uniqueAlgEquiv R PUnit P : Polynomial R).coeff n) =
       coeff (Finsupp.single default n) P :=
-  coeff_uniqueAlgEquiv (R := R) (σ := PUnit) P n
+  coeff_uniqueAlgEquiv R P n
 
 section Map
 
@@ -884,8 +884,7 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
       (MvPolynomial.rename (fun _ : Fin 1 ↦ i)).comp
         (MvPolynomial.uniqueAlgEquiv (R := R) (σ := Fin 1)).symm := by
   simpa using
-    (toMvPolynomial_eq_rename_comp_uniqueAlgEquiv (R := R) (τ := Fin 1) (i := i)
-      (f := fun _ : Fin 1 ↦ i) rfl)
+    toMvPolynomial_eq_rename_comp_uniqueAlgEquiv i (fun _ : Fin 1 ↦ i) rfl
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
