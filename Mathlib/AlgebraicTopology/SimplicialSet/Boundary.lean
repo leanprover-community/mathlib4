@@ -58,7 +58,6 @@ lemma face_singleton_compl_le_boundary {n : ℕ} (i : Fin (n + 1)) :
   rw [boundary_eq_iSup]
   exact le_iSup (fun (i : Fin (n +1)) ↦ stdSimplex.face {i}ᶜ) i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma not_mem_boundary (n : ℕ) :
     stdSimplex.objMk (m := op ⦋n⦌) .id ∉ (boundary.{u} n).obj (op ⦋n⦌) := by
   rw [boundary_eq_iSup, Subfunctor.iSup_obj, Set.mem_iUnion, not_exists]
