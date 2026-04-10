@@ -199,11 +199,12 @@ theorem addInv_apply : addInv F φ = subst φ (addInv_X F) := rfl
 instance : Neg (F.Point σ) where
   neg f := addInv F f
 
+@[simp]
 lemma neg_apply {f : F.Point σ} : -f = addInv F f := rfl
 
 /-- For any multivariate power series `φ` with zero constant coefficient, then
 `φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
-theorem addInv_eq_zero {f : F.Point σ} (hf : f.constantCoeff = 0) : f + (-f) = 0 := calc
+theorem add_addInv_eq_zero {f : F.Point σ} (hf : f.constantCoeff = 0) : f + (-f) = 0 := calc
   _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toPowerSeries) := by
     rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
       (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf), add_apply]

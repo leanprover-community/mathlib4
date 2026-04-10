@@ -88,11 +88,13 @@ def Point (F : FormalGroup R) (σ : Type*) := MvPowerSeries σ R
 instance : Zero (F.Point σ) where
   zero := (0 : MvPowerSeries σ R)
 
+@[simp]
 lemma zero_apply : (0 : F.Point σ) = (0 : MvPowerSeries σ R) := rfl
 
 instance : Add (F.Point σ) where
   add x y := (F : MvPowerSeries (Fin 2) R).subst ![x, y]
 
+@[simp]
 lemma add_apply {x y : F.Point σ} : x + y = F.toPowerSeries.subst ![x,y] := rfl
 
 /- TODO : Zero, SMul, Inv instance. -/
