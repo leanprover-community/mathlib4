@@ -343,12 +343,11 @@ theorem one_smul' {Γ} [AddCommMonoid Γ] [PartialOrder Γ] [AddAction Γ Γ'] [
 theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  apply Set.Subset.trans (fun x hx => _) (support_vaddAntidiagonal_subset_vadd
+  refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
     fun a ↦ Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a)
-  intro x hx
   simp only [Set.mem_setOf_eq]
   contrapose! hx
-  rw [HahnSeries.mem_support, coeff_smul, ne_eq, not_not, hx, sum_empty]
+  simp [coeff_smul, hx]
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
