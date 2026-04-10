@@ -85,7 +85,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
-@[to_dual]
+@[to_dual (rename := α ↔ β, a₁ → b₁, a₂ → b₂)]
 theorem l_sup (gc : GaloisConnection l u) : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
   (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
 
