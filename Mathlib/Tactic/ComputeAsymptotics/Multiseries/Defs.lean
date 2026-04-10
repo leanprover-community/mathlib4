@@ -38,8 +38,6 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 @[expose] public section
 
-whenever `i < j` we have `s[i] > s[j]`
-
 namespace ComputeAsymptotics
 
 open Stream'
