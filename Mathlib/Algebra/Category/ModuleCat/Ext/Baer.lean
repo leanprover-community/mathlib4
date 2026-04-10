@@ -28,40 +28,6 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian
 
-section
-
-variable {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
-  [Module R M] [Module R N] [Module R L] {M' N' L' : Type v} [AddCommGroup M'] [AddCommGroup N']
-  [AddCommGroup L'] [Module R M'] [Module R N'] [Module R L']
-
-variable (eM : M' ≃ₗ[R] M) (eN : N' ≃ₗ[R] N) (eL : L' ≃ₗ[R] L) (f : M →ₗ[R] N) (g : N →ₗ[R] L)
-
-def ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
-    ShortComplex (ModuleCat.{v} R) :=
-  ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
-    (eL.symm.comp (g.comp eN.toLinearMap)) (by
-      ext x
-      simpa using LinearMap.congr_fun eq0 (eM x))
-
-private lemma exact_conj_of_exact (exact : Function.Exact f g) : Function.Exact
-    ((eN.symm.comp f).comp eM.toLinearMap) (eL.symm.comp (g.comp eN.toLinearMap)) := by
-  rwa [LinearEquiv.precomp_exact_iff_exact, LinearEquiv.postcomp_exact_iff_exact,
-    LinearEquiv.conj_symm_exact_iff_exact]
-
-lemma ModuleCat.shortComplexOfConj_exact (exact : Function.Exact f g) :
-    (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).Exact :=
-  ModuleCat.shortComplex_exact _ (exact_conj_of_exact eM eN eL f g exact)
-
-set_option backward.isDefEq.respectTransparency false in
-lemma ModuleCat.shortComplexOfConj_shortExact (exact : Function.Exact f g)
-    (inj : Function.Injective f) (surj : Function.Surjective g) :
-    (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).ShortExact := by
-  refine ModuleCat.shortComplex_shortExact _ (exact_conj_of_exact eM eN eL f g exact) ?_ ?_
-  · simpa [ModuleCat.shortComplexOfConj] using inj
-  · simpa [ModuleCat.shortComplexOfConj] using surj
-
-end
-
 namespace ModuleCat
 
 set_option backward.isDefEq.respectTransparency false in
