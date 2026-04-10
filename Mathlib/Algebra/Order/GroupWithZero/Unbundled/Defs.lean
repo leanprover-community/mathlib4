@@ -31,7 +31,7 @@ We then provide statements and instances about these typeclasses not requiring `
 or higher on the underlying type – those that do can be found in
 `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`.
 
-Less granular typeclasses like `OrderedAddCommMonoid` and `LinearOrderedField` should be enough for
+Less granular typeclasses like `IsOrderedAddMonoid` and `IsOrderedRing` should be enough for
 most purposes, and the system is set up so that they imply the correct granular typeclasses here.
 
 ## Implications
@@ -53,10 +53,10 @@ The commonly used implications are:
   * `posMulReflectLT_iff_mulPosReflectLT`
 
 Furthermore, the bundled non-granular typeclasses imply the granular ones like so:
-* `OrderedSemiring → PosMulMono`
-* `OrderedSemiring → MulPosMono`
-* `StrictOrderedSemiring → PosMulStrictMono`
-* `StrictOrderedSemiring → MulPosStrictMono`
+* `IsOrderedRing → PosMulMono`
+* `IsOrderedRing → MulPosMono`
+* `IsStrictOrderedRing → PosMulStrictMono`
+* `IsStrictOrderedRing → MulPosStrictMono`
 
 All these are registered as instances, which means that in practice you should not worry about these
 implications. However, if you encounter a case where you think a statement is true but not covered
@@ -113,7 +113,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 the left, namely `b * a₁ < b * a₂ → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedRing`. -/
+`IsStrictOrderedRing`. -/
 @[mk_iff] class PosMulReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
@@ -136,7 +136,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`StrictOrderedSemiring`. -/
+`IsStrictOrderedRing`. -/
 @[mk_iff] class MulPosStrictMono : Prop where
   /-- Do not use this. Use `_root_.mul_lt_mul_of_pos_right` instead. -/
   protected mul_lt_mul_of_pos_right ⦃c : α⦄ (hc : 0 < c) ⦃a b : α⦄ (hab : a < b) : a * c < b * c
@@ -145,7 +145,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsOrderedRing`. -/
+`IsStrictOrderedRing`. -/
 @[mk_iff] class MulPosReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,

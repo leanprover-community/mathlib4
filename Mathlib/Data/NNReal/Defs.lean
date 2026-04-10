@@ -24,7 +24,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `LinearOrderedSemiring ℝ≥0`;
+  - `IsOrderedRing ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
   - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;

@@ -526,8 +526,8 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid M] [PartialOrder M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
-  of weighted degree `0` of a polynomial is its constant coefficient. -/
+/-- If `M` is canonically ordered, then the `weightedHomogeneousComponent` of weighted degree `0`
+of a polynomial is its constant coefficient. -/
 @[simp]
 theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
     (hw : ∀ i : σ, w i ≠ 0) :

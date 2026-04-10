@@ -46,7 +46,7 @@ corresponding typeclass. Here's an attempt at demystifying it. For each typeclas
 immediate predecessors and what conditions are added to each of them.
 
 * `PartialOrder` + `Semiring` + `IsOrderedRing`
-  - `IsOrderedAddCommMonoid` & multiplication & `*` respects `≤`
+  - `IsOrderedAddMonoid` & multiplication & `*` respects `≤`
 * `PartialOrder` + `Semiring` + `IsStrictOrderedRing`
   - `IsOrderedCancelAddMonoid` & multiplication & `*` respects `<` & nontriviality
 * `LinearOrder` + `Ring` + `IsOrderedRing`

@@ -11,7 +11,7 @@ import Mathlib.Order.BoundedOrder.Lattice
 
 This file shows that combining `OrderedCancelAddCommMonoid` with `BoundedOrder` is not a good idea,
 as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
-The same applies to any superclasses, e.g. combining `StrictOrderedSemiring` with `CompleteLattice`.
+The same applies to any superclasses, e.g. combining `IsStrictOrderedRing` with `CompleteLattice`.
 -/
 
 example {α : Type*} [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]

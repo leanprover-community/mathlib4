@@ -22,16 +22,16 @@ monoids/semirings/semifields.
 universe u
 variable {α : Type u}
 
-/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
+/-- An ordered additive monoid with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
+of the condition on canonical orderings defined by `CanonicallyOrderedAdd`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
 
-/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
+/-- An ordered monoid with one-sided 'division' in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
+of the condition on canonical orderings defined by `CanonicallyOrderedMul`. -/
 @[to_additive]
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   /-- For `a ≤ b`, `a` left divides `b` -/

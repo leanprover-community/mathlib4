@@ -85,7 +85,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -207,8 +207,7 @@ def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
-  is an algebra homomorphism. -/
+/-- Casting a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>

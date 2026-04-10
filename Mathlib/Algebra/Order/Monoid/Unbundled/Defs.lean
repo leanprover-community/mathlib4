@@ -125,7 +125,7 @@ class ContravariantClass : Prop where
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
@@ -133,7 +133,7 @@ abbrev MulLeftMono [Mul M] [LE M] : Prop :=
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
@@ -141,7 +141,7 @@ abbrev MulRightMono [Mul M] [LE M] : Prop :=
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
@@ -149,7 +149,7 @@ abbrev AddLeftMono [Add M] [LE M] : Prop :=
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 

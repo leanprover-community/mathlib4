@@ -29,8 +29,8 @@ rather the entire `≤` relation with `StarOrderedRing.le_iff`. However, notice 
 `NonUnitalRing`, these are equivalent (see `StarOrderedRing.nonneg_iff` and
 `StarOrderedRing.of_nonneg_iff`).
 
-It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMonoid` it is often
-*not* an `IsOrderedRing`.
+It is important to note that while a `StarOrderedRing` often satisfies `IsOrderedAddMonoid`,
+it usually does *not* satisfy `IsOrderedRing`.
 
 ## TODO
 
