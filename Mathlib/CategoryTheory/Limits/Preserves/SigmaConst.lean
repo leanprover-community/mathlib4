@@ -47,12 +47,13 @@ instance [HasCoproducts.{w} C] (R : C) :
       fac s j := by
         dsimp
         ext k
-        simpa using congr_fun (hc.fac (coconeTypes s) j) k
+        simp [dsimp% hc.fac_apply]
+        rfl
       uniq s m hm := by
         dsimp
         ext x
         obtain ⟨j, k, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
-        simpa [coconeTypes, ← hm] using congr_fun (hc.fac (coconeTypes s) j).symm k }⟩⟩⟩
+        simp [coconeTypes, ← hm, dsimp% hc.fac_apply] }⟩⟩⟩
 
 variable [HasZeroMorphisms C] (R : C)
 
