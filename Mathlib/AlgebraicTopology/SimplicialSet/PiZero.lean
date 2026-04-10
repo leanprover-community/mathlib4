@@ -14,6 +14,13 @@ In this file, we define the type `π₀ X` of connected components
 of a simplicial sets. We also introduce typeclasses
 `IsPreconnected X` and `IsConnected X`.
 
+
+## TODO
+
+* Define the subcomplex of `X` corresponding to an element in `π₀ X` (@joelriou)
+* Show `π₀ X` is a coequalizer of the two face maps `X _⦋1⦌ → X _⦋0⦌` (@joelriou)
+* Show `π₀ X` identifies to the colimit of `X` as a functor to types
+
 ## References:
 
 - [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
