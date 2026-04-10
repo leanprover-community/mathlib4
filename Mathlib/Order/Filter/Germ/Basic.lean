@@ -66,11 +66,10 @@ variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
 theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
   eventually_const
 
-@[simp] theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ => b) ↔ a = b :=
+theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ => b) ↔ a = b :=
   @const_eventuallyEq' _ _ _ _ a b
 
 /-- Setoid used to define the space of germs. -/
-@[implicit_reducible]
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
@@ -79,17 +78,35 @@ def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
 def Germ (l : Filter α) (β : Type*) : Type _ :=
   Quotient (germSetoid l β)
 
-/-- Setoid used to define the filter product. This is a dependent version of
-  `Filter.germSetoid`. -/
-@[implicit_reducible]
-def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
-  r f g := ∀ᶠ a in l, f a = g a
-  iseqv :=
-    ⟨fun _ => Eventually.of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
-      fun h1 h2 => h1.congr (h2.mono fun _ hx => hx ▸ Iff.rfl)⟩
+namespace Product
 
-/-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
-  `Filter.Germ`. -/
+/-- A dependent section defined on a filter-large domain. -/
+structure Section (l : Filter α) (ε : α → Type*) where
+  /-- Where the section is defined. -/
+  dom : Set α
+  /-- The domain is large with respect to the ambient filter. -/
+  dom_mem : dom ∈ l
+  /-- Value on points of the domain. -/
+  val : (a : dom) → ε a
+
+end Product
+
+/-- Setoid used to define the filter product with partial sections.
+Two sections are equivalent if they agree on some filter-large common domain. -/
+def productSetoid (l : Filter α) (ε : α → Type*) : Setoid (Product.Section l ε) where
+  r x y :=
+    ∀ᶠ a in l, ∃ hx : a ∈ x.dom, ∃ hy : a ∈ y.dom, x.val ⟨a, hx⟩ = y.val ⟨a, hy⟩
+  iseqv := by
+    constructor
+    · intro x
+      exact Filter.mem_of_superset x.dom_mem fun a ha => ⟨ha, ha, rfl⟩
+    · intro x y hxy
+      exact hxy.mono fun a ⟨hx, hy, hxy'⟩ => ⟨hy, hx, hxy'.symm⟩
+    · intro x y z hxy hyz
+      exact (hxy.and hyz).mono fun a ⟨⟨hx, hy₁, hxy'⟩, ⟨hy₂, hz, hyz'⟩⟩ =>
+        ⟨hx, hz, hxy'.trans (by rw [show hy₁ = hy₂ from Subsingleton.elim ..]; exact hyz')⟩
+
+/-- The filter product at a filter `l`, built from filter-large partial sections. -/
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 
@@ -97,11 +114,26 @@ namespace Product
 
 variable {ε : α → Type*}
 
+/-- Embed a total section as a partial section with full domain. -/
+def ofTotal (f : (a : α) → ε a) : Product.Section l ε where
+  dom := Set.univ
+  dom_mem := univ_mem
+  val a := f a
+
 instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
-  ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
+  ⟨fun f => Quotient.mk _ (ofTotal (l := l) f)⟩
 
 instance instInhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
   ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
+
+theorem eq_iff_ofTotal (f g : (a : α) → ε a) :
+    ((f : l.Product ε) = (g : l.Product ε)) ↔ { a | f a = g a } ∈ l := by
+  constructor
+  · intro h
+    exact (Quotient.eq''.1 h).mono fun a ⟨_, _, hfg⟩ => by simpa using hfg
+  · intro h
+    exact Quotient.eq''.2
+      (Filter.mem_of_superset h fun a ha => ⟨trivial, trivial, ha⟩)
 
 end Product
 
@@ -382,7 +414,10 @@ instance instMulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
   { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
     mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }
 
-@[to_additive (attr := to_additive) instSMul]
+@[to_additive]
+instance instSMul [SMul M G] : SMul M (Germ l G) where smul n := map (n • ·)
+
+@[to_additive existing instSMul]
 instance instPow [Pow G M] : Pow (Germ l G) M where pow f n := map (· ^ n) f
 
 @[to_additive (attr := simp, norm_cast)]
@@ -475,7 +510,7 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
-  { inv_inv := Quotient.ind' fun _ => congrArg ofFun <| inv_inv _ }
+  { inv_inv := Quotient.ind' fun _ => congrArg ofFun<| inv_inv _ }
 
 instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
   { neg_mul := Quotient.ind₂' fun _ _ => congrArg ofFun <| neg_mul ..
