@@ -576,8 +576,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     have hcont : ContDiffAt 𝕜 m f (y k) := by
       refine (hu (y k) ⟨interior_subset (hy k), hk⟩).contDiffAt ?_
       refine mem_of_superset (inter_mem (isOpen_interior.mem_nhds (hy k)) (u_open.mem_nhds hk)) ?_
-      intro z hz
-      exact ⟨interior_subset hz.1, hz.2⟩
+      grind [interior_subset]
     exact (ContDiffAt.isSymmSndFDerivAt hcont hm).isSymmSndFDerivWithinAt
       (hcont.of_le (le_minSmoothness.trans hm)) hs (interior_subset (hy k))
   have A : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s) (s ∩ u) := by
