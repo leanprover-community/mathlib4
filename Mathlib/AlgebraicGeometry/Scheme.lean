@@ -1035,7 +1035,7 @@ noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
   Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
       (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
-    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+    simp only [Arrow.mk_left, Arrow.mk_right, TopCat.Presheaf.stalkCongr_hom,
       Arrow.mk_hom]
     rw [stalkSpecializes_stalkMap]
 
