@@ -53,12 +53,16 @@ structure Function.LocallyFinsuppWithin [Zero Y] where
   /-- A proof that the support is locally finite within `U` -/
   supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
+@[deprecated (since := "2026-04-10")] alias Function.locallyFinsuppWithin := LocallyFinsuppWithin
+
 variable (X Y) in
 /--
 A function with locally finite support is a function with locally finite support within
 `⊤ : Set X`.
 -/
 abbrev Function.LocallyFinsupp [Zero Y] := LocallyFinsuppWithin (Set.univ : Set X) Y
+
+@[deprecated (since := "2026-04-10")] alias Function.locallyFinsupp := LocallyFinsupp
 
 /--
 Function with locally finite support have a zero.
