@@ -41,14 +41,17 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (cR) in
+/-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
+functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
+over `cR.pt` to a presheaf of modules whose underlying presheaf of
+abelian groups is the constant functor `Cᵒᵖ ⥤ AddCommGrpCat` with value `M`. -/
 noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R where
   obj M :=
     { obj X := (ModuleCat.restrictScalars (cR.ι.app X).hom).obj M
       map {X Y} f :=
         (ModuleCat.restrictScalarsComp' _ _ _
-          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp)).hom.app _ }
+          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp; rfl)).hom.app _ }
   map φ := { app X := (ModuleCat.restrictScalars (cR.ι.app X).hom).map φ }
 
 section
@@ -197,14 +200,13 @@ noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
     obtain ⟨U, r₁, r₂, m, rfl, rfl, rfl⟩ := jointly_surjective₃ r₁ r₂ m
     simp only [smul_eq, ← map_add, add_smul]
 
+/-- Auxiliary definition for `homEquiv`. This is the universal property
+of `PresheafOfModules.ModuleColimit`, as an abelian group. -/
 noncomputable def homEquiv' {N : Type w} [AddCommGroup N] :
-    (ModuleColimit hcR hcM →+ N) ≃+ (M.presheaf ⟶ (Functor.const _).obj (.of N)) :=
-  AddEquiv.trans
-    { toFun f := AddCommGrpCat.ofHom f
-      invFun f := f.hom
-      map_add' _ _:= rfl }
-    { toEquiv := hcM.homEquiv
-      map_add' _ _ := rfl }
+    (ModuleColimit hcR hcM →+ N) ≃+ (M.presheaf ⟶ (Functor.const _).obj (.of N)) where
+  toEquiv := (ConcreteCategory.homEquiv (X := AddCommGrpCat.of (ModuleColimit hcR hcM))
+    (Y := AddCommGrpCat.of N)).symm.trans hcM.homEquiv
+  map_add' _ _ := rfl
 
 omit [LocallySmall.{w, v, u} C] [IsCofiltered C] [InitiallySmall C] in
 lemma homEquiv'_app_apply {N : ModuleCat.{w} cR.pt}
@@ -220,7 +222,7 @@ lemma homEquiv'_symm_apply {N : ModuleCat.{w} cR.pt}
 
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     (α : ModuleColimit hcR hcM →+ N) :
-    (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
+    dsimp% (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
         letI m' : N := (homEquiv' hcR hcM α).app U m; letI r' : cR.pt := cR.ι.app U r
         r' • m') ↔
     ∀ (r : cR.pt) (m : ModuleColimit hcR hcM), α (r • m) = r • α m := by
@@ -229,11 +231,12 @@ lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     refine Eq.trans ?_ ((homEquiv'_app_apply ..).symm.trans (h U r m))
     congr 1
     apply smul_eq
-  · dsimp
-    rw [homEquiv'_app_apply, homEquiv'_app_apply, ← h]
+  · rw [homEquiv'_app_apply, homEquiv'_app_apply, ← h]
     congr 1
     exact (smul_eq ..).symm
 
+/-- This is the universal property of `PresheafOfModules.ModuleColimit` as a module.
+See also `PresheafOfModules.colimitAdjunction`. -/
 noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
     (ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) ≃+ (M ⟶ (constFunctor cR).obj N) where
   toFun φ := PresheafOfModules.homMk
@@ -247,7 +250,7 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
         simp only [← hφ, AddEquiv.symm_apply_apply, RingHom.id_apply]
         refine (map_smul_homEquiv'_iff hcR hcM φ).1 (fun U r m ↦ ?_)
         rw [hφ]
-        change ψ.app U (r • m) = _
+        erw [toPresheaf_map_app_apply]
         rw [map_smul]
         rfl}
   left_inv φ := (forget₂ _ AddCommGrpCat).map_injective (by
@@ -349,6 +352,9 @@ noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat.{w} cR.
   map f := ModuleCat.ofHom (ModuleColimit.map _ _ _ f)
   map_comp f g := by ext : 1; exact (ModuleColimit.comp_map ..).symm
 
+/-- Given a presheaf of rings `R` on a cofiltered category, this is the
+adjunction between `colimitFunctor : PresheafOfModules R ⥤ ModuleCat cR.pt`
+and the constant functor. -/
 noncomputable def colimitAdjunction :
     colimitFunctor.{w} hcR ⊣ constFunctor.{w} cR :=
   Adjunction.mkOfHomEquiv
