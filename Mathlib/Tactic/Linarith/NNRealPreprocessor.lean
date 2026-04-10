@@ -6,10 +6,8 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Linarith
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Tactic.Rify
+public import Mathlib.Data.NNReal.Basic -- shake: keep
 
 /-!
 # NNReal linarith preprocessing
