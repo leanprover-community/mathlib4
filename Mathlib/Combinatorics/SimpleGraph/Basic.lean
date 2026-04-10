@@ -417,7 +417,6 @@ theorem Adj.right_mem_support (hadj : G.Adj u v) : v ∈ G.support :=
   hadj.symm.left_mem_support
 
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
-@[simp]
 theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
   Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
 
