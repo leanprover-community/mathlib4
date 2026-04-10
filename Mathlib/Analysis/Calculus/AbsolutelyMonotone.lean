@@ -649,7 +649,8 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
         intro k _ t ht
         simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
         congr 1
-        exact iteratedFDerivWithin_subset hsub_Icc_y₀ hs_Icc_y₀ hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
+        exact iteratedFDerivWithin_subset hsub_Icc_y₀ hs_Icc_y₀ hs
+          (hf_smooth.of_le (by exact_mod_cast le_top)) ht
       -- Intermediate point `y₁ := y₀/2 ∈ s` by convexity.
       have hy₁s : y₀ / 2 ∈ s := by
         have := hconv.segment_subset h0 hy₀s
@@ -701,7 +702,8 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
           intro k _ t ht
           simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
           congr 1
-          exact iteratedFDerivWithin_subset hsub_x hs_uIcc_x hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
+          exact iteratedFDerivWithin_subset hsub_x hs_uIcc_x hs
+            (hf_smooth.of_le (by exact_mod_cast le_top)) ht
         -- Step B: apply Taylor integral remainder on uIcc 0 x.
         have hf_uIcc_x : ContDiffOn ℝ (n + 1) f (Set.uIcc (0 : ℝ) x) :=
           (hf_smooth.of_le (by exact_mod_cast le_top)).mono hsub_x
@@ -729,7 +731,8 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
           intro k _ t ht
           simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
           congr 1
-          exact iteratedFDerivWithin_subset hy₁sub hs_Icc_y₁ hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
+          exact iteratedFDerivWithin_subset hy₁sub hs_Icc_y₁ hs
+            (hf_smooth.of_le (by exact_mod_cast le_top)) ht
         have hf_Icc_y₁ : ContDiffOn ℝ (n + 2 : ℕ) f (Set.Icc (y₀ / 2) y₀) :=
           (hf_smooth.of_le
             (WithTop.coe_le_coe.mpr (le_top : ((n + 2 : ℕ) : ℕ∞) ≤ ⊤))).mono hy₁sub
