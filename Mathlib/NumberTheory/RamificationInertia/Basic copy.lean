@@ -617,16 +617,62 @@ theorem sum_ramification_inertia
   apply foo2
 
 -- PRed
-lemma Ideal.finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [hp : p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) = Module.rankAtStalk S ⟨p, hp⟩ :=
   (Module.rankAtStalk_eq ⟨p, hp⟩).symm
 
 -- PRed
-theorem _root_.Ideal.primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
+theorem primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
     (⊥ : Ideal R).primeCompl = nonZeroDivisors R := by
   ext
   simp
+
+instance isFractionRing_residueField_bot {R : Type*} [CommRing R] [IsDomain R] :
+    IsFractionRing R (⊥ : Ideal R).ResidueField := by
+  let R' := Localization.AtPrime (⊥ : Ideal R)
+  have : IsFractionRing R R' := by
+    convert Localization.isLocalization
+    exact (Ideal.primeCompl_bot R).symm
+  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
+  change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
+  rw [IsLocalRing.maximalIdeal_eq_bot]
+  exact IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R)
+    (AlgEquiv.quotientBot R R').symm
+
+set_option backward.isDefEq.respectTransparency false in
+theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
+    [IsDomain L] [Module.Finite K L] :
+    IsField L where
+  exists_pair_ne := Nontrivial.exists_pair_ne
+  mul_comm := CommSemiring.mul_comm
+  mul_inv_cancel {x} hx :=
+    (LinearMap.mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+instance isFractionRing_fiber_bot
+    {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] [FaithfulSMul R S] [IsDomain R] [IsDomain S] [Module.Finite R S] :
+    IsFractionRing S ((⊥ : Ideal R).Fiber S) := by
+  let κR := (⊥ : Ideal R).ResidueField
+  let κS := (⊥ : Ideal R).Fiber S
+  let R' := Localization.AtPrime (⊥ : Ideal R)
+  have : IsFractionRing R R' := by
+    convert Localization.isLocalization
+    exact (Ideal.primeCompl_bot R).symm
+  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
+  let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
+  let M₂ := nonZeroDivisors S
+  have h : M₁ ≤ nonZeroDivisors S := by
+    rintro - ⟨x, hx, rfl⟩
+    exact map_mem_nonZeroDivisors (algebraMap R S) (FaithfulSMul.algebraMap_injective R S) hx
+  have : IsDomain (Localization M₁) := IsLocalization.isDomain_localization h
+  have : IsField (Localization M₁) := IsField.of_finite (FractionRing R) (Localization M₁)
+  let f : Localization M₁ →ₐ[S] FractionRing S :=
+    Localization.mapToFractionRing (FractionRing S) M₁ (Localization M₁) h
+
+  -- subalgebra of fraction ring
+  sorry
 
 theorem sum_ramification_inertia'
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMul R S]
@@ -638,43 +684,9 @@ theorem sum_ramification_inertia'
   let κR := (⊥ : Ideal R).ResidueField
   let κS := (⊥ : Ideal R).Fiber S
   let : Algebra S κS := Algebra.TensorProduct.rightAlgebra
-  let R' := Localization.AtPrime (⊥ : Ideal R)
-  have : IsFractionRing R R' := by
-    convert Localization.isLocalization
-    exact (Ideal.primeCompl_bot R).symm
-  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
-  have : IsFractionRing R κR := by
-    change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
-    rw [IsLocalRing.maximalIdeal_eq_bot]
-    exact IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R)
-      (AlgEquiv.quotientBot R R').symm
-  let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
-  let M₂ := nonZeroDivisors S
-  let e : Localization M₂ ≃ₐ[S] Localization M₁ :=
-  { __ := IsLocalization.liftAlgHom (M := M₂) (f := Algebra.ofId S (Localization M₁))
-      fun x ↦ by
-        sorry
-    invFun := Localization.mapToFractionRing (Localization M₂) M₁ (Localization M₁) (by
-      rintro - ⟨x, hx, rfl⟩
-      exact map_mem_nonZeroDivisors (algebraMap R S) (FaithfulSMul.algebraMap_injective R S) hx)
-    left_inv x := by
-      simp
-      -- use uniqueness of lift?
-      sorry
-    right_inv x := by
-      simp
-      -- use uniqueness of lift?
-      sorry }
-  let e' : FractionRing S ≃ₐ[S] κS :=
-    e.trans <| (Localization.tensorLeftAlgEquiv (nonZeroDivisors R) S).symm.trans <|
-      (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
-        (Algebra.TensorProduct.commRight R S κR)
-  have := IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors S) e'
-  rw [← sum_ramification_inertia]
-  rw [← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS]
-  rw [Ideal.finrank_fiber_eq_rankAtStalk, Ideal.finrank_fiber_eq_rankAtStalk]
-  have : Module.FinitePresentation R S :=
-    Module.finitePresentation_of_projective R S
+  have : Module.FinitePresentation R S := Module.finitePresentation_of_projective R S
+  rw [← sum_ramification_inertia, ← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS,
+    Ideal.finrank_fiber_eq_rankAtStalk, Ideal.finrank_fiber_eq_rankAtStalk]
   apply (Module.isLocallyConstant_rankAtStalk).apply_eq_of_preconnectedSpace
 
 theorem sum_ramification_inertia''
