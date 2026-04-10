@@ -481,7 +481,7 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
-  simp [algebraMapInv]
+  simp
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
@@ -558,14 +558,12 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [of, Subtype.coind]
+    simp [of]
   -- finding a proof is finding an element of the subalgebra
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
-    Function.comp_apply] at of_id
-  exact of_id a
+  exact AlgHom.ext_iff.mp of_id a
 
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by

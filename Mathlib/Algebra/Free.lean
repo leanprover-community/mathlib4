@@ -490,7 +490,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, Nat.add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm]
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
@@ -522,9 +522,7 @@ homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
-      map_mul' := fun x y ↦ by
-        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
-          List.foldl_assoc] }
+      map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 
 @[to_additive (attr := simp)]
