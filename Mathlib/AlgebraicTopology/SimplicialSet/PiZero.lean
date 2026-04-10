@@ -14,7 +14,6 @@ In this file, we define the type `π₀ X` of connected components
 of a simplicial sets. We also introduce typeclasses
 `IsPreconnected X` and `IsConnected X`.
 
-
 ## TODO
 
 * Define the subcomplex of `X` corresponding to an element in `π₀ X` (@joelriou)
@@ -46,17 +45,23 @@ variable (X) in
 /-- The type of connected components of a simplicial set. -/
 def π₀ : Type u := Quot (π₀Rel (X := X))
 
+attribute [irreducible] π₀
+
 namespace π₀
 
+unseal π₀ in
 /-- The connected component of a `0`-simplex of a simplicial set. -/
 def mk : X _⦋0⦌ → π₀ X := Quot.mk _
 
+unseal π₀ in
 lemma mk_surjective : Function.Surjective (π₀.mk (X := X)) := Quot.mk_surjective
 
+unseal π₀ in
 lemma sound {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
     π₀.mk x₀ = π₀.mk x₁ :=
   Quot.sound ⟨e⟩
 
+unseal π₀ in
 lemma mk_eq_mk_iff (x₀ x₁ : X _⦋0⦌) :
     π₀.mk x₀ = π₀.mk x₁ ↔ Relation.EqvGen π₀Rel x₀ x₁ :=
   Quot.eq
@@ -67,6 +72,7 @@ lemma rec {motive : π₀ X → Prop} (mk : ∀ (x : X _⦋0⦌), motive (.mk x)
   obtain ⟨x, rfl⟩ := x.mk_surjective
   exact mk x
 
+unseal π₀ in
 /-- Constructor for maps from the type of connected components of a simplicial set. -/
 def lift {T : Type*} (f : X _⦋0⦌ → T) (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
     π₀ X → T :=
