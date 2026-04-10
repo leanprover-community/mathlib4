@@ -41,7 +41,6 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
@@ -52,7 +51,7 @@ noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R whe
     { obj X := (ModuleCat.restrictScalars (cR.ι.app X).hom).obj M
       map {X Y} f :=
         (ModuleCat.restrictScalarsComp' _ _ _
-          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp)).hom.app _ }
+          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp; rfl)).hom.app _ }
   map φ := { app X := (ModuleCat.restrictScalars (cR.ι.app X).hom).map φ }
 
 section
