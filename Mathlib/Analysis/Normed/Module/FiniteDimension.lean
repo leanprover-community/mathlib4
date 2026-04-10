@@ -160,7 +160,6 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
 
 end Affine
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
   change Continuous fun f : E →L[𝕜] E => LinearMap.det (f : E →ₗ[𝕜] E)
   -- TODO: this could be easier with `det_cases`
@@ -740,7 +739,6 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
   have := Finite.of_basis B
   LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
 theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=

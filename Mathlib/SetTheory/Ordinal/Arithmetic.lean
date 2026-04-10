@@ -124,8 +124,8 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### Limit ordinals -/
 
-theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
-  simp [IsSuccLimit]
+theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
@@ -243,19 +243,6 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
   nth_rw 1 [← enum_typein r x]
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
-
-@[simp]
-theorem typein_ordinal (o : Ordinal.{u}) :
-    @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  induction o using Quotient.inductionOn with | _ w
-  obtain ⟨α, r, wo⟩ := w
-  apply Quotient.sound
-  constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
-
-theorem mk_Iio_ordinal (o : Ordinal.{u}) :
-    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
-  rw [lift_card, ← typein_ordinal]
-  rfl
 
 /-! ### The predecessor of an ordinal -/
 
@@ -628,9 +615,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
-    obtain ⟨b, a⟩ := enum _ ⟨_, l⟩
-    exact irrefl _ (this _ _)
+  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) from irrefl _ (this _ _)
   intro a b
   rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
   have := H _ (h.succ_lt (typein_lt_type s b))
@@ -1087,10 +1072,21 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]
 
-theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+theorem eq_natCast_of_le_natCast {a : Ordinal} {b : ℕ} (h : a ≤ b) : ∃ c : ℕ, a = c :=
+  lt_omega0.1 (h.trans_lt (natCast_lt_omega0 b))
+
+theorem eq_natCast_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
+
+@[deprecated (since := "2026-03-12")] alias eq_nat_or_omega0_le := eq_natCast_or_omega0_le
+
+@[simp]
+theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordinal) := by
+  ext o
+  have := @eq_natCast_of_le_natCast o
+  grind [Nat.cast_lt]
 
 @[simp]
 theorem omega0_pos : 0 < ω :=
@@ -1103,6 +1099,7 @@ theorem omega0_ne_zero : ω ≠ 0 :=
 @[simp]
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using natCast_lt_omega0 1
 
+@[simp]
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
@@ -1182,7 +1179,7 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     rwa [add_one_of_aleph0_le] at ha
     rw [← ord_le, ← IsSuccLimit.le_succ_iff, succ_eq_add_one, ord_le, card_add_one]
     · exact hc.trans ha
-    · simpa using isSuccLimit_omega0
+    · simp
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType :=
   toType_noMax_of_succ_lt fun _ ↦ (isSuccLimit_ord h).succ_lt

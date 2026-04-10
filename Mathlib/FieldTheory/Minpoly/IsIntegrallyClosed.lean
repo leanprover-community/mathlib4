@@ -245,8 +245,9 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
+open Algebra in
 example {x : S} (B : PowerBasis R S)
-    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    (hint : IsIntegral R x) (hx : B.gen ∈ R[x]) :
     PowerBasis R S := by
   apply PowerBasis.ofAdjoinEqTop' hint
   exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx

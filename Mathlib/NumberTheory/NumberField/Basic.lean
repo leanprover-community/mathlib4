@@ -310,6 +310,9 @@ theorem not_isField : ¬IsField (𝓞 K) := by
   exact Int.not_isField
     (((IsIntegralClosure.isIntegral_algebra ℤ K).isField_iff_isField h_inj).mpr hf)
 
+instance {I : Ideal (𝓞 K)} [hI : I.IsMaximal] : NeZero I :=
+  ⟨Ring.ne_bot_of_isMaximal_of_not_isField hI <| RingOfIntegers.not_isField K⟩
+
 instance : IsDedekindDomain (𝓞 K) :=
   IsIntegralClosure.isDedekindDomain ℤ ℚ K _
 
