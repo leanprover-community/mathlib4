@@ -316,9 +316,8 @@ instance (priority := low) : IsStablyFiniteRing K := by
 theorem _root_.IsField.of_finite (K L : Type*) [Field K] [CommRing L] [IsDomain L]
     [Algebra K L] [Module.Finite K L] : IsField L where
   exists_pair_ne := Nontrivial.exists_pair_ne
-  mul_comm := CommSemiring.mul_comm
-  mul_inv_cancel {x} hx :=
-    (LinearMap.mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := (mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
 
 section Semiring
 
