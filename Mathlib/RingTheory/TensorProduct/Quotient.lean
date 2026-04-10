@@ -95,7 +95,7 @@ variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 /-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
-is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
+is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def tensorQuotientEquiv (I : Ideal T) :
     A ⊗[R] (T ⧸ I) ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (includeRight (A := A) (R := R)) :=
   letI g : (A ⊗[R] T ⧸ LinearMap.range (AlgebraTensorModule.lTensor S A
@@ -123,7 +123,7 @@ lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
   rfl
 
 /-- The tensor product over `R` of the quotient of an `S`-algebra `A` by an ideal `I` with `T`
-is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
+is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def quotientTensorEquiv (I : Ideal A) :
     (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) :=
   { __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
