@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
 public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Limits
 /-!
 
@@ -81,6 +82,24 @@ instance : (LightCondensed.forget R).PreservesEpimorphisms where
   preserves f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
     exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.hom).mp hf
+
+set_option backward.isDefEq.respectTransparency false in
+lemma factorsThru_lightProfinite_epi_of_epi [Epi f]
+    {S : LightProfinite} (p : (LightCondensed.free R).obj S.toCondensed ⟶ Y) :
+      ∃ (T : LightProfinite) (π : T ⟶ S) (g : ((LightCondensed.free R).obj T.toCondensed) ⟶ X),
+        Epi π ∧ (lightProfiniteToLightCondSet ⋙ (LightCondensed.free R)).map π ≫ p = g ≫ f := by
+  have : Epi ((LightCondensed.forget _).map f) := inferInstance
+  rw [LightCondSet.epi_iff_locallySurjective_on_lightProfinite] at this
+  obtain ⟨T, π, hπ, x, hx⟩ := this S <| (coherentTopology LightProfinite).yonedaEquiv <|
+    (LightCondensed.freeForgetAdjunction R).homEquiv S.toCondensed Y p
+  refine ⟨T, π, ((LightCondensed.freeForgetAdjunction R).homEquiv T.toCondensed X).symm
+    ((coherentTopology LightProfinite).yonedaEquiv.symm x),
+    (LightProfinite.epi_iff_surjective π).mpr hπ, ?_⟩
+  rw [Functor.comp_map, ← Adjunction.homEquiv_naturality_left_square_iff
+    (LightCondensed.freeForgetAdjunction R), Sheaf.hom_ext_iff, Equiv.apply_symm_apply,
+    GrothendieckTopology.yonedaEquiv_symm_naturality_right, hx,
+    GrothendieckTopology.map_yonedaEquiv', ← GrothendieckTopology.yonedaEquiv_symm_naturality_right]
+  rfl
 
 end LightCondMod
 
