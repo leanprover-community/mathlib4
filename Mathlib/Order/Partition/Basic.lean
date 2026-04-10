@@ -41,7 +41,7 @@ connected components; a representative function can specify which edge remains w
 parallel edges, or how supervertices are labeled after contraction. Similar uses arise in matroid
 theory and in the definition of minors.
 
-Tempting alternatives are to use`Classical.choice` or fix a global well-order and take minimal
+Tempting alternatives are to use `Classical.choice` or fix a global well-order and take minimal
 representatives. However, these lead to inconsistencies issues: independent choices need not
 respect relations between different instances (e.g. monotonicity of simplifications with respect
 to subgraph order), a global order can clash with structure already carried by the type, and maps
