@@ -96,7 +96,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]
-      norm_num
+      simp only [zero_add]
       rw [div_self]
       exact (mul_pos (a_pos 0 (Nat.zero_le _)) (a_pos 1 (Nat.zero_lt_succ _))).ne'
     -- Check the divisibility condition

@@ -350,8 +350,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     prod_pos fun i hi => rpow_pos_of_pos (inv_pos.2 (hz i hi)) _
   have s_pos : 0 < ∑ i ∈ s, w i * (z i)⁻¹ :=
     sum_pos (fun i hi => mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
-  norm_num at this
-  rw [← inv_le_inv₀ s_pos p_pos] at this
+  simp only [Pi.div_apply, Pi.one_apply, one_div, ← inv_le_inv₀ s_pos p_pos] at this
   apply le_trans this
   have p_pos₂ : 0 < (∏ i ∈ s, (z i) ^ w i)⁻¹ :=
     inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _)
