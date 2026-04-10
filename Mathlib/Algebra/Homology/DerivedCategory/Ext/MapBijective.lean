@@ -17,10 +17,10 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 # Bijections Between Ext
 
-In this file, we prove for fully faithful exact functor `F : C ⥤ D`, either
+In this file, we show that the maps between `Ext` induced
+by a fully faithful exact functor `F : C ⥤ D` are bijective when either
 1. `F` preserves projective objects and `C` has enough projectives, or
-2. `F` preserves injective objects and `C` has enough injectives,
-the map between `Ext` induced by `F` is bijective.
+2. `F` preserves injective objects and `C` has enough injectives.
 
 -/
 
