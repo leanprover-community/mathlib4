@@ -69,7 +69,7 @@ of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
 def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
-  ℕ := if wx x = wy (f.base x) then f.degree x else 0
+    ℕ := if wx x = wy (f.base x) then f.degree x else 0
 
 open Function locallyFinsupp
 lemma _root_.AlgebraicGeometry.Scheme.Hom.preimageSupportFinite [QuasiCompact f] :
