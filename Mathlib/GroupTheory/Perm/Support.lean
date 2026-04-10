@@ -194,8 +194,8 @@ def IsSwap (f : Perm α) : Prop :=
 
 @[simp]
 theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
-    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
-  Equiv.ext fun z => by grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
+    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y := by
+  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
