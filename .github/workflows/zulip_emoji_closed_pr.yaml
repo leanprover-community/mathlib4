@@ -61,6 +61,7 @@ jobs:
       - name: Update zulip emoji reactions
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
+        continue-on-error: true
         env:
           ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com

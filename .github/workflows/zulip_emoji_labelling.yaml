@@ -37,6 +37,7 @@ jobs:
         pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
     - name: Add or remove emoji
+      continue-on-error: true  # Emoji updates are cosmetic; never fail CI over them
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com

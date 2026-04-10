@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
@@ -41,8 +42,6 @@ dual, Fréchet-Riesz
 noncomputable section
 
 open ComplexConjugate Module
-
-universe u v
 
 namespace InnerProductSpace
 
@@ -239,3 +238,10 @@ lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [
   · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
 
 end InnerProductSpace
+
+lemma OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (L : StrongDual ℝ E) :
+    ‖L‖ ^ 2 = ∑ i, L (b i) ^ 2 := by
+  have := b.toBasis.finiteDimensional_of_finite
+  simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
+    InnerProductSpace.toDual_symm_apply]

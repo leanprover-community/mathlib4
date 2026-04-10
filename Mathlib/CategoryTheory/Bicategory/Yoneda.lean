@@ -79,7 +79,7 @@ the pseudofunctor defined by:
 * Objects: `a ↦ (a ⟶ x)`
 * Higher morphisms get sent to the corresponding "precomposing" operation.
 
-This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be prefered. -/
+This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred. -/
 @[simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
@@ -98,7 +98,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors.
 
-This is an implementation detail, and `Bicategory.yoneda.map` should be prefered. -/
+This is an implementation detail, and `Bicategory.yoneda.map` should be preferred. -/
 @[simps!]
 def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) where
   obj := postcomp₂

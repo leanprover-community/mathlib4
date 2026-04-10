@@ -153,16 +153,13 @@ instance denumerableList : Denumerable (List α) :=
 @[simp]
 theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
 
--- TODO: find a good way to fix the linter
-set_option linter.flexible false in
 @[simp]
 theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
       rcases e : unpair v with ⟨v₁, v₂⟩
-      simp [decodeList, e]
-      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
+      simp [decodeList, e, show decodeList v₂ = decode (α := List α) v₂ from rfl]
 
 end List
 

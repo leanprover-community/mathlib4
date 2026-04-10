@@ -132,6 +132,7 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
 /-- The (colimit) cocone which defines the fiber of a presheaf. -/
+@[simps]
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
     Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
   pt := Φ.presheafFiber.obj P

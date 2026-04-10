@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ENatToNat
 
 example (a b : ENat) (h : a = b) : a - b = b - a := by
