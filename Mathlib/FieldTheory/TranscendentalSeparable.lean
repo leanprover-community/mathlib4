@@ -16,6 +16,8 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.TensorProduct.Pi
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
+public import Mathlib.FieldTheory.SeparablyGenerated
 
 /-!
 # Transcendental separable extensions
@@ -31,11 +33,13 @@ section
 
 variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 
+@[mk_iff]
 class Algebra.IsSeparablyGenerated : Prop where
   isSeparable' : ∃ (ι : Type v) (f : ι → K),
     IsTranscendenceBasis k f ∧
     Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K
 
+@[mk_iff]
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
     Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
@@ -259,9 +263,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFi
   have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k K S f isT
 
-lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
-    {S : Type*} [CommRing S] [Algebra k S] [IsReduced S]
-    {K : Type*} [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K] :
+lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra k S] [IsReduced S]
+    (K : Type*) [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K] :
     IsReduced (TensorProduct k K S) := by
   refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun B hB ↦ ?_)
   have : Algebra.FiniteType k B := (Subalgebra.fg_iff_finiteType B).mp hB
@@ -273,6 +276,72 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
     have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType k L B
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
+
+variable (p : ℕ) [ExpChar k p]
+
+instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
+
+/-
+def adjoinPthRoots : IntermediateField k (AlgebraicClosure k) where
+  carrier := {x | x ^ p ∈ (⊥ : IntermediateField k _)}
+  mul_mem' {a b} ha hb := by simpa [mul_pow] using mul_mem ha hb
+  one_mem' := by simp
+  add_mem' {a b} ha hb := by simpa [add_pow_expChar a b p] using add_mem ha hb
+  zero_mem' := by simp [zero_pow hp.ne_zero]
+  algebraMap_mem' x := pow_mem ((⊥ : IntermediateField k _).algebraMap_mem x) p
+  inv_mem' {a} ha := by simpa
+-/
+
+def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
+
+instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
+
+instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
+
+lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
+    [ Algebra.IsTranscendentalSeparable k K,
+      ∀ s : Finset K,
+        LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K),
+      IsReduced (TensorProduct k (adjoinPthRoots k p) K),
+      Algebra.IsGeometricallyReduced k K].TFAE := by
+  tfae_have 1 → 4 := by
+    intro sep
+    have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
+      k (AlgebraicClosure k) K
+    apply (Algebra.isGeometricallyReduced_iff k K).mpr
+    exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
+  tfae_have 4 → 3 := by
+    /-
+    simp only [isGeometricallyReduced_iff]
+    intro red
+    have : Function.Injective (Algebra.TensorProduct.rTensor K (adjoinPthRoots k p).val) :=
+      Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective
+    exact isReduced_of_injective _ this
+    -/
+    sorry
+  tfae_have 3 → 2 := by
+    --only one missing
+    sorry
+  tfae_have 2 → 1 := by
+    simp only [Algebra.isTranscendentalSeparable_iff, Algebra.isSeparablyGenerated_iff]
+    intro h L hL
+    classical
+    have h' (s : Finset L) : LinearIndepOn k _root_.id (s : Set L) →
+      LinearIndepOn k (fun x ↦ x ^ p) (s : Set L) := by
+      intro li
+      have li' := h (s.image L.val) (by
+        simpa using (li.map_injOn L.val.toLinearMap Subtype.val_injective.injOn).id_image)
+      simp only [IntermediateField.coe_val, Finset.coe_image] at li'
+      have li'' := li'.comp_of_image Subtype.val_injective.injOn
+      have : (fun x ↦ x ^ p) ∘ Subtype.val = L.val.toLinearMap ∘ (fun x ↦ x ^ p) := rfl
+      rw [this] at li''
+      exact li''.of_comp
+    rcases exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType p hp h'
+      with ⟨T, isT, sep⟩
+    use T, Subtype.val, isT
+    convert sep
+    <;> simp
+  tfae_finish
 
 /-
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
