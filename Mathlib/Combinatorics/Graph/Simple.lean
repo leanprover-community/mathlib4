@@ -62,7 +62,7 @@ lemma Loopless.mono (hG : G.Loopless) (hle : H ≤ G) : H.Loopless := by
 lemma Inc.isNonloopAt [G.Loopless] (h : G.Inc e u) : G.IsNonloopAt e u :=
   h.isLoopAt_or_isNonloopAt.resolve_left (Loopless.not_isLoopAt _ _)
 
-@[simp] lemma setOf_isLoopAt_empty [G.Loopless] : {e | G.IsLoopAt e u} = ∅ := by ext e; simp
+lemma setOf_isLoopAt_empty [G.Loopless] : {e | G.IsLoopAt e u} = ∅ := by ext e; simp
 
 end Loopless
 
