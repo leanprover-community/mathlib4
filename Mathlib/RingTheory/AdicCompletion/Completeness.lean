@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals
@@ -196,7 +198,7 @@ end AdicCompletion
 
 /-- Multivariate power series is adic complete with respect to the ideal spanned by
 all variables when the index is finite. -/
-instance MvPowerSeries.isAdicComplete [Finite σ] :
+instance MvPowerSeries.isAdicComplete {σ : Type*} [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
   have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
     (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
@@ -205,7 +207,7 @@ instance MvPowerSeries.isAdicComplete [Finite σ] :
     simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
   rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
     IsAdicComplete.map_algebraMap_iff]
-  exact AdicCompletion.isAdicComplete (MvPolynomial σ R) (MvPolynomial.idealOfVars_fg σ R)
+  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
 
 /-- Power series is adic complete with respect to the ideal spanned by `X`. -/
 instance PowerSeries.isAdicComplete :
