@@ -121,6 +121,7 @@ theorem coe_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B
   rw [Pretrivialization.linearMapAt]
   split_ifs <;> rfl
 
+@[simp]
 theorem coe_linearMapAt_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
@@ -143,14 +144,10 @@ theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b
   dif_neg hb
 
 theorem symmₗ_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y := by
-  rw [e.linearMapAt_def_of_mem hb]
-  exact (e.linearEquivAt R b hb).left_inv y
+    (hb : b ∈ e.baseSet) (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y := by simp [hb]
 
 theorem linearMapAt_symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y := by
-  rw [e.linearMapAt_def_of_mem hb]
-  exact (e.linearEquivAt R b hb).right_inv y
+    (hb : b ∈ e.baseSet) (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y := by simp [hb]
 
 end Pretrivialization
 
@@ -214,6 +211,7 @@ theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
     ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 :=
   e.toPretrivialization.coe_linearMapAt b
 
+@[simp]
 theorem coe_linearMapAt_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
@@ -231,7 +229,6 @@ theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R]
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
-@[simp]
 theorem symm_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e.linearMapAt R b y) = y :=
   e.toPretrivialization.symmₗ_linearMapAt hb y
@@ -391,6 +388,11 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_isInducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
+
+lemma continuousLinearMapAt_apply_of_mem (e : Trivialization F TotalSpace.proj)
+    [Trivialization.IsLinear R e] {b : B} (hb : b ∈ e.baseSet) (y : E b) :
+    (continuousLinearMapAt R e b) y = (e ⟨b, y⟩).2 := by
+  simp [coe_linearMapAt_of_mem e hb]
 
 /-- Backwards map of `Bundle.Trivialization.continuousLinearEquivAt`, defined everywhere. -/
 @[simps -fullyApplied apply]
@@ -561,13 +563,15 @@ def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
-  Z.toFiberBundleCore.topologicalSpaceFiber x
+  letI : TopologicalSpace (Z.toFiberBundleCore.Fiber x) :=
+    Z.toFiberBundleCore.topologicalSpaceFiber x
+  inferInstanceAs <| TopologicalSpace (Z.toFiberBundleCore.Fiber x)
 
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
-  inferInstanceAs (AddCommGroup F)
+  inferInstanceAs <| AddCommGroup F
 
 instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
-  inferInstanceAs (Module R F)
+  inferInstanceAs <| Module R F
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
 @[reducible, simp, mfld_simps]
@@ -592,7 +596,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 /-- Topological structure on the total space of a vector bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
-  Z.toFiberBundleCore.toTopologicalSpace
+  fast_instance% Z.toFiberBundleCore.toTopologicalSpace
 
 variable (b : B) (a : F)
 
@@ -677,7 +681,7 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 
 instance fiberBundle : FiberBundle F Z.Fiber :=
-  Z.toFiberBundleCore.fiberBundle
+  fast_instance% Z.toFiberBundleCore.fiberBundle
 
 protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
 
@@ -706,8 +710,8 @@ variable {i j}
 theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ (Z.localTriv i).baseSet) :
     (Z.localTriv i).continuousLinearMapAt R b = Z.coordChange (Z.indexAt b) i b := by
   ext1 v
-  rw [(Z.localTriv i).continuousLinearMapAt_apply R, (Z.localTriv i).coe_linearMapAt_of_mem]
-  exacts [rfl, hb]
+  simp_all
+  rfl
 
 @[simp, mfld_simps]
 theorem trivializationAt_continuousLinearMapAt {b₀ b : B}

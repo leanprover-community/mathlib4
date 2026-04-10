@@ -828,7 +828,6 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
