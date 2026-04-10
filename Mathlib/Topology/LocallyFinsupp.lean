@@ -396,7 +396,8 @@ instance [LE Y] [Zero Y] : LE (LocallyFinsuppWithin U Y) where
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
-lemma _root_.Function.LocallyFinsupp.single_nonneg [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
+lemma _root_.Function.LocallyFinsupp.single_nonneg
+    [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 ≤ single x y ↔ 0 ≤ y := by
   simp only [le_def, coe_single]
   apply Pi.single_nonneg
@@ -407,7 +408,8 @@ instance [Preorder Y] [Zero Y] : LT (LocallyFinsuppWithin U Y) where
 lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} :
     D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
 
-lemma _root_.Function.LocallyFinsupp.single_pos [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
+lemma _root_.Function.LocallyFinsupp.single_pos
+    [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 < single x y ↔ 0 < y := by
   rw [lt_def, coe_single]
   exact Pi.single_pos
