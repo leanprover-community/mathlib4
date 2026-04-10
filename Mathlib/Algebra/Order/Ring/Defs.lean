@@ -237,7 +237,7 @@ lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + 
   rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
   gcongr
 
-instance [Nontrivial R] : CharZero R := AddMonoidWithOne.toCharZero
+instance (priority := 100) [Nontrivial R] : CharZero R := AddMonoidWithOne.toCharZero
 
 instance [Nontrivial R] : NoMaxOrder R := ⟨fun a ↦ ⟨a + 1, by simp⟩⟩
 
