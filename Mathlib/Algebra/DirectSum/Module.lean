@@ -614,9 +614,9 @@ end Congr
 
 end DirectSum
 
-open DirectSum Function
+namespace DirectSumPi
 
-section
+open DirectSum Function
 
 variable {ι' : Type*} [Fintype ι'] [DecidableEq ι'] {R ι : Type*} [Semiring R]
   {M N : ι → ι' → Type*} [∀ i i', AddCommMonoid (M i i')] [∀ i i', AddCommMonoid (N i i')]
@@ -624,7 +624,7 @@ variable {ι' : Type*} [Fintype ι'] [DecidableEq ι'] {R ι : Type*} [Semiring 
 
 /-- `⨁ⱼ(∏ᵢ Nᵢⱼ) ≅ ∏ᵢ(⨁ⱼNᵢⱼ)` if `j` ranges over a finite index set and `i` over an arbitrary
 index set. This variant is for `R`-modules and gives an `R`-module isomorphism. -/
-def directSumPi_equiv_piSum : (⨁ (i' : ι'), (∀ i, N i i')) ≃ₗ[R] (∀ i, (⨁ i', N i i')) where
+def directSumPi_equiv_piSum : (⨁ (i' : ι'), (Π i, N i i')) ≃ₗ[R] (Π i, (⨁ i', N i i')) where
   toFun nm i := ∑ i', DirectSum.of (fun i' ↦ N i i') i' (nm i' i)
   map_add' x y := by
     simp only [add_apply, Pi.add_apply, map_add]
@@ -642,7 +642,7 @@ def directSumPi_equiv_piSum : (⨁ (i' : ι'), (∀ i, N i i')) ≃ₗ[R] (∀ i
     simp only
     convert sum_univ_of (x := nm) with j _ i
     conv_rhs => rw [← DirectSum.sum_univ_of nm]
-    rw [DFinsupp.finset_sum_apply, DFinsupp.finset_sum_apply, Finset.sum_apply]
+    simp only [sum_apply, Finset.sum_apply]
     congr with k
     obtain rfl | h := eq_or_ne j k
     · simp
@@ -652,10 +652,10 @@ def directSumPi_equiv_piSum : (⨁ (i' : ι'), (∀ i, N i i')) ≃ₗ[R] (∀ i
     refine funext (fun i ↦ ?_)
     convert sum_univ_of (x := nm i) with j _ i
     conv_rhs => rw [← DirectSum.sum_univ_of (nm i)]
-    rw [DFinsupp.finset_sum_apply, DFinsupp.finset_sum_apply, Finset.sum_apply]
+    simp only [sum_apply, Finset.sum_apply]
     congr with k
     obtain rfl | h := eq_or_ne j k
     · simp
     · simp [of_eq_of_ne _ _ _ h]
 
-end
+end DirectSumPi

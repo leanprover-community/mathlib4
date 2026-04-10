@@ -1,8 +1,10 @@
 /-
-Copyright (c) 2025 Madison Crim. All rights reserved.
+Copyright (c) 2026 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim
 -/
+module
+
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
@@ -22,13 +24,14 @@ If `M` is a finite free module and `Nᵢ` is an indexed collection of modules of
 * `tensorPi_equiv_piTensor'` : the same but for finitely-presented modules.
 
 -/
+@[expose] public section
 
-section
+section FiniteFree
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
   [Module.Finite R M] {ι : Type*} (N : ι → Type*) [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
 
-open TensorProduct
+open TensorProduct DirectSum DirectSumPi
 
 /-- The isomorphism `M ⊗ ∏ᵢ Nᵢ ≅ (B →₀ R) ⊗ ∏ᵢ Nᵢ`, where `M` is assumed free and
 `B` is the basis of `M` given by Lean's global axiom-of-choice operator. This is an
@@ -63,8 +66,8 @@ noncomputable def tensorPi_equiv_piTensor' :
     (tensorPiEquiv_finitefreeModule R M N)
 
 lemma tensorPi_equiv_piTensor'_apply (m : M) (n : ∀ i, N i) :
-    tensorPi_equiv_piTensor R M N (m ⊗ₜ n) = fun i ↦ (m ⊗ₜ n i) := by
-  unfold tensorPi_equiv_piTensor
+    tensorPi_equiv_piTensor' R M N (m ⊗ₜ n) = fun i ↦ (m ⊗ₜ n i) := by
+  unfold tensorPi_equiv_piTensor'
   simp only [freeModule_tensorPiEquiv, LinearEquiv.trans_apply, LinearEquiv.rTensor_tmul]
   let m' := (Module.Free.chooseBasis R M).repr m
   have hm' : (Module.Free.chooseBasis R M).repr.symm m' = m := by simp [m']
@@ -77,31 +80,24 @@ lemma tensorPi_equiv_piTensor'_apply (m : M) (n : ∀ i, N i) :
   · rw [← LinearEquiv.eq_symm_apply]
     simp only [tensorPiEquiv_finitefreeModule, LinearEquiv.piCongrRight_symm]
     ext i
-    simp only [LinearEquiv.piCongrRight_apply, LinearEquiv.rTensor_symm_tmul, LinearEquiv.symm_symm,
-      LinearEquiv.apply_symm_apply]
-    rw [finsuppLeft_TensorPi_equiv_piTensor]
-    simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply]
-    rw [LinearEquiv.symm_apply_eq]
+    simp only [LinearEquiv.piCongrRight_apply, LinearEquiv.rTensor_symm_tmul,
+        LinearEquiv.symm_symm, LinearEquiv.apply_symm_apply,
+        finsuppLeft_TensorPi_equiv_piTensor, LinearEquiv.trans_apply]
+    rw [LinearEquiv.symm_apply_eq, finsuppScalarLeft_apply_tmul,
+        Finsupp.sum_single_index (by simp), LinearEquiv.symm_apply_eq,
+        finsuppLEquivDirectSum_single, finsuppScalarLeft_apply_tmul,
+        Finsupp.sum_single_index (by simp), finsuppLEquivDirectSum_single,
+        directSumPi_equiv_piSum, ← LinearEquiv.toFun_eq_coe]
     ext k
-    rw [finsuppScalarLeft_apply, LinearMap.rTensor_tmul, Finsupp.lapply_apply,
-      TensorProduct.lid_tmul, Finsupp.single_apply, ite_smul, zero_smul, ← Finsupp.single_apply]
-    congr
-    rw [LinearEquiv.symm_apply_eq,finsuppLEquivDirectSum_single,
-      finsuppScalarLeft_apply_tmul, Finsupp.sum_single_index (by simp),
-      finsuppLEquivDirectSum_single, DirectSum.lof_eq_of, DirectSum.lof_eq_of,
-      directSumPi_equiv_piSum]
-    simp_rw [← LinearEquiv.toFun_eq_coe]
-    conv_lhs =>
-      enter [2, x]
-      rw [DirectSum.of_apply]
-      simp only [Eq.recOn.eq_def, eq_rec_constant, dif_eq_if]
-      rw [ite_apply, Pi.zero_apply, Pi.smul_apply, apply_ite (DFunLike.coe _),
-        AddMonoidHom.map_zero]
-    apply Fintype.sum_dite_eq
+    simp only [sum_apply, DirectSum.lof_eq_of R, of_apply, eq_rec_constant, dite_eq_ite,
+      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
+    rw [ite_apply, Pi.zero_apply, Pi.smul_apply]
+
+end FiniteFree
 
 end
 
-section
+section FinitelyPresented
 
 open TensorProduct
 
@@ -126,9 +122,9 @@ noncomputable def tensorPi_equiv_piTensor [Module.FinitePresentation R M] :
     M ⊗[R] (Π i, N i) ≃ₗ[R] Π i, (M ⊗[R] N i) := IsTensorProduct.equiv <| by
   obtain ⟨n, m, f, g, exact, surj⟩ := Module.FinitePresentation.exists_fin_exact R M
   set i₁ : (Fin m → R) ⊗[R] (Π i, N i) →ₗ[R] Π i, ((Fin m → R) ⊗[R] N i) :=
-    (tensorPi_equiv_piTensor R (Fin m → R) N).toLinearMap
+    (tensorPi_equiv_piTensor' R (Fin m → R) N).toLinearMap
   set i₂ : (Fin n → R) ⊗[R] (Π i, N i) →ₗ[R] Π i, ((Fin n → R) ⊗[R] N i) :=
-    (tensorPi_equiv_piTensor R (Fin n → R) N).toLinearMap
+    (tensorPi_equiv_piTensor' R (Fin n → R) N).toLinearMap
   set i₃ : M ⊗[R] (Π i, N i) →ₗ[R] Π i, (M ⊗[R] N i) := TensorProduct.piRightHom R R M N
   set i₄ : (PUnit : Type) →ₗ[R] (PUnit : Type) := LinearMap.id   -- map to zero to zero
   set i₅ : (PUnit : Type)  →ₗ[R] (PUnit : Type)  := LinearMap.id  -- map to zero to zero
@@ -144,19 +140,19 @@ noncomputable def tensorPi_equiv_piTensor [Module.FinitePresentation R M] :
   set g₄ : (PUnit : Type) →ₗ[R] (PUnit : Type) := LinearMap.id -- map to zero to zero
   have hc₁ : g₁ ∘ₗ i₁ = i₂ ∘ₗ f₁ := by
     refine ext' fun x y ↦ ?_
-    simp only [LinearMap.coe_comp, comp_apply, i₂, i₁, g₁, LinearEquiv.coe_coe]
-    rw [LinearMap.rTensor_tmul, tensorPi_equiv_piTensor_apply, tensorPi_equiv_piTensor_apply]
+    simp only [LinearMap.coe_comp, Function.comp_apply, i₂, i₁, g₁, LinearEquiv.coe_coe]
+    rw [LinearMap.rTensor_tmul, tensorPi_equiv_piTensor'_apply, tensorPi_equiv_piTensor'_apply]
     ext i
     simp only [LinearMap.pi_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.proj_apply,
       LinearMap.rTensor_tmul]
   have hc₂ : g₂ ∘ₗ i₂ = i₃ ∘ₗ f₂ := by
     refine ext' fun x y ↦ ?_
-    simp only [LinearMap.coe_comp, comp_apply, i₂, g₂, i₃]
+    simp only [LinearMap.coe_comp, Function.comp_apply, i₂, g₂, i₃]
     rw [LinearMap.rTensor_tmul, piRightHom_tmul]
     ext i
     simp only [LinearMap.pi_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.proj_apply,
       LinearEquiv.coe_coe]
-    rw [tensorPi_equiv_piTensor_apply, LinearMap.rTensor_tmul]
+    rw [tensorPi_equiv_piTensor'_apply, LinearMap.rTensor_tmul]
   have hc₃ : g₃ ∘ₗ i₃ = i₄ ∘ₗ f₃ := rfl
   have hc₄ : g₄ ∘ₗ i₄ = i₅ ∘ₗ f₄ := rfl
   have hf₁ : Function.Exact f₁ f₂ := rTensor_exact ((i : ι) → N i) exact surj
@@ -167,7 +163,7 @@ noncomputable def tensorPi_equiv_piTensor [Module.FinitePresentation R M] :
   have hg₁ : Function.Exact g₁ g₂ := by
     intro y
     rw [Set.mem_range]
-    have (i : ι) : Exact (LinearMap.rTensor (N i) f) (LinearMap.rTensor (N i) g) :=
+    have (i : ι) : Function.Exact (LinearMap.rTensor (N i) f) (LinearMap.rTensor (N i) g) :=
       rTensor_exact (N i) exact surj
     constructor
     · intro h
@@ -185,8 +181,8 @@ noncomputable def tensorPi_equiv_piTensor [Module.FinitePresentation R M] :
     exact Classical.choose_spec (LinearMap.rTensor_surjective (N i) surj (y i))
   have hg₃ : Function.Exact g₃ g₄ :=
     (LinearMap.exact_zero_iff_injective _ LinearMap.id).mpr fun ⦃a₁ a₂⦄ ↦ congrFun rfl
-  have hi₁ : Function.Surjective i₁ := (tensorPi_equiv_piTensor R (Fin m → R) N).surjective
-  have hi₂ : Function.Bijective i₂ := ((tensorPi_equiv_piTensor R (Fin n → R) N)).bijective
+  have hi₁ : Function.Surjective i₁ := (tensorPi_equiv_piTensor' R (Fin m → R) N).surjective
+  have hi₂ : Function.Bijective i₂ := ((tensorPi_equiv_piTensor' R (Fin n → R) N)).bijective
   have hi₄ : Function.Bijective i₄ := Function.bijective_id
   have hi₅ : Function.Injective i₅ := Function.injective_id
   have := LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective
@@ -195,6 +191,6 @@ noncomputable def tensorPi_equiv_piTensor [Module.FinitePresentation R M] :
   exact this
 
 lemma tensorPi_equiv_piTensor_apply (m : M) (n : ∀ i, N i) :
-    tensorPi_equiv_piTensor' R M N (m ⊗ₜ n) = fun i ↦ (m ⊗ₜ n i) := rfl
+    tensorPi_equiv_piTensor R M N (m ⊗ₜ n) = fun i ↦ (m ⊗ₜ n i) := rfl
 
-end
+end FinitelyPresented
