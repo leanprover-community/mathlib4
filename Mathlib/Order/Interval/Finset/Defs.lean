@@ -821,7 +821,7 @@ theorem top_mem_insertTop {s : Finset α} : ⊤ ∈ insertTop s := by
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
 @[to_dual]
-instance instLocallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
+instance : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
     match a, b with
     | ⊤, ⊤ => {⊤}
