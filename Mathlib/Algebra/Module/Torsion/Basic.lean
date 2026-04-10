@@ -119,6 +119,12 @@ theorem torsionOf_eq_annihilator_span_singleton {R M : Type*} [CommSemiring R]
   have := (Submodule.annihilator_span_singleton (R := R) (M := M) x).symm
   simpa [torsionOf]
 
+/-- The annihilator of a module is the intersection of the torsion ideals of its elements. -/
+theorem Module.annihilator_eq_iInf_torsionOf :
+    Module.annihilator R M = ⨅ x : M, torsionOf R M x := by
+  ext r
+  simp [Module.mem_annihilator, mem_torsionOf_iff]
+
 /-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `Module.IsTorsionFree R M`. -/
 theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
