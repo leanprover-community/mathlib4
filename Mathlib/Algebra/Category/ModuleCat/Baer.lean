@@ -30,7 +30,6 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
@@ -53,7 +52,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
       rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
       (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
-  apply this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
+  refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · rcases h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap))) with
       ⟨f', hf'⟩
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
@@ -104,12 +103,12 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     HasInjectiveDimensionLT M n := by
   match n with
   | 0 =>
-    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans (Submodule.quotEquivOfEqBot _ rfl)
-    have := (Ext.homEquiv₀.subsingleton_congr.mp (h ⊥))
-    rw [ModuleCat.homAddEquiv.subsingleton_congr,
-      ((e₀.congrLeft M R).trans (LinearMap.ringLmapEquivSelf R R M)).subsingleton_congr,
-      ← ModuleCat.isZero_iff_subsingleton] at this
-    exact this.hasInjectiveDimensionLT_zero
+    apply Limits.IsZero.hasInjectiveDimensionLT_zero
+    rw [ModuleCat.isZero_iff_subsingleton]
+    refine ((Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ?_).subsingleton_congr.mp (h ⊥)
+    exact ((((Shrink.linearEquiv _ _).trans
+      (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
+        (LinearMap.ringLmapEquivSelf R R M)).toEquiv
   | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n  h
 
 end ModuleCat
