@@ -346,7 +346,6 @@ section OccursInAt
 variable {A : Type*} [Inhabited A]
 variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
-section PatternExtension
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
 
@@ -382,7 +381,6 @@ noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A := by
     exact p.config (Classical.choose ex)
   else
     exact default
-end PatternExtension
 
 namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
