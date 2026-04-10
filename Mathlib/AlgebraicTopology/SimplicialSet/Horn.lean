@@ -101,8 +101,8 @@ lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by
   exact ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
 
 lemma subcomplex_le_horn_iff {n : ℕ}
-    (A : (Δ[n + 1] : SSet.{u}).Subcomplex) (i : Fin (n + 2)) :
-    A ≤ horn (n + 1) i ↔ ¬ stdSimplex.face {i}ᶜ ≤ A := by
+    (A : Δ[n + 1].Subcomplex) (i : Fin (n + 2)) :
+    A ≤ horn.{u} (n + 1) i ↔ ¬ stdSimplex.face {i}ᶜ ≤ A := by
   refine ⟨fun hA h ↦ ?_, fun h ↦ ?_⟩
   · replace h := h.trans hA
     rw [stdSimplex.face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
