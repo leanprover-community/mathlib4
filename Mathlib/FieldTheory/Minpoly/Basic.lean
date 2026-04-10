@@ -223,7 +223,6 @@ theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A 
 variable (x) in
 theorem natDegree_le [Nontrivial A] [Module.Finite A B] [Module.Free A B] :
     (minpoly A x).natDegree ≤ Module.finrank A B := by
-  rw [Module.finrank_eq_spanFinrank_of_free]
   simpa [Module.finrank_eq_spanFinrank_of_free] using natDegree_le_spanFinrank A x
 
 variable (x) in
