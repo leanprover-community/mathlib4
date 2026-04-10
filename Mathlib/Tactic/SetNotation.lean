@@ -117,12 +117,11 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   tryPostponeIfMVar α
   if ← isMVarApp α then
     synthesizeSyntheticMVarsUsingDefault
-  if ← useSetNotationFor α then
-    let inst ← mkInstMVar <| .app (.const leCls f.constLevels!) α
-    return mkApp4 (.const le f.constLevels!) α inst x y
-  else
-    let inst ← mkInstMVar <| .app (.const subCls f.constLevels!) α
-    return mkApp4 (.const sub f.constLevels!) α inst x y
+  let (rel, cls) := if ← useSetNotationFor α then (le, leCls) else (sub, subCls)
+  let inst ← mkInstMVar <| .app (.const cls f.constLevels!) α
+  let rel := mkApp2 (.const rel f.constLevels!) α inst
+  addTermInfo' (← getRef) rel (isDisplayableTerm := true)
+  return mkApp2 rel x y
 
 /-- Subset relation: `a ⊆ b`.
 
