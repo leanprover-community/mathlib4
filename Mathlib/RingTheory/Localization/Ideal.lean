@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -386,6 +387,11 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
       ← IsLocalization.mk'_one (M := M)] at e
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
+
+instance (I : Ideal R) :
+    IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
+  of_surjective M S (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+    (Ideal.Quotient.mk (I.map (algebraMap R S))) Ideal.Quotient.mk_surjective rfl (by simp)
 
 open Algebra in
 instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :

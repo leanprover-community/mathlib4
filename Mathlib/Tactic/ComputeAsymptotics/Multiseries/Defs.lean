@@ -223,8 +223,8 @@ theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multi
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : destruct ms = some (exp, coef, tl)) : ms = cons exp coef tl := by
   apply Stream'.Seq.destruct_eq_cons
-  simp [destruct] at h
-  grind
+  rw [destruct_eq_destruct_map, h]
+  rfl
 
 @[simp]
 theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
