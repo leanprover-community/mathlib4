@@ -6514,7 +6514,6 @@ public import Mathlib.RingTheory.Localization.AtPrime.Extension
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Away.Lemmas
-public import Mathlib.RingTheory.Localization.Away.Prime
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Cardinality
