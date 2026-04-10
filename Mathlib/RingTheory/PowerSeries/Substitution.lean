@@ -274,6 +274,11 @@ theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
   MvPowerSeries.map_algebraMap_eq_subst_X f
 
+@[simp]
+theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
+  rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
+  exact congr_fun map_id f
+
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
     (p : PowerSeries R) =
       ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
