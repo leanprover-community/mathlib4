@@ -553,6 +553,27 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
       rcases (hx.eventually_le_atBot i).exists with ⟨n, hn⟩
       exact ⟨n, hs hn⟩
 
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere monotone
+is equal to the infimum of the measures. -/
+theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
+    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
+    (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  obtain ⟨i, hi⟩ := hfin
+  have : Nonempty ι := ⟨i⟩
+  let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
+  have hst (i : ι) : s i =ᵐ[μ] t i := by
+    filter_upwards [hs] with ω hω
+    suffices ω ∈ s i ↔ ω ∈ t i from propext this
+    simpa [t] using fun _ ↦ hω
+  have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
+  rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
+    ← hMono.measure_iInter (fun i ↦ (hsm i).congr (hst i)) ⟨i, by rwa [← measure_congr (hst i)]⟩]
+  refine measure_congr ?_
+  nth_rw 1 [← iInter_inter, ← inter_univ (⋂ i, s i)]
+  exact ae_eq_set_inter (by rfl) (ae_eq_univ.2 hs).symm
+
 /-- **Continuity from above**:
 the measure of the intersection of an antitone family of measurable sets
 indexed by a type with countably generated `atTop` filter
@@ -562,6 +583,16 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
   hs.dual_left.measure_iInter hsm hfin
+
+/-- Continuity from above (a.e. version):
+the measure of the intersection of a family of sets that is almost everywhere antitone
+is equal to the infimum of the measures. -/
+lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
+    (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  refine measure_iInter_of_ae_monotone (ι := ιᵒᵈ) ?_ hsm hfin
+  filter_upwards [hs] with ω hω using hω.dual_left
 
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
@@ -825,6 +856,11 @@ instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (
 theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure α) : μ = 0 :=
   Subsingleton.elim μ 0
 
+@[simp]
+theorem ofMeasurable_zero : ofMeasurable (α := α) (fun _ _ => 0) rfl (by simp) = 0 := by
+  ext s
+  simp [ofMeasurable, ← toOuterMeasure_apply, inducedOuterMeasure_zero MeasurableSet.iUnion]
+
 instance instInhabited {_ : MeasurableSpace α} : Inhabited (Measure α) :=
   ⟨0⟩
 
@@ -1063,22 +1099,18 @@ instance {_ : MeasurableSpace α} : InfSet (Measure α) :=
 theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
   toMeasure_apply _ _ hs
 
-set_option backward.privateInPublic true in
 private theorem measure_sInf_le (h : μ ∈ m) : sInf m ≤ μ :=
   have : sInf (toOuterMeasure '' m) ≤ μ.toOuterMeasure := sInf_le (mem_image_of_mem _ h)
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
-set_option backward.privateInPublic true in
 private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m :=
   have : μ.toOuterMeasure ≤ sInf (toOuterMeasure '' m) :=
     le_sInf <| forall_mem_image.2 fun _ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
-  isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
+  isGLB_sInf _ := private ⟨fun _ ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with

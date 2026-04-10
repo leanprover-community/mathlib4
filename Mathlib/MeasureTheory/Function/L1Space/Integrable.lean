@@ -851,7 +851,6 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
 
 variable (μ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
 noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f) :
     Lp E 1 (μ.withDensity fun x => f x) →ₗᵢ[ℝ] Lp E 1 μ where

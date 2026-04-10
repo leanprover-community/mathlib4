@@ -43,7 +43,7 @@ the action of `S = [[0, -1], [1, 0]]`.
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 1. **Write as absolutely convergent series**: Express `G2` as an absolutely convergent double sum
-  by adding and subtracting telescoping terms:
+   by adding and subtracting telescoping terms:
    `G₂(z) = 2ζ(2) + ∑' m n, 1/((mz+n)²(mz+n+1)) + δ(m,n)`
    where `δ` is a correction for boundary terms.
 

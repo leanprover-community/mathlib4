@@ -397,6 +397,11 @@ end MultipleLambdaTheorems
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
+/-- error: `Injective Nat.succ` is not a `fun_prop` goal!
+Consider marking `Function.Injective` with `@[fun_prop]`. -/
+#guard_msgs in
+example : Nat.succ.Injective := by fun_prop
+
 -- todo: warning should not have mvar id in it
 -- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
 -- #guard_msgs in
