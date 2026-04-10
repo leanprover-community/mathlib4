@@ -82,6 +82,8 @@ def privateModule : Linter where run stx := do
         for (decl, _) in (← getEnv).constants.map₂ do
           -- Ignore both private and reserved names; see implementation notes
           if !isPrivateName decl && !isReservedName (← getEnv) decl then return
+          -- `@[initialize]` can be private and still have public side effects, ignore
+          if isIOUnitInitFn (← getEnv) decl then return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
