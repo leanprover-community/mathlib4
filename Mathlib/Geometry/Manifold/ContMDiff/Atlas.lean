@@ -308,7 +308,7 @@ end IsLocalStructomorph
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
   [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
