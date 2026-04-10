@@ -126,11 +126,12 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
   left_inv F := by
     apply Functor.hext
     · rintro (_ | _) <;> rfl
-    · rintro (_ | _) (_ | _) (_) <;>
-    ( rw [heq_eq_eq]
-      dsimp
-      try rw [← F.map_id]
-      rfl )
+    · intro X Y f
+      induction X <;>
+      induction Y <;>
+      ( dsimp
+        try rw [← F.map_id]
+        rfl )
 
 end
 
