@@ -15,7 +15,7 @@ This file defines the deletion of edges and vertices from a graph.
 ## Main definitions
 
 - `restrict`: the subgraph of `G` restricted to the edges in `F` without
-removing vertices
+  removing vertices
 - `deleteEdges`: the subgraph of `G` with the edges in `F` deleted
 - `induce`: the subgraph of `G` induced by the set `X` of vertices
 - `deleteVerts` : the graph obtained from `G` by deleting the set `X` of vertices
