@@ -26,7 +26,7 @@ the map between `Ext` induced by `F` is bijective.
 
 @[expose] public section
 
-universe w w' u u' v v'
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
