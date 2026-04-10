@@ -595,12 +595,12 @@ theorem finset_prod_mem_graded
     ∏ j ∈ t, r j ∈ A (∑ j ∈ t, i j) := by
   classical
   induction t using Finset.induction_on with
-  | empty => exact (SetLike.one_mem_graded A)
+  | empty => exact SetLike.one_mem_graded A
   | insert a t ha ht =>
     rw [Finset.prod_insert ha, Finset.sum_insert ha]
     exact SetLike.mul_mem_graded
-      ((h _ (Finset.mem_insert_self a t)))
-      (ht (fun s hs ↦ h _ (Finset.mem_insert_of_mem hs)))
+      (h _ (t.mem_insert_self a))
+      (ht fun _ hs ↦ h _ (Finset.mem_insert_of_mem hs))
 
 theorem finset_prod_npow_mem_graded
     {α} (t : Finset α) (i : α → ι) (r : α → R) (n : α → ℕ)

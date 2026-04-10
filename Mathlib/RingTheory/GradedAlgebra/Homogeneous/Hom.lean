@@ -11,26 +11,36 @@ public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Homogeneous algebra morphisms between graded algebras
 
+* `AlgHom.isHomogeneous`: property, for an algebra morphism,
+to be homogeneous with respect to graded structures on the source and the target.
+
+* `AlgHom.isHomogeneous_aeval`: `MvPolynomial.aeval` is homogeneous
+when the indeterminates are mapped to homogeneous elements
+of adequae grades.
+
 -/
 
 @[expose] public section
+
+namespace AlgHom
+
 open MvPolynomial
 
 variable {R S : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S]
+  {ι κ : Type*} {A : Type*} [CommSemiring A] [Algebra R A]
+  (𝒜 : ι → Submodule R A)
 
 /-- An `R`-algebra map `f` between graded algebras `A` and `B` is homogeneous
 with respect to a map `φ : ι → κ` if, for every degree `i`, `f(𝒜 i) ⊆ ℬ (φ i)`. -/
-def AlgHom.isHomogeneous {ι κ : Type*} {A : Type*} [CommSemiring A] [Algebra R A]
-    (𝒜 : ι → Submodule R A) {B : Type*} [CommSemiring B] [Algebra R B] [Algebra S B]
+def isHomogeneous {B : Type*} [CommSemiring B] [Algebra R B] [Algebra S B]
     (ℬ : κ → Submodule S B) (φ : ι → κ) (f : A →ₐ[R] B) : Prop :=
   ∀ i a, a ∈ 𝒜 i → f a ∈ ℬ (φ i)
 
 /-- The evaluation of a weighted homogeneous polynomial at
   elements of adequate grades is homogeneous -/
-theorem AlgHom.isHomogeneous_aeval {σ : Type*} {ι κ : Type*} [AddCommMonoid ι] [AddCommMonoid κ]
-    [DecidableEq κ] (A : Type*) [CommSemiring A] [Algebra R A] (𝒜 : κ → Submodule R A)
-    [GradedAlgebra 𝒜] {w : σ → ι} (φ : ι →+ κ) (f : σ → A) (h : ∀ s : σ, f s ∈ 𝒜 (φ (w s))) :
-    AlgHom.isHomogeneous (weightedHomogeneousSubmodule R w) 𝒜 φ (MvPolynomial.aeval f) := by
+theorem isHomogeneous_aeval [DecidableEq ι] [AddCommMonoid ι] [AddCommMonoid κ] [GradedAlgebra 𝒜]
+    {σ : Type*} {w : σ → κ} {φ : κ →+ ι} {f : σ → A} (h : ∀ s : σ, f s ∈ 𝒜 (φ (w s))) :
+    isHomogeneous (weightedHomogeneousSubmodule R w) 𝒜 φ (aeval f) := by
   intro i p hp
   rw [p.as_sum, map_sum]
   apply Submodule.sum_mem
@@ -39,6 +49,8 @@ theorem AlgHom.isHomogeneous_aeval {σ : Type*} {ι κ : Type*} [AddCommMonoid �
   apply Submodule.smul_mem
   rw [Finsupp.prod]
   convert SetLike.finset_prod_npow_mem_graded c.support (fun j ↦ φ (w j)) f ⇑c (fun s _ ↦ h s)
-  rw [MvPolynomial.mem_support_iff] at hc
+  rw [mem_support_iff] at hc
   simp_rw [← map_nsmul, ← map_sum]
   rw [← hp hc, Finsupp.weight_apply, Finsupp.sum]
+
+end AlgHom
