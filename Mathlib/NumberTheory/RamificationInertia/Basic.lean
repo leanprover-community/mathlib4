@@ -619,7 +619,9 @@ theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
       algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
 
-theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+variable {S}
+
+theorem inertiaDeg_le_finrank [Module.IsTorsionFree R S] (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
     p.inertiaDeg P ≤ Module.finrank K L := by
   classical
@@ -628,7 +630,7 @@ theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaxima
   refine le_trans (Nat.le_mul_of_pos_left _ ?_) (Nat.le_add_right _ _)
   exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
 
-theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+theorem ramificationIdx_le_finrank [Module.IsTorsionFree R S] (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
     p.ramificationIdx P ≤ Module.finrank K L := by
   classical
@@ -639,7 +641,9 @@ theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsM
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
   exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
 
-theorem card_primesOverFinset_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+variable (S)
+
+theorem card_primesOverFinset_le_finrank [Module.IsTorsionFree R S] (p : Ideal R) [p.IsMaximal]
     (hp0 : p ≠ ⊥) : Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by
   rw [← sum_ramification_inertia S K L hp0, Finset.card_eq_sum_ones]
   refine Finset.sum_le_sum fun P hP ↦ ?_
