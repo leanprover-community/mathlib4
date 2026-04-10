@@ -63,7 +63,7 @@ abbrev hom (X : StructuredArrow S T) : S ⟶ T.obj X.right := Comma.hom X
 variable {X Y : StructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of structured arrows. -/
-abbrev Hom.hom : X.right ⟶ Y.right := CommaMorphism.right f
+abbrev Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 
 @[reassoc (attr := simp)]
 theorem w : X.hom ≫ T.map f.right = Y.hom := by
@@ -446,7 +446,7 @@ abbrev hom (X : CostructuredArrow S T) : S.obj X.left ⟶ T := Comma.hom X
 variable {X Y : CostructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of costructured arrows. -/
-abbrev Hom.hom : X.left ⟶ Y.left := CommaMorphism.left f
+abbrev Hom.left : X.left ⟶ Y.left := CommaMorphism.left f
 
 @[reassoc (attr := simp)]
 theorem w (f : X ⟶ Y) : S.map f.left ≫ Y.hom = X.hom := by
