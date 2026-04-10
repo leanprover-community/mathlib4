@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 @[expose] public section
 
-universe u u' v v'
+universe u v
 
 variable {R : Type u} [CommRing R]
 
