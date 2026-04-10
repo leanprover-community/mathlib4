@@ -144,6 +144,7 @@ instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRin
   @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
     NoZeroDivisors.toIsCancelMulZero
 
+/-- The coercion from `Set.Icc 0 1` as a `MonoidHom`. -/
 @[simps]
 def coeMonoidHom : (Icc (0 : R) 1) →* R where
   toFun := (↑)
@@ -215,6 +216,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrde
     CommSemigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
+/-- The coercion from `Set.Ico 0 1` as a `MulHom`. -/
 @[simps]
 def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
   toFun := (↑)
@@ -302,6 +304,7 @@ instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStric
     CancelCommMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instCommMonoid, Set.Ioc.instCancelMonoid with }
 
+/-- The coercion from `Set.Ioc 0 1` as a `MonoidHom`. -/
 @[simps]
 def coeMonoidHom : (Ioc (0 : R) 1) →* R where
   toFun := (↑)
@@ -338,6 +341,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStri
     CommSemigroup (Ioo (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
+/-- The coercion from `Set.Ioo 0 1` as a `MulHom`. -/
 @[simps]
 def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
   toFun := (↑)
