@@ -20,10 +20,10 @@ This file defines subrepresentations of a monoid representation.
 open Pointwise
 open scoped MonoidAlgebra
 
-variable {A G W M : Type*} [CommRing A] [Monoid G] [AddCommMonoid W] [Module A W]
-  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
+variable {A G W M : Type*}
 
-variable (ρ) in
+variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
+  (ρ : Representation A G W) [AddCommMonoid M] [Module A[G] M] in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
@@ -33,6 +33,11 @@ structure Subrepresentation where
   apply_mem_toSubmodule (g : G) ⦃v : W⦄ : v ∈ toSubmodule → ρ g v ∈ toSubmodule
 
 namespace Subrepresentation
+
+section non_comm
+
+variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W] {ρ : Representation A G W}
+  [AddCommMonoid M] [Module A[G] M]
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
@@ -88,6 +93,11 @@ instance : BoundedOrder (Subrepresentation ρ) where
   le_top _ := le_top (α := Submodule A W)
   bot := ⟨⊥, by simp⟩
   bot_le _ := bot_le (α := Submodule A W)
+
+end non_comm
+
+variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
+  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.

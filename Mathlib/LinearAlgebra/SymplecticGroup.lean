@@ -58,7 +58,6 @@ theorem J_inv : (J l R)⁻¹ = -J l R := by
   rw [Matrix.mul_neg, J_squared]
   exact neg_neg 1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
   rw [← det_mul, J_squared, ← one_smul R (-1 : Matrix _ _ R), smul_neg, ← neg_smul, det_smul,
     Fintype.card_sum, det_one, mul_one]
@@ -99,6 +98,7 @@ section SymplecticJ
 
 variable (l) (R)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem J_mem : J l R ∈ symplecticGroup l R := by
   rw [mem_iff, J, fromBlocks_multiply, fromBlocks_transpose, fromBlocks_multiply]
   simp
@@ -116,6 +116,7 @@ end SymplecticJ
 
 variable {A : Matrix (l ⊕ l) (l ⊕ l) R}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h ⊢
   simp [h]
@@ -131,6 +132,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
@@ -162,7 +164,6 @@ instance hasInv : Inv (symplecticGroup l R) where
 
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
     -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by

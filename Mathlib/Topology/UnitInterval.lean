@@ -324,6 +324,14 @@ theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := b
   simp [convexCombo]
 
 @[simp, grind =]
+theorem convexCombo_zero_one (t : unitInterval) : convexCombo 0 1 t = t := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_eq {a b : ℝ} (x : Icc a b) (t : unitInterval) : convexCombo x x t = x := by
+  simp [convexCombo, sub_mul]
+
+@[simp, grind =]
 theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
     convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
   simp [convexCombo]
@@ -342,6 +350,17 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) : Continuous (convexCombo x y) := by
+  unfold Icc.convexCombo
+  fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo_prod {a b : ℝ} :
+    Continuous fun x : Icc a b × Icc a b × unitInterval ↦ Icc.convexCombo x.1 x.2.1 x.2.2 := by
+  unfold Icc.convexCombo
+  fun_prop
 
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing

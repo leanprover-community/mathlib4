@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 
 /-!
@@ -53,6 +54,11 @@ lemma prop_terminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTer
     P (⊤_ C) :=
   P.prop_of_isTerminal _ terminalIsTerminal
 
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTerminal C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_terminal
+
 lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryProducts] :
     P.IsClosedUnderIsomorphisms where
@@ -60,6 +66,17 @@ lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     let h : IsLimit (BinaryFan.mk (terminal.from Y) e.inv) :=
       BinaryFan.IsLimit.mk _ (fun _ f ↦ f ≫ e.hom) (by cat_disch) (by simp) (by cat_disch)
     exact P.prop_of_isLimit_binaryFan h P.prop_terminal hX
+
+/-- All objects that are binary products of objects in `P`. -/
+abbrev binaryProductsClosure (P : ObjectProperty C) : ObjectProperty C :=
+  P.limitClosure (Discrete WalkingPair)
+
+lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
+    [Q.IsClosedUnderBinaryProducts] [Q.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] :
+    P.binaryProductsClosure ≤ Q ↔ P ≤ Q := by
+  refine ⟨fun h ↦ (P.le_limitsClosure _).trans h, fun h ↦ ?_⟩
+  letI : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryProducts.closedUnderIsomorphisms Q
+  exact limitsClosure_le h
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite products. -/
 class IsClosedUnderFiniteProducts : Prop where
@@ -131,6 +148,11 @@ lemma prop_initial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasIn
     P (⊥_ C) :=
   P.prop_of_isInitial _ initialIsInitial
 
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasInitial C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_initial
+
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :
     P.IsClosedUnderIsomorphisms where
@@ -138,6 +160,17 @@ lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     let h : IsColimit (BinaryCofan.mk (initial.to Y) e.hom) :=
       BinaryCofan.IsColimit.mk _ (fun _ f ↦ e.inv ≫ f) (by cat_disch) (by simp) (by cat_disch)
     exact P.prop_of_isColimit_binaryCofan h P.prop_initial hX
+
+/-- All objects that are binary coproducts of objects in `P`. -/
+abbrev binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
+  P.colimitClosure (Discrete WalkingPair)
+
+lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
+    [Q.IsClosedUnderBinaryCoproducts] [Q.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] :
+    P.binaryCoproductsClosure ≤ Q ↔ P ≤ Q := by
+  refine ⟨fun h ↦ (P.le_colimitsClosure _).trans h, fun h ↦ ?_⟩
+  letI : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms Q
+  exact colimitsClosure_le h
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite coproducts. -/
 class IsClosedUnderFiniteCoproducts : Prop where

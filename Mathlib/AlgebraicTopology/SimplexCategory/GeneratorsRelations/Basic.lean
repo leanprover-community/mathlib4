@@ -119,11 +119,12 @@ end generators
 /-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
 lemma multiplicativeClosure_isGenerator_eq_top : generators.multiplicativeClosure = ⊤ := by
   apply le_antisymm (by simp)
-  intro x y f _
-  apply CategoryTheory.Quotient.induction
-  apply Paths.induction
-  · exact generators.multiplicativeClosure.id_mem _
-  · rintro _ _ _ _ ⟨⟩ h
+  rintro x y f -
+  induction f using CategoryTheory.Quotient.induction with | _ f
+  induction f using Paths.induction with
+  | id => exact generators.multiplicativeClosure.id_mem _
+  | comp _ k h =>
+    cases k
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
 

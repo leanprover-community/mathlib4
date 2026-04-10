@@ -55,7 +55,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom := α.hom.app X
   inv := α.inv.app X
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing app_inv] app_hom
 
@@ -191,12 +190,10 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.translateOverwrite false in
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.translateOverwrite false in
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
