@@ -693,22 +693,19 @@ variable {G} {u v : V}
 lemma IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : s(a, b) ∈ p.edges) (heq : s(a, b) ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  by_cases! h' : a = v ∨ b = v
+  by_cases! h : a = v ∨ b = v
   · wlog hh : a = v
-    · exact this (a := b) (b := a) hp (by grind) (by grind) hl h'.symm (by simpa [hh] using h')
-    have := (eq_penultimate_of_mem_edges hp (hh ▸ hep)).symm
-    refine ⟨b, ?_, ?_⟩
-    · grind [getVert_mem_tail_support, not_nil_iff_lt_length]
-    · grind [q.mem_support_iff.mp, mem_support_of_mem_edges, getVert_eq_end_iff]
-  · by_cases h'' : a = u
-    · refine ⟨b, ?_, ?_⟩
-      · cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
-        · grind [adj_of_mem_edges _ hep, SimpleGraph.irrefl]
-        · assumption
+    · exact this hp (by grind) (by grind) hl h.symm (by simpa [hh] using h)
+    use b
+    grind [getVert_mem_tail_support, not_nil_iff_lt_length, q.mem_support_iff.mp,
+      mem_support_of_mem_edges, getVert_eq_end_iff, eq_penultimate_of_mem_edges hp (hh ▸ hep)]
+  · by_cases a = u
+    · use b
+      cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
+      · grind [p.adj_of_mem_edges hep, G.irrefl]
       · grind [q.mem_support_iff (w := b), snd_mem_support_of_mem_edges]
-    · refine ⟨a, ?_, ?_⟩
-      · grind [p.mem_support_iff.mp, fst_mem_support_of_mem_edges]
-      · grind [q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
+    · use a
+      grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
 
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
