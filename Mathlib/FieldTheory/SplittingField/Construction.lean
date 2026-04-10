@@ -242,7 +242,7 @@ def instCommRingAux : CommRing (SplittingField f) := inferInstanceAs <| CommRing
 
 public instance : CommRing (SplittingField f) where
   neg_add_cancel := by exact (instCommRingAux f).neg_add_cancel
-  intCast n := algebraMap ℤ (SplittingField f) n
+  intCast n := algebraMap K _ n
   intCast_ofNat := by exact (instCommRingAux f).intCast_ofNat
   intCast_negSucc:= by exact (instCommRingAux f).intCast_negSucc
   zsmul := (· • ·)
@@ -273,11 +273,11 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) where
 instance instField : Field (SplittingField f) where
   __ := (inferInstance : CommRing (SplittingField f))
   __ := instGroupWithZero f
-  div_eq_mul_inv := by exact (instGroupWithZero f).div_eq_mul_inv
-  zpow_zero' := by exact (instGroupWithZero f).zpow_zero'
-  zpow_succ' := by exact (instGroupWithZero f).zpow_succ'
-  mul_inv_cancel := by exact (instGroupWithZero f).mul_inv_cancel
-  inv_zero := by exact (instGroupWithZero f).inv_zero
+  div_eq_mul_inv := (instGroupWithZero f).div_eq_mul_inv
+  zpow_zero' := (instGroupWithZero f).zpow_zero'
+  zpow_succ' := (instGroupWithZero f).zpow_succ'
+  mul_inv_cancel := (instGroupWithZero f).mul_inv_cancel
+  inv_zero := (instGroupWithZero f).inv_zero
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
   nnqsmul := (· • ·)
@@ -286,9 +286,9 @@ instance instField : Field (SplittingField f) where
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
   nnqsmul_def q x := private Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
+    ext; simp [NNRat.smul_def]
   qsmul_def q x := private Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+    ext; simp [Rat.smul_def]
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
