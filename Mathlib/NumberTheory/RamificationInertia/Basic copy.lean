@@ -713,33 +713,33 @@ theorem finrank_fiber_eq_finrank_localization [Module.Finite R S] [Module.Flat R
       p.primeCompl S))).toLinearEquiv.finrank_eq.trans Module.finrank_baseChange
 
 noncomputable def _root_.PrimeSpectrum.localRank
-    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) : ℕ :=
-  Module.finrank p.1.ResidueField (p.1.Fiber S)
+    (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (p : PrimeSpectrum R) : ℕ :=
+  Module.finrank (Localization.AtPrime p.1) (LocalizedModule.AtPrime p.1 M)
 
 theorem _root_.PrimeSpectrum.localRank_apply
-    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    p.localRank R S = Module.finrank p.1.ResidueField (p.1.Fiber S) :=
+    (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (p : PrimeSpectrum R) :
+    p.localRank R M = Module.finrank (Localization.AtPrime p.1) (LocalizedModule.AtPrime p.1 M) :=
   rfl
 
 theorem _root_.PrimeSpectrum.localRank_apply_of_flat
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : PrimeSpectrum R) :
-    p.localRank R S = Module.finrank (Localization.AtPrime p.1)
-      (Localization (Algebra.algebraMapSubmonoid S p.1.primeCompl)) :=
-  p.1.finrank_fiber_eq_finrank_localization S
+    p.localRank R S = Module.finrank p.1.ResidueField (p.1.Fiber S) :=
+  (LinearEquiv.finrank_eq
+    { __ := IsLocalizedModule.iso p.1.primeCompl (IsScalarTower.toAlgHom R S _).toLinearMap
+      map_smul' := by simp }).trans (p.1.finrank_fiber_eq_finrank_localization S).symm
 
 theorem _root_.PrimeSpectrum.locallyConstant_localRank
-    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Module.Projective R S] :
-    IsLocallyConstant (PrimeSpectrum.localRank R S) := by
+    (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    [Module.Finite R M] [Module.Projective R M] :
+    IsLocallyConstant (PrimeSpectrum.localRank R M) := by
   let Rp (p : Ideal R) [p.IsPrime] := Localization.AtPrime p
-  let Sp (p : Ideal R) [p.IsPrime] := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  have (p : Ideal R) [p.IsPrime] : Module.Projective (Rp p) (Sp p) := -- instance PRed
-    Module.projective_of_isLocalizedModule p.primeCompl
-      (IsScalarTower.toAlgHom R S (Sp p)).toLinearMap
-  have (p : Ideal R) [p.IsPrime] : Module.Free (Rp p) (Sp p) :=
+  let Mp (p : Ideal R) [p.IsPrime] := LocalizedModule.AtPrime p M
+  have (p : Ideal R) [p.IsPrime] : Module.Projective (Rp p) (Mp p) := -- instance PRed
+    Module.projective_of_isLocalizedModule p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
+  have (p : Ideal R) [p.IsPrime] : Module.Free (Rp p) (Mp p) :=
     Module.free_of_flat_of_isLocalRing
-  have (p : Ideal R) [p.IsPrime] : Module.Finite (Rp p) (Sp p) := inferInstance
+  have (p : Ideal R) [p.IsPrime] : Module.Finite (Rp p) (Mp p) := inferInstance
   sorry
 
 -- PRed
@@ -791,8 +791,11 @@ theorem sum_ramification_inertia'
         (Algebra.TensorProduct.commRight R S κR)
   have := IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors S) e'
   rw [← sum_ramification_inertia]
-  exact (Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS).symm.trans <|
-    (PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace ⊥ ⟨p, ‹_›⟩
+  rw [← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS]
+  -- todo: better rw's here:
+  refine Eq.trans ?_ (PrimeSpectrum.localRank_apply_of_flat R S ⟨p, ‹_›⟩)
+  refine Eq.trans ?_ ((PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace ⊥ ⟨p, ‹_›⟩)
+  exact (PrimeSpectrum.localRank_apply_of_flat R S ⊥).symm
 
 theorem sum_ramification_inertia''
     {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
