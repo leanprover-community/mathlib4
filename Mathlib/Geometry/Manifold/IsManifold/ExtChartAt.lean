@@ -23,11 +23,12 @@ in general, but we can still register them as `PartialEquiv`s.
 * `extChartAt I x`: the extended chart at `x`, obtained by composing the `chartAt H x` with `I`.
   Since the target is in general not open, this is not an open partial homeomorphism in general, but
   we register them as `PartialEquiv`s.
+* `I.extendCoordChange e e'`: the change of extended charts `(e.extend I).symm ≫ e'.extend I`.
 
 ## Main results
 
-* `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
-  `f.extend I ∘ (f'.extend I).symm` is continuous on its source
+* `ModelWithCorners.contDiffOn_extendCoordChange`: if `f` and `f'` lie in the maximal atlas on `M`,
+  `I.extendCoordChange f f'` is Cⁿ on its source
 
 * `contDiffOn_ext_coord_change`: for `x x' : M`, the coordinate change
   `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
@@ -38,6 +39,15 @@ in general, but we can still register them as `PartialEquiv`s.
   on a locally compact space.
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
+
+## Implementation notes
+
+This file uses the name `writtenInExtend` (in analogy to `writtenInExtChart`) to refer to a
+composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ` and `φ` extended by the
+appropriate models with corners. This is not a definition, so technically deviating from the naming
+convention.
+
+TODO: this file uses more made-up names; document these as well
 
 -/
 
@@ -83,6 +93,9 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
 
 theorem extend_target' : (f.extend I).target = I '' f.target := by
   rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
+
+theorem extend_target_eq_image_source : (f.extend I).target = (f.extend I) '' f.source := by
+  rw [f.extend_target', ← f.image_source_eq_target, ← image_comp, f.extend_coe]
 
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
@@ -241,7 +254,6 @@ theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
   filter_upwards [hg, mem_map.1 (this hu)] with z hz hzu
   simpa only [(· ∘ ·), extend_left_inv _ hz, mem_preimage] using hzu
 
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
 theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
     {y : M} (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
@@ -254,8 +266,6 @@ theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'
   filter_upwards [inter_mem_nhdsWithin _ (f.open_source.mem_nhds hy)] with z hz
   rw [comp_apply, extend_left_inv _ hz.2]
   exact hmaps hz.1
-
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
 
 /-- If `s ⊆ f.source` and `g x ∈ f'.source` whenever `x ∈ s`, then `g` is continuous on `s` if and
 only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `f.extend I '' s`. -/
@@ -293,19 +303,6 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
-@[deprecated "Removed without replacement" (since := "2025-08-27")]
-theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
-  rw [f.extend_target, inter_assoc, inter_comm (range I)]
-  conv =>
-    congr
-    · skip
-    rw [← univ_inter (_ ∩ range I)]
-  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
-  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
-
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
@@ -315,58 +312,134 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
 lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
     (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
 
-/-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
+end OpenPartialHomeomorph
 
-theorem extend_coord_change_source :
-    ((f.extend I).symm ≫ f'.extend I).source = I '' (f.symm ≫ₕ f').source := by
-  simp_rw [PartialEquiv.trans_source, I.image_eq, extend_source, PartialEquiv.symm_source,
-    extend_target, inter_right_comm _ (range I)]
+namespace ModelWithCorners
+
+/-- The change of charts from `e` to `e'` in the model vector space `E`. -/
+abbrev extendCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
+  (e.extend I).symm ≫ e'.extend I
+
+variable {e e' : OpenPartialHomeomorph M H}
+
+lemma extendCoordChange_symm : (I.extendCoordChange e e').symm = I.extendCoordChange e' e := by
   rfl
 
-theorem extend_image_source_inter :
-    f.extend I '' (f.source ∩ f'.source) = ((f.extend I).symm ≫ f'.extend I).source := by
-  simp_rw [f.extend_coord_change_source, f.extend_coe, image_comp I f, trans_source'', symm_symm,
-    symm_target]
+lemma extendCoordChange_source :
+    (I.extendCoordChange e e').source = I '' (e.symm ≫ₕ e').source := by
+  simp_rw [extendCoordChange, PartialEquiv.trans_source, I.image_eq, e'.extend_source,
+    PartialEquiv.symm_source, e.extend_target, inter_right_comm _ (range I)]
+  simp [Set.preimage_comp]
 
-theorem extend_coord_change_source_mem_nhdsWithin {x : E}
-    (hx : x ∈ ((f.extend I).symm ≫ f'.extend I).source) :
-    ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] x := by
-  rw [f.extend_coord_change_source] at hx ⊢
+lemma extendCoordChange_target :
+    (I.extendCoordChange e e').target = I '' (e.symm ≫ₕ e').target := by
+  rw [← PartialEquiv.symm_source, ← OpenPartialHomeomorph.symm_source]
+  exact I.extendCoordChange_source
+
+lemma _root_.OpenPartialHomeomorph.extend_image_source_inter :
+    f.extend I '' (f.source ∩ f'.source) = (I.extendCoordChange f f').source := by
+  simp_rw [I.extendCoordChange_source, f.extend_coe, image_comp I f,
+    OpenPartialHomeomorph.trans_source'', OpenPartialHomeomorph.symm_symm,
+    OpenPartialHomeomorph.symm_target]
+
+lemma extendCoordChange_source_mem_nhdsWithin {x : E}
+    (hx : x ∈ (I.extendCoordChange e e').source) :
+    (I.extendCoordChange e e').source ∈ 𝓝[range I] x := by
+  rw [I.extendCoordChange_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
   refine I.image_mem_nhdsWithin ?_
   exact (OpenPartialHomeomorph.open_source _).mem_nhds hx
 
-theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
-    (hxf' : x ∈ f'.source) :
-    ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] f.extend I x := by
-  apply extend_coord_change_source_mem_nhdsWithin
-  rw [← extend_image_source_inter]
-  exact mem_image_of_mem _ ⟨hxf, hxf'⟩
+lemma extendCoordChange_source_mem_nhdsWithin' {x : M} (hxe : x ∈ e.source)
+    (hxe' : x ∈ e'.source) :
+    (I.extendCoordChange e e').source ∈ 𝓝[range I] e.extend I x := by
+  apply extendCoordChange_source_mem_nhdsWithin
+  rw [← OpenPartialHomeomorph.extend_image_source_inter]
+  exact mem_image_of_mem _ ⟨hxe, hxe'⟩
 
-variable {f f'}
+lemma uniqueDiffOn_extendCoordChange_source : UniqueDiffOn 𝕜 (I.extendCoordChange e e').source := by
+  rw [extendCoordChange_source, I.image_eq]
+  exact I.uniqueDiffOn_preimage <| e.isOpen_inter_preimage_symm e'.open_source
+
+lemma uniqueDiffOn_extendCoordChange_target : UniqueDiffOn 𝕜 (I.extendCoordChange e e').target := by
+  rw [← extendCoordChange_symm, PartialEquiv.symm_target]
+  exact uniqueDiffOn_extendCoordChange_source
 
 open IsManifold
 
-theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
-    (hf' : f' ∈ maximalAtlas I n M) :
-    ContDiffOn 𝕜 n (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
-  rw [extend_coord_change_source, I.image_eq]
-  exact (StructureGroupoid.compatible_of_mem_maximalAtlas hf' hf).1
+variable [ChartedSpace H M]
 
-theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
-    (hf' : f' ∈ maximalAtlas I n M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
-    ContDiffWithinAt 𝕜 n (f.extend I ∘ (f'.extend I).symm) (range I) x := by
-  apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
-  rw [extend_coord_change_source] at hx ⊢
+lemma contDiffOn_extendCoordChange (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extendCoordChange e e') (I.extendCoordChange e e').source := by
+  rw [I.extendCoordChange_source, I.image_eq]
+  exact (StructureGroupoid.compatible_of_mem_maximalAtlas he he').1
+
+lemma contDiffWithinAt_extendCoordChange (he : e ∈ maximalAtlas I n M)
+    (he' : e' ∈ maximalAtlas I n M) {x : E} (hx : x ∈ (I.extendCoordChange e e').source) :
+    ContDiffWithinAt 𝕜 n (I.extendCoordChange e e') (range I) x := by
+  apply (I.contDiffOn_extendCoordChange he he' x hx).mono_of_mem_nhdsWithin
+  rw [I.extendCoordChange_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
   exact I.image_mem_nhdsWithin ((OpenPartialHomeomorph.open_source _).mem_nhds hz)
 
-theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
-    (hf' : f' ∈ maximalAtlas I n M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
-    ContDiffWithinAt 𝕜 n (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine contDiffWithinAt_extend_coord_change hf hf' ?_
-  rw [← extend_image_source_inter]
-  exact mem_image_of_mem _ ⟨hxf', hxf⟩
+lemma contDiffWithinAt_extendCoordChange' (he : e ∈ maximalAtlas I n M)
+    (he' : e' ∈ maximalAtlas I n M) {x : M} (hxe : x ∈ e.source) (hxe' : x ∈ e'.source) :
+    ContDiffWithinAt 𝕜 n (I.extendCoordChange e e') (range I) (e.extend I x) := by
+  refine I.contDiffWithinAt_extendCoordChange he he' ?_
+  rw [← OpenPartialHomeomorph.extend_image_source_inter]
+  exact mem_image_of_mem _ ⟨hxe, hxe'⟩
+
+lemma contDiffOn_extendCoordChange_symm (he : e ∈ maximalAtlas I n M)
+    (he' : e' ∈ maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extendCoordChange e e').symm (I.extendCoordChange e e').target :=
+  I.contDiffOn_extendCoordChange he' he
+
+lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {x : E} (hx : x ∈ (I.extendCoordChange e e').source) :
+    ContinuousLinearMap.IsInvertible <|
+      fderivWithin 𝕜 (I.extendCoordChange e e') (I.extendCoordChange e e').source x := by
+  set φ := I.extendCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extendCoordChange he he'
+  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extendCoordChange_symm he he'
+  refine .of_inverse (g := (fderivWithin 𝕜 φ.symm φ.target (φ x))) ?_ ?_
+  · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp,
+      fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx), fderivWithin_id]
+    · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
+    · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn) :)
+    · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
+    · exact φ.symm_mapsTo
+    · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
+  · rw [← fderivWithin_comp, fderivWithin_congr' φ.leftInvOn.eqOn hx, fderivWithin_id]
+    · exact I.uniqueDiffOn_extendCoordChange_source _ hx
+    · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
+    · exact (hφ _ hx).differentiableWithinAt hn
+    · exact φ.mapsTo
+    · exact I.uniqueDiffOn_extendCoordChange_source _ hx
+
+end ModelWithCorners
+
+namespace OpenPartialHomeomorph
+
+@[deprecated (since := "2026-02-16")]
+alias extend_coord_change_source := ModelWithCorners.extendCoordChange_source
+
+@[deprecated (since := "2026-02-16")]
+alias extend_coord_change_source_mem_nhdsWithin :=
+  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin
+
+@[deprecated (since := "2026-02-16")]
+alias extend_coord_change_source_mem_nhdsWithin' :=
+  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin'
+
+@[deprecated (since := "2026-02-16")]
+alias contDiffOn_extend_coord_change := ModelWithCorners.contDiffOn_extendCoordChange
+
+@[deprecated (since := "2026-02-16")]
+alias contDiffWithinAt_extend_coord_change := ModelWithCorners.contDiffWithinAt_extendCoordChange
+
+@[deprecated (since := "2026-02-16")]
+alias contDiffWithinAt_extend_coord_change' := ModelWithCorners.contDiffWithinAt_extendCoordChange'
 
 end OpenPartialHomeomorph
 
@@ -707,19 +780,19 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
 theorem ext_coord_change_source (x x' : M) :
     ((extChartAt I x').symm ≫ extChartAt I x).source =
       I '' ((chartAt H x').symm ≫ₕ chartAt H x).source :=
-  extend_coord_change_source _ _
+  I.extendCoordChange_source
 
 open IsManifold
 
 theorem contDiffOn_ext_coord_change [IsManifold I n M] (x x' : M) :
     ContDiffOn 𝕜 n (extChartAt I x ∘ (extChartAt I x').symm)
       ((extChartAt I x').symm ≫ extChartAt I x).source :=
-  contDiffOn_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x')
+  I.contDiffOn_extendCoordChange (chart_mem_maximalAtlas x') (chart_mem_maximalAtlas x)
 
 theorem contDiffWithinAt_ext_coord_change [IsManifold I n M] (x x' : M) {y : E}
     (hy : y ∈ ((extChartAt I x').symm ≫ extChartAt I x).source) :
     ContDiffWithinAt 𝕜 n (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
-  contDiffWithinAt_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x') hy
+  I.contDiffWithinAt_extendCoordChange (chart_mem_maximalAtlas x') (chart_mem_maximalAtlas x) hy
 
 variable (I I') in
 /-- Conjugating a function to write it in the preferred charts around `x`.
@@ -728,24 +801,27 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
+    MapsTo (writtenInExtChartAt I I' x f)
+      ((extChartAt I x).target ∩ f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source)
+      (extChartAt I' (f x)).target := by
+  intro x' hx'
+  simpa using (chartAt H' (f x)).mapsTo (by simpa using hx'.2)
 
 section
 
@@ -774,7 +850,6 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by

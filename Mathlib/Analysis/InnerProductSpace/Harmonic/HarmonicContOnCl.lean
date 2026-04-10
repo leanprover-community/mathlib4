@@ -83,7 +83,7 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
   HarmonicContOnCl ((fun _ ↦ c) + f) s := harmonicContOnCl_const.add hf
 
 @[to_fun] theorem neg (hf : HarmonicContOnCl f s) :
-    HarmonicContOnCl  (-f) s := ⟨hf.1.neg, hf.2.neg⟩
+    HarmonicContOnCl (-f) s := ⟨hf.1.neg, hf.2.neg⟩
 
 @[to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
     HarmonicContOnCl (f₁ - f₂) s := ⟨hf₁.1.sub hf₂.1, hf₁.2.sub hf₂.2⟩

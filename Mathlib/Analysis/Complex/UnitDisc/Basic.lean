@@ -25,7 +25,7 @@ noncomputable section
 
 namespace Complex
 
-/-- The complex unit disc, denoted as `𝔻` withinin the Complex namespace -/
+/-- The complex unit disc, denoted as `𝔻` within the Complex namespace -/
 def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 
@@ -37,16 +37,16 @@ namespace UnitDisc
 /-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝔻 → ℂ := Subtype.val
 
-set_option backward.isDefEq.respectTransparency false in
-instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+instance instCommSemigroup : CommSemigroup UnitDisc := inferInstanceAs <| CommSemigroup (ball _ _)
 
-instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
+instance instSemigroupWithZero : SemigroupWithZero UnitDisc :=
+  inferInstanceAs <| SemigroupWithZero (ball _ _)
 
-set_option backward.isDefEq.respectTransparency false in
-instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; infer_instance
+instance instIsCancelMulZero : IsCancelMulZero UnitDisc :=
+  inferInstanceAs <| IsCancelMulZero (ball _ _)
 
-set_option backward.isDefEq.respectTransparency false in
-instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
+instance instHasDistribNeg : HasDistribNeg UnitDisc :=
+  inferInstanceAs <| HasDistribNeg (ball _ _)
 
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
@@ -142,7 +142,6 @@ theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
 theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
   coe_injective.eq_iff' coe_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem mk_zero : mk 0 (by simp) = 0 := rfl
 
 @[simp] theorem mk_eq_zero {z : ℂ} (hz : ‖z‖ < 1) : mk z hz = 0 ↔ z = 0 := by simp [← coe_inj]
@@ -151,16 +150,16 @@ instance : Inhabited 𝔻 :=
   ⟨0⟩
 
 instance instMulActionCircle : MulAction Circle 𝔻 :=
-  mulActionSphereBall
+  inferInstanceAs <| MulAction (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
-  isScalarTower_sphere_sphere_ball
+  inferInstanceAs <| IsScalarTower (sphere _ _) (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle : IsScalarTower Circle 𝔻 𝔻 :=
-  isScalarTower_sphere_ball_ball
+  inferInstanceAs <| IsScalarTower (sphere _ _) (ball _ _) (ball _ _)
 
 instance instSMulCommClass_circle_left : SMulCommClass Circle 𝔻 𝔻 :=
-  instSMulCommClass_sphere_ball_ball
+  inferInstanceAs <| SMulCommClass (sphere _ _) (ball _ _) (ball _ _)
 
 instance instSMulCommClass_circle_right : SMulCommClass 𝔻 Circle 𝔻 :=
   SMulCommClass.symm _ _ _
@@ -172,16 +171,15 @@ theorem coe_circle_smul (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :
 @[deprecated (since := "2026-01-06")]
 alias coe_smul_circle := coe_circle_smul
 
-set_option backward.isDefEq.respectTransparency false in
 instance instMulActionClosedBall : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
-  mulActionClosedBallBall
+  inferInstanceAs <| MulAction (closedBall _ _) (ball _ _)
 
 instance instIsScalarTower_closedBall_closedBall :
     IsScalarTower (closedBall (0 : ℂ) 1) (closedBall (0 : ℂ) 1) 𝔻 :=
-  isScalarTower_closedBall_closedBall_ball
+  inferInstanceAs <| IsScalarTower (closedBall _ _) (closedBall _ _) (ball _ _)
 
 instance instIsScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
-  isScalarTower_closedBall_ball_ball
+  inferInstanceAs <| IsScalarTower (closedBall _ _) (ball _ _) (ball _ _)
 
 instance instSMulCommClass_closedBall_left : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
   ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
@@ -190,7 +188,7 @@ instance instSMulCommClass_closedBall_right : SMulCommClass 𝔻 (closedBall (0 
   SMulCommClass.symm _ _ _
 
 instance instSMulCommClass_circle_closedBall : SMulCommClass Circle (closedBall (0 : ℂ) 1) 𝔻 :=
-  instSMulCommClass_sphere_closedBall_ball
+  inferInstanceAs <| SMulCommClass (sphere _ _) (closedBall _ _) (ball _ _)
 
 instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) Circle 𝔻 :=
   SMulCommClass.symm _ _ _
@@ -202,7 +200,6 @@ theorem coe_closedBall_smul (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • 
 @[deprecated (since := "2026-01-06")]
 alias coe_smul_closedBall := coe_closedBall_smul
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Pow UnitDisc ℕ+ where
   pow z n := ⟨z ^ (n : ℕ), by simp [pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
 
@@ -299,7 +296,6 @@ alias re_conj := UnitDisc.re_star
 instance : StarMul 𝔻 where
   star_mul z w := coe_injective <| by simp [mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated star_mul' (since := "2026-01-06")]
 theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
   star_mul' z w

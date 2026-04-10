@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.ToDual
@@ -26,7 +26,5 @@ namespace List
 lemma isChain_ofFn {α : Type*} {n : ℕ} {f : Fin n → α} {r : α → α → Prop} :
     (ofFn f).IsChain r ↔ ∀ (i) (hi : i + 1 < n), r (f ⟨i, lt_of_succ_lt hi⟩) (f ⟨i + 1, hi⟩) := by
   simp_rw [isChain_iff_getElem, List.getElem_ofFn, length_ofFn]
-
-@[deprecated (since := "2025-09-24")] alias chain'_ofFn := isChain_ofFn
 
 end List

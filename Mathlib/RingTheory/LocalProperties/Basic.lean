@@ -552,6 +552,16 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
     I ≤ J :=
   fun _ hm ↦ mem_of_localization_maximal fun P hP ↦ h P hP (mem_map_of_mem _ hm)
 
+lemma Ideal.iInf_ker_le (I : Ideal R) :
+    ⨅ (p : Ideal R) (_ : p.IsPrime) (_ : I ≤ p),
+      RingHom.ker (algebraMap R (Localization.AtPrime p)) ≤ I := by
+  intro x hx
+  refine Ideal.mem_of_localization_maximal fun m hm ↦ ?_
+  simp only [Submodule.mem_iInf, RingHom.mem_ker] at hx
+  by_cases hle : I ≤ m
+  · simp [hx _ _ hle]
+  · simp [IsLocalization.AtPrime.map_eq_top_of_not_le _ hle]
+
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is equal to
 the localization of `J` at `P`, then `I = J`. -/
 theorem Ideal.eq_of_localization_maximal {I J : Ideal R}

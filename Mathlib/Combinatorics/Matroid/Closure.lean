@@ -694,7 +694,6 @@ lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_ma
     insert_eq_of_mem hecl]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Indep.closure_diff_ssubset (hI : M.Indep I) (hX : (I ∩ X).Nonempty) :
     M.closure (I \ X) ⊂ M.closure I := by
   refine hI.closure_ssubset_closure <| diff_subset.ssubset_of_ne fun h ↦ ?_
@@ -931,7 +930,8 @@ variable {R S : Set α}
   rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, hI.indep.mem_closure_iff', mem_union,
     mem_inter_iff, hI'.indep.mem_closure_iff', restrict_ground_eq, restrict_indep_iff, mem_diff]
   by_cases he : M.Indep (insert e I)
-  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)), imp_or]
+  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)),
+      imp_or_left_iff_true]
   tauto
 
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
