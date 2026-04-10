@@ -705,7 +705,7 @@ theorem finrank_fiber_eq_finrank_localization [Module.Finite R S] [Module.Flat R
       (Localization (Algebra.algebraMapSubmonoid S p.primeCompl)) := by
   let Rp := Localization.AtPrime p
   let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  have : Module.Flat Rp Sp :=
+  have : Module.Flat Rp Sp := -- instance PRed
     Module.Flat.of_isLocalizedModule Rp p.primeCompl (IsScalarTower.toAlgHom R S Sp).toLinearMap
   have : Module.Free Rp Sp := Module.free_of_flat_of_isLocalRing
   exact ((Algebra.TensorProduct.cancelBaseChange R Rp p.ResidueField p.ResidueField S).symm.trans
@@ -734,7 +734,7 @@ theorem _root_.PrimeSpectrum.locallyConstant_localRank
     IsLocallyConstant (PrimeSpectrum.localRank R S) := by
   let Rp (p : Ideal R) [p.IsPrime] := Localization.AtPrime p
   let Sp (p : Ideal R) [p.IsPrime] := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  have (p : Ideal R) [p.IsPrime] : Module.Projective (Rp p) (Sp p) := -- should be instance
+  have (p : Ideal R) [p.IsPrime] : Module.Projective (Rp p) (Sp p) := -- instance PRed
     Module.projective_of_isLocalizedModule p.primeCompl
       (IsScalarTower.toAlgHom R S (Sp p)).toLinearMap
   have (p : Ideal R) [p.IsPrime] : Module.Free (Rp p) (Sp p) :=
