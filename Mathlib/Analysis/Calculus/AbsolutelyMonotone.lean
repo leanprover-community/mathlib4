@@ -345,7 +345,7 @@ using that the remainder is nonneg when all iterated derivatives are nonneg. -/
 private lemma taylor_partial_sum_le_of_nonneg_iteratedDerivWithin
     {f : ℝ → ℝ} {s : Set ℝ}
     (hs : UniqueDiffOn ℝ s) (hconv : Convex ℝ s) (h0 : (0 : ℝ) ∈ s)
-    (hf_smooth : ∀ n : ℕ, ContDiffOn ℝ n f s)
+    (hf_smooth : ContDiffOn ℝ ∞ f s)
     (hf_nonneg : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDerivWithin n f s x)
     {y : ℝ} (hy : y ∈ s) (hy_pos : 0 ≤ y) (n : ℕ) :
     ∑ k ∈ Finset.range (n + 1),
@@ -373,7 +373,7 @@ private lemma taylor_partial_sum_le_of_nonneg_iteratedDerivWithin
     rw [huIcc]; exact uniqueDiffOn_Icc hy_pos'
   -- `f` is (n+1)-times continuously differentiable on `uIcc 0 y` (via restriction from `s`).
   have hf_uIcc : ContDiffOn ℝ (n + 1) f (Set.uIcc (0 : ℝ) y) :=
-    (hf_smooth (n + 1)).mono huIcc_sub
+    (hf_smooth.of_le (by exact_mod_cast le_top)).mono huIcc_sub
   -- Taylor's integral remainder formula.
   have htaylor := taylor_integral_remainder (f := f) (x₀ := (0 : ℝ)) (x := y)
     (n := n) hf_uIcc
@@ -383,7 +383,8 @@ private lemma taylor_partial_sum_le_of_nonneg_iteratedDerivWithin
     intro k _ t ht
     simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
     congr 1
-    exact iteratedFDerivWithin_subset huIcc_sub hs_uIcc hs (hf_smooth k) ht
+    exact iteratedFDerivWithin_subset huIcc_sub hs_uIcc hs
+      (hf_smooth.of_le (by exact_mod_cast le_top)) ht
   -- Nonnegativity of the integrand.
   have hpow_nn : ∀ t ∈ Set.Icc (0 : ℝ) y, 0 ≤ (y - t) ^ n := fun t ht =>
     pow_nonneg (sub_nonneg.mpr ht.2) n
@@ -456,7 +457,7 @@ not on a two-sided neighbourhood of `0` in general.
 -/
 theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s : Set ℝ}
     (hs : UniqueDiffOn ℝ s) (hconv : Convex ℝ s) (h0 : (0 : ℝ) ∈ s)
-    (hf_smooth : ∀ n : ℕ, ContDiffOn ℝ n f s)
+    (hf_smooth : ContDiffOn ℝ ∞ f s)
     (hf_nonneg : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDerivWithin n f s x)
     (hpos : ∃ y ∈ s, 0 < y) :
     AnalyticWithinAt ℝ f s 0 := by
@@ -557,14 +558,16 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
     have hk_lt : ((k : ℕ) : WithTop ℕ∞) < ((k + 1 : ℕ) : WithTop ℕ∞) := by
       exact_mod_cast Nat.lt_succ_self k
     have hcont : ContinuousOn (iteratedDerivWithin k f s) s := by
-      have hkplus : ContDiffOn ℝ (k + 1) f s := hf_smooth (k + 1)
+      have hkplus : ContDiffOn ℝ (k + 1) f s :=
+        hf_smooth.of_le (by exact_mod_cast le_top)
       exact hkplus.continuousOn_iteratedDerivWithin hk_le hs
     apply monotoneOn_of_deriv_nonneg hconv hcont
     · -- DifferentiableOn on interior s.
       intro x hx_int
       have hx : x ∈ s := interior_subset hx_int
       have hdiff : DifferentiableWithinAt ℝ (iteratedDerivWithin k f s) s x := by
-        have hkplus : ContDiffOn ℝ (k + 1) f s := hf_smooth (k + 1)
+        have hkplus : ContDiffOn ℝ (k + 1) f s :=
+        hf_smooth.of_le (by exact_mod_cast le_top)
         exact (hkplus.differentiableOn_iteratedDerivWithin hk_lt hs) x hx
       -- At an interior point, `s ∈ 𝓝 x`, so `DifferentiableWithinAt ℝ g s x`
       -- implies `DifferentiableAt`, which restricts to `interior s`.
@@ -646,7 +649,7 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
         intro k _ t ht
         simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
         congr 1
-        exact iteratedFDerivWithin_subset hsub_Icc_y₀ hs_Icc_y₀ hs (hf_smooth k) ht
+        exact iteratedFDerivWithin_subset hsub_Icc_y₀ hs_Icc_y₀ hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
       -- Intermediate point `y₁ := y₀/2 ∈ s` by convexity.
       have hy₁s : y₀ / 2 ∈ s := by
         have := hconv.segment_subset h0 hy₀s
@@ -698,10 +701,10 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
           intro k _ t ht
           simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
           congr 1
-          exact iteratedFDerivWithin_subset hsub_x hs_uIcc_x hs (hf_smooth k) ht
+          exact iteratedFDerivWithin_subset hsub_x hs_uIcc_x hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
         -- Step B: apply Taylor integral remainder on uIcc 0 x.
         have hf_uIcc_x : ContDiffOn ℝ (n + 1) f (Set.uIcc (0 : ℝ) x) :=
-          (hf_smooth (n + 1)).mono hsub_x
+          (hf_smooth.of_le (by exact_mod_cast le_top)).mono hsub_x
         have htaylor_x := taylor_integral_remainder (f := f) (x₀ := (0 : ℝ)) (x := x)
           (n := n) hf_uIcc_x
         -- Step C: convert the Taylor polynomial to use `s`.
@@ -726,9 +729,10 @@ theorem analyticWithinAt_zero_of_nonneg_iteratedDerivWithin {f : ℝ → ℝ} {s
           intro k _ t ht
           simp only [iteratedDerivWithin_eq_iteratedFDerivWithin]
           congr 1
-          exact iteratedFDerivWithin_subset hy₁sub hs_Icc_y₁ hs (hf_smooth k) ht
+          exact iteratedFDerivWithin_subset hy₁sub hs_Icc_y₁ hs (hf_smooth.of_le (by exact_mod_cast le_top)) ht
         have hf_Icc_y₁ : ContDiffOn ℝ (n + 2 : ℕ) f (Set.Icc (y₀ / 2) y₀) :=
-          (hf_smooth (n + 2)).mono hy₁sub
+          (hf_smooth.of_le
+            (WithTop.coe_le_coe.mpr (le_top : ((n + 2 : ℕ) : ℕ∞) ≤ ⊤))).mono hy₁sub
         -- `uIcc (y₀/2) y₀ = Icc (y₀/2) y₀` since `y₀/2 ≤ y₀`.
         have huIcc_eq : Set.uIcc (y₀ / 2) y₀ = Set.Icc (y₀ / 2) y₀ :=
           Set.uIcc_of_le (by linarith [hy₀pos])
@@ -978,5 +982,4 @@ theorem AbsolutelyMonotoneOn.analyticWithinAt_zero {f : ℝ → ℝ} {s : Set �
     (hconv : Convex ℝ s) (h0 : (0 : ℝ) ∈ s) (hpos : ∃ y ∈ s, 0 < y) :
     AnalyticWithinAt ℝ f s 0 :=
   analyticWithinAt_zero_of_nonneg_iteratedDerivWithin hs hconv h0
-    (fun n => (hf.contDiffOn).of_le (by exact_mod_cast le_top))
-    hf.nonneg hpos
+    hf.contDiffOn hf.nonneg hpos
