@@ -379,7 +379,6 @@ variable {S : Type*} [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N]
 
 namespace LinearMap
 
-
 @[simp]
 lemma dp_zero {a : M} : dp S 0 (f a) = 1 := DividedPowerAlgebra.dp_zero
 
@@ -463,6 +462,7 @@ lemma map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
   rw [algHom_ext_iff]
   intros; simp [map_apply_dp]
 
+@[simp]
 lemma map_id : map R (LinearMap.id (R := R) (M := M)) = AlgHom.id R _ := by
   rw [algHom_ext_iff]
   intros
@@ -472,6 +472,7 @@ lemma map_id : map R (LinearMap.id (R := R) (M := M)) = AlgHom.id R _ := by
   the underlying modules. Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear equivalence
   `f : M →ₗ[R] N`, this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
   sending `dp R n m` to `dp S n (f m)`. -/
+@[simps!]
 def mapEquiv (g : M ≃ₗ[R] N) :
     DividedPowerAlgebra R M ≃ₐ[R] DividedPowerAlgebra R N :=
   AlgEquiv.ofAlgHom (map R g.toLinearMap) (map R g.symm.toLinearMap)
