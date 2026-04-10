@@ -42,17 +42,20 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (F : IntermediateField 
 The image of the intermediate field `F` of `L/K` under the inclusion `L ⊆ M`, viewed as an
 intermediate field of `M/K`.
 -/
-abbrev extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
+def extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
 
 /-- The isomorphism between `F` and its image `F.extendTop M` in `M`. -/
 noncomputable def extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
 
+@[simp]
 theorem algebraMap_extendTopEquiv (a : F) :
     algebraMap (F.extendTop M) M (extendTopEquiv F M a) = algebraMap F M a := rfl
 
+@[simp]
 theorem coe_extendTopEquiv (a : F) :
     (extendTopEquiv F M a : M) = algebraMap F M a := rfl
 
+@[simp]
 theorem algebraMap_extendTopEquiv_symm (a : F.extendTop M) :
     algebraMap F M ((extendTopEquiv F M).symm a) = a := by
   rw [← algebraMap_extendTopEquiv, AlgEquiv.apply_symm_apply, algebraMap_apply]
@@ -104,15 +107,18 @@ variable (S)
 Variant of `extendTopEquiv` giving an `S`-algebra isomorphism `F ≃ₐ[S] F.extendTop M`,
 for a commutative ring `S` with `Algebra S F`.
 -/
-noncomputable abbrev _root_.IntermediateField.extendTopEquiv' : F ≃ₐ[S] (F.extendTop M) :=
+noncomputable def _root_.IntermediateField.extendTopEquiv' : F ≃ₐ[S] (F.extendTop M) :=
   AlgEquiv.ofBijective (Algebra.algHom S F (F.extendTop M)) (extendTopEquiv F M).bijective
 
+@[simp]
 theorem coe_extendTopEquiv' (a : F) :
     (extendTopEquiv' F M S a : M) = algebraMap F M a := rfl
 
+@[simp]
 theorem algebraMap_extendTopEquiv' (a : F) :
     algebraMap (F.extendTop M) M (extendTopEquiv' F M S a) = algebraMap F M a := rfl
 
+@[simp]
 theorem algebraMap_extendTopEquiv'_symm (a : F.extendTop M) :
     algebraMap F M ((extendTopEquiv' F M S).symm a) = a := by
   rw [← algebraMap_extendTopEquiv' F M S, AlgEquiv.apply_symm_apply, algebraMap_apply]
