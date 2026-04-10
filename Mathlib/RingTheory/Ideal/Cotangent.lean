@@ -358,9 +358,13 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
 
 end IsLocalRing
 
+namespace Ideal
+
+open Submodule
+
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
-lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (algebraMap A B))
+lemma mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (algebraMap A B))
     {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
     Function.Surjective (Ideal.mapCotangent J I (Algebra.ofId A B)
       (le_of_le_of_eq le_sup_right eq.symm)) := by
@@ -370,7 +374,7 @@ lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (alg
   use J.toCotangent ⟨y', mem⟩
   simpa using I.toCotangent.congr_arg (SetCoe.ext hy')
 
-lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraMap A B))
+lemma mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraMap A B))
     {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
     (Ideal.mapCotangent J I (Algebra.ofId A B) (le_of_le_of_eq le_sup_right eq.symm)).ker =
       (Submodule.comap J.subtype ((RingHom.ker (algebraMap A B)) ⊓ J)).map J.toCotangent  := by
@@ -392,3 +396,51 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
     convert map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1
+
+/-- The canonical surjective map from `I` to the cotangent space of its image in `A / J`. -/
+def toCotangentMapMk (I J : Ideal A) : I →ₗ[A] (I.map (Ideal.Quotient.mk J)).Cotangent where
+  toFun x := (I.map (Ideal.Quotient.mk J)).toCotangent ⟨Ideal.Quotient.mk J x,
+    Ideal.mem_map_of_mem _ x.prop⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+lemma surjective_toCotangentMapMk (I J : Ideal A) :
+    Function.Surjective (I.toCotangentMapMk J) := fun x ↦ by
+  rcases toCotangent_surjective _ x with ⟨⟨x, h⟩, rfl⟩
+  rw [mem_map_iff_of_surjective _ Quotient.mk_surjective] at h
+  obtain ⟨x, x_in, rfl⟩ := h
+  exact ⟨⟨x, x_in⟩, rfl⟩
+
+lemma ker_toCotangentMapMk (I J : Ideal A) :
+    LinearMap.ker (I.toCotangentMapMk J) = (Submodule.comap I.subtype J) ⊔ I • ⊤ := by
+  ext x
+  suffices (Quotient.mk J) x ∈ map (Quotient.mk J) I ^ 2 ↔ ∃ a ∈ J, a ∈ I ∧
+    ∃ a_1 ∈ I * I, a_1 ∈ I ∧ a + a_1 = x by simpa [mem_sup, mem_smul_top_iff, toCotangentMapMk,
+      toCotangent_eq_zero, ← Subtype.val_inj]
+  simp_rw [← Ideal.map_pow, ← mem_comap, comap_map_of_surjective' _ Quotient.mk_surjective, mk_ker,
+    mem_sup, ← pow_two]
+  have pow_le : I ^ 2 ≤ I := pow_le_self (by simp)
+  refine ⟨fun ⟨y, y_in, z, z_in, hyz⟩ ↦ ⟨z, z_in, ?_, y, y_in, pow_le y_in, by rwa [add_comm]⟩,
+    fun _ ↦ by grind⟩
+  rw [eq_comm, ← sub_eq_iff_eq_add'] at hyz
+  rw [← hyz]
+  exact Ideal.sub_mem _ x.prop (pow_le y_in)
+
+/-- The linear equivalence between the cotangent space of the image of `I` in `A / J` and
+`I / ((I ∩ J) + I^2)`. -/
+noncomputable def cotangentMapMkEquiv (I J : Ideal A) :
+    (I.map (Ideal.Quotient.mk J)).Cotangent ≃ₗ[A] I ⧸ (Submodule.comap I.subtype J) ⊔ I • ⊤ :=
+  ((I.toCotangentMapMk J).quotKerEquivOfSurjective (surjective_toCotangentMapMk I J)).symm.trans
+    (Submodule.quotEquivOfEq _ _ (ker_toCotangentMapMk I J))
+
+@[simp]
+lemma cotangentMapMkEquiv_symm_mk (I J : Ideal A) (x : I) :
+    (cotangentMapMkEquiv I J).symm (Submodule.Quotient.mk x) = I.toCotangentMapMk J x :=
+  rfl
+
+@[simp]
+lemma cotangentMapMkEquiv_toCotangentMapMk (I J : Ideal A) (x : I) :
+    cotangentMapMkEquiv I J (I.toCotangentMapMk J x) = Submodule.Quotient.mk x := by
+  rw [← cotangentMapMkEquiv_symm_mk, LinearEquiv.apply_symm_apply]
+
+end Ideal
