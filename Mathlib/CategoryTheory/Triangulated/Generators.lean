@@ -72,16 +72,16 @@ lemma triangEnvelopeIter_succ (n : ℕ) :
       (extensionProduct (P.shiftClosure ℤ).binaryProductsClosure.retractClosure
          (P.triangEnvelopeIter n)).retractClosure := by
   rw [triangEnvelopeIter, extensionProductIter_succ,
-    ← retractClosure_extensionProduct_retractClosure_retractClosure,
-    retractClosure_eq_self (P.shiftClosure ℤ).binaryProductsClosure.retractClosure]
+    ← retractClosure_extensionProduct_retractClosure_retractClosure]
+  simp
 
 lemma triangEnvelopeIter_succ' [IsTriangulated C] (n : ℕ) :
     P.triangEnvelopeIter (n + 1) =
       (extensionProduct (P.triangEnvelopeIter n)
         (P.shiftClosure ℤ).binaryProductsClosure.retractClosure).retractClosure := by
   rw [triangEnvelopeIter, extensionProductIter_succ',
-    ← retractClosure_extensionProduct_retractClosure_retractClosure,
-    retractClosure_eq_self (P.shiftClosure ℤ).binaryProductsClosure.retractClosure]
+    ← retractClosure_extensionProduct_retractClosure_retractClosure]
+  simp
 
 lemma triangEnvelopeIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1 := by lia) :
     P.triangEnvelopeIter (n + m) =
