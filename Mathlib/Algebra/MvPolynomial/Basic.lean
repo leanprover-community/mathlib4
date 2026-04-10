@@ -549,9 +549,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
+-- TODO: Remove once its use in the Witt vector API has been removed.
 @[simp]
-theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
+lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (φ.map g) = g (coeff m φ) := rfl
+
+@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
