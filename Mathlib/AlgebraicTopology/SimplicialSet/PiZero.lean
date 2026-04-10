@@ -57,8 +57,7 @@ lemma rec {motive : π₀ X → Prop} (mk : ∀ (x : X _⦋0⦌), motive (.mk x)
   exact mk x
 
 /-- Constructor for maps from the type of connected components of a simplicial set. -/
-def lift {T : Type*} (f : X _⦋0⦌ → T)
-    (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
+def lift {T : Type*} (f : X _⦋0⦌ → T) (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
     π₀ X → T :=
   Quot.lift f (by rintro x y ⟨e⟩; exact hf e)
 
