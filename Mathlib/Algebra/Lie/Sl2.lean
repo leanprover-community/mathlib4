@@ -247,13 +247,12 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     congr 1
     ring
 
-section IsAlgClosedIrreducible
+section Field
 
-variable {L M : Type*}
-(K : Type*) [Field K]
-[LieRing L] [LieAlgebra K L]
-[AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
-variable {h e f : L} {t : IsSl2Triple h e f}
+variable {L M : Type*} (K : Type*) [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L]
+  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
+  {h e f : L} (t : IsSl2Triple h e f)
 
 lemma exists_primitiveVector (t : IsSl2Triple h e f)
     [IsAlgClosed K] [CharZero K] [FiniteDimensional K M] [Nontrivial M] :
