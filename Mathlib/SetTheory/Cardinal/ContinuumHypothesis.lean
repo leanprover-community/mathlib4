@@ -93,7 +93,7 @@ theorem continuum_eq_aleph_one.{u} [ContinuumHypothesis] : (𝔠 : Cardinal.{u})
 
 alias ⟨_, of_continuum_eq_aleph_one⟩ := iff_continuum_eq_aleph_one
 
-theorem iff_aleph0_covby_continuum : ContinuumHypothesis ↔ ℵ₀ ⋖ 𝔠 := by
+theorem iff_aleph0_covby_continuum.{u} : ContinuumHypothesis ↔ ℵ₀ ⋖ (𝔠 : Cardinal.{u}) := by
   rw [← Order.succ_eq_iff_covBy, Cardinal.succ_aleph0, eq_comm, iff_continuum_eq_aleph_one]
 
 theorem aleph0_covby_continuum.{u} [ContinuumHypothesis] : ℵ₀ ⋖ (𝔠 : Cardinal.{u}) :=
