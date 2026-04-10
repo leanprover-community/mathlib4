@@ -299,7 +299,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at htn ⊢
   apply mt ((htc i₀).elim_directed_family_closed t htcl)
-  push_neg
+  push Not
   simp only [← nonempty_iff_ne_empty] at htn ⊢
   refine ⟨htd, fun i => ?_⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
@@ -539,7 +539,7 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
   have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
   choose! U hxU hSU hUF using hSF
   obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])
-    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
+    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by grind))
   have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1
   have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_notMem]
   have : ⋃₀ Q ∉ F := by

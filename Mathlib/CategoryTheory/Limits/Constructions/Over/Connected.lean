@@ -138,7 +138,6 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
 @[simps]

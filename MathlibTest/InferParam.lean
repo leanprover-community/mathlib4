@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.InferParam
 
 namespace InferParamTest

@@ -47,10 +47,7 @@ from x to y is a scalar taking x to y. Due to implementation details, the object
 of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
   (actionAsFunctor M X).Elements
-
-instance : Category (ActionCategory M X) := by
-  dsimp only [ActionCategory]
-  infer_instance
+deriving Category
 
 namespace ActionCategory
 
@@ -162,9 +159,6 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   rcases f with ⟨g : G, h : g • a = b⟩
   cases inv_smul_eq_iff.mpr h.symm
   rfl
-
-@[deprecated (since := "2025-08-21")]
-alias cases' := ActionCategory.cases
 
 variable {H : Type*} [Group H]
 

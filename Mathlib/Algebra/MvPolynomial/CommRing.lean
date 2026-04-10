@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 
 noncomputable section
 
-open Set Function Finsupp AddMonoidAlgebra
+open Set Function Finsupp
 
 universe u v
 
@@ -53,9 +53,6 @@ section CommRing
 
 variable [CommRing R]
 variable {p q : MvPolynomial σ R}
-
-instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commRing
 
 variable (σ a a')
 

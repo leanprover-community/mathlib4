@@ -723,9 +723,7 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
       (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).hom ≫
         (𝟙_ C ◁ (α_ X₁ (𝟙_ C) X₂).inv) ≫ (λ_ ((X₁ ⊗ 𝟙_ C) ⊗ X₂)).hom ≫ ((ρ_ X₁).hom ▷ X₂) := by
     monoidal
-  rw [this]; clear this
-  rw [← braiding_leftUnitor]
-  monoidal
+  simp [this]
 
 @[reassoc]
 theorem rightUnitor_monoidal (X₁ X₂ : C) :
