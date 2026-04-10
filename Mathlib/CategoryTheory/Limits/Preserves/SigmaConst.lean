@@ -99,14 +99,10 @@ noncomputable def isColimitSigmaConstCokernelCofork :
   Cofork.IsColimit.mk _
     (fun s ↦ Sigma.desc (fun ⟨b, _⟩ ↦ Sigma.ι (fun _ ↦ R) b ≫ s.π))
     (fun s ↦ by
-      dsimp
       ext b
-      dsimp
       by_cases hb : b ∈ Set.range f
       · obtain ⟨a, rfl⟩ := hb
-        have := Sigma.ι (fun _ ↦ R) a ≫= s.condition.symm
-        simp only [Sigma.ι_comp_map'_assoc, Category.id_comp, zero_comp, comp_zero] at this
-        simpa using this
+        simpa [-CokernelCofork.condition] using Sigma.ι (fun _ ↦ R) a ≫= s.condition.symm
       · simp [ι_sigmaConstCokernelCofork_π_assoc _ _ _ hb])
     (fun s m hm ↦ by
       dsimp
