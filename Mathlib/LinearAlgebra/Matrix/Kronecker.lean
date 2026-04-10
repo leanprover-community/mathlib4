@@ -80,20 +80,20 @@ theorem kroneckerMap_map (f : α → β → γ) (g : γ → γ') (A : Matrix l m
 theorem kroneckerMap_submatrix_left
     (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : l' → l) (c : m' → m) :
     kroneckerMap f (A.submatrix r c) B =
-      (kroneckerMap f A B).submatrix (Prod.map r id) (Prod.map c id) :=
+      (kroneckerMap f A B).submatrix (.map r id) (.map c id) :=
   rfl
 
 theorem kroneckerMap_submatrix_right
     (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : n' → n) (c : p' → p) :
     kroneckerMap f A (B.submatrix r c) =
-      (kroneckerMap f A B).submatrix (Prod.map id r) (Prod.map id c) :=
+      (kroneckerMap f A B).submatrix (.map id r) (.map id c) :=
   rfl
 
 theorem kroneckerMap_submatrix_submatrix
     (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β)
     (r : l' → l) (c : m' → m) (r' : n' → n) (c' : p' → p) :
     kroneckerMap f (A.submatrix r c) (B.submatrix r' c') =
-      (kroneckerMap f A B).submatrix (Prod.map r r') (Prod.map c c') :=
+      (kroneckerMap f A B).submatrix (.map r r') (.map c c') :=
   rfl
 
 @[simp]
