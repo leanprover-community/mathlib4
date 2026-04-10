@@ -104,6 +104,17 @@ theorem isRegular_aleph_one : IsRegular ℵ₁ := by
 theorem cof_omega_one : cof ω₁ = ℵ₁ := by
   simpa using isRegular_aleph_one.cof_omega_eq
 
+/-- A countable supremum of countable ordinals is countable. -/
+theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α → Ordinal} :
+    (∀ i, f i < ω₁) → ⨆ i, f i < ω₁ :=
+  Ordinal.lift_iSup_lt_of_lt_cof (by simp)
+
+@[deprecated (since := "2026-03-23")]
+alias iSup_sequence_lt_omega_one := Ordinal.iSup_lt_omega_one
+
+@[deprecated (since := "2025-12-22")]
+alias iSup_sequence_lt_omega1 := Ordinal.iSup_lt_omega_one
+
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
@@ -140,12 +151,14 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
     (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [lift_umax, c.ord.lift_id', hc.cof_ord]
 
+set_option linter.deprecated false in
 @[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
@@ -323,26 +336,3 @@ theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
 -- `IsInaccessible (ℶ_ o)`
 
 end Cardinal
-
-section Omega1
-
-namespace Ordinal
-
-open Cardinal
-open scoped Ordinal
-
--- TODO: generalize universes, and use ω₁.
-lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
-    iSup o < (aleph 1).ord := by
-  apply lift_iSup_lt_of_lt_cof _ ho
-  rw [← lift_cof, Cardinal.isRegular_aleph_one.cof_ord,
-    Cardinal.lift_umax, Cardinal.lift_id'.{u, v}]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
-
-@[deprecated (since := "2025-12-22")]
-alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
-
-end Ordinal
-
-end Omega1
