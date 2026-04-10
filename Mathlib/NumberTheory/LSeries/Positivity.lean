@@ -25,7 +25,7 @@ The main results of this file are as follows.
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexOrder
 

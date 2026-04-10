@@ -33,7 +33,7 @@ to be able to be applied in noncommutative division rings.
 ultrametric, nonarchimedean
 -/
 
-@[expose] public section
+public section
 open Metric NNReal
 
 namespace IsUltrametricDist

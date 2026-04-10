@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Functor.EpiMono
 
 If a category is `C`, and a functor out of `C` reflects epimorphisms and monomorphisms,
 then the functor reflects isomorphisms.
-Furthermore, categories that admits a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
+Furthermore, categories that admit a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
 and `PreservesMonomorphisms` are balanced.
 
 -/

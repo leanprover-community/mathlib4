@@ -21,7 +21,7 @@ the left lifting property with respect to `p.left`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -31,6 +31,7 @@ variable {C : Type u} [Category.{v} C] {S : C}
 
 namespace CommSq.HasLift
 
+set_option backward.isDefEq.respectTransparency false in
 lemma over {X₁ X₂ X₃ X₄ : Over S}
     {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄} {sq : CommSq t l r b}
     [CommSq.HasLift (f := t.left) (i := l.left) (p := r.left) (g := b.left)

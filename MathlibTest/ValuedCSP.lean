@@ -175,7 +175,7 @@ private def exampleSolutionIncorrect0 : Fin 4 → Fin 3 := ![0, 0, 0, 0]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect0 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -190,7 +190,7 @@ private def exampleSolutionIncorrect1 : Fin 4 → Fin 3 := ![1, 0, 0, 0]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect1 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -205,7 +205,7 @@ private def exampleSolutionIncorrect2 : Fin 4 → Fin 3 := ![0, 2, 0, 0]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect2 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -220,7 +220,7 @@ private def exampleSolutionIncorrect3 : Fin 4 → Fin 3 := ![0, 1, 0, 2]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect3 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -235,7 +235,7 @@ private def exampleSolutionIncorrect4 : Fin 4 → Fin 3 := ![2, 2, 0, 1]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect4 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -250,7 +250,7 @@ private def exampleSolutionIncorrect5 : Fin 4 → Fin 3 := ![0, 1, 2, 1]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect5 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -265,7 +265,7 @@ private def exampleSolutionIncorrect6 : Fin 4 → Fin 3 := ![1, 0, 0, 1]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect6 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl
 
@@ -280,6 +280,6 @@ private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect7 := by
   unfold ValuedCSP.Instance.IsOptimumSolution
-  push_neg
+  push Not
   use exampleSolutionCorrect0
   rfl

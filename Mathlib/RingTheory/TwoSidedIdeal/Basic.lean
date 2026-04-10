@@ -55,7 +55,7 @@ instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
 
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
-  coe_injective'  := by
+  coe_injective' := by
     rintro ⟨t₁⟩ ⟨t₂⟩ (h : {x | _} = {x | _})
     congr 1
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
@@ -65,6 +65,8 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
+
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 

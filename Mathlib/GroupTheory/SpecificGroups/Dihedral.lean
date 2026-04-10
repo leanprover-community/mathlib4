@@ -130,34 +130,33 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
-set_option backward.privateInPublic true in
-private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun
+/-- The equivalence between the dihedral group and the sum of `ZMod`s. -/
+@[simps]
+def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
+  toFun
     | r j => .inl j
     | sr j => .inr j
-  toFun
+  invFun
     | .inl j => r j
     | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
-  Fintype.ofEquiv _ fintypeHelper
+  Fintype.ofEquiv _ equivSum.symm
 
 instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+  equivSum.symm.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by by_contra h; injection h⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
-  rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
+  rw [← Fintype.card_eq.mpr ⟨equivSum.symm⟩, Fintype.card_sum, ZMod.card, two_mul]
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
@@ -176,7 +175,7 @@ theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by
   simp
 
-/-- If `0 < n`, then `sr i` has order 2.
+/-- `sr i` has order 2.
 -/
 @[simp]
 theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
@@ -184,7 +183,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · rw [sq, sr_mul_self]
   · simp [← r_zero]
 
-/-- If `0 < n`, then `r 1` has order `n`.
+/-- `r 1` has order `n`.
 -/
 @[simp]
 theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
@@ -203,7 +202,7 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
     rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
     exact absurd h2.symm (orderOf_pos _).ne
 
-/-- If `0 < n`, then `i : ZMod n` has order `n / gcd n i`.
+/-- If `0 < n`, then `r i` has order `n / gcd n i`.
 -/
 theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val := by
   conv_lhs => rw [← ZMod.natCast_zmod_val i]
@@ -226,24 +225,22 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
-lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
-    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y
-  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
-  | n + 3, _, _ => by
-    rintro ⟨h'⟩
-    specialize h' (r 1) (sr 0)
+lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)
+  | 0, _, _, h' => by simpa using h'.is_comm.comm (r 1) (sr 0)
+  | n + 3, _, _, h' => by
+    have := h'.is_comm.comm (r 1) (sr 0)
     rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
-      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
-    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
+      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at this
+    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero this
 
-lemma commutative_iff : Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
+lemma commutative_iff : IsMulCommutative (DihedralGroup n) ↔ n = 1 ∨ n = 2 where
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
-  mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
+  mpr := by rintro (rfl | rfl) <;> exact ⟨⟨by decide⟩⟩
 
 lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
   by_cases h2 : n = 2
   · simpa [exponent, card, h2] using h.exponent_eq_card
-  · exact not_commutative h1 h2 h.commutative
+  · exact not_commutative h1 h2 h.isMulCommutative
 
 lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic
@@ -273,10 +270,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
           using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
           using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
@@ -302,5 +299,14 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
+theorem center_eq_bot_of_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
+    Subgroup.center (DihedralGroup n) = ⊥ := by
+  simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
+  rintro (i | i) h
+  · have heq := sr.inj (h (sr i))
+    simp_all
+  · have heq := sr.inj (h (r 1))
+    have : Fact (1 < n) := ⟨by grind⟩
+    simp [sub_eq_iff_eq_add, add_assoc, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
 
 end DihedralGroup

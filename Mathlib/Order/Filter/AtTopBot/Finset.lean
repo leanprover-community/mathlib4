@@ -14,7 +14,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 # `Filter.atTop` and `Filter.atBot` filters and finite sets.
 -/
 
-@[expose] public section
+public section
 
 variable {ι ι' α β γ : Type*}
 

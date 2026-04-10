@@ -223,9 +223,6 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
     linearProjOfIsCompl p q h (h.projection x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_idempotent :=
-  linearProjOfIsCompl_isCompl_projection
-
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
@@ -247,26 +244,14 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self :=
-  IsCompl.projection_add_projection_eq_self
-
-@[deprecated (since := "2025-07-11")] alias linear_proj_add_linearProjOfIsCompl_eq_self :=
-  linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self
-
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
-
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl :=
-  IsCompl.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
     hpq.projection x = x ↔ x ∈ p := by
   rw [eq_comm, ← sub_eq_zero, ← projection_eq_self_sub_projection, projection_apply_eq_zero_iff]
-
-@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_iff :=
-  IsCompl.projection_eq_self_iff
 
 @[simp]
 theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
@@ -647,22 +632,29 @@ lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
 alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
 
 theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
-    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (id - p) :=
   le_antisymm
     (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
     fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
 
+theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+  range_eq_ker hp
+
 open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
-    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) := by
-  simpa using hp.one_sub.range_eq_ker.symm
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
+  simpa using hp.one_sub.range_eq_ker_one_sub.symm
+
+theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
+  ker_eq_range hp
 
 open LinearMap in
 theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
     (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
     p ∘ₗ q = p ↔ ker q ≤ ker p := by
-  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, Module.End.one_eq_id, sub_eq_zero,
-    eq_comm (a := p)]
+  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, sub_eq_zero, eq_comm]
 
 end LinearMap
 

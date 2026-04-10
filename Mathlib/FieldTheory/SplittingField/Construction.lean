@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
@@ -164,6 +163,7 @@ theorem algebraMap_succ (n : ℕ) (f : K[X]) :
         (AdjoinRoot.of f.factor) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem splits (n : ℕ) :
     ∀ {K : Type u} [Field K], ∀ (f : K[X]) (_hfn : f.natDegree = n),
       Splits (f.map (algebraMap K <| SplittingFieldAux n f)) :=
@@ -178,6 +178,7 @@ protected theorem splits (n : ℕ) :
     rw [Polynomial.map_mul]
     exact Splits.mul ((Splits.X_sub_C _).map _) (ih _ (natDegree_removeFactor' hf))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
@@ -241,7 +242,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
-  __ := inferInstanceAs <| CommRing (SplittingField f)
+  __ := (inferInstance : CommRing (SplittingField f))
   __ := instGroupWithZero f
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
@@ -297,7 +298,7 @@ instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
 instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
   Module.finite_of_finite K
 
-instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
+instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/

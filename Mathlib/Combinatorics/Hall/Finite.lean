@@ -35,7 +35,7 @@ A description of this formalization is in [Gusakov2021].
 Hall's Marriage Theorem, indexed families
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -50,6 +50,7 @@ section Fintype
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by

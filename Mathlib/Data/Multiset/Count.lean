@@ -203,7 +203,7 @@ section Rel
 
 variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
-theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
+theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [Std.Symm r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
   induction s using Multiset.induction_on generalizing t with
   | empty => rw [rel_zero_left.mp h]

@@ -129,7 +129,7 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
     simp only [map_cons, List.sym2, cons_append]
     cases h with
     | head =>
-      exact (sublist_append_left _ _).cons₂ _
+      exact (sublist_append_left _ _).cons_cons _
     | tail _ h =>
       refine .cons _ ?_
       rw [← singleton_append]
@@ -141,30 +141,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
   induction xs with
   | nil => simp
-  | cons x' xs ih =>
-    simp only [mem_cons, not_or] at h
-    rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
-      disjoint_cons_right]
-    refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
-    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
-      · simp [h.1]
-      · simp_rw [mem_map, not_exists, not_and]
-        intro x'' hx
-        simp_rw [Sym2.mk_eq_mk_iff, Prod.swap_prod_mk, Prod.mk.injEq, true_and]
-        rintro (⟨rfl, rfl⟩ | rfl)
-        · exact h.2 hx
-        · exact h.2 hx
-      · simp [mk_mem_sym2_iff, h.2]
-    · simp [h.1]
-    · intro z hx hy
-      rw [List.mem_map] at hx hy
-      obtain ⟨a, hx, rfl⟩ := hx
-      obtain ⟨b, hy, hx⟩ := hy
-      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
-        false_or] at hx
-      obtain ⟨rfl, rfl⟩ := hx
-      exact h.2 hy
-    · exact ih h.2
+  | cons x' xs ih => aesop (add simp mk_mem_sym2_iff, unfold safe List.Disjoint)
 
 theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2 := by
   induction xs with
@@ -206,9 +183,9 @@ protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.
   | cons a h ih =>
     simp only [List.sym2]
     exact Sublist.append (nil_sublist _) ih
-  | cons₂ a h ih =>
+  | cons_cons a h ih =>
     simp only [List.sym2, map_cons, cons_append]
-    exact cons₂ _ (append (Sublist.map _ h) ih)
+    exact cons_cons _ (append (Sublist.map _ h) ih)
 
 protected theorem Subperm.sym2 {xs ys : List α} (h : xs <+~ ys) : xs.sym2 <+~ ys.sym2 := by
   obtain ⟨xs', hx, h⟩ := h
@@ -266,10 +243,10 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     rw [List.sym, ← nil_append (List.sym (n + 1) xs)]
     apply Sublist.append (nil_sublist _)
     exact h.sym (n + 1)
-  | n + 1, .cons₂ a h => by
+  | n + 1, .cons_cons a h => by
     rw [List.sym, List.sym]
     apply Sublist.append
-    · exact ((cons₂ a h).sym n).map _
+    · exact ((cons_cons a h).sym n).map _
     · exact h.sym (n + 1)
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=

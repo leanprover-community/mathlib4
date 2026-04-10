@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
@@ -32,7 +32,7 @@ Before starting to work on these TODOs, please contact Yury Kudryashov
 who may have partial progress towards some of them.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped ContDiff
@@ -62,6 +62,7 @@ theorem iteratedDeriv_vcomp_eq_sum_orderedFinpartition
   exact iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _) hi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
@@ -85,6 +86,7 @@ theorem iteratedDeriv_vcomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffA
   exact iteratedDerivWithin_vcomp_two hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_three
     (hg : ContDiffWithinAt 𝕜 3 g t (f x)) (hf : ContDiffWithinAt 𝕜 3 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :

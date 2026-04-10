@@ -32,7 +32,7 @@ As corollaries, we get:
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset LinearMap Set Convex Pointwise

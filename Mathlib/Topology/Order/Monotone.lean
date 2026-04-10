@@ -17,7 +17,7 @@ has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.ten
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 

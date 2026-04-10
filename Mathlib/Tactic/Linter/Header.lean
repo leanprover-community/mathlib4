@@ -7,7 +7,9 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Init
+public import Lean.Parser.Module
+public import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -179,7 +181,9 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
+  -- We also allow the "All rights reserved" line to be on a separate line.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
+    |>.replace ".\nAll rights reserved." ". All rights reserved."
   -- Filter out everything after the first isolated `-/`.
   let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -323,7 +327,7 @@ partial def collectAtoms (s : Syntax) : Array String :=
     (s.getArgs.map collectAtoms).flatten
 
 /-- Extracts the module name and modifiers from an import syntax node.
-Returns (module_id, isPublic, isMeta, isAll) -/
+Returns `(module_id, isPublic, isMeta, isAll)`. -/
 def importInfo (importStx : Syntax) : Option (Syntax × Bool × Bool × Bool) := do
   guard (importStx.isOfKind `Lean.Parser.Module.import)
   let args := importStx.getArgs
@@ -349,6 +353,13 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
       else
         importsSoFar := importsSoFar.push info
 
+/--
+The set of files outside the `Mathlib` package to run the header style linter on,
+because they are files that test the linter.
+-/
+def headerTestFiles : NameSet := .ofList
+  [`MathlibTest.Header, `MathlibTest.HeaderFail, `MathlibTest.VersoHeader, `MathlibTest.DirectoryDependencyLinter.Test]
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
@@ -362,8 +373,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test files for the linter itself.
-  unless inMathlib? ||
-    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+  unless inMathlib? || headerTestFiles.contains mainModule do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
@@ -372,11 +382,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
   let fm ← getFileMap
-  let md := (getMainModuleDoc (← getEnv)).toArray
+  let mdDocs := (getMainModuleDoc (← getEnv)).toArray
+  let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
   -- The end of the first module doc-string, or the end of the file if there is none.
-  let firstDocModPos := match md[0]? with
-                          | none     => fm.positions.back!
-                          | some doc => fm.ofPosition doc.declarationRange.endPos
+  -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
+  -- so we get the end pos for both types of docstrings and take their minimum as the first.
+  let firstMDDocModPos := match mdDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstVersoDocModPos := match versoDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
   unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.
@@ -398,20 +415,19 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
     Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
-  let afterImports := firstNonImport? upToStx
-  if afterImports.isNone then return
+  let some afterImports := firstNonImport? upToStx | return
+  if afterImports.isOfKind ``Lean.Parser.Command.eoi then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init then
+  if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
-    | none => return
-    | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
-    | some rest =>
+  | (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+  | rest =>
     Linter.logLint linter.style.header rest
       m!"The module doc-string for a file should be the first command after the imports.\n\
        Please, add a module doc-string before `{stx}`."

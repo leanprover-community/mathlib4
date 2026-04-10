@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Central.Defs
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Central Algebras
 
@@ -49,7 +51,7 @@ lemma baseField_essentially_unique
   { out := fun x ↦ show x ∈ Subalgebra.center k D → _ by
       simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
       rintro x rfl
-      exact  ⟨algebraMap k K x, by simp [algebraMap_eq_smul_one, smul_assoc]⟩ }
+      exact ⟨algebraMap k K x, by simp [algebraMap_eq_smul_one, smul_assoc]⟩ }
   refine ⟨FaithfulSMul.algebraMap_injective k K, fun x => ?_⟩
   have H : algebraMap K D x ∈ (Subalgebra.center K D : Set D) := Subalgebra.algebraMap_mem _ _
   rw [show (Subalgebra.center K D : Set D) = Subalgebra.center k D by rfl] at H
@@ -66,7 +68,7 @@ open MulOpposite in
 /-- Opposite algebra of a central algebra is central. This instance combined with the coming
   `IsSimpleRing` instance for the opposite of central simple algebra will be an
   inverse for an element in `BrauerGroup`, find out more about this in
-  `Mathlib/Algebra/BrauerGroup/Basic.lean`. -/
+  `Mathlib/Algebra/BrauerGroup/Defs.lean`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz :=
     have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)
