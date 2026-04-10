@@ -138,6 +138,10 @@ theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗�
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]
 
+@[simp]
+theorem lift_zero : lift (0 : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) = 0 :=
+  Eq.symm <| lift.unique fun _ _ => by simp only [LinearMap.zero_apply]
+
 theorem lift_mk : lift (mk R M N) = LinearMap.id :=
   Eq.symm <| lift.unique fun _ _ => rfl
 
