@@ -126,7 +126,6 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
   { out := fun c =>
