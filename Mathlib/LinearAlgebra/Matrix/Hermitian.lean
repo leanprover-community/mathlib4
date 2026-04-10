@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-! # Hermitian matrices
@@ -153,6 +154,11 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
     fun ⟨hA, hBC, _hCB, hD⟩ => IsHermitian.fromBlocks hA hBC hD⟩
 
 end InvolutiveStar
+
+/-- The Hadamard product of Hermitian matrices is Hermitian. -/
+theorem IsHermitian.hadamard [CommMonoid α] [StarMul α] {A B : Matrix n n α}
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : (A ⊙ B).IsHermitian := by
+  rw [IsHermitian, conjTranspose_hadamard, hB.eq, hA.eq, hadamard_comm]
 
 section AddMonoid
 
