@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.SetNotation
 
 attribute [use_set_notation] Set
@@ -19,6 +19,36 @@ variable (a b : Set Nat) in
 variable (a b : Nat) in
 #check LE.le a b
 
+/-- info: a ⊂ b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check LT.lt a b
+
+/-- info: a < b : Prop -/
+#guard_msgs in
+variable (a b : Nat) in
+#check LT.lt a b
+
+/-- info: a ⊇ b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check GE.ge a b
+
+/-- info: a ≥ b : Prop -/
+#guard_msgs in
+variable (a b : Nat) in
+#check GE.ge a b
+
+/-- info: a ⊃ b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check GT.gt a b
+
+/-- info: a > b : Prop -/
+#guard_msgs in
+variable (a b : Nat) in
+#check GT.gt a b
+
 end Delab
 
 section Elab
@@ -36,6 +66,27 @@ variable (a b : Set Nat) in
 #guard_msgs in
 variable (a b : List Nat) in
 #check a ⊆ b
+
+/-- info: LT.lt a b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check a ⊂ b
+
+/-- info: GE.ge a b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check a ⊇ b
+
+/-- info: Superset a b : Prop -/
+#guard_msgs in
+variable (a b : List Nat) in
+#check a ⊇ b
+
+/-- info: GT.gt a b : Prop -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check a ⊃ b
+
 
 -- `⊆` is not elaborated to `LE.le` even if that is the only valid relation on this type
 variable (a b : Nat) in
