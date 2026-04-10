@@ -612,6 +612,12 @@ lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 @[simp]
 lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
+lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
+    ⇑(δ i) = Fin.succAbove i := rfl
+
+lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
+    ⇑(σ i) = Fin.predAbove i := rfl
+
 end Concrete
 
 section EpiMono

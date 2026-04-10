@@ -97,10 +97,6 @@ lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by
     lia
   simpa [horn_eq_iSup] using ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
 
-@[simp]
-lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
-    ⇑(stdSimplex.asOrderHom (stdSimplex.objEquiv.{u}.symm α)) = α := rfl
-
 lemma subcomplex_le_horn_iff {n : ℕ}
     (A : Δ[n + 1].Subcomplex) (i : Fin (n + 2)) :
     A ≤ horn.{u} (n + 1) i ↔ ¬ stdSimplex.face {i}ᶜ ≤ A := by
@@ -108,10 +104,8 @@ lemma subcomplex_le_horn_iff {n : ℕ}
   · replace h := h.trans hA
     rw [stdSimplex.face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
     apply h
-    rw [coe_asOrderHom_objEquiv_symm]
-    sorry
-    --rw [Fin.range_succAboveOrderEmb]
-    --exact Set.compl_union_self {i}
+    rw [stdSimplex.coe_asOrderHom_objEquiv_symm, SimplexCategory.coe_δ,
+      Fin.range_succAbove, Set.compl_union_self]
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro d x hx
     by_cases! hd : d < n
@@ -150,7 +144,7 @@ lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     stdSimplex.objEquiv.symm f ∉ (horn.{u} n i).obj (op d) := by
   rw [mem_horn_iff, ne_eq, Decidable.not_not]
   ext i
-  simpa using Or.inr ⟨inv f i, by simp [coe_asOrderHom_objEquiv_symm.{u}]⟩
+  simpa using Or.inr ⟨inv f i, by simp [stdSimplex.coe_asOrderHom_objEquiv_symm.{u}]⟩
 
 lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
     (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
@@ -163,7 +157,6 @@ lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
     (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
       (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
   simp [objEquiv_symm_δ_mem_horn_iff.{u}]
-
 
 namespace horn
 
