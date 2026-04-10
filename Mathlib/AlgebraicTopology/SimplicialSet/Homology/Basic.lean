@@ -97,9 +97,9 @@ lemma ιChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
 lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
     X.ιChainComplex x ≫ (chainComplexMap f R).f n =
       Y.ιChainComplex (f.app _ x) := by
-  dsimp [chainComplexMap, chainComplexFunctor, ιChainComplex, Sigma.map']
-  simp only [Category.id_comp]
-  apply Sigma.ι_desc
+  dsimp [chainComplexMap, chainComplexFunctor, ιChainComplex, Sigma.map',
+    chainComplex, chainComplexFunctor]
+  simp [Sigma.ι_desc]
 
 /-- The colimit cofan which defines the simplicial `n`-chains
 `(X.chainComplex R).X n`. -/
