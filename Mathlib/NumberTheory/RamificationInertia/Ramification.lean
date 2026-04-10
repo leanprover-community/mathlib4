@@ -200,7 +200,8 @@ variable (p P) in
 theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] [Algebra R T]
     [Algebra S T] [IsScalarTower R S T] (Q : Ideal T) (hp : p = comap f P)
     (h : ramificationIdx p Q ≠ 0) : ramificationIdx P Q ≤ ramificationIdx p Q := by
-  refine csSup_le_csSup' (not_not.mp <| Nat.sSup_of_not_bddAbove.mt h) fun n hn ↦ ?_
+  simp_rw [ramificationIdx, Ne] at *
+  refine csSup_le_csSup' (h.imp_symm Nat.sSup_of_not_bddAbove) fun n hn ↦ ?_
   simp_rw [hp, IsScalarTower.algebraMap_eq R S T, ← map_map, map_le_iff_le_comap]
   exact comap_mono <| by rwa [← map_le_iff_le_comap]
 

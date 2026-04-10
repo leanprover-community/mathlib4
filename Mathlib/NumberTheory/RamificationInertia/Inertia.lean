@@ -122,7 +122,8 @@ theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
   have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
-    rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply ..)
+    rintro ⟨x⟩
+    simp [Submodule.Quotient.quot_mk_eq_mk, IsScalarTower.algebraMap_apply R (S ⧸ P) (T ⧸ Q)]
   exact finrank_top_le_finrank_of_isScalarTower ..
 
 end DecEq
