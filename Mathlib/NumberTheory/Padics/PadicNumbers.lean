@@ -8,7 +8,9 @@ module
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.MetricSpace.CauSeqFilter
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
@@ -834,14 +836,11 @@ protected theorem padicNormE.mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r�
 
 protected theorem padicNormE.is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
 
-theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := by
-  dsimp [norm]
-  exact mod_cast padicNormE.nonarchimedean' _ _
+theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ :=
+  IsUltrametricDist.norm_add_le_max _ _
 
-theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
-  dsimp [norm] at h ⊢
-  have : padicNormE q ≠ padicNormE r := mod_cast h
-  exact mod_cast padicNormE.add_eq_max_of_ne' this
+theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ :=
+  IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm h
 
 @[simp]
 theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
@@ -964,12 +963,10 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
   rw [← padicNorm.dvd_iff_norm_le]
 
 theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
-  _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
+  IsUltrametricDist.norm_eq_of_add_norm_lt_max <| lt_of_lt_of_le h (le_max_right _ _)
 
 theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
-  _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
+  IsUltrametricDist.norm_eq_of_add_norm_lt_max <| lt_of_lt_of_le h (le_max_left _ _)
 
 theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
   rw [← norm_neg z2]
@@ -1021,15 +1018,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
 
 open Filter Set
 
-instance : CompleteSpace ℚ_[p] := by
-  apply complete_of_cauchySeq_tendsto
-  intro u hu
-  let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩
-  refine ⟨c.lim, fun s h ↦ ?_⟩
-  rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
-  have := c.equiv_lim ε ε0
-  simp only [mem_map, mem_atTop_sets]
-  exact this.imp fun N hN n hn ↦ hε (hN n hn)
+instance : CompleteSpace ℚ_[p] := completeSpace_of_cauSeq_isComplete
 
 /-! ### Valuation on `ℚ_[p]` -/
 

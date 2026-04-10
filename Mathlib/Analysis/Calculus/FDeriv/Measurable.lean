@@ -688,11 +688,8 @@ variable (f)
 set, is Borel-measurable. -/
 theorem measurableSet_of_differentiableWithinAt_Ici_of_isComplete {K : Set F} (hK : IsComplete K) :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ici x) x ∧ derivWithin f (Ici x) x ∈ K } := by
-  -- simp [differentiable_set_eq_d K hK, D, measurableSet_b, MeasurableSet.iInter,
-  --   MeasurableSet.iUnion]
   simp only [differentiable_set_eq_D K hK, D]
-  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
-  exact measurableSet_B
+  grind [MeasurableSet.iUnion, MeasurableSet.iInter, measurableSet_B]
 
 variable [CompleteSpace F]
 
@@ -877,12 +874,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete_with_param
   rw [this]
   simp only [D, mem_iInter, mem_iUnion]
   simp only [setOf_forall, setOf_exists]
-  refine MeasurableSet.iInter (fun _ ↦ ?_)
-  refine MeasurableSet.iUnion (fun _ ↦ ?_)
-  refine MeasurableSet.iInter (fun _ ↦ ?_)
-  refine MeasurableSet.iInter (fun _ ↦ ?_)
-  refine MeasurableSet.iInter (fun _ ↦ ?_)
-  refine MeasurableSet.iInter (fun _ ↦ ?_)
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   have : ProperSpace E := .of_locallyCompactSpace 𝕜
   exact (isOpen_B_with_param hf K).measurableSet
 
