@@ -117,7 +117,6 @@ namespace OrderedFinpartition
 
 /-! ### Basic API for ordered finpartitions -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ordered finpartition of `Fin n` into singletons. -/
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where

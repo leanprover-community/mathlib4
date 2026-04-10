@@ -7,12 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
-public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
 
-This file defines measure spaces, the almost-everywhere filter and ae_measurable functions.
+This file defines measure spaces, the almost-everywhere filter and `AEMeasurable` functions.
 See `MeasureTheory.MeasureSpace` for their properties and for extended documentation.
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
@@ -295,6 +294,7 @@ section ae
 predicate holds for almost every `x : β` and
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
+
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 

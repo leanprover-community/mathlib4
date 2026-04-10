@@ -38,7 +38,6 @@ namespace Basis
 
 section Fin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `b` be a basis for a submodule `N` of `M`. If `y : M` is linear independent of `N`
 and `y` and `N` together span the whole of `M`, then there is a basis for `M`
 whose basis vectors are given by `Fin.cons y b`. -/
@@ -48,9 +47,9 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
     rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
   Basis.mk (v := Fin.cons y (N.subtype ∘ b))
-    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).fin_cons' _ _
+    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).finCons' _ _
       (by
-        rintro c ⟨x, hx⟩ hc
+        intro c x hx hc
         rw [span_b] at hx
         exact hli c x hx hc))
     fun x _ => by
@@ -64,7 +63,6 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/
@@ -75,7 +73,6 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
     fun z => hsp z z.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)

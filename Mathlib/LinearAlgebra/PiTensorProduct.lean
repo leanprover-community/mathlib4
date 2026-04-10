@@ -299,12 +299,10 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
-  -- TODO: this is defeq abuse: `p` is not a `List`.
-  match p with
-  | [] => rw [FreeAddMonoid.toList_nil, List.map_nil, List.sum_nil]; rfl
-  | x :: ps =>
-    rw [FreeAddMonoid.toList_cons, List.map_cons, List.sum_cons, ← List.singleton_append,
-      ← toPiTensorProduct ps, ← tprodCoeff_eq_smul_tprod]
+  induction p using FreeAddMonoid.inductionOn' with
+  | zero => rfl
+  | add_of b a ih =>
+    rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih, ← tprodCoeff_eq_smul_tprod]
     rfl
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
@@ -325,6 +323,8 @@ lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
 lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
   existsi Quot.out x
   simp [lifts, ← AddCon.quot_mk_eq_coe]
+
+instance (x : ⨂[R] i, s i) : Nonempty ↑x.lifts := nonempty_subtype.mpr (nonempty_lifts x)
 
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/

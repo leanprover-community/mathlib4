@@ -5,11 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -62,7 +64,7 @@ lemma Module.notMem_support_iff' :
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
   rw [← @not_not (_ ∈ _), notMem_support_iff']
-  push_neg
+  push Not
   rfl
 
 lemma Module.mem_support_iff_exists_annihilator :
@@ -83,7 +85,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
       ← hs, Submodule.span_le, Set.subset_def]
     simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
-    push_neg
+    push Not
     simp_rw [and_comm]
     exact id
   · intro ⟨m, _, hm⟩
@@ -194,7 +196,6 @@ variable [Module.Finite R M]
 
 open PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
   classical

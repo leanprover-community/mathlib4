@@ -229,6 +229,7 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
+@[implicit_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
@@ -456,7 +457,6 @@ section Fintype
 
 variable [Fintype ι] [DecidableEq M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
 def reindexFinsetRange : Basis (Finset.univ.image b) R M :=
@@ -700,7 +700,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
+    finsum_eq_sum _ (b.repr m).hasFiniteSupport, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 
 variable (e : ι ≃ ι')

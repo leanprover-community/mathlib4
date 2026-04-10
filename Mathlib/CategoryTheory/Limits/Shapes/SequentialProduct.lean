@@ -181,8 +181,7 @@ noncomputable def isLimit : IsLimit (cone f) where
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
       have hh : m + 1 ≤ n := by lia
       rw [← s.w (homOfLE hh).op]
-      simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-        Category.assoc]
+      simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Category.assoc]
       congr
       induction hh using Nat.leRec with
       | refl => simp

@@ -119,7 +119,7 @@ lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := 
     Set.mem_preimage, comp_apply]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
   [convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1] <;>
-  simpa [Finset.ext_iff] using by grind
+  simp [Finset.ext_iff] <;> grind
 
 @[to_additive]
 lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}

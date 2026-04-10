@@ -32,6 +32,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- In the category of modules, every monomorphism is normal. -/
+@[implicit_reducible]
 def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f.hom)
   g := ofHom (LinearMap.range f.hom).mkQ
@@ -52,8 +53,8 @@ def normalMono (hf : Mono f) : NormalMono f where
               (LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the category of modules, every epimorphism is normal. -/
+@[implicit_reducible]
 def normalEpi (hf : Epi f) : NormalEpi f where
   W := of R (LinearMap.ker f.hom)
   g := ofHom (LinearMap.ker f.hom).subtype

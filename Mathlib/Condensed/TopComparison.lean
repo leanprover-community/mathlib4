@@ -104,12 +104,12 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
 /--
 The sheaf on `CompHausLike P` of continuous maps to a topological space.
 -/
-@[simps! val_obj val_map]
+@[simps! obj_obj obj_map]
 def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
-  val := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
-  cond := by
+  obj := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
+  property := by
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     refine ⟨inferInstance, ?_⟩

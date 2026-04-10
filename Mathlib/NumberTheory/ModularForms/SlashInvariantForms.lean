@@ -87,7 +87,6 @@ theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ
     ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ hγ
 
-set_option backward.isDefEq.respectTransparency false in
 theorem slash_action_eqn' {k : ℤ} [Γ.HasDetOne] [SlashInvariantFormClass F Γ k]
     (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by

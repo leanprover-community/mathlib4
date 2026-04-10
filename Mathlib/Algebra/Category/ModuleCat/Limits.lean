@@ -96,7 +96,6 @@ def limitπLinearMap (j) :
 
 namespace HasLimits
 
-set_option backward.isDefEq.respectTransparency false in
 -- The next two definitions are used in the construction of `HasLimits (ModuleCat R)`.
 -- After that, the limits should be constructed using the generic limits API,
 -- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
@@ -228,7 +227,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 

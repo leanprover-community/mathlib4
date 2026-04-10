@@ -171,7 +171,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
-    refine Quotient.inductionOn' d' fun d => ?_
+    induction d' using Quotient.inductionOn with | _ d
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq]
@@ -269,7 +269,6 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
 
 variable [Module.Finite ℤ S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
@@ -293,7 +292,6 @@ theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : 
     (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I :=
   Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem absNorm_span_singleton (r : S) :
     absNorm (span ({r} : Set S)) = (Algebra.norm ℤ r).natAbs := by

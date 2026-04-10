@@ -166,7 +166,6 @@ lemma isPushout_of_isLocalization {R S Rₘ Sₘ : Type u}
   have : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ := ‹_›
   exact CommRingCat.isPushout_iff_isPushout.mpr (Algebra.isPushout_of_isLocalization M _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma closure_range_union_range_eq_top_of_isPushout
     {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
     (H : IsPushout f g a b) :

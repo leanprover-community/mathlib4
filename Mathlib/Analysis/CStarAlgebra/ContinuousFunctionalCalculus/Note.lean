@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Init
-public import Mathlib.Tactic.Basic
+public import Batteries.Util.LibraryNote
 
 /-!
 # Documentation concerning the continuous functional calculus
