@@ -276,6 +276,15 @@ theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x 
   rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
   exact IsFractionRing.injective A K hxy
 
+theorem of_algEquiv {K L : Type*} [CommRing K] [CommRing L] [Algebra A K] [Algebra A L]
+    [IsFractionRing A K] (e : K ≃ₐ[A] L) : IsFractionRing A L :=
+  IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors A) e
+
+theorem of_algHom [Algebra A L] (f : L →ₐ[A] K) : IsFractionRing A L := by
+  refine IsFractionRing.of_algEquiv <| .symm <| .ofBijective f ⟨f.injective, fun x ↦ ?_⟩
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective A x
+  exact ⟨algebraMap A L x / algebraMap A L y, by simp⟩
+
 section commutes
 
 variable [Algebra A B] {K₁ K₂ : Type*} [Field K₁] [Field K₂] [Algebra A K₁] [Algebra A K₂]
