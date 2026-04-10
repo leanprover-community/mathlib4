@@ -223,14 +223,10 @@ variable (f : K[X])
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
 
-@[implicit_reducible]
-def instAlgebraAux (R : Type*) [CommSemiring R] [Algebra R K] :
-  Algebra R (SplittingField f) := inferInstanceAs <| Algebra R (_ ⧸ _)
-
 public instance (R : Type*) [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) where
   toSMul := inferInstance
-  smul_def' := by exact (instAlgebraAux f R).smul_def'
-  __ := private instAlgebraAux f R
+  smul_def' := by exact Algebra.smul_def' -- For some reason `smul_def'` has to be given separately.
+  __ : Algebra R (SplittingField f) := private inferInstanceAs <| Algebra R (_ ⧸ _)
 
 public instance : Algebra K (SplittingField f) := inferInstance
 
