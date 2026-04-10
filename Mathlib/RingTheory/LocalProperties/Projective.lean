@@ -73,6 +73,10 @@ theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [
     Module.Projective Rₛ Mₛ :=
   Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
+instance Module.Projective.localization {A : Type*} [CommRing A] [Algebra R A] [Projective R A] :
+    Projective (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  projective_of_isLocalizedModule S (IsScalarTower.toAlgHom R A _).toLinearMap
+
 theorem LinearMap.split_surjective_of_localization_maximal
     (f : M →ₗ[R] N) [Module.FinitePresentation R N]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal),

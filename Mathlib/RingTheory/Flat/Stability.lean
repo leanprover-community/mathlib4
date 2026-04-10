@@ -112,6 +112,12 @@ theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
   fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
 
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+
+instance localization [Flat R A] (S : Submonoid R) :
+    Flat (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  of_isLocalizedModule _ S (IsScalarTower.toAlgHom R A _).toLinearMap
+
 end Localization
 
 end Module.Flat
