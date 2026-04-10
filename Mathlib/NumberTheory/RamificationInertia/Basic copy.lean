@@ -23,6 +23,7 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # Ramification index
@@ -654,14 +655,37 @@ theorem sum_ramification_inertia'
         Module.finrank p.ResidueField q.1.ResidueField := by
   rw [← sum_ramification_inertia, finrank_fiber_eq_finrank]
 
+theorem foo20 {R S : Type*} [CommRing R] [IsDomain R] [AddCommGroup S] [Module R S]
+    [Module.Flat R S] : Module.IsTorsionFree R S := by
+  rw [Module.isTorsionFree_iff_smul_eq_zero]
+  simp_rw [or_iff_not_imp_left]
+  intro x y hxy hx
+  let f := LinearMap.lTensor S (LinearMap.mulLeft R x)
+  have hf : Function.Injective f :=
+    Module.Flat.lTensor_preserves_injective_linearMap
+      (LinearMap.mulLeft R x) (mul_right_injective₀ hx)
+  let g := (TensorProduct.rid R S).symm
+  rw [← (g.symm.toLinearMap.comp <| f.comp g.toLinearMap).map_eq_zero_iff
+    (g.symm.injective.comp <| hf.comp g.injective)]
+  simpa [f, g]
+
 theorem sum_ramification_inertia''
-    {R S G : Type*} [CommRing R] [IsDomain R] [CommRing S] [Algebra R S] [Group G] [Finite G]
+    {R S G : Type*} [CommRing R] [IsDomain R] [CommRing S] [IsDomain S]
+    [Algebra R S] [Group G] [Finite G]
     [MulSemiringAction G S] [IsGaloisGroup G R S] [Module.Flat R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
     Nat.card G =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
-  rw [← sum_ramification_inertia]
-  sorry
+  rw [← sum_ramification_inertia']
+  have : Module.IsTorsionFree R S := foo20
+  let := FractionRing.mulSemiringAction_of_isGaloisGroup G R S
+  let := FractionRing.liftAlgebra R (FractionRing S)
+  rw [(IsGaloisGroup.toFractionRing G R S).card_eq_finrank]
+  exact Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)
+
+open NumberField in
+example {K L : Type*} [Field K] [Field L] [Algebra K L] [NumberField K] [NumberField L] :
+    Module.Flat (𝓞 K) (𝓞 L) := inferInstance
 
 end Ideal
