@@ -574,7 +574,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
   have I : ∀ᶠ k in atTop, IsSymmSndFDerivWithinAt 𝕜 f s (y k) := by
     filter_upwards [L] with k hk
     have hcont : ContDiffAt 𝕜 m f (y k) := by
-      refine (hu (y k) ⟨interior_subset (hy k), hk⟩).contDiffAt ?_
+      refine hu _ ⟨interior_subset (hy k), hk⟩ |>.contDiffAt ?_
       refine mem_of_superset (inter_mem (isOpen_interior.mem_nhds (hy k)) (u_open.mem_nhds hk)) ?_
       grind [interior_subset]
     exact (ContDiffAt.isSymmSndFDerivAt hcont hm).isSymmSndFDerivWithinAt
