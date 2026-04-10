@@ -48,7 +48,6 @@ def residueField (x : X) : CommRingCat :=
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
-set_option backward.isDefEq.respectTransparency false in
 instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique (Spec <| .of _))
 
 /-- The residue map from the stalk to the residue field. -/
@@ -291,20 +290,17 @@ def Spec.residueFieldIso :
   (IsLocalRing.ResidueField.mapEquiv
     (Spec.stalkIso R x).commRingCatIsoToRingEquiv).toCommRingCatIso
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Spec.algebraMap_residueFieldIso_inv :
     CommRingCat.ofHom (algebraMap R _) ≫ (residueFieldIso R x).inv =
       (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial ≫ (Spec R).residue x := by
   rw [← Spec.algebraMap_stalkIso_inv_assoc]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Spec.residue_residueFieldIso_hom :
     (Spec R).residue x ≫ (residueFieldIso R x).hom =
       (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
     Spec.map (residueFieldIso _ _).inv ≫
