@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 /-!
 
