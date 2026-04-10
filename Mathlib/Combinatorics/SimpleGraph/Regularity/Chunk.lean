@@ -442,8 +442,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by
     have := average_density_near_total_density hPα hPε hε₁
       (Subset.refl (chunk hP G ε hU).parts) (Subset.refl (chunk hP G ε hV).parts)
-    simp_rw [← sup_eq_biUnion, sup_parts, card_chunk (m_pos hPα).ne', cast_pow] at this
-    simpa
+    simpa [← sup_eq_biUnion, sup_parts, card_chunk (m_pos hPα).ne']
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
   grind
