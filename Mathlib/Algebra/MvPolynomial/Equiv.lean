@@ -882,9 +882,8 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp_uniqueAlgEquiv {τ : Type*} [Uniq
 lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
     toMvPolynomial (R := R) i =
       (MvPolynomial.rename (fun _ : Fin 1 ↦ i)).comp
-        (MvPolynomial.uniqueAlgEquiv (R := R) (σ := Fin 1)).symm := by
-  simpa using
-    toMvPolynomial_eq_rename_comp_uniqueAlgEquiv i (fun _ : Fin 1 ↦ i) rfl
+        (MvPolynomial.uniqueAlgEquiv (R := R) (σ := Fin 1)).symm :=
+  toMvPolynomial_eq_rename_comp_uniqueAlgEquiv i (fun _ : Fin 1 ↦ i) rfl
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
