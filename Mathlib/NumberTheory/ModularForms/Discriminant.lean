@@ -177,7 +177,7 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
     (discriminant_bounded_factor.congr fun z ↦ by congr 1)
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
+@[expose] def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
   toFun := Δ
   slash_action_eq' A hA := by
     obtain ⟨A, rfl⟩ := hA

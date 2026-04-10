@@ -3,9 +3,11 @@ Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.NumberTheory.ModularForms.QExpansion
-import Mathlib.NumberTheory.ModularForms.LevelOne
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
+module
+
+public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
 # Cusp form submodule and IsCuspForm predicate
@@ -31,10 +33,10 @@ q-expansion coefficient (for `𝒮ℒ`).
   q-expansion having vanishing constant term.
 -/
 
+@[expose] public noncomputable section
+
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
   ModularFormClass MatrixGroups OnePoint Filter Topology
-
-noncomputable section
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 
@@ -100,7 +102,7 @@ lemma isZeroAtImInfty_of_valueAtInfty_eq_zero
     (fun τ ↦ eq_cuspFunction f τ one_mem_strictPeriods_SL one_ne_zero)
 
 /-- An `𝒮ℒ` modular form with vanishing q-expansion constant term vanishes at every cusp. -/
-private lemma isZeroAt_of_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k)
+lemma isZeroAt_of_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k)
     (h : (qExpansion 1 f).coeff 0 = 0) {c : OnePoint ℝ} (hc : IsCusp c 𝒮ℒ) :
     c.IsZeroAt f k := by
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
