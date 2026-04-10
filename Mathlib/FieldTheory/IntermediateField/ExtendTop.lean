@@ -47,7 +47,6 @@ abbrev extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
 /-- The isomorphism between `F` and its image `F.extendTop M` in `M`. -/
 noncomputable def extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
 
-@[simp]
 theorem algebraMap_extendTopEquiv (a : F) :
     algebraMap (F.extendTop M) M (extendTopEquiv F M a) = algebraMap F M a := rfl
 
