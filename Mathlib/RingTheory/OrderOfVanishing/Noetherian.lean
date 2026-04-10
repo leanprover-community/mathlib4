@@ -174,7 +174,6 @@ lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) =
   simp [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord, ord_of_isUnit hx]
 
 end ordFrac
-
 section IsDiscreteValuationRing
 
 variable [IsDomain R] [IsDiscreteValuationRing R]

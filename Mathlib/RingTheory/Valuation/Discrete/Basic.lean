@@ -561,8 +561,6 @@ lemma intValuation_maximalIdeal
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   have : (maximalIdeal R).intValuation ↑u = 1 := by simp [maximalIdeal]
   simp [(maximalIdeal R).intValuation_singleton hϖ.ne_zero
-    hϖ.maximalIdeal_eq, hϖ, this]
-
-  rfl
+    hϖ.maximalIdeal_eq, hϖ, this, WithZero.exp_eq_coe_ofAdd n]
 
 end IsDiscreteValuationRing
