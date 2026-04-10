@@ -351,8 +351,10 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
 
-theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) :=
-  fun a b h => by rw [← coeff_zero_C a, h, coeff_zero_C]
+@[grind inj]
+theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
+  intro a b h
+  rw [← coeff_zero_C a, h, coeff_zero_C]
 
 theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
   fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using coeff_apply _ _⟩

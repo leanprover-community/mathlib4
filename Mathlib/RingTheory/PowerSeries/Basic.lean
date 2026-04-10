@@ -189,6 +189,7 @@ theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := b
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
   coeff_ne_zero_C n.succ_ne_zero
 
+@[grind inj]
 theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
