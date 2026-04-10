@@ -291,62 +291,6 @@ end flatBaseChange
 
 section
 
-open TensorProduct
-
-variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ]
-  (S : Type*) [CommRing S] [Algebra R S]
-
--- PRed
-/-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
-but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
-noncomputable def Localization.tensor_localization_algEquiv :
-    (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
-  (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
-
--- PRed
-@[simp]
-theorem Localization.tensor_localization_algEquiv_apply_tmul_one (x : S) :
-    Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
-  (Localization.tensor_localization_algEquiv M S).commutes x
-
--- PRed
-@[simp]
-theorem Localization.tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
-    Localization.tensor_localization_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
-  let Rₘ := Localization M
-  let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
-  obtain ⟨x, y, rfl⟩ := IsLocalization.exists_mk'_eq M x
-  letI : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
-  have h1 : (1 : S) ⊗ₜ[R] IsLocalization.mk' Rₘ x y = algebraMap _ _ (IsLocalization.mk' Rₘ x y) :=
-    rfl
-  rw [h1, Localization.tensor_localization_algEquiv, Localization.algEquiv_symm_apply,
-    IsLocalization.algebraMap_mk' S, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul]
-  simp_rw [RingHom.id_apply]
-  have h x : algebraMap S Sₘ ((algebraMap R S) x) = algebraMap Rₘ Sₘ ((algebraMap R Rₘ) x) := by
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
-  rw [h, h, ← map_mul, IsLocalization.mk'_spec]
-
--- PRed
-noncomputable def Localization.localization_tensor_algEquiv :
-    (Localization M ⊗[R] S) ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
-  { __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
-      (Localization.tensor_localization_algEquiv M S).toRingEquiv
-    commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S }
-
--- PRed
-@[simp]
-theorem Localization.localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
-    Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
-  (Localization.localization_tensor_algEquiv M S).commutes x
-
--- PRed
-@[simp]
-theorem Localization.localization_tensor_algEquiv_apply_one_tmul (x : S) :
-    Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
-  (Localization.tensor_localization_algEquiv M S).commutes x
-
-end
-
 namespace Ideal
 
 open Classical in
@@ -520,11 +464,11 @@ noncomputable def Fiber.algEquivQuotient :
   letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   letI pSp := pRp.map (algebraMap Rp Sp)
   (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S Rp S pRp).trans <|
-    { __ := quotientEquiv _ _ (Localization.tensor_localization_algEquiv p.primeCompl S) (by
+    { __ := quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
         rw [← Ideal.map_coe includeRight, Ideal.map_map]
         congr
         ext
-        simp [Localization.tensor_localization_algEquiv_apply_one_tmul p.primeCompl])
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
       commutes' := by simp }
 
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (MaximalSpectrum (p.Fiber S)) :=
@@ -672,19 +616,6 @@ theorem sum_ramification_inertia
   intros
   apply foo2
 
-variable (S) in
-theorem finrank_fiber_eq_finrank_localization [Module.Finite R S] [Module.Flat R S] :
-    Module.finrank p.ResidueField (p.Fiber S) = Module.finrank (Localization.AtPrime p)
-      (Localization (Algebra.algebraMapSubmonoid S p.primeCompl)) := by
-  let Rp := Localization.AtPrime p
-  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  have : Module.Flat Rp Sp := -- instance PRed
-    Module.Flat.of_isLocalizedModule Rp p.primeCompl (IsScalarTower.toAlgHom R S Sp).toLinearMap
-  have : Module.Free Rp Sp := Module.free_of_flat_of_isLocalRing
-  exact ((Algebra.TensorProduct.cancelBaseChange R Rp p.ResidueField p.ResidueField S).symm.trans
-    (Algebra.TensorProduct.congr AlgEquiv.refl (Localization.localization_tensor_algEquiv
-      p.primeCompl S))).toLinearEquiv.finrank_eq.trans Module.finrank_baseChange
-
 -- PRed
 lemma Ideal.finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [hp : p.IsPrime] :
@@ -735,7 +666,7 @@ theorem sum_ramification_inertia'
       -- use uniqueness of lift?
       sorry }
   let e' : FractionRing S ≃ₐ[S] κS :=
-    e.trans <| (Localization.tensor_localization_algEquiv (nonZeroDivisors R) S).symm.trans <|
+    e.trans <| (Localization.tensorLeftAlgEquiv (nonZeroDivisors R) S).symm.trans <|
       (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
         (Algebra.TensorProduct.commRight R S κR)
   have := IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors S) e'
