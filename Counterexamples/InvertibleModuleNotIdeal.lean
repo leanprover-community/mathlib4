@@ -33,7 +33,6 @@ instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
 /-- R as an algebra over `SqZeroExtQuotMax R`. -/
 abbrev SqZeroExtQuotMax.algebraBase : Algebra (SqZeroExtQuotMax R) R := TrivSqZeroExt.algebraBase ..
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 open CommRing (Pic) in
 /-- If the Picard group of a commutative ring R is nontrivial, then `SqZeroExtQuotMax R`
 has an invertible module (which is the base change of an invertible ideal of R)
