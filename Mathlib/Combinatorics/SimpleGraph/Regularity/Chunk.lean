@@ -448,7 +448,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
   grind
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp and norm_num
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
