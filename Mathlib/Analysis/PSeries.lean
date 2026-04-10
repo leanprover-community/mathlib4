@@ -450,7 +450,6 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop := by
     refine Tendsto.congr' ?_ tendsto_natCast_atTop_atTop
-    filter_upwards [eventually_ge_atTop 0] with n hn
     simp
   have h_add : (fun n : ℕ ↦ (n : ℝ) + a) ~[atTop] fun n ↦ (n : ℝ) := by
     simpa using IsEquivalent.add_const_of_norm_tendsto_atTop
