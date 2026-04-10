@@ -125,7 +125,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
       · obtain ⟨k, rfl⟩ := hn
         simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
       · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_map, one_apply_ne, smul_zero]
-        contrapose! hn
+        contrapose hn
         exact ⟨0, by simp [hn]⟩
     · simp
 

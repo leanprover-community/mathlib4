@@ -256,7 +256,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
   · by_cases h : Multipliable f L
     · exact h.map_tprod g hge.continuous
     · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      contrapose! h
+      contrapose h
       -- need to show `g ∘ f` multipliable implies `g` multipliable
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h

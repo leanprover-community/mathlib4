@@ -574,7 +574,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
       (hf.integrableOn_isCompact k'_comp)
     rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
     apply hgs p _ hp
-    contrapose! hy
+    contrapose hy
     exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
   apply ContinuousWithinAt.mono_of_mem_nhdsWithin (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩

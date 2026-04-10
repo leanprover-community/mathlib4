@@ -1119,7 +1119,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_mk, Sym2.eq]
-    contrapose!
+    contrapose
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
     exact h' _ hs rfl

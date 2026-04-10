@@ -196,7 +196,7 @@ theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα :
   @Set.Nonempty.of_subtype _ _
     (by
       rw [← Finite.card_pos_iff, pos_iff_ne_zero]
-      contrapose! hpα
+      contrapose hpα
       rw [← Nat.modEq_zero_iff_dvd, ← hpα]
       exact hG.card_modEq_card_fixedPoints α)
 
