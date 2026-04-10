@@ -852,6 +852,10 @@ theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
 
+lemma Infinite.inter_of_finite_diff {α : Type*} {s t : Set α} (hs : s.Infinite)
+    (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
+  simpa using hs.diff ht
+
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by
   simp only [Set.Infinite, finite_union, not_and_or]

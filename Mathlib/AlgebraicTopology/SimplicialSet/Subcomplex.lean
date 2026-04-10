@@ -159,16 +159,20 @@ lemma mem_ofSimplex_obj_iff {n : ℕ} (x : X _⦋n⦌) {m : SimplexCategoryᵒ�
   dsimp [ofSimplex, Subfunctor.ofSection]
   aesop
 
+lemma ofSimplex_map_le {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌)
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) ≤ ofSimplex x := by
+  simp only [Subfunctor.ofSection_le_iff]
+  exact ⟨f.op, by simp⟩
+
 @[simp]
-lemma ofSimplex_map {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
+lemma ofSimplex_map_of_epi {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
     (x : X _⦋m⦌) :
     ofSimplex (X.map f.op x) = ofSimplex x := by
-  refine le_antisymm ?_ ?_
-  · simp only [Subfunctor.ofSection_le_iff]
-    exact ⟨f.op, by simp⟩
-  · simp only [Subfunctor.ofSection_le_iff]
-    have := isSplitEpi_of_epi f
-    exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  refine le_antisymm (ofSimplex_map_le f x) ?_
+  simp only [Subfunctor.ofSection_le_iff]
+  have := isSplitEpi_of_epi f
+  exact ⟨(section_ f).op, by simp [← FunctorToTypes.map_comp_apply, ← op_comp]⟩
 
 section
 
