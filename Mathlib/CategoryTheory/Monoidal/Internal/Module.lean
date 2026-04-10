@@ -43,7 +43,8 @@ namespace MonModuleEquivalenceAlgebra
 /-- The ring structure on a monoid object.
 This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
 to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
-scoped instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
+@[implicit_reducible]
+def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
@@ -67,6 +68,8 @@ scoped instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
       rw [TensorProduct.zero_tmul, map_zero]
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
+
+scoped[ModuleCat.MonModuleEquivalenceAlgebra] attribute [instance] MonObj.toRing
 
 /-- The algebra structure on a monoid object.
 This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
