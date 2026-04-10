@@ -129,7 +129,10 @@ attribute [local instance] functorMap_epi Abelian.hasFiniteBiproducts
 variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
 instance : Epi (Limits.Pi.map f) :=
-  epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simpa using by infer_instance)
+  epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by
+    simp only [Nat.succ_eq_add_one, Functor.ofOpSequence_obj, homOfLE_leOfHom,
+      Functor.ofOpSequence_map_homOfLE_succ]
+    infer_instance)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where

@@ -22,4 +22,3 @@ open CategoryTheory Limits
 variable (R : Type u) [Ring R]
 
 instance : HasCountableLimits (LightCondMod.{u} R) where
-  out := inferInstance
