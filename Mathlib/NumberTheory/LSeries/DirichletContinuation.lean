@@ -7,7 +7,9 @@ module
 
 public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
-public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+
+import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Analytic continuation of Dirichlet L-functions

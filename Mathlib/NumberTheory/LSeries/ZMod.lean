@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Normed.Module.Connected
 
-import Mathlib.Analysis.Normed.Module.Connected
 import Mathlib.Analysis.SumOverResidueClass
 
 /-!
