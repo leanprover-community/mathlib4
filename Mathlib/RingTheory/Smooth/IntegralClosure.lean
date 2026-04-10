@@ -33,7 +33,6 @@ open Polynomial TensorProduct
 
 variable {R S B : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing B] [Algebra R B]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The comparison map from `S ⊗[R] integralClosure R B` to `integralClosure S (S ⊗[R] B)`.
 This is injective when `S` is `R`-flat, and (TODO) bijective when `S` is `R`-smooth. -/
@@ -56,7 +55,6 @@ lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :
   exact Module.Flat.lTensor_preserves_injective_linearMap (M := S)
     (integralClosure R B).val.toLinearMap Subtype.val_injective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- "Base change preserves integral closure" is stable under composition. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_tower
     {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -72,7 +70,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
   congr 1
   ext; simp [e, toIntegralClosure]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- "Base change preserves integral closure" can be checked Zariski-locally. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     {s : Set S} (hs : Ideal.span s = ⊤) (Sᵣ : s → Type*) [∀ r, CommRing (Sᵣ r)]
@@ -124,7 +121,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
         (AlgHom.id R (integralClosure R B))).toLinearMap)
       (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).1)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 /-- Base changing to `MvPolynomial σ R` preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
@@ -153,11 +149,9 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
       (Algebra.TensorProduct.map (AlgHom.id R (MvPolynomial σ R)) (integralClosure R B).val) =
       (MvPolynomial.mapAlgHom (integralClosure R B).val).comp
       MvPolynomial.scalarRTensorAlgEquiv.toAlgHom := by
-    ext <;> simp [e₀, -MvPolynomial.mapAlgHom_apply, MvPolynomial.mapAlgHom, MvPolynomial.coeff_map,
-      MvPolynomial.scalarRTensorAlgEquiv]
+    ext <;> simp [e₀, MvPolynomial.coeff_map, MvPolynomial.scalarRTensorAlgEquiv]
   exact congr($this y)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- Localization preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
@@ -272,7 +266,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
         (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
     · simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero] using H' a ham
   refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H''⟩
-  rw [modByMonic_eq_sub_mul_div _ hf, map_sub, map_mul, map_mul,
+  rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]
 
 open TensorProduct
@@ -366,7 +360,6 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   exact sum_mem fun i hi ↦ Subalgebra.mul_mem _ (Algebra.subset_adjoin ⟨_, hRy _, rfl⟩)
     (pow_mem (Subalgebra.algebraMap_mem _ _) _)
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `TensorProduct.toIntegralClosure_bijective_of_smooth`
 private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
     [Algebra.IsStandardEtale R S] : Function.Bijective (toIntegralClosure R S B) := by
@@ -379,7 +372,6 @@ private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
 
 end IsStandardEtale
 
-set_option backward.isDefEq.respectTransparency false in
 theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S] :
     Function.Bijective (toIntegralClosure R S B) := by
   have (m : PrimeSpectrum S) : ∃ f ∉ m.asIdeal,

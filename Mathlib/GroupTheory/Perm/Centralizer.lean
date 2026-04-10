@@ -128,6 +128,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
+@[implicit_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
@@ -374,7 +375,7 @@ theorem ofPermHom_support :
     rw [(g ^ m).injective.ne_iff, a.injective.ne_iff, not_iff_comm]
     by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
     · simp only [H, iff_true]
-      push_neg
+      push Not
       intro d hd
       rw [← notMem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
@@ -536,7 +537,6 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
     exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   apply le_antisymm

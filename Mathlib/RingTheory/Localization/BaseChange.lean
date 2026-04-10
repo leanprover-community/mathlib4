@@ -81,6 +81,12 @@ lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
   apply (equivTensorProduct S M).symm.injective
   simp
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+instance {T : Type*} [CommSemiring T] [Algebra R T] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R T (A ⊗[R] T) : T →ₗ[R] A ⊗[R] T) := by
+  rw [isLocalizedModule_iff_isBaseChange (S := S) (A := A)]
+  exact TensorProduct.isBaseChange _ _ _
+
 namespace IsLocalization
 
 open TensorProduct Algebra.TensorProduct
@@ -120,18 +126,18 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
 tensoring them over `R`. -/
 noncomputable def moduleTensorEquiv : M₁ ⊗[A] M₂ ≃ₗ[A] M₁ ⊗[R] M₂ :=
   have := tensorProduct_compatibleSMul S A M₁ M₂
-  equivOfCompatibleSMul R A M₁ M₂
+  equivOfCompatibleSMul R A A M₁ M₂
 
 /-- If `A` is a localization of `R`, tensoring an `A`-module with `A` over `R` does nothing. -/
 noncomputable def moduleLid : A ⊗[R] M₁ ≃ₗ[A] M₁ :=
   have := tensorProduct_compatibleSMul S A A M₁
-  (equivOfCompatibleSMul R A A M₁).symm ≪≫ₗ TensorProduct.lid _ _
+  (equivOfCompatibleSMul R A A A M₁).symm ≪≫ₗ TensorProduct.lid _ _
 
 /-- If `A` is a localization of `R`, tensoring two `A`-algebras over `A` is the same as
 tensoring them over `R`. -/
 noncomputable def algebraTensorEquiv : B ⊗[A] C ≃ₐ[A] B ⊗[R] C :=
   have := tensorProduct_compatibleSMul S A B C
-  Algebra.TensorProduct.equivOfCompatibleSMul R A B C
+  Algebra.TensorProduct.equivOfCompatibleSMul R A A B C
 
 /-- If `A` is a localization of `R`, tensoring an `A`-algebra with `A` over `R` does nothing. -/
 noncomputable def algebraLid : A ⊗[R] B ≃ₐ[A] B :=

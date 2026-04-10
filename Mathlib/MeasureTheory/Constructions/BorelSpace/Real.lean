@@ -194,6 +194,11 @@ theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
 
+@[fun_prop]
+theorem Measurable.nnreal_mk {f : α → ℝ} (hf : Measurable f) {h'f : ∀ x, 0 ≤ f x} :
+    Measurable (fun x ↦ NNReal.mk (f x) (h'f x)) :=
+  measurable_coe_nnreal_real_iff.mp hf
+
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
@@ -389,7 +394,7 @@ theorem AEMeasurable.coe_real_ereal {f : α → ℝ} {μ : Measure α} (hf : AEM
   measurable_coe_real_ereal.comp_aemeasurable hf
 
 /-- The set of finite `EReal` numbers is `MeasurableEquiv` to `ℝ`. -/
-def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
+noncomputable def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
   EReal.neBotTopHomeomorphReal.toMeasurableEquiv
 
 theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ => f p) :

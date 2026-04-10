@@ -63,7 +63,6 @@ to avoid needing even more. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 600000 in --
 set_option synthInstance.maxHeartbeats 40000 in
-set_option backward.whnf.reducibleClassField false in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
     (AddCommGrpCat.FilteredColimits.colimit M) where

@@ -78,7 +78,6 @@ theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTo
 theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.IsAlgebraic F K] :
     IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
@@ -144,7 +143,6 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   refine RingHom.congr_fun ?_ _
   exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] :
     maximalRealSubfield K = ⊤ :=
@@ -174,7 +172,6 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
       Algebra.IsAlgebraic.tower_bot E (maximalRealSubfield K) K
   exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   rw [isTotallyReal_iff_le_maximalRealSubfield, sup_le_iff,

@@ -24,7 +24,8 @@ namespace PNat
 
 variable (a b : ℕ+)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ := Subtype.instLocallyFiniteOrder _
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ :=
+  inferInstanceAs <| LocallyFiniteOrder (Subtype _)
 
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).subtype fun n : ℕ => 0 < n :=
   rfl
@@ -65,6 +66,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem card_Ico : #(Ico a b) = b - a := by
   rw [← Nat.card_Ico, ← map_subtype_embedding_Ico, card_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_Ioc : #(Ioc a b) = b - a := by
   rw [← Nat.card_Ioc, ← map_subtype_embedding_Ioc, card_map]

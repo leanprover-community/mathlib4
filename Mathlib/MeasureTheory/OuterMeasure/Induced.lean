@@ -202,6 +202,13 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
     intro h2f
     exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
 
+omit msU m_mono in
+theorem inducedOuterMeasure_zero (Pu : P univ) :
+    inducedOuterMeasure (fun _ _ => 0) P0 (by simp) = 0 := by
+  ext s
+  rw [inducedOuterMeasure_eq_iInf PU (fun _ _ => by simp) (fun _ _ => by simp)]
+  exact le_antisymm (iInf₂_le_of_le univ Pu (by simp)) (zero_le _)
+
 theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f ⁻¹' s) ↔ P s)
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :
     inducedOuterMeasure m P0 m0 (f ⁻¹' A) = inducedOuterMeasure m P0 m0 A := by
@@ -353,7 +360,6 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _

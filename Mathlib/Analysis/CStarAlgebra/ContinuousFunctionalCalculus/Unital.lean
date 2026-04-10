@@ -142,6 +142,7 @@ goals, but it can be modified to become more sophisticated as the need arises.
 
 @[expose] public section
 
+open scoped Ring
 open Topology ContinuousMap
 
 section Basic
@@ -730,12 +731,10 @@ lemma cfc_nonneg_of_predicate [LE A]
 variable (R) in
 /-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
 has nonempty `R`-spectrum. -/
+@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
+  (since := "2026-03-08")]
 lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
-    (spectrum R a).Nonempty := by
-  by_contra! h
-  apply one_ne_zero (α := A)
-  rw [← cfc_one R a, ← cfc_zero R a]
-  exact cfc_congr fun x hx ↦ by simp_all
+    (spectrum R a).Nonempty := ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end CFC
 
@@ -780,7 +779,7 @@ lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
 
 lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ (f x)⁻¹) a = Ring.inverse (cfc f a) := by
+    cfc (fun x ↦ (f x)⁻¹) a = (cfc f a)⁻¹ʳ := by
   rw [← val_inv_cfcUnits f a hf', ← val_cfcUnits f a hf', Ring.inverse_unit]
 
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
@@ -791,10 +790,16 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx
 
+lemma cfc_ringInverse_id (a : A) (ha_unit : IsUnit a) (ha : p a := by cfc_tac) :
+    cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ʳ := by
+  rw [Ring.inverse_of_isUnit ha_unit]
+  change cfc (fun x ↦ x⁻¹ : R → R) (ha_unit.unit : A) = ha_unit.unit⁻¹
+  exact cfc_inv_id _ ha
+
 lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ f x / g x) a = cfc f a * Ring.inverse (cfc g a) := by
+    cfc (fun x ↦ f x / g x) a = cfc f a * (cfc g a)⁻¹ʳ := by
   simp only [div_eq_mul_inv]
   rw [cfc_mul .., cfc_inv g a hg']
 
@@ -1024,7 +1029,6 @@ variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrdere
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 variable [NonnegSpectrumClass R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
     cfcHom ha f ≤ cfcHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcHom_nonneg_iff, sub_nonneg]

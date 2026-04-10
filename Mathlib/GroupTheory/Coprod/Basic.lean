@@ -153,7 +153,8 @@ section MulOneClass
 variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] [MulOneClass N']
   [MulOneClass P]
 
-@[to_additive] protected instance : MulOneClass (M ∗ N) := Con.mulOneClass _
+@[to_additive] protected instance : MulOneClass (M ∗ N) :=
+  inferInstanceAs <| MulOneClass (coprodCon M N).Quotient
 
 /-- The natural projection `FreeMonoid (M ⊕ N) →* M ∗ N`. -/
 @[to_additive /-- The natural projection `FreeAddMonoid (M ⊕ N) →+ AddMonoid.Coprod M N`. -/]
@@ -609,7 +610,6 @@ set_option backward.isDefEq.respectTransparency false in
   rw [← closure_range_inl_union_inr, Subgroup.closure_union, ← MonoidHom.coe_range,
     ← MonoidHom.coe_range, Subgroup.closure_eq, Subgroup.closure_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem codisjoint_range_inl_range_inr :
     Codisjoint (MonoidHom.range (inl : G →* G ∗ H)) (MonoidHom.range inr) :=
@@ -665,6 +665,7 @@ end MulOneClass
 
 variable (M N P : Type*) [Monoid M] [Monoid N] [Monoid P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A multiplicative equivalence between `(M ∗ N) ∗ P` and `M ∗ (N ∗ P)`. -/
 @[to_additive /-- An additive equivalence between `AddMonoid.Coprod (AddMonoid.Coprod M N) P` and
 `AddMonoid.Coprod M (AddMonoid.Coprod N P)`. -/]
