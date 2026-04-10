@@ -84,12 +84,11 @@ variable (ρ) in
       algebraMap_intertwiningMap_bijective_of_isAlgClosed).symm]
   exact CommSemiring.finrank_self k
 
+open scoped IsMulCommutative in
 set_option backward.isDefEq.respectTransparency false in
 include ρ in
 variable (ρ) in
-theorem finrank_eq_one_of_isMulCommutative
-    [IsMulCommutative G] : Module.finrank k V = 1 := by
-  have _ : IsMulCommutative k[G] := ⟨⟨mul_comm⟩⟩
+theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 := by
   exact IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
 
 end IsIrreducible
