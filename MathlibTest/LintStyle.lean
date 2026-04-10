@@ -643,8 +643,8 @@ def allLinterDefinedCharacterLists : List (List Char) := [
 def isPrivateUseAreaChar (c : Char) : Bool :=
   letI N := c.toNat
   (0xE000 ≤ N && N ≤ 0xF8FF) ||
-  (N ≥ 0xF0000 && N ≤ 0xFFFFF) ||
-  (N ≥ 0x100000 && N ≤ 0x10FFFF)
+  (0xF0000 ≤ N && N ≤ 0xFFFFF) ||
+  (0x100000 ≤ N && N ≤ 0x10FFFF)
 
 /- Ensure no list contains [Private Use Area](https://en.wikipedia.org/wiki/Private_Use_Areas) characters. -/
 #guard !(allLinterDefinedCharacterLists.any <| (List.any · isPrivateUseAreaChar))
