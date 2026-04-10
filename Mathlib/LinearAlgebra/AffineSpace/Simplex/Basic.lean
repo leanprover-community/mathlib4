@@ -637,8 +637,8 @@ section LinearOrder
 variable [LinearOrder k]
 
 /-- The closed interior is the union of the open interior and the surface. -/
-theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass k]
-    {n : ℕ} [NeZero n] (s : Simplex k P n) :
+theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) :
     s.closedInterior = s.interior ∪ ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
   apply Set.Subset.antisymm
   · intro p hp
@@ -648,7 +648,7 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
     intro h
     rw [affineCombination_mem_closedInterior_iff hw1] at hp
     simp_rw [affineCombination_mem_interior_iff hw1, Set.mem_Ioo] at h
-    push_neg +distrib at h
+    push +distrib Not at h
     obtain ⟨j, hj⟩ : ∃ j : Fin (n + 1), w j = 0 := by
       obtain ⟨i, hi | hi⟩ := h
       · exact ⟨i, le_antisymm hi (hp i).1⟩
