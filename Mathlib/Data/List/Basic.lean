@@ -493,7 +493,8 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
-theorem mem_tail {α k} (l : List α) (h : 0 < k) (hk : k < l.length) : l[k]'hk ∈ l.tail := by
+theorem getElem_mem_tail {α k} (l : List α) (h : 0 < k) (hk : k < l.length) :
+    l[k]'hk ∈ l.tail := by
   cases l <;> grind
 
 /-! ### sublists -/

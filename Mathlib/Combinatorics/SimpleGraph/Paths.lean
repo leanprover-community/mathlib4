@@ -721,7 +721,7 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
   · rw [ne_eq, ← Walk.nil_iff_eq_nil, Walk.not_nil_iff_lt_length, Walk.length_append]
     cases lt_sup_iff.mp hn <;> lia
   · rw [Walk.tail_support_append, List.nodup_append]
-    exact ⟨(p.isPath_def.mp hp).nodup_tail, (q.isPath_def.mp hq).nodup_tail, fun _ x _ y ↦
+    exact ⟨(p.isPath_def.mp hp).tail, (q.isPath_def.mp hq).tail, fun _ x _ y ↦
       ne_of_mem_of_not_mem x (h.symm y)⟩
 
 theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
