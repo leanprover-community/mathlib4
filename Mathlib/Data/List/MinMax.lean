@@ -71,13 +71,7 @@ theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     rw [foldl_argAux_eq_none] at hf
     simp_all [hf.1, hf.2, hr₀.irrefl _]
   rw [hf, Option.mem_def] at ho
-  dsimp only at ho
-  split_ifs at ho with hac <;> rcases mem_append.1 hb with h | h <;>
-    injection ho with ho <;> subst ho
-  · exact fun hba => ih h hf (hr₁.trans b a c hba hac)
-  · simp_all [hr₀.irrefl _]
-  · exact ih h hf
-  · simp_all
+  grind +splitIndPred
 
 end ArgAux
 
