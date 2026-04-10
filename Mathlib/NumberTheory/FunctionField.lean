@@ -18,7 +18,7 @@ This file defines a function field and the ring of integers corresponding to it.
 
 ## Main definitions
 
-- `FunctionField F K` states that `K` is a function field over the (finite) field `F`,
+- `FunctionField F K` states that `K` is a function field over the field `F`,
   i.e. it is a finite extension of the field of rational functions in one variable over `F`.
 - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
   as the integral closure of `F[X]` in the function field.
@@ -51,7 +51,7 @@ open scoped nonZeroDivisors Polynomial WithZero
 
 variable (F K : Type*) [Field F] [Field K]
 
-/-- `K` is a function field over the finite field `F` if it is a finite
+/-- `K` is a function field over the (usually finite) field `F` if it is a finite
 extension of the field of rational functions in one variable over `F`.
 
 Note that `K` can be a function field over multiple, non-isomorphic, `F`.
