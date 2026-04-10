@@ -37,6 +37,16 @@ section artinian
 open Submodule
 
 -- PRed
+instance Module.IsTorsionFree.ofFlat {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] [Flat R M] : IsTorsionFree R M where
+  isSMulRegular x hx y z hyz := by
+    have hf : Function.Injective (LinearMap.lTensor M (LinearMap.mulLeft R x)) :=
+      Flat.lTensor_preserves_injective_linearMap _ (hx.smul_right_injective R)
+    rw [← ((TensorProduct.rid R M).injective.comp <|
+      hf.comp (TensorProduct.rid R M).symm.injective).eq_iff]
+    simpa
+
+-- PRed
 theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
     [IsDomain L] [Module.Finite K L] :
     IsField L where
@@ -655,37 +665,21 @@ theorem sum_ramification_inertia'
         Module.finrank p.ResidueField q.1.ResidueField := by
   rw [← sum_ramification_inertia, finrank_fiber_eq_finrank]
 
-theorem foo20 {R S : Type*} [CommRing R] [IsDomain R] [AddCommGroup S] [Module R S]
-    [Module.Flat R S] : Module.IsTorsionFree R S := by
-  rw [Module.isTorsionFree_iff_smul_eq_zero]
-  simp_rw [or_iff_not_imp_left]
-  intro x y hxy hx
-  let f := LinearMap.lTensor S (LinearMap.mulLeft R x)
-  have hf : Function.Injective f :=
-    Module.Flat.lTensor_preserves_injective_linearMap
-      (LinearMap.mulLeft R x) (mul_right_injective₀ hx)
-  let g := (TensorProduct.rid R S).symm
-  rw [← (g.symm.toLinearMap.comp <| f.comp g.toLinearMap).map_eq_zero_iff
-    (g.symm.injective.comp <| hf.comp g.injective)]
-  simpa [f, g]
-
 theorem sum_ramification_inertia''
-    {R S G : Type*} [CommRing R] [IsDomain R] [CommRing S] [IsDomain S]
-    [Algebra R S] [Group G] [Finite G]
-    [MulSemiringAction G S] [IsGaloisGroup G R S] [Module.Flat R S] [Module.Finite R S]
-    (p : Ideal R) [p.IsPrime] :
+    {R S G : Type*} [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] [Algebra R S]
+    [Group G] [Finite G] [MulSemiringAction G S] [IsGaloisGroup G R S]
+    [Module.Flat R S] [Module.Finite R S] (p : Ideal R) [p.IsPrime] :
     Nat.card G =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
-  rw [← sum_ramification_inertia']
-  have : Module.IsTorsionFree R S := foo20
   let := FractionRing.mulSemiringAction_of_isGaloisGroup G R S
   let := FractionRing.liftAlgebra R (FractionRing S)
-  rw [(IsGaloisGroup.toFractionRing G R S).card_eq_finrank]
-  exact Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)
+  rw [← sum_ramification_inertia', (IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
+    Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)]
 
 open NumberField in
 example {K L : Type*} [Field K] [Field L] [Algebra K L] [NumberField K] [NumberField L] :
-    Module.Flat (𝓞 K) (𝓞 L) := inferInstance
+    Module.Flat (𝓞 K) (𝓞 L) :=
+  inferInstance
 
 end Ideal
