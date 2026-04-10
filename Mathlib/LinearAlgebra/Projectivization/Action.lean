@@ -72,7 +72,7 @@ instance linearEquiv_is_two_pretransitive :
   let f := hD.linearCombinationEquiv.symm ≪≫ₗ hE.linearCombinationEquiv
   have : FiniteDimensional K (Submodule.span K (Set.range ![D.rep, D'.rep])) :=
     span_of_finite K (Set.finite_range _)
-  obtain ⟨g, hg⟩ := exists_linearEquiv_restrict_eq f
+  obtain ⟨g, hg⟩ := Submodule.exists_linearEquiv_restrict_eq f
   use g
   constructor
   · rw [← mk_rep D, ← mk_rep E, smul_mk, mk_eq_mk_iff]
@@ -122,8 +122,8 @@ instance specialLinearGroup_is_two_pretransitive :
       simp [specialLinearGroup_smul_def, toLinearEquiv_eq_coe, mul_smul, gD, hD, gE, hE]
     intro a
     rw [← linearIndependent_pair_iff_ne] at hD
-    have := linearIndependentOn_pair D D'
-    let s := (linearIndependentOn_pair D D').extend (Set.subset_univ _)
+    have := linearIndepOn_pair D D'
+    let s := (linearIndepOn_pair D D').extend (Set.subset_univ _)
     let b : Module.Basis s K V := Module.Basis.extend this
     rw [← mk_rep D, ← mk_rep D']
     have hD_mem : D.rep ∈ s := LinearIndepOn.subset_extend _ _ (by simp)
