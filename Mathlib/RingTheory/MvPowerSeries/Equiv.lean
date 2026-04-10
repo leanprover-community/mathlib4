@@ -42,7 +42,6 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 
 * `MvPowerSeries.finSuccEquiv` : The isomorphism between multivariable power series
   in `Fin (n + 1)` and power series over multivariable power series in `Fin n`.
-This file establishes a number of equivalences related to power series rings.
 
 * `MvPowerSeries.toAdicCompletionAlgEquiv` : the canonical isomorphism from
   multivariate power series to the adic completion of multivariate polynomials
