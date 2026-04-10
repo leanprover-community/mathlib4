@@ -37,8 +37,8 @@ The pairing integral is defined through the extension process described in the f
 2. Define the structure `VectorMeasureWithPairing`, combining a pairing of two normed vector spaces
   and a vector measure.
 
-3. Define the pairing integral on L1 functions `f` as `setToL1 (...) f`. Note that, differently
-  from the definition of Bochner integral, here `setToL1` is already a continuous linear map from
+3. Define the pairing integral on L1 functions `f` as `setToL1 (...) f`. Note that, contrary
+  to the definition of Bochner integral, here `setToL1` is already a continuous linear map from
   L1 functions, not from step functions.
 
 ## Note
@@ -49,7 +49,7 @@ We often consider L1 functions with respect to the total variation of `Bμ.vecto
 
 -/
 
-@[expose] public section
+public section
 
 open ENNReal Set MeasureTheory VectorMeasure ContinuousLinearMap
 
@@ -64,33 +64,27 @@ variable {α E F G : Type*} [MeasurableSpace α]
   (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure α F)
 
 /-- Given a set `s`, return the continuous linear map `fun x : E => B x (μ s)`, where the `B` is a
-`G`-valued bilinear form on `E` `F` and `μ` is an `F`-valued vector measure. The extension of that
+`G`-valued bilinear form on `E × F` and `μ` is an `F`-valued vector measure. The extension of that
 set function through `setToL1` gives the pairing integral of L1 functions. -/
 noncomputable def weightedVectorSMul (s : Set α) : E →L[ℝ] G where
   toFun x := B x (μ s)
-  map_add' _ _ := map_add₂ B _ _ (μ s)
-  map_smul' _ _ := map_smulₛₗ₂ B _ _ (μ s)
+  map_add' _ _ := map_add₂ ..
+  map_smul' _ _ := map_smulₛₗ₂ ..
 
 @[simp]
 theorem weightedVectorSMul_apply (s : Set α) (x : E) : weightedVectorSMul B μ s x = B x (μ s) := rfl
 
-theorem weightedVectorSMul_union (s t : Set α) (hs : MeasurableSet s) (ht : MeasurableSet t)
+theorem weightedVectorSMul_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hdisj : Disjoint s t) :
     weightedVectorSMul B μ (s ∪ t) = weightedVectorSMul B μ s + weightedVectorSMul B μ t := by
   ext x
-  simp only [weightedVectorSMul_apply, ContinuousLinearMap.add_apply, ← (B x).map_add]
-  congr
-  exact of_union hdisj hs ht
+  simp [weightedVectorSMul_apply, of_union hdisj hs ht, (B x).map_add]
 
 theorem norm_weightedVectorSMul_le (s : Set α) :
-    ‖(weightedVectorSMul B μ s : E →L[ℝ] G)‖ ≤ ‖B‖ * ‖μ s‖ := by
-  rw [ContinuousLinearMap.opNorm_le_iff (mul_nonneg (norm_nonneg B) (norm_nonneg (μ s)))]
+    ‖weightedVectorSMul B μ s‖ ≤ ‖B‖ * ‖μ s‖ := by
+  rw [opNorm_le_iff (by positivity)]
   intro x
-  simp only [weightedVectorSMul_apply]
-  apply le_trans (le_opNorm (B x) (μ s))
-  rw [mul_assoc, mul_comm _ ‖x‖, ← mul_assoc]
-  gcongr
-  exact le_opNorm B x
+  grw [weightedVectorSMul_apply, le_opNorm₂, mul_right_comm]
 
 theorem dominatedFinMeasAdditive_weightedVectorSMul :
     DominatedFinMeasAdditive (μ.variation)
