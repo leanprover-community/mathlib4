@@ -18,10 +18,10 @@ public import Mathlib.Algebra.Module.PUnit
 If `M` is a finite free module and `Nᵢ` is an indexed collection of modules of a commutative ring
 `R` then there is an `R`-module isomorphism between `M ⊗ ∏ᵢ Nᵢ` and `∏ᵢ (M ⊗ Nᵢ)`.
 
-## Main definition
+## Main definitions
 
-* `tensorPi_equiv_piTensor` : `M ⊗[R] (Π i, N i) ≃ₗ[R] Π i, (M ⊗[R] N i)` for finite free modules
-* `tensorPi_equiv_piTensor'` : the same but for finitely-presented modules.
+* `tensorPi_equiv_piTensor'` : `M ⊗[R] (Π i, N i) ≃ₗ[R] Π i, (M ⊗[R] N i)` for finite free modules
+* `tensorPi_equiv_piTensor` : the same but for finitely-presented modules.
 
 -/
 @[expose] public section
