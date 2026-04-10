@@ -175,8 +175,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
   have : ∀ᵐ a ∂μ, Tendsto (fun i ↦ g' i a) atTop (𝓝 (F a)) := by
     apply tendsto_of_lintegral_tendsto_of_monotone_aux _ hF_meas _ _ _ h_int_finite
     · exact fun n ↦ (M n).aemeasurable
-    · simp_rw [Int_eq]
-      exact hf_tendsto
+    · simpa [Int_eq]
     · exact Eventually.of_forall fun x ↦ monotone_nat_of_le_succ fun n ↦
         iSup₂_le fun k hk ↦ le_iSup₂_of_le k (by grind) le_rfl
     · filter_upwards [h_bound, I'] with x h'x hx n using (hx n).trans (h'x n)
