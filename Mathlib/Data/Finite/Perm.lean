@@ -45,6 +45,6 @@ theorem Equiv.Perm.isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
 
 theorem Equiv.Perm.isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsMulCommutative (Perm α) :=
-  ⟨(isCyclic_of_card_le_two hα).commutative⟩
+  (isCyclic_of_card_le_two hα).isMulCommutative
 
 end
