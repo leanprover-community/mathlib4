@@ -729,6 +729,12 @@ theorem _root_.PrimeSpectrum.localRank_apply_of_flat
     { __ := IsLocalizedModule.iso p.1.primeCompl (IsScalarTower.toAlgHom R S _).toLinearMap
       map_smul' := by simp }).trans (p.1.finrank_fiber_eq_finrank_localization S).symm
 
+theorem _root_.Ideal.finrank_fiber_eq_localRank
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [hp : p.IsPrime] :
+    Module.finrank p.ResidueField (p.Fiber S) = PrimeSpectrum.localRank R S ⟨p, hp⟩ :=
+  (PrimeSpectrum.localRank_apply_of_flat R S ⟨p, hp⟩).symm
+
 theorem _root_.PrimeSpectrum.locallyConstant_localRank
     (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Finite R M] [Module.Projective R M] :
@@ -793,9 +799,8 @@ theorem sum_ramification_inertia'
   rw [← sum_ramification_inertia]
   rw [← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS]
   -- todo: better rw's here:
-  refine Eq.trans ?_ (PrimeSpectrum.localRank_apply_of_flat R S ⟨p, ‹_›⟩)
-  refine Eq.trans ?_ ((PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace ⊥ ⟨p, ‹_›⟩)
-  exact (PrimeSpectrum.localRank_apply_of_flat R S ⊥).symm
+  rw [Ideal.finrank_fiber_eq_localRank, Ideal.finrank_fiber_eq_localRank]
+  apply (PrimeSpectrum.locallyConstant_localRank R S).apply_eq_of_preconnectedSpace
 
 theorem sum_ramification_inertia''
     {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
