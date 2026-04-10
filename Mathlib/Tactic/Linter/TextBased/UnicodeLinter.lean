@@ -146,7 +146,9 @@ Some guidelines:
 - No characters affecting text directionality (Mathlib uses left-to-right text).
 - No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
 
-The list `withVSCodeAbbrev` contains characters with abbreviations, if an abbreviation already has been defined, you might need to update the list `withVSCodeAbbrev`. Further, consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4) for new symbols.
+The list `withVSCodeAbbrev` contains characters with abbreviations; if an abbreviation
+already has been defined, you might need to update the list `withVSCodeAbbrev`.
+Further, consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4) for new symbols.
 
 Empty lines for improved readability (otherwise some characters overlap in some fonts).
 -/
