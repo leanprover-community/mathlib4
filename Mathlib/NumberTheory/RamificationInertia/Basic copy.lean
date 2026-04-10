@@ -622,25 +622,29 @@ lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Alge
     Module.finrank p.ResidueField (p.Fiber S) = Module.rankAtStalk S ⟨p, hp⟩ :=
   (Module.rankAtStalk_eq ⟨p, hp⟩).symm
 
--- PRed
-theorem primeCompl_bot (R : Type*) [Semiring R] [IsDomain R] :
-    (⊥ : Ideal R).primeCompl = nonZeroDivisors R := by
-  ext
-  simp
+theorem IsFractionRing.of_algEquiv {R K L : Type*}
+    [CommRing R] [CommRing K] [CommRing L] [Algebra R K]
+    [Algebra R L] [IsFractionRing R K] (e : K ≃ₐ[R] L) : IsFractionRing R L :=
+  IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R) e
+
+theorem IsFractionRing.of_algHom
+    {R K L : Type*} [CommRing R] [Field K] [Field L] [Algebra R K] [Algebra R L]
+    (f : K →ₐ[R] L) [IsFractionRing R L] : IsFractionRing R K := by
+  refine IsFractionRing.of_algEquiv <| .symm <| .ofBijective f ⟨f.injective, fun x ↦ ?_⟩
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective R x
+  exact ⟨algebraMap R K x / algebraMap R K y, by simp⟩
 
 instance isFractionRing_residueField_bot {R : Type*} [CommRing R] [IsDomain R] :
     IsFractionRing R (⊥ : Ideal R).ResidueField := by
   let R' := Localization.AtPrime (⊥ : Ideal R)
   have : IsFractionRing R R' := by
     convert Localization.isLocalization
-    exact (Ideal.primeCompl_bot R).symm
+    exact Ideal.primeCompl_bot.symm
   let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
   change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
   rw [IsLocalRing.maximalIdeal_eq_bot]
-  exact IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R)
-    (AlgEquiv.quotientBot R R').symm
+  exact IsFractionRing.of_algEquiv (AlgEquiv.quotientBot R R').symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
     [IsDomain L] [Module.Finite K L] :
     IsField L where
@@ -659,7 +663,7 @@ instance isFractionRing_fiber_bot
   let R' := Localization.AtPrime (⊥ : Ideal R)
   have : IsFractionRing R R' := by
     convert Localization.isLocalization
-    exact (Ideal.primeCompl_bot R).symm
+    exact Ideal.primeCompl_bot.symm
   let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
   let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
   let M₂ := nonZeroDivisors S
@@ -668,11 +672,16 @@ instance isFractionRing_fiber_bot
     exact map_mem_nonZeroDivisors (algebraMap R S) (FaithfulSMul.algebraMap_injective R S) hx
   have : IsDomain (Localization M₁) := IsLocalization.isDomain_localization h
   have : IsField (Localization M₁) := IsField.of_finite (FractionRing R) (Localization M₁)
+  let : Field (Localization M₁) := this.toField
   let f : Localization M₁ →ₐ[S] FractionRing S :=
     Localization.mapToFractionRing (FractionRing S) M₁ (Localization M₁) h
-
-  -- subalgebra of fraction ring
-  sorry
+  have := IsFractionRing.of_algHom f
+  let e : Localization M₂ ≃ₐ[S] Localization M₁ := Localization.algEquiv _ _
+  let e' : FractionRing S ≃ₐ[S] κS :=
+    e.trans <| (Localization.tensorLeftAlgEquiv (nonZeroDivisors R) S).symm.trans <|
+      (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
+        (Algebra.TensorProduct.commRight R S κR)
+  exact IsFractionRing.of_algEquiv e'
 
 theorem sum_ramification_inertia'
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMul R S]
