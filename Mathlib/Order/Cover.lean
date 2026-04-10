@@ -238,6 +238,8 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
+@[simp] lemma covBy_irrefl : ¬ a ⋖ a := by simp [CovBy]
+
 @[to_dual self]
 theorem CovBy.le (h : a ⋖ b) : a ≤ b :=
   h.1.le
