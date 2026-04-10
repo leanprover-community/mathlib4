@@ -36,4 +36,8 @@ theorem Countable.of_moduleFinite [Countable R] [Module.Finite R M] : Countable 
   have : Countable (Submodule.span R (Set.range s)) := inferInstance
   rwa [h] at this
 
+theorem Uncountable.of_moduleFinite [hM : Uncountable M] [Module.Finite R M] : Uncountable R := by
+  by_contra!
+  exact (uncountable_iff_not_countable _).mp hM <| Countable.of_moduleFinite (R := R)
+
 end Finsupp
