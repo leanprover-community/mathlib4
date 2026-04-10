@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Tactic.FastInstance
@@ -143,6 +144,12 @@ instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRin
   @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
     NoZeroDivisors.toIsCancelMulZero
 
+@[simps]
+def coeMonoidHom : (Icc (0 : R) 1) →* R where
+  toFun := (↑)
+  map_mul' := fun _ _ => rfl
+  map_one' := rfl
+
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
@@ -207,6 +214,11 @@ instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
 instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     CommSemigroup (Ico (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
+
+@[simps]
+def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
+  toFun := (↑)
+  map_mul' := fun _ _ => rfl
 
 end Set.Ico
 
@@ -290,6 +302,12 @@ instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStric
     CancelCommMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instCommMonoid, Set.Ioc.instCancelMonoid with }
 
+@[simps]
+def coeMonoidHom : (Ioc (0 : R) 1) →* R where
+  toFun := (↑)
+  map_mul' := fun _ _ => rfl
+  map_one' := rfl
+
 end Set.Ioc
 
 /-! ### Instances for `↥(Set.Ioo 0 1)` -/
@@ -319,6 +337,11 @@ instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
 instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommSemigroup (Ioo (0 : R) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
+
+@[simps]
+def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
+  toFun := (↑)
+  map_mul' := fun _ _ => rfl
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 

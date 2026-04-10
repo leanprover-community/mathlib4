@@ -65,14 +65,20 @@ instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X]
   Subsemiring.continuousSMul S.toSubsemiring X
 
 instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
-    ContinuousMul (Icc (0 : A) 1) := Topology.IsInducing.continuousMul
-  ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom (Icc (0 : A) 1) A)
-  (by simp [Topology.IsInducing.subtypeVal])
+    ContinuousMul (Icc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Icc.coeMonoidHom
 
 instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
-    ContinuousMul (Ico (0 : A) 1) := IsInducing.continuousMul
-  ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom (Ico (0 : A) 1) A)
-  (by simp [Topology.IsInducing.subtypeVal])
+    ContinuousMul (Ico (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ico.coeMulHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioc.coeMonoidHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioo (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioo.coeMulHom
 
 section
 variable [ContinuousSMul R A]
