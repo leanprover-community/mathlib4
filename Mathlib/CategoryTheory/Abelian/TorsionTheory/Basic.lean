@@ -132,7 +132,7 @@ lemma le_leftOrthogonal_rightOrthogonal (P : ObjectProperty C) :
 
 /-- If `P` is closed under quotients, extensions, and coproducts, then for any `X`,
 the cokernel of the maximal `P`-subobject's arrow is `P.rightOrthogonal`. -/
-lemma rightOrthogonal_cokernel_sSupOfP (P : ObjectProperty C)
+lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
@@ -176,7 +176,7 @@ lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
     P.rightOrthogonal.leftOrthogonal ≤ P :=
   fun X hX ↦
     haveI : Epi (sSup P X).arrow :=
-      Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSupOfP P X))
+      Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
     P.prop_of_epi (sSup P X).arrow (sSup_prop P X)
 
 /-- If an object property `P` in an abelian category is closed under quotients, extensions,
@@ -283,6 +283,7 @@ theorem isTorsionClass_iff {P : ObjectProperty C} [LocallySmall.{w} C] [WellPowe
   exact ⟨P.rightOrthogonal,
     { torsion_eq_leftOrthogonal := eq_rightOrthogonal_leftOrthogonal P,
       free_eq_rightOrthogonal := rfl }⟩
+
 end TorsionTheory
 
 end CategoryTheory.Abelian
