@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Tactic.DefEqAbuse
@@ -123,20 +124,7 @@ instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
 def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
   -(MyAction.mySmul (R := ℕ) 1 x)
 
--- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error).
--- It should produce something like:
-/-
-warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
-The following synthesis applications fail due to transparency:
-  ❌️ apply @mySub₂MyAction to MyAction ℕ ↥s
-    ❌️ s.toAddSubgroup =?= s.1
-    ❌️ s.toAddSubgroup =?= s.toAddSubmonoid
-    ❌️ s.toAddSubgroup.1 =?= s.1
-    ❌️ ↑s.toAddSubgroup =?= ↑s.toAddSubmonoid
--/
-#guard_msgs (drop warning) in
-#defeq_abuse in
+#guard_msgs in
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
 
@@ -151,3 +139,58 @@ def testVirtualParentFixed {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) 
   myOp x
 
 end VirtualParentAbuse
+
+section IdenticalSidesAbuse
+/-! ### Identical-sides disambiguation
+
+In real Mathlib, instance diamonds sometimes produce isDefEq failures like `⊤ =?= ⊤` or
+`Quiver C =?= Quiver C` where both sides render identically at default pp settings (the
+difference is only in hidden instance arguments or universe levels). `#defeq_abuse`
+automatically escalates pp options (`pp.explicit`) to disambiguate these.
+
+The test below reproduces this pattern. `ZoC` has two fields: `zo` (projected value) and
+`extra` (differentiator). Two `def`-level instances have the same `zo` value but different
+`extra`, so:
+- The instance sub-check `zoDirectC =?= zoFromGrC` fails at ALL transparencies
+  (structurally different due to `extra`), so it's NOT a transition point.
+- The parent check `@ZoC.zo Int inst₁ =?= @ZoC.zo Int inst₂` fails at instance
+  transparency (defs don't unfold) but succeeds at default transparency (both project
+  to `0` via WHNF), making it the deepest transition point.
+- At default pp, both sides render as `ZoC.zo` (identical sides).
+- `disambiguateFailures` detects identical sides and escalates to `pp.explicit`,
+  revealing the different instance arguments. -/
+
+class ZoC (α : Type _) where
+  extra : Prop
+  zo : α
+
+class GrC (α : Type _) extends ZoC α where
+  add : α → α → α
+
+set_option warn.classDefReducibility false in
+def zoDirectC : ZoC Int := ⟨True, 0⟩
+set_option warn.classDefReducibility false in
+def zoFromGrC : ZoC Int := ⟨False, 0⟩
+
+instance instZoCInt : ZoC Int := zoDirectC
+instance instGrCInt : GrC Int where
+  toZoC := zoFromGrC
+  add a b := a + b
+
+class NumC (α : Type _) (n : Nat) where fromNat : α
+instance {α} [ZoC α] : NumC α 0 where fromNat := ZoC.zo
+
+theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a a := test_sorry
+
+-- Without disambiguation, the failure would render as "ZoC.zo =?= ZoC.zo" (unhelpful).
+-- With disambiguation (pp.explicit), the different instances are revealed.
+/--
+warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
+-/
+#guard_msgs in
+example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by
+  #defeq_abuse in rw [zoC_eq_iff]
+
+end IdenticalSidesAbuse

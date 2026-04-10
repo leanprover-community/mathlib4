@@ -164,6 +164,23 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
+set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
+    (S : Sieve ((Over.map f).obj U)) :
+    overEquiv U (S.functorPullback (Over.map f)) =
+      overEquiv ((Over.map f).obj U) S := by
+  ext Z g
+  let u : (Over.map f).obj (Over.mk (g ≫ U.hom)) ⟶ Over.mk (g ≫ U.hom ≫ f) :=
+    Over.homMk (𝟙 Z) (by simp)
+  have heq : (Over.map f).map (Over.homMk (U := Over.mk (g ≫ U.hom)) g rfl) =
+      u ≫ Over.homMk (V := (Over.map f).obj U) g rfl := by
+    ext
+    simp [u]
+  have : IsIso u :=
+    ⟨Over.homMk (𝟙 Z) (by simp), by ext; simp [u], by ext; simp [u]⟩
+  rw [Sieve.overEquiv_iff, Sieve.overEquiv_iff]
+  simp [Presieve.functorPullback, heq]
+
 end Sieve
 
 variable (J : GrothendieckTopology C)
@@ -251,9 +268,23 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)
 
-section
+instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsCocontinuous (J.over _) (J.over _) where
+  cover_lift {U} S hS := by
+    rw [J.mem_over_iff] at hS ⊢
+    rwa [Sieve.overEquiv_functorPullback_map]
 
-open CategoryTheory Limits
+open Limits
+
+lemma coverPreserving_overPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    CoverPreserving (J.over Y) (J.over X) (Over.pullback f) := by
+  rw [← (Over.mapPullbackAdj f).isCocontinuous_iff_coverPreserving]
+  infer_instance
+
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    (Over.pullback f).IsContinuous (J.over Y) (J.over X) :=
+  (Over.mapPullbackAdj f).isContinuous_of_isCocontinuous _ _
+
+section
 
 variable {C : Type u'} [Category* C] [HasBinaryProducts C] {J : GrothendieckTopology C}
 

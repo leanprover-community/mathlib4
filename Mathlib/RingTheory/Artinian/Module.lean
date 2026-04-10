@@ -441,11 +441,9 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsNoetherianRing R] :
     IsNoetherianRing (Matrix n n R) := .of_finite R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsArtinianRing R] :
     IsArtinianRing (Matrix n n R) := .of_finite R _
 
@@ -534,8 +532,6 @@ variable (R)
 theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
 
-@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
-
 theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
@@ -592,6 +588,9 @@ instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
+
+theorem mem_minimalPrimes {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : p ∈ I.minimalPrimes :=
+  ⟨⟨hp, hIp⟩, fun q ⟨_, _⟩ hqp ↦ ((isMaximal_of_isPrime q).eq_of_le hp.ne_top hqp).ge⟩
 
 /-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]

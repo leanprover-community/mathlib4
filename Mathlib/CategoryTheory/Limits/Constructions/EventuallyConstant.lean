@@ -115,7 +115,6 @@ noncomputable def cone : Cone F where
         let β : i ⟶ j := IsCofiltered.minToRight _ _
         rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isLimitCone : IsLimit h.cone where
   lift s := s.π.app i₀
@@ -138,7 +137,6 @@ lemma isIso_π_of_isLimit' {c : Cone F} (hc : IsLimit c) (j : J) (π : j ⟶ i�
     IsIso (c.π.app j) :=
   (h.precomp π).isIso_π_of_isLimit hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone `c` on a cofiltered diagram `F` which `IsEventuallyConstantTo i₀`, such that
 `c.π.app i₀` is an isomorphism, `c` a limit cone. -/
 noncomputable def isLimitOfIsIso (c : Cone F) [IsIso (c.π.app i₀)] : IsLimit c :=

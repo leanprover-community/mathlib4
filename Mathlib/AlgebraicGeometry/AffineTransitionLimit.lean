@@ -325,7 +325,6 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 @[stacks 01Z4 "(1)"]
 lemma exists_preimage_eq
@@ -634,7 +633,7 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   rcases isEmpty_or_nonempty (D.obj A.i') with h | h
   · exact ⟨A.i', A.hii', isInitialOfIsEmpty.hom_ext _ _⟩
   let O : Finset I := {A.i'} ∪ Finset.univ.image (fun i : 𝒰Df.I₀ ↦ k <| A.𝒰D.idx i.1)
-  let o := Nonempty.some (inferInstanceAs <| Nonempty 𝒰Df.I₀)
+  let o := Nonempty.some (inferInstance : Nonempty 𝒰Df.I₀)
   have ho : k (A.𝒰D.idx o.1) ∈ O := by
     simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O
@@ -1045,9 +1044,7 @@ lemma exists_isAffineOpen_preimage_eq
     (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).2).mp (.of_quasiSeparatedSpace _)
   have : IsAffine (opensCone D c i U).pt := hU
   obtain ⟨j, hj⟩ := Scheme.exists_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
-  refine ⟨_, _, hj, ?_⟩
-  rw [← Scheme.Hom.comp_preimage, c.w]
-  simp
+  exact ⟨_, _, hj, by simp [← Scheme.Hom.comp_preimage]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in

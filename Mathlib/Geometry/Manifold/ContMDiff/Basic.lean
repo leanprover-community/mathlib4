@@ -382,15 +382,26 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Open
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Opens.inclusion h : U → V) := by
-  rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
-  intro y
-  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
-  rw [Set.univ_inter]
-  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
+    ContMDiff I I n (Opens.inclusion h : U → V) := fun _ ↦
+  (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
+
+@[simp]
+lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (s : Set M)
+    (x : M) :
+    ContMDiffWithinAt I I' ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt I I' ∞ f s x :=
+  ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
+
+@[simp]
+lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (x : M) :
+    ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
+  rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
+
+@[simp]
+lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) :
+    ContMDiff I I' ∞ (Subtype.val ∘ f) ↔ ContMDiff I I' ∞ f := by
+  simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
 
 end ChartedSpace
 
@@ -400,7 +411,6 @@ section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ∞}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
@@ -426,7 +436,6 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toOpenPartialHomeomorph_target] at this
     exact this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :

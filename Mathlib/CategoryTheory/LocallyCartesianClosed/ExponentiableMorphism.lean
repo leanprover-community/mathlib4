@@ -134,21 +134,18 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     pushforwardCurry (pushforwardUncurry v) = v :=
   pullbackPushforwardAdj f |>.homEquiv A X |>.right_inv v
 
-set_option backward.isDefEq.respectTransparency false in
-instance : ChosenPullbacksAlong (Over.mk f).hom := by
-  dsimp only [Over.mk_hom]
-  infer_instance
+instance : ChosenPullbacksAlong (Over.mk f).hom :=
+  inferInstanceAs <| ChosenPullbacksAlong f
 
-set_option backward.isDefEq.respectTransparency false in
-instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
-  dsimp only [Over.mk_hom]
-  infer_instance
+instance OverMkHom : ExponentiableMorphism (Over.mk f).hom :=
+  inferInstanceAs <| ExponentiableMorphism f
 
 end
 
 section
 
 /-- The identity morphisms `𝟙 _` are exponentiable. -/
+@[implicit_reducible]
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
@@ -177,6 +174,7 @@ theorem pushforwardId_hom_counit (I : C) [ChosenPullbacksAlong (𝟙 I)]
   rw [pushforwardId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- The composition of exponentiable morphisms is exponentiable. -/
+@[implicit_reducible]
 def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :

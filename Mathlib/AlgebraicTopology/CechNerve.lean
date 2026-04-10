@@ -152,7 +152,6 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     ext x : 2
     · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
       · simp
-        rfl
       · simpa using congr_app A.w.symm x
     · simp
 

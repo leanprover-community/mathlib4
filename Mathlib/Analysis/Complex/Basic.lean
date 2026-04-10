@@ -455,8 +455,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
-lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := OrderClosedTopology.isClosed_le'
+lemma orderClosedTopology : OrderClosedTopology ℂ := RCLike.instOrderClosedTopology
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
@@ -637,7 +636,7 @@ lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]
   rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
+  push Not at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
