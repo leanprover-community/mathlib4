@@ -678,6 +678,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
+public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.Page
@@ -3469,6 +3470,7 @@ public import Mathlib.Combinatorics.Quiver.Path.Weight
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Combinatorics.Quiver.Push
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.Combinatorics.Quiver.Schreier
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
@@ -4617,6 +4619,7 @@ public import Mathlib.GroupTheory.GroupExtension.Basic
 public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.IndexNSmul
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.GroupTheory.IsSubnormal
