@@ -143,10 +143,6 @@ instance : Category (Monad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := MonadHom.ext (by funext; simp only [assoc])
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Category (Comonad C) where
@@ -155,10 +151,6 @@ instance : Category (Comonad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := ComonadHom.ext (by funext; simp only [assoc])
 
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩

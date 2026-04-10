@@ -477,7 +477,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
     change ∃ L : StrongDual ℝ E, L v ≠ 0
     by_contra! h
-    exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
+    exact hv (SeparatingDual.eq_zero_of_forall_dual_eq_zero (R := ℝ) h)
   · exact isBoundedBilinearMap_apply.symm.continuous
 
 /-- The characteristic function of a measure is a product of

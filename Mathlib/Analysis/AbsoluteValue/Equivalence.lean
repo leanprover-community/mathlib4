@@ -43,10 +43,6 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
-@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
-
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
   iseqv := {
@@ -102,9 +98,6 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     [IsStrictOrderedRing S] {f : AbsoluteValue R S} :
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
-
-@[deprecated (since := "2025-09-12")]
-alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
 
@@ -369,7 +362,13 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
   · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+      by
+        #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+        (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+        goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+        the new canonicalizer; a minimization would help. The original proof was:
+        `grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]` -/
+        rw [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]; simp⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
