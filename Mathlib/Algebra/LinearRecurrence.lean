@@ -156,6 +156,7 @@ theorem coord_basis_eq (u : E.solSpace) (n : Fin E.order) :
     E.basis.coord n u = u.val n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
