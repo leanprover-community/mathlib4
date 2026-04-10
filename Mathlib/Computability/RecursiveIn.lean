@@ -6,6 +6,7 @@ Authors: Tanner Duve, Elan Roth
 module
 
 public import Mathlib.Computability.Partrec
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Oracle computability
@@ -263,3 +264,127 @@ protected theorem sumInr : ComputableIn O (@Sum.inr α β) :=
   Primrec.sumInr.computableIn
 
 end ComputableIn
+
+section RecursiveInCond
+
+variable {O : Set (ℕ →. ℕ)}
+
+theorem Nat.RecursiveIn.of_primrec {f : ℕ → ℕ}
+    (hf : Nat.Primrec f) : Nat.RecursiveIn O ↑f :=
+  Nat.Partrec.recursiveIn (Nat.Partrec.of_primrec hf)
+
+theorem Nat.RecursiveIn.of_partrec {f : ℕ →. ℕ}
+    (hf : Nat.Partrec f) : Nat.RecursiveIn O f :=
+  Nat.Partrec.recursiveIn hf
+
+theorem Nat.RecursiveIn.div2 :
+    Nat.RecursiveIn O (fun n => Nat.div2 n : ℕ → ℕ) :=
+  Nat.Primrec.recursiveIn (Primrec.nat_iff.1 Primrec.nat_div2)
+
+theorem Nat.RecursiveIn.double :
+    Nat.RecursiveIn O (fun n => 2 * n : ℕ → ℕ) :=
+  Nat.Primrec.recursiveIn (Primrec.nat_iff.1 Primrec.nat_double)
+
+theorem Nat.RecursiveIn.double_add_one :
+    Nat.RecursiveIn O (fun n => 2 * n + 1 : ℕ → ℕ) :=
+  Nat.Primrec.recursiveIn
+    (Primrec.nat_iff.1 Primrec.nat_double_succ)
+
+theorem Nat.RecursiveIn.comp_at_even {h : ℕ →. ℕ}
+    (hh : Nat.RecursiveIn O h) :
+    Nat.RecursiveIn O (fun n => h (2 * n)) :=
+  (hh.comp .double).of_eq fun _ => by simp [Part.bind_some]
+
+theorem Nat.RecursiveIn.comp_at_odd {h : ℕ →. ℕ}
+    (hh : Nat.RecursiveIn O h) :
+    Nat.RecursiveIn O (fun n => h (2 * n + 1)) :=
+  (hh.comp .double_add_one).of_eq fun _ => by
+    simp [Part.bind_some]
+
+theorem Nat.RecursiveIn.encode_even {h : ℕ →. ℕ}
+    (hh : Nat.RecursiveIn O h) : Nat.RecursiveIn O (fun n =>
+      (Nat.div2 n : ℕ) >>= h >>= fun y => (2 * y : ℕ)) :=
+  (Nat.RecursiveIn.double.comp (hh.comp .div2)).of_eq
+    fun _ => by congr
+
+theorem Nat.RecursiveIn.encode_odd {h : ℕ →. ℕ}
+    (hh : Nat.RecursiveIn O h) : Nat.RecursiveIn O (fun n =>
+      (Nat.div2 n : ℕ) >>= h >>= fun y => (2 * y + 1 : ℕ)) :=
+  (Nat.RecursiveIn.double_add_one.comp (hh.comp .div2)).of_eq
+    fun _ => by congr
+
+namespace Nat.RecursiveIn
+
+variable {O : Set (ℕ →. ℕ)}
+
+/-- Conditional with a computable guard and constant fallback. -/
+theorem cond_const {c : ℕ → Bool} {f : ℕ →. ℕ}
+    (hc : Computable c) (hf : Nat.RecursiveIn O f) (k : ℕ) :
+    Nat.RecursiveIn O
+      (fun n => bif c n then f n else Part.some k) := by
+  have hid := @of_primrec O _ (.id : Nat.Primrec _)
+  have hcode := @of_partrec O _
+    (Partrec.nat_iff.1 (Computable.encode.comp hc).partrec)
+  refine (comp (prec (of_primrec (.const k))
+    ((comp hf left).of_eq fun _ => by aesop))
+    (pair hid hcode)).of_eq fun n => ?_
+  cases h : c n <;> simp [Seq.seq, Nat.unpair_pair] <;> aesop
+
+private def eqTest (h : ℕ →. ℕ) : ℕ →. ℕ := fun p =>
+  ((Nat.pair <$> ((fun n => n.unpair.1) p >>= h) <*>
+      (fun n => n.unpair.2) p) >>= Partrec.kronecker) >>=
+    fun m => Part.some (1 - m)
+
+private theorem eqTest_recursiveIn {h : ℕ →. ℕ}
+    (hh : Nat.RecursiveIn O h) :
+    Nat.RecursiveIn O (eqTest h) :=
+  ((@of_partrec O _ (Nat.Partrec.of_primrec
+      (.comp .sub (.pair (.const 1) .id)))).comp
+    ((@of_partrec O _ Partrec.kronecker_partrec).comp
+      ((hh.comp .left).pair .right))).of_eq
+    fun _ => by simp [eqTest]; congr
+
+private def condCmp (c : ℕ → Bool) (f g : ℕ →. ℕ) : ℕ →. ℕ := fun p =>
+  (Nat.pair <$>
+    (bif c p.unpair.1 then eqTest f p else Part.some 1) <*>
+    (bif !c p.unpair.1 then eqTest g p else Part.some 1)) >>=
+    fun q => Part.some (q.unpair.1 * q.unpair.2)
+
+private theorem condCmp_recursiveIn {c : ℕ → Bool} {f g : ℕ →. ℕ}
+    (hc : Computable c)
+    (hf : Nat.RecursiveIn O f) (hg : Nat.RecursiveIn O g) :
+    Nat.RecursiveIn O (condCmp c f g) := by
+  have hc1 := hc.comp (Computable.fst.comp Computable.unpair)
+  have hmul := @of_partrec O _ ((Nat.Partrec.of_primrec
+    .mul).of_eq fun _ => by aesop)
+  exact (comp hmul (pair
+    ((cond_const hc1 (eqTest_recursiveIn hf) 1).of_eq
+      fun _ => by aesop)
+    ((cond_const (Primrec.not.to_comp.comp hc1)
+      (eqTest_recursiveIn hg) 1).of_eq
+      fun _ => by aesop))).of_eq fun _ => by
+    simp [condCmp]
+
+private theorem rfind_eqTest_eq (v cmp : ℕ →. ℕ) (n : ℕ)
+    (hv : ∀ k, (fun m => decide (m = 0)) <$> cmp (n.pair k) =
+      (fun m => decide (m = 0)) <$> eqTest v (n.pair k)) :
+    (Nat.rfind fun k => (fun m => decide (m = 0)) <$>
+      cmp (n.pair k)) = v n := by
+  rw [show _ = fun k => _ <$> eqTest v (n.pair k)
+    from funext hv]
+  convert Partrec.kronecker_rfind (v := v n) using 1
+  simp [eqTest, Nat.unpair_pair, Seq.seq,
+    Part.map_eq_map, Part.bind_some_eq_map]
+
+/-- `Nat.RecursiveIn O` is closed under conditionals. -/
+theorem cond' {c : ℕ → Bool} {f g : ℕ →. ℕ}
+    (hc : Computable c) (hf : Nat.RecursiveIn O f)
+    (hg : Nat.RecursiveIn O g) :
+    Nat.RecursiveIn O (fun n => cond (c n) (f n) (g n)) := by
+  refine (rfind (condCmp_recursiveIn hc hf hg)).of_eq fun n => ?_
+  cases hn : c n <;>
+    exact rfind_eqTest_eq _ _ n fun k => by
+      simp [condCmp, eqTest, hn, Nat.unpair_pair, Seq.seq,
+        Part.bind_assoc, Part.bind_some]
+
+end Nat.RecursiveIn
