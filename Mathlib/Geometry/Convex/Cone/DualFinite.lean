@@ -45,7 +45,7 @@ of a finite set, or a V-cone. -/
 def DualFG (C : PointedCone R N) : Prop := ∃ D : PointedCone R M, D.FG ∧ dual p D = C
 
 /-- The top cone is dually finitely generated. -/
-@[simp] protected lemma DualFG.top : DualFG p ⊤ := ⟨⊥, by simp⟩
+@[simp] protected lemma DualFG.top : DualFG p ⊤ := ⟨⊥, by simp [Submodule.fg_bot]⟩
 
 /-- A dually finitely generated cone is the dual of a finitely generated cone. -/
 @[deprecated "This is the definition of PointedCone.DualFG" (since := "2026-04-10")]

@@ -46,14 +46,17 @@ assert_not_exists InnerProductSpace
 open Set LinearMap Pointwise
 
 namespace PointedCone
+
 variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [ClosedIciTopology R]
   [IsOrderedRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [TopologicalSpace N]
-  {p : M →ₗ[R] N →ₗ[R] R} {s : Set M}
+  {p : M →ₗ[R] N →ₗ[R] R} {C : PointedCone R M}
 
-lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
-  rw [← s.biUnion_of_singleton]
-  simp_rw [dual_iUnion, Submodule.coe_iInf, dual_singleton]
-  exact isClosed_biInter fun x hx ↦ isClosed_Ici.preimage <| hp _
+lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p C : Set N) := by
+  rw [dual_eq_iInf_dual_hull_singleton]
+  simp_rw [dual_hull_singleton]
+  apply isClosed_biInter
+  rintro _ ⟨_, _, rfl⟩
+  exact isClosed_Ici.preimage (hp _)
 
 end PointedCone
 
@@ -68,21 +71,27 @@ variable (p s) in
 /-- The dual cone of a set `s` with respect to a perfect pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
 def dual (s : Set M) : ProperCone R N where
-  toSubmodule := PointedCone.dual p s
+  toSubmodule := PointedCone.dual p (PointedCone.hull R s)
   isClosed' := PointedCone.isClosed_dual fun _ ↦ p.continuous_of_isContPerfPair
 
-@[simp] lemma mem_dual : y ∈ dual p s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y := .rfl
+@[simp] lemma mem_dual : y ∈ dual p s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y := by simp [dual]
 
 @[simp] lemma dual_empty : dual p ∅ = ⊤ := by ext; simp
 @[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
 
 @[simp] lemma dual_univ [IsTopologicalRing R] [T1Space N] : dual p univ = ⊥ := by
-  refine le_antisymm (fun y hy ↦ (_root_.map_eq_zero_iff _ p.flip.toContPerfPair.injective).1 ?_)
-    (by simp)
+  refine le_antisymm
+    (fun _ hy ↦ (map_eq_zero_iff _ p.flip.toContPerfPair.injective).1 ?_) (by simp)
   ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+  have hy' := @hy (-x)
+  simp only [Submodule.span_univ, Submodule.mem_top, map_neg, neg_apply, Left.nonneg_neg_iff,
+    forall_const, mem_dual, mem_univ] at hy' hy
+  exact le_antisymm hy' (@hy x)
 
-@[gcongr] lemma dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
+@[gcongr] lemma dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := by
+  intro y hy
+  rw [mem_dual] at ⊢ hy
+  exact fun _ hx ↦ hy (h hx)
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `p x`. -/
@@ -101,7 +110,8 @@ lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := 
   ext; simp [forall_comm (α := M)]
 
 /-- Any set is a subset of its double dual cone. -/
-lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
+lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) :=
+  fun _ hx => by simpa using fun _ hy ↦ hy hx
 
 end ProperCone
 
