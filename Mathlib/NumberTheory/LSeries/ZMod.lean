@@ -9,8 +9,6 @@ public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
-import Mathlib.Analysis.SumOverResidueClass
-
 /-!
 # L-series of functions on `ZMod N`
 
