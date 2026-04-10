@@ -587,9 +587,9 @@ unseal spectralSequence in
 lemma spectralSequenceHomologyData_left_i
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
-      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁ hn₂).left.i =
+      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).left.i =
     X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃
-      (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _  n₀ n₁ n₂ ≫
+      (data.i₀_le' hrr' hr pq' hi₀' hi₀) _ _ _ n₀ n₁ n₂ ≫
         (X.spectralSequencePageXIso data r hr pq'
           i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').inv :=
   rfl
@@ -601,7 +601,7 @@ lemma spectralSequenceHomologyData_right_p
     (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂).right.p =
     (X.spectralSequencePageXIso data r hr pq'
-      i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁').hom ≫
+      i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁').hom ≫
         X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
           (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ := rfl
 

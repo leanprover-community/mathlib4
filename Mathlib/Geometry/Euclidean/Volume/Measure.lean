@@ -302,7 +302,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]
-  have hxp: (x +ᵥ p).val ∈ mk' (x +ᵥ p).val s.directionᗮ := by simp
+  have hxp : (x +ᵥ p).val ∈ mk' (x +ᵥ p).val s.directionᗮ := by simp
   have hrank : finrank ℝ s.directionᗮ = finrank ℝ (mk' (x +ᵥ p).val s.directionᗮ).direction := by
     rw [direction_mk']
   rw [IsometryEquiv.vaddConst_apply, hinter, euclideanHausdorffMeasure_coe_image, hrank,
