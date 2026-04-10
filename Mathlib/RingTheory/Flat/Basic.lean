@@ -610,6 +610,15 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
+instance Module.IsTorsionFree.ofFlat {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] [Flat R M] : IsTorsionFree R M where
+  isSMulRegular x hx y z hyz := by
+    have hf : Function.Injective (LinearMap.lTensor M (LinearMap.mulLeft R x)) :=
+      Flat.lTensor_preserves_injective_linearMap _ (hx.smul_right_injective R)
+    rw [← ((TensorProduct.rid R M).injective.comp <|
+      hf.comp (TensorProduct.rid R M).symm.injective).eq_iff]
+    simpa
+
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/
