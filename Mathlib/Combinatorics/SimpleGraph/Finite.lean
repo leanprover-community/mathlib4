@@ -207,14 +207,10 @@ theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rf
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
 
-@[simp] lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by
-  simp [← card_neighborFinset_eq_degree]
+lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
+lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
 
-@[simp] lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolated v := by
-  simp [← card_neighborFinset_eq_degree]
-
-protected alias ⟨IsIsolated.of_degree_eq_zero, IsIsolated.degree_eq_zero⟩ :=
-  degree_eq_zero
+protected alias ⟨IsIsolated.of_degree_eq_zero, IsIsolated.degree_eq_zero⟩ := degree_eq_zero
 
 attribute [simp] IsIsolated.degree_eq_zero
 
