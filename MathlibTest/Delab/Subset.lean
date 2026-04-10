@@ -118,13 +118,25 @@ variable (p : Set Nat → Prop) in
 variable (p : List Nat → Prop) in
 #check ∀ s, ∃ t ⊆ s, p t
 
-/- This test shows something that used to be possible, but does now work anymore:
+/-!
+These tests show something that used to be possible, but does now work anymore:
 If you write `_ ⊆ _`, the type cannot be inferred, and hence, elaboration of this term
 is either postposed, or it elaborates to `Subset _ _`.
 -/
 example (a b : Set Nat) : True ∨ True ∨ a ⊆ b := by
+  -- `simp_rw` fails, because `_ ⊆ _` elaborates to `Subset _ _`
+  fail_if_success simp_rw [or_comm (b := _ ⊆ _)]
+  -- `rw` fails, because elaboration of `_ ⊆ _` has been delayed.
   fail_if_success rw [or_comm (b := _ ⊆ _)]
+  -- We need to use `≤` to do the rewrite.
   rw [or_comm (b := _ ≤ _)]
+  left; trivial
+
+example (a b : List Nat) : True ∨ True ∨ a ⊆ b := by
+  -- `rw` fails, because elaboration of `_ ⊆ _` has been delayed.
+  fail_if_success rw [or_comm (b := _ ⊆ _)]
+  -- `simp_rw` succeeds, because `simp` forces the simp lemma to be fully elaborated.
+  simp_rw [or_comm (b := _ ⊆ _)]
   left; trivial
 
 end Elab
