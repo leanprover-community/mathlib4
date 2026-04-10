@@ -252,10 +252,10 @@ variable {L M : Type*} (K : Type*) [Field K] [CharZero K]
   [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
   {h e f : L} (t : IsSl2Triple h e f)
 
-lemma exists_primitiveVector (t : IsSl2Triple h e f)
-    [IsAlgClosed K] [CharZero K] [FiniteDimensional K M] [Nontrivial M] :
+lemma exists_hasPrimitiveVectorWith
+    [IsTriangularizable K L M] [FiniteDimensional K M] [Nontrivial M] :
     ∃ (μ : K) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
-  obtain ⟨μ₀, hμ₀⟩ := Module.End.exists_eigenvalue (toEnd K L M h)
+  obtain ⟨μ₀, hμ₀⟩ := IsTriangularizable.exists_hasEigenvalue K L M h
   obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
   let evals : ℕ → K := fun n ↦ μ₀ + 2 * (n : K)
   let e_vecs : ℕ → M := fun n ↦ ((toEnd K L M e) ^ n) m₀
