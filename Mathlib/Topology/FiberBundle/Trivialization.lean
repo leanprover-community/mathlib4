@@ -122,13 +122,11 @@ theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
 
 protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
 
-@[grind →, simp]
+@[grind =, simp]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
--- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
--- has the same conclusion as the unprimed version, so perhaps not?
-@[simp]
+@[grind =>, simp]
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
 
@@ -139,11 +137,12 @@ def setSymm : e.target → Z :=
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
 
-@[grind →] -- xxx good grind lemma? simp cannot do this (proj is a free variable); can grind?
+-- grind_pattern proj_symm_apply => x ∈ e.target, proj (e.toPartialEquiv.symm x) errors
 theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toPartialEquiv.symm x) = x.1 := by
   have := (e.coe_fst (e.map_target hx)).symm
   rwa [← e.coe_coe, e.right_inv hx] at this
 
+@[grind =>]
 theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     proj (e.toPartialEquiv.symm (b, x)) = b :=
   e.proj_symm_apply (e.mem_target.2 hx)
@@ -153,7 +152,7 @@ theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
-@[grind →, simp, mfld_simps]
+@[simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialEquiv.symm x) = x :=
   e.toPartialEquiv.right_inv hx
 
@@ -162,14 +161,19 @@ theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toPartialEquiv.symm (b, x)) = (b, x) :=
   e.apply_symm_apply (e.mem_target.2 hx)
 
-@[grind →, simp, mfld_simps]
+grind_pattern apply_symm_apply => x ∈ e.target, e (e.toPartialEquiv.symm x)
+grind_pattern apply_symm_apply' => b ∈ e.baseSet, e (e.toPartialEquiv.symm (b, x))
+
+@[simp, mfld_simps]
 theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toPartialEquiv.symm (e x) = x :=
   e.toPartialEquiv.left_inv hx
+-- `grind? =` omits the `hx` assumption
+grind_pattern symm_apply_apply => x ∈ e.source, e (e.toPartialEquiv.symm (e x))
 
-@[grind →] -- same question: can grind help here if simp cannot?
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toPartialEquiv.symm (proj x, (e x).2) = x := by
   rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
+grind_pattern symm_apply_mk_proj => x ∈ e.source, e.toPartialEquiv.symm (proj x, (e x).2)
 
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
@@ -218,17 +222,18 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[grind =, mfld_simps] -- grind → fails; good grind lemma?
+@[grind =>, mfld_simps]
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
   simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
 
-@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
+@[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
+grind_pattern symm_coe_proj => x ∈ e'.baseSet, (e'.toPartialEquiv.symm (x, y)).1
 
 section Zero
 
