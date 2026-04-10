@@ -1555,6 +1555,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvarianceTopCat
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
