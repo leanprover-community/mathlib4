@@ -153,6 +153,25 @@ theorem one_lt_of_gt (h : a < b) : 1 < b :=
 alias LT.lt.pos := pos_of_gt
 @[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
 
+@[to_additive]
+theorem Left.one_lt_mul_of_left [MulLeftMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Left.one_lt_mul_of_lt_of_le ha (one_le b)
+
+@[to_additive]
+theorem Left.one_lt_mul_of_right [MulLeftStrictMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Left.one_lt_mul_of_le_of_lt (one_le a) hb
+
+@[to_additive]
+theorem Right.one_lt_mul_of_left [MulRightStrictMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Right.one_lt_mul_of_lt_of_le ha (one_le b)
+
+@[to_additive]
+theorem Right.one_lt_mul_of_right [MulRightMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Right.one_lt_mul_of_le_of_lt (one_le a) hb
+
+@[to_additive add_pos_of_left] alias one_lt_mul_of_left := Left.one_lt_mul_of_left
+@[to_additive add_pos_of_right] alias one_lt_mul_of_right := Right.one_lt_mul_of_right
+
 end Preorder
 
 section PartialOrder

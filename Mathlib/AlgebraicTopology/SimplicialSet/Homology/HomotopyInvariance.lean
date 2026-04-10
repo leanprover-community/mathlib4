@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 
 /-!
-# Homotopy invariance of singular homology (simplicial step)
+# Homotopy invariance of simplicial homology
 
 This file proves that homotopic morphisms of simplicial sets induce
 the same maps on singular homology (with coefficients in an object `R`
@@ -38,6 +38,9 @@ using the definition `SSet.Homotopy.toSimplicialObjectHomotopy` from the file
 
 @[expose] public section
 
+/-! The invariance of singular homology (of topological spaces)
+is obtained in the file
+`Mathlib/AlgebraicTopology/SingularHomotopy/HomotopyInvarianceTopCat.lean`. -/
 assert_not_exists TopologicalSpace
 
 universe v u w
