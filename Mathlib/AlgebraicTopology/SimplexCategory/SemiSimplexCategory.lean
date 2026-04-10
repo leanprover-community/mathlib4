@@ -11,7 +11,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 # The semi-simplex category
 
 We define a category `SemiSimplexCategory` so that semi-simplicial objects
-can be defined as functors from `SemiSimplexCategoryᵒᵖ` similarly
+can be defined (TODO) as functors from `SemiSimplexCategoryᵒᵖ` similarly
 as simplicial objects are functors from `SimplexCategory`.
 
 -/
@@ -21,7 +21,10 @@ as simplicial objects are functors from `SimplexCategory`.
 open CategoryTheory Simplicial
 
 /-- The category whose objects are denoted `⦋n⦌ₛ` for `n : ℕ` and
-morphisms `⦋n⦌ₛ ⟶ ⦋m⦌ₛ` are order embeddings `Fin (n.len + 1) ↪o Fin (m.len + 1)`. -/
+morphisms `⦋n⦌ₛ ⟶ ⦋m⦌ₛ` are order embeddings `Fin (n.len + 1) ↪o Fin (m.len + 1)`.
+(This identifies to a wide subcategory of the category `SemiSimplex`, which
+has the "same" objects, and morphisms `Fin (n.len + 1) →o Fin (m.len + 1)`,
+see the faithful functor `SemiSimplexCategory.toSimplexCategory`.) -/
 @[ext]
 structure SemiSimplexCategory : Type where
   /-- Constructor `ℕ → SemiSimplexCategory`. -/
@@ -34,7 +37,7 @@ namespace SemiSimplexCategory
 /-- The object of `SemiSimplexCategory` corresponding to `n : ℕ` is denoted `⦋n⦌ₛ`. -/
 scoped[Simplicial] notation "⦋" n "⦌ₛ" => SemiSimplexCategory.mk n
 
-/-- The type of morphisms in the semi-simplex category are order embedding.
+/-- The type of morphisms in the semi-simplex category are order embeddings.
 This type is made irreducible: use `SemiSimplexCategory.homEquiv` to make
 the conversion. -/
 def Hom (n m : SemiSimplexCategory) := Fin (n.len + 1) ↪o Fin (m.len + 1)
