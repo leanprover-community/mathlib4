@@ -6,7 +6,8 @@ Authors: Adomas Baliuka
 import Batteries
 
 /-!
-This script extracts all unique non-ascii characters from what is given via stdin.
+This script extracts all unique non-ascii characters from what is given via stdin
+(and deliberately excludes a few).
 It is designed to update the unicode character list in
 `Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
 from
@@ -32,6 +33,7 @@ curl $URL | lake env lean --run scripts/extract-unique-nonascii.lean
 
 def Char.isAscii (c : Char) : Bool := c.toNat < 128
 
+/-- We deliberately exclude some characters, based on the reasons noted. -/
 def Char.manuallyExcluded (c : Char) : Bool :=
    c ∈ [
     '\u2001', -- \quad (U+2001) (due to being non-standard whitespace)
