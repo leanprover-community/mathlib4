@@ -37,10 +37,10 @@ section
 
 variable (X : SSet.{u}) (d : ℕ) [X.HasDimensionLT d] (n : ℕ)
 
-lemma degenerate_eq_univ_of_hasDimensionLT (hn : d ≤ n := by lia) : X.degenerate n = ⊤ :=
+lemma degenerate_eq_univ_of_hasDimensionLT (hn : d ≤ n := by lia) : X.degenerate n = Set.univ :=
   HasDimensionLT.degenerate_eq_top n hn
 
-lemma nonDegenerate_eq_empty_of_hasDimensionLT (hn : d ≤ n := by lia) : X.nonDegenerate n = ⊥ := by
+lemma nonDegenerate_eq_empty_of_hasDimensionLT (hn : d ≤ n := by lia) : X.nonDegenerate n = ∅ := by
   simp [nonDegenerate, X.degenerate_eq_univ_of_hasDimensionLT d n hn]
 
 @[deprecated (since := "2026-04-06")]
