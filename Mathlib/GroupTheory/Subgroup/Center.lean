@@ -78,8 +78,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   exact mul_comm y x
 
 @[to_additive]
-theorem center_eq_top_iff :
-    center G = ⊤ ↔ IsMulCommutative G := by
+theorem center_eq_top_iff : center G = ⊤ ↔ IsMulCommutative G := by
   simp [eq_top_iff', isMulCommutative_iff, mem_center_iff, eq_comm]
 
 @[to_additive]
