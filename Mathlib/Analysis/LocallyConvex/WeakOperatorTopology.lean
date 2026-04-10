@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
@@ -162,6 +162,11 @@ instance instIsCentralScalar {S : Type*} [Semiring S] [Module S F] [SMulCommClas
 instance instRing [IsTopologicalAddGroup E] : Ring (E →WOT[𝕜₁] E) :=
   equiv.ring
 
+instance instAlgebra {S : Type*} [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+    [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E] :
+    Algebra S (E →WOT[𝕜₁] E) :=
+  equiv.algebra S
+
 /-- The additive group equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
 @[simps!]
 def addEquiv [IsTopologicalAddGroup F] : (E →SWOT[σ] F) ≃+ (E →SL[σ] F) :=
@@ -178,6 +183,13 @@ def linearEquiv (S : Type*) [Semiring S] [Module S F] [SMulCommClass 𝕜₂ S F
 @[simps!]
 def ringEquiv [IsTopologicalAddGroup E] : (E →WOT[𝕜₁] E) ≃+* (E →L[𝕜₁] E) :=
   equiv.ringEquiv
+
+/-- The algebra equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/
+@[simps!]
+def algEquiv (S : Type*) [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+    [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E] :
+    (E →WOT[𝕜₁] E) ≃ₐ[S] (E →L[𝕜₁] E) :=
+  equiv.algEquiv S
 
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
   coe f := toCLM f
@@ -197,7 +209,7 @@ instance instContinuousLinearMapClass : ContinuousSemilinearMapClass (E →SWOT[
 @[simp]
 lemma ofCLM_toCLM (A : E →SWOT[σ] F) : ofCLM (toCLM A) = A := rfl
 
-@[simp]
+-- not marked `simp` because Lean just sees `A` on the left-hand side
 lemma toCLM_ofCLM (A : E →SL[σ] F) : toCLM (ofCLM A) = A := rfl
 
 @[simp]
@@ -223,74 +235,65 @@ lemma ext_dual [H : SeparatingDual 𝕜₂ F] {A B : E →SWOT[σ] F}
   simp_rw [ext_iff, ← (separatingDual_iff_injective.mp H).eq_iff, LinearMap.ext_iff]
   exact h
 
-@[simp] lemma ofCLM_smul {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F]
-    [ContinuousConstSMul S F] {c : S} {f : E →SL[σ] F} : ofCLM (c • f) = c • ofCLM f :=
-  toCLM_injective rfl
+section SMul
 
-@[simp] lemma toCLM_smul {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F]
-    [ContinuousConstSMul S F] {c : S} {f : E →SWOT[σ] F} : toCLM (c • f) = c • toCLM f :=
-  ofCLM_injective rfl
+variable {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F] [ContinuousConstSMul S F]
 
-@[simp] lemma smul_apply {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F]
-    [ContinuousConstSMul S F] {f : E →SWOT[σ] F} (c : S) (x : E) : (c • f) x = c • (f x) := by
-  simp only [DFunLike.coe]; rfl
+@[simp] lemma ofCLM_smul {c : S} {f : E →SL[σ] F} : ofCLM (c • f) = c • ofCLM f := rfl
+@[simp] lemma toCLM_smul {c : S} {f : E →SWOT[σ] F} : toCLM (c • f) = c • toCLM f := rfl
+@[simp] lemma smul_apply {f : E →SWOT[σ] F} (c : S) (x : E) : (c • f) x = c • (f x) := rfl
+
+end SMul
+
+section Algebra
+
+variable {S : Type*} [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S E] [SMul S 𝕜₁]
+    [IsScalarTower S 𝕜₁ E] [ContinuousConstSMul S E] [IsTopologicalAddGroup E]
+
+@[simp] lemma toCLM_algebraMap (c : S) :
+    toCLM (algebraMap S (E →WOT[𝕜₁] E) c) = algebraMap S (E →L[𝕜₁] E) c :=
+  rfl
+
+@[simp] lemma ofCLM_algebraMap (c : S) :
+    ofCLM (algebraMap S (E →L[𝕜₁] E) c) = algebraMap S (E →WOT[𝕜₁] E) c :=
+  rfl
+
+@[simp] lemma algebraMapCLM_apply (c : S) (x : E) :
+    (algebraMap S (E →WOT[𝕜₁] E) c) x = c • x :=
+  rfl
+
+end Algebra
 
 variable [IsTopologicalAddGroup F]
 
-@[simp] lemma ofCLM_zero : ofCLM (0 : E →SL[σ] F) = 0 :=
-  toCLM_injective rfl
+@[simp] lemma ofCLM_zero : ofCLM (0 : E →SL[σ] F) = 0 := rfl
+@[simp] lemma ofCLM_add {f g : E →SL[σ] F} : ofCLM (f + g) = ofCLM f + ofCLM g := rfl
+@[simp] lemma ofCLM_sub {f g : E →SL[σ] F} : ofCLM (f - g) = ofCLM f - ofCLM g := rfl
+@[simp] lemma ofCLM_neg {f : E →SL[σ] F} : ofCLM (-f) = -ofCLM f := rfl
+@[simp] lemma ofCLM_mul (f g : F →L[𝕜₂] F) : ofCLM (f * g) = ofCLM f * ofCLM g := rfl
+@[simp] lemma ofCLM_one : ofCLM (1 : F →L[𝕜₂] F) = 1 := rfl
+@[simp] lemma ofCLM_pow (f : F →L[𝕜₂] F) (n : ℕ) : ofCLM (f ^ n) = ofCLM f ^ n := rfl
+@[simp] lemma ofCLM_natCast (n : ℕ) : ofCLM (n : F →L[𝕜₂] F) = n := rfl
+@[simp] lemma ofCLM_intCast (n : ℤ) : ofCLM (n : F →L[𝕜₂] F) = n := rfl
 
-@[simp] lemma ofCLM_add {f g : E →SL[σ] F} : ofCLM (f + g) = ofCLM f + ofCLM g :=
-  toCLM_injective rfl
+@[simp] lemma toCLM_zero : toCLM (0 : E →SWOT[σ] F) = 0 := rfl
+@[simp] lemma toCLM_add {f g : E →SWOT[σ] F} : toCLM (f + g) = toCLM f + toCLM g := rfl
+@[simp] lemma toCLM_sub {f g : E →SWOT[σ] F} : toCLM (f - g) = toCLM f - toCLM g := rfl
+@[simp] lemma toCLM_neg {f : E →SWOT[σ] F} : toCLM (-f) = -toCLM f := rfl
+@[simp] lemma toCLM_mul (f g : F →WOT[𝕜₂] F) : toCLM (f * g) = toCLM f * toCLM g := rfl
+@[simp] lemma toCLM_one : toCLM (1 : F →WOT[𝕜₂] F) = 1 := rfl
+@[simp] lemma toCLM_pow (f : F →WOT[𝕜₂] F) (n : ℕ) : (f ^ n).toCLM = f.toCLM ^ n := rfl
+@[simp] lemma toCLM_natCast (n : ℕ) : (n : F →WOT[𝕜₂] F).toCLM = n := rfl
+@[simp] lemma toCLM_intCast (n : ℤ) : (n : F →WOT[𝕜₂] F).toCLM = n := rfl
 
-@[simp] lemma ofCLM_sub {f g : E →SL[σ] F} : ofCLM (f - g) = ofCLM f - ofCLM g :=
-  toCLM_injective rfl
-
-@[simp] lemma ofCLM_neg {f : E →SL[σ] F} : ofCLM (-f) = -ofCLM f :=
-  toCLM_injective rfl
-
-@[simp] lemma ofCLM_mul (f g : F →L[𝕜₂] F) : ofCLM (f * g) = ofCLM f * ofCLM g :=
-  toCLM_injective rfl
-
-@[simp] lemma ofCLM_one : ofCLM (1 : F →L[𝕜₂] F) = 1 :=
-  toCLM_injective rfl
-
-@[simp] lemma toCLM_zero : toCLM (0 : E →SWOT[σ] F) = 0 :=
-  ofCLM_injective rfl
-
-@[simp] lemma toCLM_add {f g : E →SWOT[σ] F} : toCLM (f + g) = toCLM f + toCLM g :=
-  ofCLM_injective rfl
-
-@[simp] lemma toCLM_sub {f g : E →SWOT[σ] F} : toCLM (f - g) = toCLM f - toCLM g :=
-  ofCLM_injective rfl
-
-@[simp] lemma toCLM_neg {f : E →SWOT[σ] F} : toCLM (-f) = -toCLM f :=
-  ofCLM_injective rfl
-
-@[simp] lemma toCLM_mul (f g : F →WOT[𝕜₂] F) : toCLM (f * g) = toCLM f * toCLM g :=
-  ofCLM_injective rfl
-
-@[simp] lemma toCLM_one : toCLM (1 : F →WOT[𝕜₂] F) = 1 :=
-  ofCLM_injective rfl
-
-@[simp] lemma zero_apply (x : E) : (0 : E →SWOT[σ] F) x = 0 := by
-  simp [← coe_toCLM, ← addEquiv_apply]
-
-@[simp] lemma add_apply {f g : E →SWOT[σ] F} (x : E) : (f + g) x = f x + g x := by
-  simp [← coe_toCLM, ← addEquiv_apply]
-
-@[simp] lemma sub_apply {f g : E →SWOT[σ] F} (x : E) : (f - g) x = f x - g x := by
-  simp [← coe_toCLM, ← addEquiv_apply]
-
-@[simp] lemma neg_apply {f : E →SWOT[σ] F} (x : E) : (-f) x = -(f x) := by
-  simp [← coe_toCLM, ← addEquiv_apply]
-
-@[simp] lemma mul_apply (f g : F →WOT[𝕜₂] F) (x : F) :
-    (f * g) x = f (g x) := by
-  rfl
-
-@[simp] lemma one_apply (x : F) : (1 : F →WOT[𝕜₂] F) x = x := by
-  rfl
+@[simp] lemma zero_apply (x : E) : (0 : E →SWOT[σ] F) x = 0 := rfl
+@[simp] lemma add_apply {f g : E →SWOT[σ] F} (x : E) : (f + g) x = f x + g x := rfl
+@[simp] lemma sub_apply {f g : E →SWOT[σ] F} (x : E) : (f - g) x = f x - g x := rfl
+@[simp] lemma neg_apply {f : E →SWOT[σ] F} (x : E) : (-f) x = -(f x) := rfl
+@[simp] lemma mul_apply (f g : F →WOT[𝕜₂] F) (x : F) : (f * g) x = f (g x) := rfl
+@[simp] lemma one_apply (x : F) : (1 : F →WOT[𝕜₂] F) x = x := rfl
+@[simp] lemma natCast_apply (n : ℕ) (x : F) : (n : F →WOT[𝕜₂] F) x = n • x := rfl
+@[simp] lemma intCast_apply (n : ℤ) (x : F) : (n : F →WOT[𝕜₂] F) x = n • x := rfl
 
 end Basic
 
@@ -359,7 +362,18 @@ lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →SWOT[σ] F)} {A : 
 instance instT3Space [SeparatingDual 𝕜₂ F] : T3Space (E →SWOT[σ] F) :=
   isEmbedding_inducingFn.t3Space
 
-instance instContinuousSMul : ContinuousSMul 𝕜₂ (E →SWOT[σ] F) := .induced (inducingFn σ E F)
+instance {S : Type*} [DistribSMul S F] [SMulCommClass 𝕜₂ S F] [ContinuousConstSMul S F]
+    [SMul S 𝕜₂] [IsScalarTower S 𝕜₂ 𝕜₂] [IsScalarTower S 𝕜₂ F] :
+    ContinuousConstSMul S (F →WOT[𝕜₂] F) where
+  continuous_const_smul c := by
+    apply continuous_of_dual_apply_continuous fun _ _ ↦ ?_
+    simp only [smul_apply, ContinuousLinearMap.map_smul_of_tower]
+    exact continuous_const_smul c |>.comp <| continuous_dual_apply ..
+
+instance instContinuousSMul {S : Type*} [Semiring S] [Module S F] [SMulCommClass 𝕜₂ S F]
+    [Module S 𝕜₂] [IsScalarTower S 𝕜₂ F] [IsScalarTower S 𝕜₂ 𝕜₂] [ContinuousConstSMul S F]
+    [TopologicalSpace S] [ContinuousSMul S 𝕜₂] :
+  ContinuousSMul S (E →SWOT[σ] F) := .induced <| (inducingFn σ E F).restrictScalars S
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →SWOT[σ] F) where
   toContinuousAdd := .induced (inducingFn σ E F)
@@ -419,11 +433,113 @@ lemma continuous_ofCLM :
   ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y ↦
     y.cont.comp <| continuous_eval_const x
 
+@[deprecated (since := "2026-04-10")] alias ContinuousLinearMap.continuous_toWOT := continuous_ofCLM
+
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
 def _root_.ContinuousLinearMap.WOTofCLM : (E →SL[σ] F) →L[𝕜₂] (E →SWOT[σ] F) where
   toLinearMap := linearEquiv 𝕜₂ |>.symm.toLinearMap
   cont := continuous_ofCLM
 
+@[deprecated (since := "2026-04-10")]
+alias ContinuousLinearMap.toWOTCLM := ContinuousLinearMap.WOTofCLM
+
 end toWOT_continuous
+
+
+section Comp
+
+variable {𝕜₁ 𝕜₂ 𝕜₃ 𝕜₄ : Type*} {E F G H : Type*}
+    [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+    {σ₁₂ : 𝕜₁ →+* 𝕜₂} {σ₁₃ : 𝕜₁ →+* 𝕜₃} {σ₁₄ : 𝕜₁ →+* 𝕜₄}
+    {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₃₄ : 𝕜₃ →+* 𝕜₄}
+    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+    [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
+    [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
+    [AddCommGroup F] [TopologicalSpace F] [Module 𝕜₂ F]
+    [AddCommGroup G] [TopologicalSpace G] [Module 𝕜₃ G]
+    [AddCommGroup H] [TopologicalSpace H] [Module 𝕜₄ H]
+
+variable (𝕜₂ F) in
+/-- The identity as a continuous linear map on the type synonym equipped with the weak operator
+topology -/
+protected def id : F →WOT[𝕜₂] F := ofCLM <| .id 𝕜₂ F
+
+@[simp]
+lemma toCLM_id : (.id 𝕜₂ F : F →WOT[𝕜₂] F).toCLM = .id 𝕜₂ F := rfl
+
+/-- Composition of continuous linear maps on the type synonym equipped with the weak operator
+topology. -/
+def comp (g : F →SWOT[σ₂₃] G) (f : E →SWOT[σ₁₂] F) : E →SWOT[σ₁₃] G :=
+  ofCLM <| g.toCLM.comp f.toCLM
+
+@[simp]
+lemma comp_apply (g : F →SWOT[σ₂₃] G) (f : E →SWOT[σ₁₂] F) (x : E) :
+    g.comp f x = g (f x) := by
+  simp [comp]
+
+@[simp] lemma toCLM_comp (g : F →SWOT[σ₂₃] G) (f : E →SWOT[σ₁₂] F) :
+    (g.comp f).toCLM = g.toCLM.comp f.toCLM :=
+  rfl
+
+@[simp] lemma comp_id (f : E →SWOT[σ₁₂] F) : comp (.id 𝕜₂ F) f = f := by simp [comp]
+@[simp] lemma id_comp (g : F →SWOT[σ₂₃] G) : comp g (.id 𝕜₂ F) = g := by simp [comp]
+
+lemma comp_assoc (g₃₄ : G →SWOT[σ₃₄] H) (g₂₃ : F →SWOT[σ₂₃] G) (g₁₂ : E →SWOT[σ₁₂] F) :
+    (g₃₄.comp g₂₃).comp g₁₂ = g₃₄.comp (g₂₃.comp g₁₂) := by
+  simp only [comp, ContinuousLinearMap.comp_assoc]
+
+lemma mul_eq_comp [IsTopologicalAddGroup F] (f g : F →WOT[𝕜₂] F) : f * g = f.comp g := rfl
+
+@[fun_prop]
+lemma continuous_precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (f : E →SWOT[σ₁₂] F) :
+    Continuous (fun g : F →SWOT[σ₂₃] G ↦ g.comp f) :=
+  continuous_of_dual_apply_continuous fun _ _ ↦ continuous_dual_apply ..
+
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
+variable [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+
+/-- While `RingHomSurjective σ₂₃` is not a strict requirement, there are obstructions to
+this without any assumption on `σ₂₃` (in particular, on the dimension of the extension of `𝕜₃` over
+`σ₂₃(𝕜₂)`), and in the only common case, which is when `σ₂₃` is conjugation, this type class is
+guaranteed. Likewise, it would suffice if `RingHomIsometric` were replaced with the weaker
+`Continuous σ₂₃`, but we opt for this because we have these type classes available. -/
+@[fun_prop]
+lemma continuous_postcomp [RingHomSurjective σ₂₃] [RingHomIsometric σ₂₃] (g : F →SWOT[σ₂₃] G) :
+    Continuous (fun f : E →SWOT[σ₁₂] F ↦ g.comp f) := by
+  refine continuous_of_dual_apply_continuous fun x z ↦ ?_
+  have σ_bij : Function.Bijective σ₂₃ := ⟨σ₂₃.injective, RingHomSurjective.is_surjective⟩
+  let σ_equiv : 𝕜₂ ≃+* 𝕜₃ := RingEquiv.ofBijective σ₂₃ σ_bij
+  let invPair : RingHomInvPair σ₂₃ σ_equiv.symm := RingHomInvPair.of_ringEquiv σ_equiv
+  let invPair_symm := invPair.symm
+  let σ_li : 𝕜₂ ≃ₛₗᵢ[σ₂₃] 𝕜₃ :=
+    { toLinearEquiv := .ofBijective σ₂₃.toSemilinearMap σ_bij
+      norm_map' _ := RingHomIsometric.norm_map }
+  conv => enter [1, a]; rw [← σ_li.apply_symm_apply (z _), comp_apply, ← toCLM_apply]
+  apply σ_li.continuous.comp
+  exact continuous_dual_apply x <| σ_li.symm.toLinearIsometry.toContinuousLinearMap.comp <|
+    z.comp g.toCLM
+
+/-- Precomposition by a fixed continuous linear map, as a continuous linear map when all spaces
+of continuous linear maps are equipped with the weak operator topology. -/
+@[simps]
+def precompCLM (f : E →SWOT[σ₁₂] F) : (F →SWOT[σ₂₃] G) →L[𝕜₃] (E →SWOT[σ₁₃] G) where
+  toFun g := g.comp f
+  map_add' := by simp [comp]
+  map_smul' := by simp [comp]
+
+/-- Precomposition by a fixed continuous linear map, as a continuous linear map when all spaces
+of continuous linear maps are equipped with the weak operator topology. -/
+@[simps]
+def postcompCLM [RingHomSurjective σ₂₃] [RingHomIsometric σ₂₃] (g : F →SWOT[σ₂₃] G) :
+    (E →SWOT[σ₁₂] F) →SL[σ₂₃] (E →SWOT[σ₁₃] G) where
+  toFun f := g.comp f
+  map_add' := by simp [comp]
+  map_smul' := by simp [comp]
+
+instance : IsSemitopologicalRing (F →WOT[𝕜₂] F) where
+  continuous_const_mul {_} := by simp_rw [mul_eq_comp]; fun_prop
+  continuous_mul_const {_} := by simp_rw [mul_eq_comp]; fun_prop
+
+end Comp
 
 end ContinuousLinearMapWOT
