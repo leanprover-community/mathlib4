@@ -277,10 +277,6 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
-variable (p : ℕ) [ExpChar k p]
-
-instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
-
 /-
 def adjoinPthRoots : IntermediateField k (AlgebraicClosure k) where
   carrier := {x | x ^ p ∈ (⊥ : IntermediateField k _)}
@@ -294,9 +290,35 @@ def adjoinPthRoots : IntermediateField k (AlgebraicClosure k) where
 
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
+variable (p : ℕ) [ExpChar k p]
+
 instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
 
 instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
+
+def adjoinPthRootsSelf : (adjoinPthRoots k p) →+* k := RingHom.id k
+
+lemma adjoinPthRootsSelf_algebraMap (x : adjoinPthRoots k p) :
+    algebraMap k (adjoinPthRoots k p) (adjoinPthRootsSelf k p x) = x ^ p := rfl
+
+lemma adjoinPthRoots_pth_power_mem_bot (x : adjoinPthRoots k p) :
+    x ^ p ∈ (⊥ : IntermediateField k (adjoinPthRoots k p)) := by
+  use adjoinPthRootsSelf k p x
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
+  isAlgebraic x := by
+    use Polynomial.X ^ p - Polynomial.C (adjoinPthRootsSelf k p x)
+    refine ⟨(Polynomial.monic_X_pow_sub_C _ (NeZero.ne' p).symm).ne_zero, ?_⟩
+    simp [adjoinPthRootsSelf_algebraMap]
+
+def adjoinPthRootsPthRoot : k →+* (adjoinPthRoots k p) := RingHom.id k
+
+lemma adjoinPthRootsPthRoot_pow (x : k) : algebraMap k (adjoinPthRoots k p) x =
+    (adjoinPthRootsPthRoot k p x) ^ p := rfl
+
+instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
 lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     [ Algebra.IsTranscendentalSeparable k K,
@@ -311,14 +333,15 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     apply (Algebra.isGeometricallyReduced_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
-    /-
+    let : Fact (Nat.Prime p) := ⟨hp⟩
     simp only [isGeometricallyReduced_iff]
     intro red
-    have : Function.Injective (Algebra.TensorProduct.rTensor K (adjoinPthRoots k p).val) :=
-      Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective
+    let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
+      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
+        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
+    have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
+      Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
     exact isReduced_of_injective _ this
-    -/
-    sorry
   tfae_have 3 → 2 := by
     --only one missing
     sorry
