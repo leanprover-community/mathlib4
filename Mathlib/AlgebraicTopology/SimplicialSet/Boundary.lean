@@ -41,7 +41,6 @@ def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma boundary_eq_iSup (n : ℕ) :
     boundary.{u} n = ⨆ (i : Fin (n + 1)), stdSimplex.face {i}ᶜ := by
   ext
@@ -58,7 +57,7 @@ lemma face_singleton_compl_le_boundary {n : ℕ} (i : Fin (n + 1)) :
   rw [boundary_eq_iSup]
   exact le_iSup (fun (i : Fin (n +1)) ↦ stdSimplex.face {i}ᶜ) i
 
-lemma not_mem_boundary (n : ℕ) :
+lemma stdSimplex.notMem_boundary (n : ℕ) :
     stdSimplex.objMk (m := op ⦋n⦌) .id ∉ (boundary.{u} n).obj (op ⦋n⦌) := by
   rw [boundary_eq_iSup, Subfunctor.iSup_obj, Set.mem_iUnion, not_exists]
   intro i hi
@@ -66,7 +65,7 @@ lemma not_mem_boundary (n : ℕ) :
 
 lemma boundary_lt_top (n : ℕ) :
     boundary.{u} n < ⊤ :=
-  lt_of_le_not_ge (by simp) (fun h ↦ not_mem_boundary n (h _ (by simp)))
+  lt_of_le_not_ge (by simp) (fun h ↦ stdSimplex.notMem_boundary n (h _ (by simp)))
 
 lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
     (boundary.{u} n).obj (op ⦋m⦌) = .univ := by
