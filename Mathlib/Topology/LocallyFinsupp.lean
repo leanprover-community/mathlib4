@@ -126,7 +126,7 @@ namespace Function.LocallyFinsuppWithin
 Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
 injective.
 -/
-instance [Zero Y] : FunLike (Function.LocallyFinsuppWithin U Y) X Y where
+instance [Zero Y] : FunLike (LocallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
 
