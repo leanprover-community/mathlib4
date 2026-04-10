@@ -13,7 +13,7 @@ public import Mathlib.Combinatorics.Quiver.SingleObj
 /-!
 # Schreier Graphs
 
-This module defines Schreier graphs as quivers with labeled edges.
+This module defines Schreier graphs as quivers with labelled edges.
 
 Given a monoid `M` acting on a type `V` and a map `ι : S → M`, the Schreier graph has
 vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S`.
@@ -21,7 +21,7 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 ## Main definitions
 
 * `SchreierGraph V ι` - The Schreier graph of an action, with vertices of type `V` and edges
-  labeled by elements of `S` via `ι : S → M`.
+  labelled by elements of `S` via `ι : S → M`.
 * `SchreierGraph.labelling` - The prefunctor from a Schreier graph to `SingleObj S` that
   extracts edge labels.
 
@@ -30,15 +30,19 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 * `SchreierGraph.labelling_isCovering` - The labelling prefunctor is a covering when we have
   a group action.
 
+## Examples
+
+* The (left) **Cayley graph** of a group `M` with generators `ι : S → M` is the Schreier graph
+  where `V = M` and the action is left multiplication.
+
 ## Implementation notes
 
-This is a port of the Lean 3 formalization from PR #18693, using the quiver-based approach
-rather than the simpler `SimpleGraph` approach.
+Although referred to informally as graphs, Schreier graphs have multiple, directed, labelled
+edges between nodes and so are implemented here as quivers.
 
 ## References
 
 * [Y. Vorobets, *Notes on the Schreier graphs of the Grigorchuk group*][Vorobets2012]
-* [Lean 3 PR #18693](https://github.com/leanprover-community/mathlib3/pull/18693)
 -/
 
 @[expose] public section
@@ -114,7 +118,7 @@ variable {V : Type*} {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S �
 
 /-- The star map of the labelling prefunctor as an equivalence. -/
 @[simps]
-def labelling_starEquiv (x : SchreierGraph V ι) :
+def labellingStarEquiv (x : SchreierGraph V ι) :
     Quiver.Star x ≃ Quiver.Star (SingleObj.star S) where
   toFun := (labelling V ι).star x
   invFun := fun ⟨_, s⟩ => ⟨ι s • x, s, rfl⟩
@@ -123,7 +127,7 @@ def labelling_starEquiv (x : SchreierGraph V ι) :
 
 /-- The costar map of the labelling prefunctor as an equivalence. -/
 @[simps]
-def labelling_costarEquiv (x : SchreierGraph V ι) :
+def labellingCostarEquiv (x : SchreierGraph V ι) :
     Quiver.Costar x ≃ Quiver.Costar (SingleObj.star S) where
   toFun := (labelling V ι).costar x
   invFun := fun ⟨_, s⟩ => ⟨(ι s)⁻¹ • x, s, by simp⟩
@@ -136,16 +140,17 @@ def labelling_costarEquiv (x : SchreierGraph V ι) :
 
 /-- The labelling prefunctor is a covering for Schreier graphs with group actions. -/
 theorem labelling_isCovering : (labelling V ι).IsCovering where
-  star_bijective u := (labelling_starEquiv ι u).bijective
-  costar_bijective u := (labelling_costarEquiv ι u).bijective
+  star_bijective u := (labellingStarEquiv ι u).bijective
+  costar_bijective u := (labellingCostarEquiv ι u).bijective
 
-/-- If a prefunctor φ on a Schreier graph commutes with the labelling (i.e., labels are preserved),
-then φ commutes with the group action. In other words, morphisms that preserve edge labels also
-preserve the group structure. -/
-lemma action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V ι)
-    (φm : φ ⋙q labelling V ι = labelling V ι)
-    (v : SchreierGraph V ι) (s : S) : φ.obj (ι s • v) = ι s • (φ.obj v) := by
-  -- The key is that φ preserves labels, so edges labeled 's' stay labeled 's'
+/-- If a prefunctor between Schreier graphs commutes with the labelling (i.e., labels are
+preserved), then it commutes with the group action. In other words, morphisms that preserve edge
+labels also preserve the group structure. -/
+lemma map_smul_of_comp_labelling_eq {W : Type*} [MulAction M W]
+    (φ : SchreierGraph V ι ⥤q SchreierGraph W ι) (φm : φ ⋙q labelling W ι = labelling V ι)
+    (v : SchreierGraph V ι) (s : S) :
+    φ.obj (ι s • v) = ι s • (φ.obj v) := by
+  -- The key is that φ preserves labels, so edges labelled 's' stay labelled 's'
   let e : v ⟶ ι s • v := ⟨s, rfl⟩
   -- φ.map e is an edge from φ.obj v, and its label is preserved
   have h := (φ.map e).property
@@ -154,7 +159,7 @@ lemma action_commute (φ : SchreierGraph V ι ⥤q SchreierGraph V ι)
   have label_eq : (φ.map e).val = s := by
     -- `φm` says `φ ⋙q labelling = labelling`
     -- So `(φ ⋙q labelling).map e = labelling.map e`
-    have : (φ ⋙q labelling V ι).map e = (labelling V ι).map e := by
+    have : (φ ⋙q labelling W ι).map e = (labelling V ι).map e := by
       rw [φm]
     simp only [Prefunctor.comp_map, labelling_map] at this
     exact this
