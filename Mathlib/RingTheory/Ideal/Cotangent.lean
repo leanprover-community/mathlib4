@@ -301,9 +301,9 @@ abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 instance : Module (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| Module (R ⧸ maximalIdeal R) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
-  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
+  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R)
+    ((maximalIdeal R) ⧸ ((maximalIdeal R) • ⊤ : Submodule R (maximalIdeal R)))
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
