@@ -95,10 +95,11 @@ lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
     lia
-  simp only [Set.top_eq_univ, horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
-    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
-    Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.mem_univ, iff_true]
-  exact ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+  simpa [horn_eq_iSup] using ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+
+@[simp]
+lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
+    ⇑(stdSimplex.asOrderHom (stdSimplex.objEquiv.{u}.symm α)) = α := rfl
 
 lemma subcomplex_le_horn_iff {n : ℕ}
     (A : Δ[n + 1].Subcomplex) (i : Fin (n + 2)) :
@@ -107,9 +108,10 @@ lemma subcomplex_le_horn_iff {n : ℕ}
   · replace h := h.trans hA
     rw [stdSimplex.face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
     apply h
-    change Set.range (Fin.succAboveOrderEmb i) ∪ _ = _
-    rw [Fin.range_succAboveOrderEmb]
-    exact Set.compl_union_self {i}
+    rw [coe_asOrderHom_objEquiv_symm]
+    sorry
+    --rw [Fin.range_succAboveOrderEmb]
+    --exact Set.compl_union_self {i}
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro d x hx
     by_cases! hd : d < n
@@ -136,7 +138,7 @@ lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
     stdSimplex.face.{u} S ≤ horn (n + 1) j ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
   rw [subcomplex_le_horn_iff, stdSimplex.face_le_face_iff, ← not_iff_not]
   simp only [Finset.le_eq_subset, Decidable.not_not, ne_eq, not_and_or]
-  refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
+  refine ⟨fun h ↦ ?_, by aesop⟩
   rw [← Finset.compl_subset_compl, compl_compl,
     Finset.subset_singleton_iff, Finset.compl_eq_empty_iff] at h
   obtain h | h := h
@@ -148,7 +150,7 @@ lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     stdSimplex.objEquiv.symm f ∉ (horn.{u} n i).obj (op d) := by
   rw [mem_horn_iff, ne_eq, Decidable.not_not]
   ext i
-  simpa using Or.inr ⟨inv f i, by change (inv f ≫ f) i = i; cat_disch⟩
+  simpa using Or.inr ⟨inv f i, by simp [coe_asOrderHom_objEquiv_symm.{u}]⟩
 
 lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
     (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
