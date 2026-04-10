@@ -107,10 +107,10 @@ def toContinuousLinearMap (f : E → F) (hf : IsBoundedLinearMap 𝕜 f) : E →
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 
 theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
-  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp [le_refl]
+  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp
 
 theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
-  LinearMap.id.isLinear.with_bound 1 <| by simp [le_refl]
+  LinearMap.id.isLinear.with_bound 1 <| by simp
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
   refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_
@@ -336,7 +336,7 @@ continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operati
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g :=
-  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (G := F) (fun _ ↦ g))
+  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (F := F) (fun _ ↦ g))
     |>.isBoundedLinearMap
 
 end

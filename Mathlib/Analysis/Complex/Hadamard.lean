@@ -16,17 +16,17 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 ## Main result
 
 - `norm_le_interp_of_mem_verticalClosedStrip` :
-Hadamard three-line theorem: If `f` is a bounded function, continuous on
-`re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
-`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
-`‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
-This can be seen to be equivalent to the statement
-that `log M(re z)` is a convex function on `[0, 1]`.
+  Hadamard three-line theorem: If `f` is a bounded function, continuous on
+  `re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
+  `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value
+  of `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
+  `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
+  This can be seen to be equivalent to the statement
+  that `log M(re z)` is a convex function on `[0, 1]`.
 
 - `norm_le_interp_of_mem_verticalClosedStrip'` :
-Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
-functions defined in this file.
+  Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
+  functions defined in this file.
 
 ## Main definitions
 
@@ -397,12 +397,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       use ((z - l) / (u - l))
       constructor
       · norm_cast
-        rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp only [sub_re, hz₁, ofReal_re, sub_im, ofReal_im, sub_zero, ofReal_sub, sub_self,
-          mul_zero, zero_div, add_zero]
-        rw [div_mul_eq_div_div_swap, mul_div_assoc,
-          div_self (by norm_cast; linarith),
-          mul_one, div_self (by norm_cast; linarith)]
+        grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp only [one_mul, add_sub_cancel, hz₂]
   rw [this]
@@ -526,8 +521,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       · simpa [comp_apply, mem_image, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂] using ha
       · use ‖(f 0)‖, 0
-        simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
-          and_self]
+        simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _

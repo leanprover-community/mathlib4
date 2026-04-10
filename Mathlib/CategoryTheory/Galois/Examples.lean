@@ -55,7 +55,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = ((Y.ρ g⁻¹ * Y.ρ g)).hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by
-          rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom, id_eq])
+          simp [← map_mul, inv_mul_cancel, Action.ρ_one])
     map_one' := by aesop
     map_mul' := by aesop
   }
@@ -66,7 +66,6 @@ noncomputable def Action.imageComplementIncl {X Y : Action FintypeCat G} (f : X 
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {X Y : Action FintypeCat G} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)

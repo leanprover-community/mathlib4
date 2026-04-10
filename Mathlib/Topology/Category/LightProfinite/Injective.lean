@@ -138,6 +138,7 @@ instance injective_of_finite (S : Profinite.{u}) [Nonempty S] [Finite S] :
       (CompHausLike.isTerminalPUnit.hom_ext _ _)
     exact ⟨k, h2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A nonempty light profinite space is injective in `Profinite`. -/
 instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
     Injective (lightToProfinite.obj S) where

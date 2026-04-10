@@ -264,12 +264,8 @@ in the orthogonal direction. -/
 theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
-  have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
-  rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
-  refine (eq_of_vsub_eq_zero ?_).symm
   ext
-  refine Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ ?_ h
-  exact (_ : s.direction).2
+  exact coe_orthogonalProjection_eq_iff_mem.mpr (by simp [*])
 
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector is a
@@ -303,6 +299,21 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (𝕜 := 𝕜)]
   exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
     (orthogonalProjection_vsub_mem_direction_orthogonal s p₂)
+
+/-- If the distance from `p₁` to its orthogonal projection equals its distance to a point in `s`,
+the orthogonal projection is that point. -/
+lemma dist_orthogonalProjection_eq_dist_iff_eq_of_mem {s : AffineSubspace 𝕜 P}
+    [s.direction.HasOrthogonalProjection] {p₁ p₂ : P} (hp₂ : p₂ ∈ s) :
+    haveI : Nonempty s := ⟨p₂, hp₂⟩
+    dist p₁ (orthogonalProjection s p₁) = dist p₁ p₂ ↔ orthogonalProjection s p₁ = p₂ := by
+  haveI : Nonempty s := ⟨p₂, hp₂⟩
+  constructor
+  · intro h
+    rwa [← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm _ p₂,
+      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ hp₂,
+      right_eq_add, mul_eq_zero, dist_eq_zero, or_self, eq_comm] at h
+  · intro h
+    nth_rw 4 [← h]
 
 /-- The distance between a point and its orthogonal projection to a subspace equals the distance
 to that subspace as given by `Metric.infDist`. This is not a `simp` lemma since the simplest form

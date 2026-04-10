@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Data.Fin.Parity
@@ -56,9 +56,7 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     rintro v w
     rw [Fin.mk.injEq]
     exact Fin.ext
-  map_rel_iff' := by
-    intro v w
-    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
+  map_rel_iff' := by simp [pathGraph]
 
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
@@ -159,9 +157,9 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       intro h2
       rw [← h2] at hOdd
       exact (Nat.not_odd_iff.mpr rfl) hOdd
-    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph_EulerianCircuit (n - 3)
+    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph.cycle (n - 3)
     have hOdd' : Odd w.length := by
-      rw [cycleGraph_EulerianCircuit_length, hn3]
+      rw [cycleGraph.length_cycle, hn3]
       exact hOdd
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'

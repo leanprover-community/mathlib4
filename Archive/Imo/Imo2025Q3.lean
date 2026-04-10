@@ -73,7 +73,7 @@ lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : IsBonza f) {p : ℕ} (hp : 
 /-- For each bonza function `f`, then `f p = 1` for sufficient big prime `p` -/
 theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∃ N, ∀ p > N, p.Prime → f p = 1 := by
-  obtain ⟨b, hb, neq⟩ : ∃ b, 0 < b ∧ f b ≠ b := Set.not_subset.mp hnf
+  obtain ⟨b, hb, ne⟩ : ∃ b, 0 < b ∧ f b ≠ b := Set.not_subset.mp hnf
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
   have : f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
@@ -179,7 +179,8 @@ lemma isBonza : IsBonza fExample := by
 
 theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x > (0 : ℕ), f x = x
-  · simpa [hnf n hn] using by lia
+  · simp [hnf n hn]
+    lia
   · obtain ⟨k, hk⟩ := hf.not_id_two_pow hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
@@ -205,7 +206,8 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
-      simpa [hk, this] using by lia
+      simp [hk, this]
+      lia
 
 end fExample
 

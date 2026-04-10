@@ -102,7 +102,7 @@ theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
   let ⟨_u, hu⟩ := hfg
   (hf.smul_eq hg hu).symm ▸ hu
 
-/-- Scalar product of two infinites sums indexed by arbitrary types. -/
+/-- Scalar product of two infinite sums indexed by arbitrary types. -/
 theorem tsum_smul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 • g x.2) :
     ((∑' x, f x) • ∑' y, g y) = ∑' z : ι × κ, f z.1 • g z.2 :=
@@ -208,8 +208,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
-  intro b
+  induction x using Quotient.inductionOn with | _ b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a • b) = π b := by
@@ -227,8 +226,7 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β �
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
-  intro b
+  induction x using Quotient.inductionOn with | _ b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by

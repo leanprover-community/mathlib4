@@ -76,7 +76,7 @@ namespace IsSmoothEmbedding
 variable {f g : M → N}
 
 -- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
-proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : ContMDiff I J n f
+proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : CMDiff n f
 
 protected lemma id [IsManifold I n M] : IsSmoothEmbedding I I n (@id M) := ⟨.id, .id⟩
 

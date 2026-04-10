@@ -8,6 +8,11 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
+    paths-ignore:
+      # pull_request_target uses the workflow from the target branch:
+      # PR changes under this directory won't affect this run, so
+      # running it is just wasteful
+      - '.github/workflows/**'
 
 concurrency:
   # label each workflow run; only the latest with each label will run
@@ -19,16 +24,18 @@ concurrency:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
 jobs:
   build:
+    name: ci (fork)
     if: ${{ github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing' }}
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
-      job_name_suffix: ' (fork)'
+      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       runs_on: pr
     secrets: inherit

@@ -12,17 +12,20 @@ public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
+
 The following conditions are equivalent for a ring `R`:
 1. Every radical ideal `I` is equal to its Jacobson radical
 2. Every radical ideal `I` can be written as an intersection of maximal ideals
 3. Every prime ideal `I` is equal to its Jacobson radical
+
 Any ring satisfying any of these equivalent conditions is said to be Jacobson.
 Some particular examples of Jacobson rings are also proven.
-`isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
-`isJacobsonRing_localization` says the localization of a Jacobson ring
+- `isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
+- `isJacobsonRing_localization` says the localization of a Jacobson ring
   to a single element is Jacobson.
-`isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
+- `isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
   form a Jacobson ring.
+
 ## Main definitions
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
@@ -35,6 +38,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   `f : R →+* S` is surjective, then `S` is also a Jacobson ring
 * `MvPolynomial.isJacobsonRing` says that multi-variate polynomials
   over a Jacobson ring are Jacobson.
+
 ## Tags
 Jacobson, Jacobson Ring
 -/
@@ -168,7 +172,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
-    push_neg at this
+    push Not at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = I.map (algebraMap R S)
@@ -179,13 +183,8 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
-  · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
-    · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
-    · have := congr_arg (Ideal.map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
-      · rwa [map_comap (powers y) S I, Ideal.map_top] at this
-      refine fun hI' => hI.right ?_
-      rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
-      exact map_mono hI'
+  · simp only [Ideal.mem_comap, and_imp]
+    exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
