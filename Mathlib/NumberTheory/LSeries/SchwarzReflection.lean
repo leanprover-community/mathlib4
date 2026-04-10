@@ -11,52 +11,62 @@ public import Mathlib.Analysis.Complex.RealDeriv
 # Schwarz Reflection for the Completed Riemann Zeta Function
 
 We prove that `completedRiemannZeta₀` satisfies the Schwarz reflection
-principle: `Λ₀(conj s) = conj(Λ₀(s))`. As a corollary, we establish that
-`completedRiemannZeta₀` is real-valued on the critical line `Re(s) = 1/2`.
-
-## Main results
-
-* `completedRiemannZeta₀_conj`: The Schwarz reflection identity
-  `completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s)`.
-
-* `completedRiemannZeta₀_im_eq_zero_on_half`: On the critical line,
-  `Im(completedRiemannZeta₀(1/2 + it)) = 0` for all real `t`.
-
-* `completedRiemannZeta₀_deriv_re_eq_zero_on_half`: The derivative has vanishing
-  real part on the critical line: `Re(Λ₀'(1/2 + it)) = 0` for all real `t`.
+principle: `Λ₀(conj s) = conj(Λ₀(s))`.
 
 ## Proof strategy
 
-The Schwarz reflection follows from the Mellin representation of
-`completedRiemannZeta₀`. The kernel `(hurwitzEvenFEPair 0).f_modif`
-is real-valued (its imaginary part vanishes), so the Mellin integral
-commutes with complex conjugation via `integral_conj`. The power
-`t^(s/2 - 1)` conjugates correctly for positive real `t` by `cpow_conj`.
+The proof proceeds in two stages:
 
-The critical-line reality result composes Schwarz reflection with the
-functional equation: at `s = 1/2 + it`, we have `conj(s) = 1 - s`,
-so `conj(Λ₀(s)) = Λ₀(conj s) = Λ₀(1 - s) = Λ₀(s)`.
+1. **Real on reals**: We show that the Mellin kernel `(hurwitzEvenFEPair 0).f_modif`
+   is real-valued, and that for `s : ℝ` the Mellin integrand
+   `t^(s/2-1) · kernel(t)` is real (since `t^r` is real for `t > 0, r ∈ ℝ`).
+   Therefore `completedRiemannZeta₀(s)` is real when `s ∈ ℝ`.
+
+2. **Schwarz reflection**: The same real-kernel property, combined with
+   `cpow_conj` for positive reals and `integral_conj`, gives the full
+   conjugation identity `Λ₀(conj s) = conj(Λ₀(s))`.
+
+The critical-line reality result then follows by composing Schwarz reflection
+with the functional equation: at `s = 1/2 + it`, `conj(s) = 1 - s`.
+
+## Main results
+
+* `completedRiemannZeta₀_ofReal_im`: `Λ₀` is real-valued on `ℝ`.
+* `completedRiemannZeta₀_conj`: Schwarz reflection `Λ₀(conj s) = conj(Λ₀(s))`.
+* `completedRiemannZeta₀_im_eq_zero_on_half`: `Im(Λ₀(1/2 + it)) = 0`.
+* `completedRiemannZeta₀_deriv_re_eq_zero_on_half`: `Re(Λ₀'(1/2 + it)) = 0`.
 -/
 
 @[expose] public section
 
-
 open Complex HurwitzZeta MeasureTheory Set
 
-section SchwarzReflection
+/-! ## The kernel is real-valued -/
+
+section RealKernel
 
 /-- The modified kernel of the Hurwitz even FE pair at `a = 0` is real-valued:
-its complex conjugate equals itself. This is because it is built from
+its imaginary part vanishes. This is because it is built from
 real-valued functions (exponentials of real quadratic forms). -/
-private lemma hurwitzEvenFEPair_f_modif_conj_fixed (t : ℝ) :
-    (hurwitzEvenFEPair 0).f_modif t = starRingEnd ℂ ((hurwitzEvenFEPair 0).f_modif t) := by
-  rw [eq_comm, Complex.conj_eq_iff_im]
+theorem hurwitzEvenFEPair_f_modif_im_zero (t : ℝ) :
+    ((hurwitzEvenFEPair 0).f_modif t).im = 0 := by
   simp only [WeakFEPair.f_modif, Pi.add_apply, indicator_apply]
   split_ifs <;> simp [Complex.add_im, Complex.sub_im, Complex.ofReal_im,
     Complex.one_im, Complex.zero_im, hurwitzEvenFEPair]
 
+/-- Equivalent formulation: the kernel equals its own conjugate. -/
+theorem hurwitzEvenFEPair_f_modif_conj (t : ℝ) :
+    starRingEnd ℂ ((hurwitzEvenFEPair 0).f_modif t) = (hurwitzEvenFEPair 0).f_modif t := by
+  rw [Complex.conj_eq_iff_im]
+  exact hurwitzEvenFEPair_f_modif_im_zero t
+
+end RealKernel
+
+/-! ## Schwarz reflection and real-on-reals -/
+
+section SchwarzReflection
+
 /-- **Schwarz reflection for the completed Riemann zeta function.**
-The completed Riemann zeta function `Λ₀` satisfies
 `Λ₀(conj(s)) = conj(Λ₀(s))` for all `s : ℂ`.
 
 This follows from the Mellin representation: the kernel is real-valued,
@@ -74,14 +84,13 @@ theorem completedRiemannZeta₀_conj (s : ℂ) :
       (starRingEnd ℂ) ((↑t : ℂ) ^ (s / 2 - 1) • (hurwitzEvenFEPair 0).f_modif t) := by
     simp only [smul_eq_mul, map_mul]
     congr 1
-    · -- Inline conj_half_sub_one + cpow_conj_pos_real
-      have harg : ((t : ℂ)).arg ≠ Real.pi := by
+    · have harg : ((t : ℂ)).arg ≠ Real.pi := by
         rw [arg_ofReal_of_nonneg (le_of_lt ht)]; exact Real.pi_pos.ne
       rw [show starRingEnd ℂ s / 2 - 1 = starRingEnd ℂ (s / 2 - 1) from by
         rw [map_sub, map_div₀, show (starRingEnd ℂ) (2 : ℂ) = 2 from by
           exact_mod_cast conj_ofReal 2, map_one]]
       rw [cpow_conj _ _ harg]; simp [conj_ofReal]
-    · exact hurwitzEvenFEPair_f_modif_conj_fixed t
+    · exact (hurwitzEvenFEPair_f_modif_conj t).symm
   calc ∫ t in Ioi (0 : ℝ), (↑t : ℂ) ^ ((starRingEnd ℂ) s / 2 - 1) •
         (hurwitzEvenFEPair 0).f_modif t
       = ∫ t in Ioi (0 : ℝ), (starRingEnd ℂ) ((↑t : ℂ) ^ (s / 2 - 1) •
@@ -91,7 +100,18 @@ theorem completedRiemannZeta₀_conj (s : ℂ) :
         (hurwitzEvenFEPair 0).f_modif t) :=
           integral_conj
 
+/-- **`completedRiemannZeta₀` is real-valued on `ℝ`.**
+For `r : ℝ`, `Im(Λ₀(r)) = 0`. This follows from Schwarz reflection
+since `conj(↑r) = ↑r` for real `r`. -/
+theorem completedRiemannZeta₀_ofReal_im (r : ℝ) :
+    (completedRiemannZeta₀ ↑r).im = 0 := by
+  have h : starRingEnd ℂ (completedRiemannZeta₀ ↑r) = completedRiemannZeta₀ ↑r := by
+    rw [← completedRiemannZeta₀_conj, conj_ofReal]
+  exact conj_eq_iff_im.mp h
+
 end SchwarzReflection
+
+/-! ## Critical line -/
 
 section CriticalLine
 
@@ -104,7 +124,7 @@ private lemma conj_half_add_mul_I (t : ℝ) :
   · simp [Complex.conj_im, Complex.sub_im, Complex.one_im]
 
 /-- **The completed Riemann zeta function is real-valued on the critical line.**
-At every point `1/2 + it` on the critical line, `Im(Λ₀(1/2 + it)) = 0`.
+At every point `1/2 + it`, `Im(Λ₀(1/2 + it)) = 0`.
 
 Proof: Schwarz reflection gives `conj(Λ₀(s)) = Λ₀(conj s)`,
 the functional equation gives `Λ₀(1 - s) = Λ₀(s)`,
@@ -127,6 +147,8 @@ theorem completedRiemannZeta₀_conj_eq_self_on_half (t : ℝ) :
 
 end CriticalLine
 
+/-! ## Derivative on the critical line -/
+
 section DerivativeCriticalLine
 
 /-- The affine map `z ↦ 1/2 + z * I` has complex derivative `I`. -/
@@ -147,9 +169,7 @@ private lemma half_add_ofReal_mul_I (t : ℝ) :
   apply Complex.ext <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Imaginary-part analogue of `HasDerivAt.real_of_complex`: if a complex function
-is ℂ-differentiable at a real point, then the imaginary part of its restriction to ℝ
-is ℝ-differentiable with derivative equal to the imaginary part of the complex derivative. -/
+/-- Imaginary-part analogue of `HasDerivAt.real_of_complex`. -/
 private lemma HasDerivAt.im_of_complex {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
     (h : HasDerivAt e e' z) :
     HasDerivAt (fun x : ℝ => (e x).im) e'.im z := by
@@ -161,14 +181,8 @@ private lemma HasDerivAt.im_of_complex {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
   have C : HasFDerivAt im imCLM (e (ofRealCLM z)) := imCLM.hasFDerivAt
   simpa using (C.comp z (B.comp z A)).hasDerivAt
 
-/-- **The derivative of the completed Riemann zeta function has vanishing
-real part on the critical line:** `Re(Λ₀'(1/2 + it)) = 0` for all real `t`.
-
-Proof: The rotated function `e(z) = Λ₀(1/2 + z · I)` is entire with
-`e'(z) = Λ₀'(1/2 + z · I) · I`. Restricting to ℝ, `Im(e(t)) = 0` for all
-real `t` (by `completedRiemannZeta₀_im_eq_zero_on_half`), so the ℝ-derivative
-of `Im(e(t))` vanishes. But this derivative equals `(e'(t)).im = (Λ₀'(1/2+it) · I).im
-= Re(Λ₀'(1/2 + it))`, giving the result. -/
+/-- **The derivative has vanishing real part on the critical line:**
+`Re(Λ₀'(1/2 + it)) = 0` for all real `t`. -/
 theorem completedRiemannZeta₀_deriv_re_eq_zero_on_half (t : ℝ) :
     (deriv completedRiemannZeta₀ ⟨1/2, t⟩).re = 0 := by
   have hderiv := hasDerivAt_completedRiemannZeta₀_rotated (↑t)
@@ -183,3 +197,5 @@ theorem completedRiemannZeta₀_deriv_re_eq_zero_on_half (t : ℝ) :
   linarith
 
 end DerivativeCriticalLine
+
+end
