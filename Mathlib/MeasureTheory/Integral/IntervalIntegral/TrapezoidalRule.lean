@@ -168,6 +168,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   exact (key h_dg (trapezoidal_error_eq f 1 a) (key h_ddg (by ring) bound_ddg) b
     ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
 on. -/

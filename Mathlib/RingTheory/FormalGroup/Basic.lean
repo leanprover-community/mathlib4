@@ -43,8 +43,10 @@ noncomputable section
 
 open MvPowerSeries Finsupp
 
+set_option linter.style.whitespace false in -- linter false positive
 name_power_vars X₀, X₁ over R
 
+set_option linter.style.whitespace false in -- linter false positive
 name_power_vars Y₀, Y₁, Y₂ over R
 
 variable (R) in
