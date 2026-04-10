@@ -51,12 +51,12 @@ def goursatSnd : Submodule R N :=
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by
   ext x
-  simp [mem_toAddSubgroup, goursatFst, AddSubgroup.mem_goursatFst]
+  simp [goursatFst, AddSubgroup.mem_goursatFst]
 
 lemma goursatSnd_toAddSubgroup :
     (goursatSnd L).toAddSubgroup = L.toAddSubgroup.goursatSnd := by
   ext x
-  simp [mem_toAddSubgroup, goursatSnd, AddSubgroup.mem_goursatSnd]
+  simp [goursatSnd, AddSubgroup.mem_goursatSnd]
 
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
@@ -95,7 +95,6 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Goursat's lemma** for an arbitrary submodule of a product.
 
 If `L` is a submodule of `M × N`, then there exist submodules `M'' ≤ M' ≤ M` and `N'' ≤ N' ≤ N` such

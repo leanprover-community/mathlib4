@@ -507,17 +507,18 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
 
 end
 
-section MulOneClass
+section
 
-variable [MulOneClass M] (c : Con M)
+variable [Mul M] [One M] (c : Con M)
 
-/-- The quotient of a monoid by a congruence relation is a monoid. -/
-@[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
-an `AddMonoid`. -/]
-instance mulOneClass : MulOneClass c.Quotient where
-  one := ((1 : M) : c.Quotient)
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+@[to_additive]
+instance one : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
 
 variable {c}
 
@@ -534,6 +535,19 @@ theorem coe_one : ((1 : M) : c.Quotient) = 1 :=
 instance Quotient.inhabited : Inhabited c.Quotient :=
   ⟨((1 : M) : c.Quotient)⟩
 
+end
+
+section MulOneClass
+
+variable [MulOneClass M] (c : Con M)
+
+/-- The quotient of a monoid by a congruence relation is a monoid. -/
+@[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
+an `AddMonoid`. -/]
+instance mulOneClass : MulOneClass c.Quotient where
+  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+
 end MulOneClass
 
 section Monoids
@@ -546,19 +560,6 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 
 @[to_additive]
-instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
-  -- Using Quotient.mk'' here instead of c.toQuotient
-  -- since c.toQuotient is not reducible.
-  -- This would lead to non-defeq diamonds since this instance ends up in
-  -- quotients modulo ideals.
-  one := Quotient.mk'' (1 : M)
-  -- one := ((1 : M) : c.Quotient)
-
-instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
-    SMul ℕ c.Quotient where
-  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
-
-@[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
   pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -593,7 +594,6 @@ instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotie
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
 This lemma allows to avoid code duplication in the definition of the inverse operation:
@@ -652,16 +652,11 @@ type with a subtraction. -/]
 instance hasDiv : Div c.Quotient :=
   ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 
-/-- The integer scaling induced on the quotient by a congruence relation on a type with a
-subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
-    SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
-
 /-- The integer power induced on the quotient by a congruence relation on a type with a
 division. -/
-@[to_additive existing AddCon.Quotient.zsmul]
-instance zpowinst : Pow c.Quotient ℤ :=
+@[to_additive /-- The integer scaling induced on the quotient by a congruence relation on a type
+with a subtraction. -/]
+instance instZPow : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/

@@ -34,7 +34,6 @@ namespace Polynomial
 
 variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
   wf := by
     classical
@@ -99,6 +98,7 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
 only finitely many monic factors.
 (Note that its factors up to unit may be more than monic factors.)
 See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+@[implicit_reducible]
 noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
     Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
   set G := { g : D[X] // g.Monic ∧ g ∣ f }
@@ -128,7 +128,6 @@ private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
       apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]

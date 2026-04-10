@@ -15,7 +15,7 @@ which are known to be Normalized GCD Domains.
 
 ## Main result
 - `NormalizedGCDMonoid.subsingleton_classGroup` : the class group of a domain with
-normalizable gcd is trivial. This includes unique factorization domains.
+  normalizable gcd is trivial. This includes unique factorization domains.
 
 ## References
 

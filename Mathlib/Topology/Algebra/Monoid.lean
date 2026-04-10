@@ -241,6 +241,11 @@ instance (priority := 100) continuousMul_of_discreteTopology [TopologicalSpace N
     [DiscreteTopology N] : ContinuousMul N :=
   ⟨continuous_of_discreteTopology⟩
 
+@[to_additive]
+instance (priority := 100) continuousMul_of_indiscreteTopology [TopologicalSpace N] [Mul N]
+    [IndiscreteTopology N] : ContinuousMul N :=
+  ⟨continuous_of_indiscreteTopology⟩
+
 open Filter
 
 open Function
@@ -631,6 +636,11 @@ theorem Subsemigroup.isClosed_topologicalClosure (s : Subsemigroup M) :
 theorem Subsemigroup.topologicalClosure_minimal (s : Subsemigroup M) {t : Subsemigroup M}
     (h : s ≤ t) (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t := closure_minimal h ht
 
+@[to_additive (attr := gcongr)]
+theorem Subsemigroup.topologicalClosure_mono {s t : Subsemigroup M} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
 closure.
 
@@ -701,6 +711,11 @@ theorem Submonoid.isClosed_topologicalClosure (s : Submonoid M) :
 @[to_additive]
 theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M} (h : s ≤ t)
     (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t := closure_minimal h ht
+
+@[to_additive (attr := gcongr)]
+theorem Submonoid.topologicalClosure_mono {s t : Submonoid M} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive /-- If a submonoid of an additive topological monoid is commutative, then so is its

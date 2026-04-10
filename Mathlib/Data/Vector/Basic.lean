@@ -238,8 +238,7 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
-  obtain ⟨l, hl⟩ := v
-  subst hl
+  obtain ⟨l, rfl⟩ := v
   exact List.nodup_iff_injective_get
 
 theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
@@ -292,11 +291,7 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get_toList, get_eq_get_toList]
   simp_rw [toList_reverse]
-  rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
-    ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
-  · congr
-    simp
-  · simp
+  simp
 
 section Scan
 
@@ -379,7 +374,7 @@ theorem scanl_get (i : Fin n) :
   | succ n hn =>
     rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp
     · intro i'
       simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
@@ -748,7 +743,6 @@ variable (ys : Vector β n)
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
-  clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂ with
   | nil =>
     exact Fin.elim0 i

@@ -64,16 +64,15 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
           (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- non-terminal `simp at J0`; TODO fix nicely!
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
   lift c := pullback.lift (c.π.app _) (c.π.app _)
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c _ J
-    have J0 := J WalkingParallelPair.zero; simp at J0
+    have J0 := J WalkingParallelPair.zero
     apply pullback.hom_ext
-    · rwa [limit.lift_π]
+    · simpa [limit.lift_π] using J0
     · simp [← J0, pullbackFst_eq_pullback_snd]
 
 end HasEqualizersOfHasPullbacksAndBinaryProducts

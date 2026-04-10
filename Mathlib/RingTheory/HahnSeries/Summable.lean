@@ -90,7 +90,7 @@ theorem isPWO_iUnion_support (s : SummableFamily Γ R α) : Set.IsPWO (⋃ a : �
   s.isPWO_iUnion_support'
 
 theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
-    (Function.support fun a => (s a).coeff g).Finite :=
+    (fun a => (s a).coeff g).HasFiniteSupport :=
   s.finite_co_support' g
 
 theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → R⟦Γ⟧) (⇑) :=
@@ -377,11 +377,13 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     Set.mem_setOf_eq]
   exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
-theorem smul_support_finite (s : SummableFamily Γ R α)
+theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
-    (Function.support fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2).Finite :=
+    (fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2).HasFiniteSupport :=
   Set.Finite.subset (Set.toFinite ((s.finite_co_support' gh.1).prod
     (t.finite_co_support' gh.2)).toFinset) (smul_support_subset_prod s t gh)
+
+@[deprecated (since := "2026-03-03")] alias smul_support_finite := hasFiniteSupport_smul
 
 variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
@@ -411,7 +413,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
     Finite {(ab : α × β) |
       ((fun (ab : α × β) ↦ (of R).symm (s ab.1 • (of R) (t ab.2))) ab).coeff g ≠ 0} := by
   apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
-    (fun gh _ => smul_support_finite s t gh)).subset _
+    (fun gh _ => hasFiniteSupport_smul s t gh)).subset _
   exact fun ab hab => by
     simp only [ne_eq, Set.mem_setOf_eq] at hab
     obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero hab
@@ -448,9 +450,9 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   rw [coeff_hsum]
   simp only [coeff_hsum_eq_sum, smul_toFun, HahnModule.coeff_smul, Equiv.symm_apply_apply]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
-  rw [← sum_finsum_comm _ _ <| fun gh _ => smul_support_finite s t gh]
+  rw [← sum_finsum_comm _ _ <| fun gh _ => hasFiniteSupport_smul s t gh]
   refine sum_congr rfl fun gh _ => ?_
-  rw [finsum_eq_sum _ (smul_support_finite s t gh), ← sum_product_right']
+  rw [finsum_eq_sum _ (hasFiniteSupport_smul s t gh), ← sum_product_right']
   refine sum_subset (fun ab hab => ?_) (fun ab _ hab => by simp_all)
   have hsupp := smul_support_subset_prod s t gh
   simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
@@ -702,7 +704,6 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
 return a junk value given by pretending `x = 0`. -/
 @[simps]
@@ -731,7 +732,6 @@ theorem powers_of_not_orderTop_pos {x : R⟦Γ⟧} (hx : ¬ 0 < x.orderTop) :
   ext a
   obtain rfl | ha := eq_or_ne a 0 <;> simp [powers, *]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem powers_zero : powers (0 : R⟦Γ⟧) = .single 0 1 := by
   ext n
@@ -780,7 +780,6 @@ theorem one_minus_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCo
   rw [mul_add, single_mul_single, hr, hxo,
     sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq single_zero_one.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
     (oinv : Γ) (hxo : oinv + x.order = 0) :
     0 < (1 - single oinv r * x).orderTop := by

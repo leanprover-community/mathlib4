@@ -74,7 +74,7 @@ def elementwiseThms : List Name :=
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category `C`
 (possibly after a `∀` binder), produce the equation `∀ (x : X), f x = g x` or
-`∀ FC CC _ [ConreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
+`∀ FC CC _ [ConcreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
 with compositions fully right associated and identities removed.
 
 Returns the proof of the new theorem along with (optionally) a new level metavariable

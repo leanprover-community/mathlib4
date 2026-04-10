@@ -115,6 +115,11 @@ In complex variable theory, this is also referred to as "having a primitive". -/
 def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∃ g, ∀ z ∈ U, HasDerivAt g (f z) z
 
+lemma IsExactOn.with_val_at {f : ℂ → E} {s : Set ℂ} (h : IsExactOn f s) (x₀ : ℂ) (y : E) :
+    ∃ g, g x₀ = y ∧ ∀ x ∈ s, HasDerivAt g (f x) x := by
+  obtain ⟨η, hη⟩ := h
+  use fun z ↦ η z - η x₀ + y, by simp, by simpa using hη
+
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
 lemma IsConservativeOn.mono {U V : Set ℂ} (h : U ⊆ V) (hf : IsConservativeOn f V) :
@@ -140,7 +145,6 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 omit [CompleteSpace E] in
 /-- If a function `f` `IsConservativeOn` on a disk of center `c`, then for points `z` in this disk,
@@ -190,7 +194,6 @@ lemma IsConservativeOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
       hf (z.re + c.im * I) (w.re + z.im * I) hU
   grind [wedgeIntegral]
 
-set_option backward.isDefEq.respectTransparency false in
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_re_aux :
@@ -213,7 +216,6 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
     isOpen_Ioo.continuousOn_iff.mp f_contOn zRe_mem_s
   simpa using intervalIntegral.integral_hasDerivAt_right int1 int2 int3 |>.isLittleO
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_im_aux :
@@ -288,5 +290,24 @@ theorem isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
   hf.isConservativeOn.isExactOn_ball hf.continuousOn
+
+/--
+**Morera's theorem for the complex plane** A continuous function on `ℂ` whose integrals on
+rectangles vanish, has primitives.
+-/
+theorem IsConservativeOn.isExactOn_univ (h₁ : Continuous f) (h₂ : IsConservativeOn f univ) :
+    IsExactOn f univ := by
+  use (wedgeIntegral 0 · f)
+  intro z _
+  have h₃ : IsConservativeOn f (ball 0 (‖z‖ + 1)) := h₂.mono (subset_univ _)
+  exact h₃.hasDerivAt_wedgeIntegral (by fun_prop) (by aesop)
+
+/--
+**Morera's theorem for the complex plane** A holomorphic function on `ℂ` has
+primitives.
+-/
+theorem _root_.Differentiable.isExactOn_univ (hf : Differentiable ℂ f) : IsExactOn f univ := by
+  apply IsConservativeOn.isExactOn_univ hf.continuous
+    ((isConservativeOn_and_continuousOn_iff_isDifferentiableOn isOpen_univ).2 hf.differentiableOn).1
 
 end Complex

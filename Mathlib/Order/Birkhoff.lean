@@ -29,7 +29,7 @@ If `α` is moreover a distributive lattice:
   elements.
 * `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
   powerset lattice of its irreducible elements.
-* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinet`: Same as the previous two, but bundled as
+* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinset`: Same as the previous two, but bundled as
   an injective lattice homomorphism.
 * `exists_birkhoff_representation`: `α` embeds into some powerset algebra. You should prefer using
   this over the explicit Birkhoff embedding because the Birkhoff embedding is littered with
@@ -221,18 +221,15 @@ powerset lattice. -/
 noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   exact birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
   simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
@@ -243,7 +240,6 @@ set_option backward.isDefEq.respectTransparency false in
 
 variable [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffFinset_sup (a b : α) :
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
@@ -251,7 +247,6 @@ set_option backward.isDefEq.respectTransparency false in
   rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical

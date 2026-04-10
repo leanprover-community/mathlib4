@@ -58,7 +58,6 @@ open Submodule
 
 variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
 and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger
@@ -102,6 +101,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
+      rw [RingHom.id_apply, zero_smul]
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

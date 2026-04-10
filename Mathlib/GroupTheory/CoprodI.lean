@@ -930,7 +930,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
-/-- A free group is a free product of copies of the free_group over one generator. -/
+/-- A free group is a free product of copies of the `FreeGroup` over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
