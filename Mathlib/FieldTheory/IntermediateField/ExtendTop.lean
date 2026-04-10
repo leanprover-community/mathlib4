@@ -45,10 +45,14 @@ intermediate field of `M/K`.
 abbrev extendTop : IntermediateField K M := F.map (Algebra.algHom K L M)
 
 /-- The isomorphism between `F` and its image `F.extendTop M` in `M`. -/
-noncomputable abbrev extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
+noncomputable def extendTopEquiv : F ≃ₐ[K] (F.extendTop M) := F.equivMap (Algebra.algHom K L M)
 
+@[simp]
 theorem algebraMap_extendTopEquiv (a : F) :
     algebraMap (F.extendTop M) M (extendTopEquiv F M a) = algebraMap F M a := rfl
+
+theorem coe_extendTopEquiv (a : F) :
+    (extendTopEquiv F M a : M) = algebraMap F M a := rfl
 
 theorem algebraMap_extendTopEquiv_symm (a : F.extendTop M) :
     algebraMap F M ((extendTopEquiv F M).symm a) = a := by
@@ -95,23 +99,36 @@ instance [Algebra R S] [Algebra R F] [Algebra R M] [IsScalarTower R F M] [IsScal
     IsScalarTower R S (F.extendTop M) :=
   IsScalarTower.to₁₂₃ R S (F.extendTop M) M
 
+variable (S)
+
 /--
 Variant of `extendTopEquiv` giving an `S`-algebra isomorphism `F ≃ₐ[S] F.extendTop M`,
 for a commutative ring `S` with `Algebra S F`.
 -/
-@[simps! apply_coe]
-noncomputable def _root_.IntermediateField.extendTopEquiv' : F ≃ₐ[S] (F.extendTop M) :=
+noncomputable abbrev _root_.IntermediateField.extendTopEquiv' : F ≃ₐ[S] (F.extendTop M) :=
   AlgEquiv.ofBijective (Algebra.algHom S F (F.extendTop M)) (extendTopEquiv F M).bijective
+
+theorem coe_extendTopEquiv' (a : F) :
+    (extendTopEquiv' F M S a : M) = algebraMap F M a := rfl
+
+theorem algebraMap_extendTopEquiv' (a : F) :
+    algebraMap (F.extendTop M) M (extendTopEquiv' F M S a) = algebraMap F M a := rfl
+
+theorem algebraMap_extendTopEquiv'_symm (a : F.extendTop M) :
+    algebraMap F M ((extendTopEquiv' F M S).symm a) = a := by
+  rw [← algebraMap_extendTopEquiv' F M S, AlgEquiv.apply_symm_apply, algebraMap_apply]
+
+variable {S}
 
 instance isFractionRing [IsFractionRing S F] :
     IsFractionRing S (F.extendTop M) :=
-  .of_algEquiv (R := S) (L := F.extendTop M) (K := F) <| F.extendTopEquiv' M
+  .of_algEquiv (R := S) (L := F.extendTop M) (K := F) <| F.extendTopEquiv' M S
 
 instance isIntegralClosure [Algebra R F] [Algebra R M] [IsScalarTower R F M]
     [IsIntegralClosure S R F] :
     IsIntegralClosure S R (F.extendTop M) := by
-  refine .of_algEquiv S (F.extendTopEquiv' M) fun x ↦ ?_
-  rw [Subtype.ext_iff, extendTopEquiv'_apply_coe, ← IsScalarTower.algebraMap_apply,
-    ← algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+  refine .of_algEquiv S (F.extendTopEquiv' M R) fun x ↦ ?_
+  rw [Subtype.ext_iff, ← algebraMap_apply (F.extendTop M), ← algebraMap_apply (F.extendTop M),
+    algebraMap_extendTopEquiv', ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 end IntermediateField.extendTop
