@@ -290,6 +290,11 @@ noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
       lift_surjective_of_surjective N φ hφ HN.le⟩
 
 @[to_additive (attr := simp)]
+theorem liftEquiv_symm_apply {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker)
+    (g : G) : (liftEquiv N hφ HN).symm (φ g) = (g : G ⧸ N) :=
+  (liftEquiv N hφ HN).symm_apply_eq.mpr rfl
+
+@[to_additive (attr := simp)]
 theorem liftEquiv_coe {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (g : Q) = φ g := rfl
 
