@@ -616,8 +616,10 @@ representing "for every `X : C`, a morphism `α X : F X ⟶ G X`". -/
 def equalizerDom : V :=
   ∏ᶜ fun (X : C) ↦ F.obj X ⟶[V] G.obj X
 
+set_option linter.unusedVariables false in
 /-- The codomain of which `enrichedNatTransObj` is the equalizer,
-representing "for all morphisms `f: X ⟶ Y`, a morphism `F X ⟶ G Y`". -/
+representing "for all morphisms `f: X ⟶ Y`, a morphism `F X ⟶ G Y`".
+Unused variable linting is disabled because of https://github.com/leanprover/lean4/issues/13354. -/
 def equalizerCodom : V :=
   ∏ᶜ fun (⟨X, Y, _⟩ : Σ (X : C) (Y : C), 𝟙_ V ⟶ X ⟶[V] Y) ↦ F.obj X ⟶[V] G.obj Y
 
