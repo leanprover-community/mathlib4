@@ -434,7 +434,7 @@ theorem multinomial_cons (x : ℕ) (l : List ℕ) :
   congr 1
   · congr
     exact List.toFinsupp_sum (x :: l)
-  let succEmb : ℕ ↪ ℕ :=  addRightEmbedding 1
+  let succEmb : ℕ ↪ ℕ := addRightEmbedding 1
   have : (Finsupp.single 0 x + l.toFinsupp.embDomain succEmb).update 0 0 =
     (l.toFinsupp.embDomain succEmb).update 0 0 := by
     ext i
