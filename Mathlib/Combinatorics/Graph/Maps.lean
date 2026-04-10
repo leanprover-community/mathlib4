@@ -55,17 +55,9 @@ lemma IsLink.map (f : α → α') (h : G.IsLink e u v) : (G.map f).IsLink e (f u
   ⟨u, v, h, rfl, rfl⟩
 
 @[simp]
-lemma map_isLink_apply (f : α ↪ α') : (G.map f).IsLink e (f u) (f v) ↔ G.IsLink e u v :=
-  ⟨fun ⟨u', v', hu'v', hu', hv'⟩ ↦ by grind, fun h ↦ h.map f⟩
-
-@[simp]
 lemma map_inc (f : α → α') : (G.map f).Inc e x ↔ ∃ v, G.Inc e v ∧ x = f v := by
   simp only [Inc, map_isLink]
   tauto
-
-@[simp]
-lemma map_inc_apply (f : α ↪ α') : (G.map f).Inc e (f v) ↔ G.Inc e v :=
-  map_inc f |>.trans ⟨fun ⟨_, hw, h⟩ ↦ f.injective h ▸ hw, fun h ↦ ⟨v, h, rfl⟩⟩
 
 lemma Inc.map (f : α → α') (h : G.Inc e v) : (G.map f).Inc e (f v) := by
   obtain ⟨w, hw⟩ := h
@@ -79,10 +71,6 @@ lemma IsLoopAt.map (f : α → α') (h : G.IsLoopAt e v) : (G.map f).IsLoopAt e 
   IsLink.map f h
 
 @[simp]
-lemma map_isLoopAt_apply (f : α ↪ α') : (G.map f).IsLoopAt e (f v) ↔ G.IsLoopAt e v := by
-  rw [IsLoopAt, IsLoopAt, map_isLink_apply]
-
-@[simp]
 lemma map_adj (f : α → α') : (G.map f).Adj x y ↔ ∃ u v, G.Adj u v ∧ x = f u ∧ y = f v := by
   simp only [Adj, map_isLink]
   tauto
@@ -90,10 +78,6 @@ lemma map_adj (f : α → α') : (G.map f).Adj x y ↔ ∃ u v, G.Adj u v ∧ x 
 lemma Adj.map (f : α → α') (h : G.Adj u v) : (G.map f).Adj (f u) (f v) := by
   obtain ⟨e, h⟩ := h
   exact ⟨e, h.map f⟩
-
-@[simp]
-lemma map_adj_apply (f : α ↪ α') : (G.map f).Adj (f u) (f v) ↔ G.Adj u v :=
-  exists_congr fun _ ↦ map_isLink_apply f
 
 @[simp] lemma map_id : G.map id = G := by ext a b c <;> simp
 
