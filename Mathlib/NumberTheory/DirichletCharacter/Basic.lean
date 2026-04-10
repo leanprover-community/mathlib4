@@ -377,7 +377,7 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
 
-/-- The conductor of χ * ψ divides the lcm of the conductors of χ and ψ. -/
+/-- The conductor of `χ * ψ` divides the lcm of the conductors of `χ` and `ψ`. -/
 theorem conductor_mul_dvd_lcm_conductor [NeZero n] (χ ψ : DirichletCharacter R n) :
     (χ * ψ).conductor ∣ χ.conductor.lcm ψ.conductor := by
   have h := Nat.lcm_dvd χ.conductor_dvd_level ψ.conductor_dvd_level
