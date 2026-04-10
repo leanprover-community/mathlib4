@@ -16,7 +16,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.92-pre1" -- ProofWid
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require plausible from git "https://github.com/Kha/plausible" @ "push-nuzuuroszpvz"
 
 
 /-!
