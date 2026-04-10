@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-!
@@ -276,6 +277,88 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
     ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
   refine hAB.2 ?_
   simpa [← Finsupp.support_nonempty_iff] using Finsupp.support_nonempty_iff.mpr hx
+
+/-! ### Entrywise application of power series -/
+
+variable {ιℝ : Type*}
+
+/-- The n-th Hadamard power: `(hadamardPow A n) i j = (A i j) ^ n`. -/
+def hadamardPow (A : Matrix ιℝ ιℝ 𝕜) : ℕ → Matrix ιℝ ιℝ 𝕜
+  | 0 => of fun _ _ => 1
+  | n + 1 => A ⊙ hadamardPow A n
+
+@[simp] lemma hadamardPow_apply (A : Matrix ιℝ ιℝ 𝕜) (n : ℕ) (i j : ιℝ) :
+    hadamardPow A n i j = A i j ^ n := by
+  induction n with
+  | zero => simp [hadamardPow]
+  | succ n ih => simp [hadamardPow, hadamard_apply, ih, pow_succ, mul_comm]
+
+/-- Hadamard powers of a PSD matrix are PSD. -/
+theorem PosSemidef.hadamardPow [Finite ιℝ] {A : Matrix ιℝ ιℝ 𝕜}
+    (hA : A.PosSemidef) (n : ℕ) : (hadamardPow A n).PosSemidef := by
+  induction n with
+  | zero =>
+    change (of fun _ _ => (1 : 𝕜)).PosSemidef
+    have : (of fun (_ : ιℝ) (_ : ιℝ) => (1 : 𝕜) : Matrix ιℝ ιℝ 𝕜) =
+        vecMulVec (1 : ιℝ → 𝕜) (star (1 : ιℝ → 𝕜)) := by
+      ext i j; simp [vecMulVec_apply]
+    rw [this]; exact posSemidef_vecMulVec_self_star 1
+  | succ n ih =>
+    change (A ⊙ Matrix.hadamardPow A n).PosSemidef
+    exact hA.hadamard ih
+
+/-- Entrywise application of a convergent power series with nonneg coefficients
+preserves positive semidefiniteness for real matrices. -/
+theorem PosSemidef.map_of_nonneg_coeffs [Finite ιℝ] {A : Matrix ιℝ ιℝ ℝ}
+    (hA : A.PosSemidef)
+    (a : ℕ → ℝ) (ha : ∀ n, 0 ≤ a n)
+    (hs : ∀ y : ℝ, Summable (fun n => a n * y ^ n)) :
+    (A.map (fun x => ∑' n, a n * x ^ n)).PosSemidef := by
+  classical
+  have := Fintype.ofFinite ιℝ
+  refine of_dotProduct_mulVec_nonneg ?_ fun x => ?_
+  · exact hA.isHermitian.map _ (fun _ => by simp)
+  · have hterm_hs : ∀ i j, HasSum
+        (fun n => x i * (a n * (A i j) ^ n) * x j)
+        (x i * (∑' n, a n * (A i j) ^ n) * x j) := fun i j =>
+      ((hs (A i j)).hasSum.mul_left (x i)).mul_right (x j)
+    have hfull_hs : HasSum
+        (fun n => ∑ i : ιℝ, ∑ j : ιℝ, x i * (a n * (A i j) ^ n) * x j)
+        (∑ i : ιℝ, ∑ j : ιℝ, x i * (∑' n, a n * (A i j) ^ n) * x j) :=
+      hasSum_sum fun i _ => hasSum_sum fun j _ => hterm_hs i j
+    suffices h : star x ⬝ᵥ (A.map (fun x => ∑' n, a n * x ^ n)).mulVec x =
+        ∑ i : ιℝ, ∑ j : ιℝ, x i * (∑' n, a n * (A i j) ^ n) * x j by
+      rw [h]
+      apply hfull_hs.nonneg
+      intro n
+      have hpsd := (hA.hadamardPow n).dotProduct_mulVec_nonneg x
+      simp only [dotProduct, mulVec, hadamardPow_apply, star_trivial] at hpsd
+      have hfact : ∀ i j, x i * (a n * A i j ^ n) * x j =
+          a n * (x i * A i j ^ n * x j) := fun i j => by ring
+      simp_rw [hfact, ← Finset.mul_sum]
+      apply mul_nonneg (ha n)
+      calc (0 : ℝ) ≤ ∑ i : ιℝ, x i * ∑ j : ιℝ, A i j ^ n * x j := hpsd
+        _ = ∑ i : ιℝ, ∑ j : ιℝ, x i * A i j ^ n * x j := by
+            congr 1; ext i; rw [Finset.mul_sum]
+            congr 1; ext j; ring
+    simp only [dotProduct, mulVec, map_apply, Finset.mul_sum, star_trivial]
+    ring_nf
+
+/-- Entrywise `exp` preserves positive semidefiniteness for real matrices. -/
+theorem PosSemidef.map_exp [Finite ιℝ] {A : Matrix ιℝ ιℝ ℝ}
+    (hA : A.PosSemidef) : (A.map Real.exp).PosSemidef := by
+  have hconv : A.map Real.exp = A.map (fun x => ∑' n, x ^ n / (n.factorial : ℝ)) := by
+    ext i j; simp only [map_apply]
+    rw [Real.exp_eq_exp_ℝ]
+    exact congr_fun NormedSpace.exp_eq_tsum_div (A i j)
+  rw [hconv]
+  have : (fun x : ℝ => ∑' n, x ^ n / (n.factorial : ℝ)) =
+      (fun x => ∑' n, (1 / n.factorial : ℝ) * x ^ n) := by
+    ext x; congr 1; ext n; ring
+  rw [this]
+  exact hA.map_of_nonneg_coeffs _ (fun n => by positivity)
+    (fun y => by simpa [div_eq_mul_inv, mul_comm] using
+      NormedSpace.expSeries_div_summable y)
 
 end hadamard
 
