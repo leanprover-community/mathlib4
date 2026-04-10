@@ -499,28 +499,29 @@ class PreservesCobaseChange (F : Arrow C₁ ⥤ Arrow C₂) : Prop where
       (F.obj (Arrow.mk f)).hom
       (F.map (Arrow.homMk' s t h.w)).right
 
-#check MorphismProperty.isStableUnderCobaseChange_iff_pushouts_le
--- want f ∈ W.pushouts → (F.obj f) ∈ ((temp.inv W).map F).pushouts
-
 open MorphismProperty in
 instance inverseImageArrow_isStableUnderCobaseChange_of_preservesCobaseChange
     (W : MorphismProperty C₂) (F : Arrow C₁ ⥤ Arrow C₂)
     [W.IsStableUnderCobaseChange] [F.PreservesCobaseChange] :
-    IsStableUnderCobaseChange (W.inverseImageArrow F) := by
+    IsStableUnderCobaseChange (W.arrowObj.inverseImage F).arrowMorphism := by
   constructor
   intro A B K L f s g t hP h
-  dsimp [inverseImageArrow]
+  dsimp [ObjectProperty.arrowMorphism]
   exact of_isPushout (PreservesCobaseChange.preservesPushout hP) h
 
 open PushoutObjObj in
 /-- If `f` is a pushout of `g` in `C₂`, then `∀ ι : Arrow C₁`, `(F.leibnizPushout.obj ι).obj f`
   is a pushout of `(F.leibnizPushout.obj ι).obj g`. -/
-instance leibnizPushout_preservesCobaseChange [HasPushouts C₃] (ι : Arrow C₁)
+lemma leibnizPushout_preservesCobaseChange [HasPushouts C₃] (ι : Arrow C₁)
     [PreservesColimitsOfSize.{0, 0} (F.obj ι.left)]
-    [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)] :
-    (F.leibnizPushout.obj ι).PreservesCobaseChange := by
-  constructor
-  intro A B K L f s g t h
+    [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)]
+    {A B K L : C₂} {f : A ⟶ B} {s : K ⟶ A} {g : K ⟶ L} {t : L ⟶ B}
+    (h : IsPushout s g f t) :
+    IsPushout
+      ((F.leibnizPushout.obj ι).map (Arrow.homMk' s t h.w)).left
+      ((F.leibnizPushout.obj ι).obj (Arrow.mk g)).hom
+      ((F.leibnizPushout.obj ι).obj (Arrow.mk f)).hom
+      ((F.leibnizPushout.obj ι).map (Arrow.homMk' s t h.w)).right := by
   have P₁ := h.map (F.obj ι.right)
   have h₁ : pushout.inl _ _ ≫ ((F.leibnizPushout.obj ι).obj g).hom = ((F.obj ι.right).map g) :=
     (ofHasPushout F ι.hom g).inl_ι
@@ -539,34 +540,13 @@ instance [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChan
     (ι : Arrow C₁)
     [PreservesColimitsOfSize.{0, 0} (F.obj ι.left)]
     [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)] :
-    IsStableUnderCobaseChange (W.inverseImageArrow (F.leibnizPushout.obj ι)) := by
-  infer_instance
-
-def temp : (ObjectProperty (Arrow C₂)) ≅ MorphismProperty C₂ where
-  hom P _ _ f := P (Arrow.mk f)
-  inv P f := P f.hom
-
-open MorphismProperty in
-example [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChange W]
-    (ι : Arrow C₁)
-    [PreservesColimitsOfSize.{0, 0} (F.obj ι.left)]
-    [PreservesColimitsOfSize.{0, 0} (F.obj ι.right)] :
-    IsStableUnderCobaseChange (temp.hom ((W.commaObj _ _).inverseImage (F.leibnizPushout.obj ι))) :=
-  instIsStableUnderCobaseChangeInverseImageArrowObjArrowLeibnizPushoutOfLeftOfPreservesColimitsOfSizeRight ..
-
-variable (W : MorphismProperty C₃) (F : Arrow C₂ ⥤ Arrow C₃)
-
-example : temp.hom ((temp.inv W).inverseImage F) = (W.inverseImageArrow F) := rfl
-
-example (W : MorphismProperty C₂) : MorphismProperty.IsStableUnderCobaseChange (temp.hom ((temp.inv W).map F)) := by
+    IsStableUnderCobaseChange (W.arrowObj.inverseImage (F.leibnizPushout.obj ι)).arrowMorphism := by
   constructor
-  rintro A A' B B' f g f' g' hP ⟨X, hX, ⟨h⟩⟩
-  simp [temp] at hX ⊢
-  refine ⟨?_, ?_⟩
-  · sorry
-  · sorry
-
-#check (W.commaObj (𝟭 C₃) (𝟭 C₃)).inverseImage F
+  intro _ _ _ _ f s g t hP h
+  dsimp [ObjectProperty.arrowMorphism]
+  exact of_isPushout (leibnizPushout_preservesCobaseChange F ι hP) h
+  --let : (F.leibnizPushout.obj ι).PreservesCobaseChange := ⟨leibnizPushout_preservesCobaseChange F ι⟩
+  --infer_instance
 
 end Functor
 
