@@ -581,9 +581,8 @@ lemma finSuccEquiv_renameEquiv_finSuccEquiv (e : σ ≃ Fin n) (p) :
 end finSuccEquiv
 
 end CommSemiring
-section toAdicCompletion
 
-open Finsupp
+section CommRing
 
 variable {σ R : Type*} {n : ℕ} [CommRing R] [Finite σ]
 
@@ -708,6 +707,6 @@ lemma toAdicCompletionAlgEquiv_symm_apply
       (toAdicCompletionAlgEquiv σ R).symm x = toAdicCompletionInv σ R x := by
   rfl
 
-end toAdicCompletion
+end CommRing
 
 end MvPowerSeries
