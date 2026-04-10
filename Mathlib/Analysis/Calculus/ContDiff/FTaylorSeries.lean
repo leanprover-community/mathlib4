@@ -870,7 +870,7 @@ theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
 
 theorem iteratedFDerivWithin_univ {n : ℕ} :
     iteratedFDerivWithin 𝕜 n f univ = iteratedFDeriv 𝕜 n f := by
-  simp [iteratedFDerivWithin, iteratedFDeriv, fderivWithin_univ]
+  simp [iteratedFDerivWithin, iteratedFDeriv]
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
