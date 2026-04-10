@@ -322,7 +322,7 @@ theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
 theorem coe_Icc (a b : α) : (Icc a b : Set α) = Set.Icc a b :=
   Set.ext fun _ => mem_Icc
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (reorder := a b) (attr := simp, norm_cast)]
 theorem coe_Ico (a b : α) : (Ico a b : Set α) = Set.Ico a b :=
   Set.ext fun _ => mem_Ico
 
@@ -335,7 +335,7 @@ theorem _root_.Fintype.card_Icc (a b : α) [Fintype (Set.Icc a b)] :
     Fintype.card (Set.Icc a b) = #(Icc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
-@[to_dual (attr := simp)]
+@[to_dual (reorder := a b) (attr := simp)]
 theorem _root_.Fintype.card_Ico (a b : α) [Fintype (Set.Ico a b)] :
     Fintype.card (Set.Ico a b) = #(Ico a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
@@ -503,7 +503,7 @@ variable [Preorder α] [LocallyFiniteOrder α] (a b : α)
 @[to_dual self]
 instance instFintypeIcc : Fintype (Icc a b) := .ofFinset (Finset.Icc a b) fun _ => by simp
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 instance instFintypeIco : Fintype (Ico a b) := .ofFinset (Finset.Ico a b) fun _ => by simp
 
 @[to_dual self]
@@ -512,7 +512,7 @@ instance instFintypeIoo : Fintype (Ioo a b) := .ofFinset (Finset.Ioo a b) fun _ 
 @[simp, to_dual self]
 lemma finite_Icc : (Icc a b).Finite := (Icc a b).toFinite
 
-@[to_dual (attr := simp)]
+@[to_dual (reorder := a b) (attr := simp)]
 lemma finite_Ico : (Ico a b).Finite := (Ico a b).toFinite
 
 @[simp, to_dual self]
@@ -598,6 +598,7 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
       rw [h₀_finset_mem_Ioo, h₁_finset_mem_Ioo]
     simp_rw [hIcc, hIco, hIoc, hIoo]
 
+@[to_dual]
 instance : Subsingleton (LocallyFiniteOrderTop α) :=
   Subsingleton.intro fun h₀ h₁ => by
     obtain ⟨h₀_finset_Ioi, h₀_finset_Ici, h₀_finset_mem_Ici, h₀_finset_mem_Ioi⟩ := h₀
@@ -609,18 +610,6 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
       ext a b
       rw [h₀_finset_mem_Ioi, h₁_finset_mem_Ioi]
     simp_rw [hIci, hIoi]
-
-instance : Subsingleton (LocallyFiniteOrderBot α) :=
-  Subsingleton.intro fun h₀ h₁ => by
-    obtain ⟨h₀_finset_Iio, h₀_finset_Iic, h₀_finset_mem_Iic, h₀_finset_mem_Iio⟩ := h₀
-    obtain ⟨h₁_finset_Iio, h₁_finset_Iic, h₁_finset_mem_Iic, h₁_finset_mem_Iio⟩ := h₁
-    have hIic : h₀_finset_Iic = h₁_finset_Iic := by
-      ext a b
-      rw [h₀_finset_mem_Iic, h₁_finset_mem_Iic]
-    have hIio : h₀_finset_Iio = h₁_finset_Iio := by
-      ext a b
-      rw [h₀_finset_mem_Iio, h₁_finset_mem_Iio]
-    simp_rw [hIic, hIio]
 
 -- Should this be called `LocallyFiniteOrder.lift`?
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
@@ -665,7 +654,7 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
 lemma Finset.Icc_orderDual_def (a b : αᵒᵈ) :
     Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 lemma Finset.Ico_orderDual_def (a b : αᵒᵈ) :
     Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
@@ -677,7 +666,7 @@ lemma Finset.Ioo_orderDual_def (a b : αᵒᵈ) :
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
   map_refl.symm
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 lemma Finset.Ico_toDual : Ico (toDual a) (toDual b) = (Ioc b a).map toDual.toEmbedding :=
   map_refl.symm
 
@@ -689,7 +678,7 @@ lemma Finset.Ioo_toDual : Ioo (toDual a) (toDual b) = (Ioo b a).map toDual.toEmb
 lemma Finset.Icc_ofDual (a b : αᵒᵈ) :
     Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding := map_refl.symm
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 lemma Finset.Ico_ofDual (a b : αᵒᵈ) :
     Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding := map_refl.symm
 
@@ -965,7 +954,7 @@ variable [LocallyFiniteOrder α] (a b : Subtype p)
 theorem subtype_Icc_eq : Icc a b = (Icc (a : α) b).subtype p :=
   rfl
 
-@[to_dual]
+@[to_dual (reorder := a b)]
 theorem subtype_Ico_eq : Ico a b = (Ico (a : α) b).subtype p :=
   rfl
 
@@ -1110,7 +1099,7 @@ variable [LocallyFiniteOrder α]
 lemma toFinset_Icc (a b : α) [Fintype (Icc a b)] : (Icc a b).toFinset = Finset.Icc a b := by
   ext; simp
 
-@[to_dual (attr := simp)]
+@[to_dual (reorder := a b) (attr := simp)]
 lemma toFinset_Ico (a b : α) [Fintype (Ico a b)] : (Ico a b).toFinset = Finset.Ico a b := by
   ext; simp
 
