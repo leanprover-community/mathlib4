@@ -198,7 +198,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We separately consider the case `i = 0`.
   obtain rfl | hi0 := eq_or_ne i 0
   · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
-    -- provided that its degree is stictly less than `#K`.
+    -- provided that its degree is strictly less than `#K`.
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
     case deg =>
       -- We need to show `(natDegree (coeff χ 0)) < #K` and know that `finrank K L ≤ #K`
@@ -282,7 +282,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      lia
+      omega
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
@@ -293,7 +293,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · lia
+    · omega
     · dsimp only [r] at hi ⊢
       rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.

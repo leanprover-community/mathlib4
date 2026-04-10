@@ -66,7 +66,6 @@ namespace leftHomologyData
 
 variable (cone : KernelFork (K.d j k)) (hcone : IsLimit cone)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel fork of `(K.extend e).d j' k'` that is deduced from a kernel
 fork of `K.d j k `. -/
 @[simp]
@@ -83,7 +82,6 @@ noncomputable def isLimitKernelFork : IsLimit (kernelFork K e hj' hk hk' cone) :
 variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_comp_d i j k))))
   (hcocone : IsColimit cocone)
 
-set_option backward.isDefEq.respectTransparency false in
 include hi hi' hcone in
 /-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
@@ -177,7 +175,6 @@ noncomputable def isColimitCokernelCofork : IsColimit (cokernelCofork K e hj' hi
 variable (cone : KernelFork (hcocone.desc (CokernelCofork.ofπ (K.d j k) (K.d_comp_d i j k))))
   (hcone : IsLimit cone)
 
-set_option backward.isDefEq.respectTransparency false in
 include hk hk' hcocone in
 lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
     (hf' : cocone.π ≫ f' = K.d j k)

@@ -144,7 +144,7 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
 instance : CommMonoidWithZero EReal :=
-  { inferInstanceAs (MulZeroOneClass EReal) with
+  { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
@@ -493,7 +493,6 @@ private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c
   simp_rw [mul_comm a] at h ⊢
   exact exists_lt_mul_left_of_nonneg hb.le hc h
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b) (hc : a * b < c) :
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top

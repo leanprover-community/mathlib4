@@ -466,7 +466,7 @@ open scoped WithZero
 theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ (1 : ℤᵐ⁰)) :
     ∃ a : A, algebraMap A K a = x := by
   obtain ⟨π, hπ⟩ := exists_irreducible A
-  obtain ⟨a, b, hb, h_frac⟩ := IsFractionRing.div_surjective (A := A) x
+  obtain ⟨a, b, hb, h_frac⟩ := IsFractionRing.div_surjective A x
   by_cases ha : a = 0
   · rw [← h_frac]
     use 0
