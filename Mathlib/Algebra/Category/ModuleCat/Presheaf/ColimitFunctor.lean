@@ -204,12 +204,9 @@ noncomputable instance : Module cR.pt (ModuleColimit hcR hcM) where
 of `PresheafOfModules.ModuleColimit`, as an abelian group. -/
 noncomputable def homEquiv' {N : Type w} [AddCommGroup N] :
     (ModuleColimit hcR hcM →+ N) ≃+ (M.presheaf ⟶ (Functor.const _).obj (.of N)) :=
-  AddEquiv.trans
-    { toFun f := AddCommGrpCat.ofHom f
-      invFun f := f.hom
-      map_add' _ _:= rfl }
-    { toEquiv := hcM.homEquiv
-      map_add' _ _ := rfl }
+  toEquiv := (ConcreteCategory.homEquiv (X := AddCommGrpCat.of (ModuleColimit hcR hcM))
+    (Y := AddCommGrpCat.of N)).symm.trans hcM.homEquiv
+  map_add' _ _ := rfl
 
 omit [LocallySmall.{w, v, u} C] [IsCofiltered C] [InitiallySmall C] in
 lemma homEquiv'_app_apply {N : ModuleCat.{w} cR.pt}
