@@ -73,6 +73,7 @@ open Limits _root_.SSet
 open scoped Simplicial
 open HomologicalComplex (eval)
 
+set_option linter.style.whitespace false in -- linter false positive
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] SSet.singularChainComplexFunctor in
 attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in

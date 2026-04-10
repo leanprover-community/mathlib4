@@ -259,10 +259,12 @@ lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ 
 -- (@Representation.IntertwiningMap _ _ _.1 (@Rep.mk✝ ..).1 ..)) which is bad because `Rep.mk` is
 -- private and should never be used.
 
+
 /--
 info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ _ _ _ (@resCoindToHom _ _ _ _ _ _ _ _ _ _)) _)
 -/
 #guard_msgs in
+set_option linter.style.whitespace false in -- TODO: need to fix pretty-printing of #disc_tree_simp_key
 #discr_tree_simp_key resCoindToHom_hom_apply_coe
 
 attribute [pp_with_univ] Rep coind
