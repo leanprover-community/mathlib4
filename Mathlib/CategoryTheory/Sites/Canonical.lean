@@ -57,7 +57,7 @@ namespace Sheaf
 @[stacks 00Z9 "This is a special case of the Stacks entry, but following a different
 proof (see the Stacks comments)."]
 def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
-  sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
+  sieves X := {S | ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)}
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
     exact Presieve.isSheafFor_top P
@@ -146,6 +146,10 @@ theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
 theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
     (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
+
+lemma of_le {J K : GrothendieckTopology C} (h : J ≤ K) [K.Subcanonical] : J.Subcanonical :=
+  of_isSheaf_yoneda_obj _ fun _ _ _ _ ↦ (isSheaf_of_isRepresentable (J := K) _).isSheafFor _
+    (h _ (by simpa))
 
 end Subcanonical
 

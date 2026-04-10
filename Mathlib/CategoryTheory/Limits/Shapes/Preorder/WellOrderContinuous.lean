@@ -70,7 +70,7 @@ lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderC
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
     ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
-        (Cocones.ext (e.app _)))⟩
+        (Cocone.ext (e.app _)))⟩
 
 instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (f : J' ≤i J)
     [F.IsWellOrderContinuous] :
@@ -86,7 +86,7 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
 instance IsWellOrderContinuous.restriction_setIci
     {J : Type w} [LinearOrder J]
     {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
-    ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
+    ((Subtype.mono_coe (· ∈ Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
     let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
     have hf : Monotone f := fun _ _ h ↦ h

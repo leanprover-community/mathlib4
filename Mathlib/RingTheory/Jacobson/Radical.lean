@@ -193,7 +193,6 @@ theorem jacobson_smul_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] (N : Su
   ((smul_mono_right _ le_top).trans <| Ring.jacobson_smul_top_le R M).trans_lt
     (Module.jacobson_lt_top R M)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG) :
     Ring.jacobson R • N < N := by
   rw [← Module.Finite.iff_fg] at fg

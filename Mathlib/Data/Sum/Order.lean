@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Lex
 public import Mathlib.Order.WithBot
 
 /-!
@@ -522,7 +523,6 @@ def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ �
   toEquiv := .sumCongr ea eb
   map_rel_iff' := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumCongr e₂).trans (f₁.sumCongr f₂) = (e₁.trans f₁).sumCongr (e₂.trans f₂) := by
@@ -533,7 +533,6 @@ theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
     (ea.sumCongr eb).symm = ea.symm.sumCongr eb.symm :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
@@ -613,7 +612,6 @@ def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ �
   toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
   map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumLexCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumLexCongr e₂).trans (f₁.sumLexCongr f₂) = (e₁.trans f₁).sumLexCongr (e₂.trans f₂) := by
@@ -624,7 +622,6 @@ theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
     (ea.sumLexCongr eb).symm = ea.symm.sumLexCongr eb.symm :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp

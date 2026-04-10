@@ -54,12 +54,8 @@ Notations:
 
 
 /-- The hypercube in dimension `n`. -/
-def Q (n : ℕ) :=
+abbrev Q (n : ℕ) :=
   Fin n → Bool
-
-instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
-
-instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (i.e. the image of zero). -/
@@ -79,7 +75,7 @@ instance : Unique (Q 0) :=
   ⟨⟨fun _ => true⟩, by intro; ext x; fin_cases x⟩
 
 /-- `Q n` has 2^n elements. -/
-theorem card : card (Q n) = 2 ^ n := by simp [Q]
+theorem card : card (Q n) = 2 ^ n := by simp
 
 /-! Until the end of this namespace, `n` will be an implicit argument (still
 a natural number). -/
@@ -209,7 +205,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
     all_goals
       simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
         LinearMap.comp_apply, IH]
-      congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
+      congr 1; simp [Q.succ_n_eq, hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by

@@ -51,6 +51,7 @@ theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempt
 /-- Convert `IsUnit` to `Invertible` using `Classical.choice`.
 
 Prefer `casesI h.nonempty_invertible` over `letI := h.invertible` if you want to avoid choice. -/
+@[implicit_reducible]
 noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invertible a :=
   Classical.choice h.nonempty_invertible
 
@@ -122,6 +123,7 @@ lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟(m ^
   @invertible_unique _ _ _ _ _ (invertiblePow m n) rfl
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
+@[implicit_reducible]
 def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
   (Units.ofPowEqOne x n hx hn).invertible
 
@@ -129,6 +131,7 @@ end Monoid
 
 
 /-- Monoid homs preserve invertibility. -/
+@[implicit_reducible]
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
@@ -142,14 +145,13 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
     [Invertible r] [ifr : Invertible (f r)] :
     f (⅟r) = ⅟(f r) := by
-  have h : ifr = Invertible.map f r := Subsingleton.elim _ _
-  subst h; rfl
+  obtain rfl : ifr = Invertible.map f r := Subsingleton.elim _ _; rfl
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
-@[simps! -isSimp]
+@[simps! -isSimp, implicit_reducible]
 def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
     [FunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)
     (h : Function.LeftInverse g f) [Invertible (f r)] : Invertible r :=

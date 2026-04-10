@@ -179,6 +179,20 @@ theorem mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a
 theorem span_pair_zero (x : α) : span {x, 0} = span {x} := by
   rw [span_pair_comm, span_insert_zero]
 
+variable {ι : Type*}
+
+lemma span_range_eq_iSup (x : ι → α) : span (range x) = ⨆ i, span {x i} := by
+  rw [← span_iUnion, iUnion_singleton_eq_range]
+
+lemma span_range_eq_span_range_support (x : ι → α) :
+    span (range x) = span (range fun i : x.support ↦ x i.val) := by
+  rw [← span_sdiff_singleton_zero (s := range x), Function.support]
+  congr
+  ext1 a
+  simp only [mem_diff, mem_range, mem_singleton_iff]
+  exact ⟨fun ⟨⟨i, hi⟩, ha⟩ ↦ ⟨⟨i, mem_setOf.mpr (hi ▸ ha)⟩, hi⟩,
+    fun ⟨j, hj⟩ ↦ ⟨⟨j.val, hj⟩, by grind⟩⟩
+
 end Semiring
 
 section CommSemiring

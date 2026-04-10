@@ -253,7 +253,8 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
   convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
-  rw [image_image]; symm; convert image_id' _ with h; apply inv_mul_cancel_left
+  rw [image_image]
+  simp
 
 /-!
 ### Lemmas about `prehaar`
@@ -384,7 +385,6 @@ theorem chaar_self (K₀ : PositiveCompacts G) : chaar K₀ K₀.toCompacts = 1 
     rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_mono]
 theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂) :
     chaar K₀ K₁ ≤ chaar K₀ K₂ := by
@@ -397,7 +397,6 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
     apply prehaar_mono _ h; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_Ici
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_sup_le]
 theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
     chaar K₀ (K₁ ⊔ K₂) ≤ chaar K₀ K₁ + chaar K₀ K₂ := by

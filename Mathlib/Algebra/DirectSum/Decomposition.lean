@@ -76,6 +76,7 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
   right_inv := DFunLike.congr_fun h_right_inv
 
 /-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
+@[implicit_reducible]
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
     DirectSum.Decomposition ℳ where
   decompose' := (Equiv.ofBijective _ h).symm
@@ -206,16 +207,6 @@ theorem AddSubmonoidClass.IsHomogeneous.ext
 
 end AddCommMonoid
 
-/-- The `-` in the statements below doesn't resolve without this line.
-
-This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
-the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
-instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
-to be found by unification rather than synthesis, then everything works fine without this
-instance. -/
-instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
-    AddCommGroup (⨁ i, ℳ i) := by infer_instance
-
 section AddCommGroup
 
 variable [DecidableEq ι] [AddCommGroup M]
@@ -263,10 +254,10 @@ def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 
-@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+theorem decomposeLinearEquiv_apply (m : M) :
     decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
 
-@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
     (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
 
 @[simp]
@@ -276,6 +267,14 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
 @[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
     (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
   LinearMap.ext <| decompose_symm_of _
+
+@[simp] lemma decomposeLinearEquiv_symm_lof (i : ι) (x : ℳ i) :
+    (decomposeLinearEquiv ℳ).symm (lof R _ _ i x) = x :=
+  congr($(decomposeLinearEquiv_symm_comp_lof ℳ i) x)
+
+@[simp] lemma decomposeLinearEquiv_apply_coe (i : ι) (x : ℳ i) :
+    decomposeLinearEquiv ℳ x = lof R _ _ i x :=
+  (LinearEquiv.eq_symm_apply _).mp (decomposeLinearEquiv_symm_lof ..).symm
 
 /-- Two linear maps from a module with a decomposition agree if they agree on every piece.
 

@@ -78,6 +78,27 @@ lemma singleTriangle_distinguished :
   isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact
     (HomologicalComplex.single C (ComplexShape.up ℤ) 0))) _ (singleTriangleIso hS)
 
+variable {S₁ S₂ : ShortComplex C} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The morphism `h₁.singleTriangle h₁ ⟶ h₂.singleTriangle` that is induced by a
+map of short exact sequences of objects of `C`.
+-/
+@[simps!]
+noncomputable def singleTriangle.map : h₁.singleTriangle ⟶ h₂.singleTriangle where
+  hom₁ := (singleFunctor C 0).map f.τ₁
+  hom₂ := (singleFunctor C 0).map f.τ₂
+  hom₃ := (singleFunctor C 0).map f.τ₃
+  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
+  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₃ := by
+    dsimp [singleδ]
+    rw [assoc, assoc, ← Functor.map_comp, ← NatTrans.naturality, Functor.map_comp]
+    dsimp [CochainComplex.singleFunctors]
+    rw [reassoc_of% dsimp% ((triangleOfSES.map (h₁.map_of_exact _) (h₂.map_of_exact _))
+      ((HomologicalComplex.single C (.up ℤ) 0).mapShortComplex.map f)).comm₃]
+    simp
+
 end ShortExact
 
 end ShortComplex

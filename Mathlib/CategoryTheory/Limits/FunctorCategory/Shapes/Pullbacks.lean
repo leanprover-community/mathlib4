@@ -51,7 +51,7 @@ def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
   evaluationJointlyReflectsLimits _ fun k ↦ by
     refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
     · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    · refine Cones.ext (Iso.refl _) ?_
+    · refine Cone.ext (Iso.refl _) ?_
       rintro (_ | _ | _)
       all_goals cat_disch
 

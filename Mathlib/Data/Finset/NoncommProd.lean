@@ -356,7 +356,6 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
   | empty => simp
   | cons a s ha IH => simp [IH]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
@@ -417,12 +416,7 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     · simp only [Pi.mulSingle_eq_same]
-    · intro j hj
-      simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [Pi.mulSingle, Function.update, Pi.one_apply,
-        dite_eq_right_iff]
-      intro h
-      simp [*] at *
+    · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
 
 @[deprecated noncommProd_mulSingle (since := "2025-11-25")]
 alias noncommProd_mul_single := noncommProd_mulSingle

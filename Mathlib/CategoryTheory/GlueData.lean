@@ -183,10 +183,7 @@ variable [HasColimits C]
 def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 
-set_option backward.isDefEq.respectTransparency false in
-instance π_epi : Epi D.π := by
-  unfold π
-  infer_instance
+instance π_epi : Epi D.π := inferInstanceAs <| Epi (Multicoequalizer.sigmaπ D.diagram)
 
 end
 
@@ -328,7 +325,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro (_ | _ | _)
   all_goals simp [e]; rfl
 

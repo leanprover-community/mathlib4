@@ -86,7 +86,7 @@ private theorem apply_eq_dlookup (m : List (Σ _ : α, β)) (y : β) (x : α) :
 
 variable [Zero β] [DecidableEq β]
 
-/-- Map a total_function to one whose default value is zero so that it represents a finsupp. -/
+/-- Map a `TotalFunction` to one whose default value is zero so that it represents a `Finsupp`. -/
 @[simp]
 def zeroDefault : TotalFunction α β → TotalFunction α β
   | .withDefault A _ => .withDefault A 0
@@ -270,7 +270,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.getElem?_inj _ (h₁.nodup_iff.1 h₀)
+    apply (List.getElem?_inj _ (h₁.nodup_iff.1 h₀)).mp
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
