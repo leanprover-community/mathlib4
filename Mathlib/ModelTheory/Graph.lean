@@ -78,8 +78,7 @@ theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
 instance simpleGraph_model (G : SimpleGraph V) :
     @Theory.Model _ V G.structure Theory.simpleGraph := by
   letI := G.structure
-  rw [Theory.simpleGraph_model_iff]
-  exact ⟨G.loopless, G.symm⟩
+  simp [Theory.simpleGraph_model_iff, Std.irrefl_iff, RelMap, G.symm_adj]
 
 variable (V) in
 /-- Any model of the theory of simple graphs represents a simple graph. -/

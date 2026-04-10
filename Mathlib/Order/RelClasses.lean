@@ -24,6 +24,8 @@ universe u v
 
 variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
 
+attribute [mk_iff] Std.Irrefl
+
 open Function
 
 @[deprecated inferInstance (since := "2026-04-28")]
