@@ -14,6 +14,10 @@ In this file, we define the type `π₀ X` of connected components
 of a simplicial sets. We also introduce typeclasses
 `IsPreconnected X` and `IsConnected X`.
 
+## References:
+
+- [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
+
 -/
 
 @[expose] public section
