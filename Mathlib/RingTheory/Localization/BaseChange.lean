@@ -269,26 +269,26 @@ variable {R : Type*} [CommRing R] (M : Submonoid R) (Rₘ : Type*) [CommRing R�
 
 /-- The isomorphism `S ⊗[R] Rₘ ≃ₐ[S] Sₘ`. This is a specialization of `IsLocalization.algEquiv`,
 but with additional properties since now `Sₘ` is automatically an `Rₘ`-algebra. -/
-noncomputable def tensor_localization_algEquiv :
+noncomputable def tensorLeftAlgEquiv :
     (S ⊗[R] Localization M) ≃ₐ[S] Localization (Algebra.algebraMapSubmonoid S M) :=
-  (Localization.algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
+  (algEquiv (Algebra.algebraMapSubmonoid S M) (S ⊗[R] Localization M)).symm
 
 variable {S} in
 @[simp]
-theorem tensor_localization_algEquiv_apply_tmul_one (x : S) :
-    Localization.tensor_localization_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
-  (Localization.tensor_localization_algEquiv M S).commutes x
+theorem tensorLeftAlgEquiv_apply_tmul_one (x : S) :
+    tensorLeftAlgEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (tensorLeftAlgEquiv M S).commutes x
 
 @[simp]
-theorem tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
-    Localization.tensor_localization_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
+theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
+    tensorLeftAlgEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
   let Rₘ := Localization M
   let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
   obtain ⟨x, y, rfl⟩ := IsLocalization.exists_mk'_eq M x
   letI : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
   have h1 : (1 : S) ⊗ₜ[R] IsLocalization.mk' Rₘ x y = algebraMap _ _ (IsLocalization.mk' Rₘ x y) :=
     rfl
-  rw [h1, Localization.tensor_localization_algEquiv, Localization.algEquiv_symm_apply,
+  rw [h1, tensorLeftAlgEquiv, algEquiv_symm_apply,
     IsLocalization.algebraMap_mk' S, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul]
   simp_rw [RingHom.id_apply]
   have h x : algebraMap S Sₘ ((algebraMap R S) x) = algebraMap Rₘ Sₘ ((algebraMap R Rₘ) x) := by
@@ -296,22 +296,22 @@ theorem tensor_localization_algEquiv_apply_one_tmul (x : Localization M) :
   rw [h, h, ← map_mul, IsLocalization.mk'_spec]
 
 /-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
-noncomputable def localization_tensor_algEquiv :
+noncomputable def tensorRightAlgEquiv :
     Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) where
   __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
-    (Localization.tensor_localization_algEquiv M S).toRingEquiv
-  commutes' := Localization.tensor_localization_algEquiv_apply_one_tmul M S
+    (tensorLeftAlgEquiv M S).toRingEquiv
+  commutes' := tensorLeftAlgEquiv_apply_one_tmul M S
 
 @[simp]
-theorem localization_tensor_algEquiv_apply_tmul_one (x : Localization M) :
-    Localization.localization_tensor_algEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
-  (Localization.localization_tensor_algEquiv M S).commutes x
+theorem tensorRightAlgEquiv_apply_tmul_one (x : Localization M) :
+    tensorRightAlgEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
+  (tensorRightAlgEquiv M S).commutes x
 
 variable {S} in
 @[simp]
-theorem localization_tensor_algEquiv_apply_one_tmul (x : S) :
-    Localization.localization_tensor_algEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
-  (Localization.tensor_localization_algEquiv M S).commutes x
+theorem tensorRightAlgEquiv_apply_one_tmul (x : S) :
+    tensorRightAlgEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x :=
+  (tensorLeftAlgEquiv M S).commutes x
 
 end Localization
 
