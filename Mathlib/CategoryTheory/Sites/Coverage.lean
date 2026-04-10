@@ -375,10 +375,16 @@ def Precoverage.toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnder
     exact ⟨S.pullbackArrows f, J.pullbackArrows_mem _ hS,
       Presieve.FactorsThruAlong.pullbackArrows f S⟩
 
+lemma Precoverage.toCoverage_le_toCoverage {J : Precoverage C} [J.HasPullbacks]
+    [J.IsStableUnderBaseChange] (K : GrothendieckTopology C) :
+    (J.toCoverage ≤ K.toCoverage) =
+      (∀ ⦃X : C⦄, ∀ S ∈ J.coverings X, Sieve.generate S ∈ K X) := rfl
+
 lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
     [J.IsStableUnderBaseChange] :
     J.toCoverage.toGrothendieck = J.toGrothendieck := by
-  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf]
+  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf,
+    Precoverage.toCoverage_le_toCoverage]
 
 lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
     J.toPrecoverage.toGrothendieck = J.toGrothendieck := by
