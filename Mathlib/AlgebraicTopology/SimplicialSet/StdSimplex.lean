@@ -134,7 +134,7 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 
 @[simp]
 lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
-    ⇑(stdSimplex.asOrderHom (stdSimplex.objEquiv.{u}.symm α)) = α := rfl
+    ⇑(asOrderHom (objEquiv.{u}.symm α)) = α := rfl
 
 end stdSimplex
 
