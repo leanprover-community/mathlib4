@@ -30,7 +30,7 @@ Approximation*][MR3156076] for a detailed discussion.
 public section
 namespace ValueDistribution
 
-open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
+open Asymptotics Filter Function.LocallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
 
 section FirstPart
 
@@ -71,7 +71,7 @@ lemma characteristic_sub_characteristic_inv_of_ne_zero
     rw [characteristic_sub_characteristic_inv hf, Pi.sub_apply]
   _ = log ‖meromorphicTrailingCoeffAt f 0‖ := by
     rw [MeromorphicOn.circleAverage_log_norm hR hf.meromorphicOn]
-    unfold Function.locallyFinsuppWithin.logCounting
+    unfold Function.LocallyFinsuppWithin.logCounting
     have : (divisor f (closedBall 0 |R|)) = (divisor f Set.univ).toClosedBall R :=
       (divisor_restrict hf.meromorphicOn (by tauto)).symm
     simp [this, toClosedBall, restrictMonoidHom, restrict_apply]

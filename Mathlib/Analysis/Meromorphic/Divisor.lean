@@ -136,7 +136,7 @@ theorem divisor_const (e : E) :
     divisor (fun _ ↦ e) U = 0 := by
   classical
   ext x
-  simp only [divisor_def, meromorphicOrderAt_const, Function.locallyFinsuppWithin.coe_zero,
+  simp only [divisor_def, meromorphicOrderAt_const, Function.LocallyFinsuppWithin.coe_zero,
     Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero,
     LinearOrderedAddCommGroupWithTop.top_ne_zero, imp_false, ite_eq_left_iff, WithTop.zero_ne_top,
     Decidable.not_not, and_imp]
@@ -196,7 +196,7 @@ theorem negPart_divisor_add_le_max {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf�
   intro z
   by_cases! hz : z ∉ U
   · simp [hz]
-  simp only [Function.locallyFinsuppWithin.negPart_apply, Function.locallyFinsuppWithin.max_apply]
+  simp only [Function.LocallyFinsuppWithin.negPart_apply, Function.LocallyFinsuppWithin.max_apply]
   by_cases hf₁₂ : meromorphicOrderAt (f₁ + f₂) z = ⊤
   · simp [divisor_apply (hf₁.add hf₂) hz, hf₁₂, negPart_nonneg]
   rw [← negPart_min]
@@ -361,7 +361,7 @@ theorem divisor_restrict {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U
     (divisor f U).restrict hV = divisor f V := by
   ext x
   by_cases hx : x ∈ V
-  · rw [Function.locallyFinsuppWithin.restrict_apply]
+  · rw [Function.LocallyFinsuppWithin.restrict_apply]
     simp [hf, hx, hf.mono_set hV, hV hx]
   · simp [hx]
 
@@ -403,7 +403,7 @@ lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) :
     congr
     exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
       ⟨(· - z₀), analyticAt_id.fun_sub analyticAt_const, by simp [sub_ne_zero_of_ne hx]⟩
-  · exact Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hu
+  · exact Function.LocallyFinsuppWithin.apply_eq_zero_of_notMem _ hu
 
 open WithTop in
 /-- The divisor of the function `z ↦ z - z₀` at `z₀` is `1`. -/

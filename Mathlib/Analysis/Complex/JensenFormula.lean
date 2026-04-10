@@ -170,7 +170,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
       ext x
       by_cases h : x ∈ CB
       <;> simp_all [CB]
-    simp only [CB, this, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, Int.cast_zero,
+    simp only [CB, this, Function.LocallyFinsuppWithin.coe_zero, Pi.zero_apply, Int.cast_zero,
       zero_mul, finsum_zero, add_zero, zero_add]
     rw [MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top (by aesop), norm_zero, log_zero]
     have : f =ᶠ[codiscreteWithin CB] 0 := by
@@ -245,7 +245,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
           · have : ‖c - u‖ ≠ 0 := by simpa [sub_eq_zero] using h3.symm
             simpa [field, abs_div, r_pos.trans r_lt_R, dist_eq_norm'] using h2
         · --In the larger ball but not the smaller so LHS is 0 and RHS nonnegative
-          simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
+          simp only [h2, not_false_eq_true, Function.LocallyFinsuppWithin.apply_eq_zero_of_notMem,
             Int.cast_zero, zero_mul]
           refine mul_nonneg (mod_cast h₁f.divisor_nonneg ..) ?_
           apply log_abs _ ▸ log_nonneg
