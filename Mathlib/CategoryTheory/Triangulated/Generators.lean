@@ -93,7 +93,7 @@ lemma triangEnvelopeIter_add' [IsTriangulated C] {n m m' : ℕ} (h : m = m' + 1 
     P.triangEnvelopeIter (n + m) =
       (extensionProduct (P.triangEnvelopeIter n) (P.triangEnvelopeIter m')).retractClosure := by
   simp only [triangEnvelopeIter, retractClosure_extensionProduct_retractClosure_retractClosure,
-  extensionProductIter_add' _ h]
+    extensionProductIter_add' _ h]
 
 variable {P} in
 lemma monotone_triangEnvelopeIter {Q : ObjectProperty C} (hPQ : P ≤ Q) (n : ℕ) :
