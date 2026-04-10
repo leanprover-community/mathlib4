@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
-public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+public import Mathlib.Algebra.Lie.Weights.Basic
 /-!
 
 # The Lie algebra `sl₂` and its representations
@@ -283,5 +283,5 @@ lemma exists_hasPrimitiveVectorWith
       exact hn_zero
   }⟩
 
-end IsAlgClosedIrreducible
+end Field
 end IsSl2Triple

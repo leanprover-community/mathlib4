@@ -524,7 +524,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     simp only [mem_genWeightSpace]
     intro x
     have h : (toEnd R L M₂ x - χ x • ↑1) ∘ₗ f =
-             f ∘ₗ (toEnd R L M x - χ x • ↑1) := by ext; simp
+            f ∘ₗ (toEnd R L M x - χ x • ↑1) := by ext; simp
     obtain ⟨k, hk⟩ := hm x
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
@@ -711,6 +711,16 @@ instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L 
   maxGenEigenspace_eq_top := by
     rintro ⟨-, x, rfl⟩
     exact IsTriangularizable.maxGenEigenspace_eq_top x
+
+omit [LieRing.IsNilpotent L] in
+lemma IsTriangularizable.exists_hasEigenvalue [Nontrivial M] [IsTriangularizable R L M] (x : L) :
+    ∃ φ, (toEnd R L M x).HasEigenvalue φ := by
+  suffices ∃ φ, (toEnd R L M x).maxGenEigenspace φ ≠ ⊥ by
+    obtain ⟨φ, hφ⟩ := this
+    exact ⟨φ, (Module.End.hasUnifEigenvalue_iff_hasUnifEigenvalue_one ENat.top_pos).mp hφ⟩
+  have := maxGenEigenspace_eq_top (R := R) (L := L) (M := M) x
+  contrapose! this
+  simp [this]
 
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
