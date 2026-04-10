@@ -71,12 +71,11 @@ instance : HasImage f :=
 instance : HasImages (Type u) where
   has_image := by infer_instance
 
-unif_hint (X X' : Type u) where X ≟ X'⊢ (𝟭 _).obj X ≟ X' in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (TypeCat.ofHom (fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.2), by
-        rw [dsimp% (elementwise_of% st.w)]
+        rw [elementwise_of% st.w]
         rw [Classical.choose_spec x.property]⟩⟩)) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
