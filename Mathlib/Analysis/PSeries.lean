@@ -447,21 +447,18 @@ section shifted
 open Filter Asymptotics Topology
 
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
-    Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
-  have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop := by
-    refine Tendsto.congr' ?_ tendsto_natCast_atTop_atTop
-    simp
-  have h_add : (fun n : ℕ ↦ (n : ℝ) + a) ~[atTop] fun n ↦ (n : ℝ) := by
-    simpa using IsEquivalent.add_const_of_norm_tendsto_atTop
-      (IsEquivalent.refl : (fun n : ℕ ↦ (n : ℝ)) ~[atTop] fun n ↦ (n : ℝ)) hnorm
-  have h_abs : (fun n : ℕ ↦ |(n : ℝ) + a|) ~[atTop] fun n ↦ (n : ℝ) :=
-    h_add.congr_left <| by
-      filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with n hn
-      rw [abs_of_pos]
-      linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
+    Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s :=
+  have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop :=
+    Tendsto.congr' (by simp) tendsto_natCast_atTop_atTop
+  have h_add : (fun n : ℕ ↦ (n : ℝ) + a) ~[atTop] fun n ↦ (n : ℝ) :=
+    IsEquivalent.add_const_of_norm_tendsto_atTop IsEquivalent.refl hnorm
+  have h_abs : (fun n : ℕ ↦ |(n : ℝ) + a|) ~[atTop] fun n ↦ (n : ℝ) := h_add.congr_left <| by
+    filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with n hn
+    rw [abs_of_pos]
+    linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
   have h_inv : (fun n : ℕ ↦ 1 / |n + a| ^ s) ~[atTop] fun n ↦ 1 / (n : ℝ) ^ s := by
-    simpa [one_div] using (Asymptotics.IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
-  exact (Asymptotics.IsEquivalent.summable_iff_nat h_inv).trans Real.summable_one_div_nat_rpow
+    simpa [one_div] using (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
+  h_inv.summable_iff_nat.trans Real.summable_one_div_nat_rpow
 
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
