@@ -227,14 +227,14 @@ deriving instance SMul S for SplittingField f
 def instAlgebraAux (R : Type*) [CommSemiring R] [Algebra R K] :
   Algebra R (SplittingField f) := inferInstanceAs <| Algebra R (_ ⧸ _)
 
-public instance (R : Type*) [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) where
+public instance {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) where
   algebraMap := private (instAlgebraAux f R).algebraMap
   commutes' := by exact (instAlgebraAux f R).commutes'
   smul_def' := by exact (instAlgebraAux f R).smul_def'
 
 public instance : Algebra K (SplittingField f) := inferInstance
 
-public instance (R : Type*) [CommSemiring R] [Algebra R K] : IsScalarTower R K (SplittingField f) :=
+public instance {R : Type*} [CommSemiring R] [Algebra R K] : IsScalarTower R K (SplittingField f) :=
   inferInstanceAs <| IsScalarTower R K (_ ⧸ _)
 
 @[implicit_reducible]
