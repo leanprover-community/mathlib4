@@ -568,6 +568,7 @@ theorem hasFDerivWithinAt_comp_smul_iff_smul {c : 𝕜} (hc : c ≠ 0) :
   lift c to 𝕜ˣ using IsUnit.mk0 c hc
   exact (ContinuousLinearEquiv.smulLeft c).comp_hasFDerivWithinAt_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_comp_smul_eq_fderivWithin_smul (c : 𝕜) :
     fderivWithin 𝕜 (f <| c • ·) s x = fderivWithin 𝕜 (c • f) (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc

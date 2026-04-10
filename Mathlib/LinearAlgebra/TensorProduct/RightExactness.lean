@@ -571,6 +571,14 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         rw [map_add]
         apply Submodule.add_mem _ hx hy
 
+variable (A) in
+lemma TensorProduct.AlgebraTensorModule.range_lTensor_idealMap (S : Type*) [CommSemiring S]
+    [Algebra R S] [Algebra S A] [IsScalarTower R S A] (I : Ideal B) :
+    LinearMap.range (lTensor S A (I.subtype.restrictScalars R)) =
+      (I.map (includeRight (A := A) (R := R))).restrictScalars S := by
+  rw [← (Submodule.restrictScalars_injective R _ _).eq_iff]
+  exact (I.map_includeRight_eq (R := R) (A := A)).symm
+
 -- Now, we can prove the right exactness properties of the tensor product,
 -- in its versions for algebras
 

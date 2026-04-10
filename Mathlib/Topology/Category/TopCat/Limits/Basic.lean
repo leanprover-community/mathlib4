@@ -99,6 +99,7 @@ def coneOfConeForget : Cone F where
         ext
         apply congr_fun (c.π.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -122,6 +123,7 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone F) (hc : IsLimit c)
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induced_of_isLimit :
     c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
   let c' := coneOfConeForget ((forget).mapCone c)
@@ -140,7 +142,7 @@ lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ induced_of_isLimit _ hc, fun h ↦ ⟨?_⟩⟩
-  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cones.ext ?_ ?_)
+  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
         continuous_toFun := h ▸ by fun_prop,
@@ -209,6 +211,7 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply congr_fun (c.ι.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -267,7 +270,7 @@ end IsColimit
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
-  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocones.ext ?_ ?_)
+  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
         continuous_toFun := h ▸ by fun_prop,
@@ -323,7 +326,7 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨ofHom ⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+    ⟨⟨ofHom ⟨fun x => x.elim, by fun_prop⟩⟩, fun f => by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/

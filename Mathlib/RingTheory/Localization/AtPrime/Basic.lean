@@ -65,8 +65,6 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
-
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
   IsLocalRing.of_nonunits_add
@@ -148,7 +146,7 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
 /-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
-order-preserving bijection with the interval (-∞, I] in the prime spectrum of R. -/
+order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
     ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
@@ -250,6 +248,12 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
         (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
+@[simp]
+theorem localRingHom_mk (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
+    (y : I.primeCompl) :
+    localRingHom I J f hIJ (mk x y) = mk (f x) ⟨f y, by aesop⟩ := by
+  simp_rw [mk_eq_mk', localRingHom_mk']
+
 @[instance]
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
@@ -309,7 +313,7 @@ lemma localRingHom_bijective_of_saturated_inf_eq_top
   · suffices ∀ y, ∀ z ∉ P, ∃ y' ∈ s, ∃ z' ∉ P, z' ∈ s ∧ ∃ t ∉ P, t * (z * y') = t * (z' * y) by
       simpa [(IsLocalization.mk'_surjective p.primeCompl).exists,
         (IsLocalization.mk'_surjective P.primeCompl).forall, P.over_def p,
-        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, - map_mul,
+        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, -map_mul,
         IsLocalization.eq_iff_exists P.primeCompl, Function.Surjective] using this
     intro y z hzP
     obtain ⟨a, ⟨haP, has⟩, ha⟩ := H.ge (Set.mem_univ y)
@@ -473,7 +477,7 @@ def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
     have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
       rw [← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
       exact s.prop
-    refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
+    refine ((inferInstance : (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
     rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
       ← map_mul, ← map_sub, ← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p,
       mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
@@ -538,9 +542,6 @@ lemma comap_map_eq_map :
   apply Ideal.mul_mem_right
   exact Ideal.mem_map_of_mem _ hγ
 
-@[deprecated (since := "2025-07-31")] alias
-  _root_.comap_map_eq_map_of_isLocalization_algebraMapSubmonoid := comap_map_eq_map
-
 variable [IsScalarTower R Rₚ Sₚ]
 
 variable (S Sₚ) in
@@ -583,9 +584,11 @@ noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
-@[deprecated (since := "2025-07-31")] alias
-    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotientMapMaximalIdeal
-
 end isomorphisms
+
+lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]
+    (hle : ¬ I ≤ p) : Ideal.map (algebraMap R S) I = ⊤ := by
+  apply IsLocalization.map_eq_top_of_not_subset p.primeCompl
+  simpa [SetLike.le_def, Set.not_subset_iff_exists_mem_notMem] using hle
 
 end IsLocalization.AtPrime

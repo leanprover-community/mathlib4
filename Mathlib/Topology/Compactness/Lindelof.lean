@@ -19,9 +19,9 @@ We define the following properties for sets in a topological space:
 * `IsLindelof s`: Two definitions are possible here. The more standard definition is that
   every open cover that contains `s` contains a countable subcover. We choose for the equivalent
   definition where we require that every nontrivial filter on `s` with the countable intersection
-  property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
+  property has a cluster point. Equivalence is established in `isLindelof_iff_countable_subcover`.
 * `LindelofSpace X`: `X` is Lindelöf if it is Lindelöf as a set.
-* `NonLindelofSpace`: a space that is not a Lindëlof space, e.g. the Long Line.
+* `NonLindelofSpace`: a space that is not a Lindelöf space, e.g. the Long Line.
 
 ## Main results
 
@@ -46,7 +46,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 section Lindelof
 
 /-- A set `s` is Lindelöf if every nontrivial filter `f` with the countable intersection
-  property that contains `s`, has a clusterpoint in `s`. The filter-free definition is given by
+  property that contains `s`, has a cluster point in `s`. The filter-free definition is given by
   `isLindelof_iff_countable_subcover`. -/
 def IsLindelof (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f] [CountableInterFilter f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
@@ -74,7 +74,7 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X := ofCountableUnion p hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
+  let f : Filter X := ofCountableUnion {t | p t} hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
   rwa [← compl_compl s]
 
@@ -118,7 +118,7 @@ theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) :
     IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- A filter with the countable intersection property that is finer than the principal filter on
-a Lindelöf set `s` contains any open set that contains all clusterpoints of `s`. -/
+a Lindelöf set `s` contains any open set that contains all cluster points of `s`. -/
 theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
@@ -773,9 +773,9 @@ lemma eq_closed_inter_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty �
   conv in _ = _ => rw [← compl_inj_iff]; simp
   exact eq_open_union_nat (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
 
-instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
-    LindelofSpace {x // p x} := by
-  apply isLindelof_iff_lindelofSpace.mp
-  exact HereditarilyLindelofSpace.isLindelof fun x ↦ p x
+instance [HereditarilyLindelofSpace X] (p : X → Prop) :
+    HereditarilyLindelofSpace {x // p x} :=
+  HereditarilyLindelofSpace.of_forall_isOpen fun _ _ =>
+    Subtype.isLindelof_iff.2 <| HereditarilyLindelofSpace.isLindelof _
 
 end Lindelof

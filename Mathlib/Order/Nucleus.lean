@@ -168,8 +168,9 @@ instance : InfSet (Nucleus X) where
   rw [iInf, sInf_apply, iInf_range]
 
 instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
-  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
+  isGLB_sInf _ :=
+    ⟨by simp +contextual [mem_lowerBounds, ← coe_le_coe, Pi.le_def, iInf_le_iff],
+      by simp +contextual [mem_lowerBounds, mem_upperBounds, ← coe_le_coe, Pi.le_def]⟩
 
 instance : CompleteLattice (Nucleus X) where
   __ : SemilatticeInf (Nucleus X) := inferInstance
@@ -199,7 +200,7 @@ instance : HImp (Nucleus X) where
     idempotent' x := le_iInf₂ fun y hy ↦
       calc
         ⨅ z ≥ ⨅ w ≥ x, m w ⇨ n w, m z ⇨ n z
-        _ ≤ m (m y ⇨ n y) ⇨ n (m y ⇨ n y) := iInf₂_le _ <| biInf_le _ hy
+        _ ≤ m (m y ⇨ n y) ⇨ n (m y ⇨ n y) := iInf₂_le (m y ⇨ n y) <| iInf₂_le y hy
         _ = m y ⇨ n y := by
           rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
     map_inf' x y := by

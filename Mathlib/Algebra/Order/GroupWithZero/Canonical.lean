@@ -179,19 +179,19 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
       exact ⟨z, by simp [hz, hz']⟩
 
 -- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
-instance [DenselyOrdered α] : Nontrivial αˣ :=
+instance [DenselyOrdered α] : Nontrivial αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 -- Counterexample with monoid:
 -- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
-instance [DenselyOrdered α] : DenselyOrdered αˣ :=
+instance [DenselyOrdered α] : DenselyOrdered αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
-lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α :=
+lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 end LinearOrderedCommGroupWithZero
 
@@ -487,7 +487,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 
