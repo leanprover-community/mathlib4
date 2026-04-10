@@ -45,7 +45,7 @@ structure IsometryEquiv (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.Bi
 if there exists an isometric equivalence between them:
 a linear equivalence that transforms one bilinear form into the other. -/
 def Equivalent (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.BilinForm R M₂) :
-    Prop := 
+    Prop :=
   Nonempty (B₁.IsometryEquiv B₂)
 
 namespace IsometryEquiv
