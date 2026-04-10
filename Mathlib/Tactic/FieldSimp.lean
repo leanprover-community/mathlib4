@@ -712,7 +712,7 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
     (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation
-    (m ·) "`field_simp`" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
+    (m ·) "`field_simp`" (ifUnchanged := .error) (mayCloseGoalFromHyp := true) loc
 
 /--
 `field_simp` normalizes an expression in a (semi-)field by rewriting it to a common denominator,
