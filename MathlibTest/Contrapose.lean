@@ -38,19 +38,42 @@ example (p q : Prop) (h : ¬q → p) : ¬p → q := by
   exact h
 
 example (p q : Prop) (h : q → p) : ¬p → ¬q := by
-  contrapose!
+  contrapose
   guard_target = q → p
   exact h
 
+example (p q : Prop) (h : ¬p) (hpq : q → p) : ¬q := by
+  contrapose h
+  guard_target = p
+  exact hpq h
+
+example (p q : Prop) (h : ¬p) (hpq : q → p) : ¬q := by
+  contrapose h with h'
+  guard_target = p
+  exact hpq h'
+
+example (p q : Prop) (h : q → p) : ¬p → ¬q := by
+  contrapose
+  guard_target = q → p
+  exact h
+
+section -- Using contrapose in a superfluous way warns.
+
+/-- warning: `push` made no progress on the goal -/
+#guard_msgs in
 example (p q : Prop) (h : ¬p) (hpq : q → p) : ¬q := by
   contrapose! h
   guard_target = p
   exact hpq h
 
+/-- warning: `push` made no progress on the goal -/
+#guard_msgs in
 example (p q : Prop) (h : ¬p) (hpq : q → p) : ¬q := by
   contrapose! h with h'
   guard_target = p
   exact hpq h'
+
+end
 
 example (p q r : Prop) (h : ¬ q ∧ ¬ r → ¬ p) : p → q ∨ r := by
   fail_if_success (contrapose; exact h)

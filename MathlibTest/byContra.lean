@@ -86,6 +86,12 @@ example (x : α) (f : False) : x ≤ 1 := by
 end order
 
 example (n : ℕ) (h : n ≠ 0) : n ≠ 0 := by
+  by_contra rfl
+  simp only [Ne, not_true_eq_false] at h
+
+/-- warning: `push` made no progress at h._@.MathlibTest.byContra.2021293407._hygCtx._hyg.18 -/
+#guard_msgs in
+example (n : ℕ) (h : n ≠ 0) : n ≠ 0 := by
   by_contra! rfl
   simp only [Ne, not_true_eq_false] at h
 
@@ -93,6 +99,13 @@ example (p q : Prop) (hnp : ¬ p) : ¬ p ∨ ¬ q := by
   by_contra! ⟨hp, _⟩
   exact hnp hp
 
+example (p q : Prop) (hnp : ¬ p) (hnq : ¬ q) : ¬ (p ∨ q) := by
+  by_contra hp | hq
+  · exact hnp hp
+  · exact hnq hq
+
+/-- warning: `push` made no progress at h._@.MathlibTest.byContra.2021293410._hygCtx._hyg.25 -/
+#guard_msgs in
 example (p q : Prop) (hnp : ¬ p) (hnq : ¬ q) : ¬ (p ∨ q) := by
   by_contra! hp | hq
   · exact hnp hp
