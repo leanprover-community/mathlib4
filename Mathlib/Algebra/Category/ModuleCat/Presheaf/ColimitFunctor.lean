@@ -250,7 +250,7 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
         simp only [← hφ, AddEquiv.symm_apply_apply, RingHom.id_apply]
         refine (map_smul_homEquiv'_iff hcR hcM φ).1 (fun U r m ↦ ?_)
         rw [hφ]
-        change ψ.app U (r • m) = _
+        erw [toPresheaf_map_app_apply]
         rw [map_smul]
         rfl}
   left_inv φ := (forget₂ _ AddCommGrpCat).map_injective (by
