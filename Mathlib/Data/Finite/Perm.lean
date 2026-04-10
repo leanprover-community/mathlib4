@@ -41,16 +41,7 @@ end Nat
 theorem Equiv.Perm.isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsCyclic (Perm α) := by
   apply isCyclic_of_card_dvd_prime (p := 2)
-  rw [Nat.card_perm]
-  -- The `interval_cases` tactic is incompatible with `assert_not_exists Field`
-  -- interval_cases (Nat.card α) <;> simp
-  by_cases h0 : Nat.card α = 0
-  · simp [h0]
-  rw [← ne_eq, ← Nat.one_le_iff_ne_zero] at h0
-  by_cases h1 : Nat.card α ≤ 1
-  · simp [Nat.le_antisymm h1 h0]
-  rw [not_le] at h1
-  simp [le_antisymm hα h1]
+  simpa [Nat.card_perm] using Nat.factorial_dvd_factorial hα
 
 theorem Equiv.Perm.isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsMulCommutative (Perm α) :=
