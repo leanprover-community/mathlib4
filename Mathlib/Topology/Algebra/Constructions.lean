@@ -49,8 +49,6 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space

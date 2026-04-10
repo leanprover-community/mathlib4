@@ -517,8 +517,7 @@ theorem rel_eq {s t : Multiset α} : Rel (· = ·) s t ↔ s = t := by
   constructor
   · intro h
     induction h <;> simp [*]
-  · intro h
-    subst h
+  · rintro rfl
     exact rel_eq_refl
 
 theorem Rel.mono {r p : α → β → Prop} {s t} (hst : Rel r s t)

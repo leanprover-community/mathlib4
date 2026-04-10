@@ -30,6 +30,7 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
+open scoped IsMulCommutative in
 /-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where

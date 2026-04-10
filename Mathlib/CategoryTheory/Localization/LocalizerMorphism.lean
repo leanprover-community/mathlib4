@@ -94,9 +94,8 @@ noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
 noncomputable instance liftingLocalizedFunctor :
-    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
-  dsimp [localizedFunctor]
-  infer_instance
+    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) :=
+  inferInstanceAs <| Lifting L₁ W₁ _ (lift _ _ L₁)
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
 functor `Φ.functor` -/

@@ -41,7 +41,6 @@ lemma Ideal.ramificationIdx_eq_one_of_isUnramifiedAt
     p.primeCompl_le_nonZeroDivisors
     ((isUnramifiedAt_iff_map_eq R (p.under R) p).mp ‹_›).2)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma IsUnramifiedAt.of_liesOver_of_ne_bot
     (p : Ideal S) (P : Ideal T) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
@@ -85,7 +84,6 @@ lemma Algebra.IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
