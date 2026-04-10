@@ -43,7 +43,7 @@ def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
 /-- The Poisson probability distribution with rate `r`. -/
 scoped notation3 "Po(" r ")" => poissonMeasure r
 
-/-- The Poisson probability distribution with rate `r` valued in the semiring `R`. -/
+/-- The Poisson probability distribution with rate `r` valued in the `AddMonoidWithOne` `R`. -/
 scoped notation3 "Po(" R ", " r ")" => (poissonMeasure r).map (Nat.cast : ℕ → R)
 
 lemma poissonMeasure_singleton (r : ℝ≥0) (n : ℕ) :
