@@ -105,7 +105,11 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
 
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
-  let allModuleNames := eraseExplicitImports (← findImportsFromSource "Mathlib.lean")
+  -- Note: `findImportsFromSource` only erases the *first* occurrence of `Init`.
+  -- On module-system files (such as `Mathlib.lean`), `Lean.parseImports'` may emit
+  -- `Init` multiple times, so we filter out any remaining occurrences here.
+  let allModuleNames := (eraseExplicitImports (← findImportsFromSource "Mathlib.lean")).filter
+    (· != `Init)
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
