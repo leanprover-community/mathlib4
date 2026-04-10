@@ -494,7 +494,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
       · rintro (_|_|_) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
-    · simp [HasSubst, X, substInvFun]
+    · simp [HasSubst, substInvFun]
   · rw [Fin.sum_univ_castSucc]
     simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
     generalize hB : ∑ i : Fin (n + 2), C (substInvFun P i) * X ^ i.1 = B
@@ -550,7 +550,7 @@ lemma subst_substInv_right :
         Fin.ext_iff, @eq_comm _ m]
     obtain ⟨Q, hQ⟩ := this.trans (sub_dvd_pow_sub_pow _ _ m)
     simp [substInv, sub_eq_iff_eq_add.mp hQ, coeff_X_pow_mul']
-  · simp [HasSubst, X, zero_pow_eq, C, substInvFun]
+  · simp [HasSubst, zero_pow_eq, C, substInvFun]
   · simp [HasSubst, ← constantCoeff.eq_def, substInvFun, substInv]
 
 @[simp]
