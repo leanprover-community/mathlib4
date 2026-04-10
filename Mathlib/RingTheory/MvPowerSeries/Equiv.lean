@@ -48,6 +48,12 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
   multivariate power series to the adic completion of multivariate polynomials
   with respect to the ideal spanned by all variables when the index is finite.
 
+# TODO
+
+* Prove that the equivalences introduced in this file preserve the topologies
+  on the rings of formal power series when the base ring is equipped with a topology
+  (e.g., a linear topology).
+
 -/
 
 @[expose] public section
