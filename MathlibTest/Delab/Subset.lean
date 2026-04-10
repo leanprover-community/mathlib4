@@ -118,4 +118,13 @@ variable (p : Set Nat → Prop) in
 variable (p : List Nat → Prop) in
 #check ∀ s, ∃ t ⊆ s, p t
 
+/- This test shows something that used to be possible, but does now work anymore:
+If you write `_ ⊆ _`, the type cannot be inferred, and hence, elaboration of this term
+is either postposed, or it elaborates to `Subset _ _`.
+-/
+example (a b : Set Nat) : True ∨ True ∨ a ⊆ b := by
+  fail_if_success rw [or_comm (b := _ ⊆ _)]
+  rw [or_comm (b := _ ≤ _)]
+  left; trivial
+
 end Elab
