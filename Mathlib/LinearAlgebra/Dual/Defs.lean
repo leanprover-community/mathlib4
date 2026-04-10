@@ -17,7 +17,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Duals and transposes:
   * `Module.Dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
-  * `Module.dualPairing R M` is the canonical pairing between `Dual R M` and `M`.
   * `Module.Dual.eval R M : M →ₗ[R] Dual R (Dual R)` is the canonical map to the double dual.
   * `Module.Dual.transpose` is the linear map from `M →ₗ[R] M'` to `Dual R M' →ₗ[R] Dual R M`.
   * `LinearMap.dualMap` is `Module.Dual.transpose` of a given linear map, for dot notation.
@@ -56,13 +55,14 @@ abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
+@[deprecated LinearMap.id (since := "2026-04-02")]
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
-@[simp]
-theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
-  rfl
+set_option linter.deprecated false in
+@[deprecated "`Module.dualPairing` has been deprecated" (since := "2026-04-02")]
+theorem dualPairing_apply (v x) : dualPairing R M v x = v x := rfl
 
 namespace Dual
 
