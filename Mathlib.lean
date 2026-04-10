@@ -6347,6 +6347,7 @@ public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.FormalGroup.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
@@ -6552,6 +6553,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
@@ -7168,6 +7170,7 @@ public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Ring.Common
 public import Mathlib.Tactic.Ring.Compare
 public import Mathlib.Tactic.Ring.NamePolyVars
+public import Mathlib.Tactic.Ring.NamePowerVars
 public import Mathlib.Tactic.Ring.PNat
 public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Tactic.Sat.FromLRAT
