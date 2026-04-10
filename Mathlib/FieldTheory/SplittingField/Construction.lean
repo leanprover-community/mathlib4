@@ -214,7 +214,7 @@ end SplittingFieldAux
 public def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing, Algebra K
+deriving Inhabited, CommRing
 
 namespace SplittingField
 
@@ -223,8 +223,19 @@ variable (f : K[X])
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
 
-variable {R : Type*} [CommSemiring R] [Algebra R K] in
-deriving instance Algebra R, IsScalarTower R K for SplittingField f
+@[implicit_reducible]
+def instAlgebraAux (R : Type*) [CommSemiring R] [Algebra R K] :
+  Algebra R (SplittingField f) := inferInstanceAs <| Algebra R (_ ⧸ _)
+
+public instance (R : Type*) [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) where
+  toSMul := inferInstance
+  smul_def' := by exact (instAlgebraAux f R).smul_def'
+  __ := private instAlgebraAux f R
+
+public instance : Algebra K (SplittingField f) := inferInstance
+
+public instance (R : Type*) [CommSemiring R] [Algebra R K] : IsScalarTower R K (SplittingField f) :=
+  inferInstanceAs <| IsScalarTower R K (_ ⧸ _)
 
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
