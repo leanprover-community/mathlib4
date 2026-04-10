@@ -292,7 +292,7 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
 
 lemma length_dropUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
     (p.dropUntil u h).length < p.length := by
-  grind [length_dropUntil, support_eq_cons]
+  grind [length_dropUntil, cons_tail_support]
 
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
