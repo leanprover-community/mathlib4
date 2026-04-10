@@ -15,7 +15,7 @@ This file comprises properties of equivalence relations viewed as partitions.
 There are two implementations of partitions here:
 * A collection `c : Set (Set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
   belongs to a unique set `b ∈ c`. This is expressed as `IsPartition c`
-* An indexed partition is a map `s : ι → α` whose image is a partition. This is
+* An indexed partition is a map `s : ι → Set α` whose image is a partition. This is
   expressed as `IndexedPartition s`.
 
 Of course both implementations are related to `Quotient` and `Setoid`.
