@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
@@ -167,24 +168,31 @@ instance : CompleteSpace 𝒪[K] :=
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
-open scoped Topology in
-open AdicCompletion Filter in
-instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] := by
-  refine AdicCompletion.of_bijective_iff.mp ⟨of_injective _ _, ?_⟩
-  refine of_surjective_iff.mpr {
-    prec' f h := by
-      let f' := atTop.map f
-      have cauchy_f' : Cauchy f' := by
-        change CauchySeq f
-        refine cauchySeq_iff.mpr fun V hV => ?_
-        sorry
-      obtain ⟨L, hL⟩ := cauchy_map_iff_exists_tendsto.mp cauchy_f'
-      refine ⟨L, fun n => ?_⟩
-      refine sub_smodEq_zero.mp ?_
-      refine SModEq.zero.mpr ?_
-      sorry
-  }
+lemma maximalIdeal_pow_isClosed (n : ℕ) :
+    IsClosed ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) :=
+  IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)
 
+instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
+  haus' := (inferInstance : IsHausdorff 𝓂[K] 𝒪[K]).haus
+  prec' f hf := by
+    obtain ⟨L, hL⟩ : (⋂ n, ((fun x => f n + x) '' ↑(𝓂[K] ^ n))).Nonempty := by
+      have hc (n : ℕ) : IsClosed ((fun x => f n + x) '' ↑(𝓂[K] ^ n)) := by
+        convert maximalIdeal_pow_isClosed K n |>.preimage
+          (show Continuous fun x => - f n + x from by fun_prop) using 1
+        grind
+      refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _ ?_
+        (fun _ ↦ Set.Nonempty.of_subtype) (hc 0).isCompact hc
+      intro n x ⟨y, hy1, hy2⟩
+      simp only [smul_eq_mul, Ideal.mul_top, Set.image_add_left, SetLike.mem_coe,
+        Set.mem_preimage, ← hy2] at *
+      convert Ideal.add_mem _ ((Submodule.Quotient.eq _).mp (hf (Nat.le_succ _)).symm)
+        (Ideal.pow_le_pow_right (Nat.le_succ _) hy1) using 1
+      ring
+    refine ⟨L, fun n => ?_⟩
+    obtain ⟨y, hy, hfy⟩ := Set.mem_iInter.mp hL n
+    rw [smul_eq_mul, Ideal.mul_top, SModEq.sub_mem, ← hfy]
+    convert (𝓂[K] ^ n).neg_mem hy using 1
+    ring
 
 end UniformSpace
 
