@@ -5,6 +5,7 @@ Authors: Alex J. Best
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Hom -- shake: keep (Subsingleton (ℝ →+*o ℝ))
 public import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Order.CompleteField
 
