@@ -383,13 +383,6 @@ theorem ramificationIdx_of_not_le
     exact disjoint_compl_left_iff.mp h
   · rw [ramificationIdx_of_not_isPrime p q hq]
 
--- PRed
-instance {R : Type*} [CommRing R] (M : Submonoid R)
-    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S] (I : Ideal R) :
-    IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
-  IsLocalization.of_surjective M S (Quotient.mk I) Quotient.mk_surjective
-    (Quotient.mk (I.map (algebraMap R S))) Quotient.mk_surjective rfl (by simp)
-
 theorem ramificationIdx_of_ne
     {R : Type*} [CommRing R] (p q : Ideal R) (h : p ≠ q) [hp : p.IsPrime] :
       p.ramificationIdx q = 0 := by
@@ -599,27 +592,6 @@ noncomputable def foo9 :
         simp }
 
 open TensorProduct
-
--- PRed
-noncomputable def _root_.Localization.localRingEquiv
-    {R P : Type*} [CommSemiring R] [CommSemiring P]
-    (I : Ideal R) [I.IsPrime] (J : Ideal P) [J.IsPrime]
-    (f : R ≃+* P) (hIJ : I = Ideal.comap f J) :
-    Localization.AtPrime I ≃+* Localization.AtPrime J where
-  __ := Localization.localRingHom I J f hIJ
-  invFun := Localization.localRingHom J I f.symm
-    (by rw [hIJ, ← comap_coe f, comap_comap, RingEquiv.comp_symm, comap_id])
-  left_inv x := by simp [Localization.localRingHom, IsLocalization.map_map]
-  right_inv x := by simp [Localization.localRingHom, IsLocalization.map_map]
-
--- PRed
-noncomputable def _root_.Localization.localAlgEquiv
-    {R S P : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring P]
-    [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime] (f : S ≃ₐ[R] P)
-    (hIJ : I = Ideal.comap f J) :
-    Localization.AtPrime I ≃ₐ[R] Localization.AtPrime J where
-  __ := Localization.localAlgHom I J f.toAlgHom hIJ
-  __ := Localization.localRingEquiv I J f.toRingEquiv hIJ
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
