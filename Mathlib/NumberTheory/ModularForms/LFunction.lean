@@ -21,10 +21,7 @@ open scoped Real
 open Filter Complex MatrixGroups Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
-  {k : ℤ} (hk : 0 < k)
-  {F : Type*} [FunLike F ℍ ℂ]
-
-instance : Subgroup.HasDetOne 𝒮ℒ where det_eq {g} := by rintro ⟨g, rfl⟩; simp
+  {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ]
 
 lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
     Tendsto (fun t : ℝ ↦ ofComplex (I * t)) atTop atImInfty := by
@@ -67,8 +64,7 @@ noncomputable def weakFEPair (f : F) : WeakFEPair ℂ where
       rw [coe_smul_of_det_pos (by simp), ofComplex_apply_of_im_pos (by simpa using ht)]
       simp [ModularGroup.S, num, denom, div_eq_mul_inv, mul_comm]
     · simp [mul_zpow, ModularGroup.S]
-    · ext
-      simp [ht, ofComplex_apply_eq_ite]
+    · simp [ht, ofComplex_apply_eq_ite]
   hf_top r := by
     obtain ⟨C, hCpos, hCO⟩ := ModularFormClass.exp_decay_sub_atImInfty' f
     refine (hCO.comp_tendsto tendsto_ofComplex_I_mul_atTop_atImInfty).trans ?_
@@ -151,9 +147,8 @@ lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
       congr 1
       simp only [neg_mul, ofReal_neg, ofReal_mul, ofReal_ofNat, ofReal_natCast,
         ofComplex_apply_eq_ite, mul_im, Complex.I_re, ofReal_im, mul_zero, Complex.I_im, ofReal_re,
-        one_mul, zero_add, ht, ↓reduceDIte, coe_mk_subtype, ofReal_one]
-      have := I_sq
-      grind
+        one_mul, zero_add, ht, ↓reduceDIte, coe_mk, ofReal_one]
+      grind [I_sq]
     · simpa only [Subgroup.strictPeriods_SL2Z] using AddSubgroup.mem_zmultiples 1
   · simp_rw [Real.mul_rpow two_pos.le (Nat.cast_nonneg _), mul_comm, ← div_div]
     apply Summable.div_const
