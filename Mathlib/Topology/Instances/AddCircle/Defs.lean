@@ -390,7 +390,7 @@ lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   exact ⟨b.1, by simpa only [zero_add] using b.2,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
 
-/-- Ioc version of `eq_coe_Ico`. -/
+/-- `Ioc` version of `eq_coe_Ico`. -/
 lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIocMod hp.out 0 a
   exact ⟨b.1, by simpa only [zero_add] using b.2,
