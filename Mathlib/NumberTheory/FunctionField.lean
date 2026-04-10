@@ -60,22 +60,22 @@ abbrev FunctionField [Algebra (RatFunc F) K] : Prop :=
   FiniteDimensional (RatFunc F) K
 
 /-- `K` is a function field over `F` iff it is a finite extension of `F(t)`. -/
-theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra F[X] Fqt]
-    [IsFractionRing F[X] Fqt] [Algebra (RatFunc F) K] [Algebra Fqt K] [Algebra F[X] K]
-    [IsScalarTower F[X] Fqt K] [IsScalarTower F[X] (RatFunc F) K] :
-    FunctionField F K ↔ FiniteDimensional Fqt K := by
-  let e := IsLocalization.algEquiv F[X]⁰ (RatFunc F) Fqt
+theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
+    [IsFractionRing F[X] Ft] [Algebra (RatFunc F) K] [Algebra Ft K] [Algebra F[X] K]
+    [IsScalarTower F[X] Ft K] [IsScalarTower F[X] (RatFunc F) K] :
+    FunctionField F K ↔ FiniteDimensional Ft K := by
+  let e := IsLocalization.algEquiv F[X]⁰ (RatFunc F) Ft
   have : ∀ (c) (x : K), e c • x = c • x := by
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine congr_fun (f := fun c => algebraMap Fqt K (e c)) ?_ c
+    refine congr_fun (f := fun c => algebraMap Ft K (e c)) ?_ c
     refine IsLocalization.ext (nonZeroDivisors F[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
   · let b := Module.finBasis (RatFunc F) K
     exact (b.mapCoeffs e this).finiteDimensional_of_finite
-  · let b := Module.finBasis Fqt K
+  · let b := Module.finBasis Ft K
     refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
@@ -87,7 +87,7 @@ theorem algebraMap_injective [Algebra F[X] K] [Algebra (RatFunc F) K]
   exact (algebraMap (RatFunc F) K).injective.comp (IsFractionRing.injective F[X] (RatFunc F))
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
-`FunctionField.ringOfIntegers F Fqt K` is the integral closure of `F[t]` in `K`.
+`FunctionField.ringOfIntegers F Ft K` is the integral closure of `F[t]` in `K`.
 
 We don't actually assume `K` is a function field over `F` in the definition,
 only when proving its properties.
