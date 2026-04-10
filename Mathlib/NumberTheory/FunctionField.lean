@@ -29,7 +29,7 @@ This file defines a function field and the ring of integers corresponding to it.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
-but are independent of that choice. We also omit assumptions like `Finite F` or
+but are independent of that choice. We also omit assumptions like
 `IsScalarTower F[X] (FractionRing F[X]) K` in definitions,
 adding them back in lemmas when they are needed.
 
@@ -51,7 +51,7 @@ open scoped nonZeroDivisors Polynomial WithZero
 
 variable (F K : Type*) [Field F] [Field K]
 
-/-- `K` is a function field over the (usually finite) field `F` if it is a finite
+/-- `K` is a function field over the field `F` if it is a finite
 extension of the field of rational functions in one variable over `F`.
 
 Note that `K` can be a function field over multiple, non-isomorphic, `F`.
@@ -87,7 +87,7 @@ theorem algebraMap_injective [Algebra F[X] K] [Algebra (RatFunc F) K]
   exact (algebraMap (RatFunc F) K).injective.comp (IsFractionRing.injective F[X] (RatFunc F))
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
-`FunctionField.ringOfIntegers F Ft K` is the integral closure of `F[t]` in `K`.
+`FunctionField.ringOfIntegers F K` is the integral closure of `F[X]` in `K`.
 
 We don't actually assume `K` is a function field over `F` in the definition,
 only when proving its properties.
