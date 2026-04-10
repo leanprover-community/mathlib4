@@ -390,8 +390,9 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   -- reformulate `hD` as a bound for the derivatives of `f'`.
   have J : ∀ i, ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ ≤ D ^ (n - i + 1) := by
     intro i
-    simpa [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply] using
+    have : ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖ ≤ D ^ (n - i + 1) :=
       hD (n - i + 1) (by simp) (Nat.succ_le_succ tsub_le_self)
+    simpa [iteratedFDerivWithin_succ_eq_comp_right hs hx] using this
   -- Now put these together: first, notice that we have to bound `D^n (g' ∘ f ⬝ f')`.
   calc
     ‖iteratedFDerivWithin 𝕜 (n + 1) (g ∘ f) s x‖ =

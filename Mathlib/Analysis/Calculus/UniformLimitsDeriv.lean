@@ -453,7 +453,11 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
     UniformCauchySeqOnFilter (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   intro u hu
-  simpa using hf' _ ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
+  have : ∀ᶠ m in (l ×ˢ l) ×ˢ l', (f' m.1.1 m.2, f' m.1.2 m.2) ∈
+      (fun x ↦ (((ContinuousLinearMap.smulRightL 𝕜 𝕜 G) 1) x.1,
+        ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G) 1) x.2)) ⁻¹' u :=
+    hf' _ ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
+  simpa using this
 
 variable [IsRCLikeNormedField 𝕜]
 
@@ -478,9 +482,13 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasDerivAt g (g' x) x := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
-  exact hasFDerivAt_of_tendstoUniformlyOnFilter
-    ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf')
-    hf hfg
+  -- Now we need to rewrite hf' in terms of `ContinuousLinearMap`s. The tricky part is that
+  -- operator norms are written in terms of `≤` whereas metrics are written in terms of `<`. So we
+  -- need to shrink `ε` utilizing the archimedean property of `ℝ`
+  have hf' : TendstoUniformlyOnFilter (fun n z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z))
+      (fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)) l (𝓝 x) :=
+    (ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf'
+  exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 
 theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn f' g' l s)
