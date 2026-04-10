@@ -57,6 +57,7 @@ inductive BehaviorIfUnchanged where
   | warning
   /-- Throw an error -/
   | error
+deriving BEq, Inhabited, Repr
 
 /-- Use the procedure `m` to rewrite the provided goal. -/
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
