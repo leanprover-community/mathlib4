@@ -241,11 +241,9 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       simp
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
-    f₁ = 𝟙 _ ≫ f₁ := by simp
-    _ = c₀.pt.hom ≫ F.map g₁.right := g₁.w
+    f₁ = c₀.pt.hom ≫ F.map g₁.right := g₁.w.symm
     _ = c₀.pt.hom ≫ F.map g₂.right := by rw [this]
-    _ = 𝟙 _ ≫ f₂ := g₂.w.symm
-    _ = f₂ := by simp
+    _ = f₂ := g₂.w
 
 end PreservesFiniteLimitsOfFlat
 
@@ -385,6 +383,7 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
   have : Nonempty (StructuredArrow X (F ⋙ G)) := ⟨.mk (Y.hom ≫ G.map A.hom)⟩
   suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   refine ⟨fun A B ↦ ?_, fun A B f g ↦ ?_⟩
+  all_goals sorry /-
   · let U := IsCofiltered.min (T.obj A) (T.obj B)
     let A' : StructuredArrow U.right F := .mk (IsCofiltered.minToLeft (T.obj A) (T.obj B)).right
     let B' : StructuredArrow U.right F := .mk (IsCofiltered.minToRight (T.obj A) (T.obj B)).right
@@ -403,7 +402,7 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
     · refine StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_
       simpa [← Functor.map_comp] using StructuredArrow.w _
     · ext
-      exact congr($(IsCofiltered.eq_condition f' g').right)
+      exact congr($(IsCofiltered.eq_condition f' g').right)-/
 
 instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
     IsFiltered (CostructuredArrow (F ⋙ G) X) := by

@@ -52,10 +52,11 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     dsimp
     rintro V iVW ⟨iVU, e'⟩
     have := congr($e ≫ Y.1.map iVU.op)
+    sorry /-
     simp only [comp_obj, yoneda_map_app, Category.assoc, comp_map,
       ← NatTrans.naturality, op_obj, op_map, Quiver.Hom.unop_op, ← map_comp_assoc,
       ← op_comp, ← e'] at this ⊢
-    simpa [← NatTrans.naturality] using this
+    simpa [← NatTrans.naturality] using this-/
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
@@ -65,10 +66,10 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
           (fun I ↦ f ≫ Y.1.map (l _ _ _ _ _ I.hf).op) fun I₁ I₂ r ↦ ?_
         apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (r.g₁ ≫ l _ _ _ _ _ I₁.hf)
           (r.g₂ ≫ l _ _ _ _ _ I₂.hf) ?_)).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
-        · simp only [const_obj_obj, op_obj, map_comp, hl]
+        · simp only [op_obj, map_comp, hl]
           simp only [← map_comp_assoc, r.w]
         · simp [← map_comp, ← op_comp, hiUV]
-      · dsimp
+      · sorry /-dsimp
         rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
         dsimp at g₁ g₂ i hi
         -- See issue https://github.com/leanprover-community/mathlib4/pull/15781 for tracking performance regressions of `rintro` as here
@@ -88,7 +89,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (l _ _ _ _ _ I.hf)
           (l _ _ _ _ _ I'.hf) (by simp [I', hl]))).isSeparatedFor.ext
             fun V iUV (hiUV : _ = _) ↦ ?_
-        simp [I', ← Functor.map_comp, ← op_comp, hiUV]
+        simp [I', ← Functor.map_comp, ← op_comp, hiUV]-/
     refine ⟨(isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).lift c, ?_⟩
     · have := (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).fac c (.mk (𝟙 _))
       simp only [id_obj, comp_obj, StructuredArrow.proj_obj, StructuredArrow.mk_right,

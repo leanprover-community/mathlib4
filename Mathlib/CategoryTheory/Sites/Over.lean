@@ -410,6 +410,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
     simp +instances only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
       ← Precoverage.toGrothendieck_toCoverage] at hR
+    change K.toCoverage.Saturate Y R at hR
     induction hR with
     | of Z S hS =>
       rw [Sieve.overEquiv_symm_generate]
