@@ -25,6 +25,7 @@ defined as galois extensions whose galois group is commutative. -/
 class IsAbelianGalois (K L : Type*) [Field K] [Field L] [Algebra K L] : Prop extends
   IsGalois K L, IsMulCommutative Gal(L/K)
 
+open scoped IsMulCommutative in
 lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
     IsAbelianGalois K L :=
   have : IsGalois K L :=
@@ -37,6 +38,7 @@ lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
       obtain ⟨y, rfl⟩ := AlgEquiv.restrictNormalHom_surjective M y
       rw [← map_mul, ← map_mul, mul_comm] }
 
+open scoped IsMulCommutative in
 lemma IsAbelianGalois.tower_top [IsAbelianGalois K M] :
     IsAbelianGalois L M :=
   have : IsGalois L M := .tower_top_of_isGalois K L M
