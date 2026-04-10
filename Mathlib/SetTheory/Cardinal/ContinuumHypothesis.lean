@@ -5,8 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Data.Real.Basic
 public import Mathlib.SetTheory.Cardinal.Continuum
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # The `ContinuumHypothesis` typeclass
