@@ -641,7 +641,7 @@ def allLinterDefinedCharacterLists : List (List Char) := [
 
 /- See [Private Use Area](https://en.wikipedia.org/wiki/Private_Use_Areas). -/
 def isPrivateUseAreaChar (c : Char) : Bool :=
-  let N := c.toNat
+  letI N := c.toNat
   (0xE000 ≤ N && N ≤ 0xF8FF) ||
   (N ≥ 0xF0000  && N ≤ 0xFFFFF) ||
   (N ≥ 0x100000 && N ≤ 0x10FFFF)
