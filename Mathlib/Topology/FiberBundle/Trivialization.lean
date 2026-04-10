@@ -263,17 +263,19 @@ theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
   simp only [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
 
-@[grind →, simp, mfld_simps]
+@[grind =, simp, mfld_simps] -- grind annotation omits the hypothesis
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
-@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
+@[simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
+-- grind? = misses hypothesis, otherwise looks reasonable
+grind_pattern symm_apply_apply_mk => b ∈ e.baseSet, e.symm b (e ⟨b, y⟩).2
 
-@[grind =, simp, mfld_simps] -- grind → fails; good grind lemma?
+@[grind =>, simp, mfld_simps]
 theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
@@ -439,24 +441,25 @@ protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.c
 
 theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 
-@[grind =, simp, mfld_simps] -- duplicate with coe_fst?
+@[simp, mfld_simps]
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
+grind_pattern coe_fst' => proj x ∈ e.baseSet, (e x).1  -- XXX: duplicate pattern with coe_fst?
 
-@[grind →]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
--- XXX: grind → errors (but `grind =` doesn't); is this a sensible grind lemma?
--- has the same conclusion as the unprimed version, so perhaps not?
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
+-- XXX: two lemmas with same conclusion, but different hypotheses: should I tag both?
+grind_pattern mk_proj_snd => x ∈ e.source, (proj x, (e x).2)
+grind_pattern mk_proj_snd' => proj x ∈ e.baseSet, (proj x, (e x).2)
 
 theorem source_inter_preimage_target_inter (s : Set (B × F)) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
   e.toOpenPartialHomeomorph.source_inter_preimage_target_inter s
 
-@[grind =, simp, mfld_simps]
+@[simp, mfld_simps]
 theorem coe_mk (e : OpenPartialHomeomorph Z (B × F)) (i j k l m) (x : Z) :
     (Trivialization.mk e i j k l m : Trivialization F proj) x = e x :=
   rfl
