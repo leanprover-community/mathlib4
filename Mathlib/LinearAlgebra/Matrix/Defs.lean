@@ -163,9 +163,6 @@ instance zero [Zero α] : Zero (Matrix m n α) :=
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
   inferInstanceAs <| AddZeroClass (m → n → α)
 
-instance smul [SMul R α] : SMul R (Matrix m n α) where
-  smul a b := fun i ↦ a • b i
-
 instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) where
   __ : AddMonoid (Matrix m n α) := inferInstanceAs <| AddMonoid (m → n → α)
   nsmul a b := fun i ↦ a • b i
@@ -197,6 +194,9 @@ instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
+
+instance smul [SMul R α] : SMul R (Matrix m n α) where
+  smul a b := fun i ↦ a • b i
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
