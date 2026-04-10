@@ -36,6 +36,15 @@ section artinian
 open Submodule
 
 -- PRed
+theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
+    [IsDomain L] [Module.Finite K L] :
+    IsField L where
+  exists_pair_ne := Nontrivial.exists_pair_ne
+  mul_comm := CommSemiring.mul_comm
+  mul_inv_cancel {x} hx :=
+    (LinearMap.mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
+
+-- PRed
 theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
     nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
   haveI h0 {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
@@ -622,11 +631,13 @@ lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Alge
     Module.finrank p.ResidueField (p.Fiber S) = Module.rankAtStalk S ⟨p, hp⟩ :=
   (Module.rankAtStalk_eq ⟨p, hp⟩).symm
 
+-- PRed
 theorem IsFractionRing.of_algEquiv {R K L : Type*}
     [CommRing R] [CommRing K] [CommRing L] [Algebra R K]
     [Algebra R L] [IsFractionRing R K] (e : K ≃ₐ[R] L) : IsFractionRing R L :=
   IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R) e
 
+-- PRed
 theorem IsFractionRing.of_algHom
     {R K L : Type*} [CommRing R] [Field K] [Field L] [Algebra R K] [Algebra R L]
     (f : K →ₐ[R] L) [IsFractionRing R L] : IsFractionRing R K := by
@@ -644,14 +655,6 @@ instance isFractionRing_residueField_bot {R : Type*} [CommRing R] [IsDomain R] :
   change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
   rw [IsLocalRing.maximalIdeal_eq_bot]
   exact IsFractionRing.of_algEquiv (AlgEquiv.quotientBot R R').symm
-
-theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
-    [IsDomain L] [Module.Finite K L] :
-    IsField L where
-  exists_pair_ne := Nontrivial.exists_pair_ne
-  mul_comm := CommSemiring.mul_comm
-  mul_inv_cancel {x} hx :=
-    (LinearMap.mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 instance isFractionRing_fiber_bot
