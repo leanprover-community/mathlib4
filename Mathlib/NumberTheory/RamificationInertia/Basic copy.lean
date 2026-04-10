@@ -56,7 +56,7 @@ theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtin
     Finset.prod_pow, Ideal.prod_eq_iInf_of_pairwise_isCoprime fun _ _ _ _ ↦ h0]
   simp [Finset.mem_univ, iInf, IsArtinianRing.primeSpectrum_asIdeal_range_eq]
 
--- PRed
+/-- PRed -/
 @[simps!]
 noncomputable def IsArtinainRing.quotNilradicalPowEquivPi
     (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
@@ -303,6 +303,7 @@ section
 namespace Ideal
 
 open Classical in
+/-- _ -/
 noncomputable def ramificationIdx
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) (q : Ideal S) : ℕ :=
@@ -424,41 +425,6 @@ noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
 
 -- PRed
-open TensorProduct in
-noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv
-    {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing T] [Algebra R T] [CommRing A] [Algebra R A]
-    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) :
-    (T ⧸ I) ⊗[R] A ≃ₐ[S] (T ⊗[R] A) ⧸ I.map (algebraMap T (T ⊗[R] A)) :=
-  { __ := (Algebra.TensorProduct.comm R (T ⧸ I) A).toRingEquiv.trans <|
-      (Algebra.TensorProduct.tensorQuotientEquiv (R := R) R T A I).toRingEquiv.trans <|
-      quotientEquiv _ _ (Algebra.TensorProduct.comm R A T).toRingEquiv <| by
-        nth_rewrite 3 [← Ideal.map_coe]
-        simp [map_map]
-        rfl
-    commutes' _ := rfl }
-
--- PRed
-open TensorProduct in
-noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_apply_tmul
-    {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing T] [Algebra R T] [CommRing A] [Algebra R A]
-    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : T) (y : A) :
-    Algebra.TensorProduct.quotientTensorEquiv S T A I (x ⊗ₜ y) =
-      Ideal.Quotient.mk _ (x ⊗ₜ[R] y) :=
-  rfl
-
--- PRed
-open TensorProduct in
-noncomputable def _root_.Algebra.TensorProduct.quotientTensorEquiv_symm_apply_tmul
-    {R : Type*} (S T A : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing T] [Algebra R T] [CommRing A] [Algebra R A]
-    [Algebra S T] [IsScalarTower R S T] (I : Ideal T) (x : T) (y : A) :
-    (Algebra.TensorProduct.quotientTensorEquiv S T A I).symm (Ideal.Quotient.mk _ (x ⊗ₜ[R] y)) =
-      (Ideal.Quotient.mk _ x) ⊗ₜ[R] y :=
-  rfl
-
--- PRed
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 open Algebra Algebra.TensorProduct in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
@@ -494,6 +460,7 @@ theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber 
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
 set_option backward.isDefEq.respectTransparency false in
+/-- _ -/
 noncomputable def equiv [Algebra.QuasiFinite R S] : MaximalSpectrum (p.Fiber S) ≃ p.primesOver S :=
   .symm <| (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum
@@ -502,6 +469,7 @@ theorem equiv_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) 
     (equiv p) q = q.1.comap Algebra.TensorProduct.includeRight := by
   rfl
 
+/-- _ -/
 noncomputable def foo9 :
     letI Rp := Localization p.primeCompl
     letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
@@ -548,6 +516,7 @@ noncomputable def foo9 :
 open TensorProduct
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- _ -/
 noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
     letI r := q.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
@@ -626,175 +595,73 @@ theorem sum_ramification_inertia
   apply foo2
 
 -- PRed
-lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [AddCommGroup S] [Module R S]
     [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [hp : p.IsPrime] :
-    Module.finrank p.ResidueField (p.Fiber S) = Module.rankAtStalk S ⟨p, hp⟩ :=
+    Module.finrank p.ResidueField (p.ResidueField ⊗[R] S) = Module.rankAtStalk S ⟨p, hp⟩ :=
   (Module.rankAtStalk_eq ⟨p, hp⟩).symm
 
--- PRed
-theorem IsFractionRing.of_algEquiv {R K L : Type*}
-    [CommRing R] [CommRing K] [CommRing L] [Algebra R K]
-    [Algebra R L] [IsFractionRing R K] (e : K ≃ₐ[R] L) : IsFractionRing R L :=
-  IsLocalization.isLocalization_of_algEquiv (nonZeroDivisors R) e
+theorem foo17 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
+    [CommRing K] [NoZeroDivisors K] [Algebra R K] [FaithfulSMul R K] :
+    Module.finrank R S = Module.finrank K (K ⊗[R] S) := by
+  symm
+  let h : S →ₗ[R] K ⊗[R] S :=
+  { toFun := tmul _ 1
+    map_add' := tmul_add 1
+    map_smul' x := tmul_smul x 1 }
+  apply IsBaseChange.finrank_eq (g := h)
+  have := IsBaseChange.of_equiv (f := h) (LinearEquiv.refl (R := K) (M := K ⊗[R] S))
+  apply this
+  intro x
+  rfl
 
--- PRed
-theorem IsFractionRing.of_algHom
-    {R K L : Type*} [CommRing R] [Field K] [Field L] [Algebra R K] [Algebra R L]
-    (f : K →ₐ[R] L) [IsFractionRing R L] : IsFractionRing R K := by
-  refine IsFractionRing.of_algEquiv <| .symm <| .ofBijective f ⟨f.injective, fun x ↦ ?_⟩
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective R x
-  exact ⟨algebraMap R K x / algebraMap R K y, by simp⟩
-
-instance isFractionRing_residueField_bot {R : Type*} [CommRing R] [IsDomain R] :
-    IsFractionRing R (⊥ : Ideal R).ResidueField := by
-  let R' := Localization.AtPrime (⊥ : Ideal R)
-  have : IsFractionRing R R' := by
-    convert Localization.isLocalization
-    exact Ideal.primeCompl_bot.symm
-  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
-  change IsFractionRing R (R' ⧸ IsLocalRing.maximalIdeal R')
-  rw [IsLocalRing.maximalIdeal_eq_bot]
-  exact IsFractionRing.of_algEquiv (AlgEquiv.quotientBot R R').symm
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-instance isFractionRing_fiber_bot
-    {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [FaithfulSMul R S] [IsDomain R] [IsDomain S] [Module.Finite R S] :
-    IsFractionRing S ((⊥ : Ideal R).Fiber S) := by
-  let κR := (⊥ : Ideal R).ResidueField
-  let κS := (⊥ : Ideal R).Fiber S
-  let R' := Localization.AtPrime (⊥ : Ideal R)
-  have : IsFractionRing R R' := by
-    convert Localization.isLocalization
-    exact Ideal.primeCompl_bot.symm
-  let : Field (Localization.AtPrime (⊥ : Ideal R)) := IsFractionRing.toField R
-  let M₁ := Algebra.algebraMapSubmonoid S (nonZeroDivisors R)
-  let M₂ := nonZeroDivisors S
-  have h : M₁ ≤ nonZeroDivisors S := by
-    rintro - ⟨x, hx, rfl⟩
-    exact map_mem_nonZeroDivisors (algebraMap R S) (FaithfulSMul.algebraMap_injective R S) hx
-  have : IsDomain (Localization M₁) := IsLocalization.isDomain_localization h
-  have : IsField (Localization M₁) := IsField.of_finite (FractionRing R) (Localization M₁)
-  let : Field (Localization M₁) := this.toField
-  let f : Localization M₁ →ₐ[S] FractionRing S :=
-    Localization.mapToFractionRing (FractionRing S) M₁ (Localization M₁) h
-  have := IsFractionRing.of_algHom f
-  let e : Localization M₂ ≃ₐ[S] Localization M₁ := Localization.algEquiv _ _
-  let e' : FractionRing S ≃ₐ[S] κS :=
-    e.trans <| (Localization.tensorLeftAlgEquiv (nonZeroDivisors R) S).symm.trans <|
-      (Algebra.TensorProduct.congr .refl (FractionRing.algEquiv R κR)).trans <|
-        (Algebra.TensorProduct.commRight R S κR)
-  exact IsFractionRing.of_algEquiv e'
-
-theorem _root_.Module.rankAtStalk_eq_of_le
-    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-    [Module.Finite R M] [Module.Flat R M] -- todo: weaken these assumptions
-    (p q : PrimeSpectrum R) (h : p ≤ q) :
-    Module.rankAtStalk M p = Module.rankAtStalk M q := by
-  rw [Module.rankAtStalk, Module.rankAtStalk]
-  let Rp := Localization.AtPrime p.1
-  let Mp := LocalizedModule.AtPrime p.1 M
-  let Rq := Localization.AtPrime q.1
-  let Mq := LocalizedModule.AtPrime q.1 M
-  change Module.finrank Rp Mp = Module.finrank Rq Mq
-  let ep : Mp ≃ₗ[Rp] Rp ⊗[R] M := LocalizedModule.equivTensorProduct p.1.primeCompl M
-  let eq : Mq ≃ₗ[Rq] Rq ⊗[R] M := LocalizedModule.equivTensorProduct q.1.primeCompl M
-  let f : Rq →ₐ[R] Rp := by
-    apply IsLocalization.liftAlgHom (M := q.1.primeCompl) (f := Algebra.ofId R Rp)
-    rintro ⟨x, hx⟩
-    rw [Algebra.ofId_apply, IsLocalization.AtPrime.isUnit_to_map_iff Rp p.1]
-    simp only [mem_primeCompl_iff] at hx ⊢
-    contrapose! hx
-    exact h hx
-  let : Algebra Rq Rp := f.toRingHom.toAlgebra
-  have : Module.Free Rq Mq := Module.free_of_flat_of_isLocalRing
-  have h : Module.finrank Rp (Rp ⊗[Rq] Mq) = Module.finrank Rp Mp :=
-    LinearEquiv.finrank_eq <| .trans (LinearEquiv.baseChange Rq Rp Mq (Rq ⊗[R] M) eq) <|
-      .trans (AlgebraTensorModule.cancelBaseChange R Rq Rp Rp M) ep.symm
-  exact h.symm.trans Module.finrank_baseChange
+/-- _ -/
+noncomputable def foo18 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
+    [CommRing K] [Algebra R K] (p : Ideal R) [p.IsPrime]
+    [Algebra (Localization.AtPrime p) K] [IsScalarTower R (Localization.AtPrime p) K] :
+    letI Rp := Localization.AtPrime p
+    letI Sp := LocalizedModule.AtPrime p S
+    (K ⊗[Rp] Sp) ≃ₗ[K] K ⊗[R] S :=
+  letI Rp := Localization.AtPrime p
+  letI Sp := LocalizedModule.AtPrime p S
+  ((LinearEquiv.baseChange Rp K Sp (Rp ⊗[R] S)
+    (LocalizedModule.equivTensorProduct p.primeCompl S)).trans
+      (AlgebraTensorModule.cancelBaseChange R Rp K K S))
 
 theorem finrank_fiber_eq_finrank
-    {R S : Type*} [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] [Algebra R S]
-    [FaithfulSMul R S] [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
-    Module.finrank p.ResidueField (p.Fiber S) = Module.finrank R S := by
-  let κR := (⊥ : Ideal R).ResidueField
-  let κS := (⊥ : Ideal R).Fiber S
-  let : Algebra S κS := Algebra.TensorProduct.rightAlgebra
-  rw [← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS,
-    Ideal.finrank_fiber_eq_rankAtStalk, Ideal.finrank_fiber_eq_rankAtStalk]
-  symm
-  apply Module.rankAtStalk_eq_of_le
-  exact bot_le
-
-theorem thm1 {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-    [Module.Finite R M] [Module.Flat R M] : Module.Projective R M := by
-  -- we have constant rank from `finrank_fiber_eq_finrank`
-  sorry
-
--- thm1 and thm2 are equivalent:
--- Module.finitePresentation_of_projective
--- Module.Flat.projective_of_finitePresentation
-
-theorem thm2 {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-    [Module.Finite R M] [Module.Flat R M] : Module.FinitePresentation R M := by
-  have := thm1 (R := R) (M := M)
-  exact Module.finitePresentation_of_projective R M
+    {R S : Type*} [CommRing R] [IsDomain R] [AddCommGroup S] [Module R S]
+    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
+    Module.finrank p.ResidueField (p.ResidueField ⊗[R] S) = Module.finrank R S := by
+  rw [finrank_fiber_eq_rankAtStalk]
+  let Rp := Localization.AtPrime p
+  let Sp := LocalizedModule.AtPrime p S
+  have : Module.Free Rp Sp := Module.free_of_flat_of_isLocalRing
+  transitivity Module.finrank Rp Sp
+  · simp only [Module.rankAtStalk_eq]
+    transitivity Module.finrank p.ResidueField (p.ResidueField ⊗[Rp] Sp)
+    · exact (foo18 R S p.ResidueField p).finrank_eq.symm
+    · exact Module.finrank_baseChange
+  · let K := FractionRing R
+    have : FaithfulSMul Rp K := IsFractionRing.instFaithfulSMul Rp K
+    rw [foo17 R S K, foo17 Rp Sp K]
+    exact (foo18 R S K p).finrank_eq
 
 theorem sum_ramification_inertia'
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [FaithfulSMul R S] -- todo: try to remove this assumption (flat over integral domain)
-    [IsDomain S] -- todo: try to remove this assumption
     [IsDomain R] [Module.Finite R S] [Module.Flat R S]
-    [Module.FinitePresentation R S] -- todo: try to remove this assumption (above)
     (p : Ideal R) [p.IsPrime] :
     Module.finrank R S =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
-  let κR := (⊥ : Ideal R).ResidueField
-  let κS := (⊥ : Ideal R).Fiber S
-  let : Algebra S κS := Algebra.TensorProduct.rightAlgebra
-  rw [← sum_ramification_inertia, ← Algebra.IsAlgebraic.finrank_of_isFractionRing R κR S κS,
-    Ideal.finrank_fiber_eq_rankAtStalk, Ideal.finrank_fiber_eq_rankAtStalk]
-  apply (Module.isLocallyConstant_rankAtStalk).apply_eq_of_preconnectedSpace
+  rw [← sum_ramification_inertia, finrank_fiber_eq_finrank]
 
 theorem sum_ramification_inertia''
-    {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
-    [MulSemiringAction G S] [IsGaloisGroup G R S] [Module.Flat R S] [FaithfulSMul R S] :
-    Module.Projective R S := by
-  have h1 : Algebra.IsIntegral R S := Algebra.IsInvariant.isIntegral R S G
-  have h2 : (algebraMap R S).IsIntegral := algebraMap_isIntegral_iff.mpr h1
-  have : Module.FaithfullyFlat R S := by
-    apply Module.FaithfullyFlat.of_comap_surjective
-    apply RingHom.IsIntegral.comap_surjective h2
-    exact FaithfulSMul.algebraMap_injective R S
-  -- finitely generated projective iff locally free
-  have : ∀ p : PrimeSpectrum R, Module.Flat (Localization.AtPrime p.1) (LocalizedModule p.1.primeCompl S) := by
-    intro m
-    exact Module.Flat.localizedModule m.asIdeal.primeCompl
-  have : ∀ p : PrimeSpectrum R, Module.Free (Localization.AtPrime p.1) (LocalizedModule p.1.primeCompl S) := by
-    intro m
-    sorry
-    -- apply Module.free_of_flat_of_isLocalRing
-    -- exact Module.Flat.localizedModule m.asIdeal.primeCompl
-  have : Module.FinitePresentation R S := by
-    sorry
-  apply Module.projective_of_localization_maximal
-  sorry
-
-theorem sum_ramification_inertia'''
-    {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Finite G]
-    [MulSemiringAction G S] [FaithfulSMul G S] [Module.Flat R S] -- finite type will give quasifinite
-    [IsGaloisGroup G R S]
+    {R S G : Type*} [CommRing R] [IsDomain R] [CommRing S] [Algebra R S] [Group G] [Finite G]
+    [MulSemiringAction G S] [IsGaloisGroup G R S] [Module.Flat R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
-    letI : Module.Finite R S := sorry
     Nat.card G =
       ∑ q : p.primesOver S, p.ramificationIdx q.1 *
         Module.finrank p.ResidueField q.1.ResidueField := by
-
-  have : Algebra.QuasiFinite R S := sorry
-  have : Module.Flat R S := sorry
   rw [← sum_ramification_inertia]
-  -- might need to also assume `[Domain R]` (to get connected base)?
   sorry
 
 end Ideal
