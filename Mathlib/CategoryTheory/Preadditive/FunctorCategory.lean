@@ -101,11 +101,11 @@ theorem app_neg (X : C) (α : F ⟶ G) : (-α).app X = -α.app X :=
 
 @[simp]
 theorem app_nsmul (X : C) (α : F ⟶ G) (n : ℕ) : (n • α).app X = n • α.app X :=
-  (appHom X).map_nsmul α n
+  (appHom X).map_nsmul n α
 
 @[simp]
 theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α.app X :=
-  (appHom X : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)).map_zsmul α n
+  (appHom X : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)).map_zsmul n α
 
 @[simp]
 theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = n • α.app X := by
