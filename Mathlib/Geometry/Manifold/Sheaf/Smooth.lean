@@ -97,8 +97,8 @@ def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
 variable {M}
 
 instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
-    CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) :=
-  (contDiffWithinAt_localInvariantProp ∞).sheafHasCoeToFun _ _ _
+    CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) where
+  coe a := a.1
 
 open Manifold in
 /-- The object of `smoothSheaf IM I M N` for the open set `U` in `M` is
@@ -176,7 +176,7 @@ open Manifold in
 @[to_additive]
 noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
     Group ((smoothSheaf IM I M G).presheaf.obj U) :=
-  (ContMDiffMap.group : Group C^∞⟮IM, (unop U : Opens M); I, G⟯)
+  inferInstanceAs <| Group C^∞⟮IM, (unop U : Opens M); I, G⟯
 
 /-- The presheaf of smooth functions from `M` to `G`, for `G` a Lie group, as a presheaf of groups.
 -/
@@ -207,7 +207,7 @@ variable [CommGroup A] [CommGroup A'] [LieGroup I ∞ A] [LieGroup I' ∞ A']
 open Manifold in
 @[to_additive] noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
     CommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
-  (ContMDiffMap.commGroup : CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
+  inferInstanceAs <| CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 presheaf of abelian groups. -/
@@ -251,7 +251,7 @@ variable [Ring R] [ContMDiffRing I ∞ R]
 
 open Manifold in
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
-  (ContMDiffMap.ring : Ring C^∞⟮IM, (unop U : Opens M); I, R⟯)
+  inferInstanceAs <| Ring C^∞⟮IM, (unop U : Opens M); I, R⟯
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a presheaf
 of rings. -/
@@ -277,7 +277,7 @@ variable [CommRing R] [ContMDiffRing I ∞ R]
 
 open Manifold in
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
-  (ContMDiffMap.commRing : CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯)
+  inferInstanceAs <| CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
 presheaf of commutative rings. -/
@@ -303,8 +303,8 @@ example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat.{u})
     (smoothSheafCommRing IM I M R) = (smoothSheaf IM I M R) := rfl
 
 instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
-    CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) :=
-  (contDiffWithinAt_localInvariantProp ∞).sheafHasCoeToFun _ _ _
+    CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) where
+  coe a := a.1
 
 open CategoryTheory Limits
 
@@ -321,7 +321,6 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U :=
   ι_preservesColimitIso_hom (forget CommRingCat) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
