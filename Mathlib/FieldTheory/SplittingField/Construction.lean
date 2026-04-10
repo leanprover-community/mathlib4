@@ -214,7 +214,7 @@ end SplittingFieldAux
 public def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing
+deriving Inhabited, Semiring, Neg, Sub
 
 namespace SplittingField
 
@@ -237,6 +237,21 @@ public instance : Algebra K (SplittingField f) := inferInstance
 public instance (R : Type*) [CommSemiring R] [Algebra R K] : IsScalarTower R K (SplittingField f) :=
   inferInstanceAs <| IsScalarTower R K (_ ⧸ _)
 
+@[implicit_reducible]
+def instCommRingAux : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
+
+public instance : CommRing (SplittingField f) where
+  neg_add_cancel := by exact (instCommRingAux f).neg_add_cancel
+  intCast n := algebraMap ℤ (SplittingField f) n
+  intCast_ofNat := by exact (instCommRingAux f).intCast_ofNat
+  intCast_negSucc:= by exact (instCommRingAux f).intCast_negSucc
+  zsmul := (· • ·)
+  zsmul_zero' := by exact (instCommRingAux f).zsmul_zero'
+  zsmul_succ' := by exact (instCommRingAux f).zsmul_succ'
+  zsmul_neg' := by exact (instCommRingAux f).zsmul_neg'
+  mul_comm := by exact (instCommRingAux f).mul_comm
+  sub_eq_add_neg := by exact (instCommRingAux f).sub_eq_add_neg
+
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) :
@@ -258,6 +273,11 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) where
 instance instField : Field (SplittingField f) where
   __ := (inferInstance : CommRing (SplittingField f))
   __ := instGroupWithZero f
+  div_eq_mul_inv := by exact (instGroupWithZero f).div_eq_mul_inv
+  zpow_zero' := by exact (instGroupWithZero f).zpow_zero'
+  zpow_succ' := by exact (instGroupWithZero f).zpow_succ'
+  mul_inv_cancel := by exact (instGroupWithZero f).mul_inv_cancel
+  inv_zero := by exact (instGroupWithZero f).inv_zero
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
   nnqsmul := (· • ·)
