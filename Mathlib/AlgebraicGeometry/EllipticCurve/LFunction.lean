@@ -63,7 +63,7 @@ open ArithmeticFunction IsDedekindDomain NumberField
 variable {K : Type*} [Field K] [NumberField K] (W : WeierstrassCurve K)
 
 /-- The L-function of an elliptic curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
-* `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` if `E` has good reduction at `p`,
+* `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |E(K_p)|` if `E` has good reduction at `p`,
 * `fₚ = 1 - T` if `E` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `E` has nonsplit multiplicative reduction at `p`,
 * `fₚ = 1` if `E` has additive reduction at `p`.
