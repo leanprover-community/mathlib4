@@ -400,7 +400,7 @@ instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) :=
   exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
 
 @[simp]
-theorem secondCountableTopolgy_iff :
+theorem secondCountableTopology_iff :
     SecondCountableTopology (Compacts α) ↔ SecondCountableTopology α :=
   ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
@@ -567,7 +567,7 @@ instance [SecondCountableTopology α] : SecondCountableTopology (NonemptyCompact
   isEmbedding_toCompacts.secondCountableTopology
 
 @[simp]
-theorem secondCountableTopolgy_iff :
+theorem secondCountableTopology_iff :
     SecondCountableTopology (NonemptyCompacts α) ↔ SecondCountableTopology α :=
   ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
