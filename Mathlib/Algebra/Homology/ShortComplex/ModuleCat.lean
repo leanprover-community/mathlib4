@@ -243,6 +243,7 @@ variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L'
 
 variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')
 
+/-- The short complex in `ModuleCat` obtained from conjugate by linear equivalences. -/
 def ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
