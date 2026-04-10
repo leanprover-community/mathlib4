@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.SumOverResidueClass
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Convergence of `p`-series
