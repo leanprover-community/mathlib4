@@ -74,9 +74,9 @@ See `ContinuumHypothesis.iff_aleph0_covby_continuum` and
 @[mk_iff ContinuumHypothesis.iff_continuum_eq_aleph_one']
 class ContinuumHypothesis where
   /-- See `ContinuumHypothesis.of_continuum_eq_aleph_one'` for the universe-generic version. -/
-  of_continuum_eq_aleph_one' ::
+  private of_continuum_eq_aleph_one' ::
     /-- See `ContinuumHypothesis.continuum_eq_aleph_one` for the universe-generic version. -/
-    continuum_eq_aleph_one' : (𝔠 : Cardinal.{0}) = ℵ₁
+    private continuum_eq_aleph_one' : (𝔠 : Cardinal.{0}) = ℵ₁
 
 namespace ContinuumHypothesis
 
@@ -85,6 +85,7 @@ section basic_constructors
 theorem iff_continuum_eq_aleph_one.{u} : ContinuumHypothesis ↔ (𝔠 : Cardinal.{u}) = ℵ₁ := by
   rw [iff_continuum_eq_aleph_one', ← Cardinal.lift_continuum.{u, 0}, Cardinal.lift_eq_aleph_one]
 
+@[simp]
 theorem continuum_eq_aleph_one.{u} [ContinuumHypothesis] : (𝔠 : Cardinal.{u}) = ℵ₁ :=
   iff_continuum_eq_aleph_one.1 ‹_›
 
