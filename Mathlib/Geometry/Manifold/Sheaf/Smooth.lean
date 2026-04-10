@@ -328,6 +328,7 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
       (smoothSheafCommRing IM I M R).presheaf) U).hom  := by
   dsimp
   rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom]
+  rfl
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
