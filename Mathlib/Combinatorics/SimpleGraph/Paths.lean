@@ -748,7 +748,8 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         grind [support_tail_of_not_nil, dropUntil_support_isSuffix, List.IsSuffix.sublist]
   · refine ⟨u, by simp, by simp, p.append q.reverse,
       isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simp [support_append]⟩
-    · intro; grind [support_eq_concat, IsPath.support_nodup, support_reverse, support_eq_cons]
+    · intro
+      grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
     rw [length_reverse, lt_sup_iff]
     by_contra! ⟨hpl, hql⟩
     exact h <| eq_of_length_le_one hpl hql
