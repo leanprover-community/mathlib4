@@ -182,16 +182,15 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
         apply Subsingleton.elim
     · have : F.IsGluing U' sf' (F.map (eqToHom eq.symm) y) := by
         intro b
-        specialize hy b
         dsimp [sf']
         rw [← hy]
-        suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) =
-            F.map (leSupr U b).op by
+        suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) = F.map (leSupr U b).op by
           simp only [Functor.map_comp] at this
           exact DFunLike.congr_fun this y
         rfl
       specialize hs2 (F.map (eqToHom eq.symm) y) this
-      aesop
+      subst hs2
+      simp_all
   · have : iSup U = ⊥ := by aesop
     have : Unique (ToType (F.obj (op (iSup U)))) := by rwa [this]
     use default
