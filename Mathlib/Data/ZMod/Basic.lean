@@ -1237,6 +1237,7 @@ lemma ZModModule.add_self (x : G) : x + x = 0 := by
 
 lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]
 
+@[simp]
 lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [neg_eq_self, sub_eq_add_neg]
 
 lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
