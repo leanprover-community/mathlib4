@@ -267,39 +267,39 @@ variable {Fq F : Type*} [Field Fq] [Field F] [Algebra (RatFunc Fq) F] [FunctionF
 
 open IntermediateField RatFunc
 
-instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : RatFunc Fq)⟯ F := by
-  have : Module.Finite (⊤ : IntermediateField Fq (RatFunc Fq)) (RatFunc Fq) :=
-    Module.Finite.top_left (RatFunc Fq) (RatFunc Fq)
-  exact RatFunc.adjoin_X (K := Fq) ▸ Module.Finite.trans (RatFunc Fq) _
+instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : Fq⟮X⟯)⟯ F :=
+  have : Module.Finite (⊤ : IntermediateField Fq Fq⟮X⟯) Fq⟮X⟯ :=
+    .top_left Fq⟮X⟯ Fq⟮X⟯
+  RatFunc.adjoin_X (K := Fq) ▸ Module.Finite.trans Fq⟮X⟯ _
 
-variable [Algebra Fq F] [IsScalarTower Fq (RatFunc Fq) F]
+variable [Algebra Fq F] [IsScalarTower Fq Fq⟮X⟯ F]
 
 theorem FiniteDimensional.adjoin_algebraMap_X :
-    FiniteDimensional Fq⟮algebraMap _ F (X : RatFunc Fq)⟯ F :=
-  .of_restrictScalars_finite Fq⟮(X : RatFunc Fq)⟯ _ _
+    FiniteDimensional Fq⟮algebraMap _ F (X : Fq⟮X⟯)⟯ F :=
+  .of_restrictScalars_finite Fq⟮(X : Fq⟮X⟯)⟯ _ _
 
 theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
-    Algebra.IsAlgebraic Fq⟮algebraMap _ F (X : RatFunc Fq)⟯ F :=
-  .tower_top (K := Fq⟮(X : RatFunc Fq)⟯) _
+    Algebra.IsAlgebraic Fq⟮algebraMap _ F (X : Fq⟮X⟯)⟯ F := by
+  exact .tower_top (K := Fq⟮(X : Fq⟮X⟯)⟯) _
 
 variable {y : F}
 
 theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental Fq y) :
-    IsAlgebraic Fq⟮y⟯ (algebraMap _ F (X : RatFunc Fq)) :=
+    IsAlgebraic Fq⟮y⟯ (algebraMap _ F (X : Fq⟮X⟯)) :=
   isAlgebraic_adjoin_iff.mpr (.adjoin_singleton transcendental_X hy
     (isAlgebraic_adjoin_iff.mp (Algebra.IsAlgebraic.isAlgebraic y)))
 
 lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental Fq y) :
     FiniteDimensional Fq⟮y⟯ F :=
   -- Local Definitions for convenience
-  let x := (algebraMap _ F (X : RatFunc Fq))
+  let x := algebraMap _ F (X : Fq⟮X⟯)
   let Fqyx := restrictScalars Fq Fq⟮y⟯⟮x⟯
   let Fqxy := restrictScalars Fq Fq⟮x⟯⟮y⟯
   -- Recalling instance to speed up search
-  let : Algebra Fq⟮y⟯ Fqyx := instAlgebraSubtypeMem_1 Fq⟮y⟯⟮x⟯
+  let : Algebra Fq⟮y⟯ Fqyx := Fq⟮y⟯⟮x⟯.algebra
   let : Module Fq⟮y⟯ Fqyx := Algebra.toModule
   let : SMul Fq⟮y⟯ Fqyx := Algebra.toSMul
-  let : Algebra Fq⟮x⟯ Fqxy := instAlgebraSubtypeMem_1 Fq⟮x⟯⟮y⟯
+  let : Algebra Fq⟮x⟯ Fqxy := Fq⟮x⟯⟮y⟯.algebra
   let : Module Fq⟮x⟯ Fqxy := Algebra.toModule
   let : SMul Fq⟮x⟯ Fqxy := Algebra.toSMul
   let : FiniteDimensional Fq⟮y⟯ Fqyx :=
