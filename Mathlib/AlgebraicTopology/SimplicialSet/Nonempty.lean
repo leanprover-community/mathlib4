@@ -47,8 +47,7 @@ lemma notNonempty_iff_hasDimensionLT_zero :
   simp only [not_nonempty_iff]
   refine ⟨fun _ ↦ ⟨fun n hn ↦ ?_⟩, fun _ ↦ ⟨fun x ↦ ?_⟩⟩
   · have := Function.isEmpty (X.map (⦋0⦌.const ⦋n⦌ 0).op)
-    ext x
-    exact isEmptyElim x
+    subsingleton
   · exact (lt_self_iff_false _).1 (X.dim_lt_of_nonDegenerate ⟨x, by simp⟩ 0)
 
 variable {X} in
