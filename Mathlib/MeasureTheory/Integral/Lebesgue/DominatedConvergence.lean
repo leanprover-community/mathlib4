@@ -165,7 +165,6 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
       Measurable (fun x ↦ ⨆ k ∈ Set.Iic n, g k x))
   have I' : ∀ᵐ x ∂μ, ∀ n, g' n x ≤ f n x := by
     filter_upwards [hf_mono] with x hx n using iSup₂_le fun k hk ↦ (gf k x).trans (hx hk)
-    refine iSup₂_le fun k hk ↦ (gf k x).trans (hx hk)
   have Int_eq n : ∫⁻ x, g' n x ∂μ = ∫⁻ x, f n x ∂μ := by
     apply le_antisymm
     · apply lintegral_mono_ae
