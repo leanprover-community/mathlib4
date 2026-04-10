@@ -277,17 +277,6 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
-/-
-def adjoinPthRoots : IntermediateField k (AlgebraicClosure k) where
-  carrier := {x | x ^ p ∈ (⊥ : IntermediateField k _)}
-  mul_mem' {a b} ha hb := by simpa [mul_pow] using mul_mem ha hb
-  one_mem' := by simp
-  add_mem' {a b} ha hb := by simpa [add_pow_expChar a b p] using add_mem ha hb
-  zero_mem' := by simp [zero_pow hp.ne_zero]
-  algebraMap_mem' x := pow_mem ((⊥ : IntermediateField k _).algebraMap_mem x) p
-  inv_mem' {a} ha := by simpa
--/
-
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
 variable (p : ℕ) [ExpChar k p]
@@ -306,7 +295,6 @@ lemma adjoinPthRoots_pth_power_mem_bot (x : adjoinPthRoots k p) :
   use adjoinPthRootsSelf k p x
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
   isAlgebraic x := by
     use Polynomial.X ^ p - Polynomial.C (adjoinPthRootsSelf k p x)
@@ -315,8 +303,48 @@ instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
 
 def adjoinPthRootsPthRoot : k →+* (adjoinPthRoots k p) := RingHom.id k
 
+lemma adjoinPthRootsPthRoot_bijective : Function.Bijective (adjoinPthRootsPthRoot k p) :=
+  (RingEquiv.refl k).bijective
+
 lemma adjoinPthRootsPthRoot_pow (x : k) : algebraMap k (adjoinPthRoots k p) x =
     (adjoinPthRootsPthRoot k p x) ^ p := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
+    (red : IsReduced (TensorProduct k (adjoinPthRoots k p) K)) (s : Finset K)
+    (li : LinearIndepOn k _root_.id (s : Set K)) : LinearIndepOn k (· ^ p) (s : Set K) := by
+  simp only [LinearIndepOn, LinearIndependent, SetLike.coe_sort_coe, ← LinearMap.ker_eq_bot,
+    LinearMap.ker_eq_bot']
+  intro y hy
+  have li' := Module.Flat.linearIndependent_one_tmul (S := (adjoinPthRoots k p)) li
+  let rooty := Finsupp.mapRange.addMonoidHom (adjoinPthRootsPthRoot k p).toAddMonoidHom y
+  have : Fact (Nat.Prime p) := ⟨hp⟩
+  let : Nontrivial (adjoinPthRoots k p ⊗[k] K) := by
+    apply Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left
+    exact RingHom.injective _
+  have : CharP (adjoinPthRoots k p ⊗[k] K) p := by
+    apply (Algebra.charP_iff k _ p).mp
+    induction ‹ExpChar k p› with
+    | zero => exact (Nat.not_prime_one hp).elim
+    | prime hq => assumption
+  have rooty_supp : rooty.support = y.support :=
+    Finsupp.support_mapRange_of_injective (map_zero _) y (adjoinPthRootsPthRoot_bijective k p).1
+  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := adjoinPthRootsPthRoot_pow k p _
+  have h0 : frobenius _ p (rooty.sum fun (i : s) (c : adjoinPthRoots k p) ↦ c ⊗ₜ[k] i.1) = 0 := by
+    simp only [Finsupp.sum, map_sum, frobenius_def, Algebra.TensorProduct.tmul_pow, rooty_app]
+    simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+      LinearMap.id_coe, id_eq, ← rooty_supp] at hy
+    apply Eq.trans _ ((Algebra.TensorProduct.includeRight.congr_arg hy).trans (map_zero _))
+    simp only [map_sum, map_smul, Algebra.TensorProduct.includeRight_apply]
+    congr
+    ext x
+    simp [Algebra.algebraMap_eq_smul_one, ← TensorProduct.smul_tmul']
+  have : (Finsupp.linearCombination (adjoinPthRoots k p)
+    fun (x : s) ↦ (1 : adjoinPthRoots k p) ⊗ₜ[k] x.1) rooty = 0 := by
+    simpa [Finsupp.linearCombination, rooty, Algebra.smul_def] using eq_zero_of_pow_eq_zero h0
+  exact (map_eq_zero_iff (Finsupp.mapRange.addMonoidHom (adjoinPthRootsPthRoot k p).toAddMonoidHom)
+    (Finsupp.mapRange_injective _ (map_zero _) (adjoinPthRootsPthRoot_bijective k p).1)).mp
+    ((map_eq_zero_iff _ li').mp this)
 
 instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
@@ -333,7 +361,7 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     apply (Algebra.isGeometricallyReduced_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
-    let : Fact (Nat.Prime p) := ⟨hp⟩
+    have : Fact (Nat.Prime p) := ⟨hp⟩
     simp only [isGeometricallyReduced_iff]
     intro red
     let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
@@ -342,9 +370,7 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
       Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
     exact isReduced_of_injective _ this
-  tfae_have 3 → 2 := by
-    --only one missing
-    sorry
+  tfae_have 3 → 2 := fun red s li ↦ linearIndepOn_pow_of_isReduced_tensorProduct k K p hp red s li
   tfae_have 2 → 1 := by
     simp only [Algebra.isTranscendentalSeparable_iff, Algebra.isSeparablyGenerated_iff]
     intro h L hL
