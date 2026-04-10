@@ -48,7 +48,8 @@ so that the theory works not only for groups but also for cancellative monoids.
 * `shift g x` — left translation: in additive notation `(shift v x) u = x (v + u)` (using the
 **left** action of `G` on configurations).
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
-* `Pattern A G` — finite support together with values on that support.
+* `Pattern A G` — a configuration which takes
+default value outside of a finite domain, together with this domain.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbidden F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
@@ -274,46 +275,49 @@ def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : MulSubshift A G where
 /-- A *pattern* is a finite configuration in the full shift `A^G`.
 
 It consists of:
-* a finite subset `support : Finset G` of coordinates, called the support of `p`;
-* an assignment `data : support → A` of symbols to each point in the support.
+* a full configuration `config : G → A` in the full shift;
+* a finite subset `domain : Finset G` of coordinates, called the domain of `p`;
+* a proof `condition` that outside `domain`, `config` takes the default value of `A`.
 
-Intuitively, a pattern is a "partial configuration" (like a finite word),
-specifying finitely many values of a configuration in `G → A`. Patterns are
-the basic building blocks used to define subshifts via forbidden configurations.
+Intuitively, a pattern is a "partial configuration" specifying finitely many values of
+a configuration in `G → A` (the rest being `default`).
+Patterns are the basic building blocks used to define subshifts via forbidden configurations.
 Note that each pattern corresponds to a cylinder, which is the set of configurations
-which agree with this pattern on its support. -/
-structure Pattern (A : Type*) (G : Type*) where
-  /-- Finite support of the pattern. -/
-  support : Finset G
-  /-- The value (symbol) at each point of the support. -/
-  data : support → A
+which agree with this pattern on its domain. -/
+structure Pattern (A : Type*) (G : Type*) [Inhabited A] where
+  /-- The full configuration in the full shift `A^G`. -/
+  config : G → A
+  /-- Finite domain of the pattern. -/
+  domain : Finset G
+  /-- Outside the domain, `config` takes the default value of `A`. -/
+  condition : ∀ g ∉ domain, config g = default
 
 section Forbidden
 
-variable {A G : Type*} [Monoid G]
+variable {A G : Type*} [Inhabited A] [Monoid G]
 
 /-- `p.mulOccursInAt x g` means that the finite pattern
 `p` appears in the configuration `x`
 at position `g`.
 
-Formally: for every position `h` in the support of `p`, the value of the configuration
-at `g * h` coincides with the value specified by `p` at `h`.
+Formally: for every position `h` in the domain of `p`, the value of the configuration
+at `g * h` coincides with the value of `p.config` at `h`.
 
 Intuitively, if you shift the configuration `x` by `g` (using `mulShift g`),
-then on the support of `p` you exactly recover the pattern `p`. This is the basic
+then on the domain of `p` you exactly recover the pattern `p`. This is the basic
 notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/
 @[to_additive Pattern.occursInAt
 /-- `p.occursInAt x g` means that the finite pattern `p` appears in the configuration `x`
 at position `g`.
 
-Formally: for every position `h` in the support of `p`, the value of the configuration
-at `g + h` coincides with the value specified by `p` at `h`.
+Formally: for every position `h` in the domain of `p`, the value of the configuration
+at `g + h` coincides with the value of `p.config` at `h`.
 
 Intuitively, if you shift the configuration `x` by `g` (using `shift g`),
-then on the support of `p` you exactly recover the pattern `p`. This is the basic
+then on the domain of `p` you exactly recover the pattern `p`. This is the basic
 notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/]
 def Pattern.mulOccursInAt (p : Pattern A G) (x : G → A) (g : G) : Prop :=
-  ∀ (h) (hh : h ∈ p.support), x (g * h) = p.data ⟨h, hh⟩
+  ∀ (h) (_ : h ∈ p.domain), x (g * h) = p.config h
 
 /-- `mulForbidden F` is the set of configurations that avoid every pattern in `F`.
 
@@ -347,12 +351,12 @@ section PatternExtension
 a configuration.
 
 On input `h : G`, we proceed as follows:
-* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v * ·)`,
-  choose (noncomputably) `w ∈ p.support` with `v * w = h` and return `p.data ⟨w, _⟩`;
+* if `h` lies in the left-translate of the domain, i.e. `h ∈ p.domain.image (v * ·)`,
+  choose (noncomputably) `w ∈ p.domain` with `v * w = h` and return `p.config w`;
 * otherwise return `default`.
 
 This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.mulExtend p v (v * w) = p.data ⟨w, _⟩`)
+Uniqueness (and the usual equations such as `Pattern.mulExtend p v (v * w) = p.config w`)
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/
 @[to_additive Pattern.extend
@@ -360,25 +364,22 @@ require a left-cancellation hypothesis and are proved in separate lemmas.
 a configuration.
 
 On input `h : G`, we proceed as follows:
-* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v + ·)`,
-  choose (noncomputably) `w ∈ p.support` with `v + w = h` and return `p.data ⟨w, _⟩`;
+* if `h` lies in the left-translate of the domain, i.e. `h ∈ p.domain.image (v + ·)`,
+  choose (noncomputably) `w ∈ p.domain` with `v + w = h` and return `p.config w`;
 * otherwise return `default`.
 
 This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.extend p v (v + w) = p.data ⟨w, _⟩`)
+Uniqueness (and the usual equations such as `Pattern.extend p v (v + w) = p.config w`)
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
 noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A := by
   classical
   intro h
-  if hmem : h ∈ p.support.image (v * ·) then
-    -- package existence of a preimage under (_ * v)
-    let ex : ∃ w, w ∈ p.support ∧ v * w = h := by
+  if hmem : h ∈ p.domain.image (v * ·) then
+    -- package existence of a preimage under (v * ·)
+    let ex : ∃ w, w ∈ p.domain ∧ v * w = h := by
       simpa [Finset.mem_image] using hmem
-    let w := Classical.choose ex
-    have hw  : w ∈ p.support := (Classical.choose_spec ex).1
-    have hwv : v * w = h := (Classical.choose_spec ex).2
-    exact p.data ⟨w, hw⟩
+    exact p.config (Classical.choose ex)
   else
     exact default
 end PatternExtension
@@ -387,74 +388,47 @@ namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
 to a finite subset `U : Finset G`.
 
-Formally: the support is `U`, and for each `i ∈ U` the pattern records the value
-`x i`. In other words, `Pattern.fromConfig x U` is the partial configuration of
-`x` visible on the coordinates in `U`.
+The pattern has `config g = x g` for `g ∈ U` and `config g = default` outside `U`,
+with domain `U`. In other words, `Pattern.fromConfig x U` is the partial configuration of
+`x` visible on the coordinates in `U`, padded with `default` elsewhere. -/
+noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
+  classical
+  exact { config := fun g => if g ∈ U then x g else default,
+          domain := U,
+          condition := fun g hg => if_neg hg }
 
-This is the inverse construction to `Pattern.extendAtOrigin` (which extends a
-finite pattern to a configuration by filling with `default`). -/
-def fromConfig (x : G → A) (U : Finset G) : Pattern A G where
-  support := U
-  data := fun i => x i.1
+/-- On the translated domain, `p.mulExtend v` agrees with `p.config` at the preimage.
 
-/-- On the translated support, `p.mulExtend v` agrees with `p` at the preimage.
-
-More precisely, if `w ∈ p.support`, then at the translated site `v * w`,
-the configuration `p.mulExtend v` takes the value prescribed by `p` at `w`.
+More precisely, if `w ∈ p.domain`, then at the translated site `v * w`,
+the configuration `p.mulExtend v` takes the value `p.config w`.
 
 This uses `[IsLeftCancelMul G]` to identify the unique preimage of `v * w`
 under left-multiplication by `v`. -/
 @[to_additive extend_apply_add_left_of_mem
-  /-- On the translated support, `p.extend v` agrees with `p` at the preimage.
+  /-- On the translated domain, `p.extend v` agrees with `p.config` at the preimage.
 
-  More precisely, if `w ∈ p.support`, then at the translated site `v + w`,
-  the configuration `p.extend v` takes the value prescribed by `p` at `w`.
+  More precisely, if `w ∈ p.domain`, then at the translated site `v + w`,
+  the configuration `p.extend v` takes the value `p.config w`.
 
   This uses `[IsLeftCancelAdd G]` to identify the unique preimage of `v + w`
   under left-translation by `v`. -/]
 lemma mulExtend_apply_mul_left_of_mem
-    (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
-    p.mulExtend v (v * w) = p.data ⟨w, hw⟩ := by
+    (p : Pattern A G) (v w : G) (hw : w ∈ p.domain) :
+    p.mulExtend v (v * w) = p.config w := by
   classical
-  -- (w*v) is in the translated support
-  have hmem : (v * w) ∈ p.support.image (v * ·) :=
+  -- (v * w) is in the translated domain
+  have hmem : (v * w) ∈ p.domain.image (v * ·) :=
     Finset.mem_image.mpr ⟨w, hw, rfl⟩
   -- existential used in the branch
-  have ex : ∃ w', w' ∈ p.support ∧ v * w' = v * w := by
+  have ex : ∃ w', w' ∈ p.domain ∧ v * w' = v * w := by
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
-  have h1 :
-      p.mulExtend v (v * w)
-        = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := by
+  have h1 : p.mulExtend v (v * w) = p.config (Classical.choose ex) := by
     simp [Pattern.mulExtend, hmem]
-  -- name the chosen witness and relate it to `w` by left-cancellation
-  let w' := Classical.choose ex
-  have hw'  : w' ∈ p.support := (Classical.choose_spec ex).1
-  have hwv' : v * w' = v * w := (Classical.choose_spec ex).2
-  have h_eq : w' = w := by simpa using (mul_left_cancel hwv')
-  -- transport membership along h_eq
-  have hw_w : w ∈ p.support := by simpa [h_eq] using hw'
-  -- identify the subtype inside `p.data` (first replace the value w' by w)
-  have h2 :
-      (⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ : p.support)
-        = (⟨w, hw_w⟩ : p.support) := by
-    apply Subtype.ext
-    -- goal: Classical.choose ex = w
-    -- we have h_eq : w' = w and w' := Classical.choose ex
-    simpa [w'] using h_eq     -- <-- use `using h_eq`, only unfold `[w']`
-  -- then replace the proof component (same carrier w)
-  have h3 : (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := rfl
-  -- put the rewrites together
-  calc
-    p.mulExtend v (v * w)
-        = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := h1
-    _   = p.data ⟨w, hw_w⟩ := by
-            -- push h2 through `p.data`
-            simpa using
-              (congrArg (fun z : {x // x ∈ p.support} => p.data z) h2)
-    _   = p.data ⟨w, hw⟩ := by
-            -- push h3 through `p.data`
-            simp [h3]
+  -- the chosen witness equals w by left-cancellation
+  have hwv' : v * Classical.choose ex = v * w := (Classical.choose_spec ex).2
+  have h_eq : Classical.choose ex = w := mul_left_cancel hwv'
+  rw [h1, h_eq]
 
 /-- Shifting a configuration commutes with occurrences of a pattern.
 
@@ -467,9 +441,10 @@ position `g * h`. -/
 Formally: a pattern `p` occurs in the shifted configuration `shift h x` at
 position `g` if and only if it occurs in the original configuration `x` at
 position `g + h`. -/]
-lemma mulOccursInAt_mulShift {A G : Type*} [Monoid G] (p : Pattern A G) (x : G → A) (g h : G) :
+lemma mulOccursInAt_mulShift {A G : Type*} [Inhabited A] [Monoid G]
+    (p : Pattern A G) (x : G → A) (g h : G) :
     p.mulOccursInAt (mulShift g x) h ↔ p.mulOccursInAt x (g * h) := by
-  simp only [mulOccursInAt, mulShift_apply, mul_assoc]
+  simp only [Pattern.mulOccursInAt, mulShift_apply, mul_assoc]
 
 /-- Configurations that avoid a family `F` of patterns are stable under the shift.
 
@@ -480,7 +455,7 @@ the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every po
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
-lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Monoid G]
+lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Inhabited A] [Monoid G]
     (F : Set (Pattern A G)) (h : G) :
     Set.MapsTo (fun x => mulShift h x)
     (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
@@ -518,13 +493,13 @@ the configuration `x` agrees with the translated pattern `Pattern.extend p g`.
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
 lemma mulOccursInAt_eq_cylinder
     (p : Pattern A G) (g : G) :
-    { x | p.mulOccursInAt x g } = cylinder (p.support.image (g * ·)) (p.mulExtend g) := by
+    { x | p.mulOccursInAt x g } = cylinder (p.domain.image (g * ·)) (p.mulExtend g) := by
   ext x; constructor
   · -- ⇒: from an occurrence, get membership in the cylinder
     intro H u hu
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
-    -- want: x (w*g) = Pattern.mulExtend p g (w*g)
-    have hx : x (g * w) = p.data ⟨w, hw⟩ := H w hw
+    -- want: x ( w * g) = Pattern.mulExtend p g ( w * g)
+    have hx : x (g * w) = p.config w := H w hw
     simpa [Pattern.mulExtend_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
@@ -626,40 +601,45 @@ end DefSubshiftByForbidden
 
 section Language
 
-variable {A : Type*} [Fintype A]
+variable {A : Type*} [Fintype A] [Inhabited A]
 variable {G : Type*}
 
-/-- Patterns with support exactly `U` form a finite set. -/
+/-- Patterns with domain exactly `U` form a finite set. -/
 lemma finite_setOf_pattern_support_eq
-    {A G : Type*} [Finite A]
+    {A G : Type*} [Finite A] [Inhabited A]
     (U : Finset G) :
-    ({p : Pattern A G | p.support = U}).Finite := by
+    ({p : Pattern A G | p.domain = U}).Finite := by
   -- 1. Upgrade Finite A to Fintype A locally
   cases nonempty_fintype A
   -- 2. Explicitly provide the Fintype instance for the Finset U
-  -- This is often the missing link for the (U → A) synthesis
   letI : Fintype U := U.fintypeCoeSort
   classical
-  -- Now Lean should be able to synthesize Fintype (U → A)
-  let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
-  { toFun := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
-    invFun := fun f => ⟨{ support := U, data := f }, rfl⟩
+  -- Patterns with domain U biject with (U → A) via restriction/extension
+  let e : { p : Pattern A G // p.domain = U } ≃ (U → A) :=
+  { toFun := fun p i => p.1.config i.1
+    invFun := fun f => ⟨{ config := fun g => if h : g ∈ U then f ⟨g, h⟩ else default,
+                           domain := U,
+                           condition := fun g hg => by simp [hg] }, rfl⟩
     left_inv := by
-      rintro ⟨p, hU⟩
+      rintro ⟨⟨cfg, dom, cond⟩, hU⟩
+      simp only at hU; subst hU
       apply Subtype.ext
-      cases hU
-      rfl
-    right_inv := fun _ => rfl}
+      simp only [Pattern.mk.injEq, and_true]
+      funext g
+      by_cases hg : g ∈ dom
+      · simp [hg]
+      · simp [hg, cond g hg]
+    right_inv := fun f => by ext i; simp [i.2] }
   -- Now this should synthesize without issue
-  haveI : Fintype { p : Pattern A G // p.support = U } :=
+  haveI : Fintype { p : Pattern A G // p.domain = U } :=
     Fintype.ofEquiv (U → A) e.symm
-  let T := { p : Pattern A G // p.support = U }
+  let T := { p : Pattern A G // p.domain = U }
   have h_univ : (Set.univ : Set T).Finite := Set.finite_univ
   let coeT : T → Pattern A G := fun p => (p : Pattern A G)
   have h_image : (Set.image coeT (Set.univ : Set T)).Finite := h_univ.image _
   have himage_eq :
       Set.image coeT (Set.univ : Set T)
-        = ({ p : Pattern A G | p.support = U } : Set (Pattern A G)) := by
+        = ({ p : Pattern A G | p.domain = U } : Set (Pattern A G)) := by
     ext p; constructor
     · intro hp; rcases hp with ⟨p', -, rfl⟩; exact p'.property
     · intro hp; refine ⟨⟨p, hp⟩, ?_, rfl⟩; simp
@@ -673,7 +653,7 @@ def mulLanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
-def MulSubshift.languageOn {A G} [TopologicalSpace A] [Monoid G]
+def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]
     (Y : MulSubshift A G) (U : Finset G) : Set (Pattern A G) :=
   SymbolicDynamics.FullShift.mulLanguageOn (A := A) (G := G) Y.carrier U
 
