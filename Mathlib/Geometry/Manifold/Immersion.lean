@@ -330,15 +330,13 @@ def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement :=
   haveI := hf.small
-  unfold smallComplement
-  infer_instance
+  inferInstanceAs <| NormedAddCommGroup (Shrink F)
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement :=
   haveI := hf.small
-  unfold smallComplement
-  infer_instance
+  inferInstanceAs <| NormedSpace 𝕜 (Shrink F)
 
 /-- Given an immersion `f` at `x` w.r.t. a complement `F`, this construction provides
 a continuous linear equivalence from `F` to the small complement of `F`:
@@ -369,6 +367,7 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
@@ -403,11 +402,9 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
   intro x hx
   suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
-  trans I (I.symm x)
-  · congr 1
-    apply OpenPartialHomeomorph.right_inv
-    simp_all
-  · exact I.right_inv (by simp_all)
+  simp_all
+
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 end IsImmersionAtOfComplement
 
@@ -580,6 +577,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -673,6 +672,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -729,6 +730,8 @@ protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
+
+@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 end IsImmersion
 

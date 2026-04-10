@@ -66,13 +66,14 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
 namespace AddSubmonoid
 variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 variable (T) in
 /--
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
 @[simps]
-def sumSq [AddMonoid T] : AddSubmonoid T where
+def sumSq : AddSubmonoid T where
   carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add

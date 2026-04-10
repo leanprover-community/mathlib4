@@ -73,7 +73,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits f ↔ (⊤ : Subalgebra K L) = ⊥ where
   mp h := by
-    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.map_roots, Algebra.adjoin_le_iff]
+    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.roots_map, Algebra.adjoin_le_iff]
     intro y hy
     classical
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
@@ -99,7 +99,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   · classical
     rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map, (splits K f).map_roots,
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map, (splits K f).roots_map,
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,
       Subalgebra.restrictScalars_top]

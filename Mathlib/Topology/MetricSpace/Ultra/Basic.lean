@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Clopen
 
 /-!
 ## Ultrametric spaces
@@ -75,8 +76,6 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans_lt (max_lt h' (dist_comm x _ ▸ h))
 
-@[deprecated (since := "2025-08-16")] alias mem_ball_iff := mem_ball_comm
-
 lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
   wlog! hrs : r ≤ s generalizing x y r s
@@ -101,8 +100,6 @@ lemma closedBall_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ closedBall x r) :
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans (max_le h' (dist_comm x _ ▸ h))
 
-@[deprecated (since := "2025-08-16")] alias mem_closedBall_iff := mem_closedBall_comm
-
 lemma closedBall_subset_trichotomy :
     closedBall x r ⊆ closedBall y s ∨ closedBall y s ⊆ closedBall x r ∨
     Disjoint (closedBall x r) (closedBall y s) := by
@@ -121,7 +118,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     simp [ball_eq_empty.mpr hr]
   | inr h =>
     rw [← isOpen_compl_iff, isOpen_iff]
-    simp only [Set.mem_compl_iff, gt_iff_lt]
+    push _ ∈ _
     intro y hy
     cases ball_eq_or_disjoint x y r with
     | inl hd =>

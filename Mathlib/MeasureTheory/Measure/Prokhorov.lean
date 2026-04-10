@@ -20,7 +20,7 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
 ## Main statements
 
 * `instCompactSpaceProbabilityMeasure` proves that the space of probability measures on a compact
-space is itself compact
+  space is itself compact
 * `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
   sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
   to the complement of `Kₙ` form a compact set.
@@ -427,16 +427,13 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     filter_upwards [Ici_mem_atTop n] with m (hm : n ≤ m)
     have : ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ
         = ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) (K n)ᶜ := by
-      apply (Finset.sum_subset _ _).symm
-      · intro i hi
-        simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
-        grind
-      · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
-          not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
-        intro i hi h'i
-        apply (ν i).mono_null _ (νK i)
-        rw [Monotone.partialSups_eq h]
-        exact compl_subset_compl.2 (h h'i)
+      apply (Finset.sum_subset (by grind) _).symm
+      simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
+        not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
+      intro i hi h'i
+      apply (ν i).mono_null _ (νK i)
+      rw [Monotone.partialSups_eq h]
+      exact compl_subset_compl.2 (h h'i)
     rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ ≤ u n by
       apply le_trans _ this

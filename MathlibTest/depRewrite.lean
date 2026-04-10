@@ -227,6 +227,7 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 -- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)
@@ -394,48 +395,48 @@ example (f : ∀ k, Fin k → Nat) (x : Fin m) : P (f m x) := by
 
 -- test tracing for `cleanupCasts`
 /--
-trace: [Tactic.depRewrite.cleanupCasts] P (eq ▸ x) => continue P (eq ▸ x)
-[Tactic.depRewrite.cleanupCasts] Fin m => continue Fin m
-[Tactic.depRewrite.cleanupCasts] m => continue m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+trace: [Tactic.depRewrite.cleanupCasts] ✅️ P (eq ▸ x) => continue P (eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin m => continue Fin m
+[Tactic.depRewrite.cleanupCasts] ✅️ m => continue m
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         eq ▸ x
   [Tactic.depRewrite.cleanupCasts] lhs
         n
       is not definitionally equal to rhs
         m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
-[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
-[Tactic.depRewrite.cleanupCasts] n => continue n
-[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
-[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
-[Tactic.depRewrite.cleanupCasts] x' => continue x'
-[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
-[Tactic.depRewrite.cleanupCasts] x => continue x
-[Tactic.depRewrite.cleanupCasts] eq => continue eq
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] ✅️ n => continue n
+[Tactic.depRewrite.cleanupCasts] ✅️ fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x' => continue x'
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x => continue x
+[Tactic.depRewrite.cleanupCasts] ✅️ eq => continue eq
 ---
-trace: [Tactic.depRewrite.cleanupCasts] Q (⋯ ▸ eq ▸ x) => continue Q (⋯ ▸ eq ▸ x)
-[Tactic.depRewrite.cleanupCasts] Q => continue Q
-[Tactic.depRewrite.cleanupCasts] ⋯ ▸ eq ▸ x => visit eq ▸ x
+trace: [Tactic.depRewrite.cleanupCasts] ✅️ Q (⋯ ▸ eq ▸ x) => continue Q (⋯ ▸ eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] ✅️ Q => continue Q
+[Tactic.depRewrite.cleanupCasts] ✅️ ⋯ ▸ eq ▸ x => visit eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         ⋯ ▸ eq ▸ x
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         eq ▸ x
   [Tactic.depRewrite.cleanupCasts] lhs
         n
       is not definitionally equal to rhs
         m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
-[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
-[Tactic.depRewrite.cleanupCasts] n => continue n
-[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
-[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
-[Tactic.depRewrite.cleanupCasts] x' => continue x'
-[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
-[Tactic.depRewrite.cleanupCasts] x => continue x
-[Tactic.depRewrite.cleanupCasts] m => continue m
-[Tactic.depRewrite.cleanupCasts] eq => continue eq
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] ✅️ n => continue n
+[Tactic.depRewrite.cleanupCasts] ✅️ fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x' => continue x'
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x => continue x
+[Tactic.depRewrite.cleanupCasts] ✅️ m => continue m
+[Tactic.depRewrite.cleanupCasts] ✅️ eq => continue eq
 -/
 #guard_msgs in
 set_option trace.Tactic.depRewrite.cleanupCasts true in
@@ -451,3 +452,44 @@ example (x : Fin n) : P x := by
 example {x : Bool} (h : x = x) : x = x := by
   rw! [h] at h
   exact h
+
+/-! ## Tests for `conv` mode -/
+
+example (x : Fin n) : P x.1 := by
+  conv =>
+    enter [1]
+    rewrite! (castMode := .all) [eq]
+    guard_target =ₛ (cast% eq ▸ x).1
+  guard_target =ₛ P (cast% eq ▸ x).1
+  exact test_sorry
+
+example (f : ∀ c, Fin c) : P (f n).1 := by
+  conv =>
+    enter [1, 1]
+    rewrite! (castMode := .all) [eq]
+  guard_target =ₛ P (cast% eq.symm ▸ f m).1
+  exact test_sorry
+
+example (x : Fin n) : P x.1 := by
+  conv =>
+    enter [1]
+    rw! (castMode := .all) [eq]
+    guard_target =ₛ (cast% eq ▸ x).1
+  guard_target =ₛ P (cast% eq ▸ x).1
+  exact test_sorry
+
+example (f : ∀ c, Fin c) : P (f n).1 := by
+  conv =>
+    enter [1, 1]
+    rw! (castMode := .all) [eq]
+  guard_target =ₛ P (cast% eq.symm ▸ f m).1
+  exact test_sorry
+
+example (f : Nat → ∀ c, Fin (c + n)) : P (f (f (f m n) (f n m)) n).1 := by
+  conv =>
+    enter [1, 1, 1, 1]
+    rw! (castMode := .all) [eq]
+    guard_target =~ cast% _
+  rw! (castMode := .all) [eq, ← eq]
+  guard_target =ₛ P ((f (f (f n n) (f n n))) n).1
+  exact test_sorry

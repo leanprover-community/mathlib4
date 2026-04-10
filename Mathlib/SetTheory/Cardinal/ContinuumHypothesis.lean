@@ -37,7 +37,7 @@ theorem Cardinal.exists_sierpinski_pathological_pred_of_card_eq_aleph_one
     {α : Type*} (hα : #α = ℵ₁) :
     ∃ f : α → α → Prop, (∀ x, {y | ¬ f x y}.Countable) ∧ ∀ y, {x | f x y}.Countable := by
   open Set in
-  rcases Cardinal.ord_eq α with ⟨r, hr, H⟩
+  rcases Cardinal.exists_ord_eq α with ⟨r, hr, H⟩
   refine ⟨r, fun x => ?_, fun y => ?_⟩
   · have : {y | ¬r x y} = {y | r y x} ∪ {x} := by
       ext y
@@ -51,10 +51,10 @@ theorem Cardinal.exists_sierpinski_pathological_pred_of_card_eq_aleph_one
       · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)
-    rw [Cardinal.countable_iff_lt_aleph_one, ← hα]
-    exact Cardinal.card_typein_lt r x H
-  · rw [Cardinal.countable_iff_lt_aleph_one, ← hα]
-    exact Cardinal.card_typein_lt r y H
+    rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← hα]
+    exact Cardinal.card_typein_lt x H
+  · rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← hα]
+    exact Cardinal.card_typein_lt y H
 
 theorem Cardinal.exists_sierpinski_pathological_partition_of_card_eq_aleph_one
     {α : Type*} (hα : #α = ℵ₁) :

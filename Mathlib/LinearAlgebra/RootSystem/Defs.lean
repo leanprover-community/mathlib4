@@ -122,10 +122,6 @@ class IsRootSystem : Prop where
 attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
-@[deprecated "Now a syntactic equality" (since := "2025-07-05"), nolint synTaut]
-lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
-    P.toLinearMap x y = P.toLinearMap x y := rfl
-
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 @[simps!, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
@@ -164,7 +160,7 @@ lemma zero_notMem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
   P.flip.zero_notMem_range_root
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := (inferInstance : Nonempty ι)
   exact ⟨i, P.ne_zero i⟩
 
 lemma exists_ne_zero' [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.coroot i ≠ 0 :=
@@ -383,7 +379,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
 lemma toPerfPair_conj_reflection :
     P.toPerfPair.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
   ext f n
-  simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
+  simp [reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
@@ -404,7 +400,7 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps] def indexNeg : InvolutiveNeg ι where
+@[simps, implicit_reducible] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective

@@ -46,6 +46,8 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
+
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
 @[simp]
@@ -190,12 +192,26 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 
 /-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r
 
 lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
   S.one_mem
+
+@[simp]
+lemma mem_toNonUnitalSubalgebra {S : Subalgebra R A} {x : A} :
+    x ∈ S.toNonUnitalSubalgebra ↔ x ∈ S :=
+  Iff.rfl
+
+lemma toNonUnitalSubalgebra_injective : Function.Injective
+    (toNonUnitalSubalgebra : Subalgebra R A → NonUnitalSubalgebra R A) :=
+  fun _ _ ↦ by simp [SetLike.ext_iff]
+
+lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
+    S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
+  toNonUnitalSubalgebra_injective.eq_iff
 
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.instSubsemiringClass with
@@ -218,23 +234,21 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
   intCast_mem S n
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
-@[simps coe]
+@[reducible]
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
-@[simps toSubsemiring]
+@[reducible]
 def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 
-@[simp]
 theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} {x} : x ∈ S.toSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) : (↑S.toSubring : Set A) = S :=
   rfl
@@ -273,6 +287,7 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
+@[implicit_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>
@@ -301,13 +316,13 @@ section
 
 instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
     Module R' S :=
-  S.toSubmodule.module'
+  inferInstance
 
 instance : Module R S :=
-  S.module'
+  inferInstance
 
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
-  inferInstanceAs (IsScalarTower R' R (toSubmodule S))
+  inferInstance
 
 /- More general form of `Subalgebra.algebra`.
 
@@ -335,11 +350,6 @@ end
 
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
   S.toSubmodule.instIsTorsionFree
-
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
-  ⟨fun {c} {x : S} h =>
-    have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 
 protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y := rfl
 
@@ -469,7 +479,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_one' := Subtype.ext <| by simp
     map_mul' _ _ := Subtype.ext <| by simp
     map_zero' := Subtype.ext <| by simp
-    map_add' _ _ := Subtype.ext <| by simp}
+    map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -880,11 +890,6 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
 instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
   .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
     (by simp [smul_def])
-
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
-  ⟨fun {c} x h =>
-    have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
-    this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
 
 end Actions
 

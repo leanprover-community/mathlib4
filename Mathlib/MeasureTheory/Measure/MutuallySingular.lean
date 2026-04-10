@@ -205,13 +205,12 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
     convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
       <| pow_pos (by simp) (n + 1)
-    push_cast
-    rw [pow_succ, ← mul_assoc, mul_comm, ← mul_assoc]
+    conv =>
+      -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
+      enter [1, 1]
+      equals ((1:ℝ≥0) / (2:ℝ≥0)) => rfl
     norm_cast
-    rw [div_mul_cancel₀, one_mul]
-    · push_cast
-      simp
-    · simp
+    ring
   choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_
   · rw [compl_iUnion]

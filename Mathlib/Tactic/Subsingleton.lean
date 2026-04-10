@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
+public meta import Lean.Meta.Tactic.Refl
 public import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.Basic
 
 /-!
 # `subsingleton` tactic
