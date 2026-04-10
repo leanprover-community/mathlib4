@@ -109,7 +109,9 @@ noncomputable section
 open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-- The type of smoothness exponents, consisting of all natural numbers and two special terms `∞`
-and `ω`. -/
+and `ω`.
+Natural numbers `n` correspond to `n`-fold continuous differentiability, `∞` to smoothness, and `ω`
+to analyticity. -/
 scoped[ContDiff] notation3 "ℕ∞ω" => WithTop ℕ∞
 /-- Smoothness exponent for analytic functions. -/
 scoped[ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
