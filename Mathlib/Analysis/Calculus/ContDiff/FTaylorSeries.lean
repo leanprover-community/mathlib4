@@ -711,15 +711,9 @@ lemma HasFTaylorSeriesUpTo.fderiv_eq (h : HasFTaylorSeriesUpTo n f p)
 
 theorem hasFTaylorSeriesUpToOn_univ_iff :
     HasFTaylorSeriesUpToOn n f p univ ↔ HasFTaylorSeriesUpTo n f p := by
-  constructor <;> intro H <;> refine ⟨?_, ?_, ?_⟩
-  · simpa using H.zero_eq
-  · intro m hm x
-    simpa [hasFDerivWithinAt_univ] using H.fderivWithin m hm x (mem_univ x)
-  · simpa [continuousOn_univ] using H.cont
-  · simpa using H.zero_eq
-  · intro m hm x _
-    simpa [hasFDerivWithinAt_univ] using H.fderiv m hm x
-  · simpa [continuousOn_univ] using H.cont
+  constructor <;> refine fun H ↦ ⟨by simpa using H.zero_eq, ?_, by simpa using H.cont⟩
+  · simpa using H.fderivWithin
+  · simpa using H.fderiv
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
     HasFTaylorSeriesUpToOn n f p s :=
