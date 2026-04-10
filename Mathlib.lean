@@ -678,6 +678,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
+public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.Page
@@ -1627,6 +1628,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.Exponential
+public import Mathlib.Analysis.CStarAlgebra.Fuglede
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 public import Mathlib.Analysis.CStarAlgebra.Hom
@@ -1911,6 +1913,7 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.Analysis.Distribution.Sobolev
 public import Mathlib.Analysis.Distribution.Support
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Distribution.TemperedDistribution
@@ -2337,6 +2340,7 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Analysis.SpecificLimits.RCLike
 public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.Analysis.SumIntegralExpDecay
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -2785,6 +2789,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.BifunctorCokernel
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -3466,6 +3471,7 @@ public import Mathlib.Combinatorics.Quiver.Path.Weight
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Combinatorics.Quiver.Push
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.Combinatorics.Quiver.Schreier
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
@@ -3485,6 +3491,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
+public import Mathlib.Combinatorics.SimpleGraph.Cayley
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
@@ -4613,6 +4620,7 @@ public import Mathlib.GroupTheory.GroupExtension.Basic
 public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.IndexNSmul
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.GroupTheory.IsSubnormal
@@ -6338,9 +6346,11 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.FormalGroup.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
@@ -6546,6 +6556,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
@@ -6652,6 +6663,7 @@ public import Mathlib.RingTheory.PowerSeries.Expand
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
 public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Log
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.PiTopology
@@ -6729,6 +6741,7 @@ public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Smooth.Locus
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
+public import Mathlib.RingTheory.Smooth.Quotient
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
@@ -7160,6 +7173,7 @@ public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Ring.Common
 public import Mathlib.Tactic.Ring.Compare
 public import Mathlib.Tactic.Ring.NamePolyVars
+public import Mathlib.Tactic.Ring.NamePowerVars
 public import Mathlib.Tactic.Ring.PNat
 public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Tactic.Sat.FromLRAT

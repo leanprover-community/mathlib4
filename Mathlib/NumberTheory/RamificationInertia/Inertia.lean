@@ -116,6 +116,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
 
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] : inertiaDeg P Q ≤ inertiaDeg p Q := by
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩
+    simp [Submodule.Quotient.quot_mk_eq_mk, IsScalarTower.algebraMap_apply R (S ⧸ P) (T ⧸ Q)]
+  exact finrank_top_le_finrank_of_isScalarTower ..
+
 end DecEq
 
 section absNorm
