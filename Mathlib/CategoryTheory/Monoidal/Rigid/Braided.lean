@@ -96,14 +96,14 @@ def hasRightDualOfHasLeftDual [HasLeftDual X] : HasRightDual X where
   rightDual := ᘁX
   exact := exactPairing_swap ᘁX X
 
-/-- If a category is right-rigid, then it is left-rigid. Not registered as an instance as this
-is not canonical enough. -/
+/-- If a braided category is right-rigid, then it is left-rigid.
+Not registered as an instance as this is not canonical enough. -/
 @[implicit_reducible]
 def leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigidCategory C where
   leftDual X := hasLeftDualOfHasRightDual (X := X)
 
-/-- If a category is left-rigid, then it is right-rigid. Not registered as an instance as this
-is not canonical enough. -/
+/-- If a braided category is left-rigid, then it is right-rigid.
+Not registered as an instance as this is not canonical enough. -/
 @[implicit_reducible]
 def rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
   rightDual X := hasRightDualOfHasLeftDual (X := X)
