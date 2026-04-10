@@ -312,7 +312,7 @@ instance (priority := low) : IsStablyFiniteRing K := by
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
-/-- A domain finitely generated over a field is a field. -/
+/-- A domain finitely generated as a module over a field is a field. -/
 theorem _root_.IsField.of_finite (K L : Type*) [Field K] [CommRing L] [IsDomain L]
     [Algebra K L] [Module.Finite K L] : IsField L where
   exists_pair_ne := Nontrivial.exists_pair_ne
