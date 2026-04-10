@@ -73,7 +73,7 @@ class FormalGroup.IsComm (F : FormalGroup R) : Prop where
 
 namespace FormalGroup
 
-variable {σ : Type} (F : FormalGroup R)
+variable {σ : Type*} (F : FormalGroup R)
 
 set_option linter.unusedVariables false in
 /-- `Point F σ` represents the mathematical space of points of a formal group $F$
@@ -83,10 +83,17 @@ Mathematically, a 1-dimensional formal group law $F$ over a ring $R$ defines a g
 structure on the elements of a complete local $R$-algebra (specifically, its maximal ideal)
 via the substitution operation $x +_F y = F(x, y)$. -/
 @[nolint unusedArguments]
-def Point (F : FormalGroup R) (σ : Type) := MvPowerSeries σ R
+def Point (F : FormalGroup R) (σ : Type*) := MvPowerSeries σ R
+
+instance : Zero (F.Point σ) where
+  zero := (0 : MvPowerSeries σ R)
+
+lemma zero_apply : (0 : F.Point σ) = (0 : MvPowerSeries σ R) := rfl
 
 instance : Add (F.Point σ) where
   add x y := (F : MvPowerSeries (Fin 2) R).subst ![x, y]
+
+lemma add_apply {x y : F.Point σ} : x + y = F.toPowerSeries.subst ![x,y] := rfl
 
 /- TODO : Zero, SMul, Inv instance. -/
 

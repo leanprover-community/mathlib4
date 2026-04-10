@@ -36,7 +36,7 @@ open PowerSeries Finset Fin Finsupp
 abbrev addInv_aux (F : FormalGroup R) : ℕ → R
   | 0 => 0
   | 1 => -1
-  | n + 1 => - (coeff (n + 1) (F.toFun.subst
+  | n + 1 => - (coeff (n + 1) (F.toPowerSeries.subst
     ![X, (∑ i : Fin (n + 1), C (addInv_aux F i.1) * X ^ i.1)]))
 
 @[simp]
@@ -72,8 +72,8 @@ lemma addInv_trunc_aux :
     simp [Polynomial.C_mul_X_pow_eq_monomial, addInv_X]
 
 lemma coeff_subst_addInv_trunc (hn : n ≠ 0) :
-    coeff n (F.toFun.subst ![X, (addInv_X F)]) =
-      coeff n (F.toFun.subst ![X, (trunc (n + 1) (addInv_X F))]) := by
+    coeff n (F.toPowerSeries.subst ![X, (addInv_X F)]) =
+      coeff n (F.toPowerSeries.subst ![X, (trunc (n + 1) (addInv_X F))]) := by
   have : trunc (n + 1) X = Polynomial.X (R := R):= trunc_X_of <| by omega
   rw [trunc_subst_trunc_add_one (MvPowerSeries.HasSubst.addInv_aux F)]
   congr! 3 with i
@@ -88,7 +88,7 @@ lemma _root_.MvPowerSeries.HasSubst.addInv_fin :
   MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp)
 
 lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
-  (coeff n) (F.toFun.subst ![X, (∑ (i : Fin (n + 1)), Polynomial.C (F.addInv_aux i.1) *
+  (coeff n) (F.toPowerSeries.subst ![X, (∑ (i : Fin (n + 1)), Polynomial.C (F.addInv_aux i.1) *
     Polynomial.X (R := R) ^ i.1).toPowerSeries]) = 0 := by
   rw [sum_univ_eq_sum_range fun i => (Polynomial.C (F.addInv_aux i) * Polynomial.X (R := R) ^ i)]
   induction n with
@@ -102,7 +102,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
       · rw [finsum_eq_finset_sum_of_support_subset (s := {single 0 1, single 1 1}),
           sum_pair (ne_iff.mpr ⟨0, by simp⟩)]
         · simp [F.lin_coeff_X, F.lin_coeff_Y]
-        have (x : Fin 2 →₀ ℕ) (h : ¬(MvPowerSeries.coeff x) F.toFun
+        have (x : Fin 2 →₀ ℕ) (h : ¬(MvPowerSeries.coeff x) F.toPowerSeries
           * (coeff 1) (X ^ x 0 * (-X) ^ x 1) = 0) : x = single 0 1 ∨ x = single 1 1 := by
           rw [neg_pow, coeff_X_pow_mul', coeff_mul_X_pow'] at h
           simp only [isValue, mul_ite, mul_zero, ite_eq_right_iff, Classical.not_imp] at h
@@ -124,7 +124,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
     generalize hB : (∑ i ∈ range (k + 1), Polynomial.C (F.addInv_aux i) * Polynomial.X ^ i) = B
     have coeff_B : B.coeff 0 = 0 := by simp [← hB]
     calc
-      _ = ∑ᶠ (d : Fin 2 →₀ ℕ), (MvPowerSeries.coeff d) F.toFun * (coeff (k + 1))
+      _ = ∑ᶠ (d : Fin 2 →₀ ℕ), (MvPowerSeries.coeff d) F * (coeff (k + 1))
           (X ^ d 0 * (↑B + C (F.addInv_aux (k + 1)) * X ^ (k + 1)) ^ d 1) := by
         simp [sum_range_add, hB]
       _ = _ := by
@@ -167,7 +167,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
                 coeff, MvPowerSeries.coeff_subst (hB ▸ MvPowerSeries.HasSubst.addInv_fin F k)]
             · exact hk
         · obtain h := MvPowerSeries.coeff_subst_finite
-            (MvPowerSeries.HasSubst.addInv_fin F k) F.toFun
+            (MvPowerSeries.HasSubst.addInv_fin F k) F.toPowerSeries
           simp only [Nat.succ_eq_add_one, Nat.reduceAdd, hB, Finsupp.prod_pow, prod_univ_two,
             isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
             smul_eq_mul] at h
@@ -179,7 +179,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
 
 /- Given a formal group law `F` over coefficient ring `R`, there exist a power series
 `addInv_X F`, such that `F(X, (addInv_X F)) = 0`. -/
-theorem subst_addInv_eq_zero : F.toFun.subst ![X, (addInv_X F)] = 0 := by
+theorem subst_addInv_eq_zero : F.toPowerSeries.subst ![X, (addInv_X F)] = 0 := by
   ext n
   by_cases hn : n = 0
   · simp [hn, constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero
@@ -196,19 +196,24 @@ def addInv : MvPowerSeries σ R := subst φ (addInv_X F)
 @[simp]
 theorem addInv_apply : addInv F φ = subst φ (addInv_X F) := rfl
 
+instance : Neg (F.Point σ) where
+  neg f := addInv F f
+
+lemma neg_apply {f : F.Point σ} : -f = addInv F f := rfl
+
 /-- For any multivariate power series `φ` with zero constant coefficient, then
 `φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
-theorem add_addInv_eq_zero {f : MvPowerSeries σ R} (h : f.constantCoeff = 0) :
-  f +[F] addInv F f = 0 := calc
-  _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toFun) := by
+theorem addInv_eq_zero {f : F.Point σ} (hf : f.constantCoeff = 0) : f + (-f) = 0 := calc
+  _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toPowerSeries) := by
     rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
-      (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ h)]
+      (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf), add_apply]
     congr! 1
-    funext s; fin_cases s
-    · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ h]
-    · simp [subst]
+    funext s;
+    fin_cases s
+    · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf]
+    · simp [neg_apply, subst]
   _ = _ := by
     rw [subst_addInv_eq_zero]; ext n
-    simp [coeff_subst <| HasSubst.of_constantCoeff_zero h]
+    simp [coeff_subst <| HasSubst.of_constantCoeff_zero hf, zero_apply]
 
 end FormalGroup
