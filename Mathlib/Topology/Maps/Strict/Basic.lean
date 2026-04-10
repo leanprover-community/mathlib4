@@ -67,9 +67,11 @@ theorem isStrictMap_iff_isHomeomorph_quotientKerEquivRange :
   exact ⟨fun h => IsQuotientMap.of_comp_isQuotientMap isQuotientMap_quotient_mk' h,
          fun h ↦ h.comp isQuotientMap_quotient_mk'⟩
 
+/-- The homeomorphism `Quotient (Setoid.ker f) ≃ₜ Set.range f` given by a strict map `f`.
+This is the homeomorphism obtained from the first isomorphism theorem. -/
 noncomputable def Homeomorph.quotientKerEquivRange (hf : IsStrictMap f) :
-Quotient (Setoid.ker f) ≃ₜ Set.range f :=
-(isStrictMap_iff_isHomeomorph_quotientKerEquivRange.mp hf).homeomorph
+    Quotient (Setoid.ker f) ≃ₜ Set.range f :=
+  (isStrictMap_iff_isHomeomorph_quotientKerEquivRange.mp hf).homeomorph
 
 /-- A map is a strict map if and only if the canonical injection `Quotient (Setoid.ker f) → Y`
 (`Setoid.kerLift f`) is an embedding. -/
