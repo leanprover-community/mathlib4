@@ -148,10 +148,6 @@ theorem constantCoeff_eq (f : R⟦X⟧) :
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
 
-@[simp]
-lemma constantCoeff_coe {f : PowerSeries R} :
-    MvPowerSeries.constantCoeff f = constantCoeff f := rfl
-
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
 
 /-- The variable of the formal power series ring. -/

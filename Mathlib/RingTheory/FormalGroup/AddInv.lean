@@ -57,7 +57,7 @@ lemma coeff_one_addInv_X : coeff 1 (addInv_X F) = -1 := by
   simp only [addInv_X, coeff_mk]; rfl
 
 lemma _root_.MvPowerSeries.HasSubst.addInv_aux : MvPowerSeries.HasSubst ![X, (addInv_X F)] :=
-  MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by fin_cases x <;> simp
+  MvPowerSeries.hasSubst_of_constantCoeff_zero fun x => by fin_cases x <;> simp [← constantCoeff_eq]
 
 lemma addInv_trunc_aux :
     trunc (n + 1) (addInv_X F) =
@@ -80,12 +80,12 @@ lemma coeff_subst_addInv_trunc (hn : n ≠ 0) :
   fin_cases i <;>  simp [this]
 
 lemma _root_.MvPowerSeries.HasSubst.X_zero : MvPowerSeries.HasSubst ![X (R := R), 0] :=
-  MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp)
+  MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp [← constantCoeff_eq])
 
 lemma _root_.MvPowerSeries.HasSubst.addInv_fin :
     MvPowerSeries.HasSubst ![X, (∑ (i ∈ range (n + 1)), Polynomial.C (F.addInv_aux i) *
       Polynomial.X (R := R) ^ i).toPowerSeries] :=
-  MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp)
+  MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp [← constantCoeff_eq])
 
 lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
   (coeff n) (F.toPowerSeries.subst ![X, (∑ (i : Fin (n + 1)), Polynomial.C (F.addInv_aux i.1) *
@@ -94,11 +94,11 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
   induction n with
   | zero =>
     simp [constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero MvPowerSeries.HasSubst.X_zero
-      (by simp) F.zero_constantCoeff]
+      (by simp [← constantCoeff_eq]) F.zero_constantCoeff]
   | succ k ih =>
     by_cases hk : k = 0
     · rw [hk, show range 2 = {0, 1} by rfl, coeff, MvPowerSeries.coeff_subst
-        (MvPowerSeries.hasSubst_of_constantCoeff_zero <| by simp)]
+        (MvPowerSeries.hasSubst_of_constantCoeff_zero <| by simp [← constantCoeff_eq])]
       · rw [finsum_eq_finset_sum_of_support_subset (s := {single 0 1, single 1 1}),
           sum_pair (ne_iff.mpr ⟨0, by simp⟩)]
         · simp [F.lin_coeff_X, F.lin_coeff_Y]
@@ -183,7 +183,7 @@ theorem subst_addInv_eq_zero : F.toPowerSeries.subst ![X, (addInv_X F)] = 0 := b
   ext n
   by_cases hn : n = 0
   · simp [hn, constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero
-      (MvPowerSeries.HasSubst.addInv_aux F) (by simp) F.zero_constantCoeff]
+      (MvPowerSeries.HasSubst.addInv_aux F) (by simp [← constantCoeff_eq]) F.zero_constantCoeff]
   rw [coeff_subst_addInv_trunc _ _ hn, addInv_trunc_aux, coeff_subst_sum_C_addInv_mul_X_pow_sub_X,
     map_zero]
 

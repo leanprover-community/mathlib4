@@ -368,7 +368,7 @@ variable {a : τ → PowerSeries R} (n : ℕ) {x : τ → ℕ}
 lemma _root_.MvPowerSeries.HasSubst.trunc_lt (ha : MvPowerSeries.HasSubst a) (hx : ∀ i, n < x i) :
     MvPowerSeries.HasSubst (fun i => (PowerSeries.trunc (x i) (a i) : PowerSeries R)) where
   const_coeff s := by
-    rw [constantCoeff_coe, Polynomial.constantCoeff_coe, coeff_trunc, if_pos (by linarith [hx s])]
+    rw [← constantCoeff_eq, Polynomial.constantCoeff_coe, coeff_trunc, if_pos (by linarith [hx s])]
     simpa using ha.const_coeff s
   coeff_zero d :=
     Set.Finite.subset (ha.coeff_zero d) fun s hs => by
@@ -494,7 +494,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
       · rintro (_|_|_) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
-    · simp [HasSubst, substInvFun]
+    · simp [HasSubst, substInvFun, ← constantCoeff_eq]
   · rw [Fin.sum_univ_castSucc]
     simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
     generalize hB : ∑ i : Fin (n + 2), C (substInvFun P i) * X ^ i.1 = B
@@ -550,7 +550,7 @@ lemma subst_substInv_right :
         Fin.ext_iff, @eq_comm _ m]
     obtain ⟨Q, hQ⟩ := this.trans (sub_dvd_pow_sub_pow _ _ m)
     simp [substInv, sub_eq_iff_eq_add.mp hQ, coeff_X_pow_mul']
-  · simp [HasSubst, zero_pow_eq, C, substInvFun]
+  · simp [HasSubst, zero_pow_eq, C, substInvFun, ← constantCoeff_eq]
   · simp [HasSubst, ← constantCoeff.eq_def, substInvFun, substInv]
 
 @[simp]
