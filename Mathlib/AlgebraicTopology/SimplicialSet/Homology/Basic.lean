@@ -108,8 +108,7 @@ noncomputable def chainComplexXCofan (n : ℕ) : Cofan (fun (_ : X _⦋n⦌) ↦
 /-- Simplicial `n`-chains `(X.chainComplex R).X n` of a simplicial set `X`
 with coefficients in `R` identify to a coproduct of copies of `R`
 indexed by `X _⦋n⦌`. -/
-noncomputable def isColimitChainComplexXCofan (n : ℕ) :
-    IsColimit (X.chainComplexXCofan R n) :=
+noncomputable def isColimitChainComplexXCofan (n : ℕ) : IsColimit (X.chainComplexXCofan R n) :=
   coproductIsCoproduct _
 
 variable {X R} in
