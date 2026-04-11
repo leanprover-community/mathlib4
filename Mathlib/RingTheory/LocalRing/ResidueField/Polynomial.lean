@@ -60,7 +60,9 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
       apply_fun aeval (algebraMap R[X] J.ResidueField X) at hr
       simpa [hx, aeval_map_algebraMap, aeval_algebraMap_apply, Algebra.smul_def] using hr
     refine ((IsUnit.mk0 (algebraMap R I.ResidueField s) (by simpa)).map C).mul_right_injective ?_
-    simp only [← algebraMap_eq, ← Algebra.smul_def, algebraMap_smul, ← hr]
+    simp only [← algebraMap_eq, ← Algebra.smul_def]
+    erw [algebraMap_smul]
+    simp only [← hr]
     simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using hJ.le hx
   · apply AlgHom.coe_ringHom_injective
     apply IsFractionRing.injective_comp_algebraMap (A := I.ResidueField[X])
