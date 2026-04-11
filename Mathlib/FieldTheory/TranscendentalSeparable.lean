@@ -5,19 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
-public import Mathlib.FieldTheory.Perfect
-public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.LocalProperties.Reduced
-public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
-public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
 public import Mathlib.FieldTheory.SeparablyGenerated
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
+public import Mathlib.RingTheory.TensorProduct.Pi
 
 /-!
 # Transcendental separable extensions
