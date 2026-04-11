@@ -6,6 +6,7 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morris
 module
 
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Ring.Regular
@@ -144,12 +145,13 @@ instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRin
   @Function.Injective.isCancelMulZero _ R _ _ _ _ _ Subtype.coe_injective coe_zero coe_mul
     NoZeroDivisors.toIsCancelMulZero
 
-/-- The coercion from `Set.Icc 0 1` as a `MonoidHom`. -/
+/-- The coercion from `Set.Icc 0 1` as a `MonoidWithZeroHom`. -/
 @[simps]
-def coeMonoidHom : (Icc (0 : R) 1) →* R where
+def coeMonoidWithZeroHom : (Icc (0 : R) 1) →*₀ R where
   toFun := (↑)
   map_mul' := fun _ _ => rfl
   map_one' := rfl
+  map_zero' := rfl
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
