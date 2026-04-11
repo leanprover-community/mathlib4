@@ -737,7 +737,7 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         (hs ▸ Nat.add_lt_add (length_takeUntil_lt hwp hwv) (length_takeUntil_lt hwq hwv))
         (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
       refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
-        grind [takeUntil_support_isPrefix, List.IsPrefix.sublist, support_reverse]
+        grind [support_takeUntil_isPrefix, List.IsPrefix.sublist, support_reverse]
     · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.dropUntil w _).length + (q.dropUntil w _).length)
         (hs ▸ Nat.add_lt_add (length_dropUntil_lt hwp hwu) (length_dropUntil_lt hwq hwu))
         (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl

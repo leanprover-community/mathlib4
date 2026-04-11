@@ -132,7 +132,7 @@ theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUnti
 theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
   ⟨p.takeUntil w h, nil, by simp⟩
 
-lemma takeUntil_support_isPrefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+lemma support_takeUntil_isPrefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support <+: p.support := by
   induction p with
   | nil => grind [mem_support_nil_iff, takeUntil_first]
