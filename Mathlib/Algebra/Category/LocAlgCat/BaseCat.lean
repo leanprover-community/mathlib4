@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Length
 
 This file introduces `BaseCat`, the base category used in formal deformation theory
 (e.g., for Schlessinger's criteria and Artin's axioms). It is defined as the full subcategory
-of `LocAlgCat Λ k` consisting of Artinian local rings.
+of `LocAlgCat Λ k` consisting of Artinian local algebras.
 
 ## Main Results
 
