@@ -105,6 +105,17 @@ theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a �
 theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
   simp [lt_iff_le_not_ge]
 
+lemma principal_le_iff {a : α} {c : DedekindCut α} :
+    principal a ≤ c ↔ a ∈ c.left := by
+  simp only [← extent_subset_extent_iff, left_principal]
+  exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ mem_extent_of_rel_extent (le_of_le_of_eq hy rfl) h⟩
+
+lemma le_principal_iff {a : α} {c : DedekindCut α} :
+    c ≤ principal a ↔ a ∈ c.right := by
+  simp only [← DedekindCut.upperBounds_left, mem_upperBounds,
+    ← extent_subset_extent_iff, left_principal]
+  exact ⟨fun h _ hx ↦ h hx, fun h x hx ↦ h x hx⟩
+
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
   Classical.decRel _
@@ -205,10 +216,36 @@ noncomputable instance : LinearOrder (DedekindCut α) where
   le_total := total_of _
   toDecidableLE := inferInstance
 
+/-- Use `DedekindCut.lt_iff_exists'` for a version with `<` and `≤` swapped -/
+theorem lt_iff_exists {a b : DedekindCut α} :
+    a < b ↔ ∃ c, a < principal c ∧ principal c ≤ b := by
+  refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ lt_of_lt_of_le hca hcb⟩
+  rw [← extent_ssubset_extent_iff, Set.ssubset_iff_exists] at h
+  simp only [← not_le, principal_le_iff]
+  obtain ⟨c, hcb, hca⟩ := h.2
+  refine ⟨c, hca, hcb⟩
+
+/-- Variant of `DedekindCut.lt_iff_exists` with `<` and `≤` swapped -/
+theorem lt_iff_exists' {a b : DedekindCut α} :
+    a < b ↔ ∃ c, a ≤ principal c ∧ principal c < b := by
+  refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ lt_of_le_of_lt hca hcb⟩
+  rw [← intent_ssubset_intent_iff, Set.ssubset_iff_exists] at h
+  simp only [← not_le, le_principal_iff]
+  exact h.2
+
 noncomputable instance : CompleteLinearOrder (DedekindCut α) where
   __ := (inferInstance : LinearOrder _)
   __ := (inferInstance : CompleteLattice _)
   __ := LinearOrder.toBiheytingAlgebra _
 
+instance [DenselyOrdered α] : DenselyOrdered (DedekindCut α) where
+  dense a b h := by
+    obtain ⟨c, hac, hcb⟩ := lt_iff_exists.mp h
+    obtain ⟨d, had, hdc⟩ := lt_iff_exists'.mp hac
+    simp only [principal_lt_principal] at hdc
+    obtain ⟨u, _, _⟩ := DenselyOrdered.dense d c hdc
+    exact ⟨principal u, lt_of_le_of_lt had (by simpa), lt_of_lt_of_le (by simpa) hcb⟩
+
 end LinearOrder
+
 end DedekindCut
