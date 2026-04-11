@@ -97,8 +97,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-    (x : L) (hx : x ∈ (traceForm K L M).ker ⊓
-      (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
+    (x : L) (hx : x ∈ (traceForm K L M).ker ⊓ (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
     _root_.IsNilpotent (toEnd K L M x) := by
   set X : Module.End K M := toEnd K L M x with hX_def
   obtain ⟨hx_ker, hx_der⟩ := Submodule.mem_inf.mp hx
