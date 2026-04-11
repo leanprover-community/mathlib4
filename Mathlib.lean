@@ -146,6 +146,7 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.GrpWithZero
 public import Mathlib.Algebra.Category.HopfAlgCat.Basic
 public import Mathlib.Algebra.Category.HopfAlgCat.Monoidal
+public import Mathlib.Algebra.Category.LocAlgCat.Defs
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
