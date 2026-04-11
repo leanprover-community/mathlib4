@@ -251,122 +251,89 @@ section
 
 namespace Ideal
 
+section ramification_inertia
+
+variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
+
+section ramificationIdx
+
 open Classical in
-/-- _ -/
-noncomputable def ramificationIdx
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) : ℕ :=
+/-- An alternate definition of ramification index. -/
+noncomputable def ramificationIdx' : ℕ :=
   if _ : q.IsPrime then
     letI Sq := Localization.AtPrime q
-    (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat
+    (Module.length Sq (Sq ⧸ (q.under R).map (algebraMap R Sq))).toNat
   else 0
 
-theorem ramificationIdx_def
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) [q.IsPrime] :
+theorem ramificationIdx'_def [q.IsPrime] :
     letI Sq := Localization.AtPrime q
-    p.ramificationIdx q = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat :=
+    q.ramificationIdx' R = (Module.length Sq (Sq ⧸ (q.under R).map (algebraMap R Sq))).toNat :=
   dif_pos _
 
-theorem ramificationIdx_of_not_isPrime
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) (hq : ¬ q.IsPrime) :
-    p.ramificationIdx q = 0 :=
+theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
 
-theorem ramificationIdx_of_not_le
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) (h : ¬ p.map (algebraMap R S) ≤ q) : p.ramificationIdx q = 0 := by
-  by_cases hq : q.IsPrime
-  · suffices map (algebraMap R (Localization.AtPrime q)) p = ⊤ by
-      rw [← Submodule.Quotient.subsingleton_iff] at this
-      rw [ramificationIdx_def, Module.length_eq_zero, ENat.toNat_zero]
-    rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime q), ← map_map]
-    contrapose! h
-    rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint q.primeCompl] at h
-    exact disjoint_compl_left_iff.mp h
-  · rw [ramificationIdx_of_not_isPrime p q hq]
+theorem ramificationIdx'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] :
+    letI Sq := Localization.AtPrime q
+    q.ramificationIdx' R = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat := by
+  rw [ramificationIdx'_def, h.over]
 
-theorem ramificationIdx_of_ne
-    {R : Type*} [CommRing R] (p q : Ideal R) (h : p ≠ q) [hp : p.IsPrime] :
-      p.ramificationIdx q = 0 := by
-  by_cases hq : q.IsPrime; swap
-  · rw [ramificationIdx_of_not_isPrime p q hq]
-  by_cases hpq : p ≤ q; swap
-  · apply ramificationIdx_of_not_le
-    rwa [Algebra.algebraMap_self, map_id]
-  contrapose! h
-  let Rp := R ⧸ p
-  let qRp := q.map (algebraMap R Rp)
-  have : qRp.IsPrime := Ideal.isPrime_map_quotientMk_of_isPrime hpq
-  let Rq := Localization.AtPrime q
-  let pRq := p.map (algebraMap R Rq)
-  let A := Rq ⧸ pRq
-  have h1 : Module.length Rq A = Module.length A A := by
-    apply Module.length_eq_of_surjective
-    rw [Quotient.algebraMap_eq]
-    exact Quotient.mk_surjective
-  rw [ramificationIdx_def, h1] at h
-  have : IsArtinianRing A := by
-    rw [isArtinianRing_iff_isFiniteLength, ← Module.length_ne_top_iff]
-    contrapose! h
-    rw [ENat.toNat_eq_zero]
-    right
-    assumption
-  have : IsDomain A := by
-    apply IsLocalization.isDomain_of_le_nonZeroDivisors
-      (M := Algebra.algebraMapSubmonoid Rp q.primeCompl) A
-    rintro - ⟨x, hx, rfl⟩
-    simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq]
-    rw [Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem]
-    exact mt (@hpq x) hx
-  have : IsField A := IsArtinianRing.isField_of_isDomain A
-  have : IsMaximal (p.map (algebraMap R Rq)) := by
-    apply Quotient.maximal_of_isField
-    assumption
-  have := IsLocalRing.eq_maximalIdeal this
-  rw [← Localization.AtPrime.map_eq_maximalIdeal] at this
-  replace this := congrArg (comap (algebraMap R Rq)) this
-  rwa [IsLocalization.comap_map_of_isPrime_disjoint q.primeCompl Rq hq disjoint_compl_left,
-    IsLocalization.comap_map_of_isPrime_disjoint q.primeCompl Rq hp] at this
-  have : Disjoint (q.primeCompl : Set R) (q : Set R) := by
-    apply disjoint_compl_left
-  exact Set.disjoint_of_subset_right hpq disjoint_compl_left
-
-/-- See `ramificationIdx_tower'` for a version that does not assume primality. -/
-theorem ramificationIdx_tower
+/-- See `ramificationIdx'_tower'` for a version that does not assume primality. -/
+theorem ramificationIdx'_tower
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (p : Ideal R) (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
+    (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
-    p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
-  simp_rw [ramificationIdx_def, ← ENat.toNat_mul]
+    r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
+  have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+  rw [ramificationIdx'_def, ramificationIdx'_eq (r.under R), ramificationIdx'_eq q,
+    ← ENat.toNat_mul]
   congr
   set Sq := Localization.AtPrime q
   set Tr := Localization.AtPrime r
-  have := length_baseChange (A := Sq) (B := Tr) (M := Sq ⧸ p.map (algebraMap R Sq))
-  rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map,
-    ← IsScalarTower.algebraMap_eq] at this
+  have := length_baseChange (A := Sq) (B := Tr) (M := Sq ⧸ (r.under R).map (algebraMap R Sq))
+  rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq] at this
   convert this
   let f := (Ideal.quotientEquivAlgOfEq Tr (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
-    (Algebra.TensorProduct.quotIdealMapEquivTensorQuot Tr (p.map (algebraMap R Sq)))
+    (Algebra.TensorProduct.quotIdealMapEquivTensorQuot Tr ((r.under R).map (algebraMap R Sq)))
   exact f.toLinearEquiv.length_eq
 
-theorem ramificationIdx_tower'
+theorem ramificationIdx'_tower'
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (p : Ideal R) (q : Ideal S) (r : Ideal T) [r.LiesOver q] [Module.Flat S T] :
-    p.ramificationIdx r = p.ramificationIdx q * q.ramificationIdx r := by
+    (q : Ideal S) (r : Ideal T) [h : r.LiesOver q] [Module.Flat S T] :
+    r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   by_cases hr : r.IsPrime
-  · rw [Ideal.over_def r q]
-    apply ramificationIdx_tower
-  · rw [ramificationIdx_of_not_isPrime p r hr, ramificationIdx_of_not_isPrime q r hr, mul_zero]
+  · have : q.IsPrime := by rw [h.over]; exact IsPrime.under S r -- should be lemma
+    apply ramificationIdx'_tower
+  · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
-theorem ramificationIdx_of_not_liesOver
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) (h : ¬ q.LiesOver p) : p.ramificationIdx q = 0 := by
-  rw [ramificationIdx_tower' p (q.under R) q, ramificationIdx_of_ne p (q.under R), zero_mul]
-  rwa [liesOver_iff] at h
+end ramificationIdx
+
+section inertiaDeg
+
+open Classical in
+/-- An alternate definition of inertia degree. -/
+noncomputable def inertiaDeg' : ℕ :=
+  if _ : q.IsPrime then Module.finrank (q.under R).ResidueField q.ResidueField else 0
+
+theorem inertiaDeg'_def [q.IsPrime] :
+    q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField :=
+  dif_pos _
+
+theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
+  dif_neg hq
+
+theorem inertiaDeg'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] [p.IsPrime] :
+    q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
+  rw [inertiaDeg'_def]
+  convert rfl <;> exact LiesOver.over
+
+end inertiaDeg
+
+end ramification_inertia
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
@@ -517,27 +484,25 @@ theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
 
 theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
     Module.finrank p.ResidueField (Localization.AtPrime q.1) =
-      p.ramificationIdx (q.1.comap Algebra.TensorProduct.includeRight) *
-        Module.finrank p.ResidueField
-          (q.1.comap Algebra.TensorProduct.includeRight).ResidueField := by
+      (q.1.comap Algebra.TensorProduct.includeRight).ramificationIdx' R *
+          (q.1.comap Algebra.TensorProduct.includeRight).inertiaDeg' R := by
   set r := q.1.comap Algebra.TensorProduct.includeRight
   set Sr := Localization.AtPrime r
   set A := Sr ⧸ p.map (algebraMap R Sr)
   have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A
   replace this := congrArg ENat.toNat this
   rw [ENat.toNat_mul, Cardinal.toNat_toENat] at this
-  convert this
-  · rw [← foo3, Module.length_eq_of_surjective
-      (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
-      Module.length_eq_finrank, ENat.toNat_coe]
-  · rw [ramificationIdx_def]
+  rw [ramificationIdx'_eq p, inertiaDeg'_eq p]
+  convert this -- todo: can we remove this convert?
+  rw [← foo3, Module.length_eq_of_surjective
+    (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
+    Module.length_eq_finrank, ENat.toNat_coe]
 
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
-      ∑ q : p.primesOver S, p.ramificationIdx q.1 *
-        Module.finrank p.ResidueField q.1.ResidueField := by
+      ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
   rw [foo1, ← (equiv p).sum_comp]
   apply Finset.sum_congr rfl
   intros
@@ -599,8 +564,7 @@ theorem sum_ramification_inertia'
     [IsDomain R] [Module.Finite R S] [Module.Flat R S]
     (p : Ideal R) [p.IsPrime] :
     Module.finrank R S =
-      ∑ q : p.primesOver S, p.ramificationIdx q.1 *
-        Module.finrank p.ResidueField q.1.ResidueField := by
+      ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
   rw [← sum_ramification_inertia, finrank_fiber_eq_finrank]
 
 theorem sum_ramification_inertia''
@@ -608,8 +572,7 @@ theorem sum_ramification_inertia''
     [Group G] [Finite G] [MulSemiringAction G S] [IsGaloisGroup G R S]
     [Module.Flat R S] [Module.Finite R S] (p : Ideal R) [p.IsPrime] :
     Nat.card G =
-      ∑ q : p.primesOver S, p.ramificationIdx q.1 *
-        Module.finrank p.ResidueField q.1.ResidueField := by
+      ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
   let := FractionRing.mulSemiringAction_of_isGaloisGroup G R S
   let := FractionRing.liftAlgebra R (FractionRing S)
   rw [← sum_ramification_inertia', (IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
