@@ -228,16 +228,16 @@ variable (A B : Type*) [SetLike A B]
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-/-- The partial order induced from a `SetLike` instance by inclusion.
-
-A partial order defined as `.ofSetLike` will automatically make available an instance
-of `IsConcreteLE`.
--/
+/-- Auxiliary definition to construct the order from a `SetLike` instance by inclusion. -/
 @[reducible] def PartialOrder.ofSetLikeAux : PartialOrder A where
   __ := LE.ofSetLike A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
-@[reducible] def PartialOrder.ofSetLike : PartialOrder A :=
+/-- The partial order induced from a `SetLike` instance by inclusion.
+
+A partial order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`. -/
+@[implicit_reducible] def PartialOrder.ofSetLike : PartialOrder A :=
   fast_instance% PartialOrder.ofSetLikeAux A B
 
 instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
