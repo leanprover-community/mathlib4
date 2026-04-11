@@ -168,17 +168,13 @@ instance : CompleteSpace 𝒪[K] :=
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
-lemma maximalIdeal_pow_isClosed (n : ℕ) :
-    IsClosed ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) :=
-  IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)
-
 instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
   haus' := (inferInstance : IsHausdorff 𝓂[K] 𝒪[K]).haus
   prec' f hf := by
-    obtain ⟨L, hL⟩ : (⋂ n, ((fun x => f n + x) '' ↑(𝓂[K] ^ n))).Nonempty := by
-      have hc (n : ℕ) : IsClosed ((fun x => f n + x) '' ↑(𝓂[K] ^ n)) := by
-        convert maximalIdeal_pow_isClosed K n |>.preimage
-          (show Continuous fun x => - f n + x from by fun_prop) using 1
+    obtain ⟨L, hL⟩ : (⋂ n, ((fun x ↦ f n + x) '' ↑(𝓂[K] ^ n))).Nonempty := by
+      have hc (n : ℕ) : IsClosed ((fun x ↦ f n + x) '' ↑(𝓂[K] ^ n)) := by
+        convert (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)) |>.preimage
+          (show Continuous fun x ↦ - f n + x from by fun_prop) using 1
         grind
       refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _ ?_
         (fun _ ↦ Set.Nonempty.of_subtype) (hc 0).isCompact hc
@@ -188,7 +184,7 @@ instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
       convert Ideal.add_mem _ ((Submodule.Quotient.eq _).mp (hf (Nat.le_succ _)).symm)
         (Ideal.pow_le_pow_right (Nat.le_succ _) hy1) using 1
       ring
-    refine ⟨L, fun n => ?_⟩
+    refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, hfy⟩ := Set.mem_iInter.mp hL n
     rw [smul_eq_mul, Ideal.mul_top, SModEq.sub_mem, ← hfy]
     convert (𝓂[K] ^ n).neg_mem hy using 1
