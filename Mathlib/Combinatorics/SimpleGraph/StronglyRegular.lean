@@ -197,7 +197,7 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
   ext v w
   simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
+  erw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
