@@ -100,14 +100,14 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     (x : L) (hx : x ∈ (traceForm K L M).ker ⊓ (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
     _root_.IsNilpotent (toEnd K L M x) := by
   set X : Module.End K M := toEnd K L M x with hX_def
-  obtain ⟨hx_ker, hx_der⟩ := Submodule.mem_inf.mp hx
   rcases eq_or_ne X 0 with hX0 | hX_ne
   · rw [hX0]; exact IsNilpotent.zero
+  obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
+  obtain ⟨hx_ker, hx_der⟩ := hx
   have hx_ker' : traceForm K L M x = 0 := hx_ker
   have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ ker (traceForm K L M) := fun b => by
     rw [mem_ker]; ext z
     rw [zero_apply, traceForm_apply_lie_apply, hx_ker', zero_apply]
-  obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
   classical
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
