@@ -96,7 +96,7 @@ section
 
 open Lean Elab Tactic in
 /-- A helper tactic for `cat_disch` and `Pairwise`. -/
-def pairwiseCases : TacticM Unit := do
+meta def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
