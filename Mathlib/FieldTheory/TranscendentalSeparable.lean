@@ -21,6 +21,46 @@ public import Mathlib.FieldTheory.SeparablyGenerated
 
 /-!
 # Transcendental separable extensions
+
+In this file we introduce the concept of separably generated field extensions and
+transcendental separable field extensions. We then formalizes the following result:
+
+Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
+1. `K/k` is transcendental separable.
+2. If `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
+  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent.
+3. `K ⊗ₖ k^{1/p}` is reduced.
+4. `K` is geometrically reduced over `k`.
+
+# Main definitions and results
+
+* `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
+  an transcendental basis such that the extension above it is separable.
+
+* `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
+  every finitely generated subextension is separably generated.
+
+* `tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced` : Tensor product of
+  a transcendental separable field extension with a reduced algebra is reduced.
+
+* `tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced` : Tensor product of
+  a separably generated  field extension with a reduced algebra is reduced.
+
+* `adjoinPthRoots`: Adjoining all `p`-th root to a field of characteristic `p`.
+  It is defined as the field itself with algebra map being the frobenius map.
+
+* `adjoinPthRootsPthRoot` : The map `k → adjoinPthRoots k p` for taking `p`-th root
+  with underlying map `RingHom.id`.
+
+* `Algebra.isTranscendentalSeparable_tfae` : The equivalent characterization of
+  transcendental separable field extension mentioned above.
+
+* `Algebra.isTranscendentalSeparable_of_isSeparablyGenerated` :
+  Separably generated field extension is transcendental separable.
+
+* `Algebra.isTranscendentalSeparable_of_perfectField` :
+  All extension over perfect field is transcendental separable.
+
 -/
 
 universe u v w
@@ -33,7 +73,9 @@ section
 
 variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 
-@[mk_iff]
+/-- A field extension is separably generated if there exists an transcendental basis such that
+the extension above it is separable. -/
+@[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
   isSeparable' : ∃ (ι : Type v) (f : ι → K),
     IsTranscendenceBasis k f ∧
@@ -53,7 +95,9 @@ lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k 
     (IntermediateField.equivOfEq eq)
   exact Algebra.IsSeparable.of_equiv_equiv e'.toRingEquiv e.toRingEquiv rfl
 
-@[mk_iff]
+/-- A field extension is transcendental separable if every finitely generated subextension is
+separably generated. -/
+@[mk_iff, stacks 030O "Part 2"]
 class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
     Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
@@ -75,11 +119,13 @@ lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
   rw [← Localization.AtPrime.eq_maximalIdeal_iff_comap_eq]
   exact le_antisymm this (min.2 ⟨q.comap_isPrime _, bot_le⟩ this)
 
+/-- The map of a ring to product of its localizations at minimal primes. -/
 def toLocalizationMinimal (S : Type*) [CommRing S] :=
   (Pi.ringHom (fun (p : minimalPrimes S) ↦
     letI := Ideal.minimalPrimes_isPrime p.2
     algebraMap S (Localization.AtPrime p.1)))
 
+/-- The map of a reduced ring to product of its localizations at minimal primes is injective. -/
 lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsReduced S] :
     Function.Injective (toLocalizationMinimal S) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
@@ -155,6 +201,7 @@ lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X]) (mon : f.Monic)
   apply isReduced_of_injective iQ ((Ideal.injective_lift_iff _).mpr _)
   simp [← RingHom.comap_ker, eq]
 
+/-- The canonical isomorphism `K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X]` for `k`-algebra `S, K`. -/
 noncomputable def polynomialTensorProductEquiv [Algebra k S] : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X] :=
   ((((Algebra.TensorProduct.congr (polyEquivTensor' k K) AlgEquiv.refl).trans
     (Algebra.TensorProduct.assoc k k K K k[X] S)).trans
@@ -175,6 +222,7 @@ lemma polynomialTensorProductEquiv_map_algebraMap [Algebra k S] (f : K[X]) :
       simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     simpa [- polyEquivTensor_symm_apply_tmul_eq_smul, polynomialTensorProductEquiv]
 
+/-- The equivalence of adjoining on root inside tensor product and outside tensor product. -/
 noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) [Algebra k S] :
     (K[X] ⧸ Ideal.span {f}) ⊗[k] S ≃ₐ[K]
     (K ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K (K ⊗[k] S))} :=
@@ -277,6 +325,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFi
   have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k K S f isT
 
+@[stacks 030U "Part 1"]
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra k S] [IsReduced S]
     (K : Type*) [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K] :
     IsReduced (TensorProduct k K S) := by
@@ -291,6 +340,7 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
+@[stacks 030U "Part 2"]
 lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S] [IsReduced S]
     (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K] :
     IsReduced (TensorProduct k K S) := by
@@ -341,6 +391,9 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S]
 
 section charp
 
+/-- Adjoining all `p`-th root to a field of characteristic `p`.
+It is defined as the field itself with algebra map being the frobenius map. -/
+@[nolint unusedArguments]
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
 variable (p : ℕ) [ExpChar k p]
@@ -349,6 +402,7 @@ instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
 
 instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
 
+/-- The map `adjoinPthRoots k p → k` with underlying map `RingHom.id`. -/
 def adjoinPthRootsSelf : (adjoinPthRoots k p) →+* k := RingHom.id k
 
 lemma adjoinPthRootsSelf_algebraMap (x : adjoinPthRoots k p) :
@@ -365,6 +419,7 @@ instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
     refine ⟨(Polynomial.monic_X_pow_sub_C _ (NeZero.ne' p).symm).ne_zero, ?_⟩
     simp [adjoinPthRootsSelf_algebraMap]
 
+/-- The map `k → adjoinPthRoots k p` for taking `p`-th root with underlying map `RingHom.id`. -/
 def adjoinPthRootsPthRoot : k →+* (adjoinPthRoots k p) := RingHom.id k
 
 lemma adjoinPthRootsPthRoot_bijective : Function.Bijective (adjoinPthRootsPthRoot k p) :=
@@ -373,7 +428,6 @@ lemma adjoinPthRootsPthRoot_bijective : Function.Bijective (adjoinPthRootsPthRoo
 lemma adjoinPthRootsPthRoot_pow (x : k) : algebraMap k (adjoinPthRoots k p) x =
     (adjoinPthRootsPthRoot k p x) ^ p := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     (red : IsReduced (TensorProduct k (adjoinPthRoots k p) K)) (s : Finset K)
     (li : LinearIndepOn k _root_.id (s : Set K)) : LinearIndepOn k (· ^ p) (s : Set K) := by
@@ -412,6 +466,7 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
 
 instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
+@[stacks 030W]
 lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     [ Algebra.IsTranscendentalSeparable k K,
       ∀ s : Finset K,
@@ -468,6 +523,8 @@ lemma Algebra.isTranscendentalSeparable_of_charZero [CharZero k] :
     Algebra.IsTranscendentalSeparable k K :=
   ⟨fun L _ ↦ isSeparablyGenerated_of_charZero k L⟩
 
+/-- Separably generated field extension is transcendental separable. -/
+@[stacks 030X]
 lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSeparablyGenerated k K] :
     Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
@@ -483,6 +540,7 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
   exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
 
+@[stacks 030Y "Equivalence to the alternative definition."]
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
