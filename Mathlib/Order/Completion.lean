@@ -108,7 +108,7 @@ theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b 
 lemma principal_le_iff {a : α} {c : DedekindCut α} :
     principal a ≤ c ↔ a ∈ c.left := by
   simp only [← extent_subset_extent_iff, left_principal]
-  exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ mem_extent_of_rel_extent (le_of_le_of_eq hy rfl) h⟩
+  exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ mem_extent_of_rel_extent hy h⟩
 
 lemma le_principal_iff {a : α} {c : DedekindCut α} :
     c ≤ principal a ↔ a ∈ c.right := by
