@@ -154,6 +154,9 @@ lemma projective_iff_hasProjectiveDimensionLT_one :
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
+lemma projective_iff_hasProjectiveDimensionLE_zero : Projective X ↔ HasProjectiveDimensionLE X 0 :=
+  projective_iff_hasProjectiveDimensionLT_one
+
 instance (priority := low) [HasProjectiveDimensionLT X 1] : Projective X :=
   projective_iff_hasProjectiveDimensionLT_one.mpr ‹_›
 
@@ -320,6 +323,12 @@ lemma projectiveDimension_ne_top_iff (X : C) :
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
+
+lemma projectiveDimension_eq_zero_iff (X : C) :
+    projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
+  rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
+    ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
+    le_antisymm_iff]
 
 end CategoryTheory
 
