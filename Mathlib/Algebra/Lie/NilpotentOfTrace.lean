@@ -131,6 +131,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (μ i - μ j) • v.end (i, j) := ad_diag_basis v μ s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub μ hμ f
+  let ad_X := ad K (Module.End K M) X
   let ad_s := ad K (Module.End K M) s
   let ad_y := ad K (Module.End K M) y
   have had_y_eq : ad_y = aeval ad_s r := by
@@ -139,8 +140,9 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
     commute_of_mem_adjoin_singleton_of_commute hs_adj (commute_of_mem_adjoin_self hn_adj).symm
-  have h_ad_s_mem : ad_s ∈ adjoin K {ad K _ X} := by
-    rw [hX_ns]; exact ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
+  have h_ad_s_mem : ad_s ∈ K[ad_X] := by
+    have h := ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
+    rwa [← hX_ns] at h
   rw [adjoin_singleton_eq_range_aeval] at h_ad_s_mem
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
@@ -157,8 +159,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     rintro _ ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
   have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
-    have hp_ad_s : ad_s = aeval (ad K _ X) p := hp_eq.symm
-    have had_y_X : ad_y = aeval (ad K _ X) (r.comp p) := by
+    have hp_ad_s : ad_s = aeval ad_X p := hp_eq.symm
+    have had_y_X : ad_y = aeval ad_X (r.comp p) := by
       rw [had_y_eq, hp_ad_s, ← aeval_comp]
     obtain ⟨q', hq'⟩ : (Polynomial.X : K[X]) ∣ r.comp p := by
       rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
