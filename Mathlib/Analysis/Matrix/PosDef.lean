@@ -90,17 +90,6 @@ lemma det_pos [DecidableEq n] (hA : A.PosDef) : 0 < det A := by
 
 end PosDef
 
-lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] (hA : A.PosSemidef) :
-    A.PosDef ↔ A.det ≠ 0 where
-  mp h := h.det_pos.ne'
-  mpr h := by
-    refine hA.isHermitian.posDef_iff_eigenvalues_pos.mpr fun i ↦ ?_
-    apply lt_of_le_of_ne (hA.eigenvalues_nonneg i)
-    contrapose h
-    rw [hA.isHermitian.det_eq_prod_eigenvalues]
-    apply Finset.prod_eq_zero (Finset.mem_univ i)
-    simpa using h.symm
-
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toSeminormedAddCommGroup`, `Matrix.toNormedAddCommGroup`,
