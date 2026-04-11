@@ -331,6 +331,18 @@ theorem inertiaDeg'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
   rw [inertiaDeg'_def]
   convert rfl <;> exact LiesOver.over
 
+theorem inertiaDeg'_tower'
+    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (q : Ideal S) (r : Ideal T) [h : r.LiesOver q] [Module.Flat S T] :
+    r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
+  by_cases hr : r.IsPrime
+  · have : q.IsPrime := by rw [h.over]; exact IsPrime.under S r -- should be lemma
+    have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+    rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
+    apply Module.finrank_mul_finrank
+  · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
+
 end inertiaDeg
 
 end ramification_inertia
