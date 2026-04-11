@@ -104,10 +104,6 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   · rw [hX0]; exact IsNilpotent.zero
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
   obtain ⟨hx_ker, hx_der⟩ := hx
-  have hx_ker' : traceForm K L M x = 0 := hx_ker
-  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ ker (traceForm K L M) := fun b => by
-    rw [mem_ker]; ext z
-    rw [zero_apply, traceForm_apply_lie_apply, hx_ker', zero_apply]
   classical
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
@@ -153,6 +149,10 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     Submodule.map (toEnd K L M).toLinearMap (ker (traceForm K L M))
   let B : Submodule K (Module.End K M) := range (toEnd K L M).toLinearMap
   have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
+  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ ker (traceForm K L M) := fun b => by
+    have hx_zero : traceForm K L M x = 0 := hx_ker
+    rw [mem_ker]; ext z
+    rw [zero_apply, traceForm_apply_lie_apply, hx_zero, zero_apply]
   have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
     rintro _ ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
