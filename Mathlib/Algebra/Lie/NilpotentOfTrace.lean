@@ -93,7 +93,7 @@ namespace LieModule
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
 /-- If the trace form of `M` vanishes identically and `x ∈ ⁅L, L⁆`, then `x` acts nilpotently
 on `M`. -/
-theorem isNilpotent_toEnd_of_traceForm_eq_zero {K L M : Type*}
+theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
