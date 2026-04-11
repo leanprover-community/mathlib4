@@ -11,9 +11,9 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 /-!
 # The algebraic dual of a cone
 
-Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
-`0 ≤ p x y` for all `x ∈ s`.
+Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a cone `C` in `M`, we define
+`PointedCone.dual p C` to be the cone in `N` consisting of all points `y` such that `0 ≤ p x y`
+for all `x ∈ C`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
 When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
@@ -23,7 +23,7 @@ dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 
 We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
 always contains `0`, i.e. is a pointed cone.
-Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
+Furthermore, the strict version `{y | ∀ x ∈ C, 0 < p x y}` is a candidate to the name
 `ConvexCone.dual`.
 
 -/
@@ -48,8 +48,8 @@ local notation3 "R≥0" => {c : R // 0 ≤ c}
 
 set_option backward.isDefEq.respectTransparency false in
 variable (p C) in
-/-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
-points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
+/-- The dual cone of a cone `C` with respect to a bilinear pairing `p` is the cone consisting of all
+points `y` such that for all points `x ∈ C` we have `0 ≤ p x y`. -/
 def dual : PointedCone R N where
   carrier := {y | ∀ ⦃x⦄, x ∈ C → 0 ≤ p x y}
   zero_mem' := by simp
@@ -89,8 +89,8 @@ alias dual_le_dual := dual_anti
 
 lemma dual_antitone : Antitone (dual p) := fun _ _ h => dual_anti h
 
-/-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
-linear map `p x`. -/
+/-- The dual cone of a ray (hull of a singleton) is given by the preimage of the positive cone
+under the linear map `p x`. -/
 lemma dual_hull_singleton (x : M) : dual p (R ∙₊ x) = (positive R R).comap (p x) := by ext; simp
 
 @[deprecated (since := "2026-04-10")]
@@ -133,16 +133,16 @@ lemma dual_insert (x : M) :
 variable (p) in
 @[simp] lemma dual_sup_ker (C) : dual p (C ⊔ p.ker) = dual p C := by simp [dual_sup]
 
-/-- The dual cone of `S` equals the intersection of dual cone of the points in `S`. -/
-lemma dual_eq_iInf_dual_hull_singleton (S) :
-    dual p S = ⨅ x : S, dual p (R ∙₊ x.val) := by ext; simp
+/-- The dual cone of `C` equals the intersection of dual cone of the points in `C`. -/
+lemma dual_eq_iInf_dual_hull_singleton (C) :
+    dual p C = ⨅ x : C, dual p (R ∙₊ x.val) := by ext; simp
 
 @[deprecated (since := "2026-04-10")]
 alias dual_eq_iInter_dual_singleton := dual_eq_iInf_dual_hull_singleton
 
-/-- The dual cone of `S` equals the intersection of dual cone of the points in `S`. -/
-lemma dual_eq_Inf_dual_hull_singleton (S) :
-    dual p S = ⨅ x ∈ S, dual p (R ∙₊ x) := by ext; simp
+/-- The dual cone of `C` equals the intersection of dual cone of the points in `C`. -/
+lemma dual_eq_Inf_dual_hull_singleton (C) :
+    dual p C = ⨅ x ∈ C, dual p (R ∙₊ x) := by ext; simp
 
 lemma dual_hull_eq_iInf_dual_hull_singleton (s : Set M) :
     dual p (hull R s) = ⨅ x ∈ s, dual p (R ∙₊ x) := by ext; simp
@@ -150,7 +150,7 @@ lemma dual_hull_eq_iInf_dual_hull_singleton (s : Set M) :
 lemma dual_hull_eq_Inf_dual_hull_singleton (s : Set M) :
     dual p (hull R s) = ⨅ x : s, dual p (R ∙₊ x.val) := by ext; simp
 
-/-- Any set is a subset of its double dual cone. -/
+/-- Any cone is contained in its double dual cone. -/
 lemma le_dual_dual : C ≤ dual p.flip (dual p C) := fun _x hx _y hy ↦ hy hx
 
 @[deprecated (since := "2026-04-09")]
@@ -191,7 +191,7 @@ lemma dual_eq_dual_id_map (C) : dual p C = dual .id (map p C) := by simp
 alias dual_eq_dual_id_image := dual_eq_dual_id_map
 
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
-  standard pairing `Dual.eval`. -/
+  canonical pairing `Dual.eval`. -/
 lemma dual_eq_comap_dual_eval (C) :
     dual p C = comap p.flip (dual (Module.Dual.eval R M) C) := by
   ext; simp
@@ -206,31 +206,13 @@ variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 variable {C : PointedCone R M}
 
--- TODO
--- Q: do we need Comm?
-theorem _root_.LinearMap.forall_le_iff_eq
-    {R S M M₂ : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
-    [AddCommGroup M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
-    [PartialOrder M₂] [IsOrderedAddMonoid M₂]
-    (f g : M →ₛₗ[σ] M₂) : (∀ x, f x ≤ g x) ↔ f = g := by
-  constructor
-  · rw [LinearMap.ext_iff]
-    intro h x
-    have h' := h (-x)
-    -- simp only [map_neg, neg_le_neg_iff] at h'
-    -- exact le_antisymm (h x) h'
-    sorry
-  · simp +contextual
-
 lemma dual_univ_eq_ker : dual p ⊤ = ker p.flip := by
-  ext x; simpa [Eq.comm] using LinearMap.forall_le_iff_eq (f := 0) (g := p.flip x)
+  ext x; simpa [Eq.comm] using forall_le_iff_eq (f := 0) (g := p.flip x)
 
 lemma dual_top (hp : Injective p.flip) : dual p ⊤ = 0 := by
-  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip hp).1 ?_) (by simp)
-  ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+  simpa [dual_univ_eq_ker] using ker_eq_bot_of_injective hp
 
-@[deprecated  (since := "2026-04-10")]
+@[deprecated (since := "2026-04-10")]
 alias dual_univ := dual_top
 
 variable {N : Type*} [AddCommGroup N] [Module R N]
