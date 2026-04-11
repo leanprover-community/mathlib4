@@ -23,7 +23,7 @@ public import Mathlib.FieldTheory.SeparablyGenerated
 # Transcendental separable extensions
 -/
 
-universe u v
+universe u v w
 
 @[expose] public section
 
@@ -38,6 +38,20 @@ class Algebra.IsSeparablyGenerated : Prop where
   isSeparable' : ∃ (ι : Type v) (f : ι → K),
     IsTranscendenceBasis k f ∧
     Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K
+
+variable {k K} in
+lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k K'] (e : K ≃ₐ[k] K')
+    [Algebra.IsSeparablyGenerated k K] : Algebra.IsSeparablyGenerated k K' := by
+  rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨ι, f, isT, sep⟩
+  have : Small.{w} ι := small_of_injective (e.injective.comp isT.1.injective)
+  let g := (e ∘ f) ∘ (equivShrink ι).symm
+  use Shrink.{w} ι, g, (e.isTranscendenceBasis isT).comp_equiv (equivShrink ι).symm
+  have eq : (IntermediateField.adjoin k (Set.range f)).map e =
+    (IntermediateField.adjoin k (Set.range g)) := by
+    simp [IntermediateField.adjoin_map, g, Set.range_comp e f]
+  let e' := ((IntermediateField.adjoin k (Set.range f)).equivMap e.toAlgHom).trans
+    (IntermediateField.equivOfEq eq)
+  exact Algebra.IsSeparable.of_equiv_equiv e'.toRingEquiv e.toRingEquiv rfl
 
 @[mk_iff]
 class Algebra.IsTranscendentalSeparable : Prop where
@@ -291,9 +305,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S]
     have : IsReduced (TensorProduct k B M') := by
       have mem (x : ι) : f x ∈ M' := IntermediateField.subset_adjoin _ _ (by simp)
       let f' : ι → M' := fun x ↦ ⟨f x, mem x⟩
-      have imagef' : Subtype.val '' Set.range f' = Set.range f := by
-        ext
-        simp [f']
+      have imagef' : Subtype.val '' Set.range f' = Set.range f := (Set.range_comp _ _).symm
       have isT' : IsTranscendenceBasis k f' := isT.of_comp M'.val Subtype.val_injective
       have : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f')) M' := by
         have Mle : M ≤ M' := IntermediateField.adjoin.mono _ _ _ (by simp)
@@ -463,6 +475,13 @@ lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSepar
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
     have := tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced k (adjoinPthRoots k p) K
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ _).injective
+
+lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteType
+    [Algebra.EssFiniteType k K] :
+    Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsSeparablyGenerated k K := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Algebra.isTranscendentalSeparable_of_isSeparablyGenerated k K⟩
+  have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
+  exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
 
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
