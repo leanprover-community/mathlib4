@@ -89,6 +89,12 @@ lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     objEquiv.{u}.symm (f ≫ g) =
       (stdSimplex.map g).app _ (objEquiv.{u}.symm f) := rfl
 
+lemma map_objEquiv_symm {n : SimplexCategory} {m m' : SimplexCategoryᵒᵖ}
+    (f : m.unop ⟶ n) (g : m ⟶ m') :
+    (stdSimplex.{u}.obj n).map g (objEquiv.symm f) =
+      objEquiv.symm (g.unop ≫ f) :=
+  rfl
+
 @[simp]
 lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (objEquiv.{u}.symm f : Δ[n] _⦋m⦌) i = f.toOrderHom i := rfl
@@ -614,6 +620,34 @@ lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
   · rw [← hasDimensionLT_iff_of_iso
       (isoOfRepresentableBy (faceRepresentableBy S m (monoEquivOfFin S (by simpa))))]
     exact hasDimensionLT_of_le _ (m + 1) _
+
+lemma ofSimplex_objEquiv_symm_id (n : ℕ) :
+    Subcomplex.ofSimplex (objEquiv.{u}.symm (𝟙 ⦋n⦌)) = ⊤ :=
+  le_antisymm (by simp) (fun _ x _ ↦ by
+    obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
+    simp only [Subcomplex.mem_ofSimplex_obj_iff, op_unop]
+    exact ⟨f, by simp [map_objEquiv_symm.{u}]⟩)
+
+lemma objEquiv_symm_id_mem_nonDegenerate (n : ℕ) :
+    (objEquiv (m := (op ⦋n⦌))).symm (𝟙 _) ∈ (Δ[n] : SSet.{u}).nonDegenerate n := by
+  rw [mem_nonDegenerate_iff_strictMono]
+  exact fun _ _ h ↦ h
+
+lemma nonDegenerate_top_dim (n : ℕ) :
+    (Δ[n] : SSet.{u}).nonDegenerate n = {(objEquiv (m := (op ⦋n⦌))).symm (𝟙 _)} := by
+  ext x
+  simp only [Set.mem_singleton_iff]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
+    have : Mono f := by simpa using (mem_nonDegenerate_iff_mono _).mp h
+    simpa only [EmbeddingLike.apply_eq_iff_eq] using SimplexCategory.eq_id_of_mono f
+  · rintro rfl
+    apply objEquiv_symm_id_mem_nonDegenerate
+
+lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_instance) :
+    False :=
+  (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
+    (nonDegenerateEquiv.2 (.refl _)) n)
 
 end stdSimplex
 
