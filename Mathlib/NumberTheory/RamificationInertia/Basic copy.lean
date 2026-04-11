@@ -145,69 +145,6 @@ theorem IsArtinianRing.equivPiLocalization_apply_apply (R : Type*) [CommRing R] 
 
 end artinian
 
-section temp
-
-open TensorProduct
-
--- PRed
-theorem Submodule.baseChange_mono {R M : Type*} (A : Type*) [CommSemiring R]
-    [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M]
-    {N N' : Submodule R M} (h : N ≤ N') :
-    N.baseChange A ≤ N'.baseChange A := by
-  rw [Submodule.baseChange, LinearMap.baseChange, ← Submodule.subtype_comp_inclusion N N' h,
-    ← LinearMap.id_comp LinearMap.id, TensorProduct.AlgebraTensorModule.map_comp]
-  apply LinearMap.range_comp_le_range
-
--- PRed
-@[simp]
-theorem Submodule.baseChange_le_iff {R M A : Type*} [CommRing R]
-    [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
-    {N N' : Submodule R M} :
-    N.baseChange A ≤ N'.baseChange A ↔ N ≤ N' := by
-  refine ⟨fun h ↦ ?_, Submodule.baseChange_mono A⟩
-  rwa [← N'.ker_mkQ, LinearMap.le_ker_iff_comp_subtype_eq_zero,
-    Module.FaithfullyFlat.zero_iff_lTensor_zero R A (N'.mkQ.comp N.subtype),
-    LinearMap.lTensor_comp, ← LinearMap.range_le_ker_iff, lTensor_mkQ, ← restrictScalars_le R]
-
--- PRed
-theorem Submodule.baseChange_inj {R M A : Type*} [CommRing R]
-    [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
-    {N N' : Submodule R M} :
-    N.baseChange A = N'.baseChange A ↔ N = N' := by
-  simp [le_antisymm_iff]
-
--- PRed
-theorem Submodule.baseChange_injective {R M A : Type*} [CommRing R]
-    [Ring A] [Algebra R A] [Module.FaithfullyFlat R A] [AddCommGroup M] [Module R M]
-    {N N' : Submodule R M} (h : N.baseChange A = N'.baseChange A) :
-    N = N' :=
-  Submodule.baseChange_inj.mp h
-
-variable (R M S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S]
-  [AddCommGroup M] [Module R M]
-
--- PRed
-/-- `Submodule.baseChange` as an order embedding. -/
-def Submodule.baseChangeOrderEmbedding [Module.FaithfullyFlat R S] :
-    Submodule R M ↪o Submodule S (S ⊗[R] M) where
-  toFun := Submodule.baseChange S
-  inj' _ _ := Submodule.baseChange_injective
-  map_rel_iff' := Submodule.baseChange_le_iff
-
-variable {R M S}
-
--- PRed
-theorem IsNoetherian.ofFaithfullyFlat (h : IsNoetherian S (S ⊗[R] M)) : IsNoetherian R M := by
-  rw [isNoetherian_iff'] at h ⊢
-  exact OrderEmbedding.wellFoundedGT (Submodule.baseChangeOrderEmbedding R M S)
-
--- PRed
-theorem IsArtinian.ofFaithfullyFlat (h : IsArtinian S (S ⊗[R] M)) : IsArtinian R M := by
-  rw [isArtinian_iff] at h ⊢
-  exact OrderEmbedding.wellFounded (Submodule.baseChangeOrderEmbedding R M S) h
-
-end temp
-
 section flatBaseChange
 
 open TensorProduct
@@ -255,7 +192,8 @@ theorem length_baseChange :
   · have : ¬ IsFiniteLength B (B ⊗[A] M) := by
       contrapose! h
       rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
-      exact h.imp IsNoetherian.ofFaithfullyFlat IsArtinian.ofFaithfullyFlat
+      exact h.imp IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
+        IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
     rw [← length_ne_top_iff, not_ne_iff] at h this
     rw [h, this, ENat.top_mul]
     rw [← pos_iff_ne_zero, length_pos_iff, Quotient.nontrivial_iff]
