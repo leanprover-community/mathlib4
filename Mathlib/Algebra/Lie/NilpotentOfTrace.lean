@@ -173,7 +173,7 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     obtain ⟨a, _, b, _, rfl⟩ := hts hz
     rw [hcomm a b, mul_zero]
   have hny_comm : Commute n y := by
-    have hy_adj : y ∈ adjoin K {s} := by
+    have hy_adj : y ∈ K[s] := by
       rw [adjoin_singleton_eq_range_aeval]
       let c_ext : K → K := fun ν => if hν : ν ∈ E then algebraMap ℚ K (f ⟨ν, hν⟩) else 0
       let q := Lagrange.interpolate (Finset.univ.image μ) (fun d : K => d) c_ext
