@@ -100,8 +100,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     (x : L) (hx : x ∈ (traceForm K L M).ker ⊓ (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
     _root_.IsNilpotent (toEnd K L M x) := by
   set X : Module.End K M := toEnd K L M x with hX_def
-  rcases eq_or_ne X 0 with hX0 | hX_ne
-  · rw [hX0]; exact IsNilpotent.zero
+  rcases eq_or_ne X 0 with hX_zero | hX_ne
+  · rw [hX_zero]; exact IsNilpotent.zero
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
   obtain ⟨hx_ker, hx_der⟩ := hx
   classical
