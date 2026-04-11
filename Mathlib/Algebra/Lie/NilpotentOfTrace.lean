@@ -41,6 +41,13 @@ open LinearMap Module.End Polynomial
 
 variable {K : Type*} [Field K] {V : Type*} [AddCommGroup V] [Module K V]
 
+lemma aeval_apply_of_mem_eigenspace {R M : Type*} [CommRing R] [AddCommGroup M]
+    [Module R M] {f : Module.End R M} {p : R[X]} {μ : R} {x : M}
+    (hx : f x = μ • x) : aeval f p x = p.eval μ • x := by
+  rcases eq_or_ne x 0 with rfl | hne
+  · simp
+  · exact Module.End.aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
+
 lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
