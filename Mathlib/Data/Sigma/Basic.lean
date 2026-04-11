@@ -169,7 +169,7 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   ext ja jb
   unfold Sigma.curry
   obtain rfl | ha := eq_or_ne ia ja
-  · simp only [update_self]
+  · simp
     grind
   · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm

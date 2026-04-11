@@ -58,7 +58,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     exact hx hfa
   have hfa' : f (f a) ≠ f a := mt (fun h => f.injective h) hfa
   have : ∀ x : α, (Equiv.swap a (f a) * f) x ≠ x → x ∈ l := by
-    simp only [coe_mul]
+    simp
     grind
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_flatMap]

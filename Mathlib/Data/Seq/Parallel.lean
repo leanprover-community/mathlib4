@@ -266,7 +266,9 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
       have : parallel.aux2 (l.map (map f))
           = lmap f (rmap (List.map (map f)) (parallel.aux2 l)) := by
         simp only [parallel.aux2, rmap, lmap]
-        induction l with grind [destruct_map, lmap, rmap]
+        induction l with
+        | nil => grind
+        | cons => grind [destruct_map, lmap, rmap]
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       rcases parallel.aux2 l with a | l'

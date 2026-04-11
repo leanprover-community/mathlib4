@@ -305,7 +305,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   split_ifs with h
   · have hm : (m : ℕ) > 0 := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
-    simp only [pos, le_mul_iff_one_le_right]
+    simp
     lia
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
