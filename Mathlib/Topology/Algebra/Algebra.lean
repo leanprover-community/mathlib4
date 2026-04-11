@@ -66,7 +66,7 @@ instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X]
 
 instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
     ContinuousMul (Icc (0 : A) 1) :=
-  Topology.IsInducing.subtypeVal.continuousMul Icc.coeMonoidHom
+  Topology.IsInducing.subtypeVal.continuousMul Icc.coeMonoidWithZeroHom
 
 instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
     ContinuousMul (Ico (0 : A) 1) :=
