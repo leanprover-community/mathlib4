@@ -181,8 +181,8 @@ theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
   grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
 
 /-- A uniform block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
-theorem isHermitian_blockDiagonal_iff [DecidableEq n]
-    {M : n → Matrix m m α} : (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} :
+    (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
   simpa [IsHermitian] using isHermitian_blockDiagonal'_iff
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
