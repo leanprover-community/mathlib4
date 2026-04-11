@@ -141,3 +141,38 @@ theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+/-- If `f a = 0`, then `f b = (b - a) • dslope f a b`. -/
+lemma eq_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
+    f b = (b - a) • dslope f a b := by
+  by_cases h : b = a
+  · simp [h, hf]
+  · -- 正しく関数 f を渡して dslope を slope に展開する
+    rw [dslope_of_ne f h]
+    -- slope の定義（傾きの式）に強制的に書き換える
+    change f b = (b - a) • ((b - a)⁻¹ • (f b - f a))
+    -- (b - a) * (b - a)⁻¹ = 1 となることを用いて代数的に約分する
+    rw [← mul_smul, mul_inv_cancel₀ (sub_ne_zero.mpr h)]
+    rw [one_smul, hf, sub_zero]
+
+/-- If `f` and its first `n-1` iterated dslopes at `a` vanish,
+then `f b = (b - a) ^ n • (Function.swap dslope a)^[n] f b`. -/
+lemma eq_pow_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
+    (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
+    f b = (b - a) ^ n • (Function.swap dslope a)^[n] f b := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have h_lt : ∀ k < n, (Function.swap dslope a)^[k] f a = 0 :=
+      fun k hk => hf k (Nat.lt_trans hk (Nat.lt_succ_self n))
+    rw [ih h_lt]
+    have h_zero : (Function.swap dslope a)^[n] f a = 0 :=
+      hf n (Nat.lt_succ_self n)
+    have h_dslope := eq_smul_dslope_of_zero h_zero b
+    rw [h_dslope]
+    -- スカラー倍の結合法則と、累乗の定義を使って美しく整理する
+    rw [← mul_smul, ← pow_succ]
+    rw [Function.iterate_succ_apply']
