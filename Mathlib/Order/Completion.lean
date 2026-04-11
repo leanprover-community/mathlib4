@@ -220,9 +220,7 @@ theorem lt_iff_exists {a b : DedekindCut α} :
     a < b ↔ ∃ c, a < principal c ∧ principal c ≤ b := by
   refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ hca.trans_le hcb⟩
   rw [← extent_ssubset_extent_iff, Set.ssubset_iff_exists] at h
-  simp only [← not_le, principal_le_iff]
-  obtain ⟨c, hcb, hca⟩ := h.2
-  refine ⟨c, hca, hcb⟩
+  simpa [← not_le, principal_le_iff, and_comm] using h.2
 
 /-- Variant of `DedekindCut.lt_iff_exists` with `<` and `≤` swapped -/
 theorem lt_iff_exists' {a b : DedekindCut α} :
