@@ -93,8 +93,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
 
 /-- An encoding of terms as lists. -/
 @[simps]
-protected def encoding : Encoding (L.Term α) where
-  Γ := α ⊕ (Σ i, L.Functions i)
+protected def encoding : Encoding (L.Term α) (α ⊕ (Σ i, L.Functions i)) where
   encode := listEncode
   decode l := (listDecode l).head?.join
   decode_encode t := by
@@ -276,8 +275,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
 
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
-protected def encoding : Encoding (Σ n, L.BoundedFormula α n) where
-  Γ := (Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)
+protected def encoding : Encoding (Σ n, L.BoundedFormula α n)
+((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) where
   encode φ := φ.2.listEncode
   decode l := (listDecode l)[0]?
   decode_encode φ := by
@@ -293,7 +292,7 @@ theorem listEncode_sigma_injective :
 theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans ?_)
-  rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
+  rw [mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
     max_le_iff]
   refine ⟨?_, le_max_left _ _⟩
   rw [mk_sum, Term.card_sigma, mk_sum, ← add_eq_max le_rfl, mk_sum, mk_nat]
