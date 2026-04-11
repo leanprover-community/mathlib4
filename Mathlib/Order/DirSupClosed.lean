@@ -167,17 +167,17 @@ lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   simpa using hs.dirSupInaccOn.union ht.dirSupInaccOn (D := .univ)
 
-lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
-  fun _d _ hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
-
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  by simpa using hs.dirSupClosedOn (D := univ)
+	  fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
-lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
-  hs.compl.dirSupClosedOn.of_compl
+lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
+  hs.dirSupClosed.dirSupClosedOn
 
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
+
+lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
+  hs.compl.dirSupClosedOn.of_compl
 
 theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
     IsLUB s a ↔ IsLUB s b := by
