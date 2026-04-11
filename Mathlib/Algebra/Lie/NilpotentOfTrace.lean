@@ -62,9 +62,8 @@ section Lagrange
 variable {K : Type*} [Field K] [CharZero K]
 
 lemma exists_polynomial_eval_sub
-    {ι : Type*} [Finite ι]
-    (a : ι → K) (E : Submodule ℚ K) (f : E →ₗ[ℚ] ℚ)
-    (ha : ∀ i, a i ∈ E) :
+    {ι : Type*} [Finite ι] {E : Submodule ℚ K}
+    (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →ₗ[ℚ] ℚ) :
     ∃ r : Polynomial K,
       (∀ i j, eval (a i - a j) r =
         algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
@@ -131,7 +130,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (μ i - μ j) • v.end (i, j) := ad_diag_basis v μ s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
-  obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub μ E f hμ
+  obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub μ hμ f
   let ad_s := ad K (Module.End K M) s
   have had_y_eq : ad K (Module.End K M) y = aeval ad_s r := by
     apply v.end.ext; intro ⟨i, j⟩
