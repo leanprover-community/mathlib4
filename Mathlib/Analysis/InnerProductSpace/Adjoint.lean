@@ -277,6 +277,9 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
+@[simp] theorem adjoint_comp_self_eq_zero_iff {A : E →L[𝕜] F} :
+    adjoint A ∘L A = 0 ↔ A = 0 := by rw [← norm_eq_zero]; simp [norm_adjoint_comp_self]
+
 /-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousLinearMap.lean`. -/
 instance : CStarRing (E →L[𝕜] E) where
