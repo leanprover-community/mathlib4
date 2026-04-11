@@ -168,7 +168,7 @@ lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc 
   simpa using hs.dirSupInaccOn.union ht.dirSupInaccOn (D := .univ)
 
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-	  fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
+  fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
 lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
   hs.dirSupClosed.dirSupClosedOn
@@ -183,7 +183,7 @@ theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) 
     IsLUB s a ↔ IsLUB s b := by
   simp [isLUB_iff_le_iff, h.le_congr_left]
 
-private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
+theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
   apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton Std.Refl.refl a)
   rw [← isLUB_congr_of_antisymmRel h]
