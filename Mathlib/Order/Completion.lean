@@ -227,8 +227,7 @@ theorem lt_iff_exists' {a b : DedekindCut α} :
     a < b ↔ ∃ c, a ≤ principal c ∧ principal c < b := by
   refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ lt_of_le_of_lt hca hcb⟩
   rw [← intent_ssubset_intent_iff, Set.ssubset_iff_exists] at h
-  simp only [← not_le, le_principal_iff]
-  exact h.2
+  simpa [← not_le, le_principal_iff] using h.2
 
 noncomputable instance : CompleteLinearOrder (DedekindCut α) where
   __ := (inferInstance : LinearOrder _)
