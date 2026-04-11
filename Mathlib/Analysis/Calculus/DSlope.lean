@@ -148,15 +148,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 /-- If `f a = 0`, then `f b = (b - a) • dslope f a b`. -/
 lemma eq_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
     f b = (b - a) • dslope f a b := by
-  by_cases h : b = a
-  · simp [h, hf]
-  · -- 正しく関数 f を渡して dslope を slope に展開する
-    rw [dslope_of_ne f h]
-    -- slope の定義（傾きの式）に強制的に書き換える
-    change f b = (b - a) • ((b - a)⁻¹ • (f b - f a))
-    -- (b - a) * (b - a)⁻¹ = 1 となることを用いて代数的に約分する
-    rw [← mul_smul, mul_inv_cancel₀ (sub_ne_zero.mpr h)]
-    rw [one_smul, hf, sub_zero]
+  simp [hf]
 
 /-- If `f` and its first `n-1` iterated dslopes at `a` vanish,
 then `f b = (b - a) ^ n • (Function.swap dslope a)^[n] f b`. -/
