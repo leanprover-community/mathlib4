@@ -88,11 +88,11 @@ theorem coe_eq_zero_iff {x : ℝ} : (x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * 
 
 @[simp, norm_cast]
 theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
-  simpa only [nsmul_eq_mul] using coeHom.map_nsmul x n
+  simpa only [nsmul_eq_mul] using coeHom.map_nsmul n x
 
 @[simp, norm_cast]
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
-  simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
+  simpa only [zsmul_eq_mul] using coeHom.map_zsmul n x
 
 set_option backward.isDefEq.respectTransparency false in
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
