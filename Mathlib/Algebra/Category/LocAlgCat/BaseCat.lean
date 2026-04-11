@@ -10,7 +10,22 @@ public import Mathlib.Algebra.Category.LocAlgCat.Basic
 public import Mathlib.RingTheory.Length
 
 /-!
-# Results about `BaseCat`.
+# The Base Category for Deformation Theory
+
+This file introduces `BaseCat`, the base category used in formal deformation theory
+(e.g., for Schlessinger's criteria and Artin's axioms). It is defined as the full subcategory
+of `LocAlgCat Λ k` consisting of Artinian local rings.
+
+## Main Results
+
+* `BaseCat`: The category of Artinian local `Λ`-algebras with a fixed residue field `k`.
+
+* `BaseCat.IsSmallExtension`: The typeclass representing a small extension.
+  A morphism `f : A ⟶ B` is a small extension if it is surjective and its kernel is a principal
+  ideal annihilated by the maximal ideal of `A`.
+
+* `BaseCat.induction_on_isSmallExtension`: Any surjective morphism in `BaseCat` can
+  be factored into a finite composition of small extensions.
 
 -/
 
