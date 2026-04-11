@@ -51,6 +51,12 @@ lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
   · subst hjk; simp [hs i, sub_smul]
   · simp [hjk]
 
+/-- Trace-bracket identity on `Module.End K V`: `tr(⁅x, y⁆ * z) = tr(x * ⁅y, z⁆)`. -/
+lemma trace_lie_mul_eq (x y z : Module.End K V) :
+    LinearMap.trace K V (⁅x, y⁆ * z) = LinearMap.trace K V (x * ⁅y, z⁆) := by
+  simpa [LieModule.traceForm_apply_apply, ← Module.End.mul_eq_comp] using
+    LieModule.traceForm_apply_lie_apply K (Module.End K V) V x y z
+
 section Lagrange
 
 variable {K : Type*} [Field K] [CharZero K]
@@ -79,12 +85,6 @@ lemma exists_polynomial_eval_sub
     rw [map_zero, map_zero]
 
 end Lagrange
-
-/-- Trace-bracket identity on `Module.End K V`: `tr(⁅X, Y⁆ * Z) = tr(X * ⁅Y, Z⁆)`. -/
-lemma trace_lie_mul_eq (X Y Z : Module.End K V) :
-    LinearMap.trace K V (⁅X, Y⁆ * Z) = LinearMap.trace K V (X * ⁅Y, Z⁆) := by
-  simpa [LieModule.traceForm_apply_apply, ← Module.End.mul_eq_comp] using
-    LieModule.traceForm_apply_lie_apply K (Module.End K V) V X Y Z
 
 end NilpotentOfTrace
 
