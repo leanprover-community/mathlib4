@@ -12,7 +12,9 @@ public import Mathlib.Tactic.FunProp.Theorems
 ## `funProp` attribute
 -/
 
-public meta section
+set_option linter.privateModule false
+
+meta section
 
 namespace Mathlib
 open Lean Meta

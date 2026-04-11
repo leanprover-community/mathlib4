@@ -10,6 +10,6 @@ public import Aesop.Frontend
 
 /-! # Finiteness tactic attribute -/
 
-public meta section
+set_option linter.privateModule false
 
 declare_aesop_rule_sets [finiteness]

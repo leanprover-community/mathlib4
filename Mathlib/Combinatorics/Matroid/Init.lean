@@ -16,6 +16,6 @@ This module defines the `Matroid` Aesop rule set which is used by the
 they're declared is imported, so we must put this declaration into its own file.
 -/
 
-public section
+set_option linter.privateModule false
 
 declare_aesop_rule_sets [Matroid]
