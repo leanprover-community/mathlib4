@@ -32,7 +32,6 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
-
 open scoped Topology ContDiff
 
 namespace ImplicitFunctionData
