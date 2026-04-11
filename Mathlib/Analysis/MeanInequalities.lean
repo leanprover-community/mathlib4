@@ -506,15 +506,8 @@ bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `
 form a `Real.HolderTriple`. -/
 theorem Lr_rpow_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTriple q r) :
     ∑ i ∈ s, (f i * g i) ^ r ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
-  have := hpqr.holderConjugate_div_div
-  calc ∑ i ∈ s, (f i * g i) ^ r
-    _ = ∑ i ∈ s, (f i) ^ r * (g i) ^ r := s.sum_congr rfl fun i hi ↦ mul_rpow ..
-    _ ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
-      apply inner_le_Lp_mul_Lq s _ _ this |>.trans_eq
-      congr! 2
-      all_goals try simp only [fieldEq]
-      all_goals
-        refine s.sum_congr rfl fun i hi ↦ by simp [← rpow_mul, ← mul_div_assoc, hpqr.pos'.ne']
+  simpa [mul_rpow, ← NNReal.rpow_mul, ← mul_div_assoc, hpqr.pos'.ne', fieldEq] using
+    inner_le_Lp_mul_Lq s (fun i ↦ f i ^ r) (fun i ↦ g i ^ r) hpqr.holderConjugate_div_div
 
 /-- **Hölder inequality**: The `L^r` norm of the product of two functions is bounded by the
 product of their `L^p` and `L^q` norms when `p`, `q`, and `r` form a `Real.HolderTriple`. -/
@@ -771,9 +764,8 @@ to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued f
 theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i ∈ s, |f i + g i| ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, |f i| ^ p) ^ (1 / p) + (∑ i ∈ s, |g i| ^ p) ^ (1 / p) := by
-  have :=
-    NNReal.coe_le_coe.2
-      (NNReal.Lp_add_le s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩) hp)
+  have := NNReal.coe_le_coe.2
+    (NNReal.Lp_add_le s (fun i => .mk _ (abs_nonneg (f i))) (fun i => .mk _ (abs_nonneg (g i))) hp)
   push_cast at this
   refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
@@ -872,8 +864,7 @@ theorem Lr_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple q r) (hf : ∀ i, 
   have hf' : 0 ≤ ∑' i, f i ^ p := tsum_nonneg fun i ↦ rpow_nonneg (hf i) p
   have hg' : 0 ≤ ∑' i, g i ^ q := tsum_nonneg fun i ↦ rpow_nonneg (hg i) q
   have hr := hpqr.pos'
-  convert rpow_le_rpow_iff (tsum_nonneg fun i ↦ rpow_nonneg (mul_nonneg (hf i) (hg i)) r)
-    (by apply mul_nonneg; all_goals apply rpow_nonneg; assumption)
+  convert rpow_le_rpow_iff (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
     (inv_eq_one_div r ▸ inv_pos.mpr hr) |>.mpr <|
     Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum using 1
   rw [mul_rpow (rpow_nonneg hf' _) (rpow_nonneg hg' _), ← Real.rpow_mul hg', ← Real.rpow_mul hf']
