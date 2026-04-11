@@ -60,29 +60,38 @@ lemma trace_lie_mul_eq (x y z : Module.End K V) :
 
 section Lagrange
 
-variable {K : Type*} [Field K] [CharZero K]
+variable {K : Type*} [Field K]
 
-lemma exists_polynomial_eval_sub
-    {ι : Type*} [Finite ι] {E : Submodule ℚ K}
-    (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →ₗ[ℚ] ℚ) :
-    ∃ r : Polynomial K,
-      (∀ i j, eval (a i - a j) r =
-        algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩)) ∧ eval 0 r = 0 := by
+lemma exists_polynomial_eval_eq
+    {ι : Type*} [Finite ι] (a c : ι → K) (hwd : ∀ i j, a i = a j → c i = c j) :
+    ∃ q : Polynomial K, ∀ i, eval (a i) q = c i := by
   classical
   have : Fintype ι := Fintype.ofFinite ι
-  let diffs := insert 0 (Finset.univ.image fun (i, j) => a i - a j)
-  let g : K → K := fun d => if hd : d ∈ E then algebraMap ℚ K (f ⟨d, hd⟩) else 0
-  have hinj : Set.InjOn (fun d : K => d) diffs := Set.injOn_of_injective Function.injective_id
-  have hg : ∀ d (hd : d ∈ E), g d = algebraMap ℚ K (f ⟨d, hd⟩) := fun _ hd => dif_pos hd
-  have hmem : ∀ i j, a i - a j ∈ diffs :=
-    fun i j => Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨(i, j), Finset.mem_univ _, rfl⟩)
-  refine ⟨Lagrange.interpolate diffs (fun d : K => d) g, fun i j => ?_, ?_⟩
-  · rw [Lagrange.eval_interpolate_at_node g hinj (hmem i j), hg _ (E.sub_mem (ha i) (ha j))]
-    change algebraMap ℚ K (f (⟨a i, ha i⟩ - ⟨a j, ha j⟩)) = _
-    rw [map_sub, map_sub]
-  · rw [Lagrange.eval_interpolate_at_node g hinj (Finset.mem_insert_self 0 _), hg _ E.zero_mem]
-    change algebraMap ℚ K (f 0) = 0
-    rw [map_zero, map_zero]
+  let c_fn : K → K := fun d => if h : ∃ i, a i = d then c h.choose else 0
+  have hinj : Set.InjOn (fun d : K => d) (Finset.univ.image a) :=
+    Set.injOn_of_injective Function.injective_id
+  have hc_fn : ∀ i, c_fn (a i) = c i := fun i => by
+    have h : ∃ j, a j = a i := ⟨i, rfl⟩
+    change (if h : ∃ j, a j = a i then c h.choose else 0) = c i
+    rw [dif_pos h]
+    exact hwd _ _ h.choose_spec
+  refine ⟨Lagrange.interpolate (Finset.univ.image a) (fun d : K => d) c_fn, fun i => ?_⟩
+  have hmem : a i ∈ Finset.univ.image a := Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩
+  rw [Lagrange.eval_interpolate_at_node c_fn hinj hmem, hc_fn]
+
+lemma exists_polynomial_eval_sub [CharZero K]
+    {ι : Type*} [Finite ι] {E : Submodule ℚ K}
+    (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →ₗ[ℚ] ℚ) :
+    ∃ r : Polynomial K, ∀ i j, eval (a i - a j) r =
+      algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩) := by
+  have hwd : ∀ ij kl : ι × ι, a ij.1 - a ij.2 = a kl.1 - a kl.2 →
+      algebraMap ℚ K (f ⟨a ij.1, ha ij.1⟩) - algebraMap ℚ K (f ⟨a ij.2, ha ij.2⟩) =
+      algebraMap ℚ K (f ⟨a kl.1, ha kl.1⟩) - algebraMap ℚ K (f ⟨a kl.2, ha kl.2⟩) := by
+    rintro ⟨i, j⟩ ⟨k, l⟩ hij
+    have heq : (⟨a i, ha i⟩ - ⟨a j, ha j⟩ : E) = ⟨a k, ha k⟩ - ⟨a l, ha l⟩ := Subtype.ext hij
+    rw [← (algebraMap ℚ K).map_sub, ← (algebraMap ℚ K).map_sub, ← map_sub, ← map_sub, heq]
+  obtain ⟨r, hr⟩ := exists_polynomial_eval_eq _ _ hwd
+  exact ⟨r, fun i j => hr (i, j)⟩
 
 end Lagrange
 
@@ -130,7 +139,7 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (μ i - μ j) • v.end (i, j) := ad_diag_basis v μ s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
-  obtain ⟨r, hr_eval, _⟩ := exists_polynomial_eval_sub μ hμ f
+  obtain ⟨r, hr_eval⟩ := exists_polynomial_eval_sub μ hμ f
   let ad_X := ad K (Module.End K M) X
   let ad_s := ad K (Module.End K M) s
   let ad_y := ad K (Module.End K M) y
@@ -175,16 +184,13 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ K[s] := by
       rw [adjoin_singleton_eq_range_aeval]
-      let c_ext : K → K := fun ν => if hν : ν ∈ E then algebraMap ℚ K (f ⟨ν, hν⟩) else 0
-      let q := Lagrange.interpolate (Finset.univ.image μ) (fun d : K => d) c_ext
+      obtain ⟨q, hq⟩ := exists_polynomial_eval_eq μ c fun i j hij => by
+        have heq : (⟨μ i, hμ i⟩ : E) = ⟨μ j, hμ j⟩ := Subtype.ext hij
+        change algebraMap ℚ K (f ⟨μ i, hμ i⟩) = algebraMap ℚ K (f ⟨μ j, hμ j⟩)
+        rw [heq]
       refine ⟨q, v.ext fun i => ?_⟩
-      have hq : eval (μ i) q = c i := by
-        have hmem : μ i ∈ Finset.univ.image μ := Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩
-        have h := Lagrange.eval_interpolate_at_node c_ext
-          (Set.injOn_of_injective Function.injective_id) hmem
-        exact h.trans (dif_pos (hμ i))
       change (aeval s q) (v i) = y (v i)
-      rw [aeval_apply_of_mem_eigenspace (hv_diag i), hq, hy_diag i]
+      rw [aeval_apply_of_mem_eigenspace (hv_diag i), hq i, hy_diag i]
     exact commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K M (n * y) = 0 :=
     (isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
