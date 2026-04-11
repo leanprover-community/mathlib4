@@ -57,26 +57,27 @@ namespace PointedCone
 /-- The minimal tensor product of two cones is given by all conical combinations of elementary
 tensor products `x ⊗ₜ y` with `x ∈ C₁` and `y ∈ C₂`. -/
 noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
-    PointedCone R (G ⊗[R] H) :=
-  .hull R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
+    PointedCone R (G ⊗[R] H) := hull R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
 
 /-- The maximal tensor product of two cones is the dual (pointed cone) of the minimal tensor product
 of the dual cones. -/
 noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
-  .dual (dualDistrib R G H) (minTensorProduct (.dual (Dual.eval R G) C₁)
-    (.dual (Dual.eval R H) C₂))
+  dual (dualDistrib R G H) (minTensorProduct (dual (Dual.eval R G) C₁)
+    (dual (Dual.eval R H) C₂))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterization of the maximal tensor product: `z` lies in `maxTensorProduct C₁ C₂` iff
 all pairings with elementary dual tensors are nonnegative. -/
 @[simp]
 theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
     z ∈ maxTensorProduct (R := R) C₁ C₂ ↔
-      ∀ φ ∈ PointedCone.dual (Dual.eval R G) C₁,
-      ∀ ψ ∈ PointedCone.dual (Dual.eval R H) C₂,
+      ∀ φ ∈ dual (Dual.eval R G) C₁,
+      ∀ ψ ∈ dual (Dual.eval R H) C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_hull, mem_dual, Set.forall_mem_image2,
-    SetLike.mem_coe, mem_dual]
+  simp only [maxTensorProduct, minTensorProduct]
+  rw [← hull_eq C₁, ← hull_eq C₂, mem_dual_hull]
+  simp only [Set.forall_mem_image2, SetLike.mem_coe, mem_dual]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
