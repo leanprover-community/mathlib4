@@ -15,20 +15,17 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 
-# Separably generated extensions
+# Characterization of separably generated extensions
 
-We aim to formalize the following result:
-
-Let `K/k` be a finitely generated field extension with characteristic `p > 0`, then TFAE
-1. `K/k` is separably generated
-2. If `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
-  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent
-3. `K ⊗ₖ k^{1/p}` is reduced
-4. `K` is geometrically reduced over `k`.
-5. `k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`.
+In this file we prove for finitely generated field extension `K/k`,
+if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set implies
+`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
 ## Main result
-- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
+- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType`:
+  Suppose `k` has characteristic `p` and `K/k` is finitely generated.
+  Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
+  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
 -/
 
@@ -274,11 +271,9 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
 /--
 Suppose `k` has characteristic `p` and `K/k` is finitely generated.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
-`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent (which is true when `K ⊗ₖ k^{1/p}` is reduced).
+`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
-Then `K/k` is finite separably generated.
-
-TODO: show that this is an if and only if.
+For if and only if, see `Algebra.isTranscendentalSeparable_tfae`.
 -/
 @[stacks 030W "(2) ⇒ (1) finitely generated case"]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType
