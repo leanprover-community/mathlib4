@@ -90,7 +90,9 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  simpa [MulExact, Set.rangeFactorization, Subtype.ext_iff] using by rfl
+  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+  have : ((1 : Set.range g) : P) = 1 := rfl
+  simp [MulExact, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
