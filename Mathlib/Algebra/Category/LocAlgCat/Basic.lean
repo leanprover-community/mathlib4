@@ -13,21 +13,26 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
-# Basic Constructions and Lemmas in `LocAlgCat`
+# Basic Quotient Constructions in `LocAlgCat`
 
-* `LocAlgCat.ofQuot` : The quotient of an object `A` in `LocAlgCat` by a proper ideal `I`.
+This file develops several basic constructions for the category of
+local `Λ`-algebras with a fixed residue field.
 
-* `LocAlgCat.toOfQuot` : Upgrades the canonical quotient map from `A` to `A ⧸ I` to a morphism
-  in `LocAlgCat`.
+## Main Results
 
-* `LocAlgCat.mapOfQuot` : The morphism between quotient objects in `LocAlgCat` induced by
-  a morphism `f : A ⟶ B`. This is the categorical counterpart to `Ideal.quotientMapₐ`.
+* `LocAlgCat.ofQuot` : The object in `LocAlgCat` resulting from quotienting an
+  algebra `A` by a proper ideal `I`.
 
-* `LocAlgCat.infinitesimalNeighborhood` : The quotient of a local algebra by the `n`-th power of
-  its maximal ideal.
+* `LocAlgCat.toOfQuot` : The canonical projection morphism `A ⟶ A.ofQuot I`.
 
-* `LocAlgCat.specialFiber` : The special fiber of `A` over `Λ` when `Λ` is a local ring,
-  defined as the quotient by the extended maximal ideal of `Λ`.
+* `LocAlgCat.mapOfQuot` : The categorical morphism between quotient objects induced
+  by a morphism `f : A ⟶ B`. This is the categorical counterpart to `Ideal.quotientMapₐ`.
+
+* `LocAlgCat.infinitesimalNeighborhood` : The quotient of a local algebra by the
+  `n`-th power of its maximal ideal.
+
+* `LocAlgCat.specialFiber` : The special fiber of `A` over a local base ring `Λ`,
+  defined as the quotient of `A` by the extended maximal ideal of `Λ`.
 
 -/
 
