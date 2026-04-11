@@ -14,18 +14,18 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 /-!
 # The Category of Local Algebras with a Fixed Residue Field
 
-* `LocAlgCat` : The type of objects in the category of local `Λ`-algebras
-  with residue field `k`. An object of `LocAlgCat` consists of a local `Λ`-algebra `A` equipped
-  with a surjective residue map to `k`.
+* `LocAlgCat` : The type of objects in the category of local `Λ`-algebras with residue field `k`.
+  An object of `LocAlgCat` consists of a local `Λ`-algebra `A` equipped with
+  a surjective residue map to `k`.
 
 * `LocAlgCat.Hom` : The type of morphisms between objects in `LocAlgCat Λ k`.
   A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the residue maps.
 
 -/
 
-@[expose] public section
-
 universe w w' v u
+
+@[expose] public section
 
 open IsLocalRing CategoryTheory Function
 
