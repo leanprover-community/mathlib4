@@ -134,10 +134,6 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   let ad_X := ad K (Module.End K M) X
   let ad_s := ad K (Module.End K M) s
   let ad_y := ad K (Module.End K M) y
-  have had_y_eq : ad_y = aeval ad_s r := by
-    apply v.end.ext; intro ⟨i, j⟩
-    change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
-    rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
     commute_of_mem_adjoin_singleton_of_commute hs_adj (commute_of_mem_adjoin_self hn_adj).symm
   have h_ad_s_mem : ad_s ∈ K[ad_X] := by
@@ -159,6 +155,10 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     rintro _ ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
   have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
+    have had_y_eq : ad_y = aeval ad_s r := by
+      apply v.end.ext; intro ⟨i, j⟩
+      change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
+      rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
     have hp_ad_s : ad_s = aeval ad_X p := hp_eq.symm
     have had_y_X : ad_y = aeval ad_X (r.comp p) := by
       rw [had_y_eq, hp_ad_s, ← aeval_comp]
