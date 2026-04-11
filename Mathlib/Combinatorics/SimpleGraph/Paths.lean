@@ -785,15 +785,16 @@ theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆
 theorem edges_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
+@[simp]
+lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
+  grind [bypass, support_nil, SimpleGraph.irrefl]
+
+@[simp]
+lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
+  grind [p.bypass_isPath, isPath_iff_eq_nil]
+
 theorem IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
-  induction p with
-  | nil => rfl
-  | @cons u v w h p ih =>
-    simp only [bypass]
-    have hu : u ∉ p.support := ((p.cons_isPath_iff h).mp hp).right
-    have hu' : u ∉ p.bypass.support := List.notMem_subset p.support_bypass_subset hu
-    simp only [hu', reduceDIte, cons.injEq, heq_eq_eq, true_and]
-    exact ih hp.of_cons
+  induction p <;> grind [cons_isPath_iff, bypass]
 
 theorem bypass_eq_self_iff_isPath (p : G.Walk u v) : p.bypass = p ↔ p.IsPath := by
   constructor
