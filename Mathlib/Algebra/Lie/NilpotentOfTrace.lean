@@ -139,8 +139,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   have h_ad_s_mem : ad_s ∈ K[ad_X] := by
     have h := ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
     rwa [← hX_ns] at h
-  rw [adjoin_singleton_eq_range_aeval] at h_ad_s_mem
-  obtain ⟨p, hp_eq⟩ := h_ad_s_mem
+  obtain ⟨p, hp_eq⟩ := adjoin_mem_exists_aeval K ad_X h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
   let A : Submodule K (Module.End K M) :=
