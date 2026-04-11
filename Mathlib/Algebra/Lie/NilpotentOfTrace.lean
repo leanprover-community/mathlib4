@@ -18,14 +18,15 @@ public import Mathlib.LinearAlgebra.Trace
 /-!
 # Trace-nilpotency criterion
 
-Every element `x ∈ ⁅L, L⁆` lying in the kernel of `LieModule.traceForm K L M` acts nilpotently
-on `M`. This is the key technical lemma behind Cartan's criterion for solvability.
+If the trace form of a finite-dimensional representation of a Lie algebra `L` vanishes
+identically, then every element of `⁅L, L⁆` acts nilpotently. This is the key technical
+lemma behind Cartan's criterion.
 
 ## Main results
 
-* `LieModule.isNilpotent_toEnd_of_mem_ker_traceForm`: if `K` is an algebraically closed field of
-  characteristic zero and `M` is a finite-dimensional `L`-module, then any
-  `x ∈ (traceForm K L M).ker ⊓ ⁅L, L⁆` acts nilpotently on `M`.
+* `LieModule.isNilpotent_toEnd_of_traceForm_eq_zero_algClosed`: if `K` is an algebraically closed
+  field of characteristic zero, `M` is a finite-dimensional `L`-module with `traceForm K L M = 0`,
+  then every `x ∈ ⁅L, L⁆` acts nilpotently on `M`.
 
 ## References
 
@@ -90,19 +91,18 @@ end NilpotentOfTrace
 namespace LieModule
 
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
-/-- If `x` lies in `⁅L, L⁆` and in the kernel of `traceForm K L M`, then `x` acts nilpotently
+/-- If the trace form of `M` vanishes identically and `x ∈ ⁅L, L⁆`, then `x` acts nilpotently
 on `M`. -/
-theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
+theorem isNilpotent_toEnd_of_traceForm_eq_zero {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-    (x : L) (hx : x ∈ (traceForm K L M).ker ⊓ (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
+    (h : traceForm K L M = 0) (x : L) (hx : x ∈ (derivedSeries K L 1 : Submodule K L)) :
     _root_.IsNilpotent (toEnd K L M x) := by
   set X : Module.End K M := toEnd K L M x with hX_def
   rcases eq_or_ne X 0 with hX_zero | hX_ne
   · rw [hX_zero]; exact IsNilpotent.zero
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
-  obtain ⟨hx_ker, hx_der⟩ := hx
   classical
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
@@ -130,7 +130,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (μ i - μ j) • v.end (i, j) := ad_diag_basis v μ s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
-  obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub μ hμ f
+  obtain ⟨r, hr_eval, _⟩ := exists_polynomial_eval_sub μ hμ f
   let ad_X := ad K (Module.End K M) X
   let ad_s := ad K (Module.End K M) s
   let ad_y := ad K (Module.End K M) y
@@ -140,47 +140,34 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     have h := ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
     rwa [← hX_ns] at h
   obtain ⟨p, hp_eq⟩ := adjoin_mem_exists_aeval K ad_X h_ad_s_mem
-  have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
-    (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
-  let A : Submodule K (Module.End K M) :=
-    Submodule.map (toEnd K L M).toLinearMap (ker (traceForm K L M))
-  let B : Submodule K (Module.End K M) := range (toEnd K L M).toLinearMap
-  have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
-  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ ker (traceForm K L M) := fun b => by
-    have hx_zero : traceForm K L M x = 0 := hx_ker
-    rw [mem_ker]; ext z
-    rw [zero_apply, traceForm_apply_lie_apply, hx_zero, zero_apply]
-  have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
+  let g : Submodule K (Module.End K M) := (toEnd K L M).range.toSubmodule
+  have hxM : ∀ b ∈ g, ⁅X, b⁆ ∈ g := by
     rintro _ ⟨b, rfl⟩
-    exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
-  have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
+    exact ⟨⁅x, b⁆, LieHom.map_lie (toEnd K L M) x b⟩
+  have hyM : ∀ b ∈ g, ⁅y, b⁆ ∈ g := by
     have had_y_eq : ad_y = aeval ad_s r := by
       apply v.end.ext; intro ⟨i, j⟩
       change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
       rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
-    have hp_ad_s : ad_s = aeval ad_X p := hp_eq.symm
     have had_y_X : ad_y = aeval ad_X (r.comp p) := by
-      rw [had_y_eq, hp_ad_s, ← aeval_comp]
-    obtain ⟨q', hq'⟩ : (Polynomial.X : K[X]) ∣ r.comp p := by
-      rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
+      rw [had_y_eq, hp_eq.symm, ← aeval_comp]
     intro b hb
-    change ad_y b ∈ A
-    rw [had_y_X, hq', map_mul, aeval_X, mul_apply]
-    exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
+    change ad_y b ∈ g
+    rw [had_y_X]
+    exact aeval_apply_smul_mem_of_le_comap hb (r.comp p) _ fun _ hb' => hxM _ hb'
   have htr_xy : trace K M (X * y) = 0 := by
     have hcomm : ∀ a b : L, trace K M (toEnd K L M ⁅a, b⁆ * y) = 0 := fun a b => by
-      obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (mem_range_self _ b)
+      obtain ⟨c, hbc⟩ := hyM (toEnd K L M b) ((toEnd K L M).mem_range_self b)
       have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c := calc
         _ = -⁅y, toEnd K L M b⁆ := (lie_skew _ _).symm
         _ = -toEnd K L M c := neg_inj.mpr hbc.symm
       rw [LieHom.map_lie]
       refine (trace_lie_mul_eq _ _ _).trans ?_
-      rw [hbc', mul_neg, map_neg, neg_eq_zero, mul_eq_comp,
-        ← traceForm_apply_apply, traceForm_comm, hcI]
-      rfl
+      rw [hbc', mul_neg, map_neg, neg_eq_zero, mul_eq_comp, ← traceForm_apply_apply, h]
+      simp
     rw [hX_def]
     obtain ⟨coef, t, hts, _, hxeq⟩ := Submodule.mem_span_iff_exists_finset_subset.mp
-      ((LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤).le hx_der)
+      ((LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤).le hx)
     simp only [← hxeq, map_sum, Finset.sum_mul, map_smul, smul_mul_assoc, smul_eq_mul]
     refine Finset.sum_eq_zero fun z hz => ?_
     obtain ⟨a, _, b, _, rfl⟩ := hts hz
@@ -189,15 +176,15 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     have hy_adj : y ∈ adjoin K {s} := by
       rw [adjoin_singleton_eq_range_aeval]
       let c_ext : K → K := fun ν => if hν : ν ∈ E then algebraMap ℚ K (f ⟨ν, hν⟩) else 0
-      let g := Lagrange.interpolate (Finset.univ.image μ) (fun d : K => d) c_ext
-      refine ⟨g, v.ext fun i => ?_⟩
-      have hg : eval (μ i) g = c i := by
+      let q := Lagrange.interpolate (Finset.univ.image μ) (fun d : K => d) c_ext
+      refine ⟨q, v.ext fun i => ?_⟩
+      have hq : eval (μ i) q = c i := by
         have hmem : μ i ∈ Finset.univ.image μ := Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩
         have h := Lagrange.eval_interpolate_at_node c_ext
           (Set.injOn_of_injective Function.injective_id) hmem
         exact h.trans (dif_pos (hμ i))
-      change (aeval s g) (v i) = y (v i)
-      rw [aeval_apply_of_mem_eigenspace (hv_diag i), hg, hy_diag i]
+      change (aeval s q) (v i) = y (v i)
+      rw [aeval_apply_of_mem_eigenspace (hv_diag i), hq, hy_diag i]
     exact commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K M (n * y) = 0 :=
     (isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
