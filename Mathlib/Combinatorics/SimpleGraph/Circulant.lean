@@ -64,12 +64,17 @@ def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
   | _ + 2 => {
     Adj a b := a - b = 1 ∨ b - a = 1
     symm _ _ := Or.symm
-    loopless _ h := h.elim (by simp) (by simp)
+    loopless.irrefl _ h := h.elim (by simp) (by simp)
   }
 
 instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj
   | 0 | 1 => fun _ _ => inferInstanceAs (Decidable False)
   | _ + 2 => by unfold cycleGraph; infer_instance
+
+theorem cycleGraph_eq_circulantGraph (n : ℕ) : cycleGraph (n + 1) = circulantGraph {1} := by
+  cases n
+  · exact edgeFinset_inj.mp rfl
+  · aesop
 
 theorem cycleGraph_zero_adj {u v : Fin 0} : ¬(cycleGraph 0).Adj u v := id
 
