@@ -125,11 +125,11 @@ lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
 /-- The tensor product over `R` of the quotient of an `S`-algebra `A` by an ideal `I` with `T`
 is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def quotientTensorEquiv (I : Ideal A) :
-    (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) :=
-  { __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
-      (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
-      Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv <| (I.map_map _ _).symm
-    commutes' _ := rfl }
+    (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) where
+  __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
+    (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
+    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv <| (I.map_map _ _).symm
+  commutes' _ := rfl
 
 @[simp]
 lemma quotientTensorEquiv_apply_tmul (I : Ideal A) (a : A) (t : T) :
