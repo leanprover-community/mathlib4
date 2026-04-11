@@ -289,3 +289,16 @@ lemma Module.length_eq_finrank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
+
+theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A R] [Module A M]
+    [IsScalarTower A R M] (p : Submodule R M) :
+    Module.length R p ≤ Module.length A (p.restrictScalars A) := by
+  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+  exact Order.krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
+
+theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
+    (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
+  rw [Module.length_eq_add_of_exact p.subtype p.mkQ p.subtype_injective p.mkQ_surjective
+    (LinearMap.exact_subtype_mkQ p)]
+  exact ENat.lt_add_left Module.length_ne_top
+    (Module.length_pos_iff.mpr (nontrivial_iff_ne_bot.mpr h))
