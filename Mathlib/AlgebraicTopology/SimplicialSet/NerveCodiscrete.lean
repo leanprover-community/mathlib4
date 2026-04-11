@@ -28,9 +28,10 @@ variable {X : Type u} {n : ℕ}
 
 /-- Since the morphisms in a codiscrete category do not carry information, an n-simplex of
 coherentIso is equivalent to an X-vector of length (n + 1). -/
+@[simps!]
 def equivFun : nerve (Codiscrete X) _⦋n⦌ ≃ (Fin (n + 1) → X) where
-  toFun f n := (f.obj n).as
-  invFun f := .mk (fun n ↦ .mk (f n)) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  toFun f k := (f.obj k).as
+  invFun f := .mk (fun k ↦ .mk (f k)) (fun _ ↦ iso _ _|>.hom) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- If a type `X` has decidable equality, the nerve of the codiscrete category on `X`
 has decidable equality as well. -/
