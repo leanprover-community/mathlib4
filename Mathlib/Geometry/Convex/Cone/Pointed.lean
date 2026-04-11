@@ -181,6 +181,8 @@ notation:70 R:70 " ∙₊ " x:70 => hull R (singleton x)
 
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
+lemma hull_eq (C : PointedCone R E) : PointedCone.hull R C = C := span_eq C
+
 @[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
 alias subset_span := subset_hull
 
