@@ -6236,6 +6236,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 public import Mathlib.RingTheory.Artinian.Algebra
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Artinian.Ring
