@@ -480,6 +480,11 @@ alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
 alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
   IsWeightedHomogeneous.weightedHomogeneousComponent_ne
 
+lemma support_weightedHomogeneousComponent [DecidableEq M] {n : M} {p : MvPolynomial σ R} :
+    (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
+  ext c
+  simp [coeff_weightedHomogeneousComponent, And.comm]
+
 variable (R w)
 
 open DirectSum
