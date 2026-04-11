@@ -46,7 +46,7 @@ variable {X : Type*} [ObjectTypeclass X] {x : X}
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
-instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
+instance : PartialOrder (MySubobject X) := fast_instance% .ofSetLike (MySubobject X) X
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 

@@ -37,7 +37,7 @@ instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
   coe_injective' L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
-instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α) α
+instance : PartialOrder (BooleanSubalgebra α) := fast_instance% .ofSetLike (BooleanSubalgebra α) α
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 

@@ -148,7 +148,7 @@ lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
+instance : PartialOrder (NonUnitalSubsemiring R) := fast_instance% .ofSetLike (NonUnitalSubsemiring R) R
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]

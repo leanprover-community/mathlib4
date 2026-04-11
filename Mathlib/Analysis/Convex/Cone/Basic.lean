@@ -78,7 +78,7 @@ instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
   coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
-instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
+instance : PartialOrder (ProperCone R E) := fast_instance% .ofSetLike (ProperCone R E) E
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 

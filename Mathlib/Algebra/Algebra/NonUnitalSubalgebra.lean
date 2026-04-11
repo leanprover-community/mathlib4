@@ -90,7 +90,7 @@ lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodu
 lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
-instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A) A
+instance : PartialOrder (NonUnitalSubalgebra R A) := fast_instance% .ofSetLike (NonUnitalSubalgebra R A) A
 
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/

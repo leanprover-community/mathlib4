@@ -72,7 +72,7 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
-instance : PartialOrder (Opens α) := .ofSetLike (Opens α) α
+instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -457,7 +457,7 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
 
-instance : PartialOrder (OpenNhdsOf x) := .ofSetLike (OpenNhdsOf x) α
+instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩

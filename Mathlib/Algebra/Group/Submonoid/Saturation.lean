@@ -122,7 +122,7 @@ instance : SetLike (SaturatedSubmonoid M) M where
   coe_injective' _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
 
 @[to_additive]
-instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike ..
+instance : PartialOrder (SaturatedSubmonoid M) := fast_instance% .ofSetLike ..
 
 @[to_additive]
 lemma ext' {s₁ s₂ : SaturatedSubmonoid M} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=

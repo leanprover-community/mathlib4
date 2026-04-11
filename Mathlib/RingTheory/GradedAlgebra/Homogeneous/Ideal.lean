@@ -91,7 +91,7 @@ theorem HomogeneousIdeal.toIdeal_injective :
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
 
-instance : PartialOrder (HomogeneousIdeal 𝒜) := .ofSetLike (HomogeneousIdeal 𝒜) A
+instance : PartialOrder (HomogeneousIdeal 𝒜) := fast_instance% .ofSetLike (HomogeneousIdeal 𝒜) A
 
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=

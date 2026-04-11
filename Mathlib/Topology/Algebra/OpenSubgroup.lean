@@ -73,7 +73,7 @@ instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
-@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := fast_instance% .ofSetLike (OpenSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -402,7 +402,7 @@ instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
-@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := fast_instance% .ofSetLike (OpenNormalSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where

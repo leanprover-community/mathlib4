@@ -189,7 +189,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 
 @[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+instance : PartialOrder ZFSet.{u} := fast_instance% .ofSetLike ZFSet.{u} ZFSet.{u}
 
 @[deprecated SetLike.mem_coe (since := "2025-11-05")]
 theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=

@@ -70,7 +70,7 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
-instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
+instance : PartialOrder (Sylow p G) := fast_instance% .ofSetLike (Sylow p G) G
 
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _

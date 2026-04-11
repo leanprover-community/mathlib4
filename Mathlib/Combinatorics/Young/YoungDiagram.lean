@@ -75,7 +75,7 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
-instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+instance : PartialOrder YoungDiagram := fast_instance% .ofSetLike YoungDiagram (ℕ × ℕ)
 
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=

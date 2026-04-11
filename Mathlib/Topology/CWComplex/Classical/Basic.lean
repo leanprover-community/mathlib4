@@ -571,7 +571,7 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
-instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+instance : PartialOrder (Subcomplex C) := fast_instance% .ofSetLike (Subcomplex C) X
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 

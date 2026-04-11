@@ -161,7 +161,7 @@ instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P) α
+instance : PartialOrder (RelUpperSet P) := fast_instance% .ofSetLike (RelUpperSet P) α
 
 instance : SetLike (RelLowerSet P) α where
   coe := RelLowerSet.carrier

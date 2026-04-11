@@ -108,7 +108,7 @@ instance : SetLike (Ideal P) P where
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
+instance : PartialOrder (Ideal P) := fast_instance% .ofSetLike (Ideal P) P
 
 @[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
 

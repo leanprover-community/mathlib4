@@ -119,7 +119,7 @@ instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (NonUnitalStarSubalgebra R A) := .ofSetLike (NonUnitalStarSubalgebra R A) A
+instance : PartialOrder (NonUnitalStarSubalgebra R A) := fast_instance% .ofSetLike (NonUnitalStarSubalgebra R A) A
 
 /-- The actual `NonUnitalStarSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass`, `SMulMemClass` and `StarMemClass`. -/

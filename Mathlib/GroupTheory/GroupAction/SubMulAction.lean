@@ -212,7 +212,7 @@ variable [SMul R M]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M) M
+@[to_additive] instance : PartialOrder (SubMulAction R M) := fast_instance% .ofSetLike (SubMulAction R M) M
 
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _

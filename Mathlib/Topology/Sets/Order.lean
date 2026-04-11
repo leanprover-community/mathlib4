@@ -36,7 +36,7 @@ instance : SetLike (ClopenUpperSet α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α) α
+instance : PartialOrder (ClopenUpperSet α) := fast_instance% .ofSetLike (ClopenUpperSet α) α
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s

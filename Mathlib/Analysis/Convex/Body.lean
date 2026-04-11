@@ -64,7 +64,7 @@ instance : SetLike (ConvexBody V) V where
     cases L
     congr
 
-instance : PartialOrder (ConvexBody V) := .ofSetLike (ConvexBody V) V
+instance : PartialOrder (ConvexBody V) := fast_instance% .ofSetLike (ConvexBody V) V
 
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
