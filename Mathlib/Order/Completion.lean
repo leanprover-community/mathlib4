@@ -243,5 +243,4 @@ instance [DenselyOrdered α] : DenselyOrdered (DedekindCut α) where
     exact ⟨principal u, had.trans_lt (by simpa), hcb.trans_lt' (by simpa)⟩
 
 end LinearOrder
-
 end DedekindCut
