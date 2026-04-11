@@ -307,11 +307,10 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 
 end Rat
 
-#adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
 @[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
-  ⟨abs x, _root_.abs_nonneg x⟩
+  ⟨abs x, abs_nonneg x⟩
 
 @[norm_cast, simp]
 theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl

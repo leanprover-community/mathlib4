@@ -59,9 +59,6 @@ noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
   Functor.CommShift.ofInduced _ _ _ _
 
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
-doing so requires `allowUnsafeReducibility`. -/
-set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 
 namespace Quotient

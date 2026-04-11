@@ -39,11 +39,9 @@ def Hyperreal : Type :=
 
 noncomputable section
 
-#adaptation_note
-/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
-as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
-for adding this! -/
 namespace Hyperreal
+
+deriving instance Inhabited for Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
