@@ -5,8 +5,8 @@ Authors: Larsen Close
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+public import Mathlib.Algebra.Category.ModuleCat.ForgetCorepresentable
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
@@ -20,8 +20,7 @@ generator of `ℵ₀`-presentable objects.
 
 ## Main results
 
-- `ModuleCat.coyonedaObjIsoForget`: the functor `Hom(R, -)` is naturally isomorphic
-  to the forgetful functor `ModuleCat R ⥤ Type u`.
+- `ModuleCat.forgetAccessible`: the forgetful functor preserves filtered colimits.
 - `ModuleCat.isCardinalPresentable_self`: the free rank-1 module `R` is `ℵ₀`-presentable.
 - `ModuleCat.isLocallyFinitelyPresentable`: `ModuleCat R` is locally finitely
   presentable.
@@ -44,13 +43,6 @@ namespace ModuleCat
 
 variable (R : Type u) [CommRing R]
 
-/-- For `m : M`, the `R`-linear map `R → M` sending `r` to `r • m`.
-Maps from the free rank-1 module biject with elements via
-`LinearMap.ringLmapEquivSelf`. -/
-noncomputable def elementMap (M : ModuleCat.{u} R) (m : M) :
-    ModuleCat.of R R ⟶ M :=
-  ModuleCat.ofHom ((LinearMap.ringLmapEquivSelf R R M).symm m)
-
 /-- The forgetful functor `ModuleCat R → Type` preserves filtered colimits,
 hence is `ℵ₀`-accessible. -/
 noncomputable instance forgetAccessible :
@@ -60,16 +52,6 @@ noncomputable instance forgetAccessible :
     have : IsFiltered J := isFiltered_of_isCardinalFiltered J ℵ₀
     exact PreservesFilteredColimitsOfSize.preserves_filtered_colimits
       (F := forget (ModuleCat.{u} R)) J⟩
-
-/-- The functor `Hom(R, -)` is naturally isomorphic to the forgetful functor
-`ModuleCat R ⥤ Type u`. The equivalence at each component sends a linear map
-`f : R →ₗ[R] M` to `f(1)`. -/
-noncomputable def coyonedaObjIsoForget :
-    coyoneda.obj (op (ModuleCat.of R R)) ≅ forget (ModuleCat.{u} R) :=
-  NatIso.ofComponents
-    (fun M ↦ (ConcreteCategory.homEquiv.trans
-      (LinearMap.ringLmapEquivSelf R R M).toEquiv).toIso)
-    (fun {X Y} f => by ext g; exact ConcreteCategory.comp_apply g f 1)
 
 /-- The free rank-1 module `R` is `ℵ₀`-presentable: `Hom(R, -)` preserves
 filtered colimits because it identifies with the forgetful functor. -/
