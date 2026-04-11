@@ -11,7 +11,8 @@ public import Mathlib.Algebra.Group.Units.ULift
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
-/-! # The Category of Local Algebras with a Fixed Residue Field
+/-!
+# The Category of Local Algebras with a Fixed Residue Field
 
 * `LocAlgCat` : The type of objects in the category of local `Λ`-algebras
   with residue field `k`. An object of `LocAlgCat` consists of a local `Λ`-algebra `A` equipped
@@ -19,11 +20,12 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 * `LocAlgCat.Hom` : The type of morphisms between objects in `LocAlgCat Λ k`.
   A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the residue maps.
+
 -/
 
-universe w w' v u
-
 @[expose] public section
+
+universe w w' v u
 
 open IsLocalRing CategoryTheory Function
 
