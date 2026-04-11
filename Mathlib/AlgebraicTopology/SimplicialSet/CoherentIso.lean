@@ -44,8 +44,6 @@ namespace WalkingIso
 /-- The underlying type of `WalkingIso` is equivalent to `Bool`, since they both have 2 elements. -/
 def equivBool : WalkingIso.{w} ≃ Bool := codiscreteEquiv.trans Equiv.ulift
 
-instance homUnique {x y : WalkingIso.{w}} : Unique (x ⟶ y) := inferInstanceAs (Unique Unit)
-
 section
 
 variable {C : Type u} [Category.{v} C]
