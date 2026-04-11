@@ -140,8 +140,7 @@ variable [Semiring R] [NoZeroDivisors R]
 
 instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    let : LinearOrder σ := (exists_wellFoundedGT σ).choose
-    have : WellFoundedGT σ := (exists_wellFoundedGT σ).choose_spec
+    rcases exists_wellFoundedGT σ
     simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
 
 theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
