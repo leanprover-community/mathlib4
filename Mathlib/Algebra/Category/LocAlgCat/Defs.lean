@@ -6,11 +6,10 @@ Authors: Bingyu Xia
 
 module
 
-public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Group.Units.ULift
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.Algebra.Group.Units.ULift
 
 /-! # The Category of Local Algebras with a Fixed Residue Field
 
@@ -20,7 +19,6 @@ public import Mathlib.Algebra.Group.Units.ULift
 
 * `LocAlgCat.Hom` : The type of morphisms between objects in `LocAlgCat Λ k`.
   A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the residue maps.
-
 -/
 
 universe w w' v u
@@ -111,7 +109,7 @@ compatible with the residue maps. -/
 structure Hom (A B : LocAlgCat.{w} Λ k) where
   /-- The underlying algebra map. -/
   toAlgHom : A →ₐ[Λ] B
-  -- This is intended to avoid introducing `IsLocalHom` instances for `AlgHom`.
+  -- We do not use `IsLocalHom` in order to avoid introducing `IsLocalHom` instances for `AlgHom`.
   comap_maximalIdeal_eq : (maximalIdeal B).comap toAlgHom = maximalIdeal A
   residue_comp : B.residue.comp toAlgHom = A.residue
 
@@ -133,14 +131,6 @@ lemma Hom.map_maximalIdeal_le (f : A ⟶ B) :
   rw [AlgHom.toRingHom_eq_coe, Ideal.comap_coe, Ideal.map_coe] at this
   rw [← this]; exact f.comap_maximalIdeal_eq
 
-instance : FunLike (Hom A B) A B where
-  coe f := f.toAlgHom
-  coe_injective' _ _ := by simpa using Hom.ext
-
-instance : ConcreteCategory (LocAlgCat.{w} Λ k) Hom where
-  hom := id
-  ofHom := id
-
 /-- Typecheck an `AlgHom` compatible with residue maps as a morphism in `LocAlgCat`. -/
 abbrev ofHom (f : X →ₐ[Λ] Y) (h : (maximalIdeal Y).comap f = maximalIdeal X)
     (h' : (of Λ k Y hY).residue.comp f = (of Λ k X hX).residue) : of Λ k X hX ⟶ of Λ k Y hY :=
@@ -153,12 +143,9 @@ lemma ofhom_toAlgHom (f : A ⟶ B) : ofHom f.toAlgHom f.comap_maximalIdeal_eq f.
 @[simp]
 lemma hom_id : (𝟙 A : A ⟶ A).toAlgHom = AlgHom.id Λ A := rfl
 
-lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
-
 @[simp]
-lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).toAlgHom = g.toAlgHom.comp f.toAlgHom := rfl
-
-lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
+lemma toAlgHom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).toAlgHom = g.toAlgHom.comp f.toAlgHom :=
+  rfl
 
 @[simp]
 lemma ofHom_id : ofHom (.id Λ X) (by simp) (by simp) = 𝟙 (of Λ k X hX) := rfl
@@ -171,34 +158,17 @@ lemma ofHom_comp (f : X →ₐ[Λ] Y) (hf : (maximalIdeal Y).comap f = maximalId
       (by rw [← Ideal.comap_comapₐ, hg, hf] ) (by rw [← AlgHom.comp_assoc, hg', hf']) =
         ofHom f hf hf' ≫ ofHom g hg hg' := rfl
 
-lemma ofHom_apply (f : X →ₐ[Λ] Y) (h : (maximalIdeal Y).comap f = maximalIdeal X)
+lemma ofHom_toAlgHom_apply (f : X →ₐ[Λ] Y) (h : (maximalIdeal Y).comap f = maximalIdeal X)
     (h' : (of Λ k Y hY).residue.comp f = (of Λ k X hX).residue) (x : X) :
-    ofHom f h h' x = f x := rfl
-
-lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by simp
-
-lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
-
-variable (A) in
-lemma forget_obj : (forget (LocAlgCat.{w} Λ k)).obj A = A := rfl
-
-instance : CommRing ((forget (LocAlgCat.{w} Λ k)).obj A) := inferInstanceAs <| CommRing A
-
-instance : Algebra Λ ((forget (LocAlgCat.{w} Λ k)).obj A) := inferInstanceAs <| Algebra Λ A
-
-instance : IsLocalRing ((forget (LocAlgCat.{w} Λ k)).obj A) := inferInstanceAs <| IsLocalRing A
-
-instance hasForgetToCommAlgCat : HasForget₂ (LocAlgCat.{w} Λ k) (CommAlgCat.{w} Λ) where
-  forget₂.obj A := .of Λ A
-  forget₂.map f := CommAlgCat.ofHom f.toAlgHom
+    (ofHom f h h').toAlgHom x = f x := rfl
 
 @[simp]
-lemma forget₂_commAlgCat_obj (A : LocAlgCat.{w} Λ k) :
-    (forget₂ (LocAlgCat.{w} Λ k) (CommAlgCat.{w} Λ)).obj A = .of Λ A := rfl
+lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv.toAlgHom (e.hom.toAlgHom x) = x := by
+  simp [← AlgHom.comp_apply, ← toAlgHom_comp]
 
 @[simp]
-lemma forget₂_commAlgCat_map (f : A ⟶ B) :
-    (forget₂ (LocAlgCat.{w} Λ k) (CommAlgCat.{w} Λ)).map f = CommAlgCat.ofHom f.toAlgHom := rfl
+lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom.toAlgHom (e.inv.toAlgHom x) = x := by
+  simp [← AlgHom.comp_apply, ← toAlgHom_comp]
 
 /-- Build an isomorphism in the category `LocAlgCat` from an `AlgEquiv` between `Λ`-algebras. -/
 @[simps]
@@ -216,8 +186,8 @@ def isoMk {X Y : Type w} {_ : CommRing X} {_ : IsLocalRing X} {_ : Algebra Λ X}
 @[simps]
 def ofIso (i : A ≅ B) : A ≃ₐ[Λ] B where
   __ := i.hom.toAlgHom
-  toFun := i.hom
-  invFun := i.inv
+  toFun := i.hom.toAlgHom
+  invFun := i.inv.toAlgHom
   left_inv x := by simp
   right_inv x := by simp
 
@@ -233,6 +203,22 @@ def isoEquivSubtypeAlgEquiv : (of Λ k X hX ≅ of Λ k Y hY) ≃
     { e : X ≃ₐ[Λ] Y // (of Λ k Y hY).residue.comp e = (of Λ k X hX).residue } where
   toFun i := ⟨ofIso i, residue_comp_coe_ofIso i⟩
   invFun f := isoMk f.val f.prop
+
+variable (Λ k) in
+/-- Universe lift functor for `LocAlgCat`. -/
+def uliftFunctor : LocAlgCat.{w} Λ k ⥤ LocAlgCat.{max w w'} Λ k where
+  obj A :=
+    letI : Algebra (ULift.{w'} A) k := ULift.algebra' ..
+    haveI : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
+    of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.surj r)
+  map {A B} f :=
+    letI : Algebra (ULift.{w'} A) k := ULift.algebra' ..
+    haveI : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
+    letI : Algebra (ULift.{w'} B) k := ULift.algebra' ..
+    haveI : IsScalarTower Λ (ULift.{w'} B) k := ULift.isScalarTower' ..
+    ofHom (ULift.algEquiv.symm.toAlgHom.comp <| f.toAlgHom.comp ULift.algEquiv.toAlgHom) (by
+      have := f.isLocalHom_toAlgHom
+      ext; simp) (by ext x; simpa using DFunLike.congr_fun f.residue_comp x.down)
 
 variable (Λ k) in
 /-- The universe lift functor for `LocAlgCat` is fully faithful. -/
@@ -253,3 +239,5 @@ def fullyFaithfulUliftFunctor : (uliftFunctor Λ k).FullyFaithful where
 instance : (uliftFunctor Λ k).Full := (fullyFaithfulUliftFunctor Λ k).full
 
 instance : (uliftFunctor Λ k).Faithful := (fullyFaithfulUliftFunctor Λ k).faithful
+
+end LocAlgCat
