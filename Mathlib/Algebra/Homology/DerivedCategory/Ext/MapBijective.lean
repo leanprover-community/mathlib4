@@ -40,11 +40,11 @@ variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteCo
 attribute [local simp] Ext.mapExactFunctor_comp Ext.mapExactFunctor_mk₀ Ext.mapExactFunctor_extClass
 
 attribute [local instance] Ext.subsingleton_of_projective in
-lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+lemma Functor.mapExt_bijective_of_preservesProjectiveObjects [F.Full] [F.Faithful] [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing X with
-  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | zero => simpa [Ext.mapExactFunctor₀] using ⟨Faithful.map_injective, Full.map_surjective⟩
   | succ n hn =>
     let P : ProjectivePresentation X := Classical.arbitrary _
     let S := ShortComplex.mk _ _ (kernel.condition P.f)
@@ -62,11 +62,11 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
       (fun y₃ ↦ Ext.contravariant_sequence_exact₃ (hS.map F) _ y₃ (by subsingleton) (add_comm 1 n))
 
 attribute [local instance] Ext.subsingleton_of_injective in
-lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+lemma Functor.mapExt_bijective_of_preservesInjectiveObjects [F.Full] [F.Faithful] [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing Y with
-  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | zero => simpa [Ext.mapExactFunctor₀] using ⟨Faithful.map_injective, Full.map_surjective⟩
   | succ n hn =>
     let I : InjectivePresentation Y := Classical.arbitrary _
     let S := ShortComplex.mk _ _ (cokernel.condition I.f)
