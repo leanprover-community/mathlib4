@@ -111,7 +111,6 @@ theorem aeval_of_algebraicIndependent
   intro p hp
   exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
 
-set_option backward.isDefEq.respectTransparency false in
 omit hx in
 /-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
 `{f_i : MvPolynomial ι R | i : ι}` is also algebraically independent over `R`.
@@ -134,7 +133,6 @@ theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trd
   have := isEmpty_algebraicIndependent h
   rw [trdeg, ciSup_of_empty, bot_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]

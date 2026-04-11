@@ -62,7 +62,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
-    push_neg at hn_min
+    push Not at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
   grind
@@ -121,7 +121,7 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
     (eventually_all_finite ht).2 fun m _ => (eventually_gt_atTop m).and (hr _)
   rcases seq_of_forall_finite_exists fun t ht => (this t ht).exists with ⟨φ, hφ⟩
   simp only [forall_mem_image, forall_and, mem_Iio] at hφ
-  exact ⟨φ, forall_swap.2 hφ.1, forall_swap.2 hφ.2⟩
+  exact ⟨φ, forall_comm.2 hφ.1, forall_comm.2 hφ.2⟩
 
 end Filter
 

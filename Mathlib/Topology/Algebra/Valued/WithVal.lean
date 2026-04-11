@@ -267,7 +267,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S where
-  __ := inferInstanceAs (Module (WithVal v) S)
+  __ := (inferInstance : Module (WithVal v) S)
   __ := Algebra.compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :
@@ -292,8 +292,6 @@ theorem algebraMap_right_apply (r : R) :
 
 theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap R (WithVal v)) := (toVal_injective v).comp h
-
-variable {R : Type*} [CommRing R] (v : Valuation R Γ₀) (w : Valuation S Γ₀) [Algebra R S]
 
 end right
 
