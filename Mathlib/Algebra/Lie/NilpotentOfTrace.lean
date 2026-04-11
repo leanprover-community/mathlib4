@@ -113,7 +113,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range μ)
   suffices hs_zero : s = 0 by rw [hX_ns, hs_zero, add_zero]; exact hn_nil
-  suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
+  suffices h_f_zero : ∀ f : Module.Dual ℚ E, f = 0 by
     have : Subsingleton E :=
       (subsingleton_dual_iff ℚ).mp ⟨fun a b => by rw [h_f_zero a, h_f_zero b]⟩
     refine hs_ss.eq_zero_iff_forall_eigenvalue.mpr fun ν hν => ?_
