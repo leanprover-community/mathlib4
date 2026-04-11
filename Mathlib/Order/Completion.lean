@@ -112,9 +112,8 @@ lemma principal_le_iff {a : α} {c : DedekindCut α} :
 
 lemma le_principal_iff {a : α} {c : DedekindCut α} :
     c ≤ principal a ↔ a ∈ c.right := by
-  simp only [← DedekindCut.upperBounds_left, mem_upperBounds,
-    ← extent_subset_extent_iff, left_principal]
-  exact ⟨fun h _ hx ↦ h hx, fun h x hx ↦ h x hx⟩
+  simp only [← intent_subset_intent_iff, right_principal]
+  exact ⟨fun h ↦ h self_mem_Ici, fun h _y hy ↦ mem_intent_of_intent_rel hy h⟩
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
