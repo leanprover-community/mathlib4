@@ -169,7 +169,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {α} {c : ClosureOperator α} {x y : α}
+variable {α} [PartialOrder α] {c : ClosureOperator α} {x y : α}
 
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
 @[simps]
