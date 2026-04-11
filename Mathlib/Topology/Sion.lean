@@ -488,9 +488,8 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
   (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
 
-/- The following lines essentially assume that `β` has a Dedekind MacNeille completion,
-but this is not in mathlib yet.
-One could then take `ι` to be the embedding of `β` into its DM completion. -/
+/- The following lines essentially assume that `β` has a densely ordered completion.
+(The Dedekind MacNeille completion is not densely ordered.) -/
 variable [TopologicalSpace β] [OrderTopology β]
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
   [TopologicalSpace γ] [OrderTopology γ]
@@ -544,53 +543,5 @@ public theorem exists_isSaddlePointOn :
     (ι := EReal.orderEmbedding) (hι := continuous_coe_real_ereal)
 
 end Real
-
-namespace General
-
-variable {E F β : Type*} [LinearOrder β]
-variable {X : Set E} {Y : Set F} {f : E → F → β}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-    [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
-    (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
-    (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
-    (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
-
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
-  (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
-  (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
-  (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
-
-variable (β) in
-abbrev emb := DedekindCut (β ×ₗ ℚ)
-
-noncomputable example : CompleteLinearOrder (emb β) :=
-  DedekindCut.instCompleteLinearOrder
-
-noncomputable example : DenselyOrdered (emb β) :=
-  DedekindCut.instDenselyOrdered
-
-example :
-    let _ : TopologicalSpace (emb β) := Preorder.topology (emb β)
-    OrderTopology (emb β) := by
-  exact
-    let x := Preorder.topology (emb β);
-    { topology_eq_generate_intervals := rfl }
-
-open DedekindCut
-
-include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
-/-- The minimax theorem, in the saddle point form -/
-public theorem exists_isSaddlePointOn :
-    ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b :=
-  let γ := DedekindCut (β ×ₗ ℚ)
-  let _ : TopologicalSpace β := Preorder.topology β
-  let _ : TopologicalSpace γ := Preorder.topology γ
-  have : OrderTopology β := { topology_eq_generate_intervals := rfl }
-  have : OrderTopology γ := { topology_eq_generate_intervals := rfl }
-  let ι : β ↪o γ := DedekindCut.embedLex 0
-  have hι : Continuous ι := by sorry
-  DMCompletion.exists_isSaddlePointOn ne_X cX kX hfy hfy' cY ne_Y kY hfx hfx' hι
-
 
 end Sion
