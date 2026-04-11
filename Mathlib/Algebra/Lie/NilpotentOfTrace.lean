@@ -18,15 +18,14 @@ public import Mathlib.LinearAlgebra.Trace
 /-!
 # Trace-nilpotency criterion
 
-For a Lie ideal `I` contained in the kernel of `LieModule.traceForm K L M`, every element
-`x ∈ I ⊓ ⁅L, L⁆` acts nilpotently on `M`. This is the key technical lemma behind Cartan's
-criterion for solvability.
+Every element `x ∈ ⁅L, L⁆` lying in the kernel of `LieModule.traceForm K L M` acts nilpotently
+on `M`. This is the key technical lemma behind Cartan's criterion for solvability.
 
 ## Main results
 
 * `LieModule.isNilpotent_toEnd_of_mem_ker_traceForm`: if `K` is an algebraically closed field of
-  characteristic zero and `M` is a finite-dimensional `L`-module, then any `x` lying in a Lie
-  ideal `I ≤ (traceForm K L M).ker` and in `⁅L, L⁆` acts nilpotently on `M`.
+  characteristic zero and `M` is a finite-dimensional `L`-module, then any
+  `x ∈ (traceForm K L M).ker ⊓ ⁅L, L⁆` acts nilpotently on `M`.
 
 ## References
 
@@ -86,16 +85,20 @@ end NilpotentOfTrace
 namespace LieModule
 
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
-/-- If `I` is a Lie ideal contained in the kernel of `traceForm K L M`, then every
-`x ∈ I ⊓ ⁅L, L⁆` acts nilpotently on `M`. -/
+/-- If `x` lies in `⁅L, L⁆` and in the kernel of `traceForm K L M`, then `x` acts nilpotently
+on `M`. -/
 theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-    (I : LieIdeal K L) (hI : I ≤ (traceForm K L M).ker)
-    (x : L) (hx : x ∈ I ⊓ LieAlgebra.derivedSeries K L 1) :
+    (x : L) (hx : x ∈ (traceForm K L M).ker ⊓
+      (LieAlgebra.derivedSeries K L 1 : Submodule K L)) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  obtain ⟨hxI, hx_der⟩ := (LieSubmodule.mem_inf (N := I) (N' := derivedSeries K L 1) x).mp hx
+  obtain ⟨hx_ker, hx_der⟩ := Submodule.mem_inf.mp hx
+  have hx_ker' : traceForm K L M x = 0 := hx_ker
+  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ LinearMap.ker (traceForm K L M) := fun b => by
+    rw [LinearMap.mem_ker]; ext z
+    rw [LinearMap.zero_apply, traceForm_apply_lie_apply, hx_ker', LinearMap.zero_apply]
   set X : Module.End K M := toEnd K L M x with hX_def
   rcases eq_or_ne X 0 with hX0 | hX_ne
   · rw [hX0]; exact IsNilpotent.zero
@@ -141,12 +144,13 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   obtain ⟨p, hp_eq⟩ := h_ad_s_mem
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
-  let A : Submodule K (Module.End K M) := Submodule.map (toEnd K L M).toLinearMap I
+  let A : Submodule K (Module.End K M) :=
+    Submodule.map (toEnd K L M).toLinearMap (LinearMap.ker (traceForm K L M))
   let B : Submodule K (Module.End K M) := LinearMap.range (toEnd K L M).toLinearMap
   have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
   have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
     rintro _ ⟨b, rfl⟩
-    exact ⟨⁅x, b⁆, lie_mem_left K L I x b hxI, LieHom.map_lie (toEnd K L M) x b⟩
+    exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
   have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
     have hp_ad_s : ad_s = aeval (ad K _ X) p := hp_eq.symm
     have had_y_X : ad K _ y = aeval (ad K _ X) (r.comp p) := by
@@ -176,7 +180,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     refine hcyc.trans ?_
     rw [hbc', mul_neg, map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply,
       traceForm_comm]
-    exact LinearMap.congr_fun (hI hcI) a
+    exact LinearMap.congr_fun hcI a
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ adjoin K {s} := by
       rw [adjoin_singleton_eq_range_aeval]
