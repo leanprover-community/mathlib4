@@ -297,6 +297,7 @@ public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Ring.Common
 public import Mathlib.Tactic.Ring.Compare
 public import Mathlib.Tactic.Ring.NamePolyVars
+public import Mathlib.Tactic.Ring.NamePowerVars
 public import Mathlib.Tactic.Ring.PNat
 public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Tactic.Sat.FromLRAT

@@ -74,16 +74,16 @@ theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
-  LieSubalgebra.lieRing R L ↑I
+  inferInstanceAs <| LieRing I.toLieSubalgebra
 
 /-- Transfer the `LieAlgebra` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
-  LieSubalgebra.lieAlgebra R L ↑I
+  inferInstanceAs <| LieAlgebra R I.toLieSubalgebra
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
-  LieSubalgebra.lieRingModule (I : LieSubalgebra R L)
+  inferInstanceAs <| LieRingModule I.toLieSubalgebra M
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
