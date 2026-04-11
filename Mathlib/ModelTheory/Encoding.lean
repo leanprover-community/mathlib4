@@ -276,7 +276,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
 protected def encoding : Encoding (Σ n, L.BoundedFormula α n)
-((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) where
+    ((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) where
   encode φ := φ.2.listEncode
   decode l := (listDecode l)[0]?
   decode_encode φ := by
