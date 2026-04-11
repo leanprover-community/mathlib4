@@ -327,6 +327,8 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S]
     exact isReduced_of_injective _ this
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
+section charp
+
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
 variable (p : ℕ) [ExpChar k p]
@@ -442,8 +444,33 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     <;> simp
   tfae_finish
 
-/-
+end charp
+
+lemma Algebra.isSeparablyGenerated_of_charZero [CharZero k] : Algebra.IsSeparablyGenerated k K := by
+  rcases exists_isTranscendenceBasis' k K with ⟨ι, f, isT⟩
+  use ι, f, isT
+  have : Algebra.IsAlgebraic (IntermediateField.adjoin k (Set.range f)) K := isT.isAlgebraic_field
+  exact Algebra.IsSeparable.of_integral _ K
+
+lemma Algebra.isTranscendentalSeparable_of_charZero [CharZero k] :
+    Algebra.IsTranscendentalSeparable k K :=
+  ⟨fun L _ ↦ isSeparablyGenerated_of_charZero k L⟩
+
+lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSeparablyGenerated k K] :
+    Algebra.IsTranscendentalSeparable k K := by
+  rcases CharP.exists' k with char0|⟨p, prime, charp⟩
+  · exact Algebra.isTranscendentalSeparable_of_charZero k K
+  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
+    have := tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced k (adjoinPthRoots k p) K
+    exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ _).injective
+
 lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
     {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
-  sorry
--/
+  rcases CharP.exists' k with char0|⟨p, prime, charp⟩
+  · exact Algebra.isTranscendentalSeparable_of_charZero k K
+  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
+    have perf : PerfectRing k p := inferInstance
+    have bij : Function.Bijective (Algebra.ofId k (adjoinPthRoots k p)) := perf.bijective_frobenius
+    let e := (Algebra.TensorProduct.congr (AlgEquiv.ofBijective _ bij).symm AlgEquiv.refl).trans
+      (Algebra.TensorProduct.lid k K)
+    exact isReduced_of_injective _ e.injective
