@@ -108,8 +108,24 @@ end LinearIndependent
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Nontrivial R]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
+theorem exists_set_of_lt_lift_rank {α : Cardinal.{w}}
+    (h : Cardinal.lift.{v} α < Cardinal.lift.{w} (Module.rank R M)) :
+    ∃ s : Set M, Cardinal.lift.{w} (Cardinal.mk s) = Cardinal.lift.{v} α ∧
+                 LinearIndepOn R id s := by
+  rcases Cardinal.lt_lift_iff.mp h with ⟨α', hα', hαα'⟩
+  rcases exists_lt_of_lt_ciSup (by simpa [← hαα', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
+  rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
+  exact ⟨t, by simp [ht, hαα'], hs.mono hst⟩
+
+theorem exists_set_of_lt_rank {α : Cardinal.{v}} (h : α < (Module.rank R M)) :
+    ∃ s : Set M, (Cardinal.mk s) = α ∧ LinearIndepOn R id s := by
+  simpa using exists_set_of_lt_lift_rank (Cardinal.lift_lt.mpr h)
+
+variable [Nontrivial R]
+
+-- TODO : the forward directions of the next few theorems don't need [Nontrivial R]
 /-- Note: if the rank of a module is infinite, it may not contain a linear independent subset
 with cardinality equal to the rank, see
 https://mathoverflow.net/questions/263020/maximum-cardinal-of-a-set-of-linearly-independent-vectors-in-a-module. -/
