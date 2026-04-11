@@ -277,6 +277,56 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B L).injective
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
+lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S] [IsReduced S]
+    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K] :
+    IsReduced (TensorProduct k K S) := by
+  refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun B hB ↦ ?_)
+  have : Algebra.FiniteType k B := (Subalgebra.fg_iff_finiteType B).mp hB
+  have : IsReduced B := isReduced_of_injective B.val Subtype.val_injective
+  have : IsReduced (TensorProduct k B K) := by
+    refine IsReduced.tensorProduct_of_forall_fg_intermediateField (fun L ⟨G, hG⟩ ↦ ?_)
+    rcases ‹Algebra.IsSeparablyGenerated k K› with ⟨ι, f, isT, sep⟩
+    set M := IntermediateField.adjoin k (Set.range f)
+    let M' := IntermediateField.adjoin k ((Set.range f) ∪ (G : Set K))
+    have : IsReduced (TensorProduct k B M') := by
+      have mem (x : ι) : f x ∈ M' := IntermediateField.subset_adjoin _ _ (by simp)
+      let f' : ι → M' := fun x ↦ ⟨f x, mem x⟩
+      have imagef' : Subtype.val '' Set.range f' = Set.range f := by
+        ext
+        simp [f']
+      have isT' : IsTranscendenceBasis k f' := isT.of_comp M'.val Subtype.val_injective
+      have : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f')) M' := by
+        have Mle : M ≤ M' := IntermediateField.adjoin.mono _ _ _ (by simp)
+        let := (IntermediateField.inclusion Mle).toRingHom.toAlgebra
+        let : IsScalarTower M M' K := IsScalarTower.of_algebraMap_eq' rfl
+        have : Algebra.IsSeparable M M' := Algebra.isSeparable_tower_bot_of_isSeparable M M' K
+        have eq : (IntermediateField.adjoin k (Set.range f')).map M'.val = M := by
+          simp [IntermediateField.adjoin_map, f', M, imagef']
+        let e := ((IntermediateField.adjoin k (Set.range f')).equivMap M'.val).trans
+          (IntermediateField.equivOfEq eq)
+        apply Algebra.IsSeparable.of_equiv_equiv e.toRingEquiv.symm (RingEquiv.refl M')
+        ext m
+        have : (e.symm m).1.1 = (e (e.symm m)).1 := by simp [- AlgEquiv.apply_symm_apply, e]
+        simpa only [e.apply_symm_apply] using this
+      have : Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f')) ↥M' := by
+        rw [← IntermediateField.fg_top_iff]
+        use G.preimage M'.val Subtype.val_injective.injOn
+        refine le_antisymm le_top (fun x hx ↦ ?_)
+        rw [← IntermediateField.mem_restrictScalars k, IntermediateField.adjoin_adjoin_left]
+        simp only [IntermediateField.coe_val, Finset.coe_preimage, ← IntermediateField.mem_lift,
+          IntermediateField.lift_adjoin, Set.image_union, imagef']
+        convert x.2
+        ext z
+        have : z ∈ G → z ∈ M' := fun hz ↦ IntermediateField.subset_adjoin _ _ (by simp [hz])
+        simpa
+      have := tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k _ B f' isT'
+      exact isReduced_of_injective _ (Algebra.TensorProduct.comm k B _).injective
+    have le : L ≤ M' := le_of_eq_of_le hG.symm (IntermediateField.adjoin.mono _ _ _ (by simp))
+    have : Function.Injective (Algebra.TensorProduct.lTensor B (IntermediateField.inclusion le)) :=
+      Module.Flat.lTensor_preserves_injective_linearMap _ (IntermediateField.inclusion_injective le)
+    exact isReduced_of_injective _ this
+  exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
+
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
 variable (p : ℕ) [ExpChar k p]
