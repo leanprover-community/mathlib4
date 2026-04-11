@@ -528,6 +528,15 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
     exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 
+instance {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [PreconnectedSpace α] :
+    DenselyOrdered α where
+  dense x y hxy := by
+    have := nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
+      (by use x; exact Set.mem_Iio.mpr hxy)
+      (by use y; exact Set.mem_Ioi.mpr hxy)
+    rw [Set.inter_nonempty_iff_exists_left] at this
+    grind
+
 /-!
 ### Intermediate Value Theorem on an interval
 
