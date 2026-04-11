@@ -218,7 +218,7 @@ noncomputable instance : LinearOrder (DedekindCut α) where
 /-- Use `DedekindCut.lt_iff_exists'` for a version with `<` and `≤` swapped -/
 theorem lt_iff_exists {a b : DedekindCut α} :
     a < b ↔ ∃ c, a < principal c ∧ principal c ≤ b := by
-  refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ lt_of_lt_of_le hca hcb⟩
+  refine ⟨fun h ↦ ?_, fun ⟨c, hca, hcb⟩ ↦ hca.trans_le hcb⟩
   rw [← extent_ssubset_extent_iff, Set.ssubset_iff_exists] at h
   simp only [← not_le, principal_le_iff]
   obtain ⟨c, hcb, hca⟩ := h.2
