@@ -102,8 +102,7 @@ lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
 
 /-- The colimit cofan which defines the simplicial `n`-chains
 `(X.chainComplex R).X n`. -/
-noncomputable def chainComplexXCofan (n : ℕ) :
-    Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
+noncomputable def chainComplexXCofan (n : ℕ) : Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
   Cofan.mk _ X.ιChainComplex
 
 /-- Simplicial `n`-chains `(X.chainComplex R).X n` of a simplicial set `X`
