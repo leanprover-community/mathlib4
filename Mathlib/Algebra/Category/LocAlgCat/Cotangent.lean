@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 /-!
 # Cotangent Spaces in `LocAlgCat`
 
-This file develops the theory of cotangent spaces for objects in the category of local `Λ`-algebras
-with a fixed residue field `k`. It establishes the canonical `k`-vector space structures,
+This file contains results about cotangent spaces for objects in the category of local `Λ`-algebras
+with a fixed residue field `k`. It introduces the canonical `k`-vector space structures,
 induced linear maps, and fundamental exactness properties.
 
 ## Main Results
