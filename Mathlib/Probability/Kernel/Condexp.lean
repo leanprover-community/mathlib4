@@ -88,7 +88,8 @@ lemma condExpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simpa [condExpKernel, h] using by infer_instance
+  · simp only [condExpKernel, h, ↓reduceDIte]
+    infer_instance
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
