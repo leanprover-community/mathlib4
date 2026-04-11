@@ -649,11 +649,10 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
               continue
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
-            let approx? : Option Syntax := do
-              let instantiate ← suggestedTac.raw.find? (·.isOfKind ``Lean.Parser.Tactic.Grind.instantiate)
-              instantiate.find? (·.getAtomVal == "approx")
-
-            if approx?.isSome then continue
+            if suggestedTac.raw.find? (fun stx => stx.isOfKind ``Lean.Parser.Tactic.Grind.instantiate &&
+              (stx.find? (·.getAtomVal == "approx")).isSome) |>.isSome
+            then
+              continue
 
             -- Verify suggestion works (suppress any messages from verification)
             let savedMessages2 := (← get).messages
