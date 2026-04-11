@@ -383,26 +383,25 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
   have : Nonempty (StructuredArrow X (F ⋙ G)) := ⟨.mk (Y.hom ≫ G.map A.hom)⟩
   suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   refine ⟨fun A B ↦ ?_, fun A B f g ↦ ?_⟩
-  all_goals sorry /-
   · let U := IsCofiltered.min (T.obj A) (T.obj B)
     let A' : StructuredArrow U.right F := .mk (IsCofiltered.minToLeft (T.obj A) (T.obj B)).right
     let B' : StructuredArrow U.right F := .mk (IsCofiltered.minToRight (T.obj A) (T.obj B)).right
-    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom, ?_, ?_, trivial⟩
-    · refine StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
-    · refine StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom,
+      StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_,
+      StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_, trivial⟩
+    · simp [← Functor.map_comp, A', T]
+    · simp [← Functor.map_comp, B', T]
   · let U := IsCofiltered.eq (T.map f) (T.map g)
     let A' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g)).right
     let B' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g) ≫ T.map f).right
     let f' : A' ⟶ B' := StructuredArrow.homMk f.right rfl
     let g' : A' ⟶ B' := StructuredArrow.homMk g.right
       congr($(IsCofiltered.eq_condition (T.map f) (T.map g)).right).symm
-    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom, ?_, ?_⟩
-    · refine StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom,
+      StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_, ?_⟩
+    · simp [← Functor.map_comp, A', T]
     · ext
-      exact congr($(IsCofiltered.eq_condition f' g').right)-/
+      exact congr($(IsCofiltered.eq_condition f' g').right)
 
 instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
     IsFiltered (CostructuredArrow (F ⋙ G) X) := by
