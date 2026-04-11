@@ -141,10 +141,10 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     rwa [← hX_ns] at h
   obtain ⟨p, hp_eq⟩ := adjoin_mem_exists_aeval K ad_X h_ad_s_mem
   let g : Submodule K (Module.End K M) := (toEnd K L M).range.toSubmodule
-  have hxM : ∀ b ∈ g, ⁅X, b⁆ ∈ g := by
+  have hxg : ∀ b ∈ g, ⁅X, b⁆ ∈ g := by
     rintro _ ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, LieHom.map_lie (toEnd K L M) x b⟩
-  have hyM : ∀ b ∈ g, ⁅y, b⁆ ∈ g := by
+  have hyg : ∀ b ∈ g, ⁅y, b⁆ ∈ g := by
     have had_y_eq : ad_y = aeval ad_s r := by
       apply v.end.ext; intro ⟨i, j⟩
       change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
@@ -154,10 +154,10 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     intro b hb
     change ad_y b ∈ g
     rw [had_y_X]
-    exact aeval_apply_smul_mem_of_le_comap hb (r.comp p) _ fun _ hb' => hxM _ hb'
+    exact aeval_apply_smul_mem_of_le_comap hb (r.comp p) _ fun _ hb' => hxg _ hb'
   have htr_xy : trace K M (X * y) = 0 := by
     have hcomm : ∀ a b : L, trace K M (toEnd K L M ⁅a, b⁆ * y) = 0 := fun a b => by
-      obtain ⟨c, hbc⟩ := hyM (toEnd K L M b) ((toEnd K L M).mem_range_self b)
+      obtain ⟨c, hbc⟩ := hyg (toEnd K L M b) ((toEnd K L M).mem_range_self b)
       have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c := calc
         _ = -⁅y, toEnd K L M b⁆ := (lie_skew _ _).symm
         _ = -toEnd K L M c := neg_inj.mpr hbc.symm
