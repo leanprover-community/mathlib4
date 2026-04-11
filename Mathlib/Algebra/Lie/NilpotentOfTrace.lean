@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Lie.TraceForm
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.LinearAlgebra.Trace

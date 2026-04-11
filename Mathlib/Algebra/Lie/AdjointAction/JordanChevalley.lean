@@ -6,7 +6,6 @@ Authors: Janos Wolosz
 module
 
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
