@@ -19,11 +19,9 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
   comm := by simpa only [star_mul, star_star] using fun g =>
     congr_arg star ((mem_center_iff.1 ha).comm <| star g).symm
   left_assoc b c := by
-    rw [← star_star b, ← star_star c, ← star_mul, ← star_mul, ha.right_assoc, star_mul,
-      star_mul, star_star, star_star]
+    rw [← star_star b, ← star_star c, ← star_mul, ← star_mul]; simp [ha.right_assoc]
   right_assoc b c := by
-    rw [← star_star b, ← star_star c, ← star_mul, ← star_mul, ha.left_assoc, star_mul,
-      star_mul, star_star, star_star]
+    rw [← star_star b, ← star_star c, ← star_mul, ← star_mul]; simp [ha.left_assoc]
 
 theorem Set.star_centralizer : star s.centralizer = (star s).centralizer := by
   simp_rw [centralizer, ← commute_iff_eq]
