@@ -143,12 +143,11 @@ def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           (f.asOverProp S) ((𝒰.f _).asOverProp S)).inv)
         (PreservesPullback.iso_inv_fst _ _ _) x).mp hy
-    · dsimp only
-      sorry
-      --rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
-      --  ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
-      --rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
-      --exact P.pullback_fst _ _ (𝒰.map_prop j)
+    · simp only [← CategoryTheory.Over.forget_map]
+      rw [MorphismProperty.Comma.toCommaMorphism_eq_hom,
+        ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
+      rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
+      exact P.pullback_fst _ _ (𝒰.map_prop j)
 
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over S where
   hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
@@ -176,12 +175,11 @@ def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           ((𝒰.f _).asOverProp S) (f.asOverProp S)).inv)
         (PreservesPullback.iso_inv_snd _ _ _) x).mp hy
-    · dsimp
-      sorry
-      --rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
-      --  ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
-      --rw [← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
-      --exact P.pullback_snd _ _ (𝒰.map_prop j)
+    · simp only [← CategoryTheory.Over.forget_map]
+      rw [MorphismProperty.Comma.toCommaMorphism_eq_hom,
+        ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
+      rw [← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
+      exact P.pullback_snd _ _ (𝒰.map_prop j)
 
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over S where
   hom := (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
