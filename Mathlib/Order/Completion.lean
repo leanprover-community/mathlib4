@@ -244,7 +244,7 @@ instance [DenselyOrdered α] : DenselyOrdered (DedekindCut α) where
     obtain ⟨d, had, hdc⟩ := lt_iff_exists'.mp hac
     simp only [principal_lt_principal] at hdc
     obtain ⟨u, _, _⟩ := DenselyOrdered.dense d c hdc
-    exact ⟨principal u, lt_of_le_of_lt had (by simpa), lt_of_lt_of_le (by simpa) hcb⟩
+    exact ⟨principal u, had.trans_lt (by simpa), hcb.trans_lt' (by simpa)⟩
 
 end LinearOrder
 
