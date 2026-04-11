@@ -89,8 +89,7 @@ theorem euclidSteps_of_lt {a b : ℕ} (hab : a < b) : euclidSteps a b = euclidSt
   rw [euclidSteps_of_ne_zero a (by omega), Nat.mod_eq_of_lt hab]
 
 /-- Consecutive Fibonacci numbers achieve the worst case for the Euclidean algorithm. -/
-theorem euclidSteps_fib {n : ℕ} (hn : n ≠ 0) :
-    euclidSteps (fib (n + 2)) (fib (n + 1)) = n := by
+theorem euclidSteps_fib {n : ℕ} (hn : n ≠ 0) : euclidSteps (fib (n + 2)) (fib (n + 1)) = n := by
   induction n with
   | zero => contradiction
   | succ n ih =>
