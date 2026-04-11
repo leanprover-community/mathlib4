@@ -72,6 +72,8 @@ end
   coe G := G.toSubgroup
   coe_injective' _ := by aesop
 
+@[to_additive] instance : PartialOrder (ConvexSubgroup α) := .ofSetLike ..
+
 @[to_additive (attr := simp)] theorem ConvexSubgroup.carrier_eq_coe (G : ConvexSubgroup α) :
     G.carrier = G := rfl
 
@@ -154,7 +156,7 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
     exact fun G ↦ G.1.convex hab hb1 (ha G)
 
 @[to_additive] noncomputable instance : CompleteLattice (ConvexSubgroup α) := by
-  refine ConvexSubgroup.toSubgroup_injective.completeLattice _
+  refine ConvexSubgroup.toSubgroup_injective.completeLattice _ .rfl .rfl
     (fun G H ↦ le_antisymm ?_ ?_) (fun _ _ ↦ rfl)
     (fun s ↦ le_antisymm (fun a ha ↦ ?_) ?_) (fun _ ↦ iInf_subtype) rfl rfl
   · rintro a (ha | ha); exacts [G.mem_sup_left ha, G.mem_sup_right ha]
@@ -182,8 +184,10 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
       (inv_mul_le_one_iff.mpr ha.1) <| QuotientGroup.eq.mp eq)
 
 /-- The linear order on the quotient of a linearly ordered abelian group by a convex subgroup. -/
-@[to_additive] noncomputable instance : LinearOrder (α ⧸ G) := by
-  classical exact inferInstanceAs (LinearOrder (Quotient _))
+@[to_additive] noncomputable instance : LinearOrder (α ⧸ G) :=
+  let := QuotientGroup.leftRel G.toSubgroup
+  let := Classical.decRel (· ≈ · : α → α → Prop)
+  inferInstanceAs (LinearOrder (Quotient _))
 
 @[to_additive] instance : IsOrderedMonoid (α ⧸ G) :=
   have {x y z : α ⧸ G} (le : x ≤ y) : z * x ≤ z * y := by

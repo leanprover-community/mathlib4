@@ -158,15 +158,15 @@ theorem lt_of_mk_lt_mk {x y : α} (h : Quotient.mk s x < Quotient.mk s y) : x < 
 
 theorem lt_iff_exists_left_forall {x y : Quotient s} :
     x < y ↔ ∃ ax, ⟦ax⟧ = x ∧ ∀ ay, ⟦ay⟧ = y → ax < ay := by
-  classical rw [lt_iff_not_ge, le_iff_forall_right_exists]; push_neg; rfl
+  classical rw [lt_iff_not_ge, le_iff_forall_right_exists]; push Not; rfl
 
 theorem lt_iff_exists_right_forall {x y : Quotient s} :
     x < y ↔ ∃ ay, ⟦ay⟧ = y ∧ ∀ ax, ⟦ax⟧ = x → ax < ay := by
-  classical rw [lt_iff_not_ge, le_iff_forall_left_exists]; push_neg; rfl
+  classical rw [lt_iff_not_ge, le_iff_forall_left_exists]; push Not; rfl
 
 theorem lt_iff_forall {x y : Quotient s} : x < y ↔ ∀ ax ay, ⟦ax⟧ = x → ⟦ay⟧ = y → ax < ay := by
   classical rw [lt_iff_not_ge, le_iff_exists]
-  push_neg; rw [forall_swap]; congr! 2; apply forall_swap
+  push Not; rw [forall_comm]; congr! 2; apply forall_comm
 
 end LinearOrder
 end Quotient
