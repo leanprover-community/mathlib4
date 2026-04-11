@@ -82,8 +82,7 @@ noncomputable abbrev chainComplexMap : X.chainComplex R ⟶ Y.chainComplex R :=
 variable {R} in
 /-- The inclusion `R ⟶ (X.chainComplex R).X n` of the summand
 corresponding to a `n`-simplex `x : X _⦋n⦌`. -/
-noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) :
-    R ⟶ (X.chainComplex R).X n :=
+noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) : R ⟶ (X.chainComplex R).X n :=
   Sigma.ι (fun (_ : X _⦋n⦌) ↦ R) x
 
 set_option backward.isDefEq.respectTransparency false in
