@@ -759,8 +759,8 @@ theorem not_linearIndependent_iff_linearCombination :
   simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
 theorem not_linearIndependent_iff_finsupp :
-    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), ∑ x ∈ f.support, f x • v x = 0 ∧ f ≠ 0 := by
-  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination, Finsupp.sum]
+    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), f.sum (fun x r ↦ r • v x) = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

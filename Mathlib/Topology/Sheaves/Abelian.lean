@@ -18,7 +18,7 @@ We provide instances for categories of sheaves over Abelian categories.
 ## Main Results
 
 * `TopCat.Sheaf.exact_iff_stalkFunctor_map_exact`: A complex of sheaves over a concrete abelian
-category is exact if and only if it is exact on stalks.
+  category is exact if and only if it is exact on stalks.
 
 -/
 
