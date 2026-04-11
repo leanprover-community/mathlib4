@@ -63,6 +63,7 @@ variable (R : Type*)
 section Topological
 
 variable [TopologicalSpace R]
+
 namespace WithPiTopology
 
 open scoped Topology
