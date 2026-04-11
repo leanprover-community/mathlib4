@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
@@ -41,8 +42,6 @@ dual, Fréchet-Riesz
 noncomputable section
 
 open ComplexConjugate Module
-
-universe u v
 
 namespace InnerProductSpace
 
@@ -89,11 +88,11 @@ section NullSubmodule
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
-  fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E x).ker :=
+  fun _ hx ↦ inner_eq_zero_of_right x (mem_nullSubmodule_iff.mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E).ker :=
   fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
 
 end NullSubmodule
@@ -139,7 +138,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
-      set Y := LinearMap.ker ℓ
+      set Y := ℓ.ker
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
@@ -155,8 +154,8 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
-          rw [LinearMap.mem_ker, map_sub, ContinuousLinearMap.map_smul,
-            ContinuousLinearMap.map_smul, Algebra.id.smul_eq_mul, Algebra.id.smul_eq_mul, mul_comm]
+          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, smul_eq_mul,
+            smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=
@@ -230,4 +229,19 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     ext y
     simp
 
+/-- A nonzero rank-one operator has rank one. -/
+lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (rankOne 𝕜 x y).rank = 1 := by
+  rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
+  · exact finrank_span_singleton hx
+  · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
+
 end InnerProductSpace
+
+lemma OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (L : StrongDual ℝ E) :
+    ‖L‖ ^ 2 = ∑ i, L (b i) ^ 2 := by
+  have := b.toBasis.finiteDimensional_of_finite
+  simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
+    InnerProductSpace.toDual_symm_apply]

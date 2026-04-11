@@ -86,7 +86,7 @@ variable [Φ.IsRightDerivabilityStructure]
 lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X ↔
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by
-  let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _  := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
+  let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _ := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
   rw [F.hasPointwiseRightDerivedFunctorAt_iff W₂.Q W₂ (Φ.functor.obj X),
     (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctorAt_iff W₁.Q W₁ X,
     TwoSquare.hasPointwiseLeftKanExtensionAt_iff ((Φ.catCommSq W₁.Q W₂.Q).iso).hom,
@@ -119,6 +119,7 @@ instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ �
   exact ((F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂).compTwoSquare
     ((Φ.catCommSq L₁ L₂).iso).hom).isLeftKanExtension
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_iff_of_isRightDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by
   rw [← isIso_comp_right_iff (α₁.app X)

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Martin Dvorak
+Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 -/
 module
 
@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages
@@ -34,6 +35,8 @@ with respect to other language operations.
 * `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
   concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
   to the more common ASCII asterisk `*`.
+* `lᶜ`: complement, language of strings `x` such that `x ∉ l`
+* `l ⊓ m`: intersection of languages `l` and `m`
 
 ## Main definitions
 
@@ -61,14 +64,13 @@ variable {α β γ : Type*}
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
+deriving CompleteAtomicBooleanAlgebra
 
 namespace Language
 
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Language α) :=
-  Set.instCompleteAtomicBooleanAlgebra
 
 variable {l m : Language α} {a b x : List α}
 
@@ -124,8 +126,6 @@ theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
@@ -284,28 +284,23 @@ theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ 
 theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 
-instance : KleeneAlgebra (Language α) :=
-  { instSemiring, instCompleteAtomicBooleanAlgebra with
-    kstar := fun L ↦ L∗,
-    one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
-    mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, iSup_mul]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, mul_assoc (l^n) l m]
-        exact le_trans (mul_le_mul_left' h _) ih,
-    mul_kstar_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, mul_iSup]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, ← mul_assoc m (l^n) l]
-        exact le_trans (mul_le_mul_right' ih _) h }
+instance : KleeneAlgebra (Language α) where
+  __ : OrderBot (Language α) := inferInstance
+  one_le_kstar a _ hl := ⟨[], hl, by simp⟩
+  mul_kstar_le_kstar a := (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_kstar a := (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_self l m h := by
+    rw [kstar_eq_iSup_pow, iSup_mul]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, mul_assoc, h, ih]
+  mul_kstar_le_self l m h := by
+    rw [kstar_eq_iSup_pow, mul_iSup]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -408,6 +403,13 @@ lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n 
 @[simp]
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
+
+@[simp]
+lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
+  apply Set.mem_inter_iff
+
+lemma compl_compl (l : Language α) : lᶜᶜ = l :=
+  _root_.compl_compl l
 
 end Language
 

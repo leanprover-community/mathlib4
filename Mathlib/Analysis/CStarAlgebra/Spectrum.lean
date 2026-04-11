@@ -45,7 +45,7 @@ we can still establish a form of spectral permanence.
 + `IsSelfAdjoint.mem_spectrum_eq_re`: Any element of the spectrum of a selfadjoint element is real.
 * `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
   if and only if `x` is a unit.
-* `StarSubalgebra.spectrum_eq`: **spectral_permanence** for `x : S`, where `S` is a C⋆-Subalgebra
+* `StarSubalgebra.spectrum_eq`: **spectral permanence** for `x : S`, where `S` is a C⋆-Subalgebra
   of `A`, `spectrum ℂ x = spectrum ℂ (x : A)`.
 
 ## TODO
@@ -55,7 +55,7 @@ we can still establish a form of spectral permanence.
 
 -/
 
-@[expose] public section
+public section
 
 
 local notation "σ" => spectrum
@@ -99,6 +99,7 @@ end UnitarySpectrum
 
 section Quasispectrum
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped NNReal in
 lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
@@ -154,9 +155,10 @@ variable [StarModule ℂ A]
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
-  have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+  have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
+  have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by

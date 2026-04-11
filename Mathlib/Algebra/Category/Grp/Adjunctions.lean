@@ -126,7 +126,7 @@ def adj : free ⊣ forget GrpCat.{u} :=
         intros
         rfl }
 
-instance : (forget GrpCat.{u}).IsRightAdjoint  :=
+instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 section Abelianization
@@ -157,7 +157,7 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only
+        simp +instances only
         apply Eq.symm
         apply Abelianization.lift_unique
         intros

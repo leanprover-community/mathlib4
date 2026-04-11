@@ -15,14 +15,14 @@ public import Mathlib.Analysis.Calculus.Deriv.Shift
 In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, power
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -82,7 +82,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   by_cases H : x ≠ 0 ∨ 0 ≤ m
   · exact (hasDerivAt_zpow m x H).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
-    push_neg at H
+    push Not at H
     rcases H with ⟨rfl, hm⟩
     rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 

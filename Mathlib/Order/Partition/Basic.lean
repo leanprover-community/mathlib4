@@ -19,20 +19,44 @@ of the elements of `s` into a family of nonempty sets.
 This is equivalent to a transitive and symmetric binary relation `r : α → α → Prop`
 where `s` is the set of all `x` for which `r x x`.
 
+Partitions are ordered by refinement: `P ≤ Q` if every part of `P` is less than or equal to a part
+of `Q`.
+
 ## Main definitions
 
-* For `[CompleteLattice α]` and `s : α`, a `Set.Partition s` is an independent collection of
-  nontrivial elements whose supremum is `s`.
+* `Partition s`: For `[CompleteLattice α]` and `s : α`, a `Partition s` is an independent
+  collection of nontrivial elements whose supremum is `s`.
+* `Partition.removeBot`: A constructor for `Partition s` that removes `⊥` from a set of parts.
+* `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
+* `Partition.IsRepFun`: A predicate characterizing a representative function for a partition.
+
+## Representative functions (`IsRepFun`)
+
+`IsRepFun P f` means that `f` sends each element of the support to a representative in its
+`Partition.Rel`-class, agrees on related elements, and is the identity outside the support.
+
+This is useful whenever a construction must pick one distinguished element per part of a partition.
+For example, in graph theory one may partition edges into parallel classes or vertices into
+connected components; a representative function can specify which edge remains when simplifying
+parallel edges, or how supervertices are labeled after contraction. Similar uses arise in matroid
+theory and in the definition of minors.
+
+Tempting alternatives are to use `Classical.choice` or fix a global well-order and take minimal
+representatives. However, these lead to issues with inconsistencies: independent choices need not
+respect relations between different instances (e.g. monotonicity of simplifications with respect
+to subgraph order), a global order can clash with structure already carried by the type, and maps
+between different types need not intertwine two separate canonical choices. Stating hypotheses with
+`IsRepFun` keeps the chosen representatives explicit; existence under suitable conditions can be
+proved separately.
 
 ## TODO
 
 * Link this to `Finpartition`.
-* Give API lemmas for the specialization to the `Set` case.
 
 -/
 
 @[expose] public section
-variable {α : Type*} {s x y : α}
+variable {α : Type*} {s t x y z : α} {S : Set α}
 
 open Set
 
@@ -50,11 +74,9 @@ structure Partition [CompleteLattice α] (s : α) where
 
 namespace Partition
 
-@[deprecated (since := "2025-05-23")] alias bot_not_mem' := bot_notMem'
-
 section Basic
 
-variable [CompleteLattice α] {P : Partition s}
+variable [CompleteLattice α] {P Q : Partition s}
 
 instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
@@ -67,19 +89,24 @@ initialize_simps_projections Partition (parts → coe, as_prefix coe)
 
 @[simp] lemma coe_parts : P.parts = P := rfl
 
-@[ext] lemma ext {P Q : Partition s} (hP : ∀ x, x ∈ P ↔ x ∈ Q) : P = Q :=
+@[ext] lemma ext (hP : ∀ x, x ∈ P ↔ x ∈ Q) : P = Q :=
   SetLike.ext hP
 
 @[simp]
 lemma sSupIndep (P : Partition s) : sSupIndep (P : Set α) :=
   P.sSupIndep'
 
-lemma disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : x ≠ y) :
-    Disjoint x y :=
+lemma disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : x ≠ y) : Disjoint x y :=
   P.sSupIndep.pairwiseDisjoint hx hy hxy
 
 lemma pairwiseDisjoint : Set.PairwiseDisjoint (P : Set α) id :=
   P.sSupIndep'.pairwiseDisjoint
+
+lemma eq_or_disjoint (hx : x ∈ P) (hy : y ∈ P) : x = y ∨ Disjoint x y :=
+  or_iff_not_imp_left.mpr (P.disjoint hx hy)
+
+lemma eq_of_not_disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : ¬ Disjoint x y) : x = y :=
+  (P.eq_or_disjoint hx hy).resolve_right hxy
 
 @[simp]
 lemma sSup_eq (P : Partition s) : sSup P = s :=
@@ -100,8 +127,6 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
   P.bot_notMem'
 
-@[deprecated (since := "2025-05-23")] alias bot_not_mem := bot_notMem
-
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_notMem <| h ▸ hx
 
@@ -110,18 +135,18 @@ lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
 
 /-- Convert a `Partition s` into a `Partition t` via an equality `s = t`. -/
 @[simps]
-protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
+protected def copy (P : Partition s) (hst : s = t) : Partition t where
   parts := P
   sSupIndep' := P.sSupIndep
   bot_notMem' := P.bot_notMem
   sSup_eq' := hst ▸ P.sSup_eq
 
 @[simp]
-lemma mem_copy_iff {t x : α} {P : Partition s} (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
+lemma mem_copy_iff (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
 
 /-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
 @[simps!]
-def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
+def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
   Equiv.setCongr rfl
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
@@ -132,6 +157,266 @@ def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
   bot_notMem' := by simp
   sSup_eq' := by simp [← sSup_eq]
 
+@[simp]
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
+    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+
+@[simp]
+lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
+  rintro hxP
+  obtain rfl := le_bot_iff.mp <| P.le_of_mem hxP
+  exact P.bot_notMem hxP
+
+/-- There is a unique partition of `⊥`. -/
+instance : Unique (Partition (⊥ : α)) where
+  default := removeBot (∅ : Set α) sSupIndep_empty sSup_empty
+  uniq P := by ext; simp
+
+lemma ne_bot_of_mem' (hxP : x ∈ P) : s ≠ ⊥ := by
+  rintro rfl
+  exact P.notMem_of_bot _ hxP
+
 end Basic
 
+section Order
+
+variable [CompleteLattice α] {P Q : Partition s}
+
+/-- Partitions on `s` are ordered by refinement: `P ≤ Q` if every part of `P` is contained in a part
+of `Q`. -/
+instance : PartialOrder (Partition s) where
+  le P Q := ∀ ⦃x⦄, x ∈ P → ∃ y ∈ Q, x ≤ y
+  lt := _
+  le_refl P x hx := ⟨x, hx, le_rfl⟩
+  le_trans P Q R hPQ hQR x hxP := by
+    obtain ⟨y, hy, hxy⟩ := hPQ hxP
+    obtain ⟨z, hz, hyz⟩ := hQR hy
+    exact ⟨z, hz, hxy.trans hyz⟩
+  le_antisymm P Q hp hq := by
+    refine Partition.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · obtain ⟨y, hy, hxy⟩ := hp h
+      obtain ⟨x', hx', hyx'⟩ := hq hy
+      obtain rfl := P.pairwiseDisjoint.eq_of_le h hx' (P.ne_bot_of_mem h)
+        (hxy.trans hyx')
+      rwa [hxy.antisymm hyx']
+    obtain ⟨y, hy, hxy⟩ := hq h
+    obtain ⟨x', hx', hyx'⟩ := hp hy
+    obtain rfl := Q.pairwiseDisjoint.eq_of_le h hx' (Q.ne_bot_of_mem h)
+      (hxy.trans hyx')
+    rwa [hxy.antisymm hyx']
+
+lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := .rfl
+
+lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y := h hx
+
+lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
+    ∃! y ∈ Q, x ≤ y := by
+  obtain ⟨y, hy, hxy⟩ := h hx
+  refine ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ => Q.eq_of_not_disjoint hz hy ?_⟩
+  have := P.ne_bot_of_mem hx
+  contrapose! this
+  exact le_bot_iff.mp (this hxz hxy)
+
+/-- The top partition of `s` is the partition with the single part `s`. -/
+instance : OrderTop (Partition s) where
+  top := removeBot {s} (sSupIndep_singleton s) sSup_singleton
+  le_top P x hxP := by simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
+
+lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup_singleton := rfl
+
+@[simp] lemma parts_top (hs : s ≠ ⊥) : ((⊤ : Partition s) : Set α) = {s} := by
+  simpa [top_def]
+
+@[simp] lemma mem_top_iff {a : α} : a ∈ (⊤ : Partition s) ↔ a = s ∧ a ≠ ⊥ := by
+  rw [top_def, mem_removeBot, mem_singleton_iff]
+
+lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by
+  simp
+
+end Order
+
+variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
+
+section Set
+
+@[simp] protected lemma sUnion_eq (P : Partition s) : ⋃₀ P = s := P.sSup_eq
+
+lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty := notMem_singleton_empty.1 <| P.ne_bot_of_mem ht
+
+lemma empty_notMem : ∅ ∉ P := P.bot_notMem
+
+lemma subset_of_mem (ht : t ∈ P) : t ⊆ u := P.le_of_mem ht
+
+lemma mem_iff_exists : x ∈ u ↔ ∃ t ∈ P, x ∈ t := by
+  refine ⟨fun hx ↦ ?_, fun ⟨t, htP, hxt⟩ ↦ subset_of_mem htP hxt⟩
+  rwa [← P.sUnion_eq, mem_sUnion] at hx
+
+lemma eq_of_mem_inter (ht : t ∈ P) (hs : s ∈ P) (hx : x ∈ t ∩ s) : t = s :=
+  PairwiseDisjoint.elim P.pairwiseDisjoint ht hs fun
+    (hdj : Disjoint t s) ↦ by simp [hdj.inter_eq] at hx
+
+lemma eq_of_mem_of_mem (ht : t ∈ P) (hus : s ∈ P) (hxt : x ∈ t) (hxs : x ∈ s) : t = s :=
+  eq_of_mem_inter ht hus ⟨hxt, hxs⟩
+
+lemma mem_iff_unique : x ∈ u ↔ ∃! t, t ∈ P ∧ x ∈ t := by
+  refine ⟨fun hx ↦ ?_, fun ⟨_, ⟨htP, hxt⟩, _⟩ ↦ subset_of_mem htP hxt⟩
+  rw [← P.sUnion_eq, mem_sUnion] at hx
+  obtain ⟨t, ht, hxt⟩ := hx
+  exact ⟨t, ⟨ht, hxt⟩, fun s ⟨hsP, hxs⟩ ↦ P.eq_of_mem_of_mem hsP ht hxs hxt⟩
+
+lemma subset_sUnion_and_mem_iff_mem (hSP : S ⊆ P) : t ⊆ ⋃₀ S ∧ t ∈ P ↔ t ∈ S := by
+  refine ⟨fun ⟨htsu, htP⟩ ↦ ?_, fun htS ↦ ⟨subset_sUnion_of_mem htS, hSP htS⟩⟩
+  obtain ⟨x, hxt⟩ := nonempty_of_mem htP
+  obtain ⟨s, hsS, hxs⟩ := htsu hxt
+  obtain rfl := eq_of_mem_of_mem htP (hSP hsS) hxt hxs
+  exact hsS
+
+lemma subset_sUnion_iff_mem (ht : t ∈ P) (hSP : S ⊆ P.parts) : t ⊆ ⋃₀ S ↔ t ∈ S := by
+  rw [← subset_sUnion_and_mem_iff_mem hSP]
+  simp [ht]
+
+end Set
+
+/-! ### Induced relation -/
+
+section Rel
+
+/-- Every partition of `s : Set α` induces a transitive, symmetric binary relation on `α`
+  whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
+def Rel (P : Partition s) (a b : α) : Prop :=
+  ∃ t ∈ P, a ∈ t ∧ b ∈ t
+
+lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
+  refine ⟨fun h S hS ↦ ?_, fun h a b ⟨t, ht, ha, hb⟩ ↦ ?_⟩
+  · obtain ⟨x, hxS⟩ := nonempty_of_mem hS
+    obtain ⟨T, hT, hxT, -⟩ := h x x ⟨S, hS, hxS, hxS⟩
+    refine ⟨T, hT, fun a haS ↦ ?_⟩
+    obtain ⟨T', hT', haT', hxT'⟩ := h a x ⟨S, hS, haS, hxS⟩
+    obtain rfl := eq_of_mem_of_mem hT hT' hxT hxT'
+    exact haT'
+  obtain ⟨t', ht', htt'⟩ := h ht
+  use t', ht', htt' ha, htt' hb
+
+lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
+
+lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
+  obtain ⟨t, ht', hx, hy⟩ := h
+  exact ⟨fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hx],
+    fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hy]⟩
+
+@[simp]
+lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
+  refine ⟨fun ⟨t, ht, hxP, _⟩ ↦ subset_of_mem ht hxP, fun hx ↦ ?_⟩
+  obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
+  exact ⟨t, ht, hxt, hxt⟩
+
+instance (P : Partition u) : Std.Symm P.Rel where
+  symm _ _ := fun ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
+
+instance (P : Partition u) : IsTrans α P.Rel where
+  trans _ _ _ := fun ⟨t, ht, ha, hb⟩ ⟨t', ht', hb', hc⟩ ↦
+    ⟨t, ht, ha, by rwa [eq_of_mem_of_mem ht ht' hb hb']⟩
+
+lemma Rel.symm (h : P.Rel x y) : P.Rel y x := symm_of P.Rel h
+
+lemma rel_comm : P.Rel x y ↔ P.Rel y x := ⟨Rel.symm, Rel.symm⟩
+
+lemma Rel.trans (hxy : P.Rel x y) (hyz : P.Rel y z) : P.Rel x z := trans_of P.Rel hxy hyz
+
+lemma Rel.left_mem (h : P.Rel x y) : x ∈ u := by
+  obtain ⟨t, htP, hxt, -⟩ := h
+  exact subset_of_mem htP hxt
+
+lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
+
+end Rel
+
+/-! ### Representative functions
+
+See the module docstring for motivation (graph simplification, minors, and why we use an explicit
+`IsRepFun` hypothesis rather than a global choice of representatives).
+-/
+
+section IsRepFun
+
+/-- A predicate characterizing when a function `f : α → α` is a representative function for a
+partition `P`. A representative function maps each element to a canonical representative in its
+equivalence class, is the identity outside the support, and maps related elements to the same
+representative. -/
+structure IsRepFun {u : Set α} (P : Partition u) (f : α → α) : Prop where
+  apply_of_notMem : ∀ ⦃a⦄, a ∉ u → f a = a
+  rel_apply : ∀ ⦃a⦄, a ∈ u → P.Rel a (f a)
+  apply_eq_apply : ∀ ⦃a b⦄, P.Rel a b → f a = f b
+
+namespace IsRepFun
+
+variable {u : Set α} {P : Partition u} {f g : α → α} {a b c : α}
+
+lemma apply_mem (hf : IsRepFun P f) (ha : a ∈ u) : f a ∈ u := (hf.rel_apply ha).right_mem
+
+lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
+  rintro _ ⟨a, haS, rfl⟩
+  by_cases ha : a ∈ u
+  · exact hs <| hf.apply_mem ha
+  exact (hf.apply_of_notMem ha).symm ▸ haS
+
+lemma mapsTo (hf : IsRepFun P f) (hs : u ⊆ s) : Set.MapsTo f s s :=
+  fun x h ↦ hf.image_subset hs ⟨x, h, rfl⟩
+
+lemma mapsTo_of_disjoint (hf : IsRepFun P f) (hs : Disjoint u s) : Set.MapsTo f s s :=
+  fun _ h ↦ (hf.apply_of_notMem <| hs.notMem_of_mem_right h).symm ▸ h
+
+lemma apply_mem_iff (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s :=
+  hf.mapsTo hs |>.mem_iff <| mapsTo_of_disjoint hf hs.disjoint_compl_right
+
+lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ u) : f a = f b ↔ P.Rel a b := by
+  refine ⟨fun hab ↦ (hf.rel_apply ha).trans ?_, (hf.apply_eq_apply ·)⟩
+  rw [hab, P.rel_comm]
+  refine hf.rel_apply <| by_contra fun hb ↦ ?_
+  rw [hf.apply_of_notMem hb] at hab
+  exact hab ▸ hb <| hf.apply_mem ha
+
+lemma apply_eq_apply_iff (hf : IsRepFun P f) : f a = f b ↔ a = b ∨ P.Rel a b := by
+  simp only [or_iff_not_imp_left, ← ne_eq]
+  refine ⟨fun hab hne ↦ ?_, fun h ↦ ?_⟩
+  · obtain (ha | ha) := em (a ∈ u)
+    · exact hf.apply_eq_apply_iff_rel ha |>.mp hab
+    obtain (hb | hb) := em (b ∈ u)
+    · exact (hf.apply_eq_apply_iff_rel hb |>.mp hab.symm).symm
+    rw [hf.apply_of_notMem ha, hf.apply_of_notMem hb] at hab
+    contradiction
+  obtain rfl | hne := eq_or_ne a b
+  · rfl
+  exact hf.apply_eq_apply (h hne)
+
+lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
+    (∀ (x : α), f a = f x ↔ a = x) ∨ (∀ (x : α), f a = f x ↔ P.Rel a x) := by
+  refine (em (a ∈ u)).elim (fun ha ↦ Or.inr fun b ↦ ?_) (fun ha ↦ Or.inl fun b ↦ ?_)
+  · rw [hf.apply_eq_apply_iff_rel ha]
+  rw [hf.apply_of_notMem ha]
+  constructor <;> rintro rfl
+  · exact hf.apply_of_notMem <| hf.apply_mem_iff le_rfl |>.not.mp ha
+  exact hf.apply_of_notMem ha |>.symm
+
+lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
+    f a = f b ↔ (a = b ∧ ∀ c, f a = f c ↔ a = c) ∨ P.Rel a b := by
+  obtain h1 | h2 := hf.forall_apply_eq_apply_iff a
+  · refine ⟨by grind, ?_⟩
+    rintro (h | h)
+    · exact congrArg _ h.1
+    exact hf.apply_eq_apply h
+  grind
+
+lemma idem (hf : IsRepFun P f) : f (f a) = f a := by
+  obtain (ha | ha) := em (a ∈ u)
+  · rw [eq_comm, hf.apply_eq_apply_iff_rel ha]
+    exact hf.rel_apply ha
+  simp_rw [hf.apply_of_notMem ha]
+
+theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
+  obtain (hx | hx) := em (x ∈ u)
+  · exact hf.apply_eq_apply (hg.rel_apply hx).symm
+  rw [hg.apply_of_notMem hx, hf.apply_of_notMem hx]
+
+end IsRepFun.IsRepFun
 end Partition

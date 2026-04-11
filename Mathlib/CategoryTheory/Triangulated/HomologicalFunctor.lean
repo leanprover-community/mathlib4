@@ -52,10 +52,10 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasShift C ℤ]
-  [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+variable {C D A : Type*} [Category* C] [HasShift C ℤ]
+  [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A]
+  [Category* A]
 
 namespace Functor
 
@@ -77,7 +77,7 @@ section Pretriangulated
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A]
 
-/-- A functor from a pretriangulated category to an abelian category is an homological functor
+/-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
 class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -167,7 +167,7 @@ end Pretriangulated
 
 section
 
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long exact sequence attached to a homological
 functor and a distinguished triangle. -/
 noncomputable def homologySequenceδ
     [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -211,6 +211,7 @@ lemma homologySequence_comp :
 
 attribute [local simp] smul_smul
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
@@ -223,17 +224,18 @@ lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by cutsat)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by cutsat)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by lia)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
     F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
-      (by cutsat)]
+      (by lia)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -269,9 +271,6 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     apply isIso_of_mono_of_epi
   · intros
     constructor <;> infer_instance
-
-@[deprecated (since := "2025-07-21")]
-alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows
 

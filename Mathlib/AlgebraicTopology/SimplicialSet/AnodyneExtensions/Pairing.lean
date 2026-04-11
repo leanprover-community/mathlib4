@@ -29,8 +29,9 @@ considered as of type (I) and the latter as type (II).
 
 We say that a pairing is *regular* (typeclass `Pairing.IsRegular`) when
 - it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
-a face of the corresponding type (I) simplex.
+  a face of the corresponding type (I) simplex.
 - a certain ancestrality relation is well founded.
+
 When these conditions are satisfied, the inclusion `A.ι : A ⟶ X` is
 a strong anodyne extension (TODO @joelriou), and the converse is also true
 (if `A.ι` is a strong anodyne extension, then there is a regular pairing for `A` (TODO)).
@@ -78,6 +79,11 @@ lemma isUniquelyCodimOneFace [P.IsProper] (x : P.II) :
     S.IsUniquelyCodimOneFace x.1.toS (P.p x).1.toS :=
   IsProper.isUniquelyCodimOneFace x
 
+@[simp]
+lemma dim_p [P.IsProper] (x : P.II) :
+    (P.p x).1.dim = x.1.dim + 1 :=
+  (P.isUniquelyCodimOneFace x).dim_eq
+
 /-- The condition that a pairing only involves inner horns. -/
 class IsInner [P.IsProper] : Prop where
   ne_zero (x : P.II) {d : ℕ} (hd : x.1.dim = d) :
@@ -88,6 +94,12 @@ class IsInner [P.IsProper] : Prop where
 /-- The ancestrality relation on type (II) simplices. -/
 def AncestralRel (x y : P.II) : Prop :=
   x ≠ y ∧ x.1 < (P.p y).1
+
+variable {P} in
+lemma AncestralRel.dim_le [P.IsProper] {x y : P.II} (hxy : P.AncestralRel x y) :
+    x.1.dim ≤ y.1.dim := by
+  simpa only [(P.isUniquelyCodimOneFace y).dim_eq, Nat.lt_succ_iff] using
+    SSet.N.dim_lt_of_lt hxy.2
 
 /-- A proper pairing is regular when the ancestrality relation
 is well founded. -/

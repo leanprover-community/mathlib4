@@ -5,7 +5,7 @@ Authors: Anne Baanen, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Scaling the roots of a polynomial
@@ -119,7 +119,7 @@ lemma one_scaleRoots (r : R) :
 @[simp]
 lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Semiring
 
@@ -282,19 +282,19 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
-  simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
-    ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
-    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
+  simp only [smul_smul, smul_mul_assoc, ← mul_scaleRoots, mul_assoc, ← mul_pow, IsUnit.val_inv_mul,
+    one_pow, mul_one, ← smul_add, ← add_scaleRoots_of_natDegree_eq _ _ _ this, e, natDegree_one,
+    Nat.sub_zero, one_scaleRoots, one_smul, s]
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
-lemma Factors.scaleRoots {p : R[X]} (hp : p.Factors) (r : R) :
-    (p.scaleRoots r).Factors := by
+lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
+    (p.scaleRoots r).Splits := by
   cases subsingleton_or_nontrivial R
   · rwa [Subsingleton.elim (p.scaleRoots r) p]
   obtain rfl | hp0 := eq_or_ne p 0
   · simp
-  obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hp
+  obtain ⟨m, hm⟩ := splits_iff_exists_multiset'.mp hp
   rw [hm, mul_scaleRoots', scaleRoots_C]
   · clear hm
     refine .mul (.C _) ?_
@@ -308,6 +308,8 @@ lemma Factors.scaleRoots {p : R[X]} (hp : p.Factors) (r : R) :
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
 
+@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
+
 end CommSemiring
 
 section Ring
@@ -316,7 +318,7 @@ section Ring
 lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
     (X - C r).scaleRoots s = (X - C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Ring
 

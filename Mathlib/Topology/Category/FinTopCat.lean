@@ -40,10 +40,10 @@ instance : CoeSort FinTopCat (Type u) :=
 attribute [instance] fintype
 
 instance : Category FinTopCat :=
-  InducedCategory.category toTop
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance : ConcreteCategory FinTopCat (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 /-- Construct a bundled `FinTopCat` from the underlying type and the appropriate typeclasses. -/
 def of (X : Type u) [Fintype X] [TopologicalSpace X] : FinTopCat where
@@ -57,14 +57,15 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
 
 /-- The forgetful functor to `FintypeCat`. -/
 instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.hom.toFun) HEq.rfl
+  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl)
+    (fun f ↦ FintypeCat.homMk f) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X
 
 /-- The forgetful functor to `TopCat`. -/
 instance : HasForget₂ FinTopCat TopCat :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTop) _
 
 instance (X : FinTopCat) : Fintype ((forget₂ FinTopCat TopCat).obj X) :=
   X.fintype

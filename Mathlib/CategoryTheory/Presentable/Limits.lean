@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Colimits of presentable objects
@@ -50,6 +51,7 @@ namespace isColimitMapCocone
 
 include hc hF hK
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective (x : c.pt.obj cX.pt) :
     ∃ (j : J) (x' : c.pt.obj (X.obj j)), x = (c.pt.mapCocone cX).ι.app j x' := by
   have := isFiltered_of_isCardinalFiltered J κ
@@ -103,6 +105,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
   dsimp at h₁ h₂ ⊢
   rw [h₁, hz, FunctorToTypes.naturality, h₂, ← FunctorToTypes.map_comp_apply, cX.w]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
     ∃ (j' : J) (α : j ⟶ j'),
@@ -188,5 +191,17 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
   rw [← isCardinalPresentable_iff_of_isEquivalence c.pt κ e.functor]
   exact isCardinalPresentable_of_isColimit' _
     (isColimitOfPreserves e.functor hc) κ hK
+
+variable (C) in
+lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
+    (hJ : HasCardinalLT (Arrow J) κ) :
+    (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨hX⟩
+    have := hX.prop_diag_obj
+    simp only [isCardinalPresentable_iff] at this ⊢
+    exact isCardinalPresentable_of_isColimit _ hX.isColimit κ hJ
 
 end CategoryTheory

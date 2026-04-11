@@ -16,7 +16,10 @@ namespace Rat
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
-  dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
+  dist_eq r₁ r₂ := by
+    simp only [dist_eq, norm, cast_add, cast_neg]
+    rw [← abs_neg, neg_sub]
+    abel_nf
 
 @[norm_cast, simp high] -- increase priority to prevent the left-hand side from simplifying
 theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=

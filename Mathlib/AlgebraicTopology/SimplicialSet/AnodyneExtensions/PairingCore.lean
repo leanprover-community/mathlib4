@@ -29,7 +29,7 @@ namespace SSet.Subcomplex
 
 variable {X : SSet.{u}} (A : X.Subcomplex)
 
-/-- An helper structure in order to construct a pairing for a subcomplex of a
+/-- A helper structure in order to construct a pairing for a subcomplex of a
 simplicial set `X`. The main difference with `Pairing` is that we provide
 an index type `ι` and a function `dim : ι → ℕ` which allow to
 parametrize type (I) simplices as `simplex s : X _⦋dim s + 1⦌` for `s : ι`,
@@ -177,17 +177,20 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
     obtain ⟨s, rfl⟩ := h.equivII.surjective x
     simpa using h.isUniquelyCodimOneFace s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma isUniquelyCodimOneFace_index [h.IsProper] (s : h.ι) :
     (h.isUniquelyCodimOneFace s).index rfl = h.index s := by
   symm
   simp [← (h.isUniquelyCodimOneFace s).δ_eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUniquelyCodimOneFace_index_coe
     [h.IsProper] (s : h.ι) {d : ℕ} (hd : h.dim s = d) :
     ((h.isUniquelyCodimOneFace s).index hd).val = (h.index s).val := by
@@ -199,6 +202,7 @@ class IsInner where
   ne_zero (s : h.ι) : h.index s ≠ 0
   ne_last (s : h.ι) : h.index s ≠ Fin.last _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
   ne_zero x := by
     obtain ⟨s, rfl⟩ := h.equivII.surjective x
@@ -213,6 +217,7 @@ instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
 def AncestralRel (s t : h.ι) : Prop :=
   s ≠ t ∧ h.type₂ s < h.type₁ t
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ancestralRel_iff (s t : h.ι) :
     h.AncestralRel s t ↔ h.pairing.AncestralRel (h.equivII s) (h.equivII t) := by
   simp [AncestralRel, Pairing.AncestralRel]

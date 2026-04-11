@@ -108,11 +108,11 @@ variable [TopologicalSpace β] [TopologicalSpace γ] {m m₀ : MeasurableSpace �
 protected theorem StronglyMeasurable.aestronglyMeasurable (hf : StronglyMeasurable[m] f) :
     AEStronglyMeasurable[m] f μ := ⟨f, hf, EventuallyEq.refl _ _⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem aestronglyMeasurable_const {b : β} : AEStronglyMeasurable[m] (fun _ : α => b) μ :=
   stronglyMeasurable_const.aestronglyMeasurable
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem aestronglyMeasurable_one [One β] : AEStronglyMeasurable[m] (1 : α → β) μ :=
   stronglyMeasurable_one.aestronglyMeasurable
 
@@ -131,7 +131,7 @@ theorem aestronglyMeasurable_zero_measure (f : α → β) :
   inhabit α
   exact ⟨fun _ => f default, stronglyMeasurable_const, rfl⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem SimpleFunc.aestronglyMeasurable (f : α →ₛ β) : AEStronglyMeasurable f μ :=
   f.stronglyMeasurable.aestronglyMeasurable
 
@@ -277,17 +277,17 @@ protected theorem mul [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] 
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f * g) μ :=
   ⟨hf.mk f * hg.mk g, by fun_prop, hf.ae_eq_mk.mul hg.ae_eq_mk⟩
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem mul_const [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] f μ) (c : β) :
     AEStronglyMeasurable[m] (fun x => f x * c) μ :=
   hf.mul aestronglyMeasurable_const
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem const_mul [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] f μ) (c : β) :
     AEStronglyMeasurable[m] (fun x => c * f x) μ :=
   aestronglyMeasurable_const.mul hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
@@ -295,6 +295,14 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
 @[to_additive (attr := fun_prop)]
 protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
+  ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div' hg.stronglyMeasurable_mk,
+    hf.ae_eq_mk.div hg.ae_eq_mk⟩
+
+@[fun_prop]
+theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β]
+    (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
+    AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
@@ -320,17 +328,17 @@ protected theorem pow [Monoid β] [ContinuousMul β] (hf : AEStronglyMeasurable[
     AEStronglyMeasurable[m] (f ^ n) μ :=
   ⟨hf.mk f ^ n, hf.stronglyMeasurable_mk.pow _, hf.ae_eq_mk.pow_const _⟩
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem const_smul {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β]
     (hf : AEStronglyMeasurable[m] f μ) (c : 𝕜) : AEStronglyMeasurable[m] (c • f) μ :=
   ⟨c • hf.mk f, hf.stronglyMeasurable_mk.const_smul c, hf.ae_eq_mk.const_smul c⟩
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem const_smul' {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β]
     (hf : AEStronglyMeasurable[m] f μ) (c : 𝕜) : AEStronglyMeasurable[m] (fun x => c • f x) μ :=
   hf.const_smul c
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     (hf : AEStronglyMeasurable[m] f μ) (c : β) : AEStronglyMeasurable[m] (fun x => f x • c) μ :=
   continuous_smul.comp_aestronglyMeasurable (hf.prodMk aestronglyMeasurable_const)
@@ -339,7 +347,7 @@ end Arithmetic
 
 section Star
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
@@ -381,11 +389,6 @@ theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.List.aestronglyMeasurable_prod' := List.aestronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_fun_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
@@ -404,11 +407,6 @@ theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
   rcases l with ⟨l⟩
   simpa using l.aestronglyMeasurable_prod (by simpa using hl)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.Multiset.aestronglyMeasurable_sum' := Multiset.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Multiset.aestronglyMeasurable_prod' := Multiset.aestronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Multiset.aestronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, AEStronglyMeasurable f μ) :
@@ -421,11 +419,6 @@ theorem _root_.Finset.aestronglyMeasurable_prod {ι : Type*} {f : ι → α → 
   Multiset.aestronglyMeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
-
-@[deprecated (since := "2025-05-30")]
-alias _root_.Finset.aestronglyMeasurable_sum' := Finset.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Finset.aestronglyMeasurable_prod' := Finset.aestronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Finset.aestronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
@@ -445,7 +438,7 @@ theorem _root_.AEMeasurable.aestronglyMeasurable [PseudoMetrizableSpace β] [Ope
     [SecondCountableTopology β] (hf : AEMeasurable f μ) : AEStronglyMeasurable f μ :=
   ⟨hf.mk f, hf.measurable_mk.stronglyMeasurable, hf.ae_eq_mk⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem _root_.aestronglyMeasurable_id {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
     {_ : MeasurableSpace α} [OpensMeasurableSpace α] [SecondCountableTopology α] {μ : Measure α} :
     AEStronglyMeasurable (id : α → α) μ :=
@@ -464,12 +457,12 @@ protected theorem dist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     AEStronglyMeasurable (fun x => dist (f x) (g x)) μ :=
   continuous_dist.comp_aestronglyMeasurable (hf.prodMk hg)
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖) μ :=
   continuous_norm.comp_aestronglyMeasurable hf
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
@@ -480,7 +473,7 @@ Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, 
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
 for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
@@ -496,7 +489,7 @@ protected theorem edist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
   (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (f x).toNNReal) μ :=
   continuous_real_toNNReal.comp_aestronglyMeasurable hf
@@ -521,12 +514,12 @@ theorem _root_.aestronglyMeasurable_indicator_iff₀
     aestronglyMeasurable_indicator_iff (measurableSet_toMeasurable ..),
     restrict_congr_set hs.toMeasurable_ae_eq]
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem indicator [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
     (hs : MeasurableSet s) : AEStronglyMeasurable (s.indicator f) μ :=
   (aestronglyMeasurable_indicator_iff hs).mpr hfm.restrict
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem indicator₀ [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
     (hs : NullMeasurableSet s μ) : AEStronglyMeasurable (s.indicator f) μ :=
   (aestronglyMeasurable_indicator_iff₀ hs).2 hfm.restrict

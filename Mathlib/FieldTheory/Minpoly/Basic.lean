@@ -125,7 +125,7 @@ theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     exact ne_of_lt (show ⊥ < ↑1 from WithBot.bot_lt_coe 1) hx
   have key := minpoly.aeval A x
   rw [eq_X_add_C_of_degree_eq_one hx, (minpoly.monic h).leadingCoeff, C_1, one_mul, aeval_add,
-    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← RingHom.map_neg] at key
+    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← map_neg] at key
   exact ⟨-(minpoly A x).coeff 0, key.symm⟩
 
 /-- The defining property of the minimal polynomial of an element `x`:
@@ -133,7 +133,8 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_gt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · refine le_of_not_gt <| degree_lt_wf.not_lt_min _ ?_
+    exact ⟨pmonic, hp⟩
   · simp only [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
@@ -143,7 +144,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, hm, hp⟩
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
-  · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
+  · exact (h <| (aeval_modByMonic_eq_self_of_root hp).trans <| aeval A x).elim
   obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr

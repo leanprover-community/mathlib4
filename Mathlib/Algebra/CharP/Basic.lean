@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Ring.GrindInstances
 # Characteristic of semirings
 
 This file collects some fundamental results on the characteristic of rings that don't need the extra
-imports of `CharP/Lemmas.lean`.
+imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
@@ -92,9 +92,8 @@ it is not zero in `R`. -/
 lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
     {p q : ℕ} [CharP R p] (hq : q.Prime) (hneq : p ≠ q) : (q : R) ≠ 0 := fun h ↦ by
   rw [cast_eq_zero_iff R p q] at h
-  rcases hq.eq_one_or_self_of_dvd _ h with h | h
-  · subst h
-    exact false_of_nontrivial_of_char_one (R := R)
+  rcases hq.eq_one_or_self_of_dvd _ h with rfl | h
+  · exact false_of_nontrivial_of_char_one (R := R)
   · exact hneq h
 
 lemma ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)

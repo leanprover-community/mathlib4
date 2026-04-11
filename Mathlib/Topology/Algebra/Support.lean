@@ -75,14 +75,41 @@ theorem mulTSupport_binop_subset [One β] [One γ] (op : α → β → γ)
   closure_mono (mulSupport_binop_subset op op1 f g) |>.trans closure_union.subset
 
 @[to_additive]
+lemma mulTSupport_comp_subset [One β] {g : α → β} (hg : g 1 = 1) (f : X → α) :
+    mulTSupport (g ∘ f) ⊆ mulTSupport f :=
+  closure_mono (mulSupport_comp_subset hg f)
+
+@[to_additive]
+lemma mulTSupport_subset_comp [One β] {g : α → β} (hg : ∀ {x}, g x = 1 → x = 1) (f : X → α) :
+    mulTSupport f ⊆ mulTSupport (g ∘ f) :=
+  closure_mono (mulSupport_subset_comp hg f)
+
+@[to_additive]
+lemma mulTSupport_comp_eq [One β] {g : α → β} (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : X → α) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq g hg]
+
+@[to_additive]
+lemma mulTSupport_comp_eq_of_range_subset [One β] {g : α → β} {f : X → α}
+    (hg : ∀ {x}, x ∈ range f → (g x = 1 ↔ x = 1)) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_of_range_subset hg]
+
+@[to_additive]
+lemma mulTSupport_comp_subset_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) {f : X → Y}
+    (hf : Continuous f) :
+    mulTSupport (g ∘ f) ⊆ f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage]
+  exact hf.closure_preimage_subset _
+
+@[to_additive]
+lemma mulTSupport_comp_eq_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) (f : X ≃ₜ Y) :
+    mulTSupport (g ∘ f) = f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage, Homeomorph.preimage_closure]
+
+@[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
-
-@[deprecated (since := "2025-05-24")]
-alias image_eq_zero_of_nmem_tsupport := image_eq_zero_of_notMem_tsupport
-
-@[to_additive existing, deprecated (since := "2025-05-24")]
-alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
@@ -159,12 +186,6 @@ theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_tsupport_iff_eventuallyEq := notMem_tsupport_iff_eventuallyEq
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_mulTSupport_iff_eventuallyEq := notMem_mulTSupport_iff_eventuallyEq
-
 @[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
@@ -219,7 +240,7 @@ theorem intro' (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
     apply closure_mono (mulSupport_subset_iff'.2 hfK)
-  exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
+  exact IsCompact.of_isClosed_subset hK (isClosed_mulTSupport f) this
 
 @[to_additive]
 theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulSupport f ⊆ K) :
@@ -370,7 +391,7 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 @[to_additive, simp]
 protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
     HasCompactMulSupport (1 : α → β) := by
-  simp [HasCompactMulSupport, mulTSupport]
+  simp [HasCompactMulSupport]
 
 end Monoid
 
@@ -381,9 +402,6 @@ protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [
     {f : α → β} (hf : HasCompactMulSupport f) :
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv] using hf
-
-@[deprecated (since := "2025-07-31")] alias HasCompactSupport.neg' := HasCompactSupport.neg
-@[deprecated (since := "2025-07-31")] alias HasCompactMulSupport.inv' := HasCompactMulSupport.inv
 
 @[to_additive]
 theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
@@ -482,14 +500,6 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
       intro i hi
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
-  LocallyFinite.exists_finset_nhds_mulSupport_subset
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_support_subset :=
-  LocallyFinite.exists_finset_nhds_support_subset
 
 @[to_additive]
 theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :

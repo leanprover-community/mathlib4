@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
@@ -67,7 +67,6 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
-  have hπ : RegularEpi π := inferInstance
-  exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
+  exact isQuotientMap_of_isColimit_cofork _ (IsRegularEpi.isColimit π)
 
 end TopCat

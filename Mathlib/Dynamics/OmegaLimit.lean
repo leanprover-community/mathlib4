@@ -6,7 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
-public import Mathlib.Tactic.Monotonicity
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits
@@ -134,10 +134,13 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
 images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
-theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
+theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
+
+@[deprecated (since := "2026-03-31")]
+alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
 
 /-!
 ### Set operations and omega limits
@@ -155,7 +158,7 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
   · simp only [mem_union, mem_omegaLimit_iff_frequently, union_inter_distrib_right, union_nonempty,
       frequently_or_distrib]
     contrapose!
-    simp only [not_frequently, not_nonempty_iff_eq_empty, ← subset_empty_iff]
+    simp only [← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
     refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
     exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_left,
@@ -187,12 +190,15 @@ theorem omegaLimit_eq_iInter_inter {v : Set τ} (hv : v ∈ f) :
   rw [omegaLimit_eq_biInter_inter _ _ _ hv]
   apply biInter_eq_iInter
 
-theorem omegaLimit_subset_closure_fw_image {u : Set τ} (hu : u ∈ f) :
+theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
     ω f ϕ s ⊆ closure (image2 ϕ u s) := by
   rw [omegaLimit_eq_iInter]
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
+
+@[deprecated (since := "2026-03-31")]
+alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
 
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem
@@ -348,7 +354,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
       (inter_subset_inter_left _
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
-    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
+    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_image2 _ _ _ hu hb.1, hb.2⟩
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)

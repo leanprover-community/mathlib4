@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 # Nilpotent elements in quotient rings
 -/
 
-@[expose] public section
+public section
 
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
@@ -45,7 +45,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
     · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one]
-      apply Ideal.pow_le_pow_right (by cutsat)
+      apply Ideal.pow_le_pow_right (by lia)
     · exact n.succ.lt_succ_self
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
@@ -75,3 +75,17 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
       rw [eq_comm, ← sub_eq_zero, ← this]
       ring
     exact .of_mul_eq_one _ this
+
+theorem Ideal.Quotient.isUnit_mk_pow_iff_isUnit_mk {x : S} {n : ℕ} (hn : n ≠ 0) :
+    IsUnit (Ideal.Quotient.mk (I ^ n) x) ↔ IsUnit (Ideal.Quotient.mk I x) := by
+  rw [← IsNilpotent.isUnit_quotient_mk_iff (I := Ideal.map (Ideal.Quotient.mk (I ^ n)) I)]
+  · rw [← isUnit_map_iff (DoubleQuot.quotQuotEquivQuotOfLE (Ideal.pow_le_self hn))]
+    rfl
+  · use n
+    simp [← Ideal.map_pow]
+
+theorem Ideal.Quotient.isUnit_mk_pow_iff_notMem [I.IsMaximal] {n : ℕ} (hn : n ≠ 0) {x : S} :
+    IsUnit (mk (I ^ n) x) ↔ x ∉ I := by
+  let := Ideal.Quotient.field I
+  rw [isUnit_mk_pow_iff_isUnit_mk I hn, isUnit_iff_ne_zero]
+  exact Ideal.Quotient.eq_zero_iff_mem.not

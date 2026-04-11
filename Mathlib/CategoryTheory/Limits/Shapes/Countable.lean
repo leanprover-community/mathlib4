@@ -30,7 +30,7 @@ limits, see `sequentialFunctor_initial`.
 
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category* C] (J : Type*) [Countable J]
 
 namespace CategoryTheory.Limits
 
@@ -41,7 +41,7 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
@@ -170,8 +170,8 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
     simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
       not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : j.right ≤ i.right
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : j.right ≤ i.right
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨StructuredArrow.homMk (homOfLE h) rfl⟩
 
@@ -221,13 +221,13 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
     simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
       not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : (unop i.left) ≤ (unop j.left)
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : (unop i.left) ≤ (unop j.left)
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 @[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
+proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--

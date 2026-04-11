@@ -40,7 +40,7 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 
@@ -212,7 +212,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
-    LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
+    LinearIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → M) :=
   li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
@@ -257,9 +257,6 @@ theorem LinearIndependent.notMem_span_image [Nontrivial R] (hv : LinearIndepende
   refine disjoint_def.1 (hv.disjoint_span_image ?_) (v x) h' w
   simpa using h
 
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.not_mem_span_image := LinearIndependent.notMem_span_image
-
 theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     (hv : LinearIndependent R v) {x : ι} (f : ι →₀ R) (h : x ∉ f.support) :
     f.linearCombination R v ≠ v x := by
@@ -269,10 +266,6 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
     simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.notMem_span_image h
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.linearCombination_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_notMem_support
 
 end Subtype
 
@@ -385,18 +378,21 @@ protected theorem LinearMap.linearIndependent_iff (f : M →ₗ[R] M') (hf_inj :
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v :=
   f.linearIndependent_iff_of_disjoint <| by simp_rw [hf_inj, disjoint_bot_right]
 
-/-- See `LinearIndependent.fin_cons` for a family of elements in a vector space. -/
-theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
-    (x_ortho : ∀ (c : R) (y : Submodule.span R (Set.range v)), c • x + y = (0 : M) → c = 0) :
+/-- See `LinearIndependent.finCons` for a family of elements in a vector space. -/
+theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
     LinearIndependent R (Fin.cons x v : Fin m.succ → M) := by
   rw [Fintype.linearIndependent_iff] at hli ⊢
   rintro g total_eq j
   simp_rw [Fin.sum_univ_succ, Fin.cons_zero, Fin.cons_succ] at total_eq
   have : g 0 = 0 := by
-    refine x_ortho (g 0) ⟨∑ i : Fin m, g i.succ • v i, ?_⟩ total_eq
+    refine x_ortho (g 0) (∑ i : Fin m, g i.succ • v i) ?_ total_eq
     exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
+
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
 
 end Module
 
@@ -491,7 +487,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
-    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
+    [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
@@ -556,8 +552,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 
 end Module
 
-section Nontrivial
-variable [Ring R] [AddCommGroup M] [Module R M] [Nontrivial R] [NoZeroSMulDivisors R M]
+section IsDomain
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
   {v : ι → M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
@@ -582,4 +578,4 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
 
-end Nontrivial
+end IsDomain

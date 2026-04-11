@@ -13,8 +13,8 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
-In `Mathlib/AlgebraicGeometry/Topology.lean`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
-this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
+In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a topology on
+`ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
 - `A` is a commutative ring;
@@ -200,7 +200,7 @@ def Proj.structureSheaf : Sheaf CommRingCat (ProjectiveSpectrum.top 𝒜) :=
     (-- We check the sheaf condition under `forget CommRing`.
           isSheaf_iff_isSheaf_comp
           _ _).mpr
-      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).cond)⟩
+      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).property)⟩
 
 end ProjectiveSpectrum
 
@@ -267,6 +267,7 @@ theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     stalkToFiberRingHom 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.1 (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom 𝒜 U x hx)) s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
     (f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl) :
     x ∈ ProjectiveSpectrum.basicOpen 𝒜 f.den := by

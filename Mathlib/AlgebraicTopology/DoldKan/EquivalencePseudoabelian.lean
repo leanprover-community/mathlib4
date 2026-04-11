@@ -43,7 +43,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Idempotents
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace CategoryTheory
 
@@ -60,7 +60,7 @@ of the equivalence `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. -/
 def N [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
   N₁ ⋙ (toKaroubiEquivalence _).inverse
 
-/-- The functor `Γ` for the equivalence is `Γ'`. -/
+/-- The functor `Γ` for the equivalence is `Γ₀`. -/
 @[simps!, nolint unusedArguments]
 def Γ [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
   Γ₀
@@ -101,6 +101,7 @@ theorem equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor =
 theorem equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `NΓ'` satisfies the compatibility that is needed
 for the construction of our counit isomorphism `η`. -/
 theorem hη :
@@ -109,7 +110,7 @@ theorem hη :
         (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app]
-  exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp )
+  exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp)
 
 /-- The counit isomorphism induced by `N₁Γ₀` -/
 @[simps!]
@@ -121,6 +122,7 @@ theorem equivalence_counitIso :
     DoldKan.equivalence.counitIso = (η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ)) :=
   Compatibility.equivalenceCounitIso_eq hη
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hε :
     Compatibility.υ (isoN₁) =
       (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅

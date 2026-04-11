@@ -11,7 +11,7 @@ public import Mathlib.Topology.ContinuousOn
 ### Continuity of piecewise defined functions
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology Filter
 
@@ -97,7 +97,7 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
   rw [← continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
+  apply ContinuousOn.if' <;> simpa
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))

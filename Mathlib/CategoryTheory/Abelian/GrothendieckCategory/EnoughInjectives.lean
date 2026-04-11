@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.SmallObject.Basic
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
@@ -106,6 +105,7 @@ variable {G} (hG : IsSeparator G)
 
 include hG
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p : X ⟶ Y` is a monomorphism that is not an isomorphism, there exists
 a subobject `X'` of `Y` containing `X` (but different from `X`) such that
 the inclusion `X ⟶ X'` is a pushout of a monomorphism in the family
@@ -177,6 +177,7 @@ lemma le_largerSubobject (A : Subobject X) :
     simp only [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
       (generatingMonomorphisms G).pushouts
         (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
@@ -201,9 +202,9 @@ lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot 
     (fun h ↦ by simpa [hasCardinalLT_iff_cardinal_mk_lt] using hJ.of_injective _ h)
 
 lemma exists_ordinal (A₀ : Subobject X) :
-    ∃ (o : Ordinal.{w}) (j : o.toType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
+    ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : OrderBot κ.ord.toType := Ordinal.toTypeOrderBot (by
+  have : OrderBot κ.ord.ToType := Ordinal.toTypeOrderBot (by
     simp only [ne_eq, Cardinal.ord_eq_zero]
     apply Cardinal.succ_ne_zero)
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
@@ -220,7 +221,7 @@ at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
 @[simps]
 noncomputable def functorToMonoOver : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' (transfiniteIterate (largerSubobject hG) j A₀).arrow
+  obj j := MonoOver.mk (transfiniteIterate (largerSubobject hG) j A₀).arrow
   map {j j'} f := MonoOver.homMk (Subobject.ofLE _ _
       (monotone_transfiniteIterate _ _ (le_largerSubobject hG) (leOfHom f)))
 
@@ -264,6 +265,7 @@ end
 
 variable {A : C} {f : A ⟶ X} [Mono f]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
 then the monomorphism `f` is a transfinite composition of pushouts of
 monomorphisms in the family `generatingMonomorphisms G`. -/
@@ -291,8 +293,8 @@ lemma exists_transfiniteCompositionOfShape :
         (_ : WellFoundedLT J),
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
-  letI : OrderBot o.toType := Ordinal.toTypeOrderBot (by
-    simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
+  letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
+    simpa only [← Ordinal.nonempty_toType_iff] using Nonempty.intro j)
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
@@ -320,7 +322,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
   letI := Cardinal.toTypeOrderBot hκ'.ne_zero
   exact ⟨κ, inferInstance, inferInstance,
     { preservesColimit {A B X Y} i hi f hf := by
-        let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.toType f :=
+        let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.ToType f :=
           { toTransfiniteCompositionOfShape := hf.toTransfiniteCompositionOfShape
             map_mem j hj := by
               have := (hf.attachCells j hj).pushouts_coproducts
@@ -328,7 +330,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
               refine (?_ : _ ≤ monomorphisms C) _ this
               simp only [pushouts_le_iff, coproducts_le_iff]
               exact generatingMonomorphisms_le_monomorphisms G }
-        have (j j' : κ.ord.toType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
+        have (j j' : κ.ord.ToType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
         apply preservesColimit_coyoneda_obj_of_mono (Y := hf'.F) (κ := κ)
         obtain ⟨S⟩ := hi
         exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩

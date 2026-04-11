@@ -52,6 +52,7 @@ variable {X : Type*} [MeasurableSpace X]
 noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
 lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
@@ -79,16 +80,12 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
-@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
-
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
   obtain ⟨U, U_nhds, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
-    by_contra! con
-    apply h
-    intro U U_nhds
-    simpa only [not_frequently, not_not] using con U U_nhds
+    contrapose! h
+    exact h
   have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhds
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl

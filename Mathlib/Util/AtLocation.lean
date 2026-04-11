@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.Simp.Main
+public import Lean.Elab.Tactic.Location
 
 /-!
 # Rewriting at specified locations
@@ -55,7 +56,7 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
+  if failIfUnchanged && unchanged then throwError "{proc} made no progress on the goal"
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none
@@ -75,7 +76,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "cannot run {proc} at {ldecl.userName}, it is an implementation detail"
+    throwError "Cannot run {proc} at {ldecl.userName}, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)

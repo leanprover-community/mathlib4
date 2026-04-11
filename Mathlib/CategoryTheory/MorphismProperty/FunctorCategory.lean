@@ -17,8 +17,8 @@ Given `W : MorphismProperty C` and a category `J`, we study the
 stability properties of `W.functorCategory J : MorphismProperty (J ⥤ C)`.
 
 Under suitable assumptions, we also show that if monomorphisms
-in `C` are stable under transfinite compositions, then the same
-holds in the category `J ⥤ C`.
+in `C` are stable under transfinite compositions (or coproducts),
+then the same holds in the category `J ⥤ C`.
 
 -/
 
@@ -47,7 +47,7 @@ instance IsStableUnderLimitsOfShape.functorCategory
     (W.functorCategory J).IsStableUnderLimitsOfShape K where
   condition X₁ X₂ _ _ hc₁ hc₂ f hf φ hφ j :=
     MorphismProperty.limitsOfShape_le _
-      (limitsOfShape.mk' (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
+      (limitsOfShape.mk' (X₁ ⋙ (evaluation _ _).obj j) (X₂ ⋙ (evaluation _ _).obj j)
       _ _ (isLimitOfPreserves _ hc₁) (isLimitOfPreserves _ hc₂) (Functor.whiskerRight f _)
       (fun k ↦ hf k j) (φ.app j) (fun k ↦ congr_app (hφ k) j))
 
@@ -57,7 +57,7 @@ instance IsStableUnderColimitsOfShape.functorCategory
     (W.functorCategory J).IsStableUnderColimitsOfShape K where
   condition X₁ X₂ _ _ hc₁ hc₂ f hf φ hφ j :=
     MorphismProperty.colimitsOfShape_le _
-      (colimitsOfShape.mk' (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
+      (colimitsOfShape.mk' (X₁ ⋙ (evaluation _ _).obj j) (X₂ ⋙ (evaluation _ _).obj j)
       _ _ (isColimitOfPreserves _ hc₁) (isColimitOfPreserves _ hc₂) (Functor.whiskerRight f _)
       (fun k ↦ hf k j) (φ.app j) (fun k ↦ congr_app (hφ k) j))
 
@@ -99,10 +99,20 @@ lemma functorCategory_epimorphisms [HasPushouts C] :
 
 instance (K : Type u') [LinearOrder K] [SuccOrder K] [OrderBot K] [WellFoundedLT K]
     [(monomorphisms C).IsStableUnderTransfiniteCompositionOfShape K]
-    [HasPullbacks C] (J : Type u'') [Category.{v''} J] [HasIterationOfShape K C] :
+    [HasPullbacks C] [HasIterationOfShape K C] :
     (monomorphisms (J ⥤ C)).IsStableUnderTransfiniteCompositionOfShape K := by
   rw [← functorCategory_monomorphisms]
   infer_instance
+
+instance (K' : Type u') [(monomorphisms C).IsStableUnderCoproductsOfShape K']
+    [HasCoproductsOfShape K' C] [HasPullbacks C] :
+    (monomorphisms (J ⥤ C)).IsStableUnderCoproductsOfShape K' := by
+  rw [← functorCategory_monomorphisms]
+  infer_instance
+
+instance [IsStableUnderCoproducts.{u'} (monomorphisms C)]
+    [HasCoproducts.{u'} C] [HasPullbacks C] :
+    IsStableUnderCoproducts.{u'} (monomorphisms (J ⥤ C)) where
 
 end MorphismProperty
 

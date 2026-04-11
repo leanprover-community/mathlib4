@@ -63,10 +63,16 @@ lemma coprime_mul_succ {n m a} (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a +
 
 variable {m : ℕ}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=
     Nat.lt_add_one_iff.mpr (le_max_of_le_right <| Finset.le_sup (by simp))
@@ -76,20 +82,25 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
 open scoped Function in -- required for scoped `on` notation
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
-  wlog ltij : i < j
-  · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
+  wlog! ltij : i < j
+  · exact (this a hij.symm (lt_of_le_of_ne ltij hij.symm)).symm
   unfold Function.onFun coprimes
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_succ_of_le (le_max_left _ _))
   exact coprime_mul_succ
-    (Nat.dvd_factorial (by cutsat)
+    (Nat.dvd_factorial (by lia)
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
 /-- Gödel's Beta Function. This is similar to `(Encodable.decodeList)[i]`, but it is easier to
 prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
+set_option backward.proofsInPublic true in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=

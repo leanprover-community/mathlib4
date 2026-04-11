@@ -51,6 +51,7 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
 
 /-- If the zero morphism is an epi then the codomain is trivial. -/
+@[implicit_reducible]
 def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
   uniqueOfSurjectiveZero X ((ModuleCat.epi_iff_surjective _).mp h)
 
@@ -60,12 +61,14 @@ instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.ofHom U.subt
 instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
       rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
         ← epi_iff_surjective]
       exact hf
 
+set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
       rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,

@@ -187,7 +187,7 @@ lemma whiskerLeft_app_apply (K L M N : C ⥤ D)
 lemma whiskerRight_app_apply (K L M N : C ⥤ D)
     (f : K.functorHom L ⊗ L.functorHom M ⟶ K.functorHom M)
     {X : C} (a : ((K.functorHom L ⊗ L.functorHom M) ⊗ M.functorHom N).obj X) :
-    (f ▷  M.functorHom N).app X a = ⟨f.app X a.1, a.2⟩ := rfl
+    (f ▷ M.functorHom N).app X a = ⟨f.app X a.1, a.2⟩ := rfl
 
 @[simp]
 lemma associator_inv_apply (K L M N : C ⥤ D) {X : C}
@@ -201,7 +201,7 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
     (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
-noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
+instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
   comp F G H := { app := fun _ ⟨f, g⟩ => f.comp g }

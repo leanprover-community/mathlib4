@@ -52,15 +52,20 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Co
 
 alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
 
-@[deprecated (since := "2025-08-25")]
-alias IsCoprime.nat_coprime := IsCoprime.natCoprime
-
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast
 
 theorem Rat.isCoprime_num_den (x : ℚ) : IsCoprime x.num x.den :=
   x.reduced.cast.of_isCoprime_of_dvd_left Int.dvd_natAbs_self
+
+theorem Int.isCoprime_gcdA {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
+  use x, x.gcdB y
+  rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
+
+theorem Int.isCoprime_gcdB {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdB y) x := by
+  use y, x.gcdA y
+  rwa [add_comm, mul_comm, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
@@ -132,7 +137,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     · rintro ⟨μ, hμ⟩
       rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
       refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
-      · rw [prod_eq_mul_prod_diff_singleton h.choose_spec, ← mul_assoc, ←
+      · rw [prod_eq_mul_prod_diff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
           @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx

@@ -70,8 +70,8 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
-  wlog hn : n₁ ≤ n₂ generalizing n₁ n₂
-  · exact (this h₂ h₁ (lt_of_not_ge hn).le).symm
+  wlog! hn : n₁ ≤ n₂ generalizing n₁ n₂
+  · exact (this h₂ h₁ hn.le).symm
   rcases Nat.le.dest hn with ⟨m, rfl⟩
   clear hn
   induction n₁ generalizing s with
@@ -84,7 +84,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       have : a ∈ s \ {a} := enumerate_mem sel h_sel h'
       simp_all
   | succ k ih =>
-    rw [show k + 1 + m = (k + m) + 1 by cutsat] at h₂
+    rw [show k + 1 + m = (k + m) + 1 by lia] at h₂
     cases h : sel s <;> simp_all [enumerate]; tauto
 
 end Enumerate

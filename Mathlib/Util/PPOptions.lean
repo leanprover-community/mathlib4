@@ -23,7 +23,6 @@ should use binder predicate notation (such as `∀ x < 2, p x`).
 -/
 register_option pp.mathlib.binderPredicates : Bool := {
   defValue := true
-  group    := "pp"
   descr    := "(pretty printer) pretty prints binders such as \
     `∀ (x : α) (x < 2), p x` as `∀ x < 2, p x`"
 }

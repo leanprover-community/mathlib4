@@ -197,7 +197,7 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note2 «hom simp lemma priority»
+library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
@@ -212,7 +212,7 @@ the entirety of the `FunLike` hierarchy in order to determine this because so ma
 `OneHomClass` instance (in fact, this problem is likely worse for `ZeroHomClass`). This can lead to
 a significant performance hit when `map_one` fails to apply.
 
-To avoid this problem, we mark these widely applicable simp lemmas with key discimination tree keys
+To avoid this problem, we mark these widely applicable simp lemmas with key discrimination tree keys
 with `mid` priority in order to ensure that they are not tried first.
 
 We do not use `low`, to allow bundled morphisms to unfold themselves with `low` priority such that
@@ -707,6 +707,13 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 
+@[to_additive] theorem _root_.IsDedekindFiniteMonoid.of_injective (f : F)
+    (hf : Function.Injective f) [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
+
+@[deprecated (since := "2025-12-14")]
+alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
+
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
@@ -903,14 +910,12 @@ and `M` is commutative, then `N` is commutative. -/
 @[to_additive
 /-- If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
-theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
-    (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
-    Std.Commutative (· * · : N → N → N) where
-  comm := fun a b ↦ by
-    obtain ⟨a', ha'⟩ := is_surj a
-    obtain ⟨b', hb'⟩ := is_surj b
-    simp only [← ha', ← hb', ← map_mul]
-    rw [is_comm.comm]
+theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
+    (is_comm : IsMulCommutative M) : IsMulCommutative N where
+  is_comm.comm a b := by
+    have ⟨a', ha'⟩ := is_surj a
+    have ⟨b', hb'⟩ := is_surj b
+    simp [← ha', ← hb', ← map_mul, mul_comm']
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
@@ -933,9 +938,11 @@ protected def End := M →* M
 namespace End
 
 @[to_additive]
-instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
+
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
+  inferInstanceAs <| MonoidHomClass (M →* M) M M
 
 @[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _
@@ -997,7 +1004,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [OneHom.map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩

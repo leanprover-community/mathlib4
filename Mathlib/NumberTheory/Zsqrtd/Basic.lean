@@ -52,12 +52,8 @@ def ofInt (n : ℤ) : ℤ√d :=
 theorem re_ofInt (n : ℤ) : (ofInt n : ℤ√d).re = n :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias ofInt_re := re_ofInt
-
 theorem im_ofInt (n : ℤ) : (ofInt n : ℤ√d).im = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias ofInt_im := im_ofInt
 
 /-- The zero of the ring -/
 instance : Zero (ℤ√d) :=
@@ -67,13 +63,9 @@ instance : Zero (ℤ√d) :=
 theorem re_zero : (0 : ℤ√d).re = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias zero_re := re_zero
-
 @[simp]
 theorem im_zero : (0 : ℤ√d).im = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias zero_im := im_zero
 
 instance : Inhabited (ℤ√d) :=
   ⟨0⟩
@@ -86,13 +78,9 @@ instance : One (ℤ√d) :=
 theorem re_one : (1 : ℤ√d).re = 1 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias one_re := re_one
-
 @[simp]
 theorem im_one : (1 : ℤ√d).im = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias one_im := im_one
 
 /-- The representative of `√d` in the ring -/
 def sqrtd : ℤ√d :=
@@ -102,13 +90,9 @@ def sqrtd : ℤ√d :=
 theorem re_sqrtd : (sqrtd : ℤ√d).re = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias sqrtd_re := re_sqrtd
-
 @[simp]
 theorem im_sqrtd : (sqrtd : ℤ√d).im = 1 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias sqrtd_im := im_sqrtd
 
 /-- Addition of elements of `ℤ√d` -/
 instance : Add (ℤ√d) :=
@@ -122,13 +106,9 @@ theorem add_def (x y x' y' : ℤ) : (⟨x, y⟩ + ⟨x', y'⟩ : ℤ√d) = ⟨x
 theorem re_add (z w : ℤ√d) : (z + w).re = z.re + w.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias add_re := re_add
-
 @[simp]
 theorem im_add (z w : ℤ√d) : (z + w).im = z.im + w.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias add_im := im_add
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
@@ -138,13 +118,9 @@ instance : Neg (ℤ√d) :=
 theorem re_neg (z : ℤ√d) : (-z).re = -z.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias neg_re := re_neg
-
 @[simp]
 theorem im_neg (z : ℤ√d) : (-z).im = -z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias neg_im := im_neg
 
 /-- Multiplication in `ℤ√d` -/
 instance : Mul (ℤ√d) :=
@@ -154,13 +130,9 @@ instance : Mul (ℤ√d) :=
 theorem re_mul (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias mul_re := re_mul
-
 @[simp]
 theorem im_mul (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias mul_im := im_mul
 
 instance addCommGroup : AddCommGroup (ℤ√d) := by
   refine
@@ -180,13 +152,9 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
 theorem re_sub (z w : ℤ√d) : (z - w).re = z.re - w.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias sub_re := re_sub
-
 @[simp]
 theorem im_sub (z w : ℤ√d) : (z - w).im = z.im - w.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias sub_im := im_sub
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
@@ -245,13 +213,9 @@ theorem star_mk (x y : ℤ) : star (⟨x, y⟩ : ℤ√d) = ⟨x, -y⟩ :=
 theorem re_star (z : ℤ√d) : (star z).re = z.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias star_re := re_star
-
 @[simp]
 theorem im_star (z : ℤ√d) : (star z).im = -z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias star_im := im_star
 
 instance : StarRing (ℤ√d) where
   star_involutive _ := Zsqrtd.ext rfl (neg_neg _)
@@ -266,25 +230,17 @@ instance nontrivial : Nontrivial (ℤ√d) :=
 theorem re_natCast (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias natCast_re := re_natCast
-
 @[simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).re = n :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias ofNat_re := re_ofNat
 
 @[simp]
 theorem im_natCast (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias natCast_im := im_natCast
-
 @[simp]
 theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).im = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias ofNat_im := im_ofNat
 
 theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
@@ -292,12 +248,8 @@ theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
 @[simp]
 theorem re_intCast (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
 
-@[deprecated (since := "2025-08-31")] alias intCast_re := re_intCast
-
 @[simp]
 theorem im_intCast (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
-
-@[deprecated (since := "2025-08-31")] alias intCast_im := im_intCast
 
 theorem intCast_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
 
@@ -314,11 +266,7 @@ theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩
 
 theorem re_smul (a : ℤ) (b : ℤ√d) : (↑a * b).re = a * b.re := by simp
 
-@[deprecated (since := "2025-08-31")] alias smul_re := re_smul
-
 theorem im_smul (a : ℤ) (b : ℤ√d) : (↑a * b).im = a * b.im := by simp
-
-@[deprecated (since := "2025-08-31")] alias smul_im := im_smul
 
 @[simp]
 theorem muld_val (x y : ℤ) : sqrtd (d := d) * ⟨x, y⟩ = ⟨d * y, x⟩ := by ext <;> simp
@@ -337,8 +285,7 @@ theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x 
 theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, re_intCast, zero_mul, im_mul, dvd_mul_right, and_self_iff,
-      re_mul, mul_zero, im_intCast]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
@@ -347,11 +294,7 @@ theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z �
 @[simp, norm_cast]
 theorem intCast_dvd_intCast (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [intCast_dvd]
-  constructor
-  · rintro ⟨hre, -⟩
-    rwa [re_intCast] at hre
-  · rw [re_intCast, im_intCast]
-    exact fun hc => ⟨hc, dvd_zero a⟩
+  simp
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
@@ -587,8 +530,11 @@ instance : LE (ℤ√d) :=
 instance : LT (ℤ√d) :=
   ⟨fun a b => ¬b ≤ a⟩
 
-instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
-  cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
+instance decidableNonnegg (c d) : DecidableRel (Nonnegg c d)
+  | .ofNat _, .ofNat _ => inferInstanceAs <| Decidable True
+  | .ofNat _, .negSucc _ => inferInstanceAs <| Decidable (_ ≤ _)
+  | .negSucc _, .ofNat _ => inferInstanceAs <| Decidable (_ ≤ _)
+  | .negSucc _, .negSucc _ => inferInstanceAs <| Decidable False
 
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
@@ -674,6 +620,7 @@ protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(_ + 1 : ℕ), -[_+1]⟩ => Nat.le_total _ _
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 
+@[deprecated _root_.le_total (since := "2026-02-19")]
 protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   have t := (b - a).nonneg_total
   rwa [neg_sub] at t
@@ -681,34 +628,36 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
-  lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_ge a b := by
+    have ht : b ≤ a ∨ a ≤ b := by
+      have t := (a - b).nonneg_total
+      rwa [neg_sub] at t
+    exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
+-- TODO add an `Archimedean (ℤ√d)` instance and drop this lemma
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
-    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_eq, add_assoc]; trivial⟩
-    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_eq, add_assoc]; trivial⟩
-    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_eq, add_assoc]; trivial⟩
+    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   rcases y with - | y
-  · simp
+  · simp only [Nat.cast_zero, mul_zero, add_zero, sub_self]
     trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
 
-protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
-  show Nonneg _ by rw [add_sub_add_left_eq_sub]; exact ab
+@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
+protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
+  show Nonneg _ by rwa [add_sub_add_right_eq_sub]
 
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  simpa using Zsqrtd.add_le_add_left _ _ h (-c)
 
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
   rw [← Int.cast_natCast n]
@@ -784,8 +733,6 @@ theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
 class Nonsquare (x : ℕ) : Prop where
   ns (x) : ∀ n : ℕ, x ≠ n * n
 
-@[deprecated (since := "2025-08-28")] alias Nonsquare.ns' := Nonsquare.ns
-
 variable [dnsq : Nonsquare d]
 
 theorem d_pos : 0 < d :=
@@ -837,13 +784,16 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 
+@[deprecated _root_.le_antisymm (since := "2026-02-19")]
 theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
-    le_antisymm := fun _ _ => Zsqrtd.le_antisymm
-    le_total := Zsqrtd.le_total
+    le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
+    le_total := fun a b => by
+      have t := (b - a).nonneg_total
+      rwa [neg_sub] at t
     toDecidableLE := Zsqrtd.decidableLE
     toDecidableEq := inferInstance }
 
@@ -885,14 +835,22 @@ instance : IsDomain (ℤ√d) :=
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
-      (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
+      (_root_.le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
 instance : ZeroLEOneClass (ℤ√d) :=
   { zero_le_one := by trivial }
 
 instance : IsOrderedAddMonoid (ℤ√d) :=
-  { add_le_add_left := Zsqrtd.add_le_add_left }
+  { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
+
+@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
+protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
+  exact _root_.le_of_add_le_add_left h
+
+@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
+protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
+  h (_root_.le_of_add_le_add_left h')
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
@@ -915,7 +873,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
 
-variable {R : Type}
+variable {R : Type*}
 
 @[ext]
 theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
@@ -958,7 +916,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
       simp only [re_intCast, add_zero, lift_apply_apply, im_intCast, Int.cast_zero,
         zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
-    rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]
+    rw [norm_eq_mul_conj, map_mul, ha, zero_mul]
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid
 of unitary elements. -/

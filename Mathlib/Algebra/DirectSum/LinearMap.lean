@@ -18,7 +18,7 @@ domain and codomain.
 
 -/
 
-@[expose] public section
+public section
 
 open DirectSum Module Set
 

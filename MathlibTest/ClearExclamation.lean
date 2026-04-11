@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ClearExclamation
 
 set_option linter.unusedVariables false

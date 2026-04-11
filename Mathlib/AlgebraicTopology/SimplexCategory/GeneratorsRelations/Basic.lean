@@ -119,11 +119,12 @@ end generators
 /-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
 lemma multiplicativeClosure_isGenerator_eq_top : generators.multiplicativeClosure = ⊤ := by
   apply le_antisymm (by simp)
-  intro x y f _
-  apply CategoryTheory.Quotient.induction
-  apply Paths.induction
-  · exact generators.multiplicativeClosure.id_mem _
-  · rintro _ _ _ _ ⟨⟩ h
+  rintro x y f -
+  induction f using CategoryTheory.Quotient.induction with | _ f
+  induction f using Paths.induction with
+  | id => exact generators.multiplicativeClosure.id_mem _
+  | comp _ k h =>
+    cases k
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
     · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
 
@@ -236,13 +237,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
-    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by cutsat⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by cutsat⟩ :=
-  δ_comp_δ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
+    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by lia⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by lia⟩ :=
+  δ_comp_δ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 /-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
-    σ ⟨i, by cutsat⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by cutsat⟩ ≫ σ ⟨i, hi⟩ :=
-  σ_comp_σ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
+    σ ⟨i, by lia⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by lia⟩ ≫ σ ⟨i, hi⟩ :=
+  σ_comp_σ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 end SimplicialIdentities
 

@@ -38,11 +38,11 @@ structure IsGood (x : ℝ) : Prop where
 
 /-- Solution of IMO 1960 Q2: solutions of the inequality
 are the numbers of the half-closed interval \([-1/2, 45/8)\) except for the number zero. -/
-theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
+theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1 / 2) (45 / 8) \ {0} := by
   -- First, note that the denominator is equal to zero at `x = 0`, hence it's not a solution.
   rcases eq_or_ne x 0 with rfl | hx
   · simp [isGood_iff']
-  cases lt_or_ge x (-1/2) with
+  cases lt_or_ge x (-1 / 2) with
   | inl hx2 =>
     -- Next, if `x < -1/2`, then the square root is undefined.
     have : 2 * x + 1 < 0 := by linarith
@@ -65,6 +65,6 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
         rw [add_sq, sq_sqrt hx2']; constructor <;> intro <;> linarith
       _ ↔ 2 * x + 1 < (7 / 2) ^ 2 := sqrt_lt' <| by positivity
       _ ↔ x < 45 / 8 := by constructor <;> intro <;> linarith
-      _ ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by simp [*]
+      _ ↔ x ∈ Ico (-1 / 2) (45 / 8) \ {0} := by simp [*]
 
 end Imo1960Q2

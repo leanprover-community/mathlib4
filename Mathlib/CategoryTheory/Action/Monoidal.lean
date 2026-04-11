@@ -20,6 +20,7 @@ public import Mathlib.CategoryTheory.Action.Limits
 We show:
 
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
+* When `V` is rigid and `G` is a group, `Action V G` is also rigid.
 -/
 
 @[expose] public section
@@ -28,7 +29,7 @@ universe u
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type*} [Category V] {G : Type*} [Monoid G]
+variable {V : Type*} [Category* V] {G : Type*} [Monoid G]
 
 namespace Action
 
@@ -40,9 +41,11 @@ variable [MonoidalCategory V]
 
 @[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
   associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
-  rightUnitor_hom_hom rightUnitor_inv_hom]
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
-  Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+  rightUnitor_hom_hom rightUnitor_inv_hom, reducible]
+instance instMonoidalCategory : MonoidalCategory (Action V G) where
+  tensorObj X Y := Action.mk (X.V ⊗ Y.V) _
+  tensorUnit := Action.mk (𝟙_ _) _
+  __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
@@ -69,7 +72,7 @@ instance : (Action.forget V G).Monoidal :=
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 @[simp] lemma forget_ε : ε (Action.forget V G) = 𝟙 _ := rfl
-@[simp] lemma forget_η : ε (Action.forget V G) = 𝟙 _ := rfl
+@[simp] lemma forget_η : η (Action.forget V G) = 𝟙 _ := rfl
 
 variable {V G}
 
@@ -122,8 +125,8 @@ instance FunctorCategoryEquivalence.functorMonoidal :
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
 instance functorCategoryEquivalenceFunctorMonoidal :
-    (functorCategoryEquivalence V G).functor.Monoidal := by
-  dsimp only [functorCategoryEquivalence_functor]; infer_instance
+    (functorCategoryEquivalence V G).functor.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.functor.Monoidal
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
@@ -132,8 +135,8 @@ instance FunctorCategoryEquivalence.inverseMonoidal :
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :
-    (functorCategoryEquivalence V G).inverse.Monoidal := by
-  dsimp only [functorCategoryEquivalence_inverse]; infer_instance
+    (functorCategoryEquivalence V G).inverse.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.inverse.Monoidal
 
 @[simp]
 lemma FunctorCategoryEquivalence.functor_ε :
@@ -210,10 +213,9 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
-@[deprecated (since := "2025-06-02")] alias diagonalSucc := diagonalSuccIsoTensorDiagonal
-
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -247,6 +249,7 @@ noncomputable def diagonalSuccIsoTensorTrivial :
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
     (diagonalSuccIsoTensorTrivial G n).hom.hom f =
@@ -261,6 +264,8 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
       leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
     <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
 
+attribute [local simp] types_tensorObj_def types_tensorUnit_def in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
     (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
@@ -286,11 +291,12 @@ namespace CategoryTheory.Functor
 
 open Action
 
-variable {W : Type*} [Category W] [MonoidalCategory V] [MonoidalCategory W]
+variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
   (F : V ⥤ W)
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
@@ -315,6 +321,7 @@ lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
 lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
     (μ (F.mapAction G) X Y).hom = μ F X.V Y.V := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where

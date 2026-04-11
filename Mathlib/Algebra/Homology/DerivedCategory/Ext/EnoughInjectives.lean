@@ -25,7 +25,7 @@ Note: this file dualizes the results in `HasEnoughProjectives.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -37,6 +37,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_from_singleFunctor_obj_of_injective
     {I : C} [Injective I] {L : CochainComplex C ℤ} {i : ℤ}
     (ι : (CochainComplex.singleFunctor C i).obj I ⟶ L) [L.IsStrictlyGE i] [QuasiIsoAt ι i] :
@@ -94,15 +95,20 @@ namespace Abelian.Ext
 
 open DerivedCategory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (e : Ext X I (n + 1)) : e = 0 := by
   let K := (CochainComplex.singleFunctor C 0).obj X
-  have := K.isStrictlyGE_of_ge (-n) 0 (by cutsat)
+  have := K.isStrictlyGE_of_ge (-n) 0 (by lia)
   letI := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
-    (by cutsat)).hom.app _), zero_hom, Limits.zero_comp]
-  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by cutsat)
+    (by lia)).hom.app _), zero_hom, Limits.zero_comp]
+  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by lia)
+
+lemma subsingleton_of_injective [HasExt.{w} C]
+    (X I : C) [Injective I] (n : ℕ) : Subsingleton (Ext.{w} X I (n + 1)) :=
+  subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
 
 end Abelian.Ext
 
