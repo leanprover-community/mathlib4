@@ -141,15 +141,12 @@ protected lemma dvd_sub_self_right {n m : ℕ} :
   · simp [h]
   · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
 
-theorem add_mod_le {a b : ℕ} (hab : b ≤ a) :
-    b + a % b ≤ a := by
+theorem add_mod_le {a b : ℕ} (hab : b ≤ a) : b + a % b ≤ a := by
   rcases Nat.eq_zero_or_pos b with rfl | hb
   · simp
   · calc b + a % b
         ≤ a / b * b + a % b :=
-          Nat.add_le_add_right
-            (Nat.le_mul_of_pos_left b (Nat.div_pos hab hb))
-            (a % b)
+          Nat.add_le_add_right (Nat.le_mul_of_pos_left b (Nat.div_pos hab hb)) (a % b)
       _ = a := Nat.div_add_mod' a b
 
 end Nat
