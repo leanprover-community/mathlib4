@@ -78,36 +78,66 @@ variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
   [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
   [(W R).IsMonoidal]
 
+-- to be moved
+abbrev forgetOfCommRing :
+    SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R) ⥤
+    PresheafOfModules.{w} (R.obj ⋙ forget₂ _ _) :=
+  SheafOfModules.forget _
+
+abbrev fullyFaithfulForgetOfCommRing : (forgetOfCommRing.{w} R).FullyFaithful :=
+  SheafOfModules.fullyFaithfulForget _
+
+instance : (forgetOfCommRing.{w} R).Faithful :=
+  (fullyFaithfulForgetOfCommRing R).faithful
+
+instance : (forgetOfCommRing.{w} R).Full :=
+  (fullyFaithfulForgetOfCommRing R).full
+
+-- to be moved
+set_option backward.isDefEq.respectTransparency false in
+noncomputable abbrev _root_.PresheafOfModules.sheafificationOfCommRing :
+    PresheafOfModules.{w} (R.obj ⋙ forget₂ _ _) ⥤
+      SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R) :=
+  (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
+      (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _))
+
+-- to be moved
+set_option backward.isDefEq.respectTransparency false in
+noncomputable abbrev _root_.PresheafOfModules.sheafificationAdjunctionOfCommRing :
+    PresheafOfModules.sheafificationOfCommRing.{w} R ⊣ forgetOfCommRing.{w} R :=
+  PresheafOfModules.sheafificationAdjunction (𝟙 _)
+
+instance : (PresheafOfModules.sheafificationOfCommRing.{w} R).IsLeftAdjoint :=
+  (PresheafOfModules.sheafificationAdjunctionOfCommRing R).isLeftAdjoint
+
+instance : (PresheafOfModules.sheafificationOfCommRing R).IsLocalization (W R) := by
+  dsimp [PresheafOfModules.sheafificationOfCommRing]
+  infer_instance
+
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance monoidalCategory :
     MonoidalCategory (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) :=
   inferInstanceAs (MonoidalCategory (LocalizedMonoidal
-    (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
-      (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)) (W R) (unit := unit _)
-        (asIso (((PresheafOfModules.sheafificationAdjunction.{w} (J := J)
-          (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
-            (𝟙 _)).counit.app (unit _)) :)))
+    (PresheafOfModules.sheafificationOfCommRing R) (W R) (unit := unit _)
+    (asIso ((PresheafOfModules.sheafificationAdjunctionOfCommRing.{w} R).counit.app (unit _)))))
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance symmetricCategory :
     SymmetricCategory (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) :=
   inferInstanceAs (SymmetricCategory (LocalizedMonoidal
-    (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
-      (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)) (W R) (unit := unit _)
-        (asIso (((PresheafOfModules.sheafificationAdjunction.{w} (J := J)
-          (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
-            (𝟙 _)).counit.app (unit _)) :)))
+    (PresheafOfModules.sheafificationOfCommRing R) (W R) (unit := unit _)
+    (asIso ((PresheafOfModules.sheafificationAdjunctionOfCommRing.{w} R).counit.app (unit _)))))
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance :
-  (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
-    (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)).Monoidal :=
+noncomputable instance : (PresheafOfModules.sheafificationOfCommRing.{w} R).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
-    (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
-      (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)) (W R) (unit := unit _)
-        (asIso (((PresheafOfModules.sheafificationAdjunction.{w} (J := J)
-          (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
-            (𝟙 _)).counit.app (unit _)) :)).Monoidal
+    (PresheafOfModules.sheafificationOfCommRing R) _ _).Monoidal
+
+noncomputable instance : (forgetOfCommRing.{w} R).LaxMonoidal :=
+  (PresheafOfModules.sheafificationAdjunctionOfCommRing R).rightAdjointLaxMonoidal
+
+example : (PresheafOfModules.sheafificationAdjunctionOfCommRing R).IsMonoidal := by
+  infer_instance
 
 section
 
@@ -115,12 +145,10 @@ variable (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)))
 
 set_option backward.isDefEq.respectTransparency false in
 instance : PreservesColimitsOfSize.{w, w} (tensorLeft F) := by
-  let R' := (sheafCompose J (forget₂ _ RingCat)).obj R
-  let α : R.obj ⋙ forget₂ CommRingCat RingCat ⟶ R'.obj := 𝟙 _
-  let S := PresheafOfModules.sheafification.{w} α
-  let adj := PresheafOfModules.sheafificationAdjunction.{w} α
+  let adj := PresheafOfModules.sheafificationAdjunctionOfCommRing.{w} R
   rw [adj.preservesColimitsOfSize_iff]
-  apply preservesColimits_of_natIso ((Functor.Monoidal.commTensorLeft S _).symm ≪≫
+  apply preservesColimits_of_natIso
+    ((Functor.Monoidal.commTensorLeft (PresheafOfModules.sheafificationOfCommRing R) _).symm ≪≫
     Functor.isoWhiskerLeft _ ((curriedTensor _).mapIso
       (asIso (adj.counit.app F))))
 
