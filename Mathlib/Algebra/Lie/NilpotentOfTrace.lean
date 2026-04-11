@@ -52,9 +52,9 @@ lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
   · simp [hjk]
 
 lemma trace_lie_mul_eq (x y z : Module.End K V) :
-    LinearMap.trace K V (⁅x, y⁆ * z) = LinearMap.trace K V (x * ⁅y, z⁆) := by
+    trace K V (⁅x, y⁆ * z) = trace K V (x * ⁅y, z⁆) := by
   have h := LieModule.traceForm_apply_lie_apply K (Module.End K V) V x y z
-  simp only [LieModule.traceForm_apply_apply, ← Module.End.mul_eq_comp] at h
+  simp only [LieModule.traceForm_apply_apply, ← mul_eq_comp] at h
   exact h
 
 section Lagrange
@@ -104,31 +104,31 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   rcases eq_or_ne X 0 with hX0 | hX_ne
   · rw [hX0]; exact IsNilpotent.zero
   have hx_ker' : traceForm K L M x = 0 := hx_ker
-  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ LinearMap.ker (traceForm K L M) := fun b => by
-    rw [LinearMap.mem_ker]; ext z
-    rw [LinearMap.zero_apply, traceForm_apply_lie_apply, hx_ker', LinearMap.zero_apply]
+  have hlie_ker : ∀ b : L, ⁅x, b⁆ ∈ ker (traceForm K L M) := fun b => by
+    rw [mem_ker]; ext z
+    rw [zero_apply, traceForm_apply_lie_apply, hx_ker', zero_apply]
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
   classical
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
-  let v := eigenDecomp.collectedBasis (fun μ => Module.finBasis K (s.eigenspace μ))
-  let a : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))) → K := fun i => i.1
+  let v := eigenDecomp.collectedBasis (fun μ => finBasis K (s.eigenspace μ))
+  let a : (Σ μ, Fin (finrank K (s.eigenspace μ))) → K := fun i => i.1
   have hv_diag : ∀ i, s (v i) = a i • v i := fun i =>
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range a)
   suffices hs_zero : s = 0 by rw [hX_ns, hs_zero, add_zero]; exact hn_nil
   suffices h_f_zero : ∀ f : E →ₗ[ℚ] ℚ, f = 0 by
     have : Subsingleton E :=
-      (Module.subsingleton_dual_iff ℚ).mp ⟨fun a b => by rw [h_f_zero a, h_f_zero b]⟩
+      (subsingleton_dual_iff ℚ).mp ⟨fun a b => by rw [h_f_zero a, h_f_zero b]⟩
     refine hs_ss.eq_zero_iff_forall_eigenvalue.mpr fun μ hμ => ?_
     have : Nontrivial (s.eigenspace μ) :=
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hμ)
-    have hμ_E : μ ∈ E := Submodule.subset_span ⟨⟨μ, ⟨0, Module.finrank_pos⟩⟩, rfl⟩
+    have hμ_E : μ ∈ E := Submodule.subset_span ⟨⟨μ, ⟨0, finrank_pos⟩⟩, rfl⟩
     simpa using Subsingleton.elim (⟨μ, hμ_E⟩ : E) 0
   intro f
   have ha : ∀ i, a i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
-  have : Fintype (Σ μ, Fin (Module.finrank K (s.eigenspace μ))) :=
-    v.fintypeIndexOfRankLtAleph0 (Module.rank_lt_aleph0 K M)
+  have : Fintype (Σ μ, Fin (finrank K (s.eigenspace μ))) :=
+    v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
   let c := fun i => algebraMap ℚ K (f ⟨a i, ha i⟩)
   let y : Module.End K M := Matrix.toLin v v (Matrix.diagonal c)
   have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
@@ -140,7 +140,7 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   have had_y_eq : ad K (Module.End K M) y = aeval ad_s r := by
     apply v.end.ext; intro ⟨i, j⟩
     change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
-    rw [Module.End.aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
+    rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
   have hns_comm : Commute n s :=
     commute_of_mem_adjoin_singleton_of_commute hs_adj (commute_of_mem_adjoin_self hn_adj).symm
   have h_ad_s_mem : ad_s ∈ adjoin K {ad K _ X} := by
@@ -150,8 +150,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   have hp_zero : eval 0 p = 0 := eval_zero_of_aeval_ad_eq hX_ne
     (commute_of_mem_adjoin_self hs_adj).symm hp_eq.symm
   let A : Submodule K (Module.End K M) :=
-    Submodule.map (toEnd K L M).toLinearMap (LinearMap.ker (traceForm K L M))
-  let B : Submodule K (Module.End K M) := LinearMap.range (toEnd K L M).toLinearMap
+    Submodule.map (toEnd K L M).toLinearMap (ker (traceForm K L M))
+  let B : Submodule K (Module.End K M) := range (toEnd K L M).toLinearMap
   have hAB : A ≤ B := fun _ ⟨c, _, h⟩ => ⟨c, h⟩
   have hxM : ∀ b ∈ B, ⁅X, b⁆ ∈ A := by
     rintro _ ⟨b, rfl⟩
@@ -164,17 +164,17 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
       rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
     intro b hb
     change (ad K _ y) b ∈ A
-    rw [had_y_X, hq', map_mul, aeval_X, Module.End.mul_apply]
+    rw [had_y_X, hq', map_mul, aeval_X, mul_apply]
     exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
   have htr_xy : trace K M (X * y) = 0 := by
     have hcomm : ∀ a b : L, trace K M (toEnd K L M ⁅a, b⁆ * y) = 0 := fun a b => by
-      obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
+      obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (mem_range_self _ b)
       have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c := calc
         _ = -⁅y, toEnd K L M b⁆ := (lie_skew _ _).symm
         _ = -toEnd K L M c := neg_inj.mpr hbc.symm
       rw [LieHom.map_lie]
       refine (trace_lie_mul_eq _ _ _).trans ?_
-      rw [hbc', mul_neg, map_neg, neg_eq_zero, Module.End.mul_eq_comp,
+      rw [hbc', mul_neg, map_neg, neg_eq_zero, mul_eq_comp,
         ← traceForm_apply_apply, traceForm_comm, hcI]
       rfl
     rw [hX_def]
@@ -196,18 +196,18 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
           (Set.injOn_of_injective Function.injective_id) hmem
         exact h.trans (dif_pos (ha i))
       change (aeval s g) (v i) = y (v i)
-      rw [Module.End.aeval_apply_of_mem_eigenspace (hv_diag i), hg, hy_diag i]
+      rw [aeval_apply_of_mem_eigenspace (hv_diag i), hg, hy_diag i]
     exact commute_of_mem_adjoin_singleton_of_commute hy_adj hns_comm
   have htr_ny : trace K M (n * y) = 0 :=
-    (LinearMap.isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
+    (isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
   have htr_sy : trace K M (s * y) = ∑ i, a i * c i := by
     rw [trace_eq_matrix_trace (b := v), Matrix.trace]
     refine Finset.sum_congr rfl fun i _ => ?_
-    simp [Matrix.diag, toMatrix_apply, Module.End.mul_apply, hy_diag i, map_smul,
-      hv_diag i, smul_smul, mul_comm (c i)]
-  have htr_sum : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), a i * c i = 0 := by
+    simp [Matrix.diag, toMatrix_apply, mul_apply, hy_diag i, map_smul, hv_diag i, smul_smul,
+      mul_comm (c i)]
+  have htr_sum : ∑ i : (Σ μ, Fin (finrank K (s.eigenspace μ))), a i * c i = 0 := by
     rw [← htr_sy, ← htr_xy, hX_ns, add_mul, map_add, htr_ny, zero_add]
-  have h_sum_sq : ∑ i : (Σ μ, Fin (Module.finrank K (s.eigenspace μ))), f ⟨a i, ha i⟩ ^ 2 = 0 := by
+  have h_sum_sq : ∑ i : (Σ μ, Fin (finrank K (s.eigenspace μ))), f ⟨a i, ha i⟩ ^ 2 = 0 := by
     have h_sum_E : ∑ i, (f ⟨a i, ha i⟩) • (⟨a i, ha i⟩ : E) = 0 := by
       apply_fun E.subtype using Subtype.val_injective
       simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
