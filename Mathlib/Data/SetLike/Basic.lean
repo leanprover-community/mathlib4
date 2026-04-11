@@ -6,6 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Data.Set.Basic
 
@@ -232,9 +233,12 @@ variable (A B : Type*) [SetLike A B]
 A partial order defined as `.ofSetLike` will automatically make available an instance
 of `IsConcreteLE`.
 -/
-@[reducible] def PartialOrder.ofSetLike : PartialOrder A where
+@[reducible] def PartialOrder.ofSetLikeAux : PartialOrder A where
   __ := LE.ofSetLike A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
+
+@[reducible] def PartialOrder.ofSetLike : PartialOrder A :=
+  fast_instance% PartialOrder.ofSetLikeAux A B
 
 instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
   letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }

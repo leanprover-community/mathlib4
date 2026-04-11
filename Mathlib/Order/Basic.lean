@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
@@ -730,7 +731,7 @@ See note [reducible non-instances]. -/
 abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
-  Function.Injective.partialOrder f inj .rfl .rfl
+  fast_instance% Function.Injective.partialOrder f inj .rfl .rfl
 
 theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
