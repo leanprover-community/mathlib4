@@ -292,8 +292,7 @@ theorem listEncode_sigma_injective :
 theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans ?_)
-  rw [mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
-    max_le_iff]
+  rw [mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0, max_le_iff]
   refine ⟨?_, le_max_left _ _⟩
   rw [mk_sum, Term.card_sigma, mk_sum, ← add_eq_max le_rfl, mk_sum, mk_nat]
   simp only [lift_add, lift_lift, lift_aleph0]
