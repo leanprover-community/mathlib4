@@ -67,9 +67,7 @@ def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one := F.mapIso iso
 
 section induction
 
-universe z
-
-variable {motive : WalkingIso.{u} → Sort z} (zero : motive zero) (one : motive one)
+variable {motive : WalkingIso.{u} → Sort*} (zero : motive zero) (one : motive one)
 
 /-- The recursor for WalkingIso, which constructs a term of `∏ (x : WalkingIso), A x` from
 a term of `A zero` and a term of `A one`. -/
