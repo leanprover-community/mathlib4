@@ -51,7 +51,6 @@ lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
   · subst hjk; simp [hs i, sub_smul]
   · simp [hjk]
 
-/-- Trace-bracket identity on `Module.End K V`: `tr(⁅x, y⁆ * z) = tr(x * ⁅y, z⁆)`. -/
 lemma trace_lie_mul_eq (x y z : Module.End K V) :
     LinearMap.trace K V (⁅x, y⁆ * z) = LinearMap.trace K V (x * ⁅y, z⁆) := by
   have h := LieModule.traceForm_apply_lie_apply K (Module.End K V) V x y z
