@@ -143,9 +143,13 @@ theorem Algebra.aeval_self_charpoly_lmul (α : M) :
   Algebra.lmul_injective (R := R) <| by
     simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
 
-theorem minpoly.natDegree_le' [Nontrivial R] (α : M) :
+theorem minpoly.natDegree_le [Nontrivial R] (α : M) :
     (minpoly R α).natDegree ≤ Module.finrank R M := by
   simpa [← (Algebra.lmul _ _ α).charpoly_natDegree] using natDegree_le_natDegree <| minpoly.min _ _
     (Algebra.lmul R _ α).charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
+
+theorem minpoly.degree_le [Nontrivial R] (α : M) :
+    (minpoly R α).degree ≤ Module.finrank R M :=
+  degree_le_of_natDegree_le (minpoly.natDegree_le α)
 
 end Algebra

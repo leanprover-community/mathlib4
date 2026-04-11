@@ -670,6 +670,13 @@ def mkOfAdjoinEqTop'
   map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 
+@[simp]
+theorem mkOfAdjoinEqTop'_root
+    [Module.Finite R S] [Module.Free R S] [Nontrivial R]
+    {α : S} {hα : Algebra.adjoin R {α} = ⊤} :
+      (mkOfAdjoinEqTop' hα).root = α := by
+  simp [mkOfAdjoinEqTop', IsAdjoinRoot.root]
+
 end IsAdjoinRootMonic
 
 section Algebra
