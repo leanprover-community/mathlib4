@@ -12,7 +12,8 @@ public import Mathlib.RingTheory.Flat.Basic
 
 # Lemmas about `IsBaseChange` under exact sequences
 
-In this file, we show that if `S` is flat, taking kernels commutes with base change.
+In this file, we show that if `S` is a flat `R`-algebra, taking kernels commutes with base change
+of modules from `R` to `S`.
 
 # Main Results
 

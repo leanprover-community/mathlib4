@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.IsTensorProduct
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that taking cokernels commutes with base change.
-If `S` is flat, the same holds for kernels, see `Mathlib.RingTheory.Flat.IsBaseChange`.
+If `S` is flat `R`-algebra, the same holds for kernels, see `Mathlib.RingTheory.Flat.IsBaseChange`.
 
 # Main Results
 
