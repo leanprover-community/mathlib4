@@ -27,6 +27,10 @@ namespace PresheafOfModules
 variable {C : Type u} [Category.{v} C]
   {R : Cᵒᵖ ⥤ CommRingCat.{w}} (cR : Cocone R)
 
+/-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ CommRingCat`, this is functor
+from `ModuleCat cR.pt` to presheaves of `R`-modules which sends a `cR.pt`-module `M`
+to a presheaf of modules whose underlying presheaf of abelian groups
+is the constant functor `Cᵒᵖ ⥤ AddCommGrpCat` with value `M`. -/
 noncomputable abbrev constFunctorOfCommRing :
     ModuleCat.{w} cR.pt ⥤ PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) :=
   (constFunctor.{w} ((forget₂ _ RingCat).mapCocone cR))
@@ -87,32 +91,46 @@ variable {cR} (hcR : IsColimit cR) [LocallySmall.{w} C]
 attribute [local instance] hasColimitsOfShape_of_finallySmall
   IsFiltered.isSifted FinallySmall.preservesColimitsOfShape_of_isFiltered
 
+/-- The colimit module functor from the category of presheaves of modules
+over a presheaf of commutative rings `R` on a cofiltered category to
+the category of modules over a colimit of `R`. -/
 noncomputable def colimitFunctorOfCommRing :
     PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) ⥤ ModuleCat.{w} cR.pt :=
   colimitFunctor (isColimitOfPreserves (forget₂ _ RingCat) hcR)
 
+/-- Given a presheaf of commutative rings `R` on a cofiltered category,
+this is the adjunction between `colimitFunctorOfCommRing` and the
+constant functor. -/
 noncomputable def colimitAdjunctionOfCommRing :
     colimitFunctorOfCommRing.{w} hcR ⊣ constFunctorOfCommRing.{w} cR :=
   colimitAdjunction _
 
+/-- The coprojection `F.obj U →+ (colimitFunctorOfCommRing hcR).obj F`
+for a presheaf of modules `F`. -/
 noncomputable def ιColimitFunctorOfCommRing
     (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) (U : Cᵒᵖ) :
     F.obj U →+ (colimitFunctorOfCommRing hcR).obj F :=
   (colimit.ι F.presheaf U).hom
 
 @[simp]
-lemma ιColimitFunctorOfCommRing_w (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) {V U : Cᵒᵖ}
+lemma ιColimitFunctorOfCommRing_map (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) {V U : Cᵒᵖ}
     (f : V ⟶ U) (v : F.obj V) :
     dsimp% ιColimitFunctorOfCommRing hcR F U (F.map f v) =
       ιColimitFunctorOfCommRing hcR F V v :=
   ConcreteCategory.congr_hom (colimit.w F.presheaf f) v
 
+/-- The colimit cocone which expresses that, as an abelian group,
+`(colimitFunctorOfCommRing hcR).obj F` is the colimit of `F.presheaf`,
+when `F` is a presheaf of modules over a presheaf of commutative rings. -/
 noncomputable def coconeColimitFunctorOfCommRing (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) :
     Cocone F.presheaf where
   pt := (forget₂ _ _).obj ((colimitFunctorOfCommRing hcR).obj F)
   ι.app U := AddCommGrpCat.ofHom (ιColimitFunctorOfCommRing hcR F U)
-  ι.naturality V U f := by ext v; exact ιColimitFunctorOfCommRing_w hcR F f v
+  ι.naturality V U f := by ext v; exact ιColimitFunctorOfCommRing_map hcR F f v
 
+/-- As an abelian group, `(colimitFunctorOfCommRing hcR).obj F` is the
+colimit of `F.presheaf`, when `F` is a presheaf of modules over a presheaf
+of commutative rings. -/
 noncomputable def isColimitCoconeColimitFunctorOfCommRing
     (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) :
     IsColimit (coconeColimitFunctorOfCommRing hcR F) :=
@@ -155,7 +173,7 @@ instance : IsIso (η (colimitFunctorOfCommRing hcR)) := by
   let h₂ := isColimitOfPreserves (forget₂ _ AddCommGrpCat)
     (isColimitOfPreserves (forget₂ _ RingCat) hcR)
   have : (forget₂ _ AddCommGrpCat).map (η (colimitFunctorOfCommRing hcR)) =
-    (IsColimit.coconePointUniqueUpToIso h₁ h₂).hom := by
+      (IsColimit.coconePointUniqueUpToIso h₁ h₂).hom := by
     ext x
     obtain ⟨U, u, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective hcR x
     dsimp
@@ -171,9 +189,9 @@ lemma colimitFunctorOfCommRing_δ_apply
     {F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ CommRingCat RingCat)}
     {U : Cᵒᵖ} (m₁ : F₁.obj U) (m₂ : F₂.obj U) :
     dsimp% δ (colimitFunctorOfCommRing hcR) F₁ F₂
-        (ιColimitFunctorOfCommRing hcR _ U (m₁ ⊗ₜ m₂)) =
-      ιColimitFunctorOfCommRing hcR _ U m₁ ⊗ₜ
-        ιColimitFunctorOfCommRing hcR _ U m₂ := by
+      (ιColimitFunctorOfCommRing hcR _ U (m₁ ⊗ₜ m₂)) =
+    ιColimitFunctorOfCommRing hcR _ U m₁ ⊗ₜ
+      ιColimitFunctorOfCommRing hcR _ U m₂ := by
   dsimp [Adjunction.leftAdjointOplaxMonoidal_δ]
   erw [PresheafOfModules.colimitAdjunction_homEquiv_symm_apply]
   dsimp
