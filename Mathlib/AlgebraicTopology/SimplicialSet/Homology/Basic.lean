@@ -134,8 +134,7 @@ protected noncomputable abbrev homologyMap (n : ℕ) : X.homology R n ⟶ Y.homo
   HomologicalComplex.homologyMap (chainComplexMap f R) n
 
 @[simp]
-lemma homologyMap_id (n : ℕ) :
-    SSet.homologyMap (𝟙 X) R n = 𝟙 _ := by
+lemma homologyMap_id (n : ℕ) : SSet.homologyMap (𝟙 X) R n = 𝟙 _ := by
   simp [SSet.homologyMap]
 
 @[reassoc]
