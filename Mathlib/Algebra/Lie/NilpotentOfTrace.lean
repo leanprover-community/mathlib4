@@ -19,15 +19,15 @@ public import Mathlib.LinearAlgebra.Trace
 /-!
 # Trace-nilpotency criterion
 
-If the trace form of a finite-dimensional representation of a Lie algebra `L` vanishes
-identically, then every element of `⁅L, L⁆` acts nilpotently. This is the key technical
-lemma behind Cartan's criterion.
+If the trace form of a finite-dimensional representation `M` of a Lie algebra `L` is zero,
+then the `⁅L, L⁆`-module `M` is nilpotent. This is the key technical lemma behind Cartan's
+criterion.
 
 ## Main results
 
-* `LieModule.isNilpotent_toEnd_of_traceForm_eq_zero_algClosed`: if `K` is an algebraically closed
-  field of characteristic zero, `M` is a finite-dimensional `L`-module with `traceForm K L M = 0`,
-  then every `x ∈ ⁅L, L⁆` acts nilpotently on `M`.
+* `LieModule.isNilpotent_toEnd_of_traceForm_eq_zero_algClosed`: over an algebraically closed field
+  of characteristic zero, if a finite-dimensional representation `M` of `L` satisfies
+  `traceForm K L M = 0`, then the `⁅L, L⁆`-module `M` is nilpotent.
 
 ## References
 
@@ -108,8 +108,7 @@ end NilpotentOfTrace
 namespace LieModule
 
 open Algebra LieAlgebra LinearMap Module Module.End NilpotentOfTrace Polynomial
-/-- If the trace form of `M` vanishes identically and `x ∈ ⁅L, L⁆`, then `x` acts nilpotently
-on `M`. -/
+/-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
 theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
