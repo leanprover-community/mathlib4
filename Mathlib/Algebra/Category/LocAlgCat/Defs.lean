@@ -14,12 +14,24 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 /-!
 # The Category of Local Algebras with a Fixed Residue Field
 
-* `LocAlgCat` : The type of objects in the category of local `Λ`-algebras with residue field `k`.
-  An object of `LocAlgCat` consists of a local `Λ`-algebra `A` equipped with
+This file defines the category of local algebras over a base commutative ring `Λ`
+with a fixed residue field `k`. This category serves as the ambient environment
+for formal deformation theory.
+
+## Main Definitions
+
+* `LocAlgCat Λ k` : The type of objects in the category of local `Λ`-algebras with
+  residue field `k`. An object consists of a local `Λ`-algebra `A` equipped with
   a surjective residue map to `k`.
 
 * `LocAlgCat.Hom` : The type of morphisms between objects in `LocAlgCat Λ k`.
-  A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the residue maps.
+  A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the
+  residue maps.
+
+* `LocAlgCat.isoMk` / `LocAlgCat.ofIso` : Canonical translations between `Λ`-algebra
+  equivalences (`≃ₐ[Λ]`) and categorical isomorphisms (`≅`) in `LocAlgCat`.
+
+* `LocAlgCat.uliftFunctor` : The universe lift functor for `LocAlgCat`.
 
 -/
 
