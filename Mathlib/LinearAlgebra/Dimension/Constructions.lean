@@ -335,42 +335,6 @@ theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by sim
 
 variable {R}
 
-theorem Module.le_rank_iff_exists_linearMap'
-    [Module R M'] [Module.Finite R M] [Nontrivial R] :
-    Module.finrank R M ≤ Module.rank R M' ↔
-      ∃ f : M →ₗ[R] M', Function.Injective f :=
-  let e := LinearEquiv.ofFinrankEq (R := R) M
-    (Fin (Module.finrank R M) → R) (Module.finrank_fin_fun R).symm
-  ⟨
-    fun h => by
-      rw [Module.le_rank_iff_exists_linearMap] at h
-      rcases h with ⟨φ, hφ⟩
-      exact ⟨φ ∘ₛₗ e.toLinearMap, by simpa⟩,
-    fun ⟨f, hf⟩ => Module.le_rank_iff_exists_linearMap.mpr
-      ⟨f ∘ₛₗ e.symm.toLinearMap, by simpa⟩
-  ⟩
-
-theorem Module.le_finrank_iff_existsLinearMap
-    [Module R M'] [Module.Finite R M] [Nontrivial R] [Module.Finite R M'] :
-    Module.finrank R M ≤ Module.finrank R M' ↔
-      ∃ f : M →ₗ[R] M', Function.Injective f :=
-  ⟨
-    fun h => Module.le_rank_iff_exists_linearMap'.mp <| by
-      rw [← Module.finrank_eq_rank R M', Nat.cast_le]
-      exact h,
-    fun h => by
-      let h := Module.le_rank_iff_exists_linearMap'.mpr h
-      rwa [← Module.finrank_eq_rank R M', Nat.cast_le] at h
-  ⟩
-
-theorem OrzechProperty.bijective_of_surjective_of_finrank_le [OrzechProperty R]
-    [Module R M'] [Module.Finite R M] [Nontrivial R] [Module.Finite R M']
-    (h : Module.finrank R M ≤ Module.finrank R M')
-    (f : M →ₗ[R] M') (hf : Function.Surjective f) :
-    Function.Bijective f := by
-  rcases Module.le_finrank_iff_existsLinearMap.mp h with ⟨φ, hφ⟩
-  refine OrzechProperty.bijective_of_surjective_of_injective φ _ hφ hf
-
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
 def finDimVectorspaceEquiv (n : ℕ) (hn : Module.rank R M = n) : M ≃ₗ[R] Fin n → R := by
