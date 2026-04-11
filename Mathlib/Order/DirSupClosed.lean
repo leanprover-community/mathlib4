@@ -214,15 +214,14 @@ end Preorder
 namespace PartialOrder
 variable [PartialOrder α]
 
-theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} := by
-  intro d hD hdu hd₀ hd₁ b hb
-  rw [subset_singleton_iff_eq] at hdu
-  obtain rfl | rfl := hdu
-  · simp at hd₀
-  · exact hb.unique isLUB_singleton
-
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
-  simpa using dirSupClosedOn_singleton a (D := .univ)
+  intro d hda hdn _ b hb
+  rw [hdn.subset_singleton_iff] at hda
+  subst hda
+  exact mem_singleton_of_eq (hb.unique isLUB_singleton)
+
+theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
+  (dirSupClosed_singleton a).dirSupClosedOn
 
 end PartialOrder
 
