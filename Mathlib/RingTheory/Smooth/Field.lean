@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.FieldTheory.SeparablyGenerated
+public import Mathlib.FieldTheory.TranscendentalSeparable
 
 /-!
 
@@ -49,6 +50,11 @@ lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable
   have : FormallyEtale (IntermediateField.adjoin K (Set.range v)) L :=
     Algebra.FormallyEtale.of_isSeparable _ L
   exact .comp _ (IntermediateField.adjoin K (Set.range v)) _
+
+lemma Algebra.FormallySmooth.of_isSeparablyGenerated [Algebra.IsSeparablyGenerated K L] :
+    Algebra.FormallySmooth K L := by
+  rcases ‹Algebra.IsSeparablyGenerated K L› with ⟨ι, f, isT, sep⟩
+  exact Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable isT.1
 
 instance (priority := low) Algebra.FormallySmooth.of_perfectField
     [PerfectField K] [Algebra.EssFiniteType K L] : Algebra.FormallySmooth K L := by
