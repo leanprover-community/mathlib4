@@ -378,32 +378,40 @@ end PreimgCodiscrete
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-/-- If `f` is analytic at `s` and `s ≠ z₀`, then `dslope f z₀` is analytic at `s`. -/
-lemma AnalyticAt.dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) (hs : s ≠ z₀) :
-    AnalyticAt 𝕜 (dslope f z₀) s := by
+private lemma AnalyticAt.dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s)
+    (hs : s ≠ z₀) : AnalyticAt 𝕜 (_root_.dslope f z₀) s := by
   have h_inv : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹) s :=
     (analyticAt_id.sub analyticAt_const).inv (sub_ne_zero.mpr hs)
   have h_quot : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹ • (f z - f z₀)) s :=
     h_inv.smul (hf.sub analyticAt_const)
-  have h_eq : (fun z => (z - z₀)⁻¹ • (f z - f z₀)) =ᶠ[𝓝 s] dslope f z₀ := by
+  have h_eq : (fun z => (z - z₀)⁻¹ • (f z - f z₀)) =ᶠ[𝓝 s] _root_.dslope f z₀ := by
     filter_upwards [isOpen_ne.mem_nhds hs] with z hz
     exact (_root_.dslope_of_ne f hz).symm
   exact h_quot.congr h_eq
 
-/-- If `f` is analytic at `s` and `s ≠ z₀`, then the `n`-th iterated `dslope` of `f` at `z₀`
-is analytic at `s`. -/
-lemma AnalyticAt.iterate_dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s)
-    (hs : s ≠ z₀) (n : ℕ) :
-    AnalyticAt 𝕜 ((Function.swap dslope z₀)^[n] f) s := by
+/-- If `f` is analytic at `s`, then `dslope f z₀` is analytic at `s`. -/
+lemma AnalyticAt.dslope {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) :
+    AnalyticAt 𝕜 (_root_.dslope f z₀) s := by
+  by_cases hs : s = z₀
+  · subst hs
+    obtain ⟨p, hp⟩ := hf
+    exact ⟨_, hp.has_fpower_series_dslope_fslope⟩
+  · exact hf.dslope_of_ne hs
+
+private lemma AnalyticAt.iterate_dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s)
+    (hs : s ≠ z₀) (n : ℕ) : AnalyticAt 𝕜 ((Function.swap _root_.dslope z₀)^[n] f) s := by
   induction n with
   | zero => exact hf
   | succ n ih =>
     rw [Function.iterate_succ_apply']
-    exact AnalyticAt.dslope_of_ne ih hs
+    exact ih.dslope_of_ne hs
 
-/-- If `f` is analytic at `z₀`, then the `n`-th iterated `dslope` of `f` at `z₀`
-is analytic at `z₀`. -/
-lemma AnalyticAt.iterate_dslope {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
-    AnalyticAt 𝕜 ((Function.swap dslope z₀)^[n] f) z₀ := by
-  obtain ⟨p, hp⟩ := hf
-  exact ⟨_, hp.has_fpower_series_iterate_dslope_fslope n⟩
+/-- If `f` is analytic at `s`, then the `n`-th iterated `dslope` of `f` at `z₀`
+is analytic at `s`. -/
+lemma AnalyticAt.iterate_dslope {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) (n : ℕ) :
+    AnalyticAt 𝕜 ((Function.swap _root_.dslope z₀)^[n] f) s := by
+  by_cases hs : s = z₀
+  · subst hs
+    obtain ⟨p, hp⟩ := hf
+    exact ⟨_, hp.has_fpower_series_iterate_dslope_fslope n⟩
+  · exact hf.iterate_dslope_of_ne hs n
