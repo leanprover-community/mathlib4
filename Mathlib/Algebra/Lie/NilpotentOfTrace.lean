@@ -114,8 +114,11 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     [Field K] [CharZero K] [IsAlgClosed K]
     [LieRing L] [LieAlgebra K L]
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-    (h : traceForm K L M = 0) (x : L) (hx : x ∈ (derivedSeries K L 1 : Submodule K L)) :
-    _root_.IsNilpotent (toEnd K L M x) := by
+    (h : traceForm K L M = 0) :
+    IsNilpotent (derivedSeries K L 1) M := by
+  rw [LieModule.isNilpotent_iff_forall' (R := K)]
+  intro ⟨x, hx⟩
+  rw [show toEnd K (derivedSeries K L 1) M ⟨x, hx⟩ = toEnd K L M x from rfl]
   set X : Module.End K M := toEnd K L M x with hX_def
   rcases eq_or_ne X 0 with hX_zero | hX_ne
   · rw [hX_zero]; exact IsNilpotent.zero
