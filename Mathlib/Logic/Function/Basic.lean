@@ -868,7 +868,7 @@ If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f
 def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
   f (g a) (h b)
 
-theorem bicompl_same_unary_eq_on (f : γ → γ → ε) (g : α → γ) : bicompl f g g = (f on g) :=
+theorem bicompl_self_eq_onFun (f : γ → γ → ε) (g : α → γ) : bicompl f g g = (f on g) :=
   rfl
 
 /-- Compose a unary function `f` with a binary function `g`. -/
