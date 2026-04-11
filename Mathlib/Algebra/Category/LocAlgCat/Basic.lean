@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.SimpleRing.Principal
 # Basic Quotient Constructions in `LocAlgCat`
 
 This file develops several basic constructions for the category of
-local `Λ`-algebras with a fixed residue field.
+local `Λ`-algebras with a fixed residue field `k`.
 
 ## Main Results
 
