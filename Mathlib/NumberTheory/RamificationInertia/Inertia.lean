@@ -105,7 +105,7 @@ lemma inertiaDeg_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg p (P.map e) = inertiaDeg p P := by
   rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
-  exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
+  exact p.inertiaDeg_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
