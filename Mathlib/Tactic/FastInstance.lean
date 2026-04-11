@@ -45,7 +45,7 @@ Many reductions for typeclasses are done with reducible transparency, so the ent
 is `withReducible` with some exceptions.
 -/
 partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : Array Name := #[]) :
-    MetaM Expr := withReducible do
+    MetaM Expr := withReducibleAndInstances do
   withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
     | error trace m!"Can only be used for classes, but type is{indentExpr expectedType}"
@@ -70,7 +70,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
         is not defeq to inferred instance{indentExpr new}"
   -- Otherwise, try to reduce it to a constructor.
   else
-    (← whnfI inst).withApp fun f args => do
+    (← whnf inst).withApp fun f args => do
     let error' (m : MessageData) : MetaM Expr := do
       if isStructure (← getEnv) className then
         error trace m
@@ -111,8 +111,8 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
         mvarId.assign (← makeFastInstance arg argExpectedType (root := false) (trace := trace'))
       else
         -- For data fields, make sure that the lambda binders have the right type.
-        forallTelescopeReducing argExpectedType fun xs _ ↦ do
-          mvarId.assign <| ← mkLambdaFVars xs (arg.beta xs)
+        mvarId.assign <| ← forallTelescopeReducing argExpectedType fun xs _ ↦ do
+          mkLambdaFVars xs (← whnf (mkAppN arg xs))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
 /--
