@@ -39,9 +39,9 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
-deriving Inhabited, AddCommGroup, Module (R ⧸ I), IsScalarTower R (R ⧸ I)
+deriving Inhabited, AddCommGroup, Module (R ⧸ I)
 
-deriving instance Module S, IsScalarTower S S' for Cotangent I
+deriving instance Module S, IsScalarTower S S', IsScalarTower R (R ⧸ I) for Cotangent I
 
 variable [IsNoetherian R I] in
 deriving instance IsNoetherian R for Cotangent I
@@ -302,8 +302,7 @@ instance : Module (ResidueField R) (CotangentSpace R) :=
   inferInstanceAs <| Module (R ⧸ maximalIdeal R) _
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
-  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R)
-    ((maximalIdeal R) ⧸ ((maximalIdeal R) • ⊤ : Submodule R (maximalIdeal R)))
+  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
