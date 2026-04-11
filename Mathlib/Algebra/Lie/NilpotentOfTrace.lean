@@ -132,7 +132,8 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
   obtain ⟨r, hr_eval, hr_zero⟩ := exists_polynomial_eval_sub μ hμ f
   let ad_s := ad K (Module.End K M) s
-  have had_y_eq : ad K (Module.End K M) y = aeval ad_s r := by
+  let ad_y := ad K (Module.End K M) y
+  have had_y_eq : ad_y = aeval ad_s r := by
     apply v.end.ext; intro ⟨i, j⟩
     change ⁅y, v.end (i, j)⁆ = (aeval ad_s r) (v.end (i, j))
     rw [aeval_apply_of_mem_eigenspace (had_s i j), hr_eval i j, had_y i j]
@@ -157,12 +158,12 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     exact ⟨⁅x, b⁆, hlie_ker b, LieHom.map_lie (toEnd K L M) x b⟩
   have hyM : ∀ b ∈ B, ⁅y, b⁆ ∈ A := by
     have hp_ad_s : ad_s = aeval (ad K _ X) p := hp_eq.symm
-    have had_y_X : ad K _ y = aeval (ad K _ X) (r.comp p) := by
+    have had_y_X : ad_y = aeval (ad K _ X) (r.comp p) := by
       rw [had_y_eq, hp_ad_s, ← aeval_comp]
     obtain ⟨q', hq'⟩ : (Polynomial.X : K[X]) ∣ r.comp p := by
       rw [X_dvd_iff, coeff_zero_eq_eval_zero, eval_comp, hp_zero, hr_zero]
     intro b hb
-    change (ad K _ y) b ∈ A
+    change ad_y b ∈ A
     rw [had_y_X, hq', map_mul, aeval_X, mul_apply]
     exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
   have htr_xy : trace K M (X * y) = 0 := by
