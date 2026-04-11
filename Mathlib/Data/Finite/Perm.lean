@@ -18,8 +18,9 @@ Let `α` be a `Finite` type.
 * `Equiv.Perm.isCyclic_of_card_le_two`: if `Nat.card α ≤ 2`,
   then `Equiv.Perm α` is cyclic.
 
-* `Equiv.Perm.isMulCommutative_of_card_le_two`: if `Nat.card α ≤ 2`,
-  then `Equiv.Perm α` is commutative.
+* `Equiv.Perm.isCyclic_iff_card_le_two`: `Equiv.Perm α` is cyclic iff `Nat.card α ≤ 2`.
+
+* `Equiv.Perm.isMulCommutative_iff_card_le_two`: `Equiv.Perm α` is commutative iff `Nat.card α ≤ 2`.
 
 -/
 
@@ -27,24 +28,39 @@ public section
 
 assert_not_exists Field
 
+open Equiv Nat
+
 variable {α : Type*} [Finite α]
 
 namespace Nat
 
-theorem card_perm : Nat.card (Equiv.Perm α) = (Nat.card α)! := by
+theorem card_perm : Nat.card (Perm α) = (Nat.card α)! := by
   classical
   have := Fintype.ofFinite α
   rw [card_eq_fintype_card, card_eq_fintype_card, Fintype.card_perm]
 
 end Nat
 
-theorem Equiv.Perm.isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
+namespace Equiv.Perm
+
+theorem isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
     IsCyclic (Perm α) := by
   apply isCyclic_of_card_dvd_prime (p := 2)
-  simpa [Nat.card_perm] using Nat.factorial_dvd_factorial hα
+  simpa [card_perm] using factorial_dvd_factorial hα
 
-theorem Equiv.Perm.isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
-    IsMulCommutative (Perm α) :=
-  (isCyclic_of_card_le_two hα).isMulCommutative
+theorem isMulCommutative_iff_card_le_two :
+    IsMulCommutative (Perm α) ↔ Nat.card α ≤ 2 := by
+  refine ⟨?_, fun h ↦ (isCyclic_of_card_le_two h).isMulCommutative⟩
+  classical
+  rintro ⟨⟨h⟩⟩
+  rw [← not_lt, ← Set.ncard_univ, Set.two_lt_ncard_iff]
+  rintro ⟨a, b, c, _, _, _, hab, hac, hbc⟩
+  apply hbc
+  simp_rw [Perm.ext_iff] at h
+  simpa [swap_apply_of_ne_of_ne hab hac] using h (swap a b) (swap b c) a
 
-end
+theorem isCyclic_iff_card_le_two :
+    IsCyclic (Perm α) ↔ Nat.card α ≤ 2 :=
+  ⟨fun h ↦ isMulCommutative_iff_card_le_two.mp h.isMulCommutative, isCyclic_of_card_le_two⟩
+
+end Equiv.Perm
