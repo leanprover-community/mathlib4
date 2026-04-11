@@ -322,7 +322,7 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Clopens α) := .ofSetLike (Clopens α) α
+instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
 
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
@@ -368,7 +368,7 @@ instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 @[simp, norm_cast] lemma coe_himp (s t : Clopens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 
-instance : BooleanAlgebra (Clopens α) :=
+instance : BooleanAlgebra (Clopens α) := fast_instance%
   SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
     coe_sdiff coe_himp
 
@@ -410,7 +410,7 @@ instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (IrreducibleCloseds α) := .ofSetLike (IrreducibleCloseds α) α
+instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
