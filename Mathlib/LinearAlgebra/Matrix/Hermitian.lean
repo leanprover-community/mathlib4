@@ -175,6 +175,16 @@ lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
     IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
   simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
 
+/-- A uniform block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal_iff [DecidableEq n]
+    {M : n → Matrix m m α} : (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  grind [IsHermitian, blockDiagonal_conjTranspose, blockDiagonal_inj]
+
+/-- A block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
+    {M : ∀ i, Matrix (p i) (p i) α} : (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
+
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
 @[simp]
@@ -185,12 +195,6 @@ theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
 @[simp]
 theorem isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
   IsSelfAdjoint.zero _
-
-/-- A block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
-theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
-    {M : ∀ i, Matrix (p i) (p i) α} :
-    (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
-  grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
 
 @[simp]
 theorem IsHermitian.add {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
