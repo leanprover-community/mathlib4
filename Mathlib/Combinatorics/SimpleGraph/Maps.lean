@@ -669,8 +669,6 @@ section induceIso
 variable {s : Set V} {t : Set W} {r : Set X}
          (φ : G ≃g G') (φst : Set.BijOn φ s t) (ψ : G' ≃g G'') (ψtr : Set.BijOn ψ t r)
 
-example := Equiv.bijOn_symm.mpr φst
-
 /-- The restriction of an isomorphism of graphs to induced subgraphs. -/
 def induceIso : G.induce s ≃g G'.induce t where
   toFun v := ⟨φ v.val, φst.image_eq ▸ Set.mem_image_of_mem φ v.property⟩
@@ -682,10 +680,6 @@ def induceIso : G.induce s ≃g G'.induce t where
 
 @[simp, norm_cast] lemma coe_induceIso :
     ⇑(induceIso φ φst) = Set.MapsTo.restrict φ s t (φst.mapsTo) := rfl
-
-example : Set.BijOn (⇑(Iso.refl (G := G))) s s := by
-  unfold Iso.refl
-  apply Set.bijOn_id s
 
 @[simp] lemma induceIso_id (G : SimpleGraph V) (s : Set V) :
     induceIso (Iso.refl : G ≃g G) (Set.bijOn_id s) = Iso.refl := by
