@@ -165,7 +165,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : FirstNonzeroIsPos (ms.leadingMonomial).unit)
+    (h_exps : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
     (h_coef : 0 < (ms.leadingMonomial).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')
@@ -185,7 +185,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : MultiseriesExpansion.Trimmed ms)
-    (h_exps : FirstNonzeroIsPos (ms.leadingMonomial).unit)
+    (h_exps : (ms.leadingMonomial).unit.FirstNonzeroIsPos)
     (h_coef : (ms.leadingMonomial).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
     (h_equiv : ms.toFun ~[atTop] f')

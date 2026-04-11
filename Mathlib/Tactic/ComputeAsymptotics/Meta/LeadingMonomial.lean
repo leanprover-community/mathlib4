@@ -84,39 +84,41 @@ def getLeadingMonomialCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
       return .some q(Eq.subst (motive := fun (x : Monomial) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
   | _ => panic! "Unexpected basis in getLeadingMonomialCoefPos"
 
-/-- Result of checking for a `x : List ℝ` if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg`
+/-- Result of checking for a `x : UnitMonomial` if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg`
 or `x.AllZero`. -/
-inductive FirstIsResult (x : Q(List ℝ))
-| zero (pf : Q(AllZero $x))
-| pos (pf : Q(FirstNonzeroIsPos $x))
-| neg (pf : Q(FirstNonzeroIsNeg $x))
+inductive FirstIsResult (x : Q(UnitMonomial))
+| zero (pf : Q(($x).AllZero))
+| pos (pf : Q(($x).FirstNonzeroIsPos))
+| neg (pf : Q(($x).FirstNonzeroIsNeg))
+
+open UnitMonomial
 
 /-- Given a list `x`, checks if `x.FirstNonzeroIsPos` or `x.FirstNonzeroIsNeg` or `x.AllZero`. -/
-partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
+partial def getFirstIs (x : Q(UnitMonomial)) : TacticM (FirstIsResult x) := do
   match x with
-  | ~q(List.nil) => return .zero q(AllZero_of_nil)
+  | ~q(List.nil) => return .zero q(AllZero.nil)
   | ~q(List.cons $hd $tl) =>
     match ← compareReal q($hd) with
-    | .pos h_hd => return .pos q(FirstNonzeroIsPos_of_head $tl $h_hd)
-    | .neg h_hd => return .neg q(FirstNonzeroIsNeg_of_head $tl $h_hd)
+    | .pos h_hd => return .pos q(FirstNonzeroIsPos.of_head $tl $h_hd)
+    | .neg h_hd => return .neg q(FirstNonzeroIsNeg.of_head $tl $h_hd)
     | .zero h_hd =>
       match ← getFirstIs q($tl) with
-      | .zero h_tl => return .zero q(AllZero_of_tail $h_hd $h_tl)
-      | .pos h_tl => return .pos q(FirstNonzeroIsPos_of_tail $h_hd $h_tl)
-      | .neg h_tl => return .neg q(FirstNonzeroIsNeg_of_tail $h_hd $h_tl)
-  | ~q(List.replicate $n 0) => return .zero q(AllZero_of_replicate)
+      | .zero h_tl => return .zero q(AllZero.of_tail $h_hd $h_tl)
+      | .pos h_tl => return .pos q(FirstNonzeroIsPos.of_tail $h_hd $h_tl)
+      | .neg h_tl => return .neg q(FirstNonzeroIsNeg.of_tail $h_hd $h_tl)
+  | ~q(List.replicate $n 0) => return .zero q(AllZero.replicate)
   | _ => panic! "Unexpected list in getFirstIs"
 
-/-- Result of checking for a `x : List ℝ` if `x.FirstNonzeroIsPos`. -/
-inductive FirstNonzeroIsPosResult (x : Q(List ℝ))
+/-- Result of checking for a `x : UnitMonomial` if `x.FirstNonzeroIsPos`. -/
+inductive FirstNonzeroIsPosResult (x : Q(UnitMonomial))
 | right (pf : Q(FirstNonzeroIsPos $x))
 | wrong (pf : Q(¬ FirstNonzeroIsPos $x))
 
 /-- Given a list `x`, checks if `x.FirstNonzeroIsPos`. -/
-def getFirstNonzeroIsPos (x : Q(List ℝ)) : TacticM (FirstNonzeroIsPosResult x) := do
+def getFirstNonzeroIsPos (x : Q(UnitMonomial)) : TacticM (FirstNonzeroIsPosResult x) := do
   match ← getFirstIs x with
   | .pos pf => return .right pf
-  | .neg pf => return .wrong q(not_FirstNonzeroIsPos_of_FirstNonzeroIsNeg $pf)
-  | .zero pf => return .wrong q(not_FirstNonzeroIsPos_of_AllZero $pf)
+  | .neg pf => return .wrong q(($pf).not_FirstNonzeroIsPos)
+  | .zero pf => return .wrong q(($pf).not_FirstNonzeroIsPos)
 
 end Tactic.ComputeAsymptotics
