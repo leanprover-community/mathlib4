@@ -374,3 +374,36 @@ theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
   fun _ hs ↦ mem_map.1 (preimage_mem_codiscreteWithin hfU h₂f hs)
 
 end PreimgCodiscrete
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+/-- If `f` is analytic at `s` and `s ≠ z₀`, then `dslope f z₀` is analytic at `s`. -/
+lemma AnalyticAt.dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) (hs : s ≠ z₀) :
+    AnalyticAt 𝕜 (dslope f z₀) s := by
+  have h_inv : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹) s :=
+    (analyticAt_id.sub analyticAt_const).inv (sub_ne_zero.mpr hs)
+  have h_quot : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹ • (f z - f z₀)) s :=
+    h_inv.smul (hf.sub analyticAt_const)
+  have h_eq : (fun z => (z - z₀)⁻¹ • (f z - f z₀)) =ᶠ[𝓝 s] dslope f z₀ := by
+    filter_upwards [isOpen_ne.mem_nhds hs] with z hz
+    exact (_root_.dslope_of_ne f hz).symm
+  exact h_quot.congr h_eq
+
+/-- If `f` is analytic at `s` and `s ≠ z₀`, then the `n`-th iterated `dslope` of `f` at `z₀`
+is analytic at `s`. -/
+lemma AnalyticAt.iterate_dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s)
+    (hs : s ≠ z₀) (n : ℕ) :
+    AnalyticAt 𝕜 ((Function.swap dslope z₀)^[n] f) s := by
+  induction n with
+  | zero => exact hf
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
+    exact AnalyticAt.dslope_of_ne ih hs
+
+/-- If `f` is analytic at `z₀`, then the `n`-th iterated `dslope` of `f` at `z₀`
+is analytic at `z₀`. -/
+lemma AnalyticAt.iterate_dslope {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
+    AnalyticAt 𝕜 ((Function.swap dslope z₀)^[n] f) z₀ := by
+  obtain ⟨p, hp⟩ := hf
+  exact ⟨_, hp.has_fpower_series_iterate_dslope_fslope n⟩
