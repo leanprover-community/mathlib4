@@ -951,6 +951,7 @@ public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Algebra.Order.Group.Equiv
 public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.Order.Group.Height
 public import Mathlib.Algebra.Order.Group.Ideal
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Algebra.Order.Group.Int
