@@ -28,52 +28,22 @@ namespace SSet
 
 variable (X : SSet) (R : C)
 
-noncomputable abbrev singularChainComplex : ChainComplex C ℕ :=
-  ((SSet.singularChainComplexFunctor C).obj R).obj X
 
-variable {R} in
-noncomputable def ιSingularChainComplex {n : ℕ} (x : X _⦋n⦌) :
-    R ⟶ (X.singularChainComplex R).X n :=
-  Sigma.ι (fun (_ : X _⦋n⦌) ↦ R) x
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
-lemma ιSingularChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
-    X.ιSingularChainComplex x ≫ (X.singularChainComplex R).d (n + 1) n =
-      ∑ (i : Fin (n + 2)), (-1) ^ i.val • X.ιSingularChainComplex (X.δ i x) := by
-  simp [ιSingularChainComplex, singularChainComplex , SSet.singularChainComplexFunctor,
-    Preadditive.comp_sum]
-
-noncomputable def singularChainComplexXCofan (n : ℕ) :
-    Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
-  Cofan.mk _ X.ιSingularChainComplex
-
-noncomputable def isColimitSingularChainComplexXCofan (n : ℕ) :
-    IsColimit (X.singularChainComplexXCofan R n) :=
-  coproductIsCoproduct _
-
-variable {X R} in
-@[ext]
-lemma singularChainComplex_hom_ext {n : ℕ} {T : C} {f g : (X.singularChainComplex R).X n ⟶ T}
-    (h : ∀ (x : X _⦋n⦌), X.ιSingularChainComplex x ≫ f = X.ιSingularChainComplex x ≫ g) :
-    f = g :=
-  (X.isColimitSingularChainComplexXCofan R n).hom_ext (fun _ ↦ h _)
-
-noncomputable def π₀.fromSingularChainComplexXZero :
-    (X.singularChainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
+noncomputable def π₀.fromChainComplexXZero :
+    (X.chainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
   (sigmaConst.obj _).map π₀.mk
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma π₀.comp_fromSingularChainComplexXZero (x : X _⦋0⦌) :
-  X.ιSingularChainComplex x ≫ π₀.fromSingularChainComplexXZero X R =
+lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
+  X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
     Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
-  simp [π₀.fromSingularChainComplexXZero, ιSingularChainComplex]
+  simp [π₀.fromChainComplexXZero, ιChainComplex]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma π₀.d_fromSingularChainComplexXZero (n : ℕ) :
-    (X.singularChainComplex R).d n 0 ≫ π₀.fromSingularChainComplexXZero X R = 0 := by
+lemma π₀.d_fromChainComplexXZero (n : ℕ) :
+    (X.chainComplex R).d n 0 ≫ π₀.fromChainComplexXZero X R = 0 := by
   by_cases! hn : n ≠ 1
   · rw [HomologicalComplex.shape _ _ _ (by simp; lia), zero_comp]
   · subst hn
@@ -81,44 +51,41 @@ lemma π₀.d_fromSingularChainComplexXZero (n : ℕ) :
     simp [π₀.sound (Edge.mk' x)]
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def isColimitCokernelCoforkSingularChainComplexDOneZero :
-    IsColimit (CokernelCofork.ofπ _ (π₀.d_fromSingularChainComplexXZero X R 1)) := by
+noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
+    IsColimit (CokernelCofork.ofπ _ (π₀.d_fromChainComplexXZero X R 1)) := by
   refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
     (Preadditive.isColimitCokernelCoforkOfCofork
       ((isColimitMapCoconeCoforkEquiv _ _).1
         (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
   · refine parallelPair.ext (-Iso.refl _) (Iso.refl _) ?_ (by simp)
-    simp [singularChainComplex, SSet.singularChainComplexFunctor, sub_eq_neg_add]
+    simp [chainComplex, SSet.chainComplexFunctor, sub_eq_neg_add]
   · refine Cofork.ext (Iso.refl _) ?_
     ext
-    simp [singularChainComplex, SSet.singularChainComplexFunctor,
-      π₀.fromSingularChainComplexXZero]
+    simp [chainComplex, SSet.chainComplexFunctor, π₀.fromChainComplexXZero]
 
-noncomputable def singularHomologyData :
-    ((X.singularChainComplex R).sc' 1 0 0).HomologyData :=
+noncomputable def homologyData₀ :
+    ((X.chainComplex R).sc' 1 0 0).HomologyData :=
   ShortComplex.HomologyData.ofIsColimitCokernelCofork _ (by cat_disch) _
-    (isColimitCokernelCoforkSingularChainComplexDOneZero X R)
+    (isColimitCokernelCoforkChainComplexDOneZero X R)
 
 variable [CategoryWithHomology C]
 
-noncomputable abbrev homology (n : ℕ) : C := (X.singularChainComplex R).homology n
-
-noncomputable def singularHomology₀Iso :
+noncomputable def homology₀Iso :
     X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R) :=
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
-    (X.singularHomologyData R).left.homologyIso
+    (X.homologyData₀ R).left.homologyIso
 
-noncomputable def singularHomology₀ε : X.homology R 0 ⟶ R :=
-  (X.singularHomology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
+noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
+  (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
 
 set_option backward.isDefEq.respectTransparency false in
-instance [X.IsConnected] : IsIso (X.singularHomology₀ε R) := by
-  dsimp [singularHomology₀ε]
+instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
+  dsimp [homology₀ε]
   simp only [isIso_comp_left_iff]
   let x : π₀ X := Classical.arbitrary _
   refine ⟨Sigma.ι (fun _ ↦ R) x, ?_, by simp⟩
   ext y
-  obtain rfl := Subsingleton.elim x y
+  obtain rfl : x = y := by subsingleton
   simp
 
 end SSet
@@ -265,18 +232,18 @@ noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π�
 
 noncomputable def singularHomology₀Iso :
     ((singularHomologyFunctor C 0).obj R).obj X ≅ ∐ (fun (_ : ZerothHomotopy X) ↦ R) :=
-  SSet.singularHomology₀Iso _ _ ≪≫
+  SSet.homology₀Iso _ _ ≪≫
     (sigmaConst.obj R).mapIso (zerothHomotopyEquiv X).toIso.symm
 
 noncomputable def singularHomology₀ε :
     ((singularHomologyFunctor C 0).obj R).obj X ⟶ R :=
-  SSet.singularHomology₀ε _ _
+  SSet.homology₀ε _ _
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma singularHomology₀Iso_sigma_desc_id :
     (singularHomology₀Iso X R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R) = singularHomology₀ε X R := by
-  dsimp only [singularHomology₀Iso, singularHomology₀ε, SSet.singularHomology₀ε]
+  dsimp only [singularHomology₀Iso, singularHomology₀ε, SSet.homology₀ε]
   cat_disch
 
 instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
@@ -293,6 +260,6 @@ instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
   exact ⟨(zerothHomotopyEquiv X).symm.unique⟩
 
 instance [PathConnectedSpace X] : IsIso (X.singularHomology₀ε R) :=
-  inferInstanceAs (IsIso ((toSSet.obj X).singularHomology₀ε R))
+  inferInstanceAs (IsIso ((toSSet.obj X).homology₀ε R))
 
 end TopCat
