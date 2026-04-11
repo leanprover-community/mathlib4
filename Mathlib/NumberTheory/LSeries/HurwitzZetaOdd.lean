@@ -360,14 +360,11 @@ lemma differentiable_completedSinZeta (a : UnitAddCircle) :
 
 lemma completedHurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd (-a) s = -completedHurwitzZetaOdd a s := by
-  simp only [completedHurwitzZetaOdd, StrongFEPair.Λ_eq]
-  simp [hurwitzOddFEPair, mellin, oddKernel_neg, integral_neg, neg_div]
+  simp [completedHurwitzZetaOdd, StrongFEPair.Λ_eq, mellin, oddKernel_neg, integral_neg, neg_div]
 
 lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
     completedSinZeta (-a) s = -completedSinZeta a s := by
-  simp only [completedSinZeta, StrongFEPair.Λ_eq]
-  simp [mellin, StrongFEPair.symm, WeakFEPair.symm,
-    hurwitzOddFEPair, sinKernel_neg, integral_neg, neg_div]
+  simp [completedSinZeta, StrongFEPair.Λ_eq, mellin, sinKernel_neg, integral_neg, neg_div]
 
 /-- Functional equation for the odd Hurwitz zeta function. -/
 theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :

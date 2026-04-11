@@ -111,8 +111,8 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
+@[simps]
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
   g := P.f
@@ -129,6 +129,7 @@ def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   h_feq  := P.h_feq'
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
+@[simps! f g k ε f₀ g₀]
 def StrongFEPair.symm (P : StrongFEPair E) : StrongFEPair E where
   toWeakFEPair := P.toWeakFEPair.symm
   hf₀ := P.hg₀
@@ -305,7 +306,6 @@ lemma hf_modif_top (r : ℝ) :
   filter_upwards [eventually_gt_atTop 1] with x hx
   simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where
