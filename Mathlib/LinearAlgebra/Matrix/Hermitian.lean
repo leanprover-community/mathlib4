@@ -187,8 +187,8 @@ theorem isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
   IsSelfAdjoint.zero _
 
 /-- A block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
-theorem isHermitian_blockDiagonal'_iff {n : Type*} [DecidableEq n] {blockSize : n → Type*}
-    (M : ∀ i, Matrix (blockSize i) (blockSize i) α) :
+theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
+    {M : ∀ i, Matrix (p i) (p i) α} :
     (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
   grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
 
