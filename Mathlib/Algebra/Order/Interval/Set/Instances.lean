@@ -149,7 +149,7 @@ instance instIsCancelMulZero {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRin
 @[simps]
 def coeMonoidWithZeroHom : (Icc (0 : R) 1) →*₀ R where
   toFun := (↑)
-  map_mul' := fun _ _ => rfl
+  map_mul' := coe_mul
   map_one' := rfl
   map_zero' := rfl
 
@@ -222,7 +222,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrde
 @[simps]
 def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
   toFun := (↑)
-  map_mul' := fun _ _ => rfl
+  map_mul' := coe_mul
 
 end Set.Ico
 
@@ -310,7 +310,7 @@ instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStric
 @[simps]
 def coeMonoidHom : (Ioc (0 : R) 1) →* R where
   toFun := (↑)
-  map_mul' := fun _ _ => rfl
+  map_mul' := coe_mul
   map_one' := rfl
 
 end Set.Ioc
@@ -347,7 +347,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStri
 @[simps]
 def coeMulHom : (Ioo (0 : R) 1) →ₙ* R where
   toFun := (↑)
-  map_mul' := fun _ _ => rfl
+  map_mul' := coe_mul
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
