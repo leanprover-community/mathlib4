@@ -201,6 +201,7 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     · obtain ⟨c, h₁, h₂⟩ := exists_between h
       exact ⟨(a, c), right _ h₁, right _ h₂⟩
 
+@[to_dual]
 instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense x y h := by
