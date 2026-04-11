@@ -88,9 +88,9 @@ theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
   · exact ⟨0, Function.injective_of_subsingleton _⟩
   have := Module.nontrivial R M
   rcases Module.Free.exists_set R M with ⟨_, ⟨B⟩⟩
-  replace h := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
-  rw [Cardinal.lift_mk_le'] at h
-  rcases h with ⟨i, hi⟩
+  replace cnd := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
+  rw [Cardinal.lift_mk_le'] at cnd
+  rcases cnd with ⟨i, hi⟩
   refine ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
 
 theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
