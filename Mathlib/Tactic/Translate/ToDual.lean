@@ -246,6 +246,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("decidableSucc", "DecidablePred"),
 ]
 
+@[inherit_doc GuessName.GuessNameExt]
 initialize guessNameExt : GuessName.GuessNameExt ←
   GuessName.registerGuessNameExt { nameDict, abbreviationDict }
 
