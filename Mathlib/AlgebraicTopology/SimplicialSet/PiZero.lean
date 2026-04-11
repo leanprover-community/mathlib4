@@ -15,6 +15,16 @@ In this file, we define the type `π₀ X` of connected components
 of a simplicial sets. We also introduce typeclasses
 `IsPreconnected X` and `IsConnected X`.
 
+## TODO
+
+* Define the subcomplex of `X` corresponding to an element in `π₀ X` (@joelriou)
+* Show `π₀ X` is a coequalizer of the two face maps `X _⦋1⦌ → X _⦋0⦌` (@joelriou)
+* Show `π₀ X` identifies to the colimit of `X` as a functor to types
+
+## References:
+
+- [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
+
 -/
 
 @[expose] public section
@@ -36,17 +46,23 @@ variable (X) in
 /-- The type of connected components of a simplicial set. -/
 def π₀ : Type u := Quot (π₀Rel (X := X))
 
+attribute [irreducible] π₀
+
 namespace π₀
 
+unseal π₀ in
 /-- The connected component of a `0`-simplex of a simplicial set. -/
 def mk : X _⦋0⦌ → π₀ X := Quot.mk _
 
+unseal π₀ in
 lemma mk_surjective : Function.Surjective (π₀.mk (X := X)) := Quot.mk_surjective
 
+unseal π₀ in
 lemma sound {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
     π₀.mk x₀ = π₀.mk x₁ :=
   Quot.sound ⟨e⟩
 
+unseal π₀ in
 lemma mk_eq_mk_iff (x₀ x₁ : X _⦋0⦌) :
     π₀.mk x₀ = π₀.mk x₁ ↔ Relation.EqvGen π₀Rel x₀ x₁ :=
   Quot.eq
@@ -57,9 +73,9 @@ lemma rec {motive : π₀ X → Prop} (mk : ∀ (x : X _⦋0⦌), motive (.mk x)
   obtain ⟨x, rfl⟩ := x.mk_surjective
   exact mk x
 
+unseal π₀ in
 /-- Constructor for maps from the type of connected components of a simplicial set. -/
-def lift {T : Type*} (f : X _⦋0⦌ → T)
-    (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
+def lift {T : Type*} (f : X _⦋0⦌ → T) (hf : ∀ ⦃x₀ x₁ : X _⦋0⦌⦄ (_ : X.Edge x₀ x₁), f x₀ = f x₁) :
     π₀ X → T :=
   Quot.lift f (by rintro x y ⟨e⟩; exact hf e)
 
@@ -105,8 +121,8 @@ abbrev coforkπ₀ : Cofork (X.δ (1 : Fin 2)) (X.δ 0) :=
 
 def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
   Cofork.IsColimit.mk _
-    (fun s ↦ Quot.lift s.π (by
-      rintro x₀ x₁ ⟨e⟩
+    (fun s ↦ π₀.lift s.π (by
+      rintro x₀ x₁ e
       simpa only [← e.src_eq, ← e.tgt_eq] using congr_fun s.condition e.edge))
     (fun s ↦ rfl)
     (fun s m hm ↦ by

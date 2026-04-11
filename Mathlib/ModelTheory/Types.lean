@@ -62,7 +62,13 @@ structure CompleteType where
   subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal
 
-variable {T α}
+variable {α}
+
+/-- The clopen set of complete types which contain a formula. -/
+def typesWith (T : L.Theory) : L[[α]].Sentence → Set (CompleteType T α) :=
+  fun φ ↦ {p | φ ∈ p.toTheory}
+
+variable {T}
 
 namespace CompleteType
 
@@ -185,29 +191,27 @@ theorem mem_typeOf {φ : L[[α]].Sentence} :
 theorem formula_mem_typeOf {φ : L.Formula α} :
     Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v := by simp
 
-/-- The clopen set of complete types which contain a formula. -/
-def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p}
-
 @[simp]
-lemma mem_typesWith_iff (φ : L[[α]].Sentence) (p : CompleteType T α) : p ∈ typesWith φ ↔ φ ∈ p := by
-  simp [typesWith]
+lemma mem_typesWith_iff (φ : L[[α]].Sentence) (p : CompleteType T α) :
+    p ∈ T.typesWith φ ↔ φ ∈ p := by
+  rfl
 
 lemma typesWith_inf (φ ψ : L[[α]].Sentence) :
-    typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
+    T.typesWith (φ ⊓ ψ) = T.typesWith φ ∩ T.typesWith ψ := by
   ext p
   simp only [mem_typesWith_iff, mem_inter_iff, ← SetLike.mem_coe, p.isMaximal.mem_iff_models,
     ModelsBoundedFormula, ← forall_and]
   exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
 
 lemma typesWith_eq_univ_of_mem_onTheory_lhomWithConstants {φ}
-    (hφ : φ ∈ (L.lhomWithConstants α).onTheory T) : typesWith (T := T) φ = Set.univ :=
+    (hφ : φ ∈ (L.lhomWithConstants α).onTheory T) : T.typesWith φ = Set.univ :=
   univ_subset_iff.mp fun p _ ↦ p.subset hφ
 
-lemma typesWith_top : typesWith (T := T) (α := α) ⊤ = Set.univ :=
+lemma typesWith_top : T.typesWith (α := α) ⊤ = Set.univ :=
   univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
 
-lemma typesWith_not (φ : L[[α]].Sentence) : typesWith ∼φ = (typesWith (T := T) φ)ᶜ := by
-  simp [typesWith]
+lemma typesWith_not (φ : L[[α]].Sentence) : T.typesWith ∼φ = (T.typesWith φ)ᶜ := by
+  exact Eq.symm compl_setOf_mem
 
 end CompleteType
 
