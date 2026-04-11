@@ -461,12 +461,11 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-set_option backward.inferInstanceAs.wrap false in
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance : Fintype (X q) := inferInstanceAs <| Fintype (ZMod q × ZMod q)
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
-  dsimp [X]
+  change Fintype.card (ZMod q × ZMod q) = q ^ 2
   rw [Fintype.card_prod, ZMod.card q, sq]
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
