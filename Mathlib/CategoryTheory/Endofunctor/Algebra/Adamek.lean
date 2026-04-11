@@ -52,34 +52,11 @@ universe v u
 variable {C : Type u} [Category.{v} C]
 variable (F : C ⥤ C) [HasInitial C]
 
-/-! ### Algebra structure on the colimit -/
-
-section AlgebraConstruction
-
-variable {c : Cocone (initialChain F)} (hc : IsColimit c)
-variable [PreservesColimit (initialChain F) F]
-
-/-- The colimit of `F` applied to the initial chain is a colimit (by preservation). -/
-noncomputable def preservedColimit :
-    IsColimit (F.mapCocone c) :=
-  isColimitOfPreserves F hc
-
-/-- The algebra structure map `F(L) → L` for the Adamek algebra. -/
-noncomputable def adamekStr : F.obj c.pt ⟶ c.pt :=
-  (preservedColimit F hc).desc (shiftCocone F c)
-
-/-- The structure map commutes with the colimit inclusions:
-`F.map (ι_n) ≫ adamekStr = ι_{n+1}`. -/
-@[reassoc]
-lemma adamekStr_fac (n : ℕ) :
-    F.map (c.ι.app n) ≫ adamekStr F hc = c.ι.app (n + 1) :=
-  (preservedColimit F hc).fac (shiftCocone F c) n
-
-end AlgebraConstruction
-
 namespace Algebra
 
-section AlgebraDefinition
+/-! ### The Adamek algebra -/
+
+section AdamekDefinition
 
 variable (c : Cocone (initialChain F)) (hc : IsColimit c)
 variable [PreservesColimit (initialChain F) F]
@@ -88,17 +65,32 @@ variable [PreservesColimit (initialChain F) F]
 algebra structure map `F(L) → L` obtained from the preserved colimit. -/
 noncomputable def adamek : Endofunctor.Algebra F where
   a := c.pt
-  str := adamekStr F hc
+  str := (isColimitOfPreserves F hc).desc (shiftCocone F c)
 
 @[simp]
 lemma adamek_a : (adamek F c hc).a = c.pt := rfl
 
 @[simp]
-lemma adamek_str : (adamek F c hc).str = adamekStr F hc := rfl
+lemma adamek_str : (adamek F c hc).str =
+    (isColimitOfPreserves F hc).desc (shiftCocone F c) := rfl
 
-end AlgebraDefinition
+end AdamekDefinition
 
-/-! ### Algebra cocone and initiality -/
+section AdamekProperties
+
+variable {c : Cocone (initialChain F)} (hc : IsColimit c)
+variable [PreservesColimit (initialChain F) F]
+
+/-- The structure map commutes with the colimit inclusions:
+`F.map (ι_n) ≫ str = ι_{n+1}`. -/
+@[reassoc]
+lemma adamekStr_fac (n : ℕ) :
+    F.map (c.ι.app n) ≫ (adamek F c hc).str = c.ι.app (n + 1) :=
+  (isColimitOfPreserves F hc).fac (shiftCocone F c) n
+
+end AdamekProperties
+
+/-! ### Algebra cocone -/
 
 section AlgebraCoconeApp
 
@@ -129,6 +121,8 @@ lemma iterateMap_comp_algebraCoconeApp (B : Endofunctor.Algebra F) (k : ℕ) :
     rw [← Category.assoc, ← F.map_comp, ih]
 
 end AlgebraCoconeApp
+
+/-! ### Initiality -/
 
 section Initiality
 
@@ -171,12 +165,9 @@ noncomputable def adamekHom (B : Endofunctor.Algebra F) :
     adamek F _ hc ⟶ B where
   f := hc.desc (algebraCocone F B)
   h := by
-    apply (preservedColimit F hc).hom_ext
+    apply (isColimitOfPreserves F hc).hom_ext
     intro n
     simp only [Functor.mapCocone_pt, Functor.mapCocone_ι_app]
-    -- Goal: F.map (c.ι.app n) ≫ F.map (desc) ≫ B.str =
-    --       F.map (c.ι.app n) ≫ (adamek ...).str ≫ desc
-    -- Both sides equal algebraCoconeApp F B (n + 1)
     -- LHS: reassociate and fold F.map_comp
     conv_lhs => erw [← Category.assoc, ← F.map_comp, hc.fac (algebraCocone F B) n]
     -- RHS: unfold adamek str and use fac
@@ -198,10 +189,10 @@ lemma adamekHom_unique (B : Endofunctor.Algebra F)
   induction n with
   | zero => exact initial.hom_ext _ _
   | succ n ih =>
-    rw [show c.ι.app (n + 1) = F.map (c.ι.app n) ≫ adamekStr F hc from
+    rw [show c.ι.app (n + 1) = F.map (c.ι.app n) ≫ (adamek F c hc).str from
       (adamekStr_fac F hc n).symm]
     erw [Category.assoc]
-    have hg : adamekStr F hc ≫ g.f = F.map g.f ≫ B.str := by
+    have hg : (adamek F c hc).str ≫ g.f = F.map g.f ≫ B.str := by
       have := g.h; simp only [adamek_str] at this; exact this.symm
     erw [hg]
     conv_lhs => erw [← Category.assoc, ← F.map_comp, ih]
