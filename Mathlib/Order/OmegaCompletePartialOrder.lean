@@ -89,6 +89,8 @@ instance : OrderHomClass (Chain α) ℕ α where
 /-- See note [partially-applied ext lemmas]. -/
 @[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
 
+@[simp] lemma eta (f : Chain α) : ⟨f, f.monotone⟩ = f := rfl
+
 @[simp] lemma coe_toOrderHom (c : Chain α) : ⇑c.toOrderHom = c := rfl
 
 instance [Inhabited α] : Inhabited (Chain α) :=
@@ -165,14 +167,6 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
     (pair a₁ a₂ ha).zip (pair b₁ b₂ hb) = pair (a₁, b₁) (a₂, b₂) (Prod.le_def.2 ⟨ha, hb⟩) := by
   ext n : 2; cases n <;> rfl
 
-/-- Left injection for chains of sums. -/
-@[simps!]
-def inl (c : Chain α) : Chain (α ⊕ β) := c.map OrderEmbedding.inl.toOrderHom
-
-/-- Right injection for chains of sums. -/
-@[simps!]
-def inr (c : Chain β) : Chain (α ⊕ β) := c.map OrderEmbedding.inr.toOrderHom
-
 /-- Projects left values out of a chain.
 If the chain contains right values (chains can contain only left values, or only right values),
 then a default value is returned. -/
@@ -188,51 +182,48 @@ then a default value is returned. -/
 def projR (c : Chain (α ⊕ β)) (dflt : β) : Chain β :=
   projL (c.map ⟨Sum.swap, Sum.swap_mono⟩) dflt
 
-@[simp]
-lemma projL_inl (dflt : α) : projL (inl c : Chain (α ⊕ β)) dflt = c := by
-  ext; simp
-
-@[simp]
-lemma projR_inr (dflt : α) : projR (inr c : Chain (β ⊕ α)) dflt = c := by
-  ext; simp
-
-/-- Splits a chain of sums into a sum of chains. -/
-@[simps symm_apply]
+/-- A chain of sums is equivalent to a sum of chains. -/
 def toSum : Chain (α ⊕ β) ≃ Chain α ⊕ Chain β where
   toFun c := Sum.map (projL c) (projR c) (c 0)
   invFun
-    | .inl c => .inl c
-    | .inr c => .inr c
+    | .inl c => c.map OrderEmbedding.inl.toOrderHom
+    | .inr c => c.map OrderEmbedding.inr.toOrderHom
   left_inv c := by
     ext n
     have h₀ₙ := OrderHomClass.monotone c n.zero_le
     cases h₀ : c 0 <;> cases hₙ : c n <;> simp_all
-  right_inv c := by cases c <;> simp
+  right_inv c := by cases c <;> simp [projL, projR]
 
 @[simp]
-lemma toSum_inl (c : Chain α) : toSum (inl c : Chain (α ⊕ β)) = .inl c := rfl
+lemma toSum_symm_inl_apply (c : Chain α) (n : ℕ) :
+    toSum.symm (.inl c) n = (.inl (c n) : α ⊕ β) := rfl
 
 @[simp]
-lemma toSum_inr (c : Chain β) : toSum (inr c : Chain (α ⊕ β)) = .inr c := rfl
+lemma toSum_symm_inr_apply (c : Chain β) (n : ℕ) :
+    toSum.symm (.inr c) n = (.inr (c n) : α ⊕ β) := rfl
 
 @[simp]
-lemma elim_toSum (c : Chain (α ⊕ β)) : (toSum c).elim .inl .inr = c := by
-  apply toSum.injective
-  cases toSum c <;> simp
+lemma projL_toSum_symm_inl (dflt) : projL (toSum.symm (.inl c : Chain α ⊕ Chain β)) dflt = c := by
+  rfl
+
+@[simp]
+lemma projR_toSum_symm_inr (dflt) : projR (toSum.symm (.inr c : Chain β ⊕ Chain α)) dflt = c := by
+  rfl
 
 @[elab_as_elim]
-lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
-    (c : Chain (α ⊕ β)) : p c := by
-  rw [← toSum.symm_apply_apply c]
-  cases c.toSum <;> simp [inl, inr]
+lemma toSum_cases {p : Chain (α ⊕ β) → Prop} (symm : ∀ c, p (toSum.symm c)) : ∀c, p c := by
+  rw [toSum.forall_congr_left]
+  apply symm
 
 lemma inl_projL_of_apply_eq_inl (c : Chain (α ⊕ β)) {n : ℕ} {x : α} (dflt : α)
-    (hn : c n = .inl x) : inl (projL c dflt) = c := by
-  ext; cases c using sum_cases <;> simp_all
+    (hn : c n = .inl x) : toSum.symm (.inl (projL c dflt)) = c := by
+  cases c using toSum_cases with | symm c =>
+  cases c <;> simp_all
 
 lemma inr_projR_of_apply_eq_inr (c : Chain (α ⊕ β)) {n : ℕ} {x : β} (dflt : β)
-    (hn : c n = .inr x) : inr (projR c dflt) = c := by
-  ext; cases c using sum_cases <;> simp_all
+    (hn : c n = .inr x) : toSum.symm (.inr (projR c dflt)) = c := by
+  cases c using toSum_cases with | symm c =>
+  cases c <;> simp_all
 
 end Chain
 
@@ -549,17 +540,17 @@ variable
 
 noncomputable instance : OmegaCompletePartialOrder (α ⊕ β) where
   ωSup c := Sum.map ωSup ωSup (toSum c)
-  le_ωSup c i := by cases c using sum_cases <;> simp [le_ωSup]
+  le_ωSup c i := by
+    cases c using Chain.toSum_cases with | symm c =>
+    cases c <;> simp [le_ωSup]
   ωSup_le c x hc := by
-    cases c using sum_cases <;>
-    · cases hc 0
-      simp_all
+    cases c using Chain.toSum_cases with | symm c =>
+    cases c <;> cases hc 0 <;> simp_all
 
 @[simp]
-lemma ωSup_inl (c : Chain α) : ωSup (.inl c : Chain (α ⊕ β)) = .inl (ωSup c) := rfl
-
-@[simp]
-lemma ωSup_inr (c : Chain β) : ωSup (.inr c : Chain (α ⊕ β)) = .inr (ωSup c) := rfl
+lemma ωSup_toSum_symm (c : Chain α ⊕ Chain β) :
+    ωSup (toSum.symm c : Chain (α ⊕ β)) = c.map ωSup ωSup := by
+  cases c <;> rfl
 
 @[fun_prop]
 lemma ωScottContinuous_inl : ωScottContinuous (.inl : α → α ⊕ β) := ScottContinuousOn.inl
@@ -578,12 +569,13 @@ lemma ωScottContinuous_elim
   · rw [hh.map_ωSup]
     generalize hc' : c.map ⟨h, hh.monotone⟩ = c'
     simp only [Chain.ext_iff, coe_map, OrderHom.coe_mk, funext_iff, Function.comp_apply] at hc'
-    cases c' using sum_cases
-    · simp only [ωSup_inl, elim_inl, hf.map_ωSup₂]
+    cases c' using toSum_cases with | symm c' =>
+    cases c'
+    · simp only [ωSup_toSum_symm, map_inl, elim_inl, hf.map_ωSup₂]
       congr 1
       ext n
       simp [hc']
-    · simp only [ωSup_inr, elim_inr, hg.map_ωSup₂]
+    · simp only [ωSup_toSum_symm, map_inr, elim_inr, hg.map_ωSup₂]
       congr 1
       ext n
       simp [hc']
