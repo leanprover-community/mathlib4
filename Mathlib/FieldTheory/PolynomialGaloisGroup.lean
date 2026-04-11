@@ -54,12 +54,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
-deriving Group, Fintype, EquivLike, AlgEquivClass
+deriving Group, Fintype, EquivLike, AlgEquivClass, MulSemiringAction _ p.SplittingField
 
 namespace Gal
-
-instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
-  AlgEquiv.applyMulSemiringAction
 
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
@@ -70,6 +67,7 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
+@[implicit_reducible]
 def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
   default := 1
   uniq f :=
@@ -134,7 +132,7 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
   · exact fun _ _ h => Subtype.ext (RingHom.injective _ (Subtype.ext_iff.mp h))
   · intro y
     -- this is just an equality of two different ways to write the roots of `p` as an `E`-polynomial
-    have key := (IsSplittingField.splits p.SplittingField p).map_roots
+    have key := (IsSplittingField.splits p.SplittingField p).roots_map
       (IsScalarTower.toAlgHom F p.SplittingField E : p.SplittingField →+* E)
     rw [map_map, AlgHom.comp_algebraMap] at key
     have hy := Subtype.mem y
@@ -242,6 +240,7 @@ variable (p q)
 def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
   MonoidHom.prod (restrictDvd (dvd_mul_right p q)) (restrictDvd (dvd_mul_left q p))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.Gal.restrictProd` is actually a subgroup embedding. -/
 theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   by_cases hpq : p * q = 0

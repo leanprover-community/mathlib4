@@ -71,14 +71,14 @@ instance : HasImage f :=
 instance : HasImages (Type u) where
   has_image := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
-        simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
-        rw [p, Classical.choose_spec x.2]⟩⟩) rfl
+        simp [dsimp% p, Classical.choose_spec x.2]⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -106,6 +106,7 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       types_comp_apply, (hF p _).choose_spec]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/

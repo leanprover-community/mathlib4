@@ -37,6 +37,8 @@ instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
   coe_injective' L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
+instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α) α
+
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
 @[simp] lemma supClosed (L : BooleanSubalgebra α) : SupClosed (L : Set α) := L.supClosed'
@@ -119,10 +121,13 @@ instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.2 b.2⟩
 @[simp] lemma mk_himp_mk (a b : α) (ha hb) : (⟨a, ha⟩ ⇨ ⟨b, hb⟩ : L) = ⟨a ⇨ b, himp_mem ha hb⟩ :=
   rfl
 
+instance (L : BooleanSubalgebra α) : PartialOrder L :=
+  PartialOrder.lift _ Subtype.coe_injective
+
 /-- A Boolean subalgebra of a lattice inherits a Boolean algebra structure. -/
 instance instBooleanAlgebraCoe (L : BooleanSubalgebra α) : BooleanAlgebra L :=
-  Subtype.coe_injective.booleanAlgebra _ val_sup val_inf val_top val_bot val_compl val_sdiff
-    val_himp
+  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl val_sup val_inf val_top val_bot val_compl
+    val_sdiff val_himp
 
 /-- The natural lattice hom from a Boolean subalgebra to the original lattice. -/
 def subtype (L : BooleanSubalgebra α) : BoundedLatticeHom L α where

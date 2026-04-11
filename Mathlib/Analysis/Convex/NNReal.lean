@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Data.NNReal.Defs
 

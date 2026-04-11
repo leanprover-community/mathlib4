@@ -106,7 +106,7 @@ theorem some_update_none (f : Option α →₀ M) (a : M) :
 pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
 noncomputable
-def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
   toFun P := (P none, P.some)
   invFun P := (P.2.embDomain .some).update none P.1
   left_inv P := by ext (_ | a) <;> simp [Finsupp.update]
@@ -210,6 +210,11 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+@[simp]
+lemma optionElim_add [AddZeroClass M] (a b : α →₀ M) (i j : M) :
+    (a + b).optionElim (i + j) = a.optionElim i + b.optionElim j := by
+  ext x; cases x <;> simp
 
 end Option
 

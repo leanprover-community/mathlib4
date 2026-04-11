@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -18,7 +19,7 @@ It is calculated with Cramer's rule, which we introduce first.
 The vectors returned by Cramer's rule are given by the linear map `cramer`,
 which sends a matrix `A` and vector `b` to the vector consisting of the
 determinant of replacing the `i`th column of `A` with `b` at index `i`
-(written as `(A.update_column i b).det`).
+(written as `(A.updateCol i b).det`).
 Using Cramer's rule, we can compute for each matrix `A` the matrix `adjugate A`.
 The entries of the adjugate are the minors of `A`.
 Instead of defining a minor by deleting row `i` and column `j` of `A`, we
@@ -259,6 +260,7 @@ theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
   rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
   ext i j
   rw [mul_apply, Pi.smul_apply, Pi.smul_apply, one_apply, smul_eq_mul, mul_boole]
@@ -346,7 +348,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   apply mul_left_cancel₀ (show A'.det ≠ 0 from det_mvPolynomialX_ne_zero n ℤ)
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
-    _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
+    _ = A'.det ^ Fintype.card n := by erw [mul_adjugate A']; rw [det_smul, det_one, mul_one]
     _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 
 @[simp]

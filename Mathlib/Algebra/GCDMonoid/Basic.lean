@@ -6,12 +6,11 @@ Authors: Johannes Hölzl, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Ring.Associated
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
 
-This file defines extra structures on `CancelCommMonoidWithZero`s, including `IsDomain`s.
+This file defines extra structures on `CommMonoidWithZero`s.
 
 ## Main Definitions
 
@@ -69,7 +68,7 @@ variable {α : Type*}
 
 /-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. -/
-class NormalizationMonoid (α : Type*) [CancelCommMonoidWithZero α] where
+class NormalizationMonoid (α : Type*) [CommMonoidWithZero α] where
   /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
   normUnit : α → αˣ
   /-- The proposition that `normUnit` maps `0` to the identity. -/
@@ -85,7 +84,7 @@ attribute [simp] normUnit_coe_units normUnit_zero normUnit_mul
 
 section NormalizationMonoid
 
-variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
+variable [CommMonoidWithZero α] [NormalizationMonoid α]
 
 @[simp]
 theorem normUnit_one : normUnit (1 : α) = 1 :=
@@ -147,30 +146,32 @@ theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
 @[simp]
 theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp [normalize_apply]
 
-theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
+theorem normalize_eq_normalize [IsCancelMulZero α] {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b := by
   nontriviality α
   rcases associated_of_dvd_dvd hab hba with ⟨u, rfl⟩
-  refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => ?_
+  refine by_cases (by rintro rfl; simp) fun ha : a ≠ 0 => ?_
   suffices a * ↑(normUnit a) = a * ↑u * ↑(normUnit a) * ↑u⁻¹ by
     simpa only [normalize_apply, mul_assoc, normUnit_mul ha u.ne_zero, normUnit_coe_units]
   calc
     a * ↑(normUnit a) = a * ↑(normUnit a) * ↑u * ↑u⁻¹ := (Units.mul_inv_cancel_right _ _).symm
     _ = a * ↑u * ↑(normUnit a) * ↑u⁻¹ := by rw [mul_right_comm a]
 
-theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
+theorem normalize_eq_normalize_iff [IsCancelMulZero α] {x y : α} :
+    normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
   ⟨fun h => ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
     normalize_eq_normalize hxy hyx⟩
 
-theorem normalize_eq_normalize_iff_associated {x y : α} :
+theorem normalize_eq_normalize_iff_associated [IsCancelMulZero α] {x y : α} :
     normalize x = normalize y ↔ Associated x y := by
   rw [normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
-theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : normalize b = b)
+theorem dvd_antisymm_of_normalize_eq [IsCancelMulZero α] {a b : α}
+    (ha : normalize a = a) (hb : normalize b = b)
     (hab : a ∣ b) (hba : b ∣ a) : a = b :=
   ha ▸ hb ▸ normalize_eq_normalize hab hba
 
-theorem Associated.eq_of_normalized
+theorem Associated.eq_of_normalized [IsCancelMulZero α]
     {a b : α} (h : Associated a b) (ha : normalize a = a) (hb : normalize b = b) :
     a = b :=
   dvd_antisymm_of_normalize_eq ha hb h.dvd h.dvd'
@@ -187,7 +188,7 @@ end NormalizationMonoid
 
 namespace Associates
 
-variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
+variable [CommMonoidWithZero α] [IsCancelMulZero α] [NormalizationMonoid α]
 
 /-- Maps an element of `Associates` back to the normalized element of its associate class -/
 protected def out : Associates α → α :=
@@ -238,11 +239,11 @@ theorem out_zero : (0 : Associates α).out = 0 := by
 
 end Associates
 
-/-- GCD monoid: a `CancelCommMonoidWithZero` with `gcd` (greatest common divisor) and
+/-- GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
-class GCDMonoid (α : Type*) [CancelCommMonoidWithZero α] where
+class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α where
   /-- The greatest common divisor between two elements. -/
   gcd : α → α → α
   /-- The least common multiple between two elements. -/
@@ -260,13 +261,15 @@ class GCDMonoid (α : Type*) [CancelCommMonoidWithZero α] where
   /-- `0` is right-absorbing. -/
   lcm_zero_right : ∀ a, lcm a 0 = 0
 
-/-- Normalized GCD monoid: a `CancelCommMonoidWithZero` with normalization and `gcd`
+attribute [instance 100] GCDMonoid.toIsCancelMulZero
+
+/-- Normalized GCD monoid: a cancellative `CommMonoidWithZero` with normalization and `gcd`
 (greatest common divisor) and `lcm` (least common multiple) operations. In this setting `gcd` and
 `lcm` form a bounded lattice on the associated elements where `gcd` is the infimum, `lcm` is the
 supremum, `1` is bottom, and `0` is top. The type class focuses on `gcd` and we derive the
 corresponding `lcm` facts from `gcd`.
 -/
-class NormalizedGCDMonoid (α : Type*) [CancelCommMonoidWithZero α] extends NormalizationMonoid α,
+class NormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends NormalizationMonoid α,
   GCDMonoid α where
   /-- The GCD is normalized to itself. -/
   normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b
@@ -279,7 +282,7 @@ attribute [simp] lcm_zero_left lcm_zero_right
 
 section GCDMonoid
 
-variable [CancelCommMonoidWithZero α]
+variable [CommMonoidWithZero α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
 instance [GCDMonoid α] : Nonempty (GCDMonoid α) := ⟨‹_›⟩
@@ -409,7 +412,7 @@ theorem gcd_same [NormalizedGCDMonoid α] (a : α) : gcd a a = normalize a :=
 @[simp]
 theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     gcd (a * b) (a * c) = normalize a * gcd b c :=
-  (by_cases (by rintro rfl; simp only [zero_mul, gcd_zero_left, normalize_zero]))
+  (by_cases (by rintro rfl; simp))
     fun ha : a ≠ 0 =>
     suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa
     let ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
@@ -604,19 +607,19 @@ theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Subsingleton αˣ]
   let ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow hab h
   ⟨d, (associated_iff_eq.mp hd).symm⟩
 
-theorem gcd_greatest {α : Type*} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
+theorem gcd_greatest {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     GCDMonoid.gcd a b = normalize d :=
   haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
   gcd_eq_normalize h (GCDMonoid.dvd_gcd hda hdb)
 
-theorem gcd_greatest_associated {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] {a b d : α}
+theorem gcd_greatest_associated {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
     Associated d (GCDMonoid.gcd a b) :=
   haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
   associated_of_dvd_dvd (GCDMonoid.dvd_gcd hda hdb) h
 
-theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
+theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
@@ -624,7 +627,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCD
   convert (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 
-theorem extract_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] (x y : α) :
+theorem extract_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] (x y : α) :
     ∃ x' y', x = gcd x y * x' ∧ y = gcd x y * y' ∧ IsUnit (gcd x' y') := by
   by_cases h : gcd x y = 0
   · obtain ⟨rfl, rfl⟩ := (gcd_eq_zero_iff x y).1 h
@@ -774,7 +777,7 @@ theorem lcm_eq_one_iff [NormalizedGCDMonoid α] (a b : α) : lcm a b = 1 ↔ a �
 @[simp]
 theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     lcm (a * b) (a * c) = normalize a * lcm b c :=
-  (by_cases (by rintro rfl; simp only [zero_mul, lcm_zero_left, normalize_zero]))
+  (by_cases (by rintro rfl; simp))
     fun ha : a ≠ 0 =>
     suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
@@ -868,7 +871,7 @@ end GCDMonoid
 
 section UniqueUnit
 
-variable [CancelCommMonoidWithZero α] [Subsingleton αˣ]
+variable [CommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α where
@@ -917,7 +920,7 @@ theorem normalize_eq (x : α) : normalize x = x :=
 
 /-- If a monoid's only unit is `1`, then it is isomorphic to its associates. -/
 @[simps]
-def associatesEquivOfUniqueUnits : Associates α ≃* α where
+def associatesEquivOfUniqueUnits [IsCancelMulZero α] : Associates α ≃* α where
   toFun := Associates.out
   invFun := Associates.mk
   left_inv := Associates.mk_out
@@ -928,7 +931,7 @@ end UniqueUnit
 
 section IsDomain
 
-variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
+variable [CommRing α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a c := by
   apply dvd_antisymm_of_normalize_eq (normalize_gcd _ _) (normalize_gcd _ _) <;>
@@ -954,14 +957,17 @@ noncomputable section Constructors
 
 open Associates
 
-variable [CancelCommMonoidWithZero α]
+variable [CommMonoidWithZero α]
 
 private theorem map_mk_unit_aux {f : Associates α →* α}
     (hinv : Function.RightInverse f Associates.mk) (a : α) :
     a * ↑(Classical.choose (associated_map_mk hinv a)) = f (Associates.mk a) :=
   Classical.choose_spec (associated_map_mk hinv a)
 
+variable [IsCancelMulZero α]
+
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
+@[implicit_reducible]
 def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
     (hinv : Function.RightInverse f Associates.mk) :
     NormalizationMonoid α where
@@ -987,6 +993,7 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
       Associates.mk_one, map_one]
 
 /-- Define `GCDMonoid` on a structure just from the `gcd` and its properties. -/
+@[implicit_reducible]
 noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b) : GCDMonoid α :=
@@ -1012,7 +1019,9 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
       rw [h, mul_zero] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `gcd` and its properties. -/
+@[implicit_reducible]
 noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b)
@@ -1067,6 +1076,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
       rw [h, mul_zero, normalize_zero] }
 
 /-- Define `GCDMonoid` on a structure just from the `lcm` and its properties. -/
+@[implicit_reducible]
 noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a) : GCDMonoid α :=
@@ -1124,13 +1134,15 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd c b)]
       rcases ab with ⟨d, rfl⟩
       rw [mul_eq_zero] at ‹a * d ≠ 0›
-      push_neg at h_1
+      push Not at h_1
       rw [mul_comm a, ← mul_assoc, mul_dvd_mul_iff_right h_1.1]
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
+@[implicit_reducible]
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a)
@@ -1215,13 +1227,14 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
       dvd_normalize_iff]
       rcases ab with ⟨d, rfl⟩
       rw [mul_eq_zero] at h_1
-      push_neg at h_1
+      push Not at h_1
       rw [mul_comm a, ← mul_assoc, mul_dvd_mul_iff_right h_1.1]
       apply lcm_dvd (Dvd.intro d rfl)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of a `gcd`. -/
+@[implicit_reducible]
 noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : GCDMonoid α :=
   gcdMonoidOfGCD (fun a b => Classical.choose (h a b))
@@ -1230,6 +1243,7 @@ noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
 /-- Define a `NormalizedGCDMonoid` structure on a monoid just from the existence of a `gcd`. -/
+@[implicit_reducible]
 noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : NormalizedGCDMonoid α :=
   normalizedGCDMonoidOfGCD (fun a b => normalize (Classical.choose (h a b)))
@@ -1241,6 +1255,7 @@ noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [Decid
     fun _ _ => normalize_idem _
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
+@[implicit_reducible]
 noncomputable def gcdMonoidOfExistsLCM [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : GCDMonoid α :=
   gcdMonoidOfLCM (fun a b => Classical.choose (h a b))
@@ -1249,6 +1264,7 @@ noncomputable def gcdMonoidOfExistsLCM [DecidableEq α]
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
 /-- Define a `NormalizedGCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
+@[implicit_reducible]
 noncomputable def normalizedGCDMonoidOfExistsLCM [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : NormalizedGCDMonoid α :=
   normalizedGCDMonoidOfLCM (fun a b => normalize (Classical.choose (h a b)))
@@ -1293,7 +1309,7 @@ end CommGroupWithZero
 
 namespace Associates
 
-variable [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable [CommMonoidWithZero α] [GCDMonoid α]
 
 instance instGCDMonoid : GCDMonoid (Associates α) where
   gcd := Quotient.map₂ gcd fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.gcd hb

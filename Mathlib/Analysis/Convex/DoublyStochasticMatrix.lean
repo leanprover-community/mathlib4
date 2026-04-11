@@ -5,8 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Matrix.Permutation
+public import Mathlib.LinearAlgebra.Matrix.Stochastic
 
 /-!
 # Doubly stochastic matrices
@@ -21,11 +20,6 @@ public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 * `convex_doublyStochastic`: The set of doubly stochastic matrices is convex.
 * `permMatrix_mem_doublyStochastic`: Any permutation matrix is doubly stochastic.
-
-## TODO
-
-Define the submonoids of row-stochastic and column-stochastic matrices.
-Show that the submonoid of doubly stochastic matrices is the meet of them, or redefine it as such.
 
 ## Tags
 
@@ -64,6 +58,20 @@ lemma mem_doublyStochastic_iff_sum :
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
   simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
 
+/-- A matrix is doubly stochastic if and only if it is both row and
+column stochastic. -/
+@[local grind =]
+lemma doublyStochastic_eq_rowStochastic_inf_colStochastic :
+    doublyStochastic R n = rowStochastic R n ⊓ colStochastic R n := by
+  ext M
+  simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    Set.mem_setOf_eq, doublyStochastic]
+  grind
+
+lemma mem_doublyStochastic_iff_mem_rowStochastic_and_mem_colStochastic {M : Matrix n n R} :
+    M ∈ doublyStochastic R n ↔ M ∈ rowStochastic R n ∧ M ∈ colStochastic R n := by
+  rw [doublyStochastic_eq_rowStochastic_inf_colStochastic, Submonoid.mem_inf]
+
 /-- Every entry of a doubly stochastic matrix is nonnegative. -/
 lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} : 0 ≤ M i j :=
   hM.1 _ _
@@ -97,13 +105,32 @@ lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 /-- Any permutation matrix is doubly stochastic. -/
+@[simp, grind ←]
 lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
-    σ.permMatrix R ∈ doublyStochastic R n := by
-  rw [mem_doublyStochastic_iff_sum]
-  refine ⟨fun i j => ?g1, ?g2, ?g3⟩
-  case g1 => aesop
-  case g2 => simp [Equiv.toPEquiv_apply]
-  case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+    σ.permMatrix R ∈ doublyStochastic R n := by grind
+
+/-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
+@[grind =]
+lemma transpose_mem_doublyStochastic_iff :
+    Mᵀ ∈ doublyStochastic R n ↔ M ∈ doublyStochastic R n := by grind
+
+/-- Reindexing a matrix preserves double stochasticity. -/
+@[aesop safe apply]
+lemma reindex_mem_doublyStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} (hM : M ∈ doublyStochastic R n) : M.reindex e₁ e₂ ∈ doublyStochastic R m := by
+  grind
+
+/-- Reindexing a matrix preserves double stochasticity. -/
+@[grind =]
+lemma reindex_mem_doublyStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ doublyStochastic R m ↔ M ∈ doublyStochastic R n := by
+  grind
+
+/-- Applying a doubly stochastic matrix to a vector preserves its sum. -/
+lemma sum_mulVec_of_mem_doublyStochastic {M : Matrix n n R} {x : n → R}
+    (hA : M ∈ doublyStochastic R n) : ∑ i, (M *ᵥ x) i = ∑ i, x i := by
+  apply sum_mulVec_of_mem_colStochastic
+  grind
 
 end OrderedSemiring
 

@@ -41,7 +41,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 
@@ -121,7 +121,7 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R M] {n : ℕ} (h : Module.ran
   nontriviality R
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   have := mk_lt_aleph0_iff.mp <|
-    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt natCast_lt_aleph0
   exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1) :
@@ -138,6 +138,7 @@ theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : 
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+@[implicit_reducible]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
@@ -174,7 +175,7 @@ theorem lt_aleph0_of_finite {ι : Type w}
   apply lt_of_le_of_lt
   · apply h.cardinal_lift_le_rank
   · rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
-    apply Cardinal.nat_lt_aleph0
+    apply Cardinal.natCast_lt_aleph0
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
@@ -197,11 +198,11 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
   rcases hn.eq_or_lt with h | h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
       (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
-    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
+    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
-    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
+    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
@@ -267,6 +268,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank_aux
 
 /-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
+@[implicit_reducible]
 noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
@@ -274,7 +276,7 @@ noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     rw [Cardinal.lt_aleph0_iff_fintype] at this
     exact this.some
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
-  simp [Cardinal.nat_lt_aleph0]
+  simp [Cardinal.natCast_lt_aleph0]
 
 /-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.

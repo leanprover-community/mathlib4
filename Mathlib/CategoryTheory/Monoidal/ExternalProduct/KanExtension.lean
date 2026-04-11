@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 We prove that if a functor `H' : D' ⥤ V` is a pointwise left Kan extension of
 `H : D ⥤ V` along `L : D ⥤ D'`, and if `K : E ⥤ V` is any functor such that
 for any `e : E`, the functor `tensorRight (K.obj e)` commutes with colimits of
-shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left kan extension
+shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left Kan extension
 of `H ⊠ K` along `L.prod (𝟭 E)`.
 
 We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
@@ -78,7 +78,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
   apply Limits.IsColimit.equivOfNatIsoOfIso diag_iso
     (d := Limits.Cocone.whisker I (Limits.Cocone.whisker equiv.functor cone))
     (c := tensorRight (K.obj e) |>.mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d)
-    (Limits.Cocones.ext <| .refl _) |>.toFun
+    (Limits.Cocone.ext <| .refl _) |>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorRight <| K.obj e) P |>.some
 
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'`,
@@ -125,7 +125,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
   apply Limits.IsColimit.equivOfNatIsoOfIso diag_iso
     (d := Limits.Cocone.whisker I <| Limits.Cocone.whisker equiv.functor cone)
     (c := (tensorLeft <| K.obj e).mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d)
-    (Limits.Cocones.ext <| .refl _) |>.toFun
+    (Limits.Cocone.ext <| .refl _) |>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorLeft <| K.obj e) P |>.some
 
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` and

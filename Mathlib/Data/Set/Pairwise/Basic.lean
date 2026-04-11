@@ -132,8 +132,7 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
-  simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  aesop
+  grind [Set.Pairwise]
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -240,6 +239,10 @@ theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
 @[simp]
 theorem pairwiseDisjoint_singleton (i : ι) (f : ι → α) : PairwiseDisjoint {i} f :=
   pairwise_singleton i _
+
+@[simp]
+lemma pairwiseDisjoint_singleton' (s : Set ι) :
+    s.PairwiseDisjoint (singleton : ι → Set ι) := by intro; grind
 
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔

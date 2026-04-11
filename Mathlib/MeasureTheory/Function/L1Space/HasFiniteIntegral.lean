@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 module
 
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
@@ -44,11 +45,11 @@ namespace MeasureTheory
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
+    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [ofReal_norm_eq_enorm, edist_zero_eq_enorm]
+  simp only [ofReal_norm_eq_enorm, edist_zero_right]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
@@ -114,6 +115,14 @@ theorem HasFiniteIntegral.mono {f : α → β} {g : α → γ} (hg : HasFiniteIn
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : HasFiniteIntegral f μ :=
   hg.mono_enorm <| h.mono fun _x hx ↦ enorm_le_iff_norm_le.mpr hx
 
+theorem HasFiniteIntegral.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : HasFiniteIntegral g μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    HasFiniteIntegral f μ := by
+  refine HasFiniteIntegral.mono hg ?_
+  filter_upwards [hnonneg, h] with a hn ha
+  apply norm_le_norm_of_abs_le_abs
+  rwa [abs_of_nonneg hn, abs_of_nonneg (hn.trans ha)]
+
 theorem HasFiniteIntegral.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : HasFiniteIntegral f μ :=
   hg.mono_enorm <| h.mono fun _x hx ↦ le_trans hx le_rfl
@@ -153,8 +162,7 @@ theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
 
 theorem hasFiniteIntegral_const_iff {c : β} :
     HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
-  rw [hasFiniteIntegral_const_iff_enorm enorm_ne_top]
-  simp
+  simp [hasFiniteIntegral_const_iff_enorm enorm_ne_top]
 
 lemma hasFiniteIntegral_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
@@ -191,15 +199,9 @@ theorem HasFiniteIntegral.of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} 
     (hC' : ‖C‖ₑ ≠ ∞ := by finiteness) (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const_enorm hC').mono'_enorm hC
 
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_of_bounded_enorm := HasFiniteIntegral.of_bounded_enorm
-
 theorem HasFiniteIntegral.of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
-
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_of_bounded := HasFiniteIntegral.of_bounded
 
 -- TODO: generalise this to f with codomain ε
 -- requires generalising `norm_le_pi_norm` and friends to enorms
@@ -314,26 +316,33 @@ variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
   {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
-theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
+theorem all_ae_norm_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
     ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a‖ ≤ ENNReal.ofReal (bound a) := fun n =>
   (h n).mono fun _ h => ENNReal.ofReal_le_ofReal h
+
+@[deprecated (since := "2026-01-26")] alias
+all_ae_ofReal_F_le_bound := all_ae_norm_ofReal_F_le_bound
 
 theorem ae_tendsto_enorm (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
     ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
   h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
-theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
+theorem ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ := by
   convert ae_tendsto_enorm h <;> simp
 
-theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
+@[deprecated (since := "2026-01-26")] alias all_ae_tendsto_ofReal_norm := ae_tendsto_ofReal_norm
+
+theorem ae_norm_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
     ∀ᵐ a ∂μ, ENNReal.ofReal ‖f a‖ ≤ ENNReal.ofReal (bound a) := by
-  have F_le_bound := all_ae_ofReal_F_le_bound h_bound
+  have F_le_bound := all_ae_norm_ofReal_F_le_bound h_bound
   rw [← ae_all_iff] at F_le_bound
-  apply F_le_bound.mp ((all_ae_tendsto_ofReal_norm h_lim).mono _)
+  apply F_le_bound.mp ((ae_tendsto_ofReal_norm h_lim).mono _)
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
+
+@[deprecated (since := "2026-01-26")] alias all_ae_ofReal_f_le_bound := ae_norm_ofReal_f_le_bound
 
 theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
@@ -364,7 +373,7 @@ theorem hasFiniteIntegral_of_dominated_convergence
   rw [hasFiniteIntegral_iff_norm]
   calc
     (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) ≤ ∫⁻ a, ENNReal.ofReal (bound a) ∂μ :=
-      lintegral_mono_ae <| all_ae_ofReal_f_le_bound h_bound h_lim
+      lintegral_mono_ae <| ae_norm_ofReal_f_le_bound h_bound h_lim
     _ < ∞ := by
       rw [← hasFiniteIntegral_iff_ofReal]
       · exact bound_hasFiniteIntegral
@@ -384,8 +393,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence
     triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a)`. -/
   have hb : ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a - f a‖ ≤ b a := by
     intro n
-    filter_upwards [all_ae_ofReal_F_le_bound h_bound n,
-      all_ae_ofReal_f_le_bound h_bound h_lim] with a h₁ h₂
+    filter_upwards [all_ae_norm_ofReal_F_le_bound h_bound n,
+      ae_norm_ofReal_f_le_bound h_bound h_lim] with a h₁ h₂
     calc
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]

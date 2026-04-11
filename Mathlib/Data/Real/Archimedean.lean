@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
@@ -50,6 +51,7 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
         (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
+@[deprecated _root_.exists_floor (since := "2026-01-29")]
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
   ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
 
@@ -136,10 +138,8 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
-  csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
+  isLUB_csSup _ := Real.isLUB_sSup
+  isGLB_csInf _ := Real.isGLB_sInf
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -298,6 +298,11 @@ lemma sSup_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨆ i, f i`. -/
 lemma iSup_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg <| Set.forall_mem_range.2 hf
 
+lemma iSup_nonneg_of_nonnegHomClass {ι F α : Type*} [FunLike F α ℝ] [NonnegHomClass F α ℝ] (f : F)
+    (g : ι → α) :
+    0 ≤ ⨆ i, f (g i) :=
+  iSup_nonneg (fun i ↦ apply_nonneg f (g i))
+
 /-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
 it suffices to show that all elements of `s` are nonpositive to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos (hs : ∀ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
@@ -312,7 +317,7 @@ lemma iInf_nonpos (hf : ∀ i, f i ≤ 0) : ⨅ i, f i ≤ 0 := sInf_nonpos <| S
 theorem sInf_le_sSup (s : Set ℝ) (h₁ : BddBelow s) (h₂ : BddAbove s) : sInf s ≤ sSup s := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · rw [sInf_empty, sSup_empty]
-  · exact csInf_le_csSup h₁ h₂ hne
+  · exact csInf_le_csSup hne h₁ h₂
 
 theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   let s := {x : ℝ | const abs x < f}

@@ -212,6 +212,7 @@ end Hom
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := (𝟭 C).toCatHom

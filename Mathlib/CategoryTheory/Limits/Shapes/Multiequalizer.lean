@@ -162,6 +162,16 @@ def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
 
+lemma functor_ext {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
+    (left : ∀ i, F.obj (.left i) = G.obj (.left i))
+    (right : ∀ i, F.obj (.right i) = G.obj (.right i))
+    (wl : ∀ i, F.map (Hom.fst i) ≫ eqToHom (right i) = eqToHom (left _) ≫ G.map (Hom.fst i))
+    (wr : ∀ i, F.map (Hom.snd i) ≫ eqToHom (right i) = eqToHom (left _) ≫ G.map (Hom.snd i)) :
+    F = G :=
+  Functor.ext_of_iso
+    (functorExt (fun _ ↦ eqToIso (left _)) (fun _ ↦ eqToIso (right _)) wl wr)
+    (by rintro (_ | _) <;> grind) (by rintro (_ | _) <;> simp)
+
 end WalkingMulticospan
 
 namespace WalkingMultispan
@@ -337,11 +347,11 @@ def multicospan : WalkingMulticospan J ⥤ C where
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst` for limiting fans. -/
 def fstPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
-  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.fst i
+  Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.fst i
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd` for limiting fans. -/
 def sndPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
-  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.snd i
+  Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.snd i
 
 @[reassoc (attr := simp)]
 lemma fstPiMapOfIsLimit_proj (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) (i) :
@@ -549,7 +559,7 @@ theorem condition (b) : K.ι (J.fst b) ≫ I.fst b = K.ι (J.snd b) ≫ I.snd b 
 @[simps!]
 def ext {t s : Multifork I} (e : t.pt ≅ s.pt)
     (h : ∀ i : J.L, e.hom ≫ s.ι i = t.ι i := by cat_disch) : t ≅ s :=
-  Cones.ext e (by rintro (i | j) <;> simp [← h])
+  Cone.ext e (by rintro (i | j) <;> simp [← h])
 
 /-- Every multifork is isomorphic to one of the form `Multifork.ofι`. -/
 @[simps!]
@@ -615,8 +625,8 @@ variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
 @[reassoc (attr := simp)]
 theorem pi_condition :
-    Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
-      Fan.IsLimit.desc hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
+    Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
+      Fan.IsLimit.lift hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
   apply Fan.IsLimit.hom_ext hd
   simp
 
@@ -624,17 +634,17 @@ theorem pi_condition :
 @[simps! pt]
 def toPiFork (K : Multifork I) :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) :=
-  .ofι (Fan.IsLimit.desc hc K.ι) (by simp)
+  .ofι (Fan.IsLimit.lift hc K.ι) (by simp)
 
 @[simp]
 theorem toPiFork_π_app_zero :
-    (K.toPiFork hc hd).ι = Fan.IsLimit.desc hc K.ι :=
+    (K.toPiFork hc hd).ι = Fan.IsLimit.lift hc K.ι :=
   rfl
 
 @[simp]
 theorem toPiFork_π_app_one :
     (K.toPiFork hc hd).π.app WalkingParallelPair.one =
-      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
+      Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
 variable {hd} in
@@ -688,10 +698,6 @@ def toPiForkFunctor :
         · apply Fan.IsLimit.hom_ext hc
           simp
         · apply Fan.IsLimit.hom_ext hd
-          intro j
-          simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition,
-            Category.assoc]
-          dsimp [MulticospanIndex.sndPiMapOfIsLimit, Fan.proj, Fan.IsLimit.desc]
           simp }
 
 /-- `Multifork.ofPiFork` as a functor. -/
@@ -714,7 +720,7 @@ def multiforkEquivPiForkOfIsLimit :
   inverse := ofPiForkFunctor I hd
   unitIso :=
     NatIso.ofComponents fun K =>
-      Cones.ext (Iso.refl _) (by
+      Cone.ext (Iso.refl _) (by
         rintro (_ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun K =>
@@ -738,6 +744,7 @@ def ofParallelHoms (J : MulticospanShape) {X Y : C} (f g : X ⟶ Y) : Multicospa
   fst _ := f
   snd _ := g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fork on a pair of morphisms `f` and `g` is the same as a multifork on the
 single point index defined by `f` and `g`. -/
 def multiforkOfParallelHomsEquivFork (J : MulticospanShape) [Unique J.L] [Unique J.R] {X Y : C}
@@ -761,6 +768,7 @@ lemma multiforkOfParallelHomsEquivFork_functor_obj_ι (J : MulticospanShape) [Un
     ((multiforkOfParallelHomsEquivFork J f g).functor.obj c).ι = c.ι default :=
   Fan.IsLimit.fac (Fan.isLimitMkOfUnique (Iso.refl X) J.L) _ default
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma multiforkOfParallelHomsEquivFork_inverse_obj_ι (J : MulticospanShape) [Unique J.L]
     [Unique J.R] {X Y : C} (f g : X ⟶ Y) (c : Fork f g) (a : J.L) :
@@ -817,6 +825,7 @@ def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
 theorem condition (a) : I.fst a ≫ K.π (J.fst a) = I.snd a ≫ K.π (J.snd a) := by
   rw [← K.snd_app_right, ← K.fst_app_right]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This definition provides a convenient way to show that a multicofork is a colimit. -/
 @[simps]
 def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
@@ -920,7 +929,7 @@ alias ofSigmaCofork_ι_app_right' := ofSigmaCofork_π
 def ext {K K' : Multicofork I}
     (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
-  Cocones.ext e (by rintro (i | j) <;> simp [h])
+  Cocone.ext e (by rintro (i | j) <;> simp [h])
 
 /-- Every multicofork is isomorphic to one of the form `Multicofork.ofπ`. -/
 @[simps!]
@@ -967,7 +976,7 @@ noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
     Multicofork I ≌ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
   functor := toSigmaCoforkFunctor I hc hd
   inverse := ofSigmaCoforkFunctor I hc
-  unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
+  unitIso := NatIso.ofComponents fun K => Cocone.ext (Iso.refl _) (by
       rintro (_ | _) <;> simp)
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
@@ -1067,6 +1076,7 @@ def isoEqualizer : multiequalizer I ≅ equalizer I.fstPiMap I.sndPiMap :=
 def ιPi : multiequalizer I ⟶ ∏ᶜ I.left :=
   (isoEqualizer I).hom ≫ equalizer.ι I.fstPiMap I.sndPiMap
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   rw [ιPi, Category.assoc, ← Iso.eq_inv_comp, isoEqualizer]
@@ -1098,7 +1108,7 @@ theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
-/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
+/-- `@[simp]`-normal form of `multicofork_ι_app_right`. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=
@@ -1120,6 +1130,7 @@ theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=
   colimit.ι_desc _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem hom_ext {W : C} (i j : multicoequalizer I ⟶ W)
     (h : ∀ b, Multicoequalizer.π I b ≫ i = Multicoequalizer.π I b ≫ j) : i = j :=
@@ -1147,6 +1158,7 @@ def isoCoequalizer : multicoequalizer I ≅ coequalizer I.fstSigmaMap I.sndSigma
 def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
   coequalizer.π I.fstSigmaMap I.sndSigmaMap ≫ (isoCoequalizer I).inv
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rw [sigmaπ, ← Category.assoc, Iso.comp_inv_eq, isoCoequalizer]
@@ -1221,6 +1233,7 @@ for `I : MultispanIndex (.prod ι) C` when `ι` is linearly ordered. -/
 def toLinearOrder (c : Multicofork I) : Multicofork I.toLinearOrder :=
   Multicofork.ofπ _ c.pt c.π (fun _ ↦ c.condition _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multicofork for `I : MultispanIndex (.prod ι) C` deduced from
 a multicofork for `I.toLinearOrder` when `ι` is linearly ordered
 and `I` is symmetric. -/
@@ -1235,6 +1248,7 @@ def ofLinearOrder (c : Multicofork I.toLinearOrder) (h : I.SymmStruct) :
       dsimp at this ⊢
       rw [← h.iso_hom_fst_assoc, ← h.iso_hom_snd_assoc, this])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is a linearly ordered type, `I : MultispanIndex (.prod ι) C`, and
 `c` a colimit multicofork for `I`, then `c.toLinearOrder` is a colimit
 multicofork for `I.toLinearOrder`. -/

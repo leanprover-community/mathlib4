@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.MetricSeparated
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -276,7 +277,7 @@ theorem mono_pre_nat (m : Set X → ℝ≥0∞) : Monotone fun k : ℕ => pre m 
 
 theorem tendsto_pre (m : Set X → ℝ≥0∞) (s : Set X) :
     Tendsto (fun r => pre m r s) (𝓝[>] 0) (𝓝 <| mkMetric' m s) := by
-  rw [← map_coe_Ioi_atBot, tendsto_map'_iff]
+  rw [← tendsto_comp_coe_Ioi_atBot]
   simp only [mkMetric', OuterMeasure.iSup_apply, iSup_subtype']
   exact tendsto_atBot_iSup fun r r' hr => mono_pre _ hr _
 
@@ -365,8 +366,9 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
 theorem mkMetric_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) (hc' : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
   simp only [mkMetric, mkMetric', mkMetric'.pre]
-  simp_rw [smul_iSup, smul_boundedBy hc, smul_extend _ hc', Pi.smul_apply]
+  simp_rw [smul_iSup, smul_boundedBy hc, ennreal_smul_extend _ hc', Pi.smul_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mkMetric_nnreal_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0} (hc : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
   rw [ENNReal.smul_def, ENNReal.smul_def,
@@ -481,7 +483,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, if_true]
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr; rcases htr with ⟨n, hn⟩
+    push Not at htr; rcases htr with ⟨n, hn⟩
     refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     · exact hn.not_ge
@@ -739,6 +741,7 @@ end LipschitzWith
 
 open scoped Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
@@ -853,6 +856,11 @@ namespace MeasureTheory
 theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsIsometricSMul α X] {d : ℝ} (c : α)
     (h : 0 ≤ d ∨ Surjective (c • · : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
   (isometry_smul X c).hausdorffMeasure_image h _
+
+@[to_additive]
+instance {α : Type*} [Group α] [MulAction α X] [IsIsometricSMul α X] {d : ℝ} :
+    SMulInvariantMeasure α X μH[d] where
+  measure_preimage_smul c _ _ := (IsometryEquiv.constSMul c).hausdorffMeasure_preimage _ _
 
 @[to_additive]
 instance {d : ℝ} [Group X] [IsIsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
