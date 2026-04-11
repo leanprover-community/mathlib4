@@ -140,7 +140,7 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     have h := ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
     rwa [← hX_ns] at h
   obtain ⟨p, hp_eq⟩ := adjoin_mem_exists_aeval K ad_X h_ad_s_mem
-  let g : Submodule K (Module.End K M) := (toEnd K L M).range.toSubmodule
+  let g : LieSubalgebra K (Module.End K M) := (toEnd K L M).range
   have hxg : ∀ b ∈ g, ⁅X, b⁆ ∈ g := by
     rintro _ ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, LieHom.map_lie (toEnd K L M) x b⟩
@@ -152,7 +152,7 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     have had_y_X : ad_y = aeval ad_X (r.comp p) := by
       rw [had_y_eq, hp_eq.symm, ← aeval_comp]
     intro b hb
-    change ad_y b ∈ g
+    change ad_y b ∈ g.toSubmodule
     rw [had_y_X]
     exact aeval_apply_smul_mem_of_le_comap hb (r.comp p) _ fun _ hb' => hxg _ hb'
   have htr_xy : trace K M (X * y) = 0 := by
