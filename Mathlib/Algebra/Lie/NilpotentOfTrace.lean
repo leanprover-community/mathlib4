@@ -80,6 +80,12 @@ lemma exists_polynomial_eval_sub
 
 end Lagrange
 
+/-- Trace-bracket identity on `Module.End K V`: `tr(⁅X, Y⁆ * Z) = tr(X * ⁅Y, Z⁆)`. -/
+lemma trace_lie_mul_eq (X Y Z : Module.End K V) :
+    LinearMap.trace K V (⁅X, Y⁆ * Z) = LinearMap.trace K V (X * ⁅Y, Z⁆) := by
+  simpa [LieModule.traceForm_apply_apply, ← Module.End.mul_eq_comp] using
+    LieModule.traceForm_apply_lie_apply K (Module.End K V) V X Y Z
+
 end NilpotentOfTrace
 
 namespace LieModule
@@ -162,25 +168,23 @@ theorem isNilpotent_toEnd_of_mem_ker_traceForm {K L M : Type*}
     rw [had_y_X, hq', map_mul, aeval_X, Module.End.mul_apply]
     exact hxM _ (aeval_apply_smul_mem_of_le_comap hb q' _ fun _ h => hAB (hxM _ h))
   have htr_xy : trace K M (X * y) = 0 := by
-    let ψ : L →ₗ[K] K := (trace K M).comp ((mulRight K y).comp (toEnd K L M).toLinearMap)
-    suffices h : ψ x = 0 by simpa [ψ, hX_def] using h
-    refine (?_ : (LieAlgebra.derivedSeries K L 1 : Submodule K L) ≤ LinearMap.ker ψ) hx_der
-    rw [show (LieAlgebra.derivedSeries K L 1 : Submodule K L) = _ from
-      LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤, Submodule.span_le]
-    rintro _ ⟨a, _, b, _, rfl⟩
-    obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
-    have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c :=
-      (lie_skew _ _).symm.trans (congrArg Neg.neg hbc.symm)
-    have hcyc : trace K M (⁅toEnd K L M a, toEnd K L M b⁆ * y) =
-        trace K M (toEnd K L M a * ⁅toEnd K L M b, y⁆) := by
-      simpa [traceForm_apply_apply, ← Module.End.mul_eq_comp] using
-        traceForm_apply_lie_apply K (Module.End K M) M (toEnd K L M a) (toEnd K L M b) y
-    change trace K M (toEnd K L M ⁅a, b⁆ * y) = 0
-    rw [LieHom.map_lie]
-    refine hcyc.trans ?_
-    rw [hbc', mul_neg, map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply,
-      traceForm_comm]
-    exact LinearMap.congr_fun hcI a
+    have hcomm : ∀ a b : L, trace K M (toEnd K L M ⁅a, b⁆ * y) = 0 := fun a b => by
+      obtain ⟨c, hcI, hbc⟩ := hyM (toEnd K L M b) (LinearMap.mem_range_self _ b)
+      have hbc' : ⁅toEnd K L M b, y⁆ = -toEnd K L M c := calc
+        _ = -⁅y, toEnd K L M b⁆ := (lie_skew _ _).symm
+        _ = -toEnd K L M c := neg_inj.mpr hbc.symm
+      rw [LieHom.map_lie]
+      refine (trace_lie_mul_eq _ _ _).trans ?_
+      rw [hbc', mul_neg, map_neg, neg_eq_zero, Module.End.mul_eq_comp,
+        ← traceForm_apply_apply, traceForm_comm, hcI]
+      rfl
+    rw [hX_def]
+    obtain ⟨coef, t, hts, _, hxeq⟩ := Submodule.mem_span_iff_exists_finset_subset.mp
+      ((LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤).le hx_der)
+    simp only [← hxeq, map_sum, Finset.sum_mul, map_smul, smul_mul_assoc, smul_eq_mul]
+    refine Finset.sum_eq_zero fun z hz => ?_
+    obtain ⟨a, _, b, _, rfl⟩ := hts hz
+    rw [hcomm a b, mul_zero]
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ adjoin K {s} := by
       rw [adjoin_singleton_eq_range_aeval]
