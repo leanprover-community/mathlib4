@@ -37,8 +37,7 @@ It computes the simplicial homology of a simplicial sets with coefficients
 in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
 and `X := ℤ`.
 -/
-noncomputable def chainComplexFunctor :
-    C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
+noncomputable def chainComplexFunctor : C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
   (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
     (sigmaConst ⋙ SimplicialObject.whiskering _ _)
 
