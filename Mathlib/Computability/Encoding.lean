@@ -194,7 +194,7 @@ def encodingList (α : Type) : Encoding (List α) α where
   decode_encode _ := rfl
 
 /--
-Given `Encoding` of `α` and `β`,
+Given an `Encoding` of `α` and `β`,
 constructs an `Encoding` of `α × β` by concatenating the encodings,
 mapping the symbols from the first encoding with `Sum.inl`
 and those from the second with `Sum.inr`.
