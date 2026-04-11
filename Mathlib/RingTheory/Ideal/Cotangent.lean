@@ -39,7 +39,7 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
-deriving Inhabited, AddCommGroup, Module (R ⧸ I)
+deriving Inhabited, AddCommGroup, Module (R ⧸ I), IsScalarTower R (R ⧸ I)
 
 deriving instance Module S, IsScalarTower S S' for Cotangent I
 
