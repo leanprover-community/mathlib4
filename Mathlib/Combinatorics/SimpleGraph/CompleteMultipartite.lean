@@ -129,7 +129,7 @@ theorem IsCompleteMultipartiteWith.isCompleteMultipartite
 
 theorem isCompleteMultipartiteWith_of_isCompleteMultipartite (h : G.IsCompleteMultipartite) :
     G.IsCompleteMultipartiteWith (Quotient.mk h.setoid) := fun _ _ ↦ by
-  grind only [Quotient.eq, IsCompleteMultipartite.setoid.eq_def, Setoid.bot_def]
+  simp only [ne_eq, Quotient.eq, IsCompleteMultipartite.setoid, not_not]
 
 lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u) (V : ι → Type u)
     (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g completeMultipartiteGraph V) := by
