@@ -7,19 +7,15 @@ module
 
 public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Determinant Formula for Simple Continued Fraction
 
 ## Summary
 
-We derive the so-called *determinant formula* for `SimpContFract`:
-`Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`.
-
-## TODO
-
-Generalize this for `GenContFract` version:
+We derive the so-called *determinant formula* for `GenContFract`:
 `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ₊₁)`.
 
 ## References
@@ -32,19 +28,19 @@ public section
 
 open GenContFract
 
-namespace SimpContFract
+namespace GenContFract
 
-variable {K : Type*} [Field K] {s : SimpContFract K} {n : ℕ}
+variable {K : Type*} [Field K] {g : GenContFract K} {n : ℕ}
 
-theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
-    ((↑s : GenContFract K).contsAux n).a * ((↑s : GenContFract K).contsAux (n + 1)).b -
-      ((↑s : GenContFract K).contsAux n).b * ((↑s : GenContFract K).contsAux (n + 1)).a =
-        (-1) ^ n := by
+theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
+    (g.contsAux n).a * (g.contsAux (n + 1)).b -
+      (g.contsAux n).b * (g.contsAux (n + 1)).a =
+        ∏ i ∈ Finset.range n, (- (g.s.get? i).elim 0 Pair.a) := by
   induction n with
   | zero => simp [contsAux]
   | succ n IH =>
     -- set up some shorthand notation
-    let g := (↑s : GenContFract K)
+    let g := g
     let conts := contsAux g (n + 2)
     set pred_conts := contsAux g (n + 1) with pred_conts_eq
     set ppred_conts := contsAux g n with ppred_conts_eq
@@ -53,21 +49,51 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
     let ppA := ppred_conts.a
     let ppB := ppred_conts.b
     -- let's change the goal to something more readable
-    change pA * conts.b - pB * conts.a = (-1) ^ (n + 1)
+    change pA * conts.b - pB * conts.a = _
     have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
     obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
       Option.ne_none_iff_exists'.1 not_terminated_at_n
-    -- unfold the recurrence relation for `conts` once and simplify to derive the following
-    suffices pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) = (-1) ^ (n + 1) by
-      simp only [conts, contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
-      have gp_a_eq_one : gp.a = 1 := s.property _ _ (partNum_eq_s_a s_nth_eq)
-      rw [gp_a_eq_one, this.symm]
+    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, (- (g.s.get? i).elim 0 Pair.a) by {
+      rw [Finset.prod_range_succ, ← this, s_nth_eq, Option.elim_some]
+      subst conts; rw [contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
       ring
-    suffices ppA * pB - ppB * pA = (-1) ^ n by grind
+    }
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
-/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
-theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
+/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ₊₁)`. -/
+theorem determinant :
+  g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1)
+  = ∏ i ∈ Finset.range (n + 1), (- (g.s.get? i).elim 0 Pair.a) := by
+  rcases Decidable.em (TerminatedAt g n) with terminatedAt_n | not_terminatedAt_n
+  swap; · exact determinant_aux <| Or.inr <| not_terminatedAt_n
+  rw [dens_stable_of_terminated n.le_succ <| terminated_stable (le_refl n) terminatedAt_n,
+  nums_stable_of_terminated n.le_succ <| terminated_stable (le_refl n) terminatedAt_n,
+  Finset.prod_range_succ, terminatedAt_n, Option.elim_none]; ring
+
+end GenContFract
+
+namespace SimpContFract
+
+variable {K : Type*} [Field K] {s : SimpContFract K} {n : ℕ}
+
+nonrec theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
+    ((↑s : GenContFract K).contsAux n).a * ((↑s : GenContFract K).contsAux (n + 1)).b -
+      ((↑s : GenContFract K).contsAux n).b * ((↑s : GenContFract K).contsAux (n + 1)).a =
+        (-1) ^ n := by
+  calc _ = ∏ i ∈ Finset.range n, (- ((↑s : GenContFract K).s.get? i).elim 0 Pair.a) :=
+    determinant_aux hyp
+    _ = ∏ i ∈ Finset.range n, -1 := by {
+      apply Finset.prod_congr rfl fun i hi => ?_
+      simp only [Finset.mem_range] at hi
+      replace hyp := Or.resolve_left hyp (by omega)
+      obtain ⟨gp, s_ith_eq⟩ : ∃ gp, (↑s : GenContFract K).s.get? i = some gp :=
+        Option.ne_none_iff_exists'.1 <| mt (terminated_stable <| show i ≤ n - 1 by omega) ‹_›
+      rw [s_ith_eq, Option.elim_some, s.property i _ (partNum_eq_s_a s_ith_eq)]
+    }
+    _ = (-1) ^ n := by rw [Finset.prod_const, Finset.card_range]
+
+/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)` for `SimpContFract`. -/
+nonrec theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
     (↑s : GenContFract K).nums n * (↑s : GenContFract K).dens (n + 1) -
       (↑s : GenContFract K).dens n * (↑s : GenContFract K).nums (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminatedAt_n
