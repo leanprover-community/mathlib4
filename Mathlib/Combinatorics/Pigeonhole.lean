@@ -304,11 +304,9 @@ Unlike the classical pigeonhole principle (see
 `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
 this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
-lemma exists_mem_biUnion_inf'_card_lt
-    [DecidableEq α] [Fintype α] {f : α → Finset β}
-    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j))
-    (h₃ : #(s.biUnion f) < #s) : ∃ x ∈ s.biUnion f,
-    s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
+lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → Finset β}
+    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j)) (h₃ : #(s.biUnion f) < #s) :
+    ∃ x ∈ s.biUnion f, s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
   set k := s.inf' h₁ (fun j ↦ #(f j)) with hk
   have nek : NeZero k := ⟨by rwa [hk, Nat.ne_zero_iff_zero_lt, Finset.lt_inf'_iff h₁]⟩
   contrapose! h₃
