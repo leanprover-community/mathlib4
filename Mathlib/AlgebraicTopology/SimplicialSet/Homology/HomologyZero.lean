@@ -1,0 +1,91 @@
+/-
+Copyright (c) 2026 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+--public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
+--public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+
+/-!
+# Homology of simplicial sets in degree 0
+
+
+-/
+
+@[expose] public section
+
+universe w v v' u u'
+
+open CategoryTheory Limits AlgebraicTopology Simplicial
+
+variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
+
+namespace SSet
+
+variable (X : SSet) (R : C)
+
+noncomputable def π₀.fromChainComplexXZero :
+    (X.chainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
+  (sigmaConst.obj _).map π₀.mk
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
+  X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
+    Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
+  simp [π₀.fromChainComplexXZero, ιChainComplex]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma π₀.d_fromChainComplexXZero (n : ℕ) :
+    (X.chainComplex R).d n 0 ≫ π₀.fromChainComplexXZero X R = 0 := by
+  by_cases! hn : n ≠ 1
+  · rw [HomologicalComplex.shape _ _ _ (by simp; lia), zero_comp]
+  · subst hn
+    ext x
+    simp [π₀.sound (Edge.mk' x)]
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
+    IsColimit (CokernelCofork.ofπ _ (π₀.d_fromChainComplexXZero X R 1)) := by
+  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+    (Preadditive.isColimitCokernelCoforkOfCofork
+      ((isColimitMapCoconeCoforkEquiv _ _).1
+        (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
+  · refine parallelPair.ext (-Iso.refl _) (Iso.refl _) ?_ (by simp)
+    simp [chainComplex, SSet.chainComplexFunctor, sub_eq_neg_add]
+  · refine Cofork.ext (Iso.refl _) ?_
+    ext
+    simp [chainComplex, SSet.chainComplexFunctor, π₀.fromChainComplexXZero]
+
+noncomputable def homologyData₀ :
+    ((X.chainComplex R).sc' 1 0 0).HomologyData :=
+  ShortComplex.HomologyData.ofIsColimitCokernelCofork _ (by cat_disch) _
+    (isColimitCokernelCoforkChainComplexDOneZero X R)
+
+variable [CategoryWithHomology C]
+
+noncomputable def homology₀Iso :
+    X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R) :=
+  ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
+    (X.homologyData₀ R).left.homologyIso
+
+noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
+  (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
+
+set_option backward.isDefEq.respectTransparency false in
+instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
+  dsimp [homology₀ε]
+  simp only [isIso_comp_left_iff]
+  let x : π₀ X := Classical.arbitrary _
+  refine ⟨Sigma.ι (fun _ ↦ R) x, ?_, by simp⟩
+  ext y
+  obtain rfl : x = y := by subsingleton
+  simp
+
+end SSet
