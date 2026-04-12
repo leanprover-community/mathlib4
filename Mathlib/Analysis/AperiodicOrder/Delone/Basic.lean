@@ -119,14 +119,11 @@ theorem copy_eq (D : DeloneSet X)
 lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
     (hx : x ∈ D) (hy : y ∈ D) (hne : x ≠ y) :
     D.packingRadius < dist x y := by
-  have hsep : ENNReal.ofReal D.packingRadius < ENNReal.ofReal (dist x y) := by
-    simpa [edist_dist] using D.isSeparated_packingRadius hx hy hne
-  exact (ENNReal.ofReal_lt_ofReal_iff (h := dist_pos.mpr hne)).1 hsep
+  simpa [edist_dist] using D.isSeparated_packingRadius hx hy hne
 
 lemma exists_dist_le_coveringRadius (D : DeloneSet X) (x : X) :
     ∃ y ∈ D, dist x y ≤ D.coveringRadius := by
-  obtain ⟨y, hy, hdist⟩ := D.isCover_coveringRadius (x := x) (by trivial)
-  exact ⟨y, hy, by simpa [edist_dist] using hdist⟩
+  simpa [edist_dist] using D.isCover_coveringRadius (x := x) (by trivial)
 
 lemma eq_of_mem_ball (D : DeloneSet X) {r : ℝ≥0} (hr : r ≤ D.packingRadius / 2)
     {x y z : X} (hx : x ∈ D) (hy : y ∈ D) (hxz : x ∈ ball z r) (hyz : y ∈ ball z r) :
@@ -170,11 +167,7 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
     D.mapBilipschitz (f.trans g) (K₁f * K₁g) (K₂g * K₂f)
       (mul_pos hf₁_pos hg₁_pos) (mul_pos hg₂_pos hf₂_pos)
       (hg_anti.comp hf_anti) (hg_lip.comp hf_lip) := by
-  ext
-  · simp only [mapBilipschitz_carrier, Equiv.trans_apply, Set.mem_image]
-    exact exists_exists_and_eq_and
-  · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
-  · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
+  (ext <;> simp [mapBilipschitz, Equiv.trans_apply, div_div, mul_assoc]); grind
 
 /-- The image of a Delone set under an isometry. This is a specialization of
 `DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the

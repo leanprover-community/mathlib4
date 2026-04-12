@@ -255,13 +255,7 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
     p.radius = ∞ ↔ ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n := by
   constructor
   · intro h r
-    obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius
-      (show (r : ℝ≥0∞) < p.radius from h.symm ▸ ENNReal.coe_lt_top)
-    refine .of_norm_bounded
-      (g := fun n ↦ (C : ℝ) * a ^ n) ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
-      fun n ↦ ?_
-    specialize hp n
-    rwa [Real.norm_of_nonneg (by positivity)]
+    exact p.summable_norm_mul_pow (show (r : ℝ≥0∞) < p.radius from h.symm ▸ ENNReal.coe_lt_top)
   · exact p.radius_eq_top_of_summable_norm
 
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/

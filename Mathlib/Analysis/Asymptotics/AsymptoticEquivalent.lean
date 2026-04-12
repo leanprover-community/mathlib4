@@ -118,13 +118,9 @@ theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β)
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  simp +unfoldPartialApp only [IsEquivalent, const, isLittleO_const_iff h]
-  constructor <;> intro h
-  · have := h.sub (tendsto_const_nhds (x := -c))
-    simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
-    exact this
-  · have := h.sub (tendsto_const_nhds (x := c))
-    rwa [sub_self] at this
+  rw [IsEquivalent]
+  change (u - const α c) =o[l] (fun _ : α => c) ↔ Tendsto u l (𝓝 c)
+  simpa [show u - const α c = (fun x ↦ u x - c) by rfl, isLittleO_const_iff h] using (Filter.tendsto_sub_const_iff (b := c) (c := c) (f := u) (l := l))
 
 theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) := by
   rcases em <| c = 0 with rfl | h
@@ -207,16 +203,12 @@ theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
-  constructor
-  · intro hequiv
-    have := hequiv.isLittleO.tendsto_div_nhds_zero
-    simp only [Pi.sub_apply, sub_div] at this
-    have key : Tendsto (fun x ↦ v x / v x) l (𝓝 1) :=
-      (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
-    convert this.add key
-    · simp
-    · simp
-  · exact isEquivalent_of_tendsto_one
+  rw [IsEquivalent, isLittleO_iff_tendsto' (hz.mono fun x hx hx0 => (hx hx0).elim)]
+  change Tendsto (fun x ↦ (u x - v x) / v x) l (𝓝 0) ↔ Tendsto (u / v) l (𝓝 1)
+  rw [show Tendsto (fun x ↦ (u x - v x) / v x) l (𝓝 0) ↔
+      Tendsto (fun x ↦ u x / v x - 1) l (𝓝 0) from
+      tendsto_congr' <| hz.mono fun x hx => by simp [sub_div, hx]]
+  simpa using (Filter.tendsto_sub_const_iff (b := (1 : β)) (c := (1 : β)) (f := u / v) (l := l))
 
 end NormedField
 

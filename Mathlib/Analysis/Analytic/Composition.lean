@@ -916,12 +916,8 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
     contrapose! hi
     rw [← c.sum_blocksFun]
     rcases eq_zero_or_pos c.length with h'c | h'c
-    · have : ∑ j : Fin c.length, c.blocksFun j = 0 := by
-        apply Finset.sum_eq_zero (fun j hj ↦ ?_)
-        have := j.2
-        grind
-      rw [this]
-      exact mul_pos (by grind) hn
+    · have hi0 : i = 0 := (Composition.length_eq_zero (c := c)).1 h'c
+      simpa [hi0, h'c] using mul_pos (Nat.zero_lt_of_lt hc) hn
     · calc ∑ j : Fin c.length, c.blocksFun j
       _ < ∑ j : Fin c.length, n := by
         apply Finset.sum_lt_sum (fun j hj ↦ (hi j).le)
