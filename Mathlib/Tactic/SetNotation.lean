@@ -10,7 +10,7 @@ public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 
 /-!
-# Set Notation
+# Set notation for order operations
 
 This file allows the use of `⊆` notation while the underlying constant is `≤`.
 Similarly for `⊂`/`<`, `⊇`/`≥` and `⊃`/`>`.
@@ -114,13 +114,14 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   let e ← elabApp rel expectedType?
   let_expr f@SubsetElabAux α x y := e | throwError "unexpected result {e} when elaborating {rel}"
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
-  -- This behaviour is inspired by `resolveLValLoop`.
+  -- This behaviour is inspired by `resolveLValLoop` from the file `Lean.Elab.App`.
   tryPostponeIfMVar α
   if ← isMVarApp α then
     synthesizeSyntheticMVarsUsingDefault
   let (rel, cls) := if ← useSetNotationFor α then (le, leCls) else (sub, subCls)
   let inst ← mkInstMVar <| .app (.const cls f.constLevels!) α
   let rel := mkApp2 (.const rel f.constLevels!) α inst
+  -- Add the relation (e.g. `LE.le : Set Nat → Set Nat → Prop`) as a hover on the whole term
   addTermInfo' (← getRef) rel (isDisplayableTerm := true)
   return mkApp2 rel x y
 
