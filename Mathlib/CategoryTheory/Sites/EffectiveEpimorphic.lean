@@ -102,14 +102,13 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
     fac := by
       rintro S ⟨T, g, hT⟩
       dsimp
-      sorry /-
-      nth_rewrite 1 [← hT, Category.assoc, Hf.fac]
+      simp only [← hT, Category.assoc, Hf.fac]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let x : D := ⟨Over.mk T.hom, g, hT⟩
       let g' : x ⟶ y := ObjectProperty.homMk (Over.homMk g)
       change F.map g' ≫ _ = _
       rw [S.w]
-      rfl-/
+      rfl
     uniq := by
       intro S m hm
       dsimp
@@ -139,27 +138,21 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
   { desc := fun {_} e h => Hf.desc (aux e h)
-    fac := by
-      intro W e h
-      sorry /-
-      dsimp +instances
+    fac {W} e h := by
       have := Hf.fac (aux e h) ⟨Over.mk f, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this
       nth_rewrite 2 [← Category.id_comp e]
       apply h
       generalize_proofs hh
-      rw [hh.choose_spec, Category.id_comp] -/
-    uniq := by
-      intro W e h m hm
-      sorry /-
-      dsimp +instances
+      rw [hh.choose_spec, Category.id_comp]
+    uniq {W} e h m hm := by
       apply Hf.uniq (aux e h)
       rintro ⟨A, g, hA⟩
       dsimp
-      nth_rewrite 1 [← hA, Category.assoc, hm]
+      simp only [← hA, Category.assoc, hm]
       apply h
       generalize_proofs hh
-      rwa [hh.choose_spec]-/ }
+      rwa [hh.choose_spec] }
 
 theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     (Presieve.singleton f).EffectiveEpimorphic ↔ (EffectiveEpi f) := by
@@ -225,14 +218,13 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp
-      sorry /-
-      nth_rewrite 1 [← hT, Category.assoc, H.fac]
+      simp only [← hT, Category.assoc, H.fac]
       let A : D := ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       let B : D := ⟨Over.mk T.hom, a, g, hT⟩
       let i : B ⟶ A := ObjectProperty.homMk (Over.homMk g)
       change F.map i ≫ _ = _
       rw [S.w]
-      rfl-/
+      rfl
     uniq := by
       intro S m hm; dsimp
       apply H.uniq
@@ -256,7 +248,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
     Cocone (Sieve.generateFamily X π).arrows.diagram := {
       pt := W
       ι := {
-        app := fun ⟨_,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
+        app := fun ⟨_, hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
           rintro ⟨A, a, (g₁ : A.left ⟶ _), ha⟩ ⟨B, b, (g₂ : B.left ⟶ _), hb⟩ ⟨q : A ⟶ B⟩
           dsimp; rw [Category.comp_id, ← Category.assoc]
@@ -264,26 +256,21 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
           generalize_proofs h1 h2 h3 h4
           rw [h2.choose_spec, h4.choose_spec, Over.w] } }
   { desc := fun {_} e h => H.desc (aux e h)
-    fac := by
-      intro W e h a
-      sorry /-
-      dsimp +instances
+    fac {W} e h a := by
       have := H.fac (aux e h) ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this
       conv_rhs => rw [← Category.id_comp (e a)]
       apply h
       generalize_proofs h1 h2
-      rw [h2.choose_spec, Category.id_comp]-/
-    uniq := by
-      intro W e h m hm
+      rw [h2.choose_spec, Category.id_comp]
+    uniq {W} e h m hm := by
       apply H.uniq (aux e h)
       rintro ⟨T, a, (g : T.left ⟶ _), ha⟩
       dsimp
-      sorry /-
-      nth_rewrite 1 [← ha, Category.assoc, hm]
+      simp only [← ha, Category.assoc, hm]
       apply h
       generalize_proofs h1 h2
-      rwa [h2.choose_spec]-/ }
+      rwa [h2.choose_spec] }
 
 theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) :

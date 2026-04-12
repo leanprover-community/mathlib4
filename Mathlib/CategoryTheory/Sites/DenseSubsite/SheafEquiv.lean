@@ -93,7 +93,6 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         I.f (by simp [hl]))).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
       simp [← Functor.map_comp, ← op_comp, hiUV]
 
-#exit
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
   apply +allowSynthFailures ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
   rw [NatTrans.isIso_iff_isIso_app]
