@@ -103,7 +103,7 @@ section
 
 open MeasureTheory VectorMeasure
 
-variable {X V : Type*} {mX : MeasurableSpace X} [NormedAddCommGroup V] (μ : VectorMeasure X V)
+variable {X V : Type*} {mX : MeasurableSpace X} [NormedAddCommGroup V] {μ : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ⊤) :
     ‖μ E‖ ≤ μ.variation.real E := by
