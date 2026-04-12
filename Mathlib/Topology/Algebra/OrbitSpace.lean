@@ -56,7 +56,7 @@ lemma isLocalHomeomorph_of_properlyDiscontinuousSMul :
 variable (G) in
 /-- A chosen local homeomorphism for the quotient map
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
-noncomputable def localHomeomorphAt (p : M) : OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
+def localHomeomorphAt (p : M) : OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
   Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
