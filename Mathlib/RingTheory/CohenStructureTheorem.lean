@@ -11,16 +11,15 @@ public import Mathlib.Algebra.CharP.MixedCharZero
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
+public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
-public import Mathlib.RingTheory.RingHom.Flat
-public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Quotient
-public import Mathlib.RingTheory.MvPowerSeries.Evaluation
-public import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-!
 
