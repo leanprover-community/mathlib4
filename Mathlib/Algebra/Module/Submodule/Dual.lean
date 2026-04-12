@@ -95,15 +95,9 @@ theorem ker_le_dual_flip (S) : ker p ≤ dual p.flip S := by
 theorem dual_span_singleton (x : M₁) : dual p (R₁ ∙ x) = ker (p x) := by ext x; simp [Eq.comm]
 
 theorem dual_sSup (s : Set (Submodule R₁ M₁)) : dual p (sSup s) = sInf (dual p '' s) := by
-  ext y
-  simp only [mem_dual, mem_sInf, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  constructor
-  · exact fun h S hS x hx => h x (le_sSup hS hx)
-  · intro h x hx
-    rw [mem_sSup] at hx
-    specialize hx (p.flip y).ker
-    simp only [← mem_dual_iff_le_ker_flip] at hx
-    exact hx h
+  ext y; simpa using ⟨
+    fun h _ hS _ hx => h _ (le_sSup hS hx),
+    fun h _ hx => (mem_sSup.mp hx) (p.flip y).ker h⟩
 
 theorem dual_iSup {ι : Sort*} (f : ι → Submodule R₁ M₁) :
     dual p (⨆ i, f i) = ⨅ i, dual p (f i) := by
