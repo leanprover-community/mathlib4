@@ -28,6 +28,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [A
 
 variable {ιS ιT : Type*} (GS : Algebra.Generators R S ιS) (GT : Algebra.Generators R T ιT)
 
+/-- Hom of generators obtained directly from element level. -/
 noncomputable def Algebra.Generators.HomOfComm [Algebra S T] (f : ιS → ιT)
     (comm : GT.val ∘ f = algebraMap S T ∘ GS.val) : GS.Hom GT where
   val s := MvPolynomial.X (f s)
@@ -44,6 +45,7 @@ lemma Algebra.Generators.homOfComm_toExtensionHom_toAlgHom [Algebra S T] [IsScal
   Algebra.Generators.homOfComm_toAlgHom GS GT f comm
 
 variable (R S T) in
+/-- AlgebraMap as hom of generators. -/
 noncomputable abbrev Algebra.Generators.HomOfCommSelf [Algebra S T] :
     (Algebra.Generators.self R S).Hom (Algebra.Generators.self R T) :=
   Algebra.Generators.HomOfComm _ _ (algebraMap S T) rfl
