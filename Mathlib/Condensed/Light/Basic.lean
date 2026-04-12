@@ -26,11 +26,8 @@ open CategoryTheory Limits
 `LightCondensed.{u} C` is the category of light condensed objects in a category `C`, which are
 defined as sheaves on `LightProfinite.{u}` with respect to the coherent Grothendieck topology.
 -/
-def LightCondensed (C : Type w) [Category.{v} C] :=
+abbrev LightCondensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology LightProfinite.{u}) C
-
-instance {C : Type w} [Category.{v} C] : Category (LightCondensed.{u} C) :=
-  inferInstanceAs <| Category (Sheaf _ _)
 
 /--
 Light condensed sets. Because `LightProfinite` is an essentially small category, we don't need the
@@ -42,10 +39,10 @@ namespace LightCondensed
 
 variable {C : Type w} [Category.{v} C]
 
-@[simp]
+@[deprecated ObjectProperty.FullSubcategory.id_hom (since := "2026-04-08")]
 lemma id_hom (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
-@[simp]
+@[deprecated ObjectProperty.FullSubcategory.comp_hom (since := "2026-04-08")]
 lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl

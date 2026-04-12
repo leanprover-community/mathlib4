@@ -5,9 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Condensed.Light.CartesianClosed
-public import Mathlib.Condensed.Light.TopCatAdjunction
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 public import Mathlib.CategoryTheory.Sites.PreservesLimits
+public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
@@ -80,11 +80,8 @@ instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
 The functor from `LightProfinite` to `LightCondSet` is monoidal with respect to the cartesian
 monoidal structure.
 -/
-noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
-  have : Nonempty lightProfiniteToLightCondSet.Monoidal := by
-    rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]
-    infer_instance
-  exact this.some
+noncomputable instance : lightProfiniteToLightCondSet.{u}.Monoidal :=
+  (Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance |>.some
 
 instance : PreservesFiniteCoproducts lightProfiniteToLightCondSet.{u} :=
   inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).yoneda
