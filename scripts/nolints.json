@@ -61,7 +61,6 @@
  ["docBlame", "MvQPF.repr"],
  ["docBlame", "OptionT.callCC"],
  ["docBlame", "OptionT.mkLabel"],
- ["docBlame", "PointedCone.«term_∙₊_»"],
  ["docBlame", "PowerBasis.basis"],
  ["docBlame", "PowerBasis.dim"],
  ["docBlame", "PowerBasis.gen"],
