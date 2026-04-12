@@ -158,9 +158,6 @@ predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
 def subtype {p : X → Prop} {q : Y → Prop} (h : X ≃ₜ Y) (h_iff : ∀ x, p x ↔ q (h x)) :
     {x // p x} ≃ₜ {y // q y} where
-  continuous_toFun := by simpa [Equiv.coe_subtypeEquiv_eq_map] using h.continuous.subtype_map _
-  continuous_invFun := by simpa [Equiv.coe_subtypeEquiv_eq_map] using
-    h.symm.continuous.subtype_map _
   __ := h.subtypeEquiv h_iff
 
 @[simp]
@@ -175,8 +172,6 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
 
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
-  continuous_toFun := continuous_inclusion h.subset
-  continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
 
 section prod
@@ -188,8 +183,6 @@ variable (X Y W Z)
 def prodUnique [Unique Y] :
     X × Y ≃ₜ X where
   toEquiv := Equiv.prodUnique X Y
-  continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prodMk continuous_const
 
 @[simp] theorem coe_prodUnique [Unique Y] : ⇑(prodUnique X Y) = Prod.fst := rfl
 
@@ -210,7 +203,6 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, TopologicalSpace (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
-  continuous_toFun := .prodMk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> dsimp <;> fun_prop
 
 /-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
@@ -255,8 +247,6 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} {Y : ι' → Type*} [∀ j, Topol
 @[simps! apply toEquiv]
 def piCongrRight {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) : (∀ i, Y₁ i) ≃ₜ ∀ i, Y₂ i where
-  continuous_toFun := Pi.continuous_postcomp' fun i ↦ (F i).continuous
-  continuous_invFun := Pi.continuous_postcomp' fun i ↦ (F i).symm.continuous
   toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
 
 @[simp]
@@ -276,8 +266,6 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
 
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
-  continuous_toFun := continuous_uliftDown
-  continuous_invFun := continuous_uliftUp
   toEquiv := Equiv.ulift
 
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
@@ -298,6 +286,7 @@ private theorem _root_.Fin.appendEquiv_eq_homeomorph (m n : ℕ) : Fin.appendEqu
   apply Equiv.symm_bijective.injective
   ext x i <;> simp
 
+@[fun_prop]
 theorem _root_.Fin.continuous_append (m n : ℕ) :
     Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
   suffices Continuous (Fin.appendEquiv m n) by exact this
@@ -309,10 +298,6 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
-  continuous_toFun := Fin.continuous_append m n
-  continuous_invFun := by
-    rw [Fin.appendEquiv_eq_homeomorph]
-    exact Homeomorph.continuous_invFun _
 
 @[simp]
 theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
@@ -337,15 +322,11 @@ end Distrib
 @[simps! -fullyApplied]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
-  continuous_toFun := continuous_apply _
-  continuous_invFun := continuous_pi fun _ => continuous_id
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
-  continuous_toFun := (continuous_apply 0).prodMk (continuous_apply 1)
-  continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
 @[simps! -fullyApplied]
@@ -365,7 +346,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
-  continuous_toFun := continuous_subtype_val
+  -- TODO: `fun_prop` cannot apply `Continuous.subtype_mk`
   continuous_invFun := continuous_id.subtype_mk _
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
@@ -387,8 +368,6 @@ variable {ι : Type*}
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
-  continuous_toFun := by
-    apply Continuous.prodMk <;> exact continuous_pi fun j => continuous_apply j.1
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
@@ -402,7 +381,6 @@ variable [DecidableEq ι] (i : ι)
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
-  continuous_toFun := (continuous_apply i).prodMk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]
@@ -581,3 +559,28 @@ def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y
 theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
   (Homeomorph.ofDiscrete f).isHomeomorph
+
+section
+
+/-- If `f : X → Y` is coinducing and has connected fibers, it induces a homeomorphism on `π₀`. -/
+noncomputable def Topology.IsCoinducing.connectedComponentsHomeomorph {f : X → Y}
+    (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    ConnectedComponents X ≃ₜ ConnectedComponents Y :=
+  IsHomeomorph.homeomorph hf.continuous.connectedComponentsMap <| by
+    have hbij := hf.connectedComponentsMap_bijective hf'
+    exact ⟨hf.continuous.connectedComponentsMap_continuous,
+      hf.connectedComponentsMap.isOpenMap_of_injective hbij.injective, hbij⟩
+
+variable {f : X → Y} (hf : Topology.IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y}))
+
+@[simp]
+lemma Topology.IsCoinducing.connectedComponentsHomeomorph_mk (x : X) :
+    hf.connectedComponentsHomeomorph hf' (.mk x) = .mk (f x) :=
+  rfl
+
+@[simp]
+lemma Topology.IsCoinducing.connectedComponentsHomeomorph_symm_mk_apply (x : X) :
+    (hf.connectedComponentsHomeomorph hf').symm (.mk (f x)) = .mk x :=
+  (hf.connectedComponentsHomeomorph hf').injective (by simp)
+
+end
