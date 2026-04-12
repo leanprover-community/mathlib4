@@ -16,6 +16,6 @@ This module defines the `Continuous` Aesop rule set which is used by the
 they're declared is imported, so we must put this declaration into its own file.
 -/
 
-set_option linter.privateModule false
+public meta section
 
 declare_aesop_rule_sets [Continuous]

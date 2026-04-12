@@ -14,7 +14,7 @@ public import Aesop.Frontend
 This file defines `finsetNonempty`, an aesop rule set to prove that a given finset is nonempty.
 -/
 
-set_option linter.privateModule false
+public section
 
 -- `finsetNonempty` rules try to prove that a given finset is nonempty,
 -- for use in positivity extensions.
