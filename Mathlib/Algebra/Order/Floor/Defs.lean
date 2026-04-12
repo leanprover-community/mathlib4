@@ -200,7 +200,7 @@ instance : FloorRing ℤ where
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -209,7 +209,7 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor 
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
