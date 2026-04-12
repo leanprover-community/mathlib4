@@ -7,6 +7,7 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Basic
+public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 
 /-!
