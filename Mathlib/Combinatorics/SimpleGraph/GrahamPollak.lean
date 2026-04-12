@@ -36,7 +36,7 @@ theorem card_le_card_add_one_of_forall_IsCompleteBipartite
     card V ≤ card α + 1 := by
   classical
   rcases subsingleton_or_nontrivial V
-  · grind [card_le_one_iff_subsingleton]
+  · grind [Fintype.card_le_one_iff_subsingleton]
   · let M : Matrix (Fin 1 ⊕ α) V ℝ := Matrix.fromRows
       (Matrix.replicateCol V ![1])
       (Matrix.of fun m n ↦ (completeBipartiteOf m).choose.indicator 1 n)
