@@ -86,21 +86,25 @@ instance :
     (weakEquivalences (CategoryWithSmithStructure hIW₁ hIW₃)).IsStableUnderRetracts := by
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 instance :
     (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).IsStableUnderRetracts := by
   simp only [cofibrations_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance :
     (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).IsStableUnderCobaseChange := by
   simp only [cofibrations_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance :
     (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).IsMultiplicative := by
   simp only [cofibrations_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance :
     (fibrations (CategoryWithSmithStructure hIW₁ hIW₃)).IsStableUnderRetracts := by
   simp only [fibrations_eq]
@@ -122,6 +126,7 @@ instance : (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFunctori
     exact ⟨by simp [← le_llp_iff_le_rlp], hIW₁⟩
   simpa [trivialFibrations] using HasFunctorialFactorization.of_le le_rfl le
 
+set_option backward.isDefEq.respectTransparency false in
 open lemma_1_9 in
 instance : (trivialCofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFactorization
     (fibrations (CategoryWithSmithStructure hIW₁ hIW₃)) := by

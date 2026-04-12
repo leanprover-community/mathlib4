@@ -65,10 +65,12 @@ variable {i} {Φ : i.Factorization J}
 
 attribute [reassoc (attr := simp)] fac
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma fac_left : Φ.α.left ≫ Φ.β.left = i.γ.left := by
+lemma fac_left : dsimp% Φ.α.left ≫ Φ.β.left = i.γ.left := by
   simp [← Arrow.comp_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fac_right : Φ.α.right ≫ Φ.β.right = i.γ.right := by
   simp [← Arrow.comp_right]
@@ -149,10 +151,12 @@ noncomputable abbrev inr : sigmaTgt g hJ₁ ⟶ succObj g hJ₁ :=
 noncomputable abbrev ιSuccObj : g.left ⟶ succObj g hJ₁ :=
   pushout.inl _ _
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable abbrev πSuccObj : succObj g hJ₁ ⟶ Y :=
   haveI := hasCoproductsOfShape_index I W g
   pushout.desc g.hom (Sigma.desc (fun i ↦ (i.factorization hJ₁).β.right))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma factorizationM_ι_inr (i : Index I W g) :
     haveI := hasCoproductsOfShape_index I W g
@@ -202,12 +206,14 @@ lemma ιSuccObj_mem :
 
 noncomputable abbrev succ : Over Y := Over.mk (πSuccObj g hJ₁)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def toSucc : g ⟶ succ g hJ₁ := Over.homMk (ιSuccObj g hJ₁)
 
 variable [W.HasTwoOutOfThreeProperty]
   [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
   [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)] in
 include hJ₂ in
+set_option backward.isDefEq.respectTransparency false in
 lemma prop_succ_hom (hg : W g.hom) :
     W (succ g hJ₁).hom :=
   W.of_precomp _ _ ((ιSuccObj_mem g hJ₁ hJ₂).2) (by simpa)
@@ -238,6 +244,7 @@ lemma succStruct_prop_le_inverseImage_rlp_llp_inter :
       ((attachCellsOfProp f hJ₁ φ hφ).pushouts_coproducts)
   exact MorphismProperty.pushouts_le _ (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_lift {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁) (hφ : (succStruct f hJ₁).prop φ)
     (h₀ : W Z₀.hom)
     {A B : C} (i : A ⟶ B) (hi : I i) (t : A ⟶ Z₀.left) (b : B ⟶ Y)
@@ -281,6 +288,7 @@ variable
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
   (hκ : ∀ {A B : C} (i : A ⟶ B), I i → IsCardinalPresentable A κ)
 
+set_option backward.isDefEq.respectTransparency false in
 include hJ₁ hJ₂ hκ in
 lemma lemma_1_8 [OrderBot κ.ord.ToType] {X Y : C} (f : X ⟶ Y) (hf : W f) :
     ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
