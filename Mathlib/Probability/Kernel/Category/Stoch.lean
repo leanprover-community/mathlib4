@@ -9,6 +9,7 @@ module
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
 public import Mathlib.Probability.Kernel.Category.SFinKer
+public import Mathlib.Probability.Kernel.Composition.Lemmas
 
 /-!
 # Stoch
@@ -64,15 +65,25 @@ noncomputable
 instance : MarkovCategory Stoch.{u} where
   discard_natural κ := by ext : 2; simp
 
-variable {X Y Z : Stoch}
+variable {X Y : Stoch}
 
-instance : Deterministic (α_ X Y Z).hom where
-
-instance : Deterministic (λ_ X).hom where
-
-instance : Deterministic (ρ_ X).hom where
-
-instance : Deterministic (β_ X Y).hom where
+open Kernel in
+instance {e : X ≅ Y} : Deterministic e.hom where
+  hom_comul := by
+    ext : 2; dsimp
+    let κ := e.hom.hom.hom
+    let η := e.inv.hom.hom
+    have : κ ∥ₖ Kernel.id ∘ₖ ((η ∥ₖ Kernel.id) ∘ₖ copy Y.obj ∘ₖ κ) =
+      κ ∥ₖ Kernel.id ∘ₖ ((Kernel.id ∥ₖ κ) ∘ₖ copy X.obj) := by
+      have h : η ∘ₖ κ = Kernel.id := by
+        change (e.hom ≫ e.inv).hom.hom = Kernel.id
+        simp
+      rw [(parallelComp_id_comp_copy_comp ⟨id, measurable_id, h⟩).symm]
+      simp [h]
+    have h : κ ∘ₖ η = Kernel.id := by
+      change (e.inv ≫ e.hom).hom.hom = Kernel.id
+      simp
+    simpa [← comp_assoc, parallelComp_comp_parallelComp, h] using this
 
 instance : Deterministic (ε[X]) where
   hom_comul := by

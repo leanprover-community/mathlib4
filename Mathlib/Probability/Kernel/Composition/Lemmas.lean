@@ -73,6 +73,53 @@ lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
   · exact measurable_measure_prodMk_left hs
   · exact Kernel.measurable_coe _ hs
 
+/-- If `η ∘ₖ κ` is a deterministic kernel given by `f`, then `η x` is almost everywhere the
+Dirac measure at `f a`. -/
+lemma comp_eq_deterministic_ae_eq_dirac {η : Kernel β α} [IsMarkovKernel η] {f : α → α}
+    (hf : Measurable f) (h : η ∘ₖ κ = deterministic f hf) (a : α) {s : Set α}
+    (hs : MeasurableSet s) : ∀ᵐ x ∂(κ a), η x s = Measure.dirac (f a) s := by
+  have hg_eq : ∫⁻ x, (η x) s ∂κ a = Measure.dirac (f a) s := by
+    rw [← comp_apply' _ _ _ hs, h, deterministic_apply]
+  simp only [Measure.dirac_apply' _ hs] at ⊢ hg_eq
+  by_cases hfa : (f a) ∈ s
+  · simp only [hfa, Set.indicator_of_mem, Pi.one_apply] at ⊢ hg_eq
+    replace hg_eq : ∫⁻ x, (1 - (η x) s) ∂κ a = 0 := by
+      calc
+      _ =∫⁻ x, (η x) sᶜ ∂κ a := by
+        congr with x
+        rw [measure_compl hs (by simp)]
+        simp
+      _ = (η ∘ₖ κ) a sᶜ := by
+        rw [η.comp_apply' _ _ hs.compl]
+      _ = 0 := by
+        simp [h, deterministic_apply' hf _ hs.compl, hfa]
+    rw [lintegral_eq_zero_iff'] at hg_eq
+    · filter_upwards [hg_eq] with y hy
+      rw [Pi.zero_apply, tsub_eq_zero_iff_le] at hy
+      exact one_le_prob_iff.mp hy
+    have := η.measurable_coe hs
+    fun_prop
+  · simp only [hfa, not_false_eq_true, Set.indicator_of_notMem] at ⊢ hg_eq
+    rwa [lintegral_eq_zero_iff' ((η.measurable_coe hs).aemeasurable)] at hg_eq
+
+lemma parallelComp_id_comp_copy_comp [IsMarkovKernel κ] {η : Kernel β α} [IsMarkovKernel η]
+    (h : ∃ f, ∃ (hf : Measurable f), η ∘ₖ κ = deterministic f hf) :
+    η ∘ₖ κ ∥ₖ κ ∘ₖ copy α = η ∥ₖ Kernel.id ∘ₖ copy β ∘ₖ κ := by
+  simp only [parallelComp_comp_copy]
+  ext x : 1
+  rw [prod_apply]
+  refine Measure.prod_eq fun s₁ s₂ hs₁ hs₂ ↦ ?_
+  obtain ⟨f, hf, h⟩ := h
+  rw [h, comp_apply, Measure.bind_apply, deterministic_apply]
+  · suffices ∀ᵐ a ∂(κ x), (η ×ₖ Kernel.id) a (s₁ ×ˢ s₂) =
+        (Measure.dirac (f x)) s₁ * (Measure.dirac a) s₂ by
+      rw [MeasureTheory.lintegral_congr_ae this]
+      simp [lintegral_const_mul', hs₂]
+    filter_upwards [comp_eq_deterministic_ae_eq_dirac hf h x hs₁] with a ha
+    rw [prod_apply_prod, ha, Kernel.id_apply]
+  · exact hs₁.prod hs₂
+  · fun_prop
+
 end ProbabilityTheory.Kernel
 
 namespace MeasureTheory.Measure
