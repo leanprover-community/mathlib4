@@ -580,6 +580,53 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real u
   rw [← integral_prod_swap]
   apply integral_fun_snd
 
+/-- Change the order of integration of two `intervalIntegral`s over `ℝ`, under an integrability
+hypothesis on the product rectangle. This is the two-interval-integral version of
+`intervalIntegral_integral_swap`. -/
+lemma intervalIntegral_intervalIntegral_swap {a b c d : ℝ} {f : ℝ → ℝ → E}
+    (hf : IntegrableOn (uncurry f) (Set.uIcc a b ×ˢ Set.uIcc c d) (volume.prod volume)) :
+    (∫ y in c..d, ∫ x in a..b, f x y)
+      = (∫ x in a..b, ∫ y in c..d, f x y) := by
+  have hmain : ∀ ⦃a b c d : ℝ⦄, a ≤ b → c ≤ d →
+      IntegrableOn (uncurry f) (Set.Icc a b ×ˢ Set.Icc c d) (volume.prod volume) →
+      (∫ y in c..d, ∫ x in a..b, f x y) = (∫ x in a..b, ∫ y in c..d, f x y) := by
+    intro a b c d hab hcd hfi
+    simp only [intervalIntegral.integral_of_le hab, intervalIntegral.integral_of_le hcd,
+      setIntegral_congr_set (Ioc_ae_eq_Icc (α := ℝ) (μ := volume))]
+    calc ∫ y in Set.Icc c d, ∫ x in Set.Icc a b, f x y
+        = ∫ z : ℝ × ℝ in Set.Icc c d ×ˢ Set.Icc a b, f z.2 z.1 :=
+          (setIntegral_prod (fun z : ℝ × ℝ => f z.2 z.1) hfi.swap).symm
+      _ = ∫ z : ℝ × ℝ in Set.Icc a b ×ˢ Set.Icc c d, f z.1 z.2 := by
+          simpa using setIntegral_prod_swap (s := Set.Icc a b) (t := Set.Icc c d)
+            (f := uncurry f)
+      _ = ∫ x in Set.Icc a b, ∫ y in Set.Icc c d, f x y :=
+          setIntegral_prod (uncurry f) hfi
+  rcases le_total a b with hab | hab
+  · rcases le_total c d with hcd | hcd
+    · exact hmain hab hcd (by rwa [Set.uIcc_of_le hab, Set.uIcc_of_le hcd] at hf)
+    · apply neg_injective
+      simpa only [intervalIntegral.integral_symm c d, intervalIntegral.integral_neg] using
+        hmain hab hcd (by rwa [Set.uIcc_of_le hab, Set.uIcc_comm c d,
+          Set.uIcc_of_le hcd] at hf)
+  · rcases le_total c d with hcd | hcd
+    · apply neg_injective
+      simpa only [intervalIntegral.integral_symm a b, intervalIntegral.integral_neg] using
+        hmain hab hcd (by rwa [Set.uIcc_comm a b, Set.uIcc_of_le hab,
+          Set.uIcc_of_le hcd] at hf)
+    · simpa only [intervalIntegral.integral_symm a b, intervalIntegral.integral_symm c d,
+        intervalIntegral.integral_neg, neg_neg] using
+        hmain hab hcd (by rwa [Set.uIcc_comm a b, Set.uIcc_of_le hab,
+          Set.uIcc_comm c d, Set.uIcc_of_le hcd] at hf)
+
+/-- Corollary of `intervalIntegral_intervalIntegral_swap` for functions that are continuous on the
+product rectangle. -/
+lemma intervalIntegral_intervalIntegral_swap_of_continuousOn {a b c d : ℝ} {f : ℝ → ℝ → E}
+    (hf : ContinuousOn (uncurry f) (Set.uIcc a b ×ˢ Set.uIcc c d)) :
+    (∫ y in c..d, ∫ x in a..b, f x y)
+      = (∫ x in a..b, ∫ y in c..d, f x y) :=
+  intervalIntegral_intervalIntegral_swap
+    (hf.integrableOn_compact (isCompact_uIcc.prod isCompact_uIcc))
+
 section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
