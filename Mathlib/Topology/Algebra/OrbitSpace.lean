@@ -68,8 +68,7 @@ lemma mem_localHomeomorphAt_source {p : M} :
 /-- The local homeomorphism `localHomeomorphAt p` coincides with
 `Quotient.mk : M → M⧸G`. -/
 lemma localHomeomorphAt_eq_quotientMk {p : M} :
-    localHomeomorphAt G p =
-      (Quotient.mk _ : M → orbitRel.Quotient G M) :=
+    localHomeomorphAt G p = (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).2.symm
 
 /-- The equivalence class `⟦p⟧` lies in the target of `localHomeomorphAt p`. -/
@@ -83,8 +82,8 @@ lemma mem_localHomeomorphAt_target {p : M} :
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
 def localInverseAt (G : Type*) [Group G] [MulAction G M] [ProperlyDiscontinuousSMul G M]
     [ContinuousConstSMul G M] [IsCancelSMul G M] (p : M) :
-  OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
-    (localHomeomorphAt G p).symm
+    OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
+  (localHomeomorphAt G p).symm
 
 /-- The equivalence class `⟦p⟧` lies in the source of `localInverseAt p`. -/
 lemma mem_localInverseAt_source {p : M} :
@@ -108,9 +107,7 @@ lemma localInverseAt_apply_other {p k : M}
 /-- The local inverse at `p` sends the class `⟦p⟧` back to `p`. -/
 lemma localInverseAt_apply_self {p : M}
     : (localInverseAt G p) ⟦p⟧ = p :=
-  localInverseAt_apply_other
-    (mem_localHomeomorphAt_source)
-    (mem_localInverseAt_source)
+  localInverseAt_apply_other (mem_localHomeomorphAt_source) (mem_localInverseAt_source)
 
 end QuotientMk
 
