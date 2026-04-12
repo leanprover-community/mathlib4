@@ -53,17 +53,13 @@ The legs are the original cocone legs shifted by one: `ι_{n+1}` for each `n`. -
 noncomputable def shiftCocone (c : Cocone (initialChain F)) :
     Cocone (initialChain F ⋙ F) where
   pt := c.pt
-  ι :=
-  { app := fun n => c.ι.app (n + 1)
-    naturality := by
-      intro m n α
+  ι := NatTrans.ofSequence
+    (fun n => c.ι.app (n + 1))
+    (fun n => by
       simp only [Functor.comp_obj, Functor.comp_map, Functor.const_obj_obj,
         Functor.const_obj_map, Category.comp_id]
-      have hle := leOfHom α
-      rw [show (initialChain F).map α = (initialChain F).map (homOfLE hle) from
-        congr_arg _ (Subsingleton.elim _ _)]
-      rw [← initialChain_map_succ_eq F hle]
-      exact c.w (homOfLE (Nat.succ_le_succ hle)) }
+      rw [← initialChain_map_succ_eq F (n.le_add_right 1)]
+      exact c.w (homOfLE (Nat.succ_le_succ (n.le_add_right 1))))
 
 @[simp]
 lemma shiftCocone_ι_app (c : Cocone (initialChain F)) (n : ℕ) :
@@ -74,28 +70,21 @@ by adding `initial.to` as the zeroth leg. -/
 noncomputable def extendCocone (s : Cocone (initialChain F ⋙ F)) :
     Cocone (initialChain F) where
   pt := s.pt
-  ι :=
-  { app := fun n =>
-      match n with
+  ι := NatTrans.ofSequence
+    (fun n => match n with
       | 0 => initial.to s.pt
-      | n + 1 => s.ι.app n
-    naturality := by
-      intro m n α
+      | n + 1 => s.ι.app n)
+    (fun n => by
       simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
-      match m, n with
-      | 0, 0 =>
-        rw [show α = 𝟙 _ from Subsingleton.elim _ _, Functor.map_id, Category.id_comp]
-      | 0, (n + 1) =>
-        exact initial.hom_ext _ _
-      | (m + 1), (n + 1) =>
-        have hle := Nat.le_of_succ_le_succ (leOfHom α)
-        rw [show (initialChain F).map α =
-          (initialChain F).map (homOfLE (Nat.succ_le_succ hle)) from
-          congr_arg _ (Subsingleton.elim _ _)]
-        rw [initialChain_map_succ_eq F hle]
-        have := s.w (homOfLE hle)
+      cases n with
+      | zero => exact initial.hom_ext _ _
+      | succ k =>
+        rw [show (homOfLE ((k + 1).le_add_right 1) : (k + 1 : ℕ) ⟶ (k + 2 : ℕ)) =
+            homOfLE (Nat.succ_le_succ (k.le_add_right 1)) from Subsingleton.elim _ _,
+          initialChain_map_succ_eq F (k.le_add_right 1)]
+        have := s.w (homOfLE (k.le_add_right 1))
         simp only [Functor.comp_obj, Functor.comp_map] at this
-        exact this }
+        exact this)
 
 /-- If `c` is a colimit cocone for the initial chain, then `shiftCocone F c` is a
 colimit cocone for `initialChain F ⋙ F`. -/

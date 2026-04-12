@@ -9,25 +9,26 @@ public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
-# Iterated endofunctors and the initial chain
+# Iterated endofunctors and chains from a seed morphism
 
-Given an endofunctor `F : C ⥤ C`, we define the iterated functor `F.iterate n : C ⥤ C`
-which applies `F` a total of `n` times. This is a general-purpose definition that does
-not require the category to have an initial object.
+Given an endofunctor `F : C ⥤ C` and a seed morphism `α : X ⟶ F.obj X`, we define
+the iterated morphism `iterateMap α n : F^n(X) ⟶ F^{n+1}(X)` and the functor
+`chainMk α : ℕ ⥤ C` sending `n` to `F^n(X)` with successor maps given by `iterateMap α`.
 
-Given additionally an initial object, the *initial chain* is the sequence
-`⊥ → F(⊥) → F²(⊥) → ⋯` viewed as a functor from `ℕ` (as a preorder category) to `C`.
+The *initial chain* `⊥ → F(⊥) → F²(⊥) → ⋯` is the special case `X = ⊥_ C` with
+`α = initial.to _`, and is provided as `initialChain F`.
 
 ## Main definitions
 
 - `CategoryTheory.Functor.iterate F n` : the `n`-th iterate `F^n : C ⥤ C`
-- `CategoryTheory.Endofunctor.iterateMap F n` : the successor map `F^n(⊥) → F^{n+1}(⊥)`
-- `CategoryTheory.Endofunctor.initialChain F` : the functor `ℕ ⥤ C`
+- `CategoryTheory.Endofunctor.iterateMap α n` : the `n`-th iterated morphism from a seed
+- `CategoryTheory.Endofunctor.chainMk α` : the chain functor `ℕ ⥤ C` from a seed
+- `CategoryTheory.Endofunctor.initialChain F` : the initial chain, specialization of `chainMk`
 
 ## Main results
 
-- `CategoryTheory.Endofunctor.initialChain_map_succ` : the map for `n ≤ n+1` is `iterateMap F n`
-- `CategoryTheory.Endofunctor.initialChain_map_succ_eq` : the chain map at successor indices
+- `CategoryTheory.Endofunctor.chainMk_map_succ` : successor maps are `iterateMap α`
+- `CategoryTheory.Endofunctor.chainMk_map_succ_eq` : the chain map at successor indices
   equals `F` applied to the chain map
 
 ## References
@@ -62,37 +63,35 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Endofunctor
 
-section InitialChain
+section ChainMk
 
-variable (F : C ⥤ C) [HasInitial C]
+variable {F : C ⥤ C} {X : C} (α : X ⟶ F.obj X)
 
-/-- The successor map `F^n(⊥) → F^{n+1}(⊥)` in the initial chain, defined by
-applying `F` iteratively to the unique map from the initial object. -/
-noncomputable def iterateMap :
-    (n : ℕ) → (F.iterate n).obj (⊥_ C) ⟶ (F.iterate (n + 1)).obj (⊥_ C)
-  | 0 => initial.to _
+/-- The `n`-th iterated morphism `F^n(X) ⟶ F^{n+1}(X)`, defined from the seed
+`α : X ⟶ F.obj X` by iteratively applying `F`. -/
+def iterateMap : ∀ (n : ℕ), (F.iterate n).obj X ⟶ (F.iterate (n + 1)).obj X
+  | 0 => α
   | n + 1 => F.map (iterateMap n)
 
-/-- The initial chain: the functor `ℕ ⥤ C` sending `n` to `F^n(⊥)`,
-constructed via `Functor.ofSequence` from the successor maps. -/
-noncomputable def initialChain : ℕ ⥤ C :=
-  Functor.ofSequence (X := fun n => (F.iterate n).obj (⊥_ C)) (iterateMap F)
+/-- The chain `X → F(X) → F²(X) → ⋯` as a functor `ℕ ⥤ C`, constructed from a seed
+morphism `α : X ⟶ F.obj X`. -/
+def chainMk : ℕ ⥤ C :=
+  Functor.ofSequence (X := fun n => (F.iterate n).obj X) (iterateMap α)
 
 @[simp]
-lemma initialChain_obj (n : ℕ) :
-    (initialChain F).obj n = (F.iterate n).obj (⊥_ C) := rfl
+lemma chainMk_obj (n : ℕ) : (chainMk α).obj n = (F.iterate n).obj X := rfl
 
 @[simp]
-lemma initialChain_map_succ (n : ℕ) :
-    (initialChain F).map (homOfLE (Nat.le_add_right n 1)) = iterateMap F n :=
-  Functor.ofSequence_map_homOfLE_succ (iterateMap F) n
+lemma chainMk_map_succ (n : ℕ) :
+    (chainMk α).map (homOfLE (Nat.le_add_right n 1)) = iterateMap α n :=
+  Functor.ofSequence_map_homOfLE_succ (iterateMap α) n
 
 /-- The chain map at successor indices equals `F` applied to the chain map.
 This is the key structural property: the `(m+1)`-to-`(n+1)` map in the chain
 is `F` applied to the `m`-to-`n` map. -/
-lemma initialChain_map_succ_eq {m n : ℕ} (h : m ≤ n) :
-    (initialChain F).map (homOfLE (Nat.succ_le_succ h)) =
-    F.map ((initialChain F).map (homOfLE h)) := by
+lemma chainMk_map_succ_eq {m n : ℕ} (h : m ≤ n) :
+    (chainMk α).map (homOfLE (Nat.succ_le_succ h)) =
+    F.map ((chainMk α).map (homOfLE h)) := by
   induction h with
   | refl =>
     have h1 : (homOfLE (Nat.succ_le_succ (le_refl m)) : (m+1 : ℕ) ⟶ (m+1 : ℕ)) = 𝟙 _ :=
@@ -114,8 +113,34 @@ lemma initialChain_map_succ_eq {m n : ℕ} (h : m ≤ n) :
       Subsingleton.elim _ _
     rw [decomp_lhs, Functor.map_comp, ih, decomp_rhs, Functor.map_comp, F.map_comp]
     congr 1
-    rw [initialChain_map_succ, initialChain_map_succ]
+    rw [chainMk_map_succ, chainMk_map_succ]
     rfl
+
+end ChainMk
+
+section InitialChain
+
+variable (F : C ⥤ C) [HasInitial C]
+
+/-- The initial chain `⊥ → F(⊥) → F²(⊥) → ⋯` as a functor `ℕ ⥤ C`,
+obtained by specializing `chainMk` to the seed map `initial.to (F.obj (⊥_ C))`. -/
+noncomputable def initialChain : ℕ ⥤ C :=
+  chainMk (initial.to (F.obj (⊥_ C)))
+
+@[simp]
+lemma initialChain_obj (n : ℕ) :
+    (initialChain F).obj n = (F.iterate n).obj (⊥_ C) := rfl
+
+@[simp]
+lemma initialChain_map_succ (n : ℕ) :
+    (initialChain F).map (homOfLE (Nat.le_add_right n 1)) =
+    iterateMap (initial.to (F.obj (⊥_ C))) n :=
+  chainMk_map_succ _ n
+
+lemma initialChain_map_succ_eq {m n : ℕ} (h : m ≤ n) :
+    (initialChain F).map (homOfLE (Nat.succ_le_succ h)) =
+    F.map ((initialChain F).map (homOfLE h)) :=
+  chainMk_map_succ_eq _ h
 
 end InitialChain
 

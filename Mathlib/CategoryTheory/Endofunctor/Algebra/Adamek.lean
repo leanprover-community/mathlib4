@@ -54,39 +54,23 @@ variable (F : C ⥤ C) [HasInitial C]
 
 namespace Algebra
 
-/-! ### The Adamek algebra -/
-
-section AdamekDefinition
-
-variable (c : Cocone (initialChain F)) (hc : IsColimit c)
-variable [PreservesColimit (initialChain F) F]
-
 /-- The Adamek algebra: the colimit of the initial chain, equipped with the
 algebra structure map `F(L) → L` obtained from the preserved colimit. -/
 @[simps a]
-noncomputable def adamek : Endofunctor.Algebra F where
+noncomputable def adamek (c : Cocone (initialChain F)) (hc : IsColimit c)
+    [PreservesColimit (initialChain F) F] : Endofunctor.Algebra F where
   a := c.pt
   str := (isColimitOfPreserves F hc).desc (shiftCocone F c)
-
-end AdamekDefinition
-
-section AdamekProperties
-
-variable {c : Cocone (initialChain F)} (hc : IsColimit c)
-variable [PreservesColimit (initialChain F) F]
 
 /-- The structure map commutes with the colimit inclusions:
 `F.map (ι_n) ≫ str = ι_{n+1}`. -/
 @[reassoc]
-lemma adamekStr_fac (n : ℕ) :
+lemma adamekStr_fac {c : Cocone (initialChain F)} (hc : IsColimit c)
+    [PreservesColimit (initialChain F) F] (n : ℕ) :
     F.map (c.ι.app n) ≫ (adamek F c hc).str = c.ι.app (n + 1) :=
   (isColimitOfPreserves F hc).fac (shiftCocone F c) n
 
-end AdamekProperties
-
 /-! ### Algebra cocone -/
-
-section AlgebraCoconeApp
 
 /-- The `n`-th leg of the algebra cocone: the unique map `F^n(⊥) → B.a`. -/
 noncomputable def algebraCoconeApp (B : Endofunctor.Algebra F) :
@@ -103,18 +87,33 @@ lemma algebraCoconeApp_succ (B : Endofunctor.Algebra F) (n : ℕ) :
     algebraCoconeApp F B (n + 1) =
     F.map (algebraCoconeApp F B n) ≫ B.str := rfl
 
-/-- The successor map of the chain composes with the next algebra cocone leg
-to give the current one: `iterateMap k ≫ f_{k+1} = f_k`. -/
-lemma iterateMap_comp_algebraCoconeApp (B : Endofunctor.Algebra F) (k : ℕ) :
-    iterateMap F k ≫ algebraCoconeApp F B (k + 1) = algebraCoconeApp F B k := by
-  induction k with
+/-- The successor map of the initial chain composes with the next algebra cocone leg
+to give the current one. -/
+lemma iterateMap_comp_algebraCoconeApp (B : Endofunctor.Algebra F) (n : ℕ) :
+    iterateMap (initial.to (F.obj (⊥_ C))) n ≫ algebraCoconeApp F B (n + 1) =
+    algebraCoconeApp F B n := by
+  induction n with
   | zero => exact initial.hom_ext _ _
   | succ k ih =>
-    change F.map (iterateMap F k) ≫ (F.map (algebraCoconeApp F B (k + 1)) ≫ B.str) =
+    change F.map (iterateMap (initial.to (F.obj (⊥_ C))) k) ≫
+      (F.map (algebraCoconeApp F B (k + 1)) ≫ B.str) =
       F.map (algebraCoconeApp F B k) ≫ B.str
     rw [← Category.assoc, ← F.map_comp, ih]
 
-end AlgebraCoconeApp
+/-- Given an `F`-algebra `(B, β)`, define the cocone over the initial chain with point `B`. -/
+noncomputable def algebraCocone (B : Endofunctor.Algebra F) :
+    Cocone (initialChain F) where
+  pt := B.a
+  ι := NatTrans.ofSequence
+    (fun n => algebraCoconeApp F B n)
+    (fun n => by
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id,
+        initialChain_map_succ]
+      exact iterateMap_comp_algebraCoconeApp F B n)
+
+@[simp]
+lemma algebraCocone_ι_app (B : Endofunctor.Algebra F) (n : ℕ) :
+    (algebraCocone F B).ι.app n = algebraCoconeApp F B n := rfl
 
 /-! ### Initiality -/
 
@@ -122,37 +121,6 @@ section Initiality
 
 variable {c : Cocone (initialChain F)} (hc : IsColimit c)
 variable [PreservesColimit (initialChain F) F]
-
-/-- Given an `F`-algebra `(B, β)`, define the cocone over the initial chain with point `B`. -/
-noncomputable def algebraCocone (B : Endofunctor.Algebra F) :
-    Cocone (initialChain F) where
-  pt := B.a
-  ι :=
-  { app := fun n => algebraCoconeApp F B n
-    naturality := by
-      intro m n α
-      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
-      have hle := leOfHom α
-      rw [show (initialChain F).map α = (initialChain F).map (homOfLE hle) from
-        congr_arg _ (Subsingleton.elim _ _)]
-      induction hle with
-      | refl =>
-        rw [show (homOfLE (le_refl m) : (m : ℕ) ⟶ m) = 𝟙 _ from Subsingleton.elim _ _]
-        rw [Functor.map_id, Category.id_comp]
-      | @step k hle' ih =>
-        rw [show (homOfLE (Nat.le.step hle') : (m : ℕ) ⟶ (k + 1)) =
-          (homOfLE hle' : (m : ℕ) ⟶ k) ≫
-          (homOfLE (Nat.le_add_right k 1) : (k : ℕ) ⟶ (k + 1)) from
-          Subsingleton.elim _ _]
-        simp only [Functor.map_comp, Category.assoc, initialChain_map_succ]
-        -- Goal: ... ≫ iterateMap F k ≫ algebraCoconeApp F B k.succ = ...
-        erw [iterateMap_comp_algebraCoconeApp F B k]
-        exact ih (homOfLE hle') }
-
-omit [PreservesColimit (initialChain F) F] in
-@[simp]
-lemma algebraCocone_ι_app (B : Endofunctor.Algebra F) (n : ℕ) :
-    (algebraCocone F B).ι.app n = algebraCoconeApp F B n := rfl
 
 /-- The unique algebra homomorphism from the Adamek algebra to any other algebra. -/
 noncomputable def adamekHom (B : Endofunctor.Algebra F) :
