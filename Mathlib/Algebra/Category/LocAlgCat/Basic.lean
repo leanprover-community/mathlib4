@@ -7,10 +7,6 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Defs
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.RingTheory.Henselian
-public import Mathlib.RingTheory.RegularLocalRing.Defs
-public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Basic Quotient Constructions in `LocAlgCat`
