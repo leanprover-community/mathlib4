@@ -260,6 +260,14 @@ theorem modByMonic_eq_sub_mul_div :
 theorem modByMonic_add_div (p q : R[X]) : p %ₘ q + q * (p /ₘ q) = p :=
   eq_sub_iff_add_eq.1 (modByMonic_eq_sub_mul_div p q)
 
+theorem dvd_modByMonic_sub (p q : R[X]) : q ∣ (p %ₘ q - p) := by
+  by_cases h : q.Monic
+  · simp [modByMonic_eq_sub_mul_div]
+  · simp [modByMonic_eq_of_not_monic, h]
+
+theorem dvd_modByMonic_iff_dvd : q ∣ p %ₘ q ↔ q ∣ p := by
+  simpa using dvd_iff_dvd_of_dvd_sub <| dvd_modByMonic_sub p q
+
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := modByMonic_add_div p q
@@ -404,6 +412,8 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
+@[simp]
+theorem modByMonic_self (hp : p.Monic) : p %ₘ p = 0 := by rw [modByMonic_eq_zero_iff_dvd hp]
 
 /-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/

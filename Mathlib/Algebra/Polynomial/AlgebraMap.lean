@@ -318,6 +318,9 @@ theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp' x p q
 
+@[gcongr]
+theorem aeval_dvd (h : p ∣ q) : p.aeval x ∣ q.aeval x := _root_.map_dvd (aeval x) h
+
 section IsScalarTower
 
 variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
@@ -504,10 +507,8 @@ theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
     (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
   map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
-theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
-    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [← eval_map_algebraMap] at h₂ ⊢
-  exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
+theorem aeval_eq_zero_of_dvd_aeval_eq_zero (h₁ : p ∣ q) (h₂ : aeval x p = 0) :
+    aeval x q = 0 := zero_dvd_iff.mp (h₂ ▸ aeval_dvd _ h₁)
 
 section Semiring
 

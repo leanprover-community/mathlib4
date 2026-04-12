@@ -79,7 +79,7 @@ variable [Ring S]
 theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
   --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
-  rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, hx, zero_mul, sub_zero]
+  simp [modByMonic_eq_sub_mul_div, hx]
 
 end
 
