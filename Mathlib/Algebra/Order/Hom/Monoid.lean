@@ -175,6 +175,31 @@ instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : C
 
 end Monoid
 
+section MonoidHomClass
+
+variable [Group α] [Monoid β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+theorem inv_le_iff_le [LE β] [MulRightMono β] [MulLeftMono β] {f g : F} {x : α} :
+    f x⁻¹ ≤ g x⁻¹ ↔ g x ≤ f x := by
+  suffices h : ∀ (f g : F) (x), f x⁻¹ ≤ g x⁻¹ → g x ≤ f x from
+    ⟨h f g x, by simpa using h g f x⁻¹⟩
+  exact fun f g x hfg => calc
+    g x = f (x * x⁻¹) * g x     := by simp
+      _ = f x * (f x⁻¹ * g x)   := by rw [map_mul, mul_assoc]
+      _ ≤ f x * (g x⁻¹ * g x)   := by gcongr
+      _ = f x                   := by simp [← map_mul]
+
+@[to_additive forall_le_iff_eq]
+theorem forall_le_iff_eq' [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
+    (∀ x, f x ≤ g x) ↔ f = g where
+  mp h := DFunLike.ext f g
+    fun x => le_antisymm (h x) (inv_le_iff_le.mp <| h x⁻¹)
+  mpr := by simp +contextual
+
+end MonoidHomClass
+
 section OrderedZero
 
 variable [FunLike F α β]
