@@ -4400,6 +4400,7 @@ public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.FieldTheory.Tower
+public import Mathlib.FieldTheory.TranscendentalSeparable
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
