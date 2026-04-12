@@ -7576,6 +7576,7 @@ public import Mathlib.Topology.ExtremallyDisconnected
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+public import Mathlib.Topology.FiberBundle.Notation
 public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter
@@ -7879,7 +7880,6 @@ public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
-public import Mathlib.Topology.VectorBundle.Notation
 public import Mathlib.Topology.VectorBundle.Riemannian
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Util.AliasIn
