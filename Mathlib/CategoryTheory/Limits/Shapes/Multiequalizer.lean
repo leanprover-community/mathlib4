@@ -647,7 +647,6 @@ theorem toPiFork_π_app_one :
       Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {hd} in
 /-- Given a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`, we may obtain a multifork. -/
 @[simps pt]
@@ -701,7 +700,6 @@ def toPiForkFunctor :
         · apply Fan.IsLimit.hom_ext hd
           simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Multifork.ofPiFork` as a functor. -/
 @[simps]
 def ofPiForkFunctor :
@@ -888,7 +886,6 @@ theorem toSigmaCofork_π :
     (K.toSigmaCofork hc hd).π = Cofan.IsColimit.desc hd K.π :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {hc} in
 /-- Given a cofork over `∐ I.left ⇉ ∐ I.right`, we may obtain a multicofork. -/
 @[simps pt]
@@ -960,7 +957,6 @@ noncomputable def toSigmaCoforkFunctor :
       · apply Cofan.IsColimit.hom_ext hd
         simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Multicofork.ofSigmaCofork` as a functor. -/
 @[simps]
 noncomputable def ofSigmaCoforkFunctor :
@@ -1112,7 +1108,7 @@ theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
-/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
+/-- `@[simp]`-normal form of `multicofork_ι_app_right`. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=
