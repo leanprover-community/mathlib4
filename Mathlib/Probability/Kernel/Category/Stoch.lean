@@ -9,27 +9,36 @@ module
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
 public import Mathlib.Probability.Kernel.Category.SFinKer
-public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.Deterministic
 
 /-!
 # Stoch
 
 The category of measurable spaces with Markov kernels is a Markov category.
 
-## Main declarations
+## Main definition
 
 `Stoch` is defined as the wide subcategory `WideSubcategory StochHom` of `SFinKer`, where
 `StochHom` selects Markov kernels, and this construction provides in particular the instance
 `MarkovCategory Stoch`.
 
+## Main statements
+
+* `Stoch.is_positive`: `Stoch` is a positive Markov category, in the sense of Definition 11.22 in
+  [fritz2020].
+
+* All isomorphisms in `Stoch` are deterministic. This is a consequence of `Stoch.is_positive`.
+
 ## References
+
 * [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+
 -/
 
 @[expose] public section
 
-open CategoryTheory ProbabilityTheory MeasureTheory
+open CategoryTheory MeasureTheory ProbabilityTheory
 
 open scoped MonoidalCategory SFinKer ComonObj
 
@@ -67,23 +76,55 @@ instance : MarkovCategory Stoch.{u} where
 
 variable {X Y : Stoch}
 
-open Kernel in
+namespace Stoch
+
+open Kernel
+
+instance {κ : X ⟶ Y} [Deterministic κ] : Deterministic κ.hom where
+  hom_comul := WideSubcategory.hom_ext_iff.mp <| Deterministic.copy_natural κ
+
+instance {κ : X ⟶ Y} [Deterministic κ] : IsDeterministic κ.hom.hom where
+  comp_natural' := by
+    have := Deterministic.copy_natural κ.hom
+    rw [SFinKer.Hom.ext_iff] at this
+    dsimp at this
+    rw [id_parallelComp_comp_parallelComp_id] at this
+    exact this.symm
+
+/-- `Stoch` is a positive Markov category. See Definition 11.22 in [fritz2020] -/
+lemma is_positive {Z : Stoch} (κ : X ⟶ Y) (η : Y ⟶ Z) [Deterministic (κ ≫ η)] :
+    κ ≫ Δ ≫ (η ⊗ₘ 𝟙 Y) = Δ ≫ ((κ ≫ η) ⊗ₘ κ) := by
+  ext : 2
+  dsimp
+  simp only [id_parallelComp_id, id_comp, id_parallelComp_comp_parallelComp_id]
+  have : IsDeterministic (κ ≫ η).hom.hom := inferInstance
+  exact (parallelComp_id_comp_copy_comp).symm
+
+end Stoch
+
+instance {κ : X ⟶ Y} [Deterministic κ.hom] : Deterministic κ where
+
+instance {e : X ≅ Y} : Deterministic (e.hom ≫ e.inv) where
+
+instance {e : X ≅ Y} : Deterministic (e.inv ≫ e.hom) where
+
 instance {e : X ≅ Y} : Deterministic e.hom where
   hom_comul := by
-    ext : 2; dsimp
-    let κ := e.hom.hom.hom
-    let η := e.inv.hom.hom
-    have : κ ∥ₖ Kernel.id ∘ₖ ((η ∥ₖ Kernel.id) ∘ₖ copy Y.obj ∘ₖ κ) =
-      κ ∥ₖ Kernel.id ∘ₖ ((Kernel.id ∥ₖ κ) ∘ₖ copy X.obj) := by
-      have h : η ∘ₖ κ = Kernel.id := by
-        change (e.hom ≫ e.inv).hom.hom = Kernel.id
-        simp
-      rw [(parallelComp_id_comp_copy_comp ⟨id, measurable_id, h⟩).symm]
-      simp [h]
-    have h : κ ∘ₖ η = Kernel.id := by
-      change (e.inv ≫ e.hom).hom.hom = Kernel.id
+    have : Deterministic (e.hom ≫ e.inv) := inferInstance
+    have := Stoch.is_positive (e.hom) (e.inv)
+    simp only [Iso.hom_inv_id] at this
+    calc
+    _ = e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+      cat_disch
+    _ = (e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
       simp
-    simpa [← comp_assoc, parallelComp_comp_parallelComp, h] using this
+    _ = (Δ ≫ (𝟙 X ⊗ₘ e.hom)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+      rw [this]
+    _ = Δ ≫ (𝟙 X ⊗ₘ e.hom) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+      simp
+    _ = Δ ≫ ((𝟙 X ≫ e.hom) ⊗ₘ (e.hom ≫ 𝟙 Y)) := by
+      rw [MonoidalCategory.tensorHom_comp_tensorHom]
+    _ = Δ ≫ (e.hom ⊗ₘ e.hom) := by cat_disch
 
 instance : Deterministic (ε[X]) where
   hom_comul := by
