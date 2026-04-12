@@ -357,17 +357,11 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
 
-@[elab_as_elim]
+@[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
 lemma LinearOrder.strong_induction_of_finite
     {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
     (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
-    motive i := by
-  have := Fintype.ofFinite α
-  let e := Fintype.orderIsoFinOfCardEq α rfl
-  revert i
-  rw [e.surjective.forall]
-  refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
-  simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
+    motive i := WellFoundedLT.induction _ h
 
 lemma OrderEmbedding.range_eq_iff
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]

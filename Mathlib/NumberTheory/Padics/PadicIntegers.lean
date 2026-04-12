@@ -177,7 +177,7 @@ We now show that `ℤ_[p]` is a
 
 variable (p)
 
-instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+instance : MetricSpace ℤ_[p] := inferInstanceAs <| MetricSpace (Subtype _)
 
 instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
@@ -191,7 +191,6 @@ variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 instance : NormedCommRing ℤ_[p] where
-  __ := instCommRing
   dist_eq := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     exact dist_eq_norm_neg_add x y
