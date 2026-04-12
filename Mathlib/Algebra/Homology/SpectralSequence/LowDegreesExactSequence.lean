@@ -210,17 +210,19 @@ instance [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
     Epi ((d₂Sequence E).map' 2 3) := by
   dsimp [ComposableArrows.Precomp.map]
   infer_instance
 
-attribute [local simp] ComposableArrows.Precomp.map
+attribute [local simp] ComposableArrows.Precomp.map ComposableArrows.Precomp.obj in
+set_option backward.isDefEq.respectTransparency false in
 lemma d₂Sequence_exact [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
     (d₂Sequence E).Exact := by
   have := E.le₀_of_hasEdgeMonoAt ⟨0, 1⟩ 2
   apply ComposableArrows.exact_of_δ₀
-  · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
+  · apply ComposableArrows.exact₂_mk _ (by simp)
     let S := ShortComplex.mk _ _ ((E.page 2).iCycles_d ⟨0, 1⟩ ⟨2, 0⟩)
     have hS : S.Exact := by
       apply ShortComplex.exact_of_f_is_kernel
@@ -231,9 +233,9 @@ lemma d₂Sequence_exact [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
         apply (E.page 2).shape_from
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_zero, Nat.cast_one] at hpq
-        omega) ≪≫ (E.iso 2 3) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by aesop_cat)
-          (by aesop_cat)
-  · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
+        omega) ≪≫ (E.iso 2 3) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by cat_disch) (by cat_disch)
+  · apply ComposableArrows.exact₂_mk _
+      (by simp)
     let S := ShortComplex.mk _ _ ((E.page 2).d_pOpcycles ⟨0, 1⟩ ⟨2, 0⟩)
     have hS : S.Exact := by
       apply ShortComplex.exact_of_g_is_cokernel
@@ -246,7 +248,7 @@ lemma d₂Sequence_exact [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_ofNat,
           Nat.cast_zero, zero_add] at hpq
-        omega)) (by aesop_cat) (by aesop_cat)
+        omega)) (by aesop_cat) (by cat_disch)
 
 end LowDegreesExactSequence
 
@@ -269,7 +271,9 @@ instance [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2]
   dsimp
   infer_instance
 
-attribute [simp] ComposableArrows.Precomp.map
+attribute [local simp] ComposableArrows.Precomp.map ComposableArrows.Precomp.obj
+
+set_option backward.isDefEq.respectTransparency false in
 open LowDegreesExactSequence in
 /-- The exact sequence `0 → E₂¹⁰ → X¹ → E₂⁰¹ → E₂²⁰ → X²` -/
 lemma lowDegreesComposableArrows_exact

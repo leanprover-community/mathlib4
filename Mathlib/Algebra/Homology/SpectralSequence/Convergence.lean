@@ -381,6 +381,7 @@ def filtration : WithBot (α n) ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙
 def filtrationι (i : WithBot (α n)) : h.filtration.obj i ⟶ X :=
   ((h.filtration' ⋙ MonoOver.forget X).obj i).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance (i : WithBot (α n)) : Mono (h.filtrationι i) := by
   dsimp [filtrationι]
   infer_instance
@@ -445,6 +446,7 @@ noncomputable def shortComplex :
 
 instance : Mono (h.shortComplex i j hij pq hpq).f := by dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (h.shortComplex i j hij pq hpq).g := by dsimp; infer_instance
 
 lemma shortExact :
@@ -495,6 +497,7 @@ lemma isIso_filtration_map_comp_iff (i j k : WithBot (α n)) (f : i ⟶ j) (g : 
   · rintro ⟨_, _⟩
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isZero_of_isIso_filtration_map (i j : WithBot (α n)) (φ : i ⟶ j)
     (hφ : IsIso (h.filtration.map φ)) (k : α n)
     (h₁ : i ≤ s.pred n k) (h₂ : WithBot.some k ≤ j)
@@ -888,6 +891,7 @@ instance : Epi (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).g := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexOfCollapsesIso
     (k : WithBot (α n)) (hk : s.pred n j = k) :
     h.shortComplex k j hk pqj hpqj ≅ h.shortComplexOfCollapses i j pqi pqj hpqi hpqj :=

@@ -53,6 +53,7 @@ def op {F G : HomologicalComplex C c} {φ₁ φ₂ : F ⟶ G}
 
 end Homotopy
 
+@[implicit_reducible]
 def ComplexShape.decidableRelSymm {α : Type*} (c : ComplexShape α)
     [DecidableRel c.Rel] :
     DecidableRel c.symm.Rel :=
@@ -78,6 +79,7 @@ instance [HasBinaryBiproducts C] : HasHomotopyFiber φ where
 
 variable [HasHomotopyFiber φ] [DecidableRel c.Rel]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasHomotopyCofiber ((opFunctor C c).map φ.op) where
   hasBinaryBiproduct i j hij := by
     have := HasHomotopyFiber.hasBinaryBiproduct φ j i hij
@@ -95,34 +97,43 @@ variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev HasPathObject := HasHomotopyCofiber (biprod.lift (𝟙 K.op) (-𝟙 K.op))
 
 variable [K.HasPathObject]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def pathObject := (unopFunctor C c.symm).obj (op K.op.cylinder)
 
 namespace pathObject
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def π₀ : K.pathObject ⟶ K :=
   (unopFunctor C c.symm).map (cylinder.ι₀ K.op).op
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def π₁ : K.pathObject ⟶ K :=
   (unopFunctor C c.symm).map (cylinder.ι₁ K.op).op
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def ι : K ⟶ K.pathObject :=
   (unopFunctor C c.symm).map (cylinder.π K.op).op
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀_ι : ι K ≫ π₀ K = 𝟙 K :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₀_π K.op))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₁_ι : ι K ≫ π₁ K = 𝟙 K :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₁_π K.op))
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def homotopy₀₁ (hc : ∀ (i : α), ∃ j, c.Rel i j) : Homotopy (π₀ K) (π₁ K) :=
   (cylinder.homotopy₀₁ K.op hc).unop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence between `K` and `K.pathObject`. -/
 noncomputable def homotopyEquiv (hc : ∀ (i : α), ∃ j, c.Rel i j) :
     HomotopyEquiv K K.pathObject where
@@ -135,16 +146,19 @@ section
 
 variable {K} (φ₀ φ₁ : F ⟶ K) (h : Homotopy φ₀ φ₁)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def lift : F ⟶ K.pathObject := by
   letI φ : K.op.cylinder ⟶ (opFunctor C c).obj (op F) :=
     cylinder.desc ((opFunctor C c).map φ₀.op)
       ((opFunctor C c).map φ₁.op) h.op
   exact (unopFunctor C c.symm).map φ.op
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_π₀ : lift φ₀ φ₁ h ≫ π₀ K = φ₀ :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₀_desc _ _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_π₁ : lift φ₀ φ₁ h ≫ π₁ K = φ₁ :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₁_desc _ _ _))
@@ -155,18 +169,25 @@ variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive
   [∀ (i : α), HasBinaryBiproduct (((H.mapHomologicalComplex c).obj K).X i)
     (((H.mapHomologicalComplex c).obj K).X i)]
   [((H.mapHomologicalComplex c).obj K).HasPathObject]
+
+instance : H.op.PreservesZeroMorphisms := { }
+
+variable
   [∀ (i : α),
     HasBinaryBiproduct (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)
       (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)]
+  [HasBinaryBiproduct ((H.op.mapHomologicalComplex c.symm).obj K.op)
+    ((H.op.mapHomologicalComplex c.symm).obj K.op)]
   [HasHomotopyCofiber
     (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
     (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
   [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
-  (hc : ∀ (i : α), ∃ j, c.Rel i j)
+
+variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (K.pathObject) ≅
-      pathObject ((H.mapHomologicalComplex c).obj K) :=
+      pathObject ((H.mapHomologicalComplex c).obj K) := by
   (unopFunctor _ _).mapIso
     (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
 

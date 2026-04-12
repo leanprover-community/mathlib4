@@ -145,11 +145,13 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [W.RespectsIso]
   [L.IsLocalization W] [W.ContainsIdentities]
   [W.HasTwoOutOfThreeProperty]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_counit_app_app_of_kFlat_right (X Y : C) (hY : W.kFlat Y) :
     IsIso (((counit L W).app X).app Y) :=
   have : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W := inferInstance
   (W.id_prod_kFlat_derives_curriedTensor L).isIso_of_isLeftDerivabilityStructure _ X ⟨Y, hY⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_counit_app_app_of_kFlat_left (X Y : C) (hX : W.kFlat X) :
     IsIso (((counit L W).app X).app Y) :=
   have : (bifunctor L W).IsLeftDerivedFunctor₂ (counit L W) W W := inferInstance

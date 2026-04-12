@@ -32,6 +32,7 @@ def connect (e : S₁.X₃ ≅ S₂.X₁) (f : S₁.X₂ ⟶ S₂.X₂) (_ : f =
 
 include h₁ h₂ hS₁ hS₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma connect_exact :
     (connect S₁ S₂ e f hf).Exact :=
   exact_of_δ₀

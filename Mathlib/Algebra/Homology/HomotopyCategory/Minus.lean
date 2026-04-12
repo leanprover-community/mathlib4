@@ -49,6 +49,7 @@ def minus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
   fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
 
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
+set_option backward.isDefEq.respectTransparency false in
 instance : (minus C).IsTriangulated where
   exists_zero := by
     refine ⟨⟨0⟩, ?_, ⟨0, ?_⟩⟩
@@ -133,6 +134,7 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 open HomologicalComplex in
 instance :
@@ -203,6 +205,7 @@ noncomputable instance : (F.mapHomotopyCategoryMinus).CommShift ℤ := by
   dsimp only [mapHomotopyCategoryMinus]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 instance : (F.mapHomotopyCategoryMinus).IsTriangulated := by
   dsimp only [mapHomotopyCategoryMinus]

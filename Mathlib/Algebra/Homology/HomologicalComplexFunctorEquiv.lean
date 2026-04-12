@@ -31,6 +31,7 @@ def functor : HomologicalComplex (J ⥤ C) c ⥤ (J ⥤ HomologicalComplex C c) 
   map {K K'} φ :=
     { app j := (((evaluation J C).obj j).mapHomologicalComplex c).map φ }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def inverse : (J ⥤ HomologicalComplex C c) ⥤ HomologicalComplex (J ⥤ C) c where
   obj F :=

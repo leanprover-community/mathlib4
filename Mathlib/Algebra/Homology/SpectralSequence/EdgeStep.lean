@@ -72,6 +72,7 @@ noncomputable def edgeMonoStepShortComplex (pq pq' : ι) (r r' : ℤ) [E.HasEdge
     (hr' : r + 1 = r' := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (E.edgeMonoStep_comp_d pq pq' r r')
 
+set_option backward.isDefEq.respectTransparency false in
 lemma edgeMonoStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
     (hpq' : (c r).next pq = pq')
     (hrr' : r + 1 = r' := by lia) :
@@ -128,6 +129,7 @@ noncomputable def edgeEpiStepShortComplex (pq pq' : ι) (r r' : ℤ) [E.HasEdgeE
     (hrr' : r + 1 = r' := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (E.d_comp_edgeEpiStep pq pq' r r' hrr')
 
+set_option backward.isDefEq.respectTransparency false in
 lemma edgeEpiStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
     (hpq' : (c r).prev pq' = pq) (hrr' : r + 1 = r' := by lia) :
     (E.edgeEpiStepShortComplex pq pq' r r' hrr').Exact := by
@@ -171,6 +173,7 @@ variable (r r' : ℤ) (pq pq' pq'' : ι)
   (left : ((E.page r hr).sc' pq pq' pq'').LeftHomologyData)
   (right : ((E.page r hr).sc' pq pq' pq'').RightHomologyData)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftHomologyData_π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
@@ -178,6 +181,7 @@ lemma leftHomologyData_π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
       (E.iso r r' pq' hrr').hom ≫ E.edgeMonoStep pq' r r' hrr' = left.i := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightHomologyData_p_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
@@ -188,6 +192,7 @@ lemma rightHomologyData_p_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
     ← cancel_epi ((E.page r).isoHomologyπ  _ pq' rfl (by apply d_eq_zero_of_hasEdgeMonoAt)).hom]
   simp [edgeMonoStep]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma leftHomologyData_i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
     (hrr' : r + 1 = r' := by lia) :
@@ -199,6 +204,7 @@ lemma leftHomologyData_i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
       (by apply d_eq_zero_of_hasEdgeEpiAt)).hom]
   simp [edgeEpiStep]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma rightHomologyData_ι_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
       (hrr' : r + 1 = r' := by lia) :

@@ -173,6 +173,7 @@ instance (K L : CochainComplex C ℤ) [hK : K.IsKInjective] [hL : L.IsKInjective
   apply ObjectProperty.prop_biprod_of_isClosedUnderBinaryProducts
   all_goals assumption
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
     ∃ (α : Cochain K L m), δ m n α = z.1 := by

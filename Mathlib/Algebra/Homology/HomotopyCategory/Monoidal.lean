@@ -132,6 +132,7 @@ noncomputable def associator :
       (curriedAssociatorNatIso (HomologicalComplex C c)) ≪≫
         (bifunctorComp₂₃Iso C c).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C c} in
 @[simp]
 lemma associator_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
@@ -192,6 +193,7 @@ lemma quotient_map_whiskerLeft (K₁ : HomologicalComplex C c) {K₂ L₂ : Homo
     (quotient C c).map (K₁ ◁ f₂) =
       ((bifunctor C c).obj ((quotient C c).obj K₁)).map ((quotient C c).map f₂) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 400000 in
 -- this is slow
 lemma pentagon :
@@ -225,6 +227,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (HomotopyCategory
   .ofBifunctor (unit C c) (bifunctor C c) (associator C c)
   (leftUnitor C c) (rightUnitor C c) (pentagon C c) (triangle C c)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (quotient C c).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

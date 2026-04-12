@@ -27,7 +27,7 @@ lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
   obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
   obtain rfl : y = m₀ + t := by lia
   simp only [ge_iff_le, add_le_add_iff_left, Nat.cast_le]
-  exact (Nat.lt_wfRel.wf).min_le hy _
+  exact (Nat.lt_wfRel.wf).min_le hy
 
 namespace CategoryTheory
 
