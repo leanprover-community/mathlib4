@@ -189,7 +189,7 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
   refine le_antisymm ?_ ?_
   · dsimp [Sieve.overEquiv]
     rw [Sieve.functorPushforward_le_iff_le_functorPullback, ← Sieve.functorPullback_comp]
-    simp_rw [← CategoryTheory.Over.post_forget_eq_forget_post, Sieve.functorPullback_comp]
+    simp_rw [← CategoryTheory.Over.post_forget_eq_forget_comp, Sieve.functorPullback_comp]
     exact Sieve.functorPullback_monotone _ _ (Sieve.le_functorPushforward_pullback _ _)
   · intro Z g hg
     rw [Sieve.overEquiv_iff]
@@ -202,7 +202,7 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
     (U : Over X) (S : Sieve U) :
     (Sieve.overEquiv _) (Sieve.functorPushforward (Over.post F) S) =
       Sieve.functorPushforward F ((Sieve.overEquiv _) S) := by
-  simp [Sieve.overEquiv, ← Sieve.functorPushforward_comp, ← Over.post_forget_eq_forget_post]
+  simp [Sieve.overEquiv, ← Sieve.functorPushforward_comp, ← Over.post_forget_eq_forget_comp]
 
 end Sieve
 
