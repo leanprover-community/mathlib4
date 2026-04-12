@@ -796,12 +796,8 @@ lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
 theorem IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
   induction p <;> grind [cons_isPath_iff, bypass]
 
-theorem bypass_eq_self_iff_isPath (p : G.Walk u v) : p.bypass = p ↔ p.IsPath := by
-  constructor
-  · intro hp
-    rw [← bypass_eq_self_of_length_le p (congrArg length hp).ge]
-    exact p.bypass_isPath
-  · exact IsPath.bypass_eq_self
+theorem bypass_eq_self_iff_isPath (p : G.Walk u v) : p.bypass = p ↔ p.IsPath :=
+  ⟨fun hp ↦ hp ▸ p.bypass_isPath, IsPath.bypass_eq_self⟩
 
 theorem length_bypass_lt_iff_not_isPath (p : G.Walk u v) :
     p.bypass.length < p.length ↔ ¬p.IsPath := by
