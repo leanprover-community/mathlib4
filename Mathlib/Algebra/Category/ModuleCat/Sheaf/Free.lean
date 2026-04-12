@@ -127,23 +127,21 @@ end
 /-- The functor `Type u ⥤ SheafOfModules.{u} R` which sends a type `I` to
 `free I` which is a coproduct indexed by `I` of copies of `R` (thought of as a
 presheaf of modules over itself). -/
-@[simps]
-noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
-  obj := free
-  map f := freeMap f
-  map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
-  map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
+noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R :=
+  sigmaConst.obj (unit R)
 
-variable (R) in
-/-- `freeFunctor : Type u ⥤ SheafOfModules R` identifies to `sigmaConst.obj (unit R)`. -/
-noncomputable def freeFunctorIsoSigmaConstObj :
-    freeFunctor (R := R) ≅ sigmaConst.obj (unit R) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
-    (fun f ↦ Sigma.hom_ext _ _
-      (fun x ↦ (ιFree_freeMap_assoc _ _ _ ).trans (by simp [free, ιFree])))
+@[simp]
+lemma freeFunctor_obj (X : Type u) :
+    (freeFunctor (R := R)).obj X = free X := rfl
+
+@[simp]
+lemma freeFunctor_map {X Y : Type u} (f : X ⟶ Y) :
+    (freeFunctor (R := R)).map f = freeMap f :=
+  Cofan.IsColimit.hom_ext (isColimitFreeCofan _) _ _
+    (fun i ↦ (Sigma.ι_desc _ _).trans (ιFree_freeMap f i).symm)
 
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
-  preservesColimits_of_natIso (freeFunctorIsoSigmaConstObj R).symm
+  inferInstanceAs (PreservesColimitsOfSize.{v₂, u₂} (sigmaConst.obj _))
 
 section
 
@@ -159,14 +157,16 @@ noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
 
 @[reassoc (attr := simp)]
 lemma inl_freeSumIso_hom :
-    coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl :=
-  IsColimit.comp_coconePointUniqueUpToIso_hom
+    coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl := by
+  rw [← freeFunctor_map]
+  exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
 
 @[reassoc (attr := simp)]
 lemma inr_freeSumIso_hom :
-    coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr :=
-  IsColimit.comp_coconePointUniqueUpToIso_hom
+    coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr := by
+  rw [← freeFunctor_map]
+  exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
 
 end
