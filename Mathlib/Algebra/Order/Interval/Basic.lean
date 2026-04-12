@@ -658,9 +658,10 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
 meta def evalNonemptyIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
+    let some _ := pα? | throwError "no PartialOrder instance"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assertInstancesCommute
     return .nonnegative q(NonemptyInterval.length_nonneg $a)
@@ -668,8 +669,9 @@ meta def evalNonemptyIntervalLength : PositivityExt where
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
 meta def evalIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
+    let some _ := pα? | throwError "no PartialOrder instance"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute
     return .nonnegative q(Interval.length_nonneg $a)

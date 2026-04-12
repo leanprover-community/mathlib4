@@ -1397,13 +1397,14 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for integration and
 requires more assumptions. -/
 @[positivity MeasureTheory.integral _ _]
-meta def evalIntegral : PositivityExt where eval {u α} _ _ e := do
+meta def evalIntegral : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
     have body : Q(ℝ) := .betaRev f #[i]
     let rbody ← core q(inferInstance) (some q(inferInstance)) body
-    let pbody ← rbody.toNonneg _ q(inferInstance)
+    let pbody ← rbody.toNonneg
     let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
     assertInstancesCommute
     return .nonnegative q(integral_nonneg $pr)

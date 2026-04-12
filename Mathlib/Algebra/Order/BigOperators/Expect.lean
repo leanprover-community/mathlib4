@@ -204,7 +204,7 @@ meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e := do
       return .positive p_pos
     -- Fall back to showing that the sum is nonnegative
     else
-      let pbody ← rbody.toNonneg _ pα
+      let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let instαordmon ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)

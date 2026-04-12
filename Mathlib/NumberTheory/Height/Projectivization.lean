@@ -83,18 +83,20 @@ open Lean.Meta Qq Projectivization
 
 /-- Extension for the `positivity` tactic: `Projectivization.mulHeight` is always positive. -/
 @[positivity Projectivization.mulHeight _]
-meta def evalProjMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalProjMulHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $ιF $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(mulHeight_pos $a))
   | _, _, _ => throwError "not Projectivization.mulHeight"
 
 /-- Extension for the `positivity` tactic: `Projectivization.logHeight` is always nonnegative. -/
 @[positivity Projectivization.logHeight _]
-meta def evalProjLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalProjLogHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $ιF $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.nonnegative q(logHeight_nonneg $a))
   | _, _, _ => throwError "not Projectivization.logHeight"

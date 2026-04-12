@@ -68,7 +68,7 @@ def Strictness.toNonneg {e pα} : Strictness zα e (some pα) → Option Q(0 ≤
   | _ => .none
 
 /-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
-def Strictness.toNonzero {e pα} : Strictness zα e (some pα) → Option Q($e ≠ 0)
+def Strictness.toNonzero {e pα?} : Strictness zα e pα? → Option Q($e ≠ 0)
   | .positive pf => some q(ne_of_gt $pf)
   | .nonzero pf => some pf
   | _ => .none

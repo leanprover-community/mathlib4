@@ -836,7 +836,7 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e := do
   | 0, ~q(EReal), ~q($a + $b) =>
     match ← core zα pα a with
     | .positive pa =>
-      match (← core zα pα b).toNonneg _ _ with
+      match (← core zα pα b).toNonneg with
       | some pb =>
         assertInstancesCommute
         pure (.positive q(EReal.add_pos_of_pos_of_nonneg $pa $pb))
@@ -846,8 +846,7 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e := do
       | .positive pb =>
         assertInstancesCommute
         pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
-      | .nonnegative (leα := leα) pb =>
-        haveI' : $leα =Q ($pα).toLE := ⟨⟩
+      | .nonnegative pb =>
         assertInstancesCommute
         pure (.nonnegative q(add_nonneg $pa $pb))
       | _ => pure .none
@@ -863,8 +862,7 @@ meta def evalERealMul : PositivityExt where eval {u α} zα pα? e := do
     match ← core zα pα a with
     | .positive pa =>
       match ← core zα pα b with
-      | .positive (ltα := ltα) pb =>
-        haveI' : $ltα =Q ($pα).toLT := ⟨⟩
+      | .positive pb =>
         assertInstancesCommute
         pure <| .positive q(EReal.mul_pos $pa $pb)
       | .nonnegative pb =>
@@ -875,13 +873,13 @@ meta def evalERealMul : PositivityExt where eval {u α} zα pα? e := do
         pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
       | _ => pure .none
     | .nonnegative pa =>
-      match (← core zα pα b).toNonneg _ _ with
+      match (← core zα pα b).toNonneg with
       | some pb =>
         assertInstancesCommute
         pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
       | none => pure .none
     | .nonzero pa =>
-      match (← core zα pα b).toNonzero _ pα with
+      match (← core zα pα b).toNonzero with
       | some pb =>
         assertInstancesCommute
         pure (.nonzero q(mul_ne_zero $pa $pb))

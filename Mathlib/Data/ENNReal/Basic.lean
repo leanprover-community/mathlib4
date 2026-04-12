@@ -734,18 +734,20 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα? e := do
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.nonnegative q(ENNReal.toReal_nonneg))
   | _, _, _ => throwError "not ENNReal.toReal"
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα? e := do
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>

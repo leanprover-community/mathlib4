@@ -1122,12 +1122,14 @@ open Lean Meta Qq
 the base is nonnegative and positive when the base is positive.
 This is the `NNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
-meta def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(NNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
@@ -1152,12 +1154,14 @@ private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : 
 the base is nonnegative and positive when the base is positive.
 This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
-meta def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(ENNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← catchNone <| core q(inferInstance) (some q(inferInstance)) b
     match ra, rb with

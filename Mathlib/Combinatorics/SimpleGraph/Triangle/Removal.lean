@@ -176,9 +176,10 @@ if `ε` is.
 
 This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
-meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let .positive hε ← core q(inferInstance) (some q(inferInstance)) ε | failure
     assertInstancesCommute
     pure (.positive q(triangleRemovalBound_pos $hε))

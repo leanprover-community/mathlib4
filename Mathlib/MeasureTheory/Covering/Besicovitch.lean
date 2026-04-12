@@ -138,9 +138,10 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `Besicovitch.SatelliteConfig.r`. -/
 @[positivity Besicovitch.SatelliteConfig.r _ _]
-meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Besicovitch.SatelliteConfig.r $β $inst $N $τ $self $i) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     return .positive q(Besicovitch.SatelliteConfig.rpos $self $i)
   | _, _, _ => throwError "not Besicovitch.SatelliteConfig.r"

@@ -744,13 +744,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
       pure (.nonzero q(div_ne_zero $pa $pb))
     | _, _ => pure .none
   let _a ← synthInstanceQ q(GroupWithZero $α)
-  let pα' ← synthInstanceQ q(PartialOrder $α)
   let _a ← synthInstanceQ q(PosMulReflectLT $α)
   assumeInstancesCommute
   let ra ← core zα pα? a; let rb ← core zα pα? b
   match ra, rb with
-  | .positive (ltα := ltα) pa, .positive pb =>
-    haveI' : $ltα =Q ($pα').toLT := ⟨⟩
+  | .positive pa, .positive pb =>
     assumeInstancesCommute
     pure (.positive q(div_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
@@ -759,8 +757,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | .nonnegative pa, .positive pb =>
     assumeInstancesCommute
     pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative (leα := leα) pa, .nonnegative pb =>
-    haveI' : $leα =Q ($pα').toLE := ⟨⟩
+  | .nonnegative pa, .nonnegative pb =>
     assumeInstancesCommute
     pure (.nonnegative q(div_nonneg $pa $pb))
   | .positive pa, .nonzero pb =>
@@ -804,8 +801,9 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
-meta def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα? e := do
+meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  let some _ := pα? | throwError "no PartialOrder instance"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)
   let _a ← synthInstanceQ q(IsStrictOrderedRing $α)

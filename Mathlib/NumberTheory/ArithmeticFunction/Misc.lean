@@ -450,7 +450,8 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e := do
+  let some p := p? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n

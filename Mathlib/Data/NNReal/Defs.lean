@@ -989,9 +989,10 @@ alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα? e := do
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
@@ -1004,9 +1005,10 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα? e := do
 
 /-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
-meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     match (← core q(inferInstance) (some q(inferInstance)) a) with
     | .positive pa =>
@@ -1019,12 +1021,12 @@ alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
 /-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
-meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero
-      _ (some q(inferInstance)) with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero with
     | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.nnabs"

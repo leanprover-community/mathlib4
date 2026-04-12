@@ -189,18 +189,20 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight₁` is always positive. -/
 @[positivity Height.mulHeight₁ _]
-meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
 @[positivity Height.logHeight₁ _]
-meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
@@ -458,9 +460,10 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight` is always positive. -/
 @[positivity Height.mulHeight _]
-meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
@@ -471,9 +474,10 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
 @[positivity Height.logHeight _]
-meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>

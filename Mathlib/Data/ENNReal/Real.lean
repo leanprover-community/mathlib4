@@ -400,9 +400,10 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα? e := do
+meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>

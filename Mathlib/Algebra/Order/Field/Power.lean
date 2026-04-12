@@ -155,15 +155,15 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
-  orElse pα result do
-    let ra ← core zα pα? a
+  orElse result do
+    let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a))
         (_oα : Q(Semifield $α)) (_oα : Q(LinearOrder $α)) (_oα : Q(IsStrictOrderedRing $α)) :
-        MetaM (Strictness zα e) := do
+        MetaM (Strictness zα e pα) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(zpow_nonneg $pa $b))
-    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα e) := do
+    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα e pα) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
@@ -183,7 +183,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
         let oα ← synthInstanceQ q(LinearOrder $α)
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
         assumeInstancesCommute
-        orElse pα (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
+        orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
           (ofNonzero q(ne_of_gt $pa) q(inferInstance))
     | .nonnegative pa =>
       ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))

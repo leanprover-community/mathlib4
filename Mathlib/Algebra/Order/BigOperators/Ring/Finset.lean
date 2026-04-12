@@ -238,7 +238,7 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e := do
     if let some p_pos := p_pos then return .positive p_pos
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
-      let some pbody := rbody.toNonneg _ pα
+      let some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
@@ -249,7 +249,7 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e := do
       return some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
     -- Fall back to showing that the product is nonzero
-    let pbody ← rbody.toNonzero _ pα
+    let pbody ← rbody.toNonzero
     let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
     -- TODO(https://github.com/leanprover-community/quote4/issues/38):
     -- We must name the following, else `assertInstancesCommute` loops.

@@ -104,7 +104,7 @@ end Module.IsTorsionFree
 /-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
 meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) := do
-  let some pα := pα? | pure .none
+  let some _ := pα? | pure .none
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
@@ -117,15 +117,15 @@ meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) := do
       try {
         let _hαβ : Q(SMul $β $α) ← synthInstanceQ q(SMul $β $α)
         let _hαβ : Q(PosSMulStrictMono $β $α) ← synthInstanceQ q(PosSMulStrictMono $β $α)
-        pure (.positive (ltα := q(($pα).toLT)) (← mkAppM ``smul_pos #[pa, pb]))
+        pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
       } catch _ =>
-        pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_pos_of_pos #[pa, pb]))
+        pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_pos #[pa, pb]))
   | .positive pa, .nonnegative pb =>
-      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
   | .nonnegative pa, .positive pb =>
-      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
   | .nonnegative pa, .nonnegative pb =>
-      pure (.nonnegative (leα := q(($pα).toLE)) (← mkAppM ``smul_nonneg #[pa, pb]))
+      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
   | .positive pa, .nonzero pb =>
       pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
   | .nonzero pa, .positive pb =>

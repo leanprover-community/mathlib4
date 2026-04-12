@@ -413,12 +413,12 @@ For performance reasons, we only attempt to apply this when `abv` is a variable.
 If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
 meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e := do
-  let some pα := pα? | pure .none
+  let some _ := pα? | pure .none
   let (.app f a) ← whnfR e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
-  pure (.nonnegative (leα := q(($pα).toLE)) pa')
+  pure (.nonnegative pa')
 
 lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
 
