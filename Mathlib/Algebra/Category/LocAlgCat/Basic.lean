@@ -16,10 +16,9 @@ local `Λ`-algebras with a fixed residue field `k`.
 
 ## Main Results
 
-* `LocAlgCat.ofQuot` : The object in `LocAlgCat` resulting from quotienting an
-  algebra `A` by a proper ideal `I`.
+* `LocAlgCat.ofQuot` : The object in `LocAlgCat` obtained from quotienting by a proper ideal.
 
-* `LocAlgCat.toOfQuot` : The canonical projection morphism `A ⟶ A.ofQuot I`.
+* `LocAlgCat.toOfQuot` : The canonical quotient morphism `A ⟶ A.ofQuot I`.
 
 * `LocAlgCat.mapOfQuot` : The categorical morphism between quotient objects induced
   by a morphism `f : A ⟶ B`. This is the categorical counterpart to `Ideal.quotientMapₐ`.
