@@ -231,6 +231,8 @@ lemma free_internallyProjective_iff_tensor_condition' (P : LightCondSet.{u}) :
     simp only [comp_obj, Functor.comp_map, μIso_hom, ← μ_natural_left, μIso_inv, assoc, μ_δ,
       comp_id]
 
+attribute [-simp] ObjectProperty.whiskerLeft_def ObjectProperty.whiskerRight_def
+
 /--
 Given a `P : LightProfinite`, the light free light condensed module `R[P]` is internally projective
 if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
