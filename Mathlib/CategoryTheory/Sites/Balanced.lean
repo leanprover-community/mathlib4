@@ -71,11 +71,11 @@ lemma isIso_iff_bijective [(forget D).ReflectsIsomorphisms] :
   constructor
   · intro _ X
     rw [← CategoryTheory.isIso_iff_bijective]
-    change IsIso ((forget D).map (φ.val.app X))
+    change IsIso ((forget D).map (φ.hom.app X))
     infer_instance
   · intro hφ
     have : ∀ (X : Cᵒᵖ), IsIso (φ.1.app X) := fun X => by
-      have : IsIso ((forget D).map (φ.val.app X)) := by
+      have : IsIso ((forget D).map (φ.hom.app X)) := by
         simpa only [CategoryTheory.isIso_iff_bijective] using hφ X
       apply isIso_of_reflects_iso _ (forget D)
     apply NatIso.isIso_of_isIso_app
@@ -84,6 +84,7 @@ end
 
 namespace BalancedAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a commutative square in the category of types is pushout square, and the top map
 is injective, then the square is also a pullback square. -/
 noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ S} {g : Y ⟶ S}

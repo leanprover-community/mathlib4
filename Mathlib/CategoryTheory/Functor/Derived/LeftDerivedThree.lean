@@ -22,6 +22,7 @@ namespace Functor
 variable {C₁ C₂ C₃ D₁ D₂ D₃ H : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category D₁] [Category D₂] [Category D₃] [Category H]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def whiskeringLeft₃Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ H} {G : C₁ ⥤ C₂ ⥤ C₃ ⥤ H}
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃} :
@@ -81,6 +82,7 @@ noncomputable def leftDerivedCounit₃ :
   whiskeringLeft₃Equiv.symm (whiskerLeft _ (currying₃.counitIso.hom.app _) ≫
     ((uncurry₃.obj F).totalLeftDerivedCounit (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃))))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (leftDerived₃ F L₁ L₂ L₃ W₁ W₂ W₃).IsLeftDerivedFunctor₃
     (leftDerivedCounit₃ F L₁ L₂ L₃ W₁ W₂ W₃) W₁ W₂ W₃ := by
   refine (isLeftDerivedFunctor_iff_of_iso _ _
@@ -107,6 +109,7 @@ noncomputable def leftDerived₃Lift : G ⟶ LF :=
       (whiskeringLeft₃Equiv α) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj G)
       (whiskeringLeft₃Equiv β))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma leftDerived₃_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((leftDerived₃Lift LF α W₁ W₂ W₃ G β).app (L₁.obj X₁)).app (L₂.obj X₂)).app (L₃.obj X₃) ≫

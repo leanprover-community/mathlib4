@@ -34,6 +34,7 @@ section
 
 variable (F : J ⥤ HomologicalComplex C c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone in `HomologicalComplex C c` is limit if the induced cones obtained
 by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are limit. -/
 def isLimitOfEval (s : Cone F)
@@ -59,6 +60,7 @@ def isLimitOfEval (s : Cone F)
 
 variable [∀ (n : ι), HasLimit (F ⋙ eval C c n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
 the limit `F ⋙ eval C c n`. -/
 @[simps]
@@ -110,6 +112,7 @@ section
 
 variable (F : J ⥤ HomologicalComplex C c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocone in `HomologicalComplex C c` is colimit if the induced cocones obtained
 by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are colimit. -/
 def isColimitOfEval (s : Cocone F)
@@ -136,6 +139,7 @@ def isColimitOfEval (s : Cocone F)
 
 variable [∀ (n : ι), HasColimit (F ⋙ HomologicalComplex.eval C c n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
 the colimit of `F ⋙ eval C c n`. -/
 @[simps]
@@ -231,12 +235,15 @@ section
 variable (F : J ⥤ C) (hF : IsZero F) (G : C ⥤ D) (hG : IsZero G)
   [HasZeroObject C] [HasZeroObject D]
 
-def IsLimit.ofIsZero (c : Cone F) (hc : IsZero c.pt) : IsLimit c where
+def IsLimit.ofIsZero
+    (c : Cone F) (hc : IsZero c.pt) : IsLimit c where
   lift _ := 0
   fac _ j := (F.isZero_iff.1 hF j).eq_of_tgt _ _
   uniq _ _ _ := hc.eq_of_tgt _ _
 
-def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
+omit [HasZeroMorphisms C] [HasZeroObject C] in
+include hG in
+lemma preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => ⟨by
     rw [Functor.isZero_iff] at hG
     apply IsLimit.ofIsZero
@@ -250,7 +257,9 @@ def IsColimit.ofIsZero (c : Cocone F) (hc : IsZero c.pt) : IsColimit c where
   fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
   uniq _ _ _ := hc.eq_of_src _ _
 
-def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
+omit [HasZeroMorphisms C] [HasZeroObject C] in
+include hG in
+lemma preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => ⟨by
     rw [Functor.isZero_iff] at hG
     apply IsColimit.ofIsZero

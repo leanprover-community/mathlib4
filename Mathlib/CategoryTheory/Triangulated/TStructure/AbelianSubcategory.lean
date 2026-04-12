@@ -1,12 +1,21 @@
 /-
+<<<<<<< HEAD
 Copyright (c) 2024 Joël Riou. All rights reserved.
+=======
+Copyright (c) 2026 Joël Riou. All rights reserved.
+>>>>>>> origin
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
+<<<<<<< HEAD
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
+=======
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+>>>>>>> origin
 
 /-!
 # Abelian subcategories of triangulated categories
@@ -22,7 +31,11 @@ is an abelian category if the following conditions are satisfied:
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`.
 
 ## References
+<<<<<<< HEAD
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
+=======
+* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
+>>>>>>> origin
 
 -/
 
@@ -34,16 +47,29 @@ open Category Limits Preadditive ZeroObject Pretriangulated ZeroObject
 
 namespace Triangulated
 
+<<<<<<< HEAD
 variable {C A : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   [Category A] {ι : A ⥤ C}
+=======
+variable {C A : Type*} [Category* C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+  [Category* A] {ι : A ⥤ C}
+>>>>>>> origin
 
 namespace AbelianSubcategory
 
 variable (hι : ∀ ⦃X Y : A⦄ ⦃n : ℤ⦄ (f : ι.obj X ⟶ (ι.obj Y)⟦n⟧), n < 0 → f = 0)
 
+<<<<<<< HEAD
 include hι in
 lemma vanishing_from_positive_shift
+=======
+set_option backward.isDefEq.respectTransparency false in
+include hι in
+omit [HasZeroObject C] [Pretriangulated C] in
+lemma eq_zero_of_hom_shift_pos
+>>>>>>> origin
     {X Y : A} {n : ℤ} (f : (ι.obj X)⟦n⟧ ⟶ ι.obj Y) (hn : 0 < n) :
     f = 0 :=
   (shiftFunctor C (-n)).map_injective (by
@@ -80,6 +106,10 @@ lemma ι_map_πQ : ι.map (πQ f₂ β) = f₂ ≫ β :=
 
 variable {f₂ f₃} [Preadditive A] [ι.Faithful]
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 include hT in
 @[reassoc]
 lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
@@ -88,6 +118,10 @@ lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
     dsimp at this
     simp [this])
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 include hT in
 @[reassoc]
 lemma mor₁_πQ : f₁ ≫ πQ f₂ β = 0 :=
@@ -100,6 +134,10 @@ variable {α β}
 
 include hT hT' hι
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 lemma mono_ιK : Mono (ιK f₃ α) := by
   rw [mono_iff_cancel_zero]
   intro B k hk
@@ -108,21 +146,34 @@ lemma mono_ιK : Mono (ιK f₃ α) := by
   simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
     shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
   obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
+<<<<<<< HEAD
   rw [vanishing_from_positive_shift hι l (by lia), zero_comp] at hl
+=======
+  rw [eq_zero_of_hom_shift_pos hι l (by lia), zero_comp] at hl
+>>>>>>> origin
   obtain ⟨m, hm⟩ := Triangle.coyoneda_exact₁ _ hT' ((ι.map k)⟦(1 : ℤ)⟧'⟦(1 : ℤ)⟧')
     (by simp [← Functor.map_comp, hl])
   obtain rfl : m = 0 := by
     rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by lia)).hom.app _), comp_zero]
+<<<<<<< HEAD
     exact vanishing_from_positive_shift hι _ (by lia)
   rw [zero_comp] at hm
   exact (shiftFunctor C (1 : ℤ)).map_injective (by rw [hm, Functor.map_zero])
 
+=======
+    exact eq_zero_of_hom_shift_pos hι _ (by lia)
+  rw [zero_comp] at hm
+  exact (shiftFunctor C (1 : ℤ)).map_injective (by rw [hm, Functor.map_zero])
+
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 lemma epi_πQ : Epi (πQ f₂ β) := by
   rw [epi_iff_cancel_zero]
   intro B k hk
   replace hk := ι.congr_map hk
   simp only [Functor.map_comp, ι_map_πQ, assoc, Functor.map_zero] at hk
   obtain ⟨l, hl⟩ := Triangle.yoneda_exact₃ _ hT _ hk
+<<<<<<< HEAD
   rw [vanishing_from_positive_shift hι l (by lia), comp_zero] at hl
   obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' (ι.map k) hl
   obtain rfl : m = 0 := by
@@ -130,6 +181,16 @@ lemma epi_πQ : Epi (πQ f₂ β) := by
     exact vanishing_from_positive_shift hι _ (by lia)
   exact ι.map_injective (by rw [hm, comp_zero, ι.map_zero])
 
+=======
+  rw [eq_zero_of_hom_shift_pos hι l (by lia), comp_zero] at hl
+  obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' (ι.map k) hl
+  obtain rfl : m = 0 := by
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by lia)).hom.app _), comp_zero]
+    exact eq_zero_of_hom_shift_pos hι _ (by lia)
+  exact ι.map_injective (by rw [hm, comp_zero, ι.map_zero])
+
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
     ∃ (k : B ⟶ K), k ≫ ιK f₃ α = x₁ := by
   suffices ∃ (k' : (ι.obj B)⟦(1 : ℤ)⟧ ⟶ (ι.obj K)⟦(1 : ℤ)⟧),
@@ -142,22 +203,38 @@ lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
   obtain ⟨x₃, hx₃⟩ := Triangle.coyoneda_exact₁ _ hT ((ι.map x₁)⟦(1 : ℤ)⟧')
     (by simp [← Functor.map_comp, hx₁])
   obtain ⟨k', hk'⟩ := Triangle.coyoneda_exact₂ _ hT' x₃
+<<<<<<< HEAD
     (vanishing_from_positive_shift hι _ (by lia))
+=======
+    (eq_zero_of_hom_shift_pos hι _ (by lia))
+>>>>>>> origin
   exact ⟨k', by cat_disch⟩
 
 /-- `ιK` is a kernel. -/
 noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ (ιK_mor₁ hT α)) :=
+<<<<<<< HEAD
   KernelFork.IsLimit.ofι _ _  _
+=======
+  KernelFork.IsLimit.ofι _ _ _
+>>>>>>> origin
     (fun x₁ hx₁ ↦ (exists_lift_ιK hι hT hT' x₁ hx₁).choose_spec)
     (fun x₁ hx₁ m hm ↦ by
       have := mono_ιK hι hT hT'
       rw [← cancel_mono (ιK f₃ α), (exists_lift_ιK hι hT hT' x₁ hx₁).choose_spec, hm])
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 lemma exists_desc_πQ {B : A} (x₂ : X₂ ⟶ B) (hx₂ : f₁ ≫ x₂ = 0) :
     ∃ (k : Q ⟶ B), πQ f₂ β ≫ k = x₂ := by
   obtain ⟨x₁, hx₁⟩ := Triangle.yoneda_exact₂ _ hT (ι.map x₂) (by simp [← ι.map_comp, hx₂])
   obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
+<<<<<<< HEAD
     (vanishing_from_positive_shift hι _ (by lia))
+=======
+    (eq_zero_of_hom_shift_pos hι _ (by lia))
+>>>>>>> origin
   exact ⟨ι.preimage k, ι.map_injective (by cat_disch)⟩
 
 /-- `πQ` is a cokernel. -/
@@ -211,6 +288,10 @@ attribute [local instance] hasZeroObject_of_hasTerminal_object
 
 variable [HasFiniteProducts A] [ι.Additive]
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₁` is a kernel of `X₂ ⟶ X₃`. -/
 noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
@@ -231,6 +312,10 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
   exact Fork.ext (-(Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
     (by simp))
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₃` is a cokernel of `X₁ ⟶ X₂`. -/
 noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
@@ -250,6 +335,7 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
         Functor.map_zero, Functor.map_zero]
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+<<<<<<< HEAD
     · simpa using Functor.map_zero _ _ _
     · simp
     · simp
@@ -260,6 +346,17 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
 variable (hA : admissibleMorphism ι = ⊤)
 
 include hι hA in
+=======
+    all_goals simp
+  refine IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork hι hT hT') ?_
+  exact Cofork.ext (Iso.refl _) (ι.map_injective (by simp))
+
+variable (hA : admissibleMorphism ι = ⊤)
+
+set_option backward.isDefEq.respectTransparency false in
+include hι hA in
+omit [HasFiniteProducts A] in
+>>>>>>> origin
 lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) [Epi π] :
     ∃ (X₁ : A) (i : X₁ ⟶ X₂) (δ : ι.obj X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧),
       Triangle.mk (ι.map i) (ι.map π) δ ∈ distTriang C := by
@@ -278,6 +375,10 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
   refine isomorphic_distinguished _ hT _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso α)
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 variable (ι) in
 /-- Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
 an additive category and `C` is a triangulated category. The category `A`
@@ -288,6 +389,10 @@ is abelian if the following conditions are satisfied:
   we complete `ι.obj f₁` in a distinguished triangle
   `ι.obj X₁ ⟶ ι.obj X₂ ⟶ X₃ ⟶ (ι.obj X₁)⟦1⟧`, there exists objects `K`
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`. -/
+<<<<<<< HEAD
+=======
+@[implicit_reducible]
+>>>>>>> origin
 noncomputable def abelian [IsTriangulated C] : Abelian A :=
   Abelian.mk' (fun X₁ X₂ f₁ ↦ by
     obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)
@@ -307,11 +412,27 @@ noncomputable def abelian [IsTriangulated C] : Abelian A :=
       rw [rotate_distinguished_triangle, ← Triangle.shift_distinguished_iff _ 1]
       refine isomorphic_distinguished _ H.mem _ ?_
       exact Triangle.isoMk _ _ (-(Iso.refl _)) (Iso.refl _) (Iso.refl _)
+<<<<<<< HEAD
     exact ⟨K, _, _, isLimitKernelFork hι hT hT',
       Q, _, _, isColimitCokernelCofork hι hT hT',
       I, _, _, isColimitCokernelCoforkOfDistTriang hι _ _ _ Hmem,
       i, _, isLimitKernelForkOfDistTriang hι _ _ _ hI,
       (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective (by simpa [hm₁] using H.comm₂.symm)⟩)
+=======
+    exact ⟨{
+      kernelFork := _
+      isLimitKernelFork := isLimitKernelFork hι hT hT'
+      cokernelCofork := _
+      isColimitCokernelCofork := isColimitCokernelCofork hι hT hT'
+      image := _
+      imageι := _
+      imageπ := _
+      ι_imageπ := _
+      imageι_π := _
+      imageIsCokernel := isColimitCokernelCoforkOfDistTriang hι _ _ _ Hmem
+      imageIsKernel := isLimitKernelForkOfDistTriang hι _ _ _ hI
+      fac := (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective (by simpa [hm₁] using H.comm₂) }⟩)
+>>>>>>> origin
 
 end
 

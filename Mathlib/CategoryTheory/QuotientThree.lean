@@ -59,6 +59,7 @@ lemma natTransLift₃_app_app_app
     (((natTransLift₃ r₁ r₂ r₃ τ).app ((functor r₁).obj X₁)).app ((functor r₂).obj X₂)).app
       ((functor r₃).obj X₃) = ((τ.app X₁).app X₂).app X₃ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def natIsoLift₃ {F G : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₃ ⥤ C}
     (τ : ((((whiskeringLeft₃ _).obj (functor r₁)).obj (functor r₂)).obj (functor r₃)).obj F ≅

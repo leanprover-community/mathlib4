@@ -6,6 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Bundled exact functors
@@ -42,7 +43,9 @@ lemma leftExactFunctor_iff (F : C ⥤ D) :
     leftExactFunctor C D F ↔ PreservesFiniteLimits F := Iff.rfl
 
 instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
-  of_iso e (_ : PreservesFiniteLimits _) := preservesFiniteLimits_of_natIso e
+  of_iso e h := by
+    simp only [leftExactFunctor_iff] at h ⊢
+    exact preservesFiniteLimits_of_natIso e
 
 /-- Bundled left-exact functors. -/
 abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
@@ -68,7 +71,9 @@ lemma rightExactFunctor_iff (F : C ⥤ D) :
     rightExactFunctor C D F ↔ PreservesFiniteColimits F := Iff.rfl
 
 instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
-  of_iso e (_ : PreservesFiniteColimits _) := preservesFiniteColimits_of_natIso e
+  of_iso e h := by
+    simp only [rightExactFunctor_iff] at h ⊢
+    exact preservesFiniteColimits_of_natIso e
 
 /-- Bundled right-exact functors. -/
 abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
@@ -92,6 +97,10 @@ variable {C D} in
 @[simp]
 lemma exactFunctor_iff (F : C ⥤ D) :
     exactFunctor C D F ↔ PreservesFiniteLimits F ∧ PreservesFiniteColimits F := Iff.rfl
+
+instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
+  dsimp [exactFunctor]
+  infer_instance
 
 /-- Bundled exact functors. -/
 abbrev ExactFunctor := (exactFunctor C D).FullSubcategory

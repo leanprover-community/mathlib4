@@ -75,6 +75,7 @@ noncomputable def leftDerivedCounit₂ :
   whiskeringLeft₂Equiv.symm (whiskerLeft _ (currying.counitIso.hom.app _) ≫
     ((uncurry.obj F).totalLeftDerivedCounit (L₁.prod L₂) (W₁.prod W₂)))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (leftDerived₂ F L₁ L₂ W₁ W₂).IsLeftDerivedFunctor₂
     (leftDerivedCounit₂ F L₁ L₂ W₁ W₂) W₁ W₂ := by
   refine (isLeftDerivedFunctor_iff_of_iso _ _

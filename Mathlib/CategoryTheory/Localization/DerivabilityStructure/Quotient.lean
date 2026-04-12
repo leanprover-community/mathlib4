@@ -40,6 +40,7 @@ lemma isLocalizerEquivalence [T.IsLocalizedEquivalence] [L.IsLocalizedEquivalenc
     LocalizerMorphism.isLocalizedEquivalence_of_iso (Φ := T.comp R) (Φ' := L.comp B) iso
   exact LocalizerMorphism.isLocalizedEquivalence_of_precomp L B
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def leftResolutionComparison [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] (X : C) :
     T.LeftResolution X ⥤ B.LeftResolution (R.functor.obj X) where
@@ -54,6 +55,7 @@ def leftResolutionComparison [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] (X : C) 
         dsimp at this ⊢
         rw [reassoc_of% this, ← Functor.map_comp, φ.comm] }
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] [L.functor.EssSurj] [R.functor.Full]
     [R.IsInduced] (X : C) :
     (leftResolutionComparison iso X).EssSurj where
@@ -78,6 +80,7 @@ lemma isConnected_leftResolution
   have := (leftResolutionComparison iso X).isConnected_of_isConnected_of_essSurj
   exact isConnected_of_equivalent (LocalizerMorphism.LeftResolution.chgObjEquivalence B e)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftResolutions_arrow [R.functor.EssSurj] [R.functor.Full]
     [T.arrow.HasLeftResolutions] [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] :
     B.arrow.HasLeftResolutions := by

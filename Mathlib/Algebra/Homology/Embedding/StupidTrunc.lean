@@ -89,6 +89,7 @@ lemma stupidTruncMap_comp :
     stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by
   simp [stupidTruncMap, stupidTrunc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma stupidTruncMap_stupidTruncXIso_hom {i : ι} {i' : ι'} (hi : e.f i = i') :
     (stupidTruncMap φ e).f i' ≫ (L.stupidTruncXIso e hi).hom =
@@ -107,6 +108,7 @@ noncomputable def ιStupidTruncf [e.IsRelIff] (i' : ι') : (K.stupidTrunc e).X i
   then (K.stupidTruncXIso e h.choose_spec).hom
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ιStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.ιStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).hom := by
   dsimp [ιStupidTruncf]
@@ -175,6 +177,7 @@ instance [K.IsStrictlySupported e] : IsIso (K.ιStupidTrunc e) := by
 
 variable {K L}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιStupidTrunc_naturality :
     stupidTruncMap φ e ≫ L.ιStupidTrunc e = K.ιStupidTrunc e ≫ φ := by
@@ -202,6 +205,7 @@ noncomputable def πStupidTruncf [e.IsRelIff] (i' : ι') : K.X i' ⟶ (K.stupidT
   then (K.stupidTruncXIso e h.choose_spec).inv
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.πStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).inv := by
   dsimp [πStupidTruncf]
@@ -271,6 +275,7 @@ instance [K.IsStrictlySupported e] : IsIso (K.πStupidTrunc e) := by
 
 variable {K L}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma πStupidTrunc_naturality :
     K.πStupidTrunc e ≫ stupidTruncMap φ e = φ ≫ L.πStupidTrunc e := by

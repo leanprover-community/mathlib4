@@ -78,6 +78,7 @@ section
 
 variable [Abelian C] [Abelian D] (F : C ⥤ D) [F.PreservesZeroMorphisms] [Faithful F]
 
+set_option backward.isDefEq.respectTransparency false in
 -- adapted from the proof in `CategoryTheory.Abelian.Exact` using the previous homology API
 instance reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful : F.ReflectsExactSequences := by
   rw [reflectsExactSequences_iff_reflectsShortComplexExact']

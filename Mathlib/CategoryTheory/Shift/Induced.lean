@@ -95,8 +95,10 @@ end Induced
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
+@[implicit_reducible]
 noncomputable def induced : HasShift D A :=
   hasShiftMk D A
     { F := s
@@ -209,9 +211,11 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/
+@[implicit_reducible]
 noncomputable def Functor.CommShift.ofInduced :
     letI := HasShift.induced F A s i
     F.CommShift A := by
@@ -268,6 +272,8 @@ end Induced
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
 noncomputable def induced : G.CommShift A where
   commShiftIso := Induced.iso e
   commShiftIso_zero := by
@@ -302,6 +308,7 @@ noncomputable def induced : G.CommShift A where
     simp only [assoc, Functor.map_id, id_comp, ← NatTrans.naturality]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma induced_compatibility :
     letI := induced e A
     NatTrans.CommShift e.hom A := by

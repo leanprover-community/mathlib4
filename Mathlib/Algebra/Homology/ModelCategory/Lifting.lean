@@ -33,7 +33,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace Lifting
 
@@ -50,14 +50,14 @@ variable {A B X Y : CochainComplex C ℤ}
 abbrev cochain₀ : Cochain B X 0 := Cochain.ofHoms (fun n ↦ (hsq n).l)
 
 /-- A `1`-cocycle from `B` to `X` obtained as the boundary of
-the `0`-cochain `cochain`0 sq hsq` consisting of the degreewise liftings.
+the `0`-cochain `cochain₀ sq hsq` consisting of the degreewise liftings.
 This is refined below as a `1`-cocycle from `Q` to `K` where `Q` is a
 cokernel of `i : A ⟶ B` and `K` a kernel of `p : X ⟶ Y` (see `cocycle₁`). -/
 def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
 @[reassoc (attr := simp)]
-lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m) :
+lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
   have fac_right (k : ℤ) := (hsq k).fac_right
   dsimp at fac_right
@@ -65,14 +65,15 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m) :
     ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
 @[reassoc (attr := simp)]
-lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m) :
+lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
   have fac_left (k : ℤ) := (hsq k).fac_left
   dsimp at fac_left
   simp [cocycle₁', fac_left, reassoc_of% fac_left]
 
+set_option backward.isDefEq.respectTransparency false in
 include hQ hK in
-lemma exists_hom (n m : ℤ) (hnm : n + 1 = m) :
+lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm := by
   have : Epi π := Cofork.IsColimit.epi hQ
   obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc'
@@ -95,7 +96,7 @@ lemma π_f_cochain₁_v_ι_f (n m : ℤ) (hnm : n + 1 = m) :
   (exists_hom sq hsq hQ hK n m hnm).choose_spec
 
 /-- A `1`-cocycle from a cokernel `Q` of `i : A ⟶ B` to a kernel `K` of
-`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainCompplex C ℤ`
+`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainComplex C ℤ`
 has a lifting, see the lemma `hasLift` below. -/
 noncomputable def cocycle₁ : Cocycle Q K 1 :=
   Cocycle.mk (cochain₁ sq hsq hQ hK) 2 (by simp) (by
@@ -117,7 +118,6 @@ lemma comp_coe_cocycle₁_comp :
       (cocycle₁' sq hsq).1 := by
   ext n m hnm
   simp [cocycle₁]
-
 
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`

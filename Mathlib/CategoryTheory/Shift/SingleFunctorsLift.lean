@@ -47,6 +47,7 @@ lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end Lift
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def lift : SingleFunctors C D A where
   functor := Φ
   shiftIso := Lift.shiftIso hΦ

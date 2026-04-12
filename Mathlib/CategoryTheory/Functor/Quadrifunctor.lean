@@ -172,12 +172,14 @@ lemma curry₄_map_app_app_app_app {F G : C₁ × C₂ × C₃ × C₄ ⥤ E} (f
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((curry₄.map f).app X₁).app X₂).app X₃).app X₄ = f.app ⟨X₁, X₂, X₃, X₄⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
   simp [currying₄, Equivalence.unit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :

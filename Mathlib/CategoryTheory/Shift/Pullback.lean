@@ -46,30 +46,25 @@ variable (C D : Type*) [Category C] [Category D]
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
 def PullbackShift (_ : A →+ B) [HasShift C B] := C
-
-instance : Category (PullbackShift C φ) := by
-  dsimp only [PullbackShift]
-  infer_instance
+deriving Category
 
 attribute [local instance] endofunctorMonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
 instance : HasShift (PullbackShift C φ) A where
   shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
-instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
-  dsimp [PullbackShift]
-  infer_instance
+instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) :=
+  inferInstanceAs <| HasZeroObject C
 
-instance [Preadditive C] : Preadditive (PullbackShift C φ) := by
-  dsimp [PullbackShift]
-  infer_instance
+instance [Preadditive C] : Preadditive (PullbackShift C φ) :=
+  inferInstanceAs <| Preadditive C
 
 instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
-    (shiftFunctor (PullbackShift C φ) a).Additive := by
-  change (shiftFunctor C (φ a)).Additive
-  infer_instance
+    (shiftFunctor (PullbackShift C φ) a).Additive :=
+  inferInstanceAs (shiftFunctor C (φ a)).Additive
 
 /-- When `b = φ a`, this is the canonical
 isomorphism `shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b`. -/
@@ -88,6 +83,7 @@ lemma pullbackShiftFunctorZero_inv_app :
   congr 2
   apply eqToHom_map
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero_hom_app :
     (shiftFunctorZero _ A).hom.app X =
       (pullbackShiftIso C φ 0 0 (by simp)).hom.app X ≫ (shiftFunctorZero C B).hom.app X := by
@@ -95,6 +91,7 @@ lemma pullbackShiftFunctorZero_hom_app :
     pullbackShiftFunctorZero_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero'_inv_app :
     (shiftFunctorZero _ A).inv.app X = (shiftFunctorZero' C (φ 0) (by rw [map_zero])).inv.app X ≫
       (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
@@ -103,6 +100,7 @@ lemma pullbackShiftFunctorZero'_inv_app :
     Iso.trans_inv, NatTrans.comp_app, eqToIso_refl, Iso.refl_inv, NatTrans.id_app, assoc]
   erw [comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorZero'_hom_app :
     (shiftFunctorZero _ A).hom.app X = (pullbackShiftIso C φ 0 (φ 0) rfl).hom.app X ≫
       (shiftFunctorZero' C (φ 0) (by rw [map_zero])).hom.app X := by
@@ -128,6 +126,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
   congr 2
   apply eqToHom_map
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).hom.app X =
       (pullbackShiftIso C φ a₃ b₃ h₃).hom.app X ≫
@@ -162,6 +161,7 @@ def PullbackShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then `PullbackShift.functor F φ`
 commutes with their pullbacks by an additive map `φ`.
 -/
@@ -209,6 +209,7 @@ namespace NatTrans
 
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
+set_option backward.isDefEq.respectTransparency false in
 open Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
@@ -227,6 +228,7 @@ pullback of the identity of `C`.
 -/
 def PullbackShift.natIsoId : 𝟭 (PullbackShift C φ) ≅ PullbackShift.functor φ (𝟭 C) := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 This expresses the compatibility between two `CommShift` structures by `A` on (synonyms of)
 `𝟭 C`: the canonical `CommShift` structure on `𝟭 (PullbackShift C φ)`, and the `CommShift`
@@ -246,6 +248,7 @@ composition of the pullbacks of `F` and `G`.
 def PullbackShift.natIsoComp : PullbackShift.functor φ (F ⋙ G) ≅
     PullbackShift.functor φ F ⋙ PullbackShift.functor φ G := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 Suppose that `F` and `G` have `CommShift` structure by `B`. This expresses the
 compatibility between two `CommShift` structures by `A` on (synonyms of) `F ⋙ G`:
@@ -268,6 +271,7 @@ instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
 
 end NatTrans
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The adjunction `adj`, seen as an adjunction between `PullbackShift.functor F φ`
 and `PullbackShift.functor G φ`.

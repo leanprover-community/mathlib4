@@ -66,14 +66,10 @@ variable (F G)
 of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
+deriving AddCommGroup
 
-instance : AddCommGroup (Cochain F G n) := by
-  dsimp only [Cochain]
-  infer_instance
-
-instance : Module R (Cochain F G n) := by
-  dsimp only [Cochain]
-  infer_instance
+instance : Module R (Cochain F G n) :=
+  inferInstanceAs <| Module R (∀ _, _)
 
 namespace Cochain
 
@@ -446,6 +442,7 @@ lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (
 
 notation a " •[" h "] " b:80 => Cochain.comp a b h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_eq (hnm : n + 1 = m) (z : Cochain F G n) :
     δ n m z = z •[hnm] (Cochain.diff G) +
       m.negOnePow • (Cochain.diff F)•[by rw [← hnm, add_comm 1]] z := by
@@ -472,61 +469,7 @@ lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
 
 section
 
-variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)
-  (Φ : C ⥤ D) [Φ.Additive]
-
-namespace Cochain
-
-/-- If `Φ : C ⥤ D` is an additive functor, a cochain `z : Cochain K L n` between
-cochain complexes in `C` can be mapped to a cochain between the cochain complexes
-in `D` obtained by applying the functor
-`Φ.mapHomologicalComplex _ : CochainComplex C ℤ ⥤ CochainComplex D ℤ`. -/
-def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
-  Cochain.mk (fun p q hpq => Φ.map (z.v p q hpq))
-
-@[simp]
-lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
-
-@[simp]
-protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
-
-@[simp]
-protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
-
-@[simp]
-protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
-
-variable (K L n)
-
-@[simp]
-protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
-
-@[simp]
-lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
-    (Φ : C ⥤ D) [Φ.Additive] :
-    (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
-  ext p q hpq
-  dsimp
-  simp only [map_v, comp_v _ _ h p _ q rfl (by lia), Φ.map_comp]
-
-@[simp]
-lemma map_ofHom :
-    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
-
-end Cochain
-
-@[simp]
-lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
-  by_cases hnm : n + 1 = m
-  · ext p q hpq
-    dsimp
-    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
-      Cochain.map_v, Functor.mapHomologicalComplex_obj_d,
-      Functor.map_add, Functor.map_comp, Functor.map_units_smul]
-  · simp only [δ_shape _ _ hnm, Cochain.map_zero]
-
-variable (F G R n)
-
+variable (F G R) in
 /-- The differential on the complex of morphisms between cochain complexes, as a linear map. -/
 @[simps!]
 def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
@@ -545,8 +488,6 @@ def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.smul_v, Linear.comp_smul,
         Linear.smul_comp, smul_add, smul_comm m.negOnePow r]
     · simp only [δ_shape _ _ h, smul_zero]
-
-variable {F G R}
 
 @[simp] lemma δ_add (z₁ z₂ : Cochain F G n) : δ n m (z₁ + z₂) = δ n m z₁ + δ n m z₂ :=
   (δ_hom ℤ F G n m).map_add z₁ z₂
@@ -581,6 +522,7 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
     add_zero, add_neg_cancel, Units.neg_smul,
     Linear.units_smul_comp, Linear.comp_units_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
     δ n₁₂ m₁₂ (z₁.comp z₂ h) = z₁.comp (δ n₂ m₂ z₂) (by rw [← h₁₂, ← h₂, ← h, add_assoc]) +
@@ -802,6 +744,7 @@ def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
   map_zero' := by simp
   map_add' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
 def isKernel (hm : n + 1 = m) :
@@ -812,35 +755,17 @@ def isKernel (hm : n + 1 = m) :
       { toFun x := ⟨s.ι x, by
           rw [mem_iff _ _ hm]
           exact ConcreteCategory.congr_hom s.condition x⟩
-        map_zero' := by cat_disch
-        map_add' := by cat_disch })
+        map_zero' := by
+          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+          this was just `cat_disch`. -/
+          simp +instances only [HomComplex_X, map_zero]
+          rfl
+        map_add' _ _ := by
+          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+          this was just `cat_disch`. -/
+          simp +instances only [HomComplex_X, map_add]
+          rfl})
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
-
-variable {K}
-variable {D : Type _} [Category D] [Preadditive D] (z z' : Cocycle K L n) (f : K ⟶ L)
-  (Φ : C ⥤ D) [Φ.Additive]
-
-@[simps!]
-def map : Cocycle ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
-  Cocycle.mk ((z : Cochain K L n).map Φ) (n+1) rfl (by simp)
-
-@[simp]
-lemma map_add : Cocycle.map (z + z') Φ = Cocycle.map z Φ + Cocycle.map z' Φ := by aesop_cat
-
-@[simp]
-lemma map_neg : Cocycle.map (-z) Φ = -Cocycle.map z Φ := by aesop_cat
-
-@[simp]
-lemma map_sub : Cocycle.map (z-z') Φ = Cocycle.map z Φ - Cocycle.map z' Φ := by aesop_cat
-
-@[simp]
-lemma map_of_hom : Cocycle.map (Cocycle.ofHom f) Φ =
-  Cocycle.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
-
-variable (K L n)
-
-@[simp]
-lemma map_zero : Cocycle.map (0 : Cocycle K L n) Φ = 0 := by aesop_cat
 
 end Cocycle
 
@@ -967,6 +892,7 @@ lemma single_zero (p q n : ℤ) :
     · simp [single_v_eq_zero' _ _ _ _ _ hq]
   · simp [single_v_eq_zero _ _ _ _ _ hp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
     (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
     δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
@@ -995,6 +921,100 @@ lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
     · simp [single_v_eq_zero' _ _ _ _ _ h]
 
 end Cochain
+
+section
+
+variable {n} {D : Type*} [Category* D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)
+  (Φ : C ⥤ D) [Φ.Additive]
+
+namespace Cochain
+
+/-- If `Φ : C ⥤ D` is an additive functor, a cochain `z : Cochain K L n` between
+cochain complexes in `C` can be mapped to a cochain between the cochain complexes
+in `D` obtained by applying the functor
+`Φ.mapHomologicalComplex _ : CochainComplex C ℤ ⥤ CochainComplex D ℤ`. -/
+def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
+  Cochain.mk (fun p q hpq => Φ.map (z.v p q hpq))
+
+@[simp]
+lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
+
+@[simp]
+protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by cat_disch
+
+@[simp]
+protected lemma map_neg : (-z).map Φ = -z.map Φ := by cat_disch
+
+@[simp]
+protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by cat_disch
+
+variable (K L n)
+
+@[simp]
+protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by cat_disch
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
+    (Φ : C ⥤ D) [Φ.Additive] :
+    (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
+  ext p q hpq
+  dsimp
+  simp only [map_v, comp_v _ _ h p _ q rfl (by lia), Φ.map_comp]
+
+@[simp]
+lemma map_ofHom :
+    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by cat_disch
+
+end Cochain
+
+variable (n)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
+  by_cases hnm : n + 1 = m
+  · ext p q hpq
+    dsimp
+    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
+      Functor.map_add, Functor.map_comp, Functor.map_units_smul,
+      Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
+  · simp only [δ_shape _ _ hnm, Cochain.map_zero]
+
+end
+
+section
+
+namespace Cocycle
+
+variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : Cocycle K L n) (f : K ⟶ L)
+  (Φ : C ⥤ D) [Φ.Additive]
+
+@[simps!]
+def map : Cocycle ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
+  Cocycle.mk ((z : Cochain K L n).map Φ) (n+1) rfl (by simp)
+
+@[simp]
+lemma map_add : Cocycle.map (z + z') Φ = Cocycle.map z Φ + Cocycle.map z' Φ := by aesop_cat
+
+@[simp]
+lemma map_neg : Cocycle.map (-z) Φ = -Cocycle.map z Φ := by aesop_cat
+
+@[simp]
+lemma map_sub : Cocycle.map (z-z') Φ = Cocycle.map z Φ - Cocycle.map z' Φ := by aesop_cat
+
+@[simp]
+lemma map_of_hom : Cocycle.map (Cocycle.ofHom f) Φ =
+  Cocycle.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
+
+variable (K L n)
+
+@[simp]
+lemma map_zero : Cocycle.map (0 : Cocycle K L n) Φ = 0 := by aesop_cat
+
+end Cocycle
+
+end
 
 end HomComplex
 

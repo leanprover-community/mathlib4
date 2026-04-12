@@ -322,6 +322,7 @@ def prod {F F' : C₁ ⥤ D₁} {G G' : C₂ ⥤ D₂} (e₁ : F ≅ F') (e₂ :
 { hom := NatTrans.prod e₁.hom e₂.hom
   inv := NatTrans.prod e₁.inv e₂.inv }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cartesian product of two natural isomorphisms. -/
 @[simps]
 def prod' {F G : A ⥤ B × C} (e₁ : F ⋙ Prod.fst _ _ ≅ G ⋙ Prod.fst _ _)

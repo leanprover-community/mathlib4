@@ -219,6 +219,7 @@ noncomputable def doubleFunctorCompMapHomologicalComplex :
 end
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
@@ -239,6 +240,7 @@ end
 
 variable {ι : Type*} (c : ComplexShape ι)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/

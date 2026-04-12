@@ -113,14 +113,11 @@ def δ₂ : Arrow₂ C ⥤ Arrow C where
 @[simps]
 def δ₂Toδ₁ : (δ₂ : Arrow₂ C ⥤ _) ⟶ δ₁ where
   app D :=
-    { left := 𝟙 _
-      right := D.g }
+    Arrow.homMk (𝟙 _) D.g
 
 @[simps]
 def δ₁Toδ₀ : (δ₁ : Arrow₂ C ⥤ _) ⟶ δ₀ where
-  app D :=
-    { left := D.f
-      right := 𝟙 _ }
+  app D := Arrow.homMk D.f (𝟙 _)
 
 @[simps]
 def obj₀ : Arrow₂ C ⥤ C where

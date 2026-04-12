@@ -28,8 +28,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 
@@ -110,6 +110,7 @@ lemma rightDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [rightDerivedNatTrans]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
     α.app X ≫ (rightDerivedNatTrans RF RF' α α' W τ).app (L.obj X) =
@@ -319,6 +320,7 @@ variable {C₁ C₂ H₁ H₂ D : Type*} [Category C₁] [Category C₂] [Catego
   (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
     whiskerRight iso.hom RF₂ ≫ (Functor.associator L₁ G RF₂).hom ≫ whiskerLeft L₁ e₂.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma isRightDerivedFunctor_iff_precomp :
     RF₁.IsRightDerivedFunctor α₁ W₁ ↔ RF₂.IsRightDerivedFunctor α₂ W₂ := by
@@ -326,7 +328,7 @@ lemma isRightDerivedFunctor_iff_precomp :
   have := Φ.isEquivalence L₁ L₂ G
   rw [← Functor.isRightDerivedFunctor_iff_of_isLocalization W₁
     (α₁ ≫ whiskerLeft L₁ e₂.inv ≫ (Functor.associator _ _ _).inv) α₁
-    _ (Iso.refl _) e₂ (by aesop_cat),
+    _ (Iso.refl _) e₂ (by cat_disch),
     Functor.isRightDerivedFunctor_iff_isLeftKanExtension _ _ W₁,
     Functor.isRightDerivedFunctor_iff_isLeftKanExtension _ _ W₂,
     Functor.isLeftKanExtension_iff_precomp RF₂ Φ.functor α₂]

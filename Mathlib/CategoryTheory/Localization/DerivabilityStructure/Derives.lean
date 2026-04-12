@@ -90,6 +90,7 @@ lemma isIso_of_isRightDerivedFunctor
   rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     Φ.Derives F := by
   intro X₁ X₂ f hf
@@ -99,6 +100,7 @@ lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.funct
   infer_instance
 
 include h in
+set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor_of_isIso [Φ.IsRightDerivabilityStructure]
     (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
@@ -138,6 +140,7 @@ lemma isIso_of_isLeftDerivedFunctor
     (L₂ := L₂.op) (NatTrans.op α) (Opposite.op X₁)
   rwa [← isIso_unop_iff] at this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isIso_app_functor_obj' (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     Φ.Derives F := by
   intro X₁ X₂ f hf
@@ -147,6 +150,7 @@ lemma of_isIso_app_functor_obj' (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.func
   infer_instance
 
 include h in
+set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivedFunctor_of_isIso [Φ.IsLeftDerivabilityStructure]
     (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     LF.IsLeftDerivedFunctor α W₂ := by

@@ -23,6 +23,7 @@ variable {C D : Type*} [Category* C] [Category* D] [ModelCategory D]
   [CategoryWithCofibrations C] [CategoryWithFibrations C]
   [CategoryWithWeakEquivalences C]
 
+@[implicit_reducible]
 def ModelCategory.transport (e : C ≌ D)
     (h₁ : cofibrations C = (cofibrations D).inverseImage e.functor)
     (h₂ : fibrations C = (fibrations D).inverseImage e.functor)

@@ -37,12 +37,14 @@ noncomputable def natTransOfIsRightDerivedFunctorComp :
     (associator _ _ _).hom ≫ whiskerLeft F₁₂ α₂₃ ≫ (associator _ _ _).inv ≫
       whiskerRight α₁₂ RF₂₃ ≫ (associator _ _ _).hom)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comp_natTransOfIsRightDerivedFunctorComp_app (X : C₁) :
     α₁₃.app X ≫ (natTransOfIsRightDerivedFunctorComp e L₁ L₂ L₃ W₁ α₁₂ α₂₃ α₁₃).app (L₁.obj X) =
       L₃.map (e.inv.app X) ≫ α₂₃.app (F₁₂.obj X) ≫ RF₂₃.map (α₁₂.app X) := by
   simp [natTransOfIsRightDerivedFunctorComp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_natTransOfIsRightDerivedFunctorComp_app (X : C₁)
     [IsIso (α₁₃.app X)] [IsIso (α₁₂.app X)] [IsIso (α₂₃.app (F₁₂.obj X))] :
     IsIso ((natTransOfIsRightDerivedFunctorComp e L₁ L₂ L₃ W₁ α₁₂ α₂₃ α₁₃).app (L₁.obj X)) :=

@@ -43,6 +43,7 @@ and have a projective kernel. -/
 def monoWithProjectiveCokernel : MorphismProperty C :=
   fun _ _ f => Mono f ∧ Projective (cokernel f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma monoWithProjectiveCokernel_eq_unop :
     monoWithProjectiveCokernel (C := C) =
       epiWithInjectiveKernel.unop := by
@@ -106,6 +107,7 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
               BinaryBicone.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
             abel }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
   of_retract := by
     rintro X' Y' X Y f' f r ⟨_, hf⟩

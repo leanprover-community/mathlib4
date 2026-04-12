@@ -37,6 +37,7 @@ lemma mapExtendX_hom_eq {i : Option ι} {j : ι} (hj : i = some j) :
   subst hj
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapExtendIso :
     (F.mapHomologicalComplex c').obj (K.extend e) ≅
       ((F.mapHomologicalComplex c).obj K).extend e :=
@@ -58,6 +59,7 @@ noncomputable def mapExtendIso :
 
 variable {K L}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapExtensIso_hom_f_naturality (i' : ι') :
     F.map ((extendMap φ e).f i') ≫ (L.mapExtendIso e F).hom.f i' =

@@ -18,6 +18,17 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
+<<<<<<< HEAD
+=======
+## TODO (@joelriou)
+* construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
+  of all truncations of an object of a triangulated category equipped with a t-structure
+* define a similar notion of spectral objects in abelian categories, show that
+  by applying a homological functor `C ⥤ A` to a spectral object in the
+  triangulated category `C`, we obtain a spectral object in the abelian category `A`
+* construct the spectral sequence attached to a spectral object in an abelian category
+
+>>>>>>> origin
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
@@ -75,6 +86,7 @@ are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
+<<<<<<< HEAD
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
@@ -88,6 +100,9 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
 
 
 /-- The distinguished triangle attached to a spectral object `E : SpectralObjet C ι`
+=======
+/-- The distinguished triangle attached to a spectral object `E : SpectralObject C ι`
+>>>>>>> origin
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
 @[simps!]
 def triangle : Triangle C :=
@@ -131,6 +146,7 @@ end
 end
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where

@@ -144,6 +144,7 @@ end Path
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
@@ -190,6 +191,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp',
     SimplexCategory.const_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
     X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
@@ -304,6 +306,7 @@ lemma spine_arrow (Δ : X _⦋n⦌) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
   obtain _ | m := m

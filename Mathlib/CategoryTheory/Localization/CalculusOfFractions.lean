@@ -502,6 +502,7 @@ lemma Q_map {X Y : C} (f : X ⟶ Y) :
 
 variable {W}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
@@ -551,7 +552,7 @@ lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
     Qinv s hs ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
 
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
-  (inferInstance : IsIso (Qiso s hs).inv)
+  inferInstanceAs <| IsIso (Qiso s hs).inv
 
 section
 
@@ -576,10 +577,13 @@ namespace StrictUniversalPropertyFixedTarget
 variable (W)
 
 lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
-  (inferInstance : IsIso (Qiso s hs).hom)
+  inferInstanceAs <| IsIso (Qiso s hs).hom
 
 variable {W}
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The functor `Localization W ⥤ E` that is induced by a functor `C ⥤ E` which inverts `W`,
+when `W` has a left calculus of fractions. -/
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     Localization W ⥤ E where
   obj X := F.obj X
@@ -605,30 +609,31 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     dsimp
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
   Functor.ext (fun _ => rfl) (fun X Y f => by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
-lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
-  let hobj : ∀ (X : C), F₁.obj X = F₂.obj X := fun X => Functor.congr_obj h X
-  refine Functor.ext hobj ?_
-  rintro (X Y : C) f
-  obtain ⟨f, rfl⟩ := Hom.mk_surjective f
-  rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
-    ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
-  erw [Functor.congr_map_conjugate h f.f]
-  rw [assoc, assoc]
-  congr 2
-  have := inverts W _ f.hs
-  rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
-    Qiso_hom_inv_id, Functor.map_id, id_comp]
-  erw [Functor.congr_map_conjugate h.symm f.s]
-  dsimp
-  rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
-    Qiso_hom_inv_id]
-  dsimp
-  rw [F₁.map_id, comp_id]
+set_option backward.isDefEq.respectTransparency false in
+lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
+  Functor.ext (fun X => Functor.congr_obj h X) (by
+    rintro (X Y : C) f
+    obtain ⟨f, rfl⟩ := Hom.mk_surjective f
+    rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
+      ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
+    erw [Functor.congr_hom h f.f]
+    rw [assoc, assoc]
+    congr 2
+    have := inverts W _ f.hs
+    rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
+      Qiso_hom_inv_id, Functor.map_id, id_comp]
+    erw [Functor.congr_hom h.symm f.s]
+    dsimp
+    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
+      Qiso_hom_inv_id]
+    dsimp
+    rw [F₁.map_id, comp_id])
 
 end StrictUniversalPropertyFixedTarget
 
@@ -681,6 +686,7 @@ lemma map_eq {W} {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocaliza
     φ.map L (Localization.inverts L W) =
       L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_compatibility {W} {X Y : C}
     (φ : W.LeftFraction X Y) {E : Type*} [Category* E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
@@ -731,6 +737,7 @@ section
 
 variable [W.HasLeftCalculusOfFractions]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
   let E := Localization.uniq (MorphismProperty.LeftFraction.Localization.Q W) L W

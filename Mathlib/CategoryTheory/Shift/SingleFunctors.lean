@@ -195,10 +195,11 @@ lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
   rw [← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app]
 
 instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
-  (inferInstance : IsIso ((evaluation C D n).map f))
+  inferInstanceAs <| IsIso ((evaluation C D n).map f)
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
@@ -224,6 +225,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
 @[simps]
@@ -246,6 +248,7 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
 which commutes with the shift. -/
 @[simps!]
@@ -261,6 +264,7 @@ section
 variable {F} (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
   (e : F' ≅ F.postcomp G) (n a a' : A) (ha' : n + a = a') (X : C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `postcomp_shiftIso_hom_app'`. -/
 lemma postcomp_shiftIso_hom_app' :
     (F'.shiftIso n a a' ha').hom.app X =
@@ -272,6 +276,7 @@ lemma postcomp_shiftIso_hom_app' :
   simp only [Functor.comp_obj, postcomp_functor, postcomp_shiftIso_hom_app, assoc,
     ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `postcomp_shiftIso_inv_app'`. -/
 lemma postcomp_shiftIso_inv_app' :
     (F'.shiftIso n a a' ha').inv.app X =
@@ -285,6 +290,7 @@ lemma postcomp_shiftIso_inv_app' :
     postcomp_functor, Functor.comp_obj, Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
     Iso.inv_hom_id, hom_inv_id_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_shiftIso_inv_app :
     G.map ((F.shiftIso n a a' ha').inv.app X) =
       (e.inv.hom a).app X ≫ (F'.shiftIso n a a' ha').inv.app X ≫
@@ -293,6 +299,7 @@ lemma map_shiftIso_inv_app :
     inv_hom_id_hom_app_assoc, ← Functor.map_comp_assoc, inv_hom_id_hom_app,
     Functor.map_id, id_comp, Iso.hom_inv_id_app, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_shiftIso_hom_app :
     G.map ((F.shiftIso n a a' ha').hom.app X) =
       (G.commShiftIso n).hom.app ((F.functor a').obj X) ≫ ((e.inv.hom a').app X)⟦n⟧' ≫

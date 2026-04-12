@@ -81,6 +81,7 @@ instance {D : Type*} [Category D] (L : C₁ᵒᵖ × C₂ᵒᵖ ⥤ D)
       rintro _ _ _ ⟨h₁, h₂⟩
       exact Localization.inverts L (W₁.op.prod W₂.op) _ ⟨h₁, h₂⟩) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure] :
     (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := by
   rw [isLeftDerivabilityStructure_iff_op]

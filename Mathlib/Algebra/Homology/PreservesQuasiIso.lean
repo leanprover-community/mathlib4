@@ -32,6 +32,7 @@ abbrev HomologicalComplex.preservesQuasiIso [HasZeroMorphisms C₁] [HasZeroMorp
   ObjectProperty.localizerMorphism
     (HomologicalComplex.quasiIso C₁ c₁) (HomologicalComplex.quasiIso C₂ c₂)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroObject C₂]
     [CategoryWithHomology C₁] [CategoryWithHomology C₂] :
     (HomologicalComplex.preservesQuasiIso (C₁ := C₁) (C₂ := C₂)
@@ -84,6 +85,7 @@ end ShortComplex
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preserves_shortComplexQuasiIso [F.PreservesHomology] :
     ShortComplex.quasiIso C ≤ (ShortComplex.quasiIso D).inverseImage F.mapShortComplex := by
   intro _ _ _ hf
@@ -125,6 +127,7 @@ noncomputable def mapHomologicalComplexHomologyIso [F.PreservesHomology]
     (associator _ _ _).symm ≪≫
       isoWhiskerRight (HomologicalComplex.homologyFunctorIso C c i).symm _
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma preservesQuasiIso_mapHomologicalComplex_iff {C D : Type*} [Category C]
     [Category D] [Abelian C] [Abelian D] (F : C ⥤ D) [F.Additive]

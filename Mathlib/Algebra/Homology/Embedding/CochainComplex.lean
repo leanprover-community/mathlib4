@@ -82,6 +82,22 @@ lemma isIso_πTruncGE_f (n m : ℤ) (h : n < m) : IsIso ((K.πTruncGE n).f m) :=
   rintro rfl
   simp at h
 
+lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (K.ιTruncLE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_ιTruncLE (j := k) _ _ (by simp)
+
+lemma quasiIsoAt_πTruncGE (n q : ℤ) (hq : n ≤ q) :
+    QuasiIsoAt (K.πTruncGE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_πTruncGE (j := k) _ _ (by simp)
+
+instance (n : ℤ) : QuasiIsoAt (K.πTruncGE n) n :=
+  quasiIsoAt_πTruncGE _ _ _ (by lia)
+
+instance (n : ℤ) : QuasiIsoAt (K.ιTruncLE n) n :=
+  quasiIsoAt_ιTruncLE _ _ _ (by lia)
+
 section
 
 variable {K L}
@@ -377,12 +393,6 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
 
 variable [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
-
-instance : QuasiIsoAt (K.πTruncGE n) n :=
-  K.quasiIsoAt_πTruncGE (embeddingUpIntGE n) (j := 0) (by simp)
-
-instance : QuasiIsoAt (K.ιTruncLE n) n :=
-  K.quasiIsoAt_ιTruncLE (embeddingUpIntLE n) (j := 0) (by simp)
 
 noncomputable def truncGEXIso (n : ℤ) (i : ℤ) (hi : n < i) :
     (K.truncGE n).X i ≅ K.X i :=

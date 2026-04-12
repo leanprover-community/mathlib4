@@ -314,6 +314,7 @@ abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
 @[simps]
 def arrow₂ : Arrow₂ C := Arrow₂.mk S.f S.g
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso
     {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
     D.f ≫ D.g = 0 := by

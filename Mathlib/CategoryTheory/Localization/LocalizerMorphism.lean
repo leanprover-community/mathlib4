@@ -110,9 +110,8 @@ noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
 noncomputable instance liftingLocalizedFunctor :
-    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
-  dsimp [localizedFunctor]
-  infer_instance
+    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) :=
+  inferInstanceAs <| Lifting L₁ W₁ _ (lift _ _ L₁)
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
 functor `Φ.functor` -/
@@ -238,18 +237,18 @@ lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
         (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
 
 instance IsLocalizedEquivalence.id :
-    (id W₁).IsLocalizedEquivalence := by
+    (id W₁).IsLocalizedEquivalence :=
   have : ((LocalizerMorphism.id W₁).functor ⋙ W₁.Q).IsLocalization W₁ :=
     Functor.IsLocalization.of_iso _ (Functor.leftUnitor _).symm
-  exact of_isLocalization_of_isLocalization _ W₁.Q
+  of_isLocalization_of_isLocalization _ W₁.Q
 
 instance IsLocalizedEquivalence.comp [Φ.IsLocalizedEquivalence]
     (Ψ : LocalizerMorphism W₂ W₃)
     [Ψ.IsLocalizedEquivalence] :
-    (Φ.comp Ψ).IsLocalizedEquivalence := by
+    (Φ.comp Ψ).IsLocalizedEquivalence :=
   have : ((Φ.comp Ψ).functor ⋙ W₃.Q).IsLocalization W₁ :=
     Functor.IsLocalization.of_iso _ (Functor.associator _ _ _).symm
-  exact of_isLocalization_of_isLocalization _ W₃.Q
+  of_isLocalization_of_isLocalization _ W₃.Q
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
@@ -328,6 +327,7 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def inv :
     LocalizerMorphism W₂ W₁ where
@@ -342,6 +342,7 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Φ.inv.IsInduced where
   inverseImage_eq := by
     ext X Y f

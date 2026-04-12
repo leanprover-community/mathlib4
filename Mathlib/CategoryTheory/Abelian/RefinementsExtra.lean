@@ -42,6 +42,7 @@ noncomputable def shortComplex : ShortComplex C where
   g := biprod.desc c.inl c.inr
   zero := by simp [c.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def isColimitOfExactShortComplex [Balanced C]
     (hc : c.shortComplex.Exact) (hc' : Epi c.shortComplex.g) :
     IsColimit c :=
@@ -71,6 +72,7 @@ noncomputable def shortComplex : ShortComplex C where
   g := biprod.desc f₁ (-f₂)
   zero := by simp [c.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_shortComplex_of_isLimit (hc : IsLimit c)
     [(shortComplex c).HasHomology] : c.shortComplex.Exact := by
   apply ShortComplex.exact_of_f_is_kernel
@@ -117,6 +119,7 @@ noncomputable def effectiveEpiStructOfEpiOfIsPushout (hc : IsPushout π₁ π₂
     symm
     apply PushoutCocone.IsColimit.inl_desc hc.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPushout_of_isPullback_of_epi (hc : IsPullback π₁ π₂ f f) :
     IsPushout π₁ π₂ f f := by
   have hc' : IsColimit (PushoutCocone.mk _ _ hc.w) := by
@@ -194,7 +197,7 @@ lemma epi_iff_isLocallySurjective_yoneda_map {C : Type u} [Category.{v} C] [Abel
     exact ⟨A', π, hπ, x, fac.symm⟩
   · intro hf A y
     obtain ⟨A', π, hπ, x, fac⟩ := Presheaf.imageSieve_mem (refinementsTopology C)
-      ((refinementsTopology C).yoneda.map f).val y
+      ((refinementsTopology C).yoneda.map f).hom y
     exact ⟨A', π, hπ, x, fac.symm⟩
 
 lemma epi_iff_epi_yoneda_map {C : Type u} [SmallCategory C] [Abelian C] {X Y : C} (f : X ⟶ Y) :

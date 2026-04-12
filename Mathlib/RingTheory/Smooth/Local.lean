@@ -45,6 +45,7 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
   rw [← IsLocalRing.split_injective_iff_lTensor_residueField_injective,
     P.formallySmooth_iff_split_injection]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
     (P : Type*) [CommRing P] [Algebra R P] [Algebra P S]
     [IsScalarTower R P S] [FormallySmooth R P] [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]

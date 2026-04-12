@@ -22,6 +22,7 @@ variable {C D : Type*} [Category C] [Category D]
 
 namespace Functor.CommShift
 
+@[implicit_reducible]
 noncomputable def mkProd
     (iso₁ : ∀ (m₁ : M₁), shiftFunctor C (m₁, (0 : M₂)) ⋙ F ≅
       F ⋙ shiftFunctor D (m₁, (0 : M₂)))

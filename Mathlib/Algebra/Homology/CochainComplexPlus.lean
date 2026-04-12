@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Shift
 # Bounded below cochain complexes
 
 In this file, we consider the full subcategory `CochainComplex.Plus C`
-of `CochainComplex C ℤ` consisting of bounded below cocahin complexes
+of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
 -/
@@ -29,6 +29,9 @@ variable (C : Type*) [Category* C]
 /-- The property of cochain complexes that are bounded below. -/
 protected def plus [HasZeroMorphisms C] : ObjectProperty (CochainComplex C ℤ) :=
   fun K ↦ ∃ (n : ℤ), K.IsStrictlyGE n
+
+lemma plus_iff [HasZeroMorphisms C] (K : CochainComplex C ℤ) :
+    CochainComplex.plus C K ↔ ∃ (n : ℤ), K.IsStrictlyGE n := Iff.rfl
 
 instance [HasZeroMorphisms C] : (CochainComplex.plus C).IsClosedUnderIsomorphisms where
   of_iso := by
@@ -48,11 +51,12 @@ variable [HasZeroMorphisms C]
 /-- The inclusion of the full subcategory of bounded below cochain complexes. -/
 abbrev ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
 
-/-- The inclusion of the full subcategory of bounded below cochain complexes. -/
+/-- The inclusion of the full subcategory of bounded below cochain complexes
+is fully faithful. -/
 def fullyFaithfulι : (ι C).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
-instance (J : Type) [Category J] [FinCategory J] [HasLimitsOfShape J C] :
+instance (J : Type*) [SmallCategory J] [FinCategory J] [HasLimitsOfShape J C] :
     (CochainComplex.plus C).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := by
     rintro K ⟨p⟩
@@ -67,7 +71,7 @@ instance (J : Type) [Category J] [FinCategory J] [HasLimitsOfShape J C] :
     exact (isLimitOfPreserves (HomologicalComplex.eval _ _ i) p.isLimit).hom_ext
       (fun j ↦ (isZero_of_isStrictlyGE (p.diag.obj j) n i).eq_of_tgt _ _)
 
-instance (J : Type) [Category J] [FinCategory J] [HasColimitsOfShape J C] :
+instance (J : Type*) [SmallCategory J] [FinCategory J] [HasColimitsOfShape J C] :
     (CochainComplex.plus C).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
     rintro K ⟨p⟩
@@ -106,7 +110,6 @@ instance [CategoryWithHomology C] : (quasiIso C).HasTwoOutOfThreeProperty := by
 instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
   dsimp [quasiIso]
   infer_instance
-
 
 end
 

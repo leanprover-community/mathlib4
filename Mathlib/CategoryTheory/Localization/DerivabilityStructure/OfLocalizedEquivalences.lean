@@ -30,6 +30,7 @@ section
 variable [W₂'.RespectsIso]
   [L.IsLocalizedEquivalence] [R.IsLocalizedEquivalence] [R.functor.EssSurj]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)

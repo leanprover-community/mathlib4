@@ -74,6 +74,23 @@ theorem _root_.ULift.algebraMap_eq (r : R) :
 theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down = algebraMap R A r :=
   rfl
 
+variable (R A) in
+/-- If `A` is an `R`-algebra, it is also a `ULift R`-algebra. In particular, `Ulift A` is a
+`ULift R` algebra. This is not an instance, because it causes a non-reducible diamond in the case
+where `A = Ulift R`. -/
+@[instance_reducible]
+def _root_.ULift.algebra' : Algebra (ULift.{u} R) A where
+  __ := ULift.module
+  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
+  commutes' _ _ := Algebra.commutes ..
+  smul_def' _ _ := Algebra.smul_def' ..
+
+attribute [local instance] ULift.algebra' in
+/-- This references the `ULift.algebra'` instance. -/
+@[simp]
+lemma _root_.ULift.algebraMap_apply' (r : ULift R) :
+    algebraMap (ULift R) A r = algebraMap R A r.down := rfl
+
 end ULift
 
 section SubsemiringAlgebra
@@ -218,19 +235,19 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
-      simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
+  mpr H := by
+    apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
-      simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+  mpr H := by
+    apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 

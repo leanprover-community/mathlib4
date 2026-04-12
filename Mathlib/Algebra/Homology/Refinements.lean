@@ -27,6 +27,12 @@ variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 
 namespace HomologicalComplex
 
+lemma exactAt_iff_exact_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+    K.ExactAt j ↔ ∀ ⦃A : C⦄ (x₂ : A ⟶ K.X j) (_ : x₂ ≫ K.d j k = 0),
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i), π ≫ x₂ = x₁ ≫ K.d i j := by
+  rw [K.exactAt_iff' i j k hi hk]
+  exact (K.sc' i j k).exact_iff_exact_up_to_refinements
+
 lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.homology i)
     (j : ι) (hj : c.next i = j) :
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ K.X i) (hz : z ≫ K.d i j = 0),
@@ -35,28 +41,35 @@ lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.
   exact (K.sc i).eq_liftCycles_homologyπ_up_to_refinements γ
 
 lemma liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
-    {A : C} {i : ι} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j) (hk : k ≫ K.d i j = 0)
-      (i' : ι) (hi' : c.prev i = i') :
-    K.liftCycles k j hj hk ≫ K.homologyπ i = 0 ↔
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (l : A' ⟶ K.X i'), π ≫ k = l ≫ K.d i' i := by
-  subst hi'
-  apply (K.sc i).liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
+    (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    {A : C} (x₂ : A ⟶ K.X j) (hx₂ : x₂ ≫ K.d j k = 0) :
+    K.liftCycles x₂ k hk hx₂ ≫ K.homologyπ j = 0 ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i), π ≫ x₂ = x₁ ≫ K.d i j := by
+  subst hi hk
+  exact (K.sc j).liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements x₂ hx₂
 
 lemma liftCycles_comp_homologyπ_eq_iff_up_to_refinements
-    {A : C} {i : ι} (k k' : A ⟶ K.X i) (j : ι) (hj : c.next i = j) (hk : k ≫ K.d i j = 0)
-      (hk' : k' ≫ K.d i j = 0)
-      (i' : ι) (hi' : c.prev i = i') :
-    K.liftCycles k j hj hk ≫ K.homologyπ i = K.liftCycles k' j hj hk' ≫ K.homologyπ i ↔
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (l : A' ⟶ K.X i'), π ≫ k = π ≫ k' + l ≫ K.d i' i := by
-  subst hi'
-  apply (K.sc i).liftCycles_comp_homologyπ_eq_iff_up_to_refinements
+    (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    {A : C} (x₂ x₂' : A ⟶ K.X j) (hx₂ : x₂ ≫ K.d j k = 0) (hx₂' : x₂' ≫ K.d j k = 0) :
+    K.liftCycles x₂ k hk hx₂ ≫ K.homologyπ j = K.liftCycles x₂' k hk hx₂' ≫ K.homologyπ j ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i), π ≫ x₂ = π ≫ x₂' + x₁ ≫ K.d i j := by
+  subst hi hk
+  exact (K.sc j).liftCycles_comp_homologyπ_eq_iff_up_to_refinements x₂ x₂' hx₂ hx₂'
 
 lemma comp_homologyπ_eq_zero_iff_up_to_refinements
-    {A : C} {i : ι} (z : A ⟶ K.cycles i) (j : ι) (hj : c.prev i = j) :
-    z ≫ K.homologyπ i = 0 ↔
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ K.X j), π ≫ z = x ≫ K.toCycles j i := by
-  subst hj
-  apply ShortComplex.comp_homologyπ_eq_zero_iff_up_to_refinements
+    (i j : ι) (hi : c.prev j = i)
+    {A : C} (z₂ : A ⟶ K.cycles j) : z₂ ≫ K.homologyπ j = 0 ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i), π ≫ z₂ = x₁ ≫ K.toCycles i j := by
+  subst hi
+  exact (K.sc j).comp_homologyπ_eq_zero_iff_up_to_refinements z₂
+
+lemma comp_homologyπ_eq_iff_up_to_refinements
+    (i j : ι) (hi : c.prev j = i)
+    {A : C} (z₂ z₂' : A ⟶ K.cycles j) : z₂ ≫ K.homologyπ j = z₂' ≫ K.homologyπ j ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ K.X i),
+        π ≫ z₂ = π ≫ z₂' + x₁ ≫ K.toCycles i j:= by
+  subst hi
+  exact (K.sc j).comp_homologyπ_eq_iff_up_to_refinements z₂ z₂'
 
 lemma comp_pOpcycles_eq_zero_iff_up_to_refinements
       {A : C} {i : ι} (z : A ⟶ K.X i) (j : ι) (hj : c.prev i = j) :
@@ -67,7 +80,8 @@ lemma comp_pOpcycles_eq_zero_iff_up_to_refinements
 
 variable {K L}
 
-lemma mono_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+lemma mono_homologyMap_iff_up_to_refinements
+    (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     Mono (homologyMap φ j) ↔
       ∀ ⦃A : C⦄ (x₂ : A ⟶ K.X j) (_ : x₂ ≫ K.d j k = 0) (y₁ : A ⟶ L.X i)
           (_ : x₂ ≫ φ.f j = y₁ ≫ L.d i j),
@@ -76,7 +90,8 @@ lemma mono_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (h
   subst hi hk
   apply ShortComplex.mono_homologyMap_iff_up_to_refinements
 
-lemma epi_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+lemma epi_homologyMap_iff_up_to_refinements
+    (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     Epi (homologyMap φ j) ↔
       ∀ ⦃A : C⦄ (y₂ : A ⟶ L.X j) (_ : y₂ ≫ L.d j k = 0),
         ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₂ : A' ⟶ K.X j) (_ : x₂ ≫ K.d j k = 0)

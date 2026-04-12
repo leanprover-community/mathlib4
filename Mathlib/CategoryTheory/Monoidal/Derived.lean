@@ -202,6 +202,7 @@ lemma rightUnitor_hom_app (X : C) :
     (tensorUnitRightCounit L W) (L').rightUnitor.hom W
       (whiskerRight (rightUnitorNatIso C).hom (L') ≫ (L').leftUnitor.hom) X
 
+set_option backward.isDefEq.respectTransparency false in
 lemma triangle :
     NatTrans.Triangle (associator L W).hom ((L').obj (𝟙_ C))
       (leftUnitor L W) (rightUnitor L W) where
@@ -215,9 +216,11 @@ lemma triangle :
     rw [Category.comp_id, Category.comp_id, Category.assoc,
       rightUnitor_hom_app, leftUnitor_hom_app, Functor.map_comp_assoc,
       Functor.map_comp, NatTrans.comp_app_assoc, h₁,
-      associator_hom_fac_app_app_app_assoc, ← (L').map_comp,
+      associator_hom_fac_app_app_app_assoc,
+      Category.assoc, Category.assoc, ← (L').map_comp,
       MonoidalCategory.triangle, h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pentagon :
     NatTrans.Pentagon (associator L W).hom where
   natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ := by
@@ -248,7 +251,7 @@ lemma pentagon :
     conv_rhs =>
       rw [Category.assoc, Functor.map_comp_assoc,
         ← reassoc_of% h₅, associator_hom_fac_app_app_app, reassoc_of% h₆, ← reassoc_of% h₇,
-        associator_hom_fac_app_app_app_assoc]
+        associator_hom_fac_app_app_app_assoc, Category.assoc, Category.assoc]
 
 noncomputable instance : MonoidalCategory (DerivedMonoidal L W) :=
   .ofBifunctor _ _ _ _ _ (pentagon L W) (triangle L W)
@@ -276,6 +279,7 @@ lemma rightUnitor_eq (X : DerivedMonoidal L W) :
 attribute [local simp] tensorObj_eq whiskerLeft_eq whiskerRight_eq associator_eq
   leftUnitor_eq rightUnitor_eq leftUnitor_hom_app rightUnitor_hom_app
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (toDerivedMonoidal L W).LaxMonoidal where
   ε := 𝟙 _
   μ X₁ X₂ := ((counit L W).app X₁).app X₂

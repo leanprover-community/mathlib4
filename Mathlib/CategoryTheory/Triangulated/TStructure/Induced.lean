@@ -1,5 +1,9 @@
 /-
+<<<<<<< HEAD
 Copyright (c) 2025 Joël Riou. All rights reserved.
+=======
+Copyright (c) 2026 Joël Riou. All rights reserved.
+>>>>>>> origin
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -12,14 +16,22 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 /-!
 # Induced t-structures
 
+<<<<<<< HEAD
 Let `t` be a t-structure on a pretriangulated cateogry `C`.
+=======
+Let `t` be a t-structure on a pretriangulated category `C`.
+>>>>>>> origin
 If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 `P.HasInducedTStructure t` which essentially says that up to isomorphisms
 `P` is stable by the application of the truncation functors.
 
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
+<<<<<<< HEAD
 and the same applis to `t.minus` and `t.bounded`.
+=======
+and the same applies to `t.minus` and `t.bounded`.
+>>>>>>> origin
 
 -/
 
@@ -37,6 +49,10 @@ namespace ObjectProperty
 
 /-- The property that a full subcategory of a pretriangulated category
 equipped with a t-structure can be endowed with an induced t-structure. -/
+<<<<<<< HEAD
+=======
+@[mk_iff]
+>>>>>>> origin
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
     ∃ (X Y : C) (_ : t.IsLE X 0) (_ : t.IsGE Y 1)
@@ -45,6 +61,10 @@ class HasInducedTStructure [P.IsTriangulated] : Prop where
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
+<<<<<<< HEAD
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
   le n X := t.le n X.obj
@@ -84,9 +104,15 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
     (h : ∀ (X : C) (_ : P X) (n : ℤ), P ((t.truncLE n).obj X) ∧ P ((t.truncGE n).obj X)) :
     P.HasInducedTStructure t where
   exists_triangle_zero_one X hX :=
+<<<<<<< HEAD
       ⟨_, _, inferInstance, inferInstance, _, _, _,
         t.triangleLEGE_distinguished 0 1 (by lia) X,
           P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
+=======
+    ⟨_, _, inferInstance, inferInstance, _, _, _,
+      t.triangleLEGE_distinguished 0 1 (by lia) X,
+        P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
+>>>>>>> origin
 
 lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
@@ -110,6 +136,7 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
     rintro X ⟨hX, hX'⟩ n
     exact
       ⟨⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+<<<<<<< HEAD
         (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
       (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
         (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
@@ -117,6 +144,15 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
         (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
       (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
         (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
+=======
+          (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
+        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+          (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
+          ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
+        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
+>>>>>>> origin
 
 end ObjectProperty
 

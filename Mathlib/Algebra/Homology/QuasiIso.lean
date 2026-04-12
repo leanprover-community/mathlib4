@@ -223,6 +223,7 @@ lemma quasiIso_of_comp_right (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomolog
   rw [← quasiIso_iff_comp_right φ φ']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :
@@ -384,14 +385,14 @@ end
 section
 
 variable {A : Type _} [Category A] [Preadditive A] {ι : Type _} {c : ComplexShape ι}
-  {K L : HomologicalComplex A c} (e : HomotopyEquiv K L) [DecidableRel c.Rel]
+  {K L : HomologicalComplex A c} (e : HomotopyEquiv K L)
 
 instance HomotopyEquiv.toQuasiIsoAt (n : ι) [K.HasHomology n] [L.HasHomology n] :
     QuasiIsoAt e.hom n := by
   rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
   exact (e.toHomologyIso n).isIso_hom
 
-def HomotopyEquiv.toQuasiIso [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+lemma HomotopyEquiv.toQuasiIso [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
     QuasiIso e.hom :=
   ⟨fun _ => inferInstance⟩
 

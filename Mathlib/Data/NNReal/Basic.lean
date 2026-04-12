@@ -6,7 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.BigOperators.Expect
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Data.Real.Pointwise
@@ -34,7 +35,7 @@ open scoped BigOperators
 
 namespace NNReal
 
-noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
+noncomputable instance : FloorSemiring ℝ≥0 := inferInstanceAs <| FloorSemiring (Subtype _)
 
 @[simp, norm_cast]
 theorem coe_mulIndicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
@@ -139,6 +140,12 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
 
+/-- This lemma is needed for the `norm_cast` simp set. Outside of this use case `Nat.coe_sub`
+should be used. -/
+@[norm_cast]
+protected theorem coe_sub_of_lt {a b : ℝ≥0} (h : a < b) :
+    ((b - a : ℝ≥0) : ℝ) = b - a := NNReal.coe_sub h.le
+
 end Sub
 
 section Csupr
@@ -206,6 +213,18 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
   simp [le_ciInf_iff, ← Nat.ceil_le]
 
 end Csupr
+
+section rify
+
+@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_le (a b : ℝ≥0) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_lt (a b : ℝ≥0) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_ne (a b : ℝ≥0) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+
+end rify
 
 @[simp]
 theorem range_coe : range toReal = Ici 0 := Subtype.range_coe

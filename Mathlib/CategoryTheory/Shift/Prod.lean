@@ -33,6 +33,7 @@ lemma Prod.eqToHom_snd {X Y : C₁ × C₂} (h : X = Y) :
 
 variable (A₁ A₂ : Type*) [AddMonoid A₁] [AddMonoid A₂] [HasShift C₁ A₁] [HasShift C₂ A₂]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] shiftFunctorAdd_add_zero_hom_app shiftFunctorAdd_zero_add_hom_app
   shiftFunctorAdd_assoc_hom_app shiftFunctorAdd' in
 instance HasShift.prod : HasShift (C₁ × C₂) (A₁ × A₂) :=

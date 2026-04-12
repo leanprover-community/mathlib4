@@ -52,6 +52,7 @@ variable {C₀ C H₀ H : Type*} [Category C₀] [Category C] [Category H₀] [C
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotient (e : T ⋙ R ≅ L ⋙ B)
     (h : ∀ ⦃X₀ : C₀⦄ ⦃Y : C⦄ (f₀ f₁ : L.obj X₀ ⟶ Y) (_ : B.map f₀ = B.map f₁),
       ∃ (Cyl : C₀) (i₀ i₁ : X₀ ⟶ Cyl) (_ : T.map i₀ = T.map i₁)

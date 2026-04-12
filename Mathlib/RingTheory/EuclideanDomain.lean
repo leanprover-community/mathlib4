@@ -69,6 +69,7 @@ end GCDMonoid
 namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
+@[implicit_reducible]
 def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm

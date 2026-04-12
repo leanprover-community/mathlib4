@@ -61,6 +61,7 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 
@@ -110,6 +111,7 @@ instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 instance [HasLimits C] : HasLimits (Under X) :=
   ⟨inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
   StructuredArrow.mono_right_of_mono _
 

@@ -35,6 +35,7 @@ variable {C D H : Type*} [Category C] [Category D] [Category H]
   [F.CommShift ℤ] [L.CommShift ℤ] [RF.CommShift ℤ]
   [NatTrans.CommShift α ℤ] [F.IsTriangulated] [L.IsTriangulated]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTriangulated_of_isRightDerivedFunctor
     (h : ∀ ⦃X Y : H⦄ (f : X ⟶ Y), ∃ (T : Triangle C) (_ : T ∈ distTriang C)
       (_ : IsIso (α.app T.obj₁)) (_ : IsIso (α.app T.obj₂)) (_ : IsIso (α.app T.obj₃)),

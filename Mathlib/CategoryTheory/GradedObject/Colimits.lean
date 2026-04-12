@@ -73,6 +73,7 @@ end
 
 end HasColimitsOfShape
 
+set_option backward.isDefEq.respectTransparency false in
 instance {I J : Type*} (p : I → J)
     [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C]
     (K : Type*) [Category K] [HasColimitsOfShape K C] :

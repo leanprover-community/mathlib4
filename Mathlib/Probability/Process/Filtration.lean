@@ -163,10 +163,12 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
   rfl
 
-noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
+noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_refl _ _ := le_rfl
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
+
+noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
@@ -175,22 +177,15 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
-  le_sSup _ f hf_mem _ := le_sSup ⟨f, hf_mem, rfl⟩
-  sSup_le s f h_forall i :=
-    sSup_le fun m' hm' => by
-      obtain ⟨g, hg_mem, hfm'⟩ := hm'
-      rw [← hfm']
-      exact h_forall g hg_mem i
-  sInf_le s f hf_mem i := by
-    have hs : s.Nonempty := ⟨f, hf_mem⟩
-    simp only [sInf_def, hs, if_true]
-    exact sInf_le ⟨f, hf_mem, rfl⟩
-  le_sInf s f h_forall i := by
-    by_cases hs : s.Nonempty
-    swap; · simp only [sInf_def, hs, if_false]; exact f.le i
-    simp only [sInf_def, hs, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂]
-    exact fun g hg_mem => h_forall g hg_mem i
+  isLUB_sSup _ :=
+    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using fun _ ↦ isLUB_sSup _)
+  isGLB_sInf _ := by
+    dsimp +instances [instInfSet]
+    split_ifs with hn
+    · refine .of_image (f := seq) .rfl ?_
+      simpa only [isGLB_pi, Set.image_image] using fun _ ↦ isGLB_sInf _
+    · rw [Set.not_nonempty_iff_eq_empty] at hn
+      simpa [hn] using Filtration.le
   le_top f i := f.le' i
   bot_le _ _ := bot_le
 
@@ -289,11 +284,12 @@ noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι 
 
 @[inherit_doc] scoped postfix:max "₊" => rightCont
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :
     𝓕₊ i = if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i := by
-  simp only [rightCont, OrderTopology.topology_eq_generate_intervals]
+  simp +instances only [rightCont, OrderTopology.topology_eq_generate_intervals]
 
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :

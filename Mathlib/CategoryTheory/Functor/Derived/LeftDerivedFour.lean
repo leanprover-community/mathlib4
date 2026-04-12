@@ -24,6 +24,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ H : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   [Category D₁] [Category D₂] [Category D₃] [Category D₄] [Category H]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 800000 in
 -- this is slow
 --@[simps!]
@@ -98,6 +99,7 @@ noncomputable def leftDerivedCounit₄ :
     ((uncurry₄.obj F).totalLeftDerivedCounit (L₁.prod (L₂.prod (L₃.prod L₄)))
       (W₁.prod (W₂.prod (W₃.prod W₄)))))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (leftDerived₄ F L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄).IsLeftDerivedFunctor₄
     (leftDerivedCounit₄ F L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄) W₁ W₂ W₃ W₄ := by
   refine (isLeftDerivedFunctor_iff_of_iso _ _
@@ -125,6 +127,7 @@ noncomputable def leftDerived₄Lift : G ⟶ LF :=
       (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
       (whiskeringLeft₄Equiv β))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma leftDerived₄_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((leftDerived₄Lift LF α W₁ W₂ W₃ W₄ G β).app (L₁.obj X₁)).app (L₂.obj X₂)).app

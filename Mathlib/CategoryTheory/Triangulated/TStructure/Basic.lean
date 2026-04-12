@@ -29,7 +29,11 @@ use depending on the context.
 
 ## TODO
 
+<<<<<<< HEAD
 * define the heart of `t` and show it is an abelian category
+=======
+* show that the heart of `t` is an abelian category
+>>>>>>> origin
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]

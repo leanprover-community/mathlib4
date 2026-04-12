@@ -82,6 +82,8 @@ instance :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
 noncomputable def commShift : RF.CommShift A where
   commShiftIso a := rightDerivedNatIso _ _ (precomposeShiftNatTrans RF α a)
     (postcomposeShiftNatTrans RF α a) W (F.commShiftIso a)
@@ -141,6 +143,7 @@ lemma comp_commShiftIso_hom (a : A) (X : C) :
   simpa using (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X)
 
+set_option backward.isDefEq.respectTransparency false in
 instance natTrans_commShift :
     letI := commShift RF α W A
     NatTrans.CommShift α A :=

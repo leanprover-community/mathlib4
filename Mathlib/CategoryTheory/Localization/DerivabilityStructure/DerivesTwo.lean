@@ -42,7 +42,7 @@ lemma prod_isInvertedBy_iff (W₁ : MorphismProperty C₁)
       have : IsIso (F.map α) := hF₁ X₂ _ hf₁
       have : IsIso (F.map β) := hF₂ Y₁ _ hf₂
       simpa only [← F.map_comp, prod_comp, comp_id, id_comp, α, β] using
-        inferInstanceAs (IsIso (F.map α ≫ F.map β))⟩
+        (inferInstance : IsIso (F.map α ≫ F.map β))⟩
 
 end MorphismProperty
 

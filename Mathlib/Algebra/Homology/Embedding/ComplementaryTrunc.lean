@@ -51,6 +51,7 @@ lemma ιStupidTrunc_πStupidTrunc :
 noncomputable def shortComplexStupidTrunc : ShortComplex (HomologicalComplex C c) :=
   ShortComplex.mk (K.ιStupidTrunc e₂) (K.πStupidTrunc e₁) (K.ιStupidTrunc_πStupidTrunc ac)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexStupidTruncSplitting₁ (n : ι₁) :
     ((K.shortComplexStupidTrunc ac).map (eval C _ (e₁.f n))).Splitting where
   r := 0
@@ -62,6 +63,7 @@ noncomputable def shortComplexStupidTruncSplitting₁ (n : ι₁) :
     rw [ac.isStrictlySupportedOutside₁_iff]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexStupidTruncSplitting₂ (n : ι₂) :
     ((K.shortComplexStupidTrunc ac).map (eval C _ (e₂.f n))).Splitting where
   r := (asIso ((K.ιStupidTrunc e₂).f (e₂.f n))).inv

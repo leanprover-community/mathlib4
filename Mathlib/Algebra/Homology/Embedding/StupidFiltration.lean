@@ -73,6 +73,7 @@ noncomputable def restrictionStupidTruncIso [e₁.IsRelIff] [e₂.IsRelIff] :
       K.restriction_d_eq e₂ (h.f_index i₁) (h.f_index j₁)]
     simp [restrictionXIso])
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma restrictionStupidTruncIso_hom_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
@@ -83,6 +84,7 @@ lemma restrictionStupidTruncIso_hom_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
   rw [extendMap_f _ e₂ (h.f_index i₁), restrictionMap_f' _ e₂ (h.f_index i₁)]
   simp [restrictionXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma restrictionStupidTruncIso_inv_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
@@ -105,6 +107,7 @@ noncomputable def mapStupidTruncGE [e₁.IsTruncGE] [e₂.IsRelIff] :
 
 open ComplexShape.Embedding
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncLE_naturality [e₁.IsTruncLE] [e₂.IsRelIff] :
@@ -117,6 +120,7 @@ lemma mapStupidTruncLE_naturality [e₁.IsTruncLE] [e₂.IsRelIff] :
     homRestrict_liftExtend]
   apply restrictionStupidTruncIso_hom_naturality
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncLE_fac [e₁.IsTruncLE] [e₂.IsTruncLE] :
     K.πStupidTrunc e₂ ≫ K.mapStupidTruncLE h = K.πStupidTrunc e₁ := by
@@ -144,6 +148,7 @@ noncomputable def mapStupidTruncLE_trans [e₁.IsTruncLE] [e₂.IsTruncLE] [e₃
   rw [← cancel_epi (K.πStupidTrunc e₃), mapStupidTruncLE_fac_assoc,
     mapStupidTruncLE_fac, mapStupidTruncLE_fac]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncGE_naturality [e₁.IsTruncGE] [e₂.IsRelIff] :
@@ -156,6 +161,7 @@ lemma mapStupidTruncGE_naturality [e₁.IsTruncGE] [e₂.IsRelIff] :
     homRestrict'_descExtend]
   apply restrictionStupidTruncIso_inv_naturality
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
     K.mapStupidTruncGE h ≫ K.ιStupidTrunc e₂ = K.ιStupidTrunc e₁ := by

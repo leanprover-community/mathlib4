@@ -51,6 +51,7 @@ namespace DerivesMonoidalStructure
 
 variable [L.IsLocalization W] (h : Φ.DerivesMonoidalStructure L)
 
+set_option backward.isDefEq.respectTransparency false in
 open Functor.Monoidal DerivedMonoidal in
 include h in
 lemma hasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by

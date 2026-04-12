@@ -29,6 +29,7 @@ variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProp
   [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
   [L.IsLocalization W]
 
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj where
   mem_essImage Y := by

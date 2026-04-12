@@ -82,6 +82,7 @@ variable {F}
 @[simps!]
 def natTrans₁₂ : functor₁ F ⟶ functor₂ F := (Functor.postcompose₃.obj F).map α
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def natTrans₂₃ : functor₂ F ⟶ functor₃ F where
   app X₁ :=
@@ -98,6 +99,7 @@ def natTrans₂₃ : functor₂ F ⟶ functor₃ F where
 @[simps!]
 def natTrans₃₄ : functor₃ F ⟶ functor₄ F := (F ⋙ Functor.postcompose₃).flip.map α
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def natTrans₁₅ : functor₁ F ⟶ functor₅ F where
   app X₁ :=
@@ -111,6 +113,7 @@ def natTrans₁₅ : functor₁ F ⟶ functor₅ F where
     ext X₂ : 2
     exact α.naturality ((F.map f₁).app X₂)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def natTrans₅₄ : functor₅ F ⟶ functor₄ F where
   app X₁ :=
@@ -149,6 +152,8 @@ namespace MonoidalCategory
 lemma pentagon_curriedAssociatorNatIso_hom [MonoidalCategory C] :
     NatTrans.Pentagon (curriedAssociatorNatIso C).hom where
 
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
 def ofBifunctor (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)
     (leftUnitor : F.obj unit ≅ 𝟭 C) (rightUnitor : F.flip.obj unit ≅ 𝟭 C)
     (pentagon : NatTrans.Pentagon α.hom)

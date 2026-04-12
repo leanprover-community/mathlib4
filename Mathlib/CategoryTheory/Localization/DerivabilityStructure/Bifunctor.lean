@@ -94,6 +94,7 @@ def toWhiskeringLeft₂Eval₂ {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂}
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def whiskeringLeft₂Equiv (F : Bifunctor C₁ C₂ H) (G : (D₁ × D₂) ⥤ H)
     (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) :
@@ -255,6 +256,7 @@ section
 variable (X₁ : C₁') (F₂ : D₂ ⥤ H)
   (α₁ : F.obj (Φ₁.functor.obj X₁) ⟶ L₂ ⋙ F₂) [F₂.IsRightDerivedFunctor α₁ W₂]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_rightDerivedNatTrans₁ [Φ₂.IsRightDerivabilityStructure]
     [Φ₁.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     IsIso (rightDerivedNatTrans₁ RF W₂ α (Φ₁.functor.obj X₁) F₂ α₁) := by
@@ -289,6 +291,7 @@ variable (X₂ : C₂') (F₁ : D₁ ⥤ H) (α₂ : F.flip.obj (Φ₂.functor.o
     [F₁.IsRightDerivedFunctor α₂ W₁]
 
 include Φ₁ in
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_rightDerivedNatTrans₂ [Φ₁.IsRightDerivabilityStructure]
     [Φ₂.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     IsIso (rightDerivedNatTrans₂ RF W₁ α (Φ₂.functor.obj X₂) F₁ α₂) := by
@@ -300,6 +303,7 @@ lemma isIso_rightDerivedNatTrans₂ [Φ₁.IsRightDerivabilityStructure]
   exact IsIso.of_isIso_fac_left (rightDerivedNatTrans₂_fac_app RF W₁ α (Φ₂.functor.obj X₂)
     F₁ α₂ (Φ₁.functor.obj X₁))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor₂_of_isRightDerivedBifunctor [Φ₁.IsRightDerivabilityStructure]
     [Φ₂.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     (RF.flip.obj (L₂.obj (Φ₂.functor.obj X₂))).IsRightDerivedFunctor

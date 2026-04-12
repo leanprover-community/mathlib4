@@ -131,12 +131,14 @@ noncomputable def filtrationLEMinusFunctorCompWhiskeringRightObjιIso :
   filtrationLEMinusFunctor C ⋙ (whiskeringRight _ _ _).obj (Minus.ι C) ≅
     filtrationLEFunctor C := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def filtrationLEFunctorCompColimIso [HasColimitsOfShape ℤ C] :
     filtrationLEFunctor C ⋙ colim ≅ 𝟭 (CochainComplex C ℤ) :=
   NatIso.ofComponents
     (fun K ↦ IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
       K.isColimitFiltrationLECocone) (fun f ↦ colimit.hom_ext (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_filtrationLEFunctorCompColimIso_hom_app (n : ℤ) [HasColimitsOfShape ℤ C] :
     colimit.ι K.filtrationLE n ≫ (filtrationLEFunctorCompColimIso C).hom.app K =

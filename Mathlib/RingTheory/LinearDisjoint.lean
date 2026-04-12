@@ -122,7 +122,7 @@ The following results are related to the equivalent characterizations in
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -640,7 +640,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   replace htb : Function.Injective gb := transcendental_iff_injective.1 htb
   have htab : Function.Injective gab := hfa.comp hta
   algebraize_only [ga.toRingHom, gb.toRingHom]
-  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R A B
+  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R R A B
   haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
   have hf : Function.Injective f := RingHom.injective _
   have key2 : gab.range ≤ fa.range ⊓ fb.range := by

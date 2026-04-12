@@ -84,7 +84,7 @@ lemma degreewiseMonoWithProjectiveCokernel_eq_unop :
   ext K L f
   simp only [degreewiseMonoWithProjectiveCokernel, monoWithProjectiveCokernel_eq_unop,
     MorphismProperty.unop, MorphismProperty.inverseImage_iff, MorphismProperty.op,
-    degreewiseEpiWithInjectiveKernel, Functor.rightOp_obj, Functor.rightOp_map, Quiver.Hom.unop_op]
+    degreewiseEpiWithInjectiveKernel, Functor.rightOp_obj, Functor.rightOp_map]
   refine ⟨fun h n ↦ h _, fun h n ↦ ?_⟩
   obtain ⟨m, rfl⟩ : ∃ m, n = - m := ⟨-n, by simp⟩
   apply h

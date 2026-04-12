@@ -209,6 +209,7 @@ lemma toEnd_eq (x : L) :
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
   tauto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
 instance [IsNoetherian R M] : IsNilpotent L (shiftedGenWeightSpace R L M χ) :=

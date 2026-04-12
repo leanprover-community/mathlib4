@@ -33,6 +33,7 @@ noncomputable def arrowHomToG : Arrow.mk (0 : S.X₁ ⟶ 0) ⟶ Arrow.mk S.g :=
 
 variable {ι : Type*} {c : ComplexShape ι} {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁) (hi₀₁' : i₀ ≠ i₁)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mono_homologyMap₀_doubleFunctor_map_arrowHomToG_iff :
     Mono (HomologicalComplex.homologyMap ((doubleFunctor C hi₀₁ hi₀₁').map S.arrowHomToG) i₀) ↔
       Mono S.f := by
@@ -56,6 +57,7 @@ lemma mono_homologyMap₀_doubleFunctor_map_arrowHomToG_iff :
     refine ⟨A, 𝟙 _, inferInstance, ?_⟩
     rw [Category.id_comp, ← cancel_mono (e₁.hom ≫ S.f ≫ e₂.inv), hx₁, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_homologyMap₀_doubleFunctor_map_arrowHomToG_iff :
     Epi (HomologicalComplex.homologyMap ((doubleFunctor C hi₀₁ hi₀₁').map S.arrowHomToG) i₀) ↔
       S.Exact := by

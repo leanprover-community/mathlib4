@@ -18,7 +18,7 @@ to the quotient of `X ⟶ Y` by the homotopy relation (in this case,
 the left and right homotopy relations coincide).
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
+* [Daniel G. Quillen, Homotopical algebra, I.1][Quillen1967]
 
 -/
 
@@ -28,7 +28,7 @@ open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category* C] [ModelCategory C] {H : Type*} [Category H]
+variable {C : Type*} [Category* C] [ModelCategory C] {H : Type*} [Category* H]
   (L : C ⥤ H) [L.IsLocalization (weakEquivalences _)]
   {X Y : C}
 
