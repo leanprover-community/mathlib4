@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov, Anne Baanen, Dagur Asgeirsson
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov, Anne Baanen,
+  Dagur Asgeirsson
 -/
 module
 
@@ -100,12 +101,15 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
 /-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-abbrev _root_.CategoryTheory.HasForget.instFunLike {X Y : C} :
+abbrev instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f
   coe_injective' f g h := by
     rw [← ofHom_hom f, ← ofHom_hom g]
     simp_all
+
+@[deprecated (since := "2026-04-03")] alias _root_.CategoryTheory.HasForget.instFunLike :=
+  instFunLike
 
 /--
 `ConcreteCategory.hom` bundled as an `Equiv`.
