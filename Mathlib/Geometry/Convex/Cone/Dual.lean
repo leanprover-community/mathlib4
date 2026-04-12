@@ -158,7 +158,7 @@ lemma le_dual_dual : C ≤ dual p.flip (dual p C) := fun _x hx _y hy ↦ hy hx
 alias subset_dual_dual := le_dual_dual
 
 @[simp] lemma le_dual_flip_iff_le_dual {D} : C ≤ dual p.flip D ↔ D ≤ dual p C := by
-  constructor <;> exact (le_trans le_dual_dual <| dual_antitone ·)
+  constructor <;> exact (le_trans le_dual_dual <| dual_anti ·)
 
 @[deprecated (since := "2026-04-09")]
 alias subset_dual_flip_iff_subset_dual := le_dual_flip_iff_le_dual
