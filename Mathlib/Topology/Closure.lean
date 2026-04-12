@@ -475,7 +475,6 @@ section Frontier
 theorem closure_diff_interior (s : Set X) : closure s \ interior s = frontier s :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Interior and frontier are disjoint. -/
 lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
   rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
@@ -489,6 +488,14 @@ theorem closure_diff_frontier (s : Set X) : closure s \ frontier s = interior s 
 theorem self_diff_frontier (s : Set X) : s \ frontier s = interior s := by
   rw [frontier, diff_diff_right, diff_eq_empty.2 subset_closure,
     inter_eq_self_of_subset_right interior_subset, empty_union]
+
+lemma mem_interior_iff_notMem_frontier {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ interior s ↔ x ∉ frontier s := by
+  simp [← self_diff_frontier, hx]
+
+lemma mem_frontier_iff_notMem_interior {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ frontier s ↔ x ∉ interior s := by
+  simp [← self_diff_frontier, hx]
 
 theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
@@ -512,11 +519,9 @@ theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
 theorem frontier_compl (s : Set X) : frontier sᶜ = frontier s := by
   simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_univ : frontier (univ : Set X) = ∅ := by simp [frontier]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_empty : frontier (∅ : Set X) = ∅ := by simp [frontier]
 

@@ -27,16 +27,16 @@ Technically, the definition `F.intervalGapsWithin a b` does not require `F` to b
 or endpoints to be within `[a, b]` or even require that `a ≤ b`, but it makes the most sense if
 they are actually satisfied. If they are actually satisfied, then we show that
 * `Finset.intervalGapsWithin_mapsTo`, `Finset.intervalGapsWithin_injective`,
-`Finset.intervalGapsWithin_surjOn`:
-`(fun j ↦ ((F.intervalGapsWithin h a b j.castSucc).2, (F.intervalGapsWithin h a b j.succ).1))` is
-a bijection between `Set.Iio k` and `F`.
+  `Finset.intervalGapsWithin_surjOn`:
+  `(fun j ↦ ((F.intervalGapsWithin h a b j.castSucc).2, (F.intervalGapsWithin h a b j.succ).1))` is
+  a bijection between `Set.Iio k` and `F`.
 * `Finset.intervalGapsWithin_le_fst`, `Finset.intervalGapsWithin_snd_le`,
-`Finset.intervalGapsWithin_fst_le_snd`:
-`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2]` is indeed a subinterval of
-`[a, b]` when `j < k`.
+  `Finset.intervalGapsWithin_fst_le_snd`:
+  `[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2]` is indeed a subinterval of
+  `[a, b]` when `j < k`.
 * `Finset.intervalGapsWithin_pairwiseDisjoint_Ioc`: the half-closed intervals
-`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2)` are pairwise disjoint
-for `j < k + 1`.
+  `[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2)` are pairwise disjoint
+  for `j < k + 1`.
 -/
 
 @[expose] public section
@@ -92,7 +92,7 @@ theorem intervalGapsWithin_snd_of_lt (hj : j < k) :
   congr
   ext
   simp only [coe_castPred, val_natCast, Nat.mod_succ_eq_iff_lt]
-  omega
+  lia
 
 theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
@@ -124,18 +124,18 @@ theorem intervalGapsWithin_surjOn : (Set.Iio k).SurjOn
 theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     a ≤ (F.intervalGapsWithin h a b j).1 := by
   wlog hj : j < k + 1 generalizing j
-  · convert this (j : Fin (k + 1)) (by grind) using 3; grind [cast_val_eq_self]
+  · grind [cast_val_eq_self]
   by_cases hj : j = 0
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind))
-    have hj₀ : j - 1 + 1 = j := by omega
+    have hj₀ : j - 1 + 1 = j := by lia
     simp only [Nat.succ_eq_add_one, hj₀] at this
     grind
 
 theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (F.intervalGapsWithin h a b j).2 ≤ b := by
   wlog hj : j < k + 1 generalizing j
-  · convert this (j : Fin (k + 1)) (by grind) using 3; grind [cast_val_eq_self]
+  · grind [cast_val_eq_self]
   by_cases hj : j = k
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j) (by grind))
@@ -174,7 +174,6 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
   simp [hFabi, this.le, hG]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (Set.Iio (k + 1)).PairwiseDisjoint (fun (j : ℕ) ↦

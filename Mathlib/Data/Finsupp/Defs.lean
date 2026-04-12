@@ -5,8 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.FiniteSupport.Defs
 
 /-!
 # Type of functions with finite support
@@ -119,13 +118,15 @@ initialize_simps_projections Finsupp (toFun → apply)
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+instance instSubsingleton [IsEmpty α] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact isEmptyElim x
+
+instance instSubsingleton' [Subsingleton M] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact Subsingleton.elim ..
+
 variable (α) in
-theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
-    Nontrivial M := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
-  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
+theorem nontrivial_of_nontrivial [h : Nontrivial (α →₀ M)] : Nontrivial M := by
+  contrapose! h; infer_instance
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
@@ -187,8 +188,12 @@ theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 
-theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
-  f.fun_support_eq.symm ▸ f.support.finite_toSet
+@[fun_prop]
+theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
+  rw [HasFiniteSupport]
+  exact f.fun_support_eq.symm ▸ f.support.finite_toSet
+
+@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
@@ -466,6 +471,10 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
     embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
+
+@[simp]
+lemma embDomain_refl : embDomain (M := M) (Function.Embedding.refl α) = id := by
+  ext; simp [embDomain_apply]
 
 end EmbDomain
 

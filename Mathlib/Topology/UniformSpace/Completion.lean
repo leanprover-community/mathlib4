@@ -299,7 +299,7 @@ instance inhabited [Inhabited α] : Inhabited (Completion α) :=
   inferInstanceAs <| Inhabited (Quotient _)
 
 instance uniformSpace : UniformSpace (Completion α) :=
-  SeparationQuotient.instUniformSpace
+  fast_instance% SeparationQuotient.instUniformSpace
 
 instance completeSpace : CompleteSpace (Completion α) :=
   SeparationQuotient.instCompleteSpace

@@ -166,7 +166,6 @@ theorem leadingCoeff_abs (x : Lex R⟦Γ⟧) :
   · obtain hgt' := leadingCoeff_pos_iff.mpr hgt
     rw [abs_eq_self.mpr hgt.le, abs_eq_self.mpr hgt'.le]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex y).orderTop < (ofLex x).orderTop) : |x| < |y| := by
   rw [← orderTop_abs x, ← orderTop_abs y] at h

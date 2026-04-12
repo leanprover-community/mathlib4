@@ -297,7 +297,6 @@ end Num
 
 namespace PosNum
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by
@@ -564,7 +563,6 @@ instance linearOrder : LinearOrder PosNum where
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> simp [bit, two_mul]
 
@@ -593,15 +591,12 @@ theorem cast_pos [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : P
 theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
--- TODO: find a good way to fix the linter error
--- simp is called on three goals, with different simp set
-set_option linter.flexible false in
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+  norm_cast at this
+  -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
+  revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
@@ -621,7 +616,6 @@ variable {α : Type*}
 
 open PosNum
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by
   cases b <;> cases n <;> simp [bit, two_mul] <;> rfl
 
@@ -732,13 +726,11 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
   cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 
--- TODO: find a good way to fix the linter; simp applies to three goals at once
-set_option linter.flexible false in
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+  norm_cast at this
+  -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
+  revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : Num} :
@@ -816,7 +808,6 @@ theorem castNum_ldiff : ∀ m n : Num, (ldiff m n : ℕ) = Nat.ldiff m n := by
 theorem castNum_xor : ∀ m n : Num, ↑(m ^^^ n) = (↑m ^^^ ↑n : ℕ) := by
   apply castNum_eq_bitwise PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n : ℕ) := by
   cases m <;> dsimp only [← shiftl_eq_shiftLeft, shiftl]

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ClearExcept
 
 set_option linter.unusedTactic false

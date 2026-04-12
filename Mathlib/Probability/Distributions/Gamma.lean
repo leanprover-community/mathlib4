@@ -28,7 +28,6 @@ open scoped ENNReal NNReal
 
 open MeasureTheory Real Set Filter Topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
@@ -98,7 +97,6 @@ lemma gammaPDFReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the gamma distribution integrates to 1 -/
 @[simp]
 lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
@@ -134,16 +132,7 @@ lemma isProbabilityMeasure_gammaMeasure {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
   measure_univ := by simp [gammaMeasure, lintegral_gammaPDF_eq_one ha hr]
 
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGamma :=
-  isProbabilityMeasure_gammaMeasure
-
 section GammaCDF
-
-/-- CDF of the gamma distribution -/
-@[deprecated "Use `cdf (gammaMeasure a r)` instead." (since := "2025-08-28")]
-noncomputable
-def gammaCDFReal (a r : ℝ) : StieltjesFunction ℝ :=
-  cdf (gammaMeasure a r)
 
 lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     cdf (gammaMeasure a r) x = ∫ x in Iic x, gammaPDFReal a r x := by
@@ -153,17 +142,11 @@ lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : �
   · exact ae_of_all _ fun b ↦ by simp [gammaPDFReal_nonneg ha hr]
   · fun_prop
 
-@[deprecated (since := "2025-08-28")] alias gammaCDFReal_eq_integral :=
-  cdf_gammaMeasure_eq_integral
-
 lemma cdf_gammaMeasure_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     cdf (gammaMeasure a r) x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasure_gammaMeasure ha hr
   simp only [gammaPDF, cdf_eq_real]
   simp [gammaMeasure, gammaPDF, measureReal_def]
-
-@[deprecated (since := "2025-08-28")] alias gammaCDFReal_eq_lintegral :=
-  cdf_gammaMeasure_eq_lintegral
 
 end GammaCDF
 

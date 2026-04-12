@@ -865,6 +865,25 @@ theorem homothety_add (c : P1) (r₁ r₂ : k) :
     homothety c (r₁ + r₂) = r₁ • (id k P1 -ᵥ const k P1 c) +ᵥ homothety c r₂ := by
   simp only [homothety_def, add_smul, vadd_vadd]
 
+theorem homothety_eq_iff_of_mul_eq_one {c p q : P1} {r₁ r₂ : k} (h : r₁ * r₂ = 1) :
+    homothety c r₁ p = q ↔ homothety c r₂ q = p := by
+  obtain h' : r₂ * r₁ = 1 := mul_eq_one_comm.mp h
+  refine ⟨fun h1 ↦ ?_, fun h1 ↦ ?_⟩
+  all_goals
+    rw [← h1, ← homothety_mul_apply]
+    simp [h, h']
+
+theorem homothety_injective [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k}
+    (hr : r ≠ 0) :
+    Function.Injective (homothety c r) :=
+  fun _ _ h ↦ by simpa [homothety_def, hr] using h
+
+@[simp]
+theorem homothety_inj [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k} (hr : r ≠ 0)
+    {p q : P1} :
+    homothety c r p = homothety c r q ↔ p = q :=
+  (homothety_injective c hr).eq_iff
+
 /-- `homothety` as a multiplicative monoid homomorphism. -/
 def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 where
   toFun := homothety c

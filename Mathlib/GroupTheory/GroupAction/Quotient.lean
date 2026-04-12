@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
+open scoped commutatorElement
+
 namespace MulAction
 
 variable [Group α]
@@ -66,7 +68,7 @@ instance left_quotientAction : QuotientAction α H :=
   ⟨fun _ _ _ _ => by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (normalizer H).op H :=
+instance right_quotientAction : QuotientAction (normalizer H : Subgroup α).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -338,7 +340,6 @@ instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
   rw [(equivSubgroupOrbits β H).finite_iff]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group acting freely and transitively, an equivalence between the orbits under the
 action of a subgroup and the quotient group. -/
 @[to_additive /-- Given an additive group acting freely and transitively, an equivalence between the

@@ -132,7 +132,6 @@ theorem aeval_iterate_derivative_of_lt (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     h, ← mul_smul_comm, mul_assoc, ← mul_sum, eval_mul, pow_one, eval_sub, eval_X, eval_C, sub_self,
     zero_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') :
     aeval r (derivative^[q] p) = q ! • p'.eval r := by
@@ -154,7 +153,6 @@ theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by
@@ -226,7 +224,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
-    rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
+    rw [range_eq_Ico, range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     rw [← tsub_le_iff_right]
     calc
       q - 1 ≤ q - 1 + p'.natDegree := le_self_add

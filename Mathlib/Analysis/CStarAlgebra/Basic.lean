@@ -97,7 +97,6 @@ namespace CStarRing
 
 section NonUnital
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_le_norm_mul_star_self
     [NonUnitalNormedRing E] [StarRing E]
     (h : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x * x⋆‖) : CStarRing E :=
@@ -111,7 +110,6 @@ lemma of_le_norm_mul_star_self
 
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
@@ -279,6 +277,12 @@ theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) 
   congr($(hx.nnnorm_pow_two_pow n))
 
 end SelfAdjoint
+
+theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+    (e : E) (he : IsStarProjection e) : ‖e‖ ≤ 1 := by
+  suffices ‖e‖ * (‖e‖ - 1) = 0 by grind [sub_eq_zero]
+  simp [mul_sub, ← CStarRing.norm_star_mul_self, he.isSelfAdjoint.star_eq, he.isIdempotentElem.eq]
+
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
@@ -308,9 +312,9 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
-    [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  NormedAlgebra.induced 𝕜 S A S.subtype
+example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+    [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) :
+    NormedAlgebra 𝕜 S := by infer_instance
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where

@@ -124,7 +124,6 @@ lemma differentiableOn_cuspFunction_ball [ModularFormClass F Γ k]
   fun _ hz ↦ (differentiableAt_cuspFunction f hh hΓ <| mem_ball_zero_iff.mp hz)
     |>.differentiableWithinAt
 
-set_option backward.isDefEq.respectTransparency false in
 lemma analyticAt_cuspFunction_zero [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     AnalyticAt ℂ (cuspFunction h f) 0 :=
@@ -140,7 +139,9 @@ lemma cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h �
   exact qParam_tendsto_atImInfty hh
 
 variable (h) in
-/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
+/-- The `q`-expansion of a modular form with strict period `h`, bundled as a `PowerSeries`.
+The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`, where
+`q = exp(2πiτ/h)` is the local parameter at the cusp. -/
 def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
@@ -152,7 +153,6 @@ lemma qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h ∈ 
     (qExpansion h f).coeff 0 = valueAtInfty f := by
   simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
@@ -212,7 +212,6 @@ lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k]
     ← NNReal.coe_lt_one, coe_nnnorm] at hy
   simpa [qExpansionFormalMultilinearSeries, mul_comm] using hasSum_qExpansion_of_norm_lt f hh hΓ hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
 -/
 lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k]
@@ -416,13 +415,11 @@ lemma qExpansion_smul
   grind [map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
     (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_neg
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
     qExpansion h (-f) = -qExpansion h f := by
   simpa using qExpansion_smul hh hΓ (-1 : ℂ) f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f - g) = qExpansion h f - qExpansion h g := by

@@ -31,7 +31,6 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 
 namespace Imo2013Q5
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   by_contra! hxy
@@ -165,7 +164,6 @@ end Imo2013Q5
 
 open Imo2013Q5
 
-set_option backward.isDefEq.respectTransparency false in
 theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H_fixed_point : ∃ a, 1 < a ∧ f a = a) :
     ∀ x, 0 < x → f x = x := by

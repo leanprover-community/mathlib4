@@ -6,14 +6,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 module
 
 public import Batteries.Logic
+public import Batteries.Util.LibraryNote
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
-public import Mathlib.Tactic.Basic
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -192,6 +193,39 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 
 end Semigroup
 
+section IsCommutative
+
+/-- A Prop stating that the addition is commutative. -/
+class IsAddCommutative (M : Type*) [Add M] : Prop where
+  is_comm : Std.Commutative (α := M) (· + ·)
+
+/-- A Prop stating that the multiplication is commutative. -/
+@[to_additive existing]
+class IsMulCommutative (M : Type*) [Mul M] : Prop where
+  is_comm : Std.Commutative (α := M) (· * ·)
+
+attribute [instance] IsAddCommutative.is_comm
+attribute [instance] IsMulCommutative.is_comm
+
+@[to_additive]
+lemma isMulCommutative_iff {M : Type*} [Mul M] : IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
+  grind [IsMulCommutative, Std.Commutative]
+
+@[to_additive]
+alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
+
+/-- An alternative to `mul_comm` which uses the mixin `IsMulCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `mul_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/
+@[to_additive
+/-- An alternative to `add_comm` which uses the mixin `IsAddCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/ ]
+lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
+  IsMulCommutative.is_comm.comm ..
+
+end IsCommutative
+
 /-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
@@ -224,7 +258,7 @@ variable [CommMagma G] {a : G}
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 @[to_additive]
-instance CommMagma.to_isCommutative : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative : IsMulCommutative G := ⟨⟨mul_comm⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
@@ -339,9 +373,9 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
   mp := mul_eq_one_symm
   mpr := mul_eq_one_symm
 
-@[to_additive] instance (priority := low) (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
+@[to_additive] instance (priority := low) (M) [MulOne M] [IsMulCommutative M] :
     IsDedekindFiniteMonoid M where
-  mul_eq_one_symm := (Std.Commutative.comm ..).trans
+  mul_eq_one_symm := mul_comm' .. |>.trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -523,7 +557,7 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     match k' with
     | 0 => rfl
     | 1 => simp [npowRec']
-    | k + 2 => simp [npowRec', ← mul_assoc, Nat.mul_add, ← ih]
+    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
 
 @[to_additive]
 theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :
@@ -623,13 +657,9 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high, to_additive]
+instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
@@ -1276,28 +1306,109 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
 
 end CommGroup
 
-section IsCommutative
+namespace IsMulCommutative
 
-/-- A Prop stating that the addition is commutative. -/
-class IsAddCommutative (M : Type*) [Add M] : Prop where
-  is_comm : Std.Commutative (α := M) (· + ·)
+/-- A magma which `IsMulCommutative` is a `CommMagma`.
 
-/-- A Prop stating that the multiplication is commutative. -/
-@[to_additive]
-class IsMulCommutative (M : Type*) [Mul M] : Prop where
-  is_comm : Std.Commutative (α := M) (· * ·)
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
 
-@[to_additive]
-instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
-    [IsMulCommutative M] :
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An additive magma which `IsMulCommutative` is a `AddCommMagma`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] : CommMagma M where
+  mul_comm := mul_comm'
+
+/-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An `AddSemigroup` which `IsMulCommutative` is a `AddCommSemigroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Semigroup M] [IsMulCommutative M] :
+    CommSemigroup M where
+
+/-- A `Monoid` which `IsMulCommutative` is a `CommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- A `AddMonoid` which `IsMulCommutative` is a `AddCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [Monoid M] [IsMulCommutative M] :
     CommMonoid M where
-  mul_comm := IsMulCommutative.is_comm.comm
 
-@[to_additive]
-instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
+/-- A `DivisionMonoid` which `IsMulCommutative` is a `DivisionCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- A `SubtractionMonoid` which `IsMulCommutative` is a `SubtractionCommMonoid`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {M : Type*} [DivisionMonoid M] [IsMulCommutative M] :
+    DivisionCommMonoid M where
+
+/-- A `Group` which `IsMulCommutative` is a `CommGroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+@[to_additive
+/-- An `AddGroup` which `IsMulCommutative` is a `AddCommGroup`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/ ]
+scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
 
-end IsCommutative
+end IsMulCommutative
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.

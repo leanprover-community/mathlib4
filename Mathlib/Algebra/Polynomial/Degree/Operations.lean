@@ -200,7 +200,6 @@ theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
@@ -617,7 +616,6 @@ theorem nextCoeff_X_add_C [Semiring S] (c : S) : nextCoeff (X + C c) = c := by
   nontriviality S
   simp [nextCoeff_of_natDegree_pos]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degree_X_pow_add_C {n : ℕ} (hn : 0 < n) (a : R) : degree ((X : R[X]) ^ n + C a) = n := by
   have : degree (C a) < degree ((X : R[X]) ^ n) := degree_C_le.trans_lt <| by
     rwa [degree_X_pow, Nat.cast_pos]
