@@ -246,14 +246,8 @@ instance deterministic_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrie
     Deterministic (X := X) (Y := Y) (⟨Kernel.deterministic f hf, inferInstance⟩ : X ⟶ Y) where
   hom_comul := by
     ext : 1; dsimp
-    rw [Kernel.id_parallelComp_comp_parallelComp_id,
-      Kernel.deterministic_parallelComp_deterministic]
-    ext _ _ hs
-    rw [Kernel.comp_apply' _ _ _ hs, Kernel.comp_apply' _ _ _ hs, Kernel.deterministic_apply,
-      Kernel.copy_apply, lintegral_dirac', lintegral_dirac', Kernel.copy_apply,
-      Kernel.deterministic_apply]
-    · rfl
-    all_goals exact Kernel.measurable_coe _ hs
+    rw [Kernel.id_parallelComp_comp_parallelComp_id]
+    exact (Kernel.deterministic_comp_copy hf).symm
 
 lemma id_map_Deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
