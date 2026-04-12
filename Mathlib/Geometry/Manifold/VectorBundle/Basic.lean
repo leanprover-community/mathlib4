@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.FiberBundle.Notation
 
 /-! # `C^n` vector bundles
 
@@ -202,13 +203,13 @@ theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
 
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
 theorem contMDiffWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
-    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (T% s) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
 
 /-- Characterization of `C^n` sections of a vector bundle. -/
 theorem contMDiffAt_section {s : ∀ x, E x} (x₀ : B) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (T% s) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
@@ -509,7 +510,7 @@ using any trivialisation whose `baseSet` contains `x₀`. -/
 theorem contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x₀ : B}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
-    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (T% s) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a x₀ := by
   rw [e.contMDiffWithinAt_iff]
   · change ContMDiffWithinAt IB IB n id a x₀ ∧ _ ↔ _
@@ -521,7 +522,7 @@ using any trivialisation whose `baseSet` contains `x₀`. -/
 theorem contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (T% s) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]
   exact e.contMDiffWithinAt_section univ hx₀
@@ -531,7 +532,7 @@ using any trivialisation whose `baseSet` contains `s`. -/
 theorem contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
-    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (T% s) a ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
   have := (h x hx).contMDiffAt <| ha.mem_nhds hx
@@ -543,7 +544,7 @@ can be determined using `e`. -/
 theorem contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
-    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (T% s) e.baseSet ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
   e.contMDiffOn_section_iff e.open_baseSet subset_rfl
 
