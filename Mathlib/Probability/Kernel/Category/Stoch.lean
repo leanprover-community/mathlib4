@@ -77,7 +77,7 @@ instance : Deterministic (β_ X Y).hom where
 instance : Deterministic (ε[X]) where
   hom_comul := by
     ext : 1
-    simp only [WideSubcategory.comp_def, MorphismProperty.counit_hom,]
+    simp only [WideSubcategory.comp_def, MorphismProperty.counit_hom]
     cat_disch
 
 instance : Deterministic (Δ[X]) where
