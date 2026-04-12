@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
+import Std.Time.Format
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
@@ -49,8 +50,12 @@ It returns just the imports of `fileContent`, including trailing comments if `ke
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
-  let stx := if keepTrailing then stx.raw else stx.raw.unsetTrailing
-  let some substring := stx.getSubstring? | throw <| .userError "No substring: we have a problem!"
+  let imports := stx.raw.getArg 2  -- extract just the imports list
+  let imports := if keepTrailing then imports else imports.unsetTrailing
+  -- Use `withLeading := false` to exclude leading comments (e.g. copyright header) that the
+  -- parser now attaches to the first token (see leanprover/lean4#12662).
+  let some substring := imports.getSubstring? (withLeading := false) |
+    throw <| .userError "No substring: we have a problem!"
   return substring.toString
 
 /--
@@ -374,7 +379,8 @@ the deprecations later on.
 -- #find_deleted_files 0
 
 /--
-info: import Std.Time.Zoned
+info: import Std.Time.Format
+import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -/
 #guard_msgs in
@@ -384,7 +390,8 @@ run_cmd
   logInfo head
 
 /--
-info: import Std.Time.Zoned
+info: import Std.Time.Format
+import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
 -/
