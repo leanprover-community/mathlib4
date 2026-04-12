@@ -521,7 +521,7 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
+    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 
