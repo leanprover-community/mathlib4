@@ -182,9 +182,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
   rcases mem_map.1 (h2 (mem_map_of_mem hx)) with ⟨x', hx', hxx'⟩
   cases h hxx'; exact hx'
 
-lemma notMem_subset {l l' : List α} (h : l ⊆ l') {a : α} (ha : a ∉ l') : a ∉ l :=
-  fun ha' ↦ ha (h ha')
-
 /-! ### append -/
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
