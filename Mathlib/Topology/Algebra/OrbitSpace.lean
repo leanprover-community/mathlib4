@@ -53,11 +53,10 @@ lemma isLocalHomeomorph_of_properlyDiscontinuousSMul :
     IsLocalHomeomorph (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
 
+variable (G) in
 /-- A chosen local homeomorphism for the quotient map
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
-noncomputable def localHomeomorphAt (G : Type*) [Group G] [MulAction G M]
-    [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M] (p : M) :
-    OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
+noncomputable def localHomeomorphAt (p : M) : OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
   Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
@@ -78,11 +77,10 @@ lemma mem_localHomeomorphAt_target {p : M} :
   refine ⟨p, mem_localHomeomorphAt_source, ?_⟩
   rw [localHomeomorphAt_eq_quotientMk]
 
+variable (G) in
 /-- A chosen local inverse for the quotient map
 `Quotient.mk : M → M⧸G` at a point `p : M`. -/
-def localInverseAt (G : Type*) [Group G] [MulAction G M] [ProperlyDiscontinuousSMul G M]
-    [ContinuousConstSMul G M] [IsCancelSMul G M] (p : M) :
-    OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
+def localInverseAt (p : M) : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   (localHomeomorphAt G p).symm
 
 /-- The equivalence class `⟦p⟧` lies in the source of `localInverseAt p`. -/
