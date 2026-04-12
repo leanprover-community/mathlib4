@@ -137,13 +137,12 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           · exact (hb rfl).elim
           · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, elim'_some]
             classical
-            refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ?_⟩
-            · replace h := Subtype.ext_iff.mp h
-              dsimp at h
-              rw [h]
-              rw [← Part.mem_toOption] at hw
-              exact Eq.symm ((fun {α} {a} {b} ↦ mem_def.mp) hw)
-            · exact ⟨b, Part.mem_toOption.mp h.symm, rfl⟩
+            refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, rfl⟩⟩
+            rw [Subtype.ext_iff] at h
+            dsimp at h
+            rw [h]
+            rw [← Part.mem_toOption, mem_def] at hw
+            exact hw.symm
   counitIso :=
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))

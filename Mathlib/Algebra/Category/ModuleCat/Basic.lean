@@ -217,7 +217,7 @@ end
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_coe (since := "2026-03-02")]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-02")]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
   rfl

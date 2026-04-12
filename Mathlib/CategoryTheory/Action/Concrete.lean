@@ -90,10 +90,8 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
       uniq := fun s f h => by
         ext x
         funext j
-        simp only [Discrete.functor_obj_eq_as, Functor.const_obj_obj, Discrete.natTrans_app,
-          Discrete.forall, TypeCat.Fun.toFun_apply, ConcreteCategory.hom_ofHom,
-          TypeCat.Fun.coe_mk] at *
-        rw [← h j]
+        dsimp at *
+        rw [← h ⟨j⟩]
         rfl }
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/

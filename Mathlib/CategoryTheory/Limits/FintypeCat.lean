@@ -38,7 +38,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
+    (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite (sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 

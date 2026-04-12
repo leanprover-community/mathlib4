@@ -158,7 +158,7 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
-    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
+    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_ofHom, types_comp_apply]
     simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =

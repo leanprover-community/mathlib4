@@ -89,7 +89,7 @@ lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 @[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_coe
+@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

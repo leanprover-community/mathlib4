@@ -214,6 +214,7 @@ variable {D : Type*} [Category* D] {FD : outParam <| D → D → Type*}
     {CD : outParam <| D → Type w}
     [outParam <| ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
+-- TODO: generate this lemma with the `elementwise` attribute.
 @[simp]
 lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y)
     (x : ToType (F.obj X)) :

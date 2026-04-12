@@ -74,7 +74,6 @@ noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :
 open scoped MonObj
 
 set_option backward.isDefEq.respectTransparency false in
--- attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of
@@ -88,7 +87,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
   refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
     erw [Functor.mapCommGrp_obj_grp_one]
     cat_disch) ?_
-  dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe]
+  dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_ofHom]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
   simp only [Category.id_comp]
   erw [Functor.mapCommGrp_obj_grp_mul]

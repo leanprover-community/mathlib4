@@ -195,7 +195,7 @@ definitional equality issues. -/
 lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
   rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_coe (since := "2026-02-25")]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
 lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
     (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
   rfl

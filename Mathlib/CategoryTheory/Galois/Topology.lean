@@ -100,7 +100,7 @@ lemma autEmbedding_range :
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   rw [autEmbedding_range]
-  refine isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
+  exact isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl

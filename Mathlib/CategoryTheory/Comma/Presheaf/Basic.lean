@@ -13,8 +13,8 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 # Computation of `Over A` for a presheaf `A`
 
 Let `A : Cᵒᵖ ⥤ Type v` be a presheaf. In this file, we construct an equivalence
-`e : Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` and show that there is a
-quasi-commutative diagram
+`e : Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` and show that there is a quasi-commutative
+diagram
 
 ```
 CostructuredArrow yoneda A      ⥤      Over A
@@ -77,9 +77,7 @@ variable {C : Type u} [Category.{v} C] {A : Cᵒᵖ ⥤ Type v}
 
 namespace OverPresheafAux
 
-/-!
-### Construction of the forward functor `Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
--/
+/-! ### Construction of the forward functor `Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` -/
 
 /-- Via the Yoneda lemma, `u : F.obj (op X)` defines a natural transformation `yoneda.obj X ⟶ F`
 and via the element `η.app (op X) u` also a morphism `yoneda.obj X ⟶ A`. This structure
@@ -384,9 +382,9 @@ end YonedaCollection
 
 /-- Given `F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`, this is the presheaf that is given by
 `YonedaCollection F X` on objects. -/
-@[simps obj map]
-def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v)
-    (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) : Cᵒᵖ ⥤ Type v where
+@[simps]
+def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v) (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
+    Cᵒᵖ ⥤ Type v where
   obj X := YonedaCollection F X.unop
   map f := TypeCat.ofHom (YonedaCollection.map₂ F f.unop)
 
@@ -401,7 +399,7 @@ def yonedaCollectionPresheafMap₁ {F G : (CostructuredArrow yoneda A)ᵒᵖ ⥤
     simp
 
 /-- This is the functor `F ↦ X ↦ YonedaCollection F X`. -/
-@[simps obj map]
+@[simps]
 def yonedaCollectionFunctor (A : Cᵒᵖ ⥤ Type v) :
     ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ Type v where
   obj := yonedaCollectionPresheaf A

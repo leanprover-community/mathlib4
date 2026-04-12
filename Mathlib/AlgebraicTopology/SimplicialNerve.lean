@@ -118,7 +118,7 @@ def compFunctor {J : Type*} [LinearOrder J]
 
 attribute [local ext (iff := false)] Functor.ext in
 attribute [local simp] types_tensorObj_def in
-@[simps] -- consider making these lemmas `-isSimp` and just local `simp` in this file
+@[simps -isSimp]
 instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
   Hom i j := nerve (i ⟶ j)
@@ -127,15 +127,19 @@ instance (J : Type*) [LinearOrder J] :
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
+attribute [local simp] SimplicialThickening.Hom_def
+
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
-@[simps]
-def functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
+abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     (f : J →o K) (i j : SimplicialThickening J) :
       (i ⟶ j) ⥤ ((SimplicialThickening.mk <| f i.as) ⟶ (SimplicialThickening.mk <| f j.as)) where
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
+
+@[deprecated "No replacement, was using a bad instance" (since := "01-12-2026")]
+alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 

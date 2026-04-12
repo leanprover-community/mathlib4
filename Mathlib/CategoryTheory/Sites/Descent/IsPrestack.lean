@@ -121,7 +121,7 @@ set_option backward.isDefEq.respectTransparency false in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
 of morphisms $p^* M ⟶ p^* N$. -/
-@[simps obj map]
+@[simps]
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N

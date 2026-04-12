@@ -38,6 +38,12 @@ namespace ConcreteCategory
 
 section
 
+instance [(forget C).PreservesMonomorphisms] {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Mono (TypeCat.ofHom f) := Functor.map_mono (forget C) f
+
+instance [(forget C).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Epi (TypeCat.ofHom f) := Functor.map_epi (forget C) f
+
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
@@ -98,7 +104,7 @@ lemma surjective_eq_epimorphisms_iff :
     have : Epi f := hf
     change Function.Surjective ((forget C).map f)
     rw [← epi_iff_surjective]
-    exact Functor.map_epi _ f
+    infer_instance
 
 lemma injective_eq_monomorphisms_iff :
     MorphismProperty.injective C = monomorphisms C ↔ (forget C).PreservesMonomorphisms := by
@@ -115,7 +121,7 @@ lemma injective_eq_monomorphisms_iff :
     have : Mono f := hf
     change Function.Injective ((forget C).map f)
     rw [← mono_iff_injective]
-    exact Functor.map_mono _ f
+    infer_instance
 
 lemma injective_eq_monomorphisms [(forget C).PreservesMonomorphisms] :
     MorphismProperty.injective C = monomorphisms C := by
@@ -151,7 +157,7 @@ open CategoryTheory.Limits
 
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
-  (mono_iff_injective ((forget C).map f)).mp (Functor.map_mono _ f)
+  (mono_iff_injective ((forget C).map f)).mp inferInstance
 
 theorem mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Mono f ↔ Function.Injective f :=
@@ -164,7 +170,7 @@ theorem epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function.Surjective f) :
 
 theorem surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=
-  (epi_iff_surjective ((forget C).map f)).mp (Functor.map_epi _ f)
+  (epi_iff_surjective ((forget C).map f)).mp inferInstance
 
 theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Epi f ↔ Function.Surjective f :=

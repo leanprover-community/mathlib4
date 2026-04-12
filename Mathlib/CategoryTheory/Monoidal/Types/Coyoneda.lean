@@ -29,11 +29,7 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (μ_natural := by cat_disch)
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h
-      simp only [op_tensorUnit, Functor.flip_obj_obj, yoneda_obj_obj, unop_tensorUnit,
-        types_tensorObj_def, tensorHom_id, Functor.flip_obj_map, yoneda_map_app,
-        TypeCat.Fun.toFun_apply, comp_apply, whiskerRight_apply, TypeCat.hom_ofHom,
-        TypeCat.Fun.coe_mk, Category.assoc, id_tensorHom, associator_hom_apply, whiskerLeft_apply,
-        Iso.cancel_iso_inv_left]
+      dsimp; simp only [Category.assoc, Iso.cancel_iso_inv_left]
       conv_lhs =>
         rw [← Category.id_comp h, ← tensorHom_comp_tensorHom, Category.assoc, associator_naturality,
           ← Category.assoc, unitors_inv_equal, tensorHom_id, triangle_assoc_comp_right_inv]
