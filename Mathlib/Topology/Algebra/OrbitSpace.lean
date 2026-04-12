@@ -104,7 +104,7 @@ lemma localInverseAt_apply_other {p k : M}
 /-- The local inverse at `p` sends the class `⟦p⟧` back to `p`. -/
 lemma localInverseAt_apply_self {p : M}
     : (localInverseAt G p) ⟦p⟧ = p :=
-  localInverseAt_apply_other (mem_localHomeomorphAt_source) (mem_localInverseAt_source)
+  localInverseAt_apply_other mem_localHomeomorphAt_source mem_localInverseAt_source
 
 end QuotientMk
 
