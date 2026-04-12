@@ -19,7 +19,7 @@ of the unique point at infinity `𝓞` and nonsingular affine points `(x, y)`. I
 group law, with `𝓞` as the identity nonsingular point, which is uniquely determined by the formulae
 in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
-With this description, there is an addition-preserving injection from the nonsingular points and the
+With this description, there is an addition-preserving injection from the nonsingular points to the
 ideal class group of the *affine coordinate ring* `F[W] := F[X, Y] / ⟨W(X, Y)⟩`. This is given by
 mapping `𝓞` to the trivial ideal class and a nonsingular affine point `(x, y)` to the ideal class of
 the invertible ideal `⟨X - x, Y - y⟩`. Proving that this is well-defined and preserves addition
