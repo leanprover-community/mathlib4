@@ -44,7 +44,7 @@ have the finite intersection property, so their intersection is nonempty.
 
 ## References
 
-* de Bruijn, N. G.; Erdős, P. (1951). "A color problem for infinite graphs and a problem
+* de Bruijn, N. G.; Erdős, P. (1951). "A colour problem for infinite graphs and a problem
   in the theory of relations".
 * Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
 
