@@ -110,6 +110,9 @@ theorem ker_le_orthogonalBilin_flip (S) : ker B ≤ orthogonalBilin B.flip S := 
 theorem orthogonalBilin_span_singleton (x : M₁) : orthogonalBilin B (R₁ ∙ x) = ker (B x) := by
   ext x; simp
 
+@[deprecated (since := "2026-04-12")]
+alias _root_.LinearMap.orthogonal_span_singleton_eq_to_lin_ker := orthogonalBilin_span_singleton
+
 theorem orthogonalBilin_sSup (s : Set (Submodule R₁ M₁)) :
     orthogonalBilin B (sSup s) = sInf (orthogonalBilin B '' s) := by
   ext y; simpa using ⟨
@@ -248,7 +251,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
-    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin B  (K₁ ∙ x)= ⊥ := by
+    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin B (K₁ ∙ x) = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
@@ -260,22 +263,10 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
       (fun y ↦ by simpa using y)
       (fun hfalse ↦ False.elim <| hx hfalse)
 
--- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
-theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
-    Submodule.orthogonalBilin B (K ∙ x) = LinearMap.ker (B x) := by
-  ext y
-  simp_rw [Submodule.mem_orthogonalBilin, LinearMap.mem_ker, Submodule.mem_span_singleton]
-  constructor
-  · exact fun h ↦ h x ⟨1, one_smul _ _⟩
-  · rintro h _ ⟨z, rfl⟩
-    rw [map_smulₛₗ₂, smul_eq_zero]
-    exact Or.intro_right _ h
-
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
     (K ∙ x) ⊔ Submodule.orthogonalBilin B (K ∙ x) = ⊤ := by
-  rw [orthogonal_span_singleton_eq_to_lin_ker]
-  exact (B x).span_singleton_sup_ker_eq_top hx
+  simpa only [Submodule.orthogonalBilin_span_singleton] using (B x).span_singleton_sup_ker_eq_top hx
 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
