@@ -263,7 +263,7 @@ instance : Deterministic (λ_ X ).hom :=
   Deterministic_id_map (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
 
 instance : Deterministic (ρ_ X ).hom :=
-  Deterministic_deterministic (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
+  Deterministic_id_map (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 
 instance : Deterministic (β_ X Y).hom :=
   Deterministic_deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
