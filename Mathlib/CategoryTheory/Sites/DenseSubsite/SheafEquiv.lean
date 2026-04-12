@@ -57,34 +57,30 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
     let c : Limits.Cone (StructuredArrow.proj (op (G.obj U)) G.op ⋙ Y.obj) := by
-      refine ⟨X, ⟨fun g ↦ ?_, ?_⟩⟩
+      refine ⟨X, ⟨fun g ↦ ?_, fun g₁ g₂ i ↦ ?_⟩⟩
       · refine Y.2.amalgamate ⟨_, IsDenseSubsite.imageSieve_mem J K G g.hom.unop⟩
           (fun I ↦ f ≫ Y.1.map (l _ _ _ _ _ I.hf).op) fun I₁ I₂ r ↦ ?_
         apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (r.g₁ ≫ l _ _ _ _ _ I₁.hf)
           (r.g₂ ≫ l _ _ _ _ _ I₂.hf) ?_)).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
         · rw [map_comp, hl, map_comp, hl, ← map_comp_assoc, r.w, map_comp_assoc]
         · simp [← map_comp, ← op_comp, hiUV]
-      · sorry /-dsimp
-        rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
-        dsimp at g₁ g₂ i hi
-        -- See issue https://github.com/leanprover-community/mathlib4/pull/15781 for tracking performance regressions of `rintro` as here
-        have h : g₂ = g₁ ≫ (G.map i.unop).op := by simpa only [Category.id_comp] using hi
-        rcases h with ⟨rfl⟩
-        have h : ∃ g' : G.obj W₁ ⟶ G.obj U, g₁ = g'.op := ⟨g₁.unop, rfl⟩
-        rcases h with ⟨g, rfl⟩
-        have h : ∃ i' : W₂ ⟶ W₁, i = i'.op := ⟨i.unop, rfl⟩
-        rcases h with ⟨i, rfl⟩
-        simp only [unop_comp, Quiver.Hom.unop_op, Category.id_comp]
-        apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (G.map i ≫ g)⟩
+      · obtain ⟨⟨W₁⟩, ⟨g₁⟩, rfl⟩ := g₁.mk_surjective
+        obtain ⟨⟨W₂⟩, ⟨g₂⟩, rfl⟩ := g₂.mk_surjective
+        obtain ⟨⟨i⟩, hi, rfl⟩ := StructuredArrow.homMk_surjective i
+        replace hi := Quiver.Hom.op_inj hi
+        dsimp at g₁ g₂ i hi ⊢
+        subst hi
+        rw [Category.id_comp]
+        apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (G.map i ≫ g₁)⟩
         intro I
-        simp only [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← Functor.map_comp, ← op_comp]
-        let I' : GrothendieckTopology.Cover.Arrow ⟨_, IsDenseSubsite.imageSieve_mem J K G g⟩ :=
+        simp only [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← Functor.map_comp]
+        let I' : GrothendieckTopology.Cover.Arrow ⟨_, IsDenseSubsite.imageSieve_mem J K G g₁⟩ :=
           ⟨_, I.f ≫ i, ⟨l _ _ _ _ _ I.hf, by simp [hl]⟩⟩
         refine Eq.trans ?_ (Y.2.amalgamate_map _ _ _ I').symm
         apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (l _ _ _ _ _ I.hf)
           (l _ _ _ _ _ I'.hf) (by simp [I', hl]))).isSeparatedFor.ext
             fun V iUV (hiUV : _ = _) ↦ ?_
-        simp [I', ← Functor.map_comp, ← op_comp, hiUV]-/
+        simp [I', ← Functor.map_comp, ← op_comp, hiUV]
     refine ⟨(isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).lift c, ?_⟩
     · have := (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).fac c (.mk (𝟙 _))
       simp only [id_obj, comp_obj, StructuredArrow.proj_obj, StructuredArrow.mk_right,
@@ -97,6 +93,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         I.f (by simp [hl]))).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
       simp [← Functor.map_comp, ← op_comp, hiUV]
 
+#exit
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
   apply +allowSynthFailures ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
   rw [NatTrans.isIso_iff_isIso_app]
