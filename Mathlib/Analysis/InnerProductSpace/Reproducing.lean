@@ -98,14 +98,25 @@ lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
 
 section Lipschitz
 
-variable (H) in
+variable (𝕜 H X V) in
+@[nolint unusedArguments]
+def KernelMetricDomain [RKHS 𝕜 H X V] : Type _ := X
+
+def toKMD (x : X) : KernelMetricDomain 𝕜 X V H := x
+def ofKMD (x : KernelMetricDomain 𝕜 X V H) : X := x
+
+variable (𝕜 H X V) in
+instance instPseudoEMetricSpace [RKHS 𝕜 H X V] : PseudoEMetricSpace (KernelMetricDomain 𝕜 X V H) :=
+  PseudoEMetricSpace.induced ((eval H)∘ofKMD) inferInstance
+
 theorem lipschitzWith_ennnorm (f : H) :
-    haveI : PseudoEMetricSpace X := PseudoEMetricSpace.induced (eval H) inferInstance
-    LipschitzWith ‖f‖₊ f := by
+    LipschitzWith ‖f‖₊ (f ∘ (ofKMD : KernelMetricDomain 𝕜 X V H → X)) := by
   intro x y
-  grw [edist_eq_enorm_sub, ← eval_apply, ← eval_apply, ← sub_apply, le_opENorm, mul_comm,
-    ← enorm_eq_nnnorm, ← edist_eq_enorm_sub]
-  rfl
+  simp only [Function.comp, ← eval_apply]
+  rw [edist_eq_enorm_sub, ← sub_apply,
+    show edist x y = edist (eval H (ofKMD x)) (eval H (ofKMD y)) from rfl,
+      edist_eq_enorm_sub, ← enorm_eq_nnnorm, mul_comm]
+  exact le_opENorm _ _
 
 end Lipschitz
 
