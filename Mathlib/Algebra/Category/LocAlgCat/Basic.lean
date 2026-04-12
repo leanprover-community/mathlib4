@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Category.LocAlgCat.Defs
 /-!
 # Basic Constructions and Lemmas in `LocAlgCat`
 
-This file develops several basic constructions for the category of
-local `Λ`-algebras with a fixed residue field `k`.
-
 ## Main Results
 
 * `LocAlgCat.ofQuot` : The object in `LocAlgCat` obtained from quotienting by a proper ideal.
