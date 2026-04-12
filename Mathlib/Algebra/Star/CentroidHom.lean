@@ -112,11 +112,10 @@ lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : �
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
 @[reducible]
-def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
+def starRingOfCommCentroidHom (mul_comm : IsMulCommutative (CentroidHom α)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul _ _ := ext (fun _ => by
-    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
+  star_mul _ _ := ext fun _ ↦ by simp [mul_comm']
 
 end NonUnitalNonAssocStarSemiring
 
