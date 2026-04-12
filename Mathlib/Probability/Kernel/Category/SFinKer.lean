@@ -241,7 +241,7 @@ instance : CopyDiscardCategory SFinKer.{u} where
     rw [Kernel.id_map (by fun_prop)]
     simp [Kernel.copy_apply, Kernel.deterministic_apply]
 
-instance Deterministic_deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier)
+instance deterministic_deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier)
     (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.deterministic f hf, inferInstance⟩ : X ⟶ Y) where
   hom_comul := by
@@ -249,30 +249,30 @@ instance Deterministic_deterministic (X Y : SFinKer) (f : X.carrier → Y.carrie
     rw [Kernel.id_parallelComp_comp_parallelComp_id]
     exact (Kernel.deterministic_comp_copy hf).symm
 
-lemma Deterministic_id_map (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
+lemma deterministic_id_map (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
   hom_comul := by cat_disch
 
 variable {X Y Z : SFinKer}
 
 instance : Deterministic (α_ X Y Z).hom :=
-  Deterministic_deterministic ((X ⊗ Y) ⊗ Z)
+  deterministic_deterministic ((X ⊗ Y) ⊗ Z)
       (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
 
 instance : Deterministic (λ_ X ).hom :=
-  Deterministic_id_map (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
+  deterministic_id_map (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
 
 instance : Deterministic (ρ_ X ).hom :=
-  Deterministic_id_map (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
+  deterministic_id_map (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 
 instance : Deterministic (β_ X Y).hom :=
-  Deterministic_deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
+  deterministic_deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
 
 instance : Deterministic (ε[X]) :=
-  Deterministic_deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
+  deterministic_deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
 
 instance : Deterministic (Δ[X]) :=
-  Deterministic_deterministic X (X ⊗ X) (fun (x : X) ↦ (x, x)) (by fun_prop)
+  deterministic_deterministic X (X ⊗ X) (fun (x : X) ↦ (x, x)) (by fun_prop)
 
 end
 
