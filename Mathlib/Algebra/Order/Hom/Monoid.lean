@@ -192,7 +192,7 @@ theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono
 
 @[to_additive]
 theorem MonoidHom.ext_iff_le [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
-    f = g ↔ (∀ x, f x ≤ g x) where
+    f = g ↔ ∀ x, f x ≤ g x where
   mp := by simp +contextual
   mpr h := DFunLike.ext f g
     fun x => le_antisymm (h x) (map_inv_le_map_inv_iff_map_le_map.mp <| h x⁻¹)
