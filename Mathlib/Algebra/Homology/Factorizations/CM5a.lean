@@ -694,7 +694,8 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
       exact L.isZero_of_isStrictlyGE (n - 1) _
     have hS : S.ShortExact :=
       { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
-    exact Injective.direct_factor (hS.splittingOfInjective).s_g
+    exact Retract.injective
+      { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
   refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, ?_, inferInstance⟩
   intro q

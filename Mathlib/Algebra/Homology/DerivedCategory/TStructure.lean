@@ -229,8 +229,7 @@ lemma essImage_singleFunctor_eq_heart :
     obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X 0
     exact ⟨A, ⟨e.symm⟩⟩
 
-noncomputable instance : (t : TStructure (DerivedCategory C)).HasHeart where
-  H := C
+noncomputable instance : (t : TStructure (DerivedCategory C)).Heart C where
   ι := singleFunctor C 0
 
 lemma isIso_homologyFunctor_map_truncLTι_app (X : DerivedCategory C) (a n : ℤ) (hn : n < a) :
@@ -272,6 +271,7 @@ lemma isIso_whiskerRight_truncLEι_homologyFunctor (a n : ℤ) (hn : n ≤ a) :
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
     (fun X => isIso_homologyFunctor_map_truncLEι_app X a n hn)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
     t.truncLE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
   have := isIso_whiskerRight_truncLEι_homologyFunctor C a n hn
@@ -300,7 +300,7 @@ noncomputable def truncLE₀GE₀ToHeart : DerivedCategory C ⥤ C :=
 
 noncomputable def truncLE₀GE₀ToHeartιHeart :
     (truncLE₀GE₀ToHeart : _ ⥤ C) ⋙ t.ιHeart ≅ t.truncGELE 0 0 :=
-  t.liftHeartιHeart _ _
+  t.liftHeartιHeart _ _ _
 
 variable (C)
 
@@ -312,12 +312,13 @@ noncomputable def homologyFunctorIsotruncLE₀GE₀ToHeart :
     Functor.isoWhiskerLeft _ (singleFunctorCompHomologyFunctorIso C 0) ≪≫
     truncLE₀GE₀ToHeart.rightUnitor
 
-noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ where
+noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ C where
   homology₀ := homologyFunctor C 0
   iso := Functor.isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
     truncLE₀GE₀ToHeartιHeart
 
-noncomputable instance : (t : TStructure (DerivedCategory C)).homology₀.ShiftSequence ℤ :=
+noncomputable instance :
+    ((t : TStructure (DerivedCategory C)).homology₀ (H := C)).ShiftSequence ℤ :=
   (inferInstance : (homologyFunctor C 0).ShiftSequence ℤ)
 
 end TStructure
@@ -332,8 +333,8 @@ abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
 
 variable {C}
 
-abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
-abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
-abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory
