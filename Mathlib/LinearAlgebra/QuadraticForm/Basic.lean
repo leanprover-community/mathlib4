@@ -6,6 +6,7 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 module
 
 public import Mathlib.Data.Finset.Sym
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
