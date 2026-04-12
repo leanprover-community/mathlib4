@@ -3,7 +3,7 @@ module
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.SetNotation
 
-attribute [use_set_notation] Set
+attribute [use_set_notation_for_order] Set
 
 section Delab
 
