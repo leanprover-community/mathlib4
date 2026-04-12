@@ -66,11 +66,9 @@ noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone 
   dual (dualDistrib R G H) (minTensorProduct (dual (Dual.eval R G) C₁)
     (dual (Dual.eval R H) C₂))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterization of the maximal tensor product: `z` lies in `maxTensorProduct C₁ C₂` iff
 all pairings with elementary dual tensors are nonnegative. -/
-@[simp]
-theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
+@[simp] theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
     z ∈ maxTensorProduct C₁ C₂ ↔
       ∀ φ ∈ dual (Dual.eval R G) C₁,
       ∀ ψ ∈ dual (Dual.eval R H) C₂,
