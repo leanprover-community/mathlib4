@@ -1,13 +1,10 @@
 /-
-Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
+Copyright (c) 2026 Martin Winter. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
 module
 
--- public import Mathlib.LinearAlgebra.Basis.Basic
--- public import Mathlib.LinearAlgebra.BilinearMap
--- public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 import Mathlib.Algebra.Module.Torsion.Field
@@ -15,27 +12,11 @@ import Mathlib.Algebra.Module.Torsion.Field
 /-!
 # Sesquilinear maps
 
-This file provides properties about sesquilinear maps and forms. The maps considered are of the
-form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
-`M₁` is a module over `R₁`, `M₂` is a module over `R₂` and `M` is a module over `R`.
-Sesquilinear forms are the special case that `M₁ = M₂`, `M = R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
-Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
-
-Sesquilinear maps are a special case of the bilinear maps defined in `BilinearMap.lean`, and many
-basic lemmas about construction and elementary calculations are found there.
+Orthogonality with respect to a general sesqui-blinear map.
 
 ## Main declarations
 
-* `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
 * `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear map
-
-## References
-
-* <https://en.wikipedia.org/wiki/Sesquilinear_form#Over_arbitrary_rings>
-
-## Tags
-
-Sesquilinear form, Sesquilinear map
 -/
 
 @[expose] public section

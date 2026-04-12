@@ -26,7 +26,6 @@ basic lemmas about construction and elementary calculations are found there.
 ## Main declarations
 
 * `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear map
 
 ## References
 
