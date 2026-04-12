@@ -96,62 +96,62 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
 lemma integralModel_a₁_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₁ = W.a₁ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₂ = W.a₂ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₃_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₃ = W.a₃ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₄ = W.a₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₆ = W.a₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₂ = W.b₂ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₄ = W.b₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₆ = W.b₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₈_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₈ = W.b₈ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_c₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).c₄ = W.c₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_c₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).c₆ = W.c₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [baseChange, integralModel]
+  simp [baseChange]
 
 variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
