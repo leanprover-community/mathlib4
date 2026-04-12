@@ -102,6 +102,15 @@ theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
   rw [← Nat.add_assoc, Nat.add_one_le_iff] at h
   exact Nat.not_le_of_lt h (Nat.le_add_left _ _)
 
+theorem natCast_pos {n : ℕ} : 0 < (n : α) ↔ 0 < n := by
+  rw [← Nat.cast_zero, natCast_strictMono.lt_iff_lt]
+
+theorem natCast_lt_iff {m n : ℕ} : (m : α) < (n : α) ↔ m < n :=
+  natCast_strictMono.lt_iff_lt
+
+theorem natCast_le_iff {m n : ℕ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  natCast_strictMono.le_iff_le
+
 instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
 instance : CharZero α := ⟨natCast_strictMono.injective⟩
@@ -257,6 +266,12 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
   rwa [Int.cast_add, Int.cast_one, left_ne_add]
 
+theorem intCast_lt_iff {m n : ℤ} : (m : α) < (n : α) ↔ m < n :=
+  intCast_strictMono.lt_iff_lt
+
+theorem intCast_le_iff {m n : ℤ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  intCast_strictMono.le_iff_le
+
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
   fun m n h => by simpa only [Int.cast_natCast]
     using intCast_mono (Int.natCast_strictMono.monotone h)
@@ -268,9 +283,18 @@ theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
   fun m n h => by simpa only [Int.cast_natCast]
     using intCast_strictMono (Int.natCast_strictMono h)
 
-instance : CharZero α := ⟨natCast_strictMono.injective⟩
+theorem natCast_pos {n : ℕ} : 0 < (n : α) ↔ 0 < n := by
+  rw [← Nat.cast_zero, natCast_strictMono.lt_iff_lt]
+
+theorem natCast_lt_iff {m n : ℕ} : (m : α) < (n : α) ↔ m < n :=
+  natCast_strictMono.lt_iff_lt
+
+theorem natCast_le_iff {m n : ℕ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  natCast_strictMono.le_iff_le
 
 instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+
+instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
 end FloorRing
 
