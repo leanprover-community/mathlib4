@@ -126,7 +126,7 @@ lemma parallelComp_comp_prod [IsSFiniteKernel κ] {η : Kernel Y Z} [IsSFiniteKe
   rw [← parallelComp_comp_copy, ← comp_assoc, parallelComp_comp_parallelComp,
     ← parallelComp_comp_copy]
 
-lemma parallelComp_comm {η : Kernel Z T} :
+lemma parallelComp_comm :
     (Kernel.id ∥ₖ κ) ∘ₖ (η ∥ₖ Kernel.id) = (η ∥ₖ Kernel.id) ∘ₖ (Kernel.id ∥ₖ κ) := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]
@@ -135,7 +135,7 @@ lemma parallelComp_comm {η : Kernel Z T} :
   rw [parallelComp_id_left_comp_parallelComp, parallelComp_id_right_comp_parallelComp,
     comp_id, comp_id]
 
-lemma id_parallelComp_comp_parallelComp_id [IsSFiniteKernel κ] (η : Kernel Z T) :
+lemma id_parallelComp_comp_parallelComp_id [IsSFiniteKernel κ] :
     Kernel.id ∥ₖ κ ∘ₖ (η ∥ₖ Kernel.id) = η ∥ₖ κ := by
   rw [parallelComp_id_left_comp_parallelComp]
   congr
