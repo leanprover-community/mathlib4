@@ -58,6 +58,7 @@ noncomputable def inv :
   (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).inv.app ((t.truncLE a).obj (X⟦n⟧)) ≫
     (inv' t X h)⟦n⟧'
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inv_ι : inv t X h ≫ ((t.truncLEι a').app X)⟦n⟧' = (t.truncLEι a).app (X⟦n⟧) := by
   dsimp only [inv]
@@ -68,6 +69,7 @@ lemma inv_ι : inv t X h ≫ ((t.truncLEι a').app X)⟦n⟧' = (t.truncLEι a).
   simp only [Functor.id_obj, Functor.id_map, Functor.comp_obj,
     shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app, Iso.inv_hom_id_app, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma shift_inv :
     (inv t X h)⟦-n⟧' ≫ (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.app _ ≫
@@ -79,6 +81,7 @@ lemma shift_inv :
   dsimp
   rw [← Functor.map_comp_assoc, inv_ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def iso : ((t.truncLE a').obj X)⟦n⟧ ≅ (t.truncLE a).obj (X⟦n⟧) where
   hom := hom t X h
@@ -132,6 +135,7 @@ noncomputable def inv :
   (inv' t X h)⟦n⟧' ≫ (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app
     ((t.truncGE a).obj (X⟦n⟧))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_inv :
     (((t.truncGEπ a')).app X)⟦n⟧' ≫ inv t X h = (t.truncGEπ a).app (X⟦n⟧) := by
@@ -155,6 +159,7 @@ lemma shift_inv :
   dsimp
   erw [← Functor.map_comp, π_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)⟦n⟧ where
   hom := hom t X h
@@ -179,6 +184,7 @@ end ShiftTruncGE
 
 variable (n a a' b b')
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shiftTruncLE :
     t.truncLE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncLE a :=
   NatIso.ofComponents (fun X => ShiftTruncLE.iso t X h) (fun {X Y} f => by
@@ -188,12 +194,14 @@ noncomputable def shiftTruncLE :
     simp only [Functor.id_obj, assoc, ShiftTruncLE.hom_ι, NatTrans.naturality, Functor.id_map,
       ShiftTruncLE.hom_ι_assoc, ← Functor.map_comp])
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma shiftTruncLE_hom_app_ι :
     (t.shiftTruncLE n a a' h).hom.app X ≫ (t.truncLEι a).app (X⟦n⟧) =
       ((t.truncLEι a').app X)⟦n⟧' := by
   simp [shiftTruncLE]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shiftTruncGE :
     t.truncGE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncGE a :=
   Iso.symm (NatIso.ofComponents (fun X => ShiftTruncGE.iso t X h) (fun {X Y} f => by
@@ -206,6 +214,7 @@ noncomputable def shiftTruncGE :
     rw [← Functor.map_comp, ← Functor.map_comp, ← NatTrans.naturality]
     rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_shiftTruncGE_inv_app :
     (t.truncGEπ a).app (X⟦n⟧) ≫ (t.shiftTruncGE n a a' h).inv.app X =

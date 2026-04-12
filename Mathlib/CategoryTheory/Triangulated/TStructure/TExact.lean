@@ -69,6 +69,7 @@ section
 
 variable [h : F.RightTExact t₁ t₂]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncGEComparison (n : ℤ) : F ⋙ t₂.truncGE n ⟶ t₁.truncGE n ⋙ F where
   app X :=
     have := h.objGE ((t₁.truncGE n).obj X) n
@@ -99,6 +100,7 @@ section
 
 variable [h : F.LeftTExact t₁ t₂]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncLEComparison (n : ℤ) : t₁.truncLE n ⋙ F ⟶ F ⋙ t₂.truncLE n where
   app X :=
     have := h.objLE ((t₁.truncLE n).obj X) n
@@ -126,6 +128,7 @@ variable [h : F.TExact t₁ t₂]
 
 namespace TExact
 
+set_option backward.isDefEq.respectTransparency false in
 def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
   ∃ (e : (t₂.triangleLEGE a b h).obj (F.obj X) ≅
     F.mapTriangle.obj ((t₁.triangleLEGE a b h).obj X))
@@ -153,11 +156,13 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
   · apply t₂.from_truncGE_obj_ext
     simpa [h₂] using e.hom.comm₂
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) (X : C) : IsIso ((truncGEComparison F t₁ t₂ n).app X) := by
   obtain ⟨e, _, h₃, _⟩ := triangleGELEIso_aux F t₁ t₂ (n-1) n (by lia) X
   rw [← h₃]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) (X : C) : IsIso ((truncLEComparison F t₁ t₂ n).app X) := by
   obtain ⟨e, h₁, _, _⟩ := triangleGELEIso_aux F t₁ t₂ n (n + 1) (by lia) X
   rw [← h₁]
@@ -199,7 +204,7 @@ lemma truncLEIso_inv_hom_id_app (X : C) (n : ℤ) :
     (F.truncLEIso t₁ t₂ n).inv.app X ≫ (F.truncLEComparison t₁ t₂ n).app X = 𝟙 _ :=
   (F.truncLEIso t₁ t₂ n).inv_hom_id_app X
 
-
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def triangleLEGEIso (a b : ℤ) (h : a + 1 = b) :
     F ⋙ t₂.triangleLEGE a b h ≅ t₁.triangleLEGE a b h ⋙ F.mapTriangle :=
   Pretriangulated.Triangle.functorIsoMk _ _ (F.truncLEIso t₁ t₂ a).symm (Iso.refl _)

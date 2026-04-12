@@ -1,9 +1,5 @@
 /-
-<<<<<<< HEAD
-Copyright (c) 2025 Joël Riou. All rights reserved.
-=======
 Copyright (c) 2026 Joël Riou. All rights reserved.
->>>>>>> origin
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -13,11 +9,7 @@ public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
 /-!
-<<<<<<< HEAD
-# Spectral objects attached t-structures
-=======
 # Spectral objects attached to t-structures
->>>>>>> origin
 
 Let `C` be a triangulated category equipped with a t-structure `t`.
 We define a functor `t.ω₁ : ComposableArrows EInt 1 ⥤ C ⥤ C` which sends
@@ -50,11 +42,7 @@ namespace Triangulated
 
 namespace TStructure
 
-<<<<<<< HEAD
-variable (t : TStructure C) [IsTriangulated C]
-=======
 variable (t : TStructure C)
->>>>>>> origin
 
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
@@ -64,11 +52,8 @@ noncomputable def ω₁ : ComposableArrows EInt 1 ⥤ C ⥤ C where
   obj D := t.eTruncLT.obj (D.obj 1) ⋙ t.eTruncGE.obj (D.obj 0)
   map φ := t.eTruncLT.map (φ.app 1) ◫ t.eTruncGE.map (φ.app 0)
 
-<<<<<<< HEAD
-=======
 variable [IsTriangulated C]
 
->>>>>>> origin
 section
 
 variable (a b c : EInt) (hab : a ≤ b) (hbc : b ≤ c)
@@ -80,45 +65,17 @@ objects attached to the objects of a triangulated equipped with a t-structure. -
 noncomputable def ω₁δ :
     t.ω₁.obj (mk₁ (homOfLE hbc)) ⟶ t.ω₁.obj (mk₁ (homOfLE hab)) ⋙ shiftFunctor C (1 : ℤ) :=
   whiskerLeft _ (t.eTruncGEToGEGE a b) ≫ (associator _ _ _).inv ≫
-<<<<<<< HEAD
-      (t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).whiskerLeft (t.eTruncGEδLT.app b) ≫
-      (associator _ _ _).inv ≫
-      whiskerRight
-        ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoLEGT a b).hom ≫
-          (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
-
-=======
     (t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).whiskerLeft (t.eTruncGEδLT.app b) ≫
       (associator _ _ _).inv ≫
         whiskerRight ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoGELT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
 set_option backward.isDefEq.respectTransparency false in
->>>>>>> origin
 @[reassoc]
 lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
     t.ω₁.map (homMk₁ (φ.app 1) (φ.app 2)) ≫ t.ω₁δ a' b' c' hab' hbc' =
       t.ω₁δ a b c hab hbc ≫ Functor.whiskerRight (t.ω₁.map (homMk₁ (φ.app 0) (φ.app 1))) _ := by
-<<<<<<< HEAD
-  ext X
-  simp only [ω₁_obj, mk₁_obj, Mk₁.obj, Functor.comp_obj, ω₁_map, homMk₁_app,
-    NatTrans.comp_app, NatTrans.hcomp_app, ω₁δ_app,
-    ← Functor.map_comp, Category.assoc, NatTrans.naturality_assoc, Functor.comp_map,
-    ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc, Functor.whiskeringRight_obj_obj,
-    Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
-  congr 2
-  have h₁ := t.eTruncLTGEIsoLEGT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
-  dsimp at h₁
-  simp only [Functor.map_comp, Category.assoc]
-  rw [← reassoc_of% h₁, ← eTruncLTGEIsoLEGT_hom_naturality, ← eTruncLTGEIsoLEGT_hom_naturality,
-    ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X, NatTrans.naturality_assoc,
-    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
-    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
-  simp only [homOfLE_leOfHom, Fin.isValue, Category.assoc, eTruncGEπ_naturality,
-    eTruncLT_map_app_eTruncLTι_app_assoc, Functor.map_comp, eTruncGEπ_app_eTruncGE_map_app,
-    eTruncLT_map_app_eTruncLTι_app]
-=======
   ext
   dsimp
   simp only [ω₁δ_app, ← Functor.map_comp, NatTrans.naturality_assoc, Functor.comp_map,
@@ -131,7 +88,6 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     ← eTruncLTGEIsoGELT_hom_naturality, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2)]
   simp only [↓NatTrans.naturality_assoc, ↓← Functor.map_comp_assoc]
   simp
->>>>>>> origin
 
 /-- The functorial (distinguished) triangles that are part of the spectral
 object attached to objects in a triangulated category equipped with a t-structure. -/
@@ -140,63 +96,30 @@ noncomputable def triangleω₁δ : C ⥤ Triangle C :=
   Triangle.functorMk (t.ω₁.map (twoδ₂Toδ₁' a b c hab hbc))
     (t.ω₁.map (twoδ₁Toδ₀' a b c hab hbc)) (t.ω₁δ a b c hab hbc)
 
-<<<<<<< HEAD
-=======
 set_option backward.isDefEq.respectTransparency false in
->>>>>>> origin
 /-- The triangle `(t.triangleω₁δ a b c hab hbc).obj X` is isomorphic to
 the (distinguished) triangle obtained by applying the functor `t.eTriangleLTGE.obj b`
 to the object `(t.eTruncGE.obj a).obj ((t.eTruncLT.obj c).obj X)`. -/
 noncomputable def triangleω₁δObjIso (X : C) :
     (t.triangleω₁δ a b c hab hbc).obj X ≅
       (t.eTriangleLTGE.obj b).obj ((t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).obj X) := by
-<<<<<<< HEAD
-  refine Triangle.isoMk _ _
-    ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
-      (t.eTruncLTGEIsoLEGT a b).symm.app _)
-    (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
-=======
   refine Triangle.isoMk _ _ ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
     (t.eTruncLTGEIsoGELT a b).symm.app _) (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
->>>>>>> origin
   · dsimp
     simp only [triangleω₁δ_obj_mor₁, homOfLE_leOfHom, Category.comp_id, Category.assoc]
     rw [← cancel_epi ((t.eTruncGE.obj a).map ((t.eTruncLTLTIsoLT c b hbc).hom.app X)),
       ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp,
-<<<<<<< HEAD
-      ← cancel_epi ((t.eTruncLTGEIsoLEGT a b).hom.app ((t.eTruncLT.obj c).obj X)),
-      Iso.hom_inv_id_app_assoc, eTruncLTLTIsoLT_hom, eTruncLTLTToLT_app,
-      ← Functor.map_comp]
-    -- this should be cleanup and made a separate lemma
-    have : ((t.eTruncLT.obj b).map ((t.eTruncLTι c).app X) ≫
-        (t.eTruncLT.map (homOfLE hbc)).app X) = (t.eTruncLTι _).app _ := by
-      dsimp [eTruncLTι]
-      rw [← homOfLE_comp hbc le_top, Functor.map_comp, NatTrans.comp_app,
-        NatTrans.naturality]
-      congr 1
-      induction c using WithBotTop.rec with
-      | bot => simp
-      | coe c => simp [truncLT_map_truncLTι_app]
-      | top => simp
-    simp [this]
-=======
       ← cancel_epi ((t.eTruncLTGEIsoGELT a b).hom.app ((t.eTruncLT.obj c).obj X)),
       Iso.hom_inv_id_app_assoc, eTruncLTLTIsoLT_hom, eTruncLTLTToLT_app,
       ← Functor.map_comp, eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app]
     simp
->>>>>>> origin
   · dsimp
     simp only [triangleω₁δ_obj_mor₂, eTruncGEToGEGE_app, Category.id_comp,
       ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
       eTruncGE_obj_map_eTruncGEπ_app]
   · simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
-<<<<<<< HEAD
-lemma triangleω₁δ_distinguished (X : C) :
-    (t.triangleω₁δ a b c hab hbc).obj X ∈ distTriang _ :=
-=======
 lemma triangleω₁δ_distinguished (X : C) : (t.triangleω₁δ a b c hab hbc).obj X ∈ distTriang _ :=
->>>>>>> origin
   isomorphic_distinguished _ (t.eTriangleLTGE_distinguished b _) _
     (t.triangleω₁δObjIso a b c hab hbc X)
 

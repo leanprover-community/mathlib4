@@ -280,12 +280,14 @@ section
 variable (hS : S.Exact) (cc : CokernelCofork S.f) (kf : KernelFork S.h)
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- cokerToKer' -/
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   IsColimit.desc hcc (CokernelCofork.ofπ _
     (show S.f ≫ IsLimit.lift hkf (KernelFork.ofι _ S.zero₂) = 0 from
       Fork.IsLimit.hom_ext hkf (by simp)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cokerToKer'_fac : cc.π ≫ S.cokerToKer' cc kf hcc hkf ≫ kf.ι = S.g := by
   simp [cokerToKer']
@@ -336,6 +338,7 @@ def connectShortComplexι : S ⟶ (connectShortComplex S T e φ hφ).shortComple
 
 instance : IsIso (connectShortComplexι S T e φ hφ).τ₁ := by dsimp; infer_instance
 instance : IsIso (connectShortComplexι S T e φ hφ).τ₂ := by dsimp; infer_instance
+set_option backward.isDefEq.respectTransparency false in
 instance [Mono T.f] : Mono (connectShortComplexι S T e φ hφ).τ₃ := mono_comp _ _
 
 @[simps]
@@ -344,6 +347,7 @@ def connectShortComplexπ : (connectShortComplex S T e φ hφ).shortComplex₂ �
   τ₂ := 𝟙 _
   τ₃ := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Epi S.g] : Epi (connectShortComplexπ S T e φ hφ).τ₁ := epi_comp _ _
 instance : IsIso (connectShortComplexπ S T e φ hφ).τ₂ := by dsimp; infer_instance
 instance : IsIso (connectShortComplexπ S T e φ hφ).τ₃ := by dsimp; infer_instance
@@ -371,6 +375,7 @@ variable [Preadditive C] (S : ShortComplex₄ C)
   (hS : S.Exact) (cc : CokernelCofork S.f) (kf : KernelFork S.h)
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- epi_cokerToKer' -/
 lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
     Epi (S.cokerToKer' cc kf hcc hkf) := by
@@ -383,6 +388,7 @@ lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
       assoc, cokerToKer'_fac, shortComplex₂_f]
   exact epi_of_epi_fac fac
 
+set_option backward.isDefEq.respectTransparency false in
 /-- mono_cokerToKer' -/
 lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
     Mono (S.cokerToKer' cc kf hcc hkf) := by
