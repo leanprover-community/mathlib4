@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Torsion Theory
@@ -44,67 +45,7 @@ open CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-/-- In an abelian category, given a kernel `k` of `q` and a mono `m : B ⟶ Q`,
-the short complex `K ⟶ pullback q m ⟶ B` (where the left leg is `pullback.lift k 0`
-and the right leg is `pullback.snd`) is short exact.
-
-This captures the general fact that pulling back an extension along a monomorphism
-yields an extension. -/
-lemma shortExact_pullbackSnd_of_isLimit_kernelFork
-    {K X Q B : C} {k : K ⟶ X} {q : X ⟶ Q} {m : B ⟶ Q} [Mono m] [Epi q]
-    (w : k ≫ q = 0) (hk : IsLimit (KernelFork.ofι k w)) [HasPullback q m] :
-    (ShortComplex.mk (pullback.lift k 0 (by simp [w]))
-      (pullback.snd q m) (pullback.lift_snd k 0 (by simp [w]))).ShortExact := by
-  have w' : k ≫ q = 0 ≫ m := by simp [w]
-  have hg_fst : pullback.lift k 0 (by simp [w]) ≫ pullback.fst q m = k :=
-    pullback.lift_fst k 0 w'
-  haveI : Mono (pullback.lift k 0 w') :=
-    (mono_comp_iff_of_mono _ (pullback.fst q m)).mp
-      (by simpa [hg_fst] using mono_of_isLimit_fork hk)
-  exact {
-    exact := by
-      refine ShortComplex.exact_of_f_is_kernel _ ?_
-      refine KernelFork.IsLimit.ofι' _ (pullback.lift_snd k 0 w') ?_
-      intro A a ha
-      have : (a ≫ pullback.fst q m) ≫ q = 0 := by
-        simpa [Category.assoc' m (pullback.snd q m) a, ha, zero_comp] using
-          congrArg (a ≫ ·) pullback.condition
-      exact ⟨hk.lift (KernelFork.ofι (a ≫ pullback.fst q m) this), by
-        apply (cancel_mono (pullback.fst q m)).mp
-        simpa [Category.assoc, hg_fst] using
-          hk.fac (KernelFork.ofι _ this) WalkingParallelPair.zero⟩
-    mono_f := by infer_instance
-    epi_g := by infer_instance
-  }
-
-/-- If `C` is locally small, well-powered, and has coproducts, then every object `X : C` has a
-subobject with property `P` that is maximal amongst all such subobjects. -/
-noncomputable
-abbrev sSup (P : ObjectProperty C) (X : C)
-    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
-    Subobject X :=
-  CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
-
-lemma le_sSup_of_prop (P : ObjectProperty C)
-    [P.IsClosedUnderIsomorphisms]
-    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    {X' X : C} (i : X' ⟶ X) (hi : P (Abelian.image i)) :
-    Subobject.mk (Abelian.image.ι i) ≤ sSup P X :=
-  Subobject.le_sSup _ _
-    (P.prop_of_iso (Subobject.underlyingIso (Abelian.image.ι i)).symm hi)
-
-lemma sSup_prop (P : ObjectProperty C)
-    [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
-    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    (X : C) : P (sSup P X) :=
-  P.prop_of_iso (Subobject.underlyingIso
-    (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
-      (P.prop_of_epi (factorThruImage _)
-        ((ObjectProperty.prop_colimit _ _ (fun ⟨j⟩ ↦ by
-          dsimp
-          obtain ⟨S, hS, hj⟩ := j.2
-          simpa [← hj] using hS))))
-
+section GaloisConnection
 lemma gc_rightOrthogonal_leftOrthogonal :
     GaloisConnection (OrderDual.toDual (α := ObjectProperty C) ∘ ObjectProperty.rightOrthogonal)
   (ObjectProperty.leftOrthogonal ∘ OrderDual.ofDual) :=
@@ -129,6 +70,106 @@ lemma le_rightOrthogonal_leftOrthogonal (P : ObjectProperty C) :
 lemma le_leftOrthogonal_rightOrthogonal (P : ObjectProperty C) :
     P ≤ P.leftOrthogonal.rightOrthogonal := by
   simpa [Function.comp] using gc_rightOrthogonal_leftOrthogonal.l_u_le (OrderDual.toDual P)
+end GaloisConnection
+
+section PullbackCokernel
+variable {X : C} {A : Subobject X} (B : Subobject (cokernel A.arrow))
+
+/-- For `A : Subobject X`, the pullback of `B : Subobject (cokernel A.arrow)` is a subobject of `X`
+that contains `A`. -/
+lemma le_pullback_cokernel_π :
+     A ≤ (Subobject.pullback (cokernel.π A.arrow)).obj B := by
+  let g : (A : C) ⟶ ((Subobject.pullback (cokernel.π A.arrow)).obj B : C) :=
+    (Subobject.isPullback (cokernel.π A.arrow) B).lift 0 A.arrow (by simp)
+  have w : g ≫ ((Subobject.pullback (cokernel.π A.arrow)).obj B).arrow = A.arrow :=
+    (Subobject.isPullback (cokernel.π A.arrow) B).lift_snd 0 A.arrow (by simp)
+  haveI : Mono g :=
+    (mono_comp_iff_of_mono _ ((Subobject.pullback (cokernel.π A.arrow)).obj B).arrow).mp
+      (by rw [w]; infer_instance)
+  exact Subobject.le_of_comm g w
+
+/-- Given a subobject `A` of `X` and a subobject `B` of the cokernel of `A.arrow`, the canonical
+inclusion of `A` into the pullback `A' = (Subobject.pullback (cokernel.π A.arrow)).obj B`
+is a kernel fork for `Subobject.pullbackπ (cokernel.π A.arrow) B`. -/
+noncomputable
+def kernelForkPullbackπCokernelπ :
+    KernelFork (Subobject.pullbackπ (cokernel.π A.arrow) B) := by
+  let A' := (Subobject.pullback (cokernel.π A.arrow)).obj B
+  let g : (A : C) ⟶ (A' : C) := (Subobject.ofLE A _ (le_pullback_cokernel_π B))
+  let p := cokernel.π A.arrow
+  refine KernelFork.ofι g ?_
+  apply (cancel_mono B.arrow).mp
+  calc
+    _ = g ≫ ((Subobject.pullback p).obj B).arrow ≫ p := by
+      rw [Category.assoc, (Subobject.isPullback p B).toCommSq.w]
+    _ = A.arrow ≫ p := by
+      rw [← Category.assoc, Subobject.ofLE_arrow (le_pullback_cokernel_π B)]
+    _ = 0 ≫ B.arrow := by
+      rw [zero_comp, cokernel.condition A.arrow]
+
+/-- `kernelFork_pullbackπ_cokernel_π A B` is a limit cone. -/
+noncomputable
+def isLimit_kernelFork_pullbackπ_cokernel_π : IsLimit (kernelForkPullbackπCokernelπ B) := by
+  let A' := (Subobject.pullback (cokernel.π A.arrow)).obj B
+  let i : (A : C) ⟶ (A' : C) := (Subobject.ofLE A _ (le_pullback_cokernel_π B))
+  let hPB := (Subobject.isPullback (cokernel.π A.arrow) B)
+  have hA := Abelian.monoIsKernelOfCokernel
+      (CokernelCofork.ofπ (cokernel.π A.arrow) (cokernel.condition A.arrow))
+      (cokernelIsCokernel A.arrow)
+  apply KernelFork.IsLimit.ofι' i (kernelForkPullbackπCokernelπ B).condition
+  intro Z f hf
+  let s : KernelFork (cokernel.π A.arrow) := KernelFork.ofι (f ≫ A'.arrow)
+    (by rw [Category.assoc, ← hPB.toCommSq.w, ← Category.assoc, hf, zero_comp])
+  refine ⟨hA.lift s, ?_⟩
+  apply (cancel_mono A'.arrow).mp
+  rw [Category.assoc, Subobject.ofLE_arrow (le_pullback_cokernel_π B)]
+  exact hA.fac s WalkingParallelPair.zero
+
+/-- Given a subobject `A` of `X` and a subobject `B` of `cokernel A.arrow`, the short complex
+`A ⟶ (Subobject.pullback (cokernel.π A.arrow)).obj B ⟶ B` with first map induced by
+`A.arrow ≫ cokernel.π A.arrow = 0 ≫ B.arrow` and second map `Subobject.pullbackπ`. -/
+noncomputable
+def shortComplexPullbackπCokernelπ : ShortComplex C :=
+  ShortComplex.mk
+    (Subobject.ofLE A _ (le_pullback_cokernel_π B))
+    (Subobject.pullbackπ (cokernel.π A.arrow) B)
+    (kernelForkPullbackπCokernelπ B).condition
+
+lemma shortExact_shortComplexPullbackπCokernelπ :
+    ShortComplex.ShortExact (shortComplexPullbackπCokernelπ B) := by
+  refine {
+    exact := by
+      refine ShortComplex.exact_of_f_is_kernel _ ?_
+      simpa [shortComplexPullbackπCokernelπ, kernelForkPullbackπCokernelπ] using
+        isLimit_kernelFork_pullbackπ_cokernel_π B
+    mono_f := by change Mono (Subobject.ofLE A _ (le_pullback_cokernel_π B)); infer_instance
+    epi_g := by
+      simpa [(Subobject.isPullback (cokernel.π A.arrow) B).isoPullback_hom_fst] using
+        epi_comp
+          (Subobject.isPullback (cokernel.π A.arrow) B).isoPullback.hom
+          (pullback.fst B.arrow (cokernel.π A.arrow))
+  }
+end PullbackCokernel
+
+lemma le_sSup_of_prop (P : ObjectProperty C)
+    [P.IsClosedUnderIsomorphisms]
+    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
+    {X' X : C} (i : X' ⟶ X) (hi : P (Abelian.image i)) :
+    Subobject.mk (Abelian.image.ι i) ≤ Subobject.sSup {A : Subobject X | P (A : C)} :=
+  Subobject.le_sSup _ _
+    (P.prop_of_iso (Subobject.underlyingIso (Abelian.image.ι i)).symm hi)
+
+lemma sSup_prop (P : ObjectProperty C)
+    [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
+    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
+    (X : C) : P (CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}) :=
+  P.prop_of_iso (Subobject.underlyingIso
+    (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
+      (P.prop_of_epi (factorThruImage _)
+        ((ObjectProperty.prop_colimit _ _ (fun ⟨j⟩ ↦ by
+          dsimp
+          obtain ⟨S, hS, hj⟩ := j.2
+          simpa [← hj] using hS))))
 
 /-- If `P` is closed under quotients, extensions, and coproducts, then for any `X`,
 the cokernel of the maximal `P`-subobject's arrow is `P.rightOrthogonal`. -/
@@ -136,38 +177,36 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-    (X : C) : P.rightOrthogonal (cokernel (sSup P X).arrow) := by
-  let Y : Subobject X := sSup P X
+    (X : C) :
+    P.rightOrthogonal (cokernel (Subobject.sSup {A : Subobject X | P (A : C)}).arrow) := by
+  let A := CategoryTheory.Subobject.sSup {A : Subobject X | P (A : C)}
   rw [ObjectProperty.rightOrthogonal_iff]
   intro Z f hPZ
-  let A := pullback (cokernel.π Y.arrow) (Abelian.image.ι f)
-  let i := pullback.fst (cokernel.π Y.arrow) (Abelian.image.ι f)
-  let p := pullback.snd (cokernel.π Y.arrow) (Abelian.image.ι f)
-  have hSES : (ShortComplex.mk
-      (pullback.lift Y.arrow 0 (by simp) : (Y : C) ⟶ A) p
-      (pullback.lift_snd Y.arrow 0 (by simp))).ShortExact :=
-    let s : ShortComplex C := ShortComplex.cokernelSequence Y.arrow
-    have hs: s.ShortExact := {
-      exact := ShortComplex.cokernelSequence_exact _
-      mono_f := by dsimp [s]; infer_instance
-      epi_g := inferInstance}
-    shortExact_pullbackSnd_of_isLimit_kernelFork (cokernel.condition Y.arrow)
-      hs.fIsKernel
-  have hPimi : P (Abelian.image i) :=
-    P.prop_of_epi (Abelian.factorThruImage i) --hPA
-      ((ObjectProperty.prop_X₂_of_shortExact P hSES (sSup_prop P X)
-          (P.prop_of_epi (Abelian.factorThruImage f) hPZ)))
-  have himg_le_Y : Subobject.mk (Abelian.image.ι i) ≤ Y :=
-    le_sSup_of_prop P i hPimi
-  let g' : Abelian.image i ⟶ (Y : C) := Subobject.ofMkLE (Abelian.image.ι i) Y himg_le_Y
-  have hg' : g' ≫ Y.arrow = image.ι i := Subobject.ofMkLE_arrow himg_le_Y
-  have hi_cokernel : i ≫ cokernel.π Y.arrow = 0 := by
-    simp [← Abelian.image.fac i, ← hg']
-  have hp : p = 0 := by
-    rw [← cancel_mono (Abelian.image.ι f), zero_comp, ← pullback.condition, hi_cokernel]
-  have himf_zero : Abelian.image.ι f = 0 :=
-    IsZero.eq_zero_of_src (IsZero.of_epi_eq_zero p hp) (Abelian.image.ι f)
-  simp [← Abelian.image.fac f, himf_zero]
+  let B := Subobject.mk (Abelian.image.ι f)
+  let A':= ((Subobject.pullback
+    (cokernel.π (Subobject.sSup {A : Subobject X | P (A : C)}).arrow))).obj B
+  haveI : Epi (Subobject.pullbackπ (cokernel.π A.arrow) B) := by
+    simpa [(Subobject.isPullback (cokernel.π A.arrow) B).isoPullback_hom_fst] using
+      epi_comp (Subobject.isPullback (cokernel.π A.arrow) B).isoPullback.hom
+        (pullback.fst B.arrow (cokernel.π A.arrow))
+  have hSES := shortExact_shortComplexPullbackπCokernelπ B
+  let f' : (A' : C) ⟶ A :=
+    Subobject.ofLE _ _
+      (Subobject.le_sSup {A | P (Subobject.underlying.obj A)} A'
+        (P.prop_X₂_of_shortExact hSES (sSup_prop P X)
+          (P.prop_of_iso
+            (Subobject.underlyingIso (Abelian.image.ι f)).symm
+              (P.prop_of_epi (Abelian.factorThruImage f) hPZ))))
+  have hf' : f' ≫ A.arrow = A'.arrow := Subobject.ofLE_arrow _
+  have hzero : A'.arrow ≫ cokernel.π (A.arrow) = 0 := by
+    simp [← hf']
+  have hpullbackπ : (Subobject.pullbackπ (cokernel.π A.arrow) B) = 0 := by
+    apply (cancel_mono B.arrow).mp
+    rw [(Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w, hzero, zero_comp]
+  have himf: IsZero (Abelian.image f) :=
+    IsZero.of_iso (IsZero.of_epi_eq_zero (Subobject.pullbackπ (cokernel.π A.arrow) B) hpullbackπ)
+      (id (Subobject.underlyingIso (Abelian.image.ι f)).symm)
+  simp [← Abelian.image.fac f, IsZero.eq_zero_of_src himf]
 
 lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
@@ -175,9 +214,9 @@ lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     P.rightOrthogonal.leftOrthogonal ≤ P :=
   fun X hX ↦
-    haveI : Epi (sSup P X).arrow :=
+    haveI : Epi (Subobject.sSup {A : Subobject X | P (A : C)}).arrow :=
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
-    P.prop_of_epi (sSup P X).arrow (sSup_prop P X)
+    P.prop_of_epi (Subobject.sSup {A : Subobject X | P (A : C)}).arrow (sSup_prop P X)
 
 /-- If an object property `P` in an abelian category is closed under quotients, extensions,
 and coproducts, then `P = P.rightOrthogonal.leftOrthogonal`. -/
