@@ -26,25 +26,26 @@ public section
 
 namespace UpperHalfPlane
 
+@[fun_prop]
+theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
+
+@[fun_prop]
+theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
+
 lemma continuous_toSL2R : Continuous toSL2R := by
-  refine continuous_induced_rng.mpr (continuous_matrix fun i j ↦ ?_)
-  fin_cases i <;> fin_cases j
-  · exact Real.continuous_sqrt.comp continuous_im
-  · exact continuous_re.div₀ (by fun_prop) (fun τ : ℍ ↦ Real.sqrt_ne_zero'.mpr τ.im_pos)
-  · exact continuous_const
-  · simpa using .inv₀ (by fun_prop) (fun τ : ℍ ↦ Real.sqrt_ne_zero'.mpr τ.im_pos)
+  apply continuous_induced_rng.mpr
+  simp only [Function.comp_def, coe_toSL2R]
+  fun_prop (disch := grind [im_pos])
 
 /-- The action of `SL(2, ℝ)` on `ℍ` is jointly continuous. -/
-instance instContinuousSMulSL2R : ContinuousSMul SL(2, ℝ) ℍ := by
-  constructor
-  suffices ∀ (g : SL(2, ℝ)) (τ : ℍ),
-      ContinuousAt (fun ⟨h, z⟩ ↦ (h 0 0 * (z : ℂ) + h 0 1) / (h 1 0 * z + h 1 1)) (g, τ) by
-    simpa [continuous_induced_rng, continuous_iff_continuousAt, Function.comp_def,
-      coe_specialLinearGroup_apply]
-  refine fun g τ ↦ .div ?_ ?_ (denom_ne_zero g τ) <;>
-  refine .add (.mul ?_ (by fun_prop)) ?_ <;>
-  · refine (Complex.continuous_ofReal.comp ?_).continuousAt
-    exact (continuous_subtype_val.matrix_elem _ _).comp continuous_fst
+instance instContinuousSMulSL2R : ContinuousSMul SL(2, ℝ) ℍ where
+  continuous_smul := by
+    suffices ∀ (g : SL(2, ℝ)) (τ : ℍ),
+        ContinuousAt (fun ⟨h, z⟩ ↦ (h 0 0 * (z : ℂ) + h 0 1) / (h 1 0 * z + h 1 1)) (g, τ) by
+      simpa [continuous_induced_rng, continuous_iff_continuousAt, Function.comp_def,
+        coe_specialLinearGroup_apply]
+    intro g τ
+    fun_prop (disch := exact denom_ne_zero g τ)
 
 open Topology in
 lemma σ_eventuallyEq (g : GL (Fin 2) ℝ) : σ =ᶠ[𝓝 g] fun _ ↦ σ g := by
@@ -63,12 +64,8 @@ instance instContinuousSMulGL2R : ContinuousSMul (GL (Fin 2) ℝ) ℍ := by
   simp only [continuous_induced_rng, Function.comp_def, coe_smul, continuous_iff_continuousAt,
     Prod.forall]
   refine fun g τ ↦ .congr ?_ (f := fun x ↦ (σ g) (num x.1 x.2 / denom x.1 x.2))
-      (by filter_upwards [(σ_eventuallyEq g).prod_inl_nhds _] using by simp +contextual)
-  refine ContinuousAt.comp (by fun_prop) (.div₀ ?_ ?_ (denom_ne_zero _ _)) <;>
-  · refine .add (.mul ?_ (by fun_prop)) ?_ <;>
-    · refine (Complex.continuous_ofReal.comp ?_).continuousAt
-      refine Continuous.comp (g := fun g : GL (Fin 2) ℝ ↦ g _ _) ?_ continuous_fst
-      exact (continuous_id.matrix_elem _ _).comp Units.continuous_val
+    (by filter_upwards [(σ_eventuallyEq g).prod_inl_nhds _] using by simp +contextual)
+  fun_prop (disch := apply denom_ne_zero)
 
 section proper_orbit_map
 
@@ -106,8 +103,12 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   have : ProperSpace (Matrix (Fin 2) (Fin 2) ℝ) := pi_properSpace
   have : IsCompact {m : Matrix (Fin 2) (Fin 2) ℝ | ∀ i j, |m i j| ≤ max √A √A'} := by
     convert ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
-    simp [Metric.closedBall, Matrix.norm_def, pi_norm_le_iff_of_nonempty]
-    grind
+    simp only [le_sup_iff, Fin.forall_fin_two, Fin.isValue, Metric.closedBall, dist_zero_right,
+      Matrix.norm_def, pi_norm_le_iff_of_nonempty, Real.norm_eq_abs]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `ext` was not necessary.
+    The cause of this might be `Matrix` function application defeq abuse. -/
+    ext; grind
   have := Matrix.SpecialLinearGroup.isClosedEmbedding_val.isCompact_preimage this
   refine this.of_isClosed_subset (hK.isClosed.preimage <| by fun_prop) (fun g hg ↦ ?_)
   intro i j
