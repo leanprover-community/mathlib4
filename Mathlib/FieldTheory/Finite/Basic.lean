@@ -239,6 +239,16 @@ theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
 
 end
 
+section
+
+variable [Field K] [Fintype K]
+
+open Lean in
+instance instGrindPowIdentity : Grind.PowIdentity K (Fintype.card K) where
+  pow_eq := pow_card
+
+end
+
 variable (K) [Field K] [Fintype K]
 
 /-- The cardinality `q` is a power of the characteristic of `K`. -/
