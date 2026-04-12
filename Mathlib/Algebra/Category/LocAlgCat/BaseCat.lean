@@ -9,6 +9,8 @@ module
 public import Mathlib.Algebra.Category.LocAlgCat.Basic
 public import Mathlib.RingTheory.Length
 
+import Mathlib.RingTheory.HopkinsLevitzki
+
 /-!
 # The Base Category for Deformation Theory
 
