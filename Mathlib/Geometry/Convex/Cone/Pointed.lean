@@ -179,6 +179,15 @@ abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 character `•` U+2022. -/
 notation:70 R:70 " ∙₊ " x:70 => hull R (singleton x)
 
+/-- Unexpander for `R ∙₊ x` notation. This needs to be defined separately because the `{_}`
+notation is ambiguous, so we have to specify that it is the `«term{_}»` notation. -/
+@[app_unexpander hull]
+meta def hull.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $R $s) => match s with
+    | `(«term{_}»| {$a}) => `($R ∙₊ $a)
+    | _ => throw ()
+  | _ => throw ()
+
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
 lemma hull_eq (C : PointedCone R E) : PointedCone.hull R C = C := span_eq C
