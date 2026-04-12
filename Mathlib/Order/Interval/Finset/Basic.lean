@@ -264,6 +264,7 @@ theorem Ioo_self : Ioo a a = ∅ :=
 variable {a}
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
+@[implicit_reducible]
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
@@ -1122,7 +1123,7 @@ restricted to pairs satisfying `a ⩿ b`. -/
 lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [transGen_eq_self (r := (· ≤ · : β → β → Prop)) transitive_le]
+  simpa [transGen_eq_self (r := (· ≤ · : β → β → Prop)) isTrans_le]
     using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
@@ -1130,7 +1131,7 @@ restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) Std.Refl.reflexive transitive_le]
+  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) Std.Refl.reflexive isTrans_le]
     using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
@@ -1139,7 +1140,7 @@ lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorde
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
   have := Relation.TransGen.lift f h (a := a) (b := b)
-  rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
+  rw [← lt_iff_transGen_covBy, transGen_eq_self inferInstance] at this
   exact this hab
 
 /-- A function from a locally finite preorder is antitone if and only if it is antitone when

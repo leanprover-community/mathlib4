@@ -39,7 +39,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `Φ` of a site `(C, J)`, an object `X : C`, and `x : Φ.fiber.obj X`,
 this is the point of the site `(Over X, J.over X)` such that the fiber of
 an object of `Over X` corresponding to a morphism `f : Y ⟶ X` identifies
-to subtype of `Φ.fiber.obj Y` consisting of elemnts `y` such
+to subtype of `Φ.fiber.obj Y` consisting of elements `y` such
 that `Φ.fiber.map f y = x`. -/
 @[simps]
 def over : Point.{w} (J.over X) where

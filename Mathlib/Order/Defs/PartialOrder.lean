@@ -8,8 +8,6 @@ module
 public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToDual
 
 /-!
@@ -129,6 +127,7 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
+@[implicit_reducible]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 

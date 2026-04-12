@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
-public import Mathlib.Probability.Independence.Process
+public import Mathlib.Probability.Independence.Process.Basic
 public import Mathlib.Probability.Notation
 
 /-!

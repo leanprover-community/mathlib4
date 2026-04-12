@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
@@ -137,10 +138,8 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
-  csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
+  isLUB_csSup _ := Real.isLUB_sSup
+  isGLB_csInf _ := Real.isGLB_sInf
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -318,7 +317,7 @@ lemma iInf_nonpos (hf : ∀ i, f i ≤ 0) : ⨅ i, f i ≤ 0 := sInf_nonpos <| S
 theorem sInf_le_sSup (s : Set ℝ) (h₁ : BddBelow s) (h₂ : BddAbove s) : sInf s ≤ sSup s := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · rw [sInf_empty, sSup_empty]
-  · exact csInf_le_csSup h₁ h₂ hne
+  · exact csInf_le_csSup hne h₁ h₂
 
 theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   let s := {x : ℝ | const abs x < f}

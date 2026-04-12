@@ -124,8 +124,8 @@ respect to a functor `F` is isomorphic (upto a natural isomorphism of the underl
 to the multifork associated to `S` and `P ⋙ F`. -/
 def mapMultifork :
     F.mapCone (S.multifork P) ≅
-      (Limits.Cones.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
-  Cones.ext (Iso.refl _)
+      (Limits.Cone.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
+  Cone.ext (Iso.refl _)
 
 end GrothendieckTopology.Cover
 

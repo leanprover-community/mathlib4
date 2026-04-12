@@ -78,7 +78,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
   apply Limits.IsColimit.equivOfNatIsoOfIso diag_iso
     (d := Limits.Cocone.whisker I (Limits.Cocone.whisker equiv.functor cone))
     (c := tensorRight (K.obj e) |>.mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d)
-    (Limits.Cocones.ext <| .refl _) |>.toFun
+    (Limits.Cocone.ext <| .refl _) |>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorRight <| K.obj e) P |>.some
 
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'`,
@@ -125,7 +125,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
   apply Limits.IsColimit.equivOfNatIsoOfIso diag_iso
     (d := Limits.Cocone.whisker I <| Limits.Cocone.whisker equiv.functor cone)
     (c := (tensorLeft <| K.obj e).mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d)
-    (Limits.Cocones.ext <| .refl _) |>.toFun
+    (Limits.Cocone.ext <| .refl _) |>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorLeft <| K.obj e) P |>.some
 
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` and

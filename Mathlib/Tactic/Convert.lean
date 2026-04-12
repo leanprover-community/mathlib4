@@ -152,9 +152,7 @@ example {n : ℕ} (e : Prime (2 * n + 1)) :
   convert e using 2
   -- One goal: ⊢ n + n = 2 * n
   ring
-```
 
-```lean
 -- `convert` can fail where `exact` succeeds.
 example (h : p 0) : p 1 := by
   fail_if_success
@@ -162,7 +160,6 @@ example (h : p 0) : p 1 := by
     done
   exact h -- succeeds
 
-```lean
 -- `convert with` names introduced variables.
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
@@ -171,6 +168,7 @@ example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
   -- hε : ε > 0
   -- ⊢ q ε ↔ p ε
   sorry
+```
 -/
 syntax (name := convert) "convert" Lean.Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic

@@ -23,16 +23,15 @@ jobs:
         fetch-depth: 0
         path: pr-branch
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Update the merge-conflict label
       run: |
@@ -229,7 +228,7 @@ jobs:
         then
           # Format each changed workflow path as a Markdown bullet: "- `path`"
           workflowFilesChangedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${workflowFilesChanged}")"
-          workflowDocsReminder="$(printf "### Workflow documentation reminder\nThis PR modifies files under \`.github/workflows/\`.\nPlease update \`docs/workflows.md\` if the workflow inventory, triggers, or behavior changed.\n\nModified workflow files:\n%s\n" "${workflowFilesChangedMarkdown}")"
+          workflowDocsReminder="$(printf "### ⚠️ Workflow documentation reminder\nThis PR modifies files under \`.github/workflows/\`.\nPlease update \`docs/workflows.md\` if the workflow inventory, triggers, or behavior changed.\n\nModified workflow files:\n%s\n" "${workflowFilesChangedMarkdown}")"
         else
           workflowDocsReminder=""
         fi
@@ -240,7 +239,7 @@ jobs:
         then
           # Format each added scripts path as a Markdown bullet: "- `path`"
           scriptsFilesAddedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${scriptsFilesAdded}")"
-          scriptsLocationReminder="$(printf "### Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in \`leanprover-community/mathlib-ci\`.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
+          scriptsLocationReminder="$(printf "### ⚠️ Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in [\`leanprover-community/mathlib-ci\`](https://github.com/leanprover-community/mathlib-ci).\n\nA script belongs in **\`mathlib-ci\`** if it is a CI automation script that interacts with GitHub (e.g. managing labels, posting comments, triggering bots), runs from a trusted external checkout in CI, or requires access to secrets.\n\nA script belongs in **this repository** (\`scripts/\`) if it is a developer or maintainer tool to be run locally, a code maintenance or analysis utility, a style linting tool, or a data file used by the library's own linters.\n\nSee the [\`mathlib-ci\` README](https://github.com/leanprover-community/mathlib-ci) for more details.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
         else
           scriptsLocationReminder=""
         fi

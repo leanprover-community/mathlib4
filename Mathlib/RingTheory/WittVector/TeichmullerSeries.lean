@@ -59,7 +59,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
       simp only [hind]
       by_contra! ⟨m, hma, hmS'⟩
       have := Finset.sum_eq_zero.mt hmS'
-      push_neg at this
+      push Not at this
       choose b hb hb' using this
       have : a = b :=
         congrArg (fun x ↦ x.1) <|

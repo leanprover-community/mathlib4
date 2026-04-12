@@ -155,7 +155,7 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
   · cat_disch
   · dsimp
     ext
-    simp only [Function.comp_apply, limit.lift_map, Cones.postcompose, Fan.mk_pt, Category.comp_id,
+    simp only [Function.comp_apply, limit.lift_map, Cone.postcompose, Fan.mk_pt, Category.comp_id,
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
 

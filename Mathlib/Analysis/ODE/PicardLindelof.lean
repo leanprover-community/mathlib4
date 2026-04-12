@@ -120,12 +120,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
     (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
-  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
-  rw [this]
-  apply hf.comp (by fun_prop)
-  intro _ ht
-  rw [mem_prod]
-  exact ⟨ht, hmem _ ht⟩
+  simpa only [← uncurry_apply_pair f] using hf.comp (by fun_prop) (by tauto)
 
 /-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
 `f t (α t)` is continuous in `t`. -/
@@ -254,9 +249,8 @@ protected lemma mem_closedBall
 
 lemma compProj_mem_closedBall
     (α : FunSpace t₀ x₀ r L) (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) {t : ℝ} :
-    α.compProj t ∈ closedBall x₀ a := by
-  rw [compProj_apply]
-  exact α.mem_closedBall h
+    α.compProj t ∈ closedBall x₀ a :=
+  α.mem_closedBall h
 
 end
 
@@ -369,7 +363,6 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
           abs_pow, abs_pow, abs_dist, NNReal.abs_eq, abs_abs, mul_div, div_div, ← abs_mul,
           ← Nat.cast_succ, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.abs_cast, ← mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th iterate of `next` is Lipschitz continuous with respect to `FunSpace`, with constant
 $(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
 lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
@@ -414,7 +407,6 @@ there is some `m : ℕ` such that `next^[m]` is a contracting map, it further su
 distance between `α` and `next^[m]^[n] α`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A key step in the base case of `exists_forall_closedBall_funSpace_dist_le_mul` -/
 lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :
@@ -466,7 +458,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
   have hL' : 0 ≤ L' := by
     have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
     positivity
-  refine ⟨⟨L', hL'⟩, fun x y hx hy α β hα hβ ↦ ?_⟩
+  refine ⟨.mk L' hL', fun x y hx hy α β hα hβ ↦ ?_⟩
   rw [NNReal.coe_mk]
   apply le_of_tendsto_of_tendsto' (b := Filter.atTop) _ _ <|
     dist_iterate_iterate_next_le_of_lipschitzWith hf hy α (h y hy).2
@@ -507,11 +499,7 @@ lemma hasDerivWithinAt_picard_Icc
     (continuousOn_comp hf hα hmem _ ht)
   apply ContinuousOn.intervalIntegrable
   apply continuousOn_comp hf hα hmem |>.mono
-  by_cases! h : t < t₀
-  · rw [uIcc_of_gt h]
-    exact Icc_subset_Icc ht.1 ht₀.2
-  · rw [uIcc_of_le h]
-    exact Icc_subset_Icc ht₀.1 ht.2
+  exact uIcc_subset_Icc ht₀ ht
 
 /-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
 satisfies the integral equation. -/
@@ -570,9 +558,7 @@ lemma contDiffOn_enat_picard_Icc
   | top =>
     rw [contDiffOn_infty] at *
     exact fun k ↦ contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
-  | coe n =>
-    simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
+  | coe n => exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
 theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
@@ -716,8 +702,8 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   let ε := a / L / 2 / 2
   have hε0 : 0 < ε := by positivity
   refine ⟨ε, hε0,
-    ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
-    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
+    .mk (a / 2) (half_pos ha).le, (.mk (a / 2) (half_pos ha).le) / 2,
+    .mk L hL0.le, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
   apply of_time_independent hb <|
     hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
   simp [ε, field]

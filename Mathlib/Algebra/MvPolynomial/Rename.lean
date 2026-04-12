@@ -27,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 + `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `r : R` elements of the coefficient ring
 
@@ -108,7 +108,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) :
     rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
   simp_rw [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
-    X_pow_eq_monomial, ← monomial_finsupp_sum_index, ← single_eq_monomial]
+    X_pow_eq_monomial, ← monomial_finsupp_sum_index, ← single_eq_monomial, AddMonoidAlgebra.coeff]
 
 theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
     Function.Injective (rename f : MvPolynomial σ R → MvPolynomial τ R) := by

@@ -85,7 +85,6 @@ lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {y} in
 include hc hy in
 lemma epi_f [IsFiltered J] : Epi (f y) := by
@@ -192,7 +191,7 @@ lemma isIso_f [IsFiltered J] : IsIso (f z) := by
       constCocone_ι, NatTrans.id_app, Category.comp_id]
     apply hf
   · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
-      (inferInstanceAs (IsIso (𝟙 c.pt)))
+      ((inferInstance : IsIso (𝟙 c.pt)))
     exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
         (isColimitConstCocone J c.pt))
