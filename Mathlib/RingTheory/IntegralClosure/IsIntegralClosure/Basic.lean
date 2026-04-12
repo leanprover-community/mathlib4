@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.RingTheory.Polynomial.Subring
+import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -472,7 +473,6 @@ variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A] [IsScalarTower R A B]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If A is an R-algebra all of whose elements are integral over R,
 and x is an element of an A-algebra that is integral over A, then x is integral over R. -/
 theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) :
@@ -485,16 +485,9 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
     convert hp; apply p.map_toSubring S.toSubring⟩
-  let Sx := Subalgebra.toSubmodule (S[x])
-  let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
-  have : Module.Finite S Sx := .of_fg hSx.fg_adjoin_singleton
   refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
-  rw [← Module.Finite.iff_fg]
-  letI : SMul S Sx := { MSx with } -- need this even though MSx is there
-  have : IsScalarTower R S Sx :=
-    Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
-  exact Module.Finite.trans S Sx
+  simpa using hSx.fg_adjoin_singleton
 
 variable (A) in
 /-- If A is an R-algebra all of whose elements are integral over R,

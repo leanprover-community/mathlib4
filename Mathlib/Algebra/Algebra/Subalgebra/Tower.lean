@@ -116,6 +116,58 @@ This is a special case of `AlgHom.restrictScalars` that can be helpful in elabor
 def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScalars R →ₐ[R] B :=
   f.restrictScalars R
 
+instance restrictScalars.SMul {U : Subalgebra S A} : SMul S (U.restrictScalars R)  where
+  smul s := fun ⟨u, hu⟩ ↦
+    ⟨s • u, by simp only [mem_restrictScalars] at hu ⊢; apply smul_mem _ hu⟩
+
+instance restrictScalars.origAlgebra {U : Subalgebra S A} : Algebra S (U.restrictScalars R) where
+  algebraMap := {
+    toFun s :=
+      let ⟨u, hu⟩ := algebraMap S U s
+      ⟨u, by rwa [mem_restrictScalars]⟩
+    map_zero' := by ext; simp
+    map_one' := by ext; simp
+    map_add' x y := by ext; simp
+    map_mul' x y := by ext; simp
+  }
+  commutes' s x := by
+    ext
+    exact Algebra.commutes s x.val
+  smul_def' s x := by
+    ext
+    exact Algebra.smul_def s x.val
+
+@[simp, norm_cast]
+lemma restrictScalars.coe_smul {U : Subalgebra S A} (s : S) (u : U.restrictScalars R) :
+    (↑(s • u) : A) = s • (u : A) := by
+  rfl
+
+@[simp, norm_cast]
+lemma restrictScalars.coe_algebraMap {U : Subalgebra S A} (s : S) :
+    (algebraMap S (U.restrictScalars R) s : A) = algebraMap S A s := by
+  rfl
+
+instance restrictScalars.isScalarTower {U : Subalgebra S A} :
+    IsScalarTower R S (U.restrictScalars R) :=
+  ⟨fun _ _ _ ↦ by ext; simp⟩
+
+instance restrictScalars.isScalarTower' {U : Subalgebra S A} :
+    IsScalarTower S (U.restrictScalars R) A :=
+  ⟨by simp [smul_def]⟩
+
+/-- Turning `p : Subalgebra S A` into an `R`-subalgebra gives the same algebra structure. -/
+def restrictScalarsEquiv (p : Subalgebra S A) : p.restrictScalars R ≃ₐ[S] p :=
+  { RingEquiv.refl p with
+    commutes' := fun _ => rfl }
+
+@[simp]
+theorem restrictScalarsEquiv_apply (p : Subalgebra S A) (a : p.restrictScalars R) :
+    ((restrictScalarsEquiv R p) a : A) = a := rfl
+
+@[simp]
+theorem restrictScalarsEquiv_symm_apply (p : Subalgebra S A) (a : p) :
+    ((restrictScalarsEquiv R p).symm a : A) = a := rfl
+
 end Semiring
 
 section CommSemiring

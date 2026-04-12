@@ -340,13 +340,15 @@ theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
     (matroid R A).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
   rw [Matroid.isFlat_iff_closure_eq, matroid_closure_eq]
   set S := algebraicClosure (adjoin R s) A
-  refine ⟨fun eq ↦ ⟨S.restrictScalars R, eq, fun a (h : IsAlgebraic S _) ↦ ?_⟩, ?_⟩
-  · rw [← eq]; exact h.restrictScalars (adjoin R s)
+  refine ⟨fun eq ↦ ⟨S.restrictScalars R, eq, fun a h ↦ ?_⟩, ?_⟩
+  · rw [← eq, ← coe_restrictScalars R]
+    have : Algebra.IsAlgebraic (adjoin R s) (Subalgebra.restrictScalars R S) :=
+      (Subalgebra.restrictScalarsEquiv R S).symm.isAlgebraic
+    exact h.restrictScalars (adjoin R s)
   rintro ⟨s, rfl, hs⟩
   refine Set.ext fun a ↦ ⟨(hs _ <| adjoin_eq s ▸ ·), fun h ↦ ?_⟩
   exact isAlgebraic_algebraMap (A := A) (by exact (⟨a, subset_adjoin h⟩ : adjoin R s))

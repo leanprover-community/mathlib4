@@ -411,10 +411,10 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
 variable {S : Submodule A M}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
   rw [← Module.Finite.iff_fg] at *
-  exact Module.Finite.trans A S
+  have : Module.Finite R S := Module.Finite.trans A S
+  exact Module.Finite.equiv ((restrictScalarsEquiv R A M S).restrictScalars R).symm
 
 @[simp]
 theorem FG.restrictScalars_iff [Module.Finite R A] : (S.restrictScalars R).FG ↔ S.FG :=
