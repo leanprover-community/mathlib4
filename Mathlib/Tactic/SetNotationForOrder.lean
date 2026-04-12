@@ -29,7 +29,7 @@ TODO: Unify more order operations suh as `∪`/`⊔` and `∩`/`⊓`.
 
 meta section
 
-namespace Mathlib.Meta.SetNotation
+namespace Mathlib.Meta.SetNotationForOrder
 
 open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
 
@@ -198,4 +198,4 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 
-end Mathlib.Meta.SetNotation
+end Mathlib.Meta.SetNotationForOrder
