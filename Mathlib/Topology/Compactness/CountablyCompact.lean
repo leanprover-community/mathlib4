@@ -306,6 +306,7 @@ theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace 
 
 theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
   isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
+
 /-- A sequentially compact space is countably compact. -/
 instance instSeqCompactSpaceCountablyCompactSpace
     {X : Type*} [TopologicalSpace X] [SeqCompactSpace X] : CountablyCompactSpace X where
