@@ -28,8 +28,8 @@ for formal deformation theory.
   A morphism `f : A ⟶ B` is a local `Λ`-algebra homomorphism compatible with the
   residue maps.
 
-* `LocAlgCat.isoMk` / `LocAlgCat.ofIso` : Canonical translations between `Λ`-algebra
-  equivalences (`≃ₐ[Λ]`) and categorical isomorphisms (`≅`) in `LocAlgCat`.
+* `LocAlgCat.isoMk`, `LocAlgCat.ofIso` : Canonical translations between algebra
+  equivalences and categorical isomorphisms.
 
 * `LocAlgCat.uliftFunctor` : The universe lift functor for `LocAlgCat`.
 
