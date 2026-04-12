@@ -46,6 +46,13 @@ We often consider integrable functions with respect to the total variation of
 `Bμ.transpose` = `Bμ.vectormeasure.comp Bμ.pairing.flip`, which is the reference measure for the
 pairing integral.
 
+When `f` is not integrable with respect to `Bμ.transpose.variation`, the value of `Bμ.integral f`
+is set to `0`. This is an analogous convention to the Bochner integral. However, there are cases
+where a natural definition of the integral as an unconditional sum exists, but `f` is not integrable
+in this sense: Let `μ` be the `L∞(ℕ)`-valued measure on `ℕ` defined by extending
+`{n} => (0,0,..., 1/(n+1),0,0,...)`. The total variation is `∑ n, 1/(n+1) = ∞`, but the sum of
+`(0,...,0,1/n,0,...)` in `L∞(ℕ)` is unconditionally convergent.
+
 -/
 
 public section
@@ -147,52 +154,76 @@ noncomputable def transpose : VectorMeasure α (E →L[ℝ] G) :=
 
 lemma transpose_def : Bμ.transpose = Bμ.vectorMeasure.comp Bμ.pairing.flip := by rfl
 
-variable [CompleteSpace G]
-
+open Classical in
 /-- The pairing integral in L1 space as a continuous linear map. -/
 noncomputable def integral (f : α → E) : G :=
+  if _ : CompleteSpace G then
   setToFun Bμ.transpose.variation Bμ.transpose
     (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  else 0
 
 @[integral_simps]
 theorem integral_add (f g : α → E) (hf : Integrable f Bμ.transpose.variation)
     (hg : Integrable g Bμ.transpose.variation) :
-    Bμ.integral (fun x => f x + g x) = Bμ.integral f + Bμ.integral g :=
-  setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+    Bμ.integral (fun x => f x + g x) = Bμ.integral f + Bμ.integral g := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_add' (f g : α → E) (hf : Integrable f Bμ.transpose.variation)
     (hg : Integrable g Bμ.transpose.variation) :
-    Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g :=
-  setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+    Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_neg (f : α → E) :
-  Bμ.integral (fun x => -f x) = -Bμ.integral f :=
-  setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  Bμ.integral (fun x => -f x) = -Bμ.integral f := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_neg' (f : α → E) :
-  Bμ.integral (-f) = -Bμ.integral f :=
-  setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  Bμ.integral (-f) = -Bμ.integral f := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_sub (f g : α → E) (hf : Integrable f Bμ.transpose.variation)
     (hg : Integrable g Bμ.transpose.variation) :
-    Bμ.integral (fun x => f x - g x) = Bμ.integral f - Bμ.integral g :=
-  setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+    Bμ.integral (fun x => f x - g x) = Bμ.integral f - Bμ.integral g := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_sub' (f g : α → E) (hf : Integrable f Bμ.transpose.variation)
     (hg : Integrable g Bμ.transpose.variation) :
-    Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g :=
-  setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+    Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
+  · simp [integral, hG]
 
 @[integral_simps]
 theorem integral_smul (c : ℝ) (f : α → E) :
-    Bμ.integral (c • f) = c • Bμ.integral f :=
-  setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
-    (cbmApplyMeasure_smul Bμ.pairing Bμ.vectorMeasure) c f
+    Bμ.integral (c • f) = c • Bμ.integral f := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
+      (cbmApplyMeasure_smul Bμ.pairing Bμ.vectorMeasure) c f
+  · simp [integral, hG]
+
+variable [hG : CompleteSpace G]
 
 @[simp]
 lemma integral_apply (f : (α → E)) (hf : Integrable f Bμ.transpose.variation) :
@@ -201,8 +232,8 @@ lemma integral_apply (f : (α → E)) (hf : Integrable f Bμ.transpose.variation
     Bμ.integral f =
     L1.setToL1 (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
     (this.toL1 f) := by
-  simp only [integral, setToFun]
-  exact dif_pos (integral_apply._proof_1 Bμ f hf)
+  simp only [hG, integral, setToFun, ↓reduceDIte, hf]
+  rfl
 
 end VectorMeasureWithPairing
 
