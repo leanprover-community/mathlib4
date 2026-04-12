@@ -65,6 +65,7 @@ omit [IsStrictOrderedRing R] in
 theorem log_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : log b r = Nat.log b ⌊r⌋₊ :=
   if_pos hr
 
+omit [IsStrictOrderedRing R] in
 theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.clog b ⌈r⁻¹⌉₊ := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [log, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right, Nat.clog_one_right,
@@ -83,6 +84,7 @@ theorem log_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
     log b (ofNat(n) : R) = Nat.log b ofNat(n) :=
   log_natCast b n
 
+omit [IsStrictOrderedRing R] in
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : log b r = 0 := by
   rcases le_total 1 r with h | h
   · rw [log_of_one_le_right _ h, Nat.log_of_left_le_one hb, Int.ofNat_zero]
@@ -123,6 +125,7 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
 theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
   log_of_right_le_zero b le_rfl
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
   rw [log_of_one_le_right _ le_rfl, Nat.floor_one, Nat.log_one_right, Int.ofNat_zero]
@@ -189,6 +192,7 @@ omit [IsStrictOrderedRing R] in
 theorem clog_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : clog b r = Nat.clog b ⌈r⌉₊ :=
   if_pos hr
 
+omit [IsStrictOrderedRing R] in
 theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.log b ⌊r⁻¹⌋₊ := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [clog, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
@@ -252,6 +256,7 @@ theorem zpow_pred_clog_lt_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) :
 theorem clog_zero_right (b : ℕ) : clog b (0 : R) = 0 :=
   clog_of_right_le_zero _ le_rfl
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem clog_one_right (b : ℕ) : clog b (1 : R) = 0 := by
   rw [clog_of_one_le_right _ le_rfl, Nat.ceil_one, Nat.clog_one_right, Int.ofNat_zero]
