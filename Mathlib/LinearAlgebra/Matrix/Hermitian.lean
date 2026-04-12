@@ -180,7 +180,8 @@ theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
     {M : ∀ i, Matrix (p i) (p i) α} : (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
   grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
 
-/-- A uniform block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
+/-- A block diagonal matrix whose components are all equal is Hermitian if
+and only if each block is Hermitian. -/
 theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} :
     (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
   simpa [IsHermitian] using isHermitian_blockDiagonal'_iff
