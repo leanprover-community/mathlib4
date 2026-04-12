@@ -2,13 +2,19 @@ name: Remove unnecessary set_option lines
 
 on:
   schedule:
-    - cron: "0 4 * * 1" # At 04:00 UTC on Monday.
+    # Run several hours before the technical debt report which runs Mondays at 04:00 UTC
+    - cron: "20 23 * * 0" # At 23:20 UTC on Sunday.
   workflow_dispatch:
     inputs:
       dry_run:
         description: 'If true, only scan and report without modifying files or opening a PR'
         required: false
         default: false
+        type: boolean
+      auto_merge:
+        description: 'If true, apply the auto-merge-after-CI label when creating a PR'
+        required: false
+        default: true
         type: boolean
       global_timeout:
         description: 'Global timeout in seconds (default: 18000 = 5 hours)'
@@ -36,7 +42,7 @@ jobs:
 
       - name: Restore progress cache
         if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: scripts/.rm_set_option_progress.jsonl
           # Use run_id in restore-keys so we always pick up the most recent cache
@@ -69,7 +75,7 @@ jobs:
         # Skip on dry-run (no files are modified) and if the progress file was
         # cleaned up (meaning the run completed fully).
         if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: scripts/.rm_set_option_progress.jsonl
           key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
@@ -121,7 +127,7 @@ jobs:
           base: master
           title: "chore: remove unnecessary set_option lines"
           body: ${{ steps.pr_body.outputs.body }}
-          # labels: "auto-merge-after-CI"
+          labels: ${{ toJson(inputs.auto_merge) == 'true' && 'auto-merge-after-CI' || '' }}
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'

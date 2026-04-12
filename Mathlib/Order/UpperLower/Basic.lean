@@ -139,13 +139,9 @@ theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
 theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
   ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
+@[to_dual]
 theorem IsUpperSet.preimage (hs : IsUpperSet s) {f : β → α} (hf : Monotone f) :
     IsUpperSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
-
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual existing]
-theorem IsLowerSet.preimage (hs : IsLowerSet s) {f : β → α} (hf : Monotone f) :
-    IsLowerSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
 
 @[to_dual]
 theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f '' s : Set β) := by
