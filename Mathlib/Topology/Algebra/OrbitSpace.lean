@@ -24,9 +24,9 @@ point, and establish basic properties.
 @[expose] public section
 
 variable {M : Type*} [TopologicalSpace M]
-variable {G : Type*} [Group G] [MulAction G M]
-         [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M]
-         [IsCancelSMul G M] [T2Space M] [LocallyCompactSpace M]
+  {G : Type*} [Group G] [MulAction G M]
+  [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M]
+  [T2Space M] [LocallyCompactSpace M]
 
 namespace MulAction
 

@@ -42,11 +42,10 @@ open scoped Manifold
 open MulAction QuotientMk
 
 variable {M : Type*} [TopologicalSpace M]
-variable {G : Type*} [Group G] [MulAction G M]
+  {G : Type*} [Group G] [MulAction G M]
   [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M]
   [T2Space M] [LocallyCompactSpace M]
-variable {H : Type*} [TopologicalSpace H]
-variable [ChartedSpace H M]
+  {H : Type*} [TopologicalSpace H] [ChartedSpace H M]
 
 /-!
 ## Charted space structure on the orbit space
