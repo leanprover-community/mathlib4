@@ -75,8 +75,8 @@ lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
 
 /-- If `η ∘ₖ κ` is a deterministic kernel given by `f`, then `η x` is almost everywhere the
 Dirac measure at `f a`. -/
-lemma comp_eq_deterministic_ae_eq_dirac {η : Kernel β α} [IsMarkovKernel η] {f : α → α}
-    (hf : Measurable f) (h : η ∘ₖ κ = deterministic f hf) (a : α) {s : Set α}
+lemma comp_eq_deterministic_ae_eq_dirac {η : Kernel β γ} [IsMarkovKernel η] {f : α → γ}
+    (hf : Measurable f) (h : η ∘ₖ κ = deterministic f hf) (a : α) {s : Set γ}
     (hs : MeasurableSet s) : ∀ᵐ x ∂(κ a), η x s = Measure.dirac (f a) s := by
   have hg_eq : ∫⁻ x, (η x) s ∂κ a = Measure.dirac (f a) s := by
     rw [← comp_apply' _ _ _ hs, h, deterministic_apply]
@@ -102,7 +102,7 @@ lemma comp_eq_deterministic_ae_eq_dirac {η : Kernel β α} [IsMarkovKernel η] 
   · simp only [hfa, not_false_eq_true, Set.indicator_of_notMem] at ⊢ hg_eq
     rwa [lintegral_eq_zero_iff' ((η.measurable_coe hs).aemeasurable)] at hg_eq
 
-lemma parallelComp_id_comp_copy_comp [IsMarkovKernel κ] {η : Kernel β α} [IsMarkovKernel η]
+lemma parallelComp_id_comp_copy_comp [IsMarkovKernel κ] {η : Kernel β γ} [IsMarkovKernel η]
     (h : ∃ f, ∃ (hf : Measurable f), η ∘ₖ κ = deterministic f hf) :
     η ∘ₖ κ ∥ₖ κ ∘ₖ copy α = η ∥ₖ Kernel.id ∘ₖ copy β ∘ₖ κ := by
   simp only [parallelComp_comp_copy]
