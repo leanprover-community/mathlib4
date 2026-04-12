@@ -54,7 +54,7 @@ variable {M : Type*} [TopologicalSpace M]
 manifold inherits a `ChartedSpace` structure modeled on the same space. -/
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) where
   atlas := {(localInverseAt G q.out).trans (chartAt H q.out) | q : orbitRel.Quotient G M}
-  chartAt := fun q => (localInverseAt G q.out).trans (chartAt H q.out)
+  chartAt q := (localInverseAt G q.out).trans (chartAt H q.out)
   mem_chart_source q := by
     simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
       PartialEquiv.trans_source, OpenPartialHomeomorph.toFun_eq_coe,
