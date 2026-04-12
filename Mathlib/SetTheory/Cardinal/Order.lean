@@ -524,10 +524,12 @@ instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
+/-
 /-- This instance is about `WellOrderingRel.isWellOrder.linearOrder`. -/
 instance WellFoundedLT.wellOrderingRel :
     letI : LinearOrder α := WellOrderingRel.isWellOrder.linearOrder; WellFoundedLT α :=
   IsWellOrder.toIsWellFounded (r := WellOrderingRel)
+-/
 
 variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**):
