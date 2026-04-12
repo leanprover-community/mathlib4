@@ -606,6 +606,10 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
   simp [normalize_apply]
 
+@[simp]
+theorem natDegree_normalize [DecidableEq R] : natDegree (normalize p) = natDegree p :=
+  natDegree_eq_of_degree_eq degree_normalize
+
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=

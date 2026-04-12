@@ -115,6 +115,14 @@ theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) :
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
   mt natDegree_eq_of_degree_eq_some
 
+theorem degree_eq_one_iff_natDegree_eq_one :
+    p.degree = 1 ↔ p.natDegree = 1 :=
+  degree_eq_iff_natDegree_eq_of_pos (Nat.zero_lt_one)
+
+theorem degree_eq_iff_natDegree_eq_of_atLeastTwo {n : ℕ} [Nat.AtLeastTwo n] :
+    p.degree = n ↔ p.natDegree = n :=
+  degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_neZero n)
+
 @[simp]
 theorem degree_le_natDegree : degree p ≤ natDegree p :=
   WithBot.giUnbotDBot.gc.le_u_l _
@@ -558,6 +566,11 @@ theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
     _ ≤ max (degree (erase (natDegree q) p)) (degree (erase (natDegree q) q)) :=
       (degree_neg (erase (natDegree q) q) ▸ degree_add_le _ _)
     _ < degree p := max_lt_iff.2 ⟨hd' ▸ degree_erase_lt hp0, hd.symm ▸ degree_erase_lt hq0⟩
+
+theorem degree_sub_lt_right (hd : degree p = degree q) (hq0 : q ≠ 0)
+    (hlc : p.leadingCoeff = q.leadingCoeff) : degree (p - q) < degree q := by
+  rw [← degree_neg, neg_sub]
+  exact degree_sub_lt hd.symm hq0 hlc.symm
 
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=
   (degree_sub_le _ _).trans (max_le degree_X_le (degree_C_le.trans zero_le_one))
