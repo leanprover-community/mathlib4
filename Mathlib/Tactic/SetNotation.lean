@@ -125,32 +125,33 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   return mkApp2 rel x y
 
 /-- Subset relation: `a ⊆ b`.
-
 For types tagged with `@[use_set_notation_for_order]`,
 the relation `LE.le` is used instead of `Subset`.
 The hover info shows which one is used. -/
 syntax:50 (name := subsetStx') (priority := high) term:51 " ⊆ " term:51 : term
 
 /-- Strict subset relation: `a ⊂ b`.
-
 For types tagged with `@[use_set_notation_for_order]`,
 the relation `LT.lt` is used instead of `SSubset`.
 The hover info shows which one is used. -/
 syntax:50 (name := ssubsetStx') (priority := high) term:51 " ⊂ " term:51 : term
 
 /-- Superset relation: `a ⊇ b`.
-
 For types tagged with `@[use_set_notation_for_order]`,
 the relation `GE.ge` is used instead of `Superset`.
 The hover info shows which one is used. -/
 syntax:50 (name := supsetStx') (priority := high) term:51 " ⊇ " term:51 : term
 
 /-- Strict superset relation: `a ⊃ b`.
-
 For types tagged with `@[use_set_notation_for_order]`,
 the relation `GT.gt` is used instead of `SSuperset`.
 The hover info shows which one is used. -/
 syntax:50 (name := ssupsetStx') (priority := high) term:51 " ⊃ " term:51 : term
+
+recommended_spelling "subset" for "⊆" in [subsetStx']
+recommended_spelling "ssubset" for "⊂" in [ssubsetStx']
+recommended_spelling "superset" for "⊇" in [supsetStx']
+recommended_spelling "ssuperset" for "⊃" in [ssupsetStx']
 
 /-- Elaborator for `x ⊆ y` notation. -/
 @[term_elab subsetStx']
