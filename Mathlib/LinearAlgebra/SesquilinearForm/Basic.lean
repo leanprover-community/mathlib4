@@ -379,10 +379,8 @@ provided in mathlib. -/
 def orthogonalBilin (N : Submodule R₁ M₁) : Submodule R₂ M₂ where
   carrier := { m | ∀ n ∈ N, B n m = 0 }
   zero_mem' x _ := map_zero _
-  add_mem' hx hy n hn := by
-    rw [map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn, zero_add]
-  smul_mem' c x hx n hn := by
-    rw [map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+  add_mem' {u v} hu hv x hx := by simp [hu _ hx, hv _ hx]
+  smul_mem' c y hy x hx := by simp [hy _ hx]
 
 variable {N L : Submodule R₁ M₁}
 
