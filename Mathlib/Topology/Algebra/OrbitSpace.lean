@@ -88,8 +88,7 @@ def localInverseAt (G : Type*) [Group G] [MulAction G M] [ProperlyDiscontinuousS
 /-- The equivalence class `⟦p⟧` lies in the source of `localInverseAt p`. -/
 lemma mem_localInverseAt_source {p : M} :
     ⟦p⟧ ∈ (localInverseAt G p).source := by
-  simp only [localInverseAt, OpenPartialHomeomorph.symm_source]
-  exact mem_localHomeomorphAt_target
+  simp [localInverseAt, mem_localHomeomorphAt_target]
 
 /-- If a point `k` lies on the source of `localHomeomorphAt p`
 and its class `⟦k⟧` lies on the source of `localInverseAt p`,
