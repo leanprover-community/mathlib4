@@ -400,6 +400,17 @@ theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt
   rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
   exact h.neBot.mono <| inf_le_inf_right _ <| hf.nhds_le _
 
+theorem accPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : AccPt (f x) l) :
+    AccPt x (comap f l) := by
+  rw [accPt_iff_clusterPt] at h ⊢
+  apply (hf.clusterPt_comap h).mono
+  rw [comap_inf, comap_principal, preimage_compl]
+  exact inf_le_inf_right (comap f l) (by simp)
+
+theorem clusterPt_comap_iff (hf : IsOpenMap f) (hfc : Continuous f) {x : X} {l : Filter Y} :
+    ClusterPt x (comap f l) ↔ ClusterPt (f x) l :=
+  ⟨fun h => h.map hfc.continuousAt tendsto_comap, hf.clusterPt_comap⟩
+
 end IsOpenMap
 
 /-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed.
@@ -709,6 +720,13 @@ theorem of_isEmpty [IsEmpty X] (f : X → Y) : IsOpenEmbedding f :=
 theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X} :
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
   rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.injective]
+
+theorem accPt_comap_iff
+    (hf : IsOpenEmbedding f) {x : X} {l : Filter Y} :
+    AccPt x (comap f l) ↔ AccPt (f x) l := by
+  rw [accPt_iff_clusterPt, accPt_iff_clusterPt, ← hf.injective.preimage_image {x}, image_singleton,
+    ← preimage_compl, ← comap_principal, ← comap_inf,
+    hf.isOpenMap.clusterPt_comap_iff hf.continuous]
 
 end IsOpenEmbedding
 

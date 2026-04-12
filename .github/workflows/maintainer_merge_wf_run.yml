@@ -150,7 +150,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          message="${message}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
           AUTHOR: ${{ steps.inputs.outputs.author }}
@@ -188,7 +189,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          body="${body}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # body="${body}"$'\n\n---\n'"${metadata}"
           printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Add comment to PR
