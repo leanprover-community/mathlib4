@@ -84,6 +84,7 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
+/-- The augmentation map `X.homology R 0 ⟶ R`. -/
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
   (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
 
