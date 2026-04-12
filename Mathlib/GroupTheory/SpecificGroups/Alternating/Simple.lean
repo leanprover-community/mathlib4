@@ -53,26 +53,15 @@ open MulAction Equiv.Perm Equiv Set.powersetCard
 
 namespace Equiv.Perm
 
-variable {α : Type*} [Finite α]
-
-theorem isCyclic_of_card_le_two (hα : Nat.card α ≤ 2) :
-    IsCyclic (Perm α) := by
-  apply isCyclic_of_card_dvd_prime (p := 2)
-  rw [Nat.card_perm]
-  interval_cases (Nat.card α) <;> simp
-
-theorem isMulCommutative_of_card_le_two (hα : Nat.card α ≤ 2) :
-    IsMulCommutative (Perm α) :=
-  ⟨(isCyclic_of_card_le_two hα).commutative⟩
-
-variable [DecidableEq α]
+variable {α : Type*} [Finite α] [DecidableEq α]
 
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
 def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
-    have : IsMulCommutative (Perm s) := isMulCommutative_of_card_le_two (by simp)
+    have : IsMulCommutative (Perm s) :=
+      isMulCommutative_iff_card_le_two.mpr (by simp)
     rw [MonoidHom.range_eq_map]
     apply Subgroup.map_isMulCommutative
   is_conj g s := by
