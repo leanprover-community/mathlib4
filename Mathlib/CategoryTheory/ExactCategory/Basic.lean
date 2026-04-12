@@ -165,12 +165,14 @@ instance [AdmissibleEpi g] : Epi g := by
   obtain ⟨Z, f, zero, mem⟩ := AdmissibleEpi.mem g
   exact epi_of_isColimit_cofork (isColimit_cokernelCofork_of_shortExact _ mem)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [hg : IsIso g] : AdmissibleEpi g where
   mem' := by
     refine (MorphismProperty.arrow_mk_iso_iff
       (ShortComplex.gAdmissible (shortExact C)) ?_).1 (MorphismProperty.id_mem _ Y)
     exact Arrow.isoMk (Iso.refl _) (asIso g) (by aesop_cat)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [hg : IsIso f] : AdmissibleMono f where
   mem' := by
     refine (MorphismProperty.arrow_mk_iso_iff
@@ -268,6 +270,7 @@ instance (X₁ X₂ : C) : AdmissibleMono (biprod.inr : _ ⟶ X₁ ⊞ X₂) := 
   rw [show biprod.inr = biprod.inl ≫ (biprod.braiding X₁ X₂).inv by aesop_cat]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [AdmissibleEpi g] :
     AdmissibleMono (pullback.snd f g) := by
   have hf' := hf

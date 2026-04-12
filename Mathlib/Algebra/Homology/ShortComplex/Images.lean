@@ -108,13 +108,16 @@ noncomputable def shortComplex : ShortComplex C where
 lemma shortComplex_f_fac :
     I.shortComplex.f ≫ image.ι I.f₂ = image.ι I.S.f := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_g_fac :
     Abelian.factorThruImage I.f₂ ≫ I.shortComplex.g = Abelian.factorThruImage I.f₃ := by
   rw [← cancel_mono (image.ι I.f₃), assoc, shortComplex_g, image.lift_ι,
     kernel.lift_ι_assoc, kernel.lift_ι, I.fac₂]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi I.shortComplex.g := epi_of_epi_fac I.shortComplex_g_fac
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_exact : I.shortComplex.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A₀ x₂ hx₂
@@ -131,8 +134,10 @@ lemma shortComplex_exact : I.shortComplex.Exact := by
   simp only [← cancel_mono (Abelian.image.ι I.f₂), assoc, hy,
     image.lift_ι, kernel.lift_ι, hx₁]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono (I.shortComplex.f) := mono_of_mono_fac I.shortComplex_f_fac
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (I.shortComplex.g) := epi_of_epi_fac I.shortComplex_g_fac
 
 lemma shortComplex_shortExact : I.shortComplex.ShortExact where

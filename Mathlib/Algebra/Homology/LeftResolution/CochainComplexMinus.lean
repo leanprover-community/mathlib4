@@ -31,10 +31,12 @@ variable {A C : Type*} [Category C] [Category A] {ι : C ⥤ A}
 
 variable [Λ.F.PreservesZeroMorphisms]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Λ.chainComplexFunctor.PreservesZeroMorphisms where
   map_zero _ _ := by
     simp [chainComplexFunctor]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Λ.cochainComplexFunctor.PreservesZeroMorphisms where
   map_zero _ _ := by
     simp [cochainComplexFunctor]
@@ -151,6 +153,7 @@ noncomputable def totalπ' :
         (ComplexShape.up ℤ) (ComplexShape.up ℤ) 0).obj K.obj).total (ComplexShape.up ℤ) :=
   HomologicalComplex₂.total.map (Λ.bicomplexπ.app K.obj) (ComplexShape.up ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 omit [HasFiniteCoproducts C] in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -182,6 +185,7 @@ lemma totalπ'_naturality :
     apply HomologicalComplex₂.isZero_singleRow_X_X
     exact hy
 
+set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso (Λ.totalπ' K) := by
   obtain ⟨i, hi⟩ := K.2
   apply HomologicalComplex₂.total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE _ i 0
@@ -238,10 +242,12 @@ instance (K : CochainComplex.Minus A) :
     QuasiIso (Λ.minusResolutionNatTrans.app K).hom :=
   Λ.quasiIso_minusResolutionNatTrans_app K
 
+set_option backward.isDefEq.respectTransparency false in
 instance (K : Minus A) :
     QuasiIso ((Functor.whiskerRight Λ.minusResolutionNatTrans (Minus.ι A)).app K) := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_minusResolutionFunctor_map {K L : CochainComplex.Minus A} (f : K ⟶ L)
     (hf : Minus.quasiIso _ f) :
     Minus.quasiIso _ (ι.mapCochainComplexMinus.map (Λ.minusResolutionFunctor.map f)) := by

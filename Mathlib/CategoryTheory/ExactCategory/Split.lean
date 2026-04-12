@@ -104,6 +104,7 @@ lemma admissibleSplitEpi_quarrable {X Y : C} (f : X ⟶ Y) (hf : (admissibleSpli
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma admissibleSplitMono_stableUnderComposition :
     (admissibleSplitMono C).IsStableUnderComposition := ⟨by
   rintro X Y Z f₁ f₂ ⟨A₁, g₁, zero₁, ⟨h₁⟩⟩ ⟨A₂, g₂, zero₂, ⟨h₂⟩⟩
@@ -135,8 +136,8 @@ lemma admissibleSplitMono_stableUnderComposition :
         rw [assoc, h₂.f_r_assoc, h₁.f_r]
       id := by
         dsimp
-        rw [biprod.lift_desc, assoc, h₁.r_f_assoc, ← h₂.id, Preadditive.sub_comp, id_comp,
-          assoc, Preadditive.comp_sub, assoc]
+        simp only [assoc, biprod.lift_desc, h₁.r_f_assoc, Preadditive.sub_comp,
+          Preadditive.comp_sub, id_comp, ← h₂.id]
         abel }⟩
 
 lemma admissibleSplitEpi_stableUnderComposition :
@@ -144,6 +145,7 @@ lemma admissibleSplitEpi_stableUnderComposition :
   simpa only [admissibleSplitMono_unop]
     using (admissibleSplitMono_stableUnderComposition Cᵒᵖ).unop
 
+set_option backward.isDefEq.respectTransparency false in
 omit [HasBinaryBiproducts C] in
 lemma admissibleSplitMono_stableUnderCobaseChange :
     (admissibleSplitMono C).IsStableUnderCobaseChange := ⟨by
@@ -176,6 +178,7 @@ lemma admissibleSplitEpi_stableUnderBaseChange :
   simpa only [admissibleSplitMono_unop]
     using (admissibleSplitMono_stableUnderCobaseChange Cᵒᵖ).unop
 
+@[implicit_reducible]
 def splitExactSequences [HasZeroObject C] : ExactCategory C where
   shortExact' := splitShortExact C
   respectsIso_shortExact' := ⟨fun {S₁ S₂} e => by

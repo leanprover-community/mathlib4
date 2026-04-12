@@ -184,39 +184,27 @@ lemma δ₀_map_δ₁Toδ₀_app (D : Arrow₃ C) :
 
 @[simps]
 def δ₂δ₂Toδ₃δ₁ : (Arrow₃.δ₂ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₂ ⟶ Arrow₃.δ₃ ⋙ Arrow₂.δ₁ where
-  app D :=
-    { left := 𝟙 _
-      right := D.g }
+  app D := Arrow.homMk (𝟙 _) D.g
 
 @[simps]
 def δ₃δ₁Toδ₂δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₁ where
-  app D :=
-    { left := 𝟙 _
-      right := D.h }
+  app D := Arrow.homMk (𝟙 _) D.h
 
 @[simps]
 def δ₃δ₁Toδ₂δ₀ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₀ where
-  app D :=
-    { left := D.f
-      right := D.h }
+  app D := Arrow.homMk D.f D.h
 
 @[simps]
 def δ₃δ₁Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
-  app D :=
-    { left := D.f
-      right := D.h }
+  app D := Arrow.homMk D.f D.h
 
 @[simps]
 def δ₃δ₁Toδ₀δ₂ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₂ where
-  app D :=
-    { left := D.f
-      right := 𝟙 _ }
+  app D := Arrow.homMk D.f (𝟙 _)
 
 @[simps]
 def δ₃δ₀Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₀ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
-  app D :=
-    { left := 𝟙 _
-      right := D.h }
+  app D := Arrow.homMk (𝟙 _) D.h
 
 variable (C)
 

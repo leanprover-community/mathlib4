@@ -61,6 +61,7 @@ def shortComplexSplittingEquiv :
   left_inv _ := rfl
   right_inv _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def mapShortComplexSplitting (σ : S.Splitting) :
     (mapShortComplex S p).Splitting where
@@ -86,6 +87,7 @@ variable [IsIdempotentComplete C] {I : Type*}
   {X : I → C} (Y : I → C)
   (hX : ∀ (i : I), Retract (X i) (Y i))
 
+set_option backward.isDefEq.respectTransparency false in
 include hX in
 lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
   let p : ∐ Y ⟶ ∐ Y := Sigma.map (fun i => (hX i).r ≫ (hX i).i)
@@ -133,6 +135,7 @@ lemma cofanOfIsZero_inj (j : J) :
   apply Sigma.eqToHom_comp_ι (X ∘ ι)
   exact (hι hi.choose_spec).symm
 
+set_option backward.isDefEq.respectTransparency false in
 include hι in
 noncomputable def isColimitCofanOfIsZero : IsColimit (cofanOfIsZero X ι) :=
   mkCofanColimit _ (fun s => Sigma.desc (f := X ∘ ι) (fun j => s.inj (ι j)))
@@ -159,7 +162,9 @@ section
 variable {D : Type*} [Category D] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
   [PreservesColimit (Discrete.functor (X ∘ ι)) F]
 
-noncomputable def preservesColimitOfIsZero : PreservesColimit (Discrete.functor X) F := by
+set_option backward.isDefEq.respectTransparency false in
+include hι hX in
+lemma preservesColimitOfIsZero : PreservesColimit (Discrete.functor X) F := by
   have : HasCoproduct ((F.obj ∘ X) ∘ ι) := by
     let h := isColimitOfPreserves F (coproductIsCoproduct (X ∘ ι))
     exact ⟨_, (isColimitMapCoconeCofanMkEquiv _ _ _).1 h⟩
@@ -292,6 +297,7 @@ noncomputable def isColimit : IsColimit κ.cofan :=
   isColimitCofanOfIsZero (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) κ.φ
     κ.injective_φ κ.isZero'
 
+@[implicit_reducible]
 def hasCoproduct :
     HasCoproduct (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) :=
   ⟨_, κ.isColimit⟩
@@ -311,7 +317,8 @@ def map :
   isZero i₁ i₂ h h' := κ.isZero i₁ i₂ h (fun h'' => h' (F.map_isZero h''))
   hasCoproduct' := ⟨_, isColimitOfHasCoproductOfPreservesColimit F _⟩
 
-noncomputable def preserves : PreservesColimit (Discrete.functor
+include κ in
+lemma preserves : PreservesColimit (Discrete.functor
     (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n)) F := by
   have : PreservesColimit (Discrete.functor (K.toGradedObject.mapObjFun (π c₁ c₂ c) n ∘ φ κ)) F :=
     by assumption
@@ -456,6 +463,7 @@ section
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexStupidFiltrationGESplitting (k : ℤ) :
     ((K.shortComplexStupidFiltrationGE n₀ n₁ h).map
       (HomologicalComplex.eval _ _ k)).Splitting :=
@@ -542,6 +550,7 @@ variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C]
   [TotalComplexShape c₁ c₂ c]
   [((singleColumn C c₁ c₂ i₁).obj K).HasTotal c]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma singleColumn_d₁ (x : ι₁) (y : ι₂) (n : ι) :
     ((singleColumn C c₁ c₂ i₁).obj K).d₁ c x y n = 0 := by
@@ -650,6 +659,7 @@ lemma singleColumn_ιTotal
       (singleColumnXXIso (up ℤ) L x y).hom ≫(singleColumnObjTotalXIso L x y n h).inv := by
   rw [singleColumnObjTotalXIso_inv, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (h : x + x' = 0) :
     ((singleColumn C (up ℤ) (up ℤ) x).obj L).total (up ℤ) ≅ L⟦x'⟧ :=
   Iso.symm (HomologicalComplex.Hom.isoOfComponents
@@ -719,7 +729,7 @@ lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (
     [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
     K.HasTotal (up ℤ) := fun n => (K.coreHasTotalOfIsStrictlyLE x₀ y₀ n).hasCoproduct
 
-noncomputable def preservesTotal_of_isStrictlyLE
+lemma preservesTotal_of_isStrictlyLE
     (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
     [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀]
     {E : Type*} [Category E] [Preadditive E] (F : D ⥤ E) [F.Additive] :
@@ -864,6 +874,7 @@ lemma total.quasiIsoAt_ιStupidTrunc_map
     all_goals exact total.isIso_ιStupidTrunc_map_f K y₀ x _ (by omega)
   apply ShortComplex.quasiIso_of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 lemma total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE
     {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
     (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ y₀ : ℤ)

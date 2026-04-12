@@ -208,6 +208,7 @@ noncomputable def cochainComplexXNegOneIso :
     (Λ.cochainComplex X).X (-1) ≅ Λ.F.obj (kernel (Λ.π.app X)) :=
   (Λ.chainComplex X).extendXIso _ (by dsimp) ≪≫ Λ.chainComplexXOneIso X
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cochainComplex_d_neg_one_zero :
     ι.map ((cochainComplex Λ X).d (-1) 0) = ι.map (cochainComplexXNegOneIso Λ X).hom ≫
       Λ.π.app (kernel (Λ.π.app X)) ≫ kernel.ι (Λ.π.app X) ≫
@@ -219,6 +220,7 @@ lemma cochainComplex_d_neg_one_zero :
       ι.map_comp, Category.assoc, Category.assoc, Category.assoc, Category.assoc, ← ι.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def cochainComplexπ :
     (ι.mapHomologicalComplex _).obj (Λ.cochainComplex X) ⟶
       (HomologicalComplex.single A (ComplexShape.up ℤ) 0).obj X :=
@@ -235,6 +237,7 @@ lemma cochainComplexπ_f_0 :
       (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) 0 X).inv := by
   simp [cochainComplexπ ]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def cochainComplexNatTransπ :
     Λ.cochainComplexFunctor ⋙ ι.mapHomologicalComplex _ ⟶
@@ -280,6 +283,7 @@ instance : CochainComplex.IsGE
 
 open CochainComplex
 
+set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIsoAt (Λ.cochainComplexπ X) 0 := by
   rw [quasiIsoAt_iff' _ (-1) 0 1 (by simp) (by simp),
     ShortComplex.quasiIso_iff_of_zeros' _ _ (by rfl) (by rfl)]; swap
@@ -315,7 +319,6 @@ instance : QuasiIso (Λ.cochainComplexπ X) where
 instance : QuasiIso (Λ.cochainComplexNatTransπ.app X) := by
   dsimp
   infer_instance
-
 
 end LeftResolution
 

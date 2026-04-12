@@ -36,6 +36,7 @@ instance hasTotalOfPreserves : ((F.mapHomologicalComplex₂ c₁ c₂).obj K).Ha
   hasColimit_of_iso (F := (Discrete.functor (K.toGradedObject.mapObjFun
     (ComplexShape.π c₁ c₂ c) n)) ⋙ F) (Discrete.natIso (fun _ => Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapTotalXIso (n : I) :
     (((F.mapHomologicalComplex₂ c₁ c₂).obj K).total c).X n ≅ F.obj ((K.total c).X n) := by
   let s := (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n)
@@ -64,12 +65,14 @@ lemma ι_mapTotalXIso_hom (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = n)
         (ComplexShape.π c₁ c₂ c) n))
   apply ι_comp_sigmaComparison F s
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma map_ι_mapTotalXIso_inv (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = n) :
     F.map (K.ιTotal c i₁ i₂ n h) ≫ (mapTotalXIso F K c n).inv =
       ((F.mapHomologicalComplex₂ c₁ c₂).obj K).ιTotal c i₁ i₂ n h := by
   rw [← ι_mapTotalXIso_hom, assoc, Iso.hom_inv_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplex₂_d₁ :
     ((F.mapHomologicalComplex₂ c₁ c₂).obj K).d₁ c i₁ i₂ n =
@@ -80,6 +83,7 @@ lemma mapHomologicalComplex₂_d₁ :
     · simp [d₁_eq_zero' _ _ h₁ _ _ h₂]
   · simp [d₁_eq_zero _ _ _ _ _ h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplex₂_d₂ :
     ((F.mapHomologicalComplex₂ c₁ c₂).obj K).d₂ c i₁ i₂ n =
@@ -92,6 +96,7 @@ lemma mapHomologicalComplex₂_d₂ :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma mapTotalXIso_hom_naturality (n : I) :
@@ -102,6 +107,7 @@ lemma mapTotalXIso_hom_naturality (n : I) :
   simp only [ιTotal_map_assoc, Functor.mapHomologicalComplex_map_f,
     ι_mapTotalXIso_hom, ι_mapTotalXIso_hom_assoc, ← F.map_comp, ιTotal_map]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapTotalIso : ((F.mapHomologicalComplex₂ c₁ c₂).obj K).total c ≅
     (F.mapHomologicalComplex c).obj (K.total c) :=
   HomologicalComplex.Hom.isoOfComponents (mapTotalXIso F K c) (by

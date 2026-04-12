@@ -26,7 +26,7 @@ namespace SpectralObject
 variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
-  (data : SpectralSequenceMkData ι c r₀) [HasSpectralSequence X data]
+  (data : SpectralSequenceDataCore ι c r₀) [HasSpectralSequence X data]
 
 lemma spectralSequence_page_d_eq_zero_iff_isIso₁
     (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)

@@ -152,7 +152,9 @@ variable [B.IsClosedUnderIsomorphisms]
   (F' : D' ⥤ D) [Localization.Lifting L' (B.inverseImage F).trW (F ⋙ L) F']
   [IsTriangulated C]
 
-noncomputable def full_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] : F'.Full := by
+include L L' F' in
+set_option backward.isDefEq.respectTransparency false in
+lemma full_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] : F'.Full := by
   have := Localization.essSurj L' (B.inverseImage F).trW
   apply F'.full_of_precomp_essSurj L'
   intro X₁ X₂ φ
@@ -185,6 +187,7 @@ noncomputable def full_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] : F
   erw [e.inv.naturality, e.hom_inv_id_app_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 include L L' in
 lemma faithful_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Faithful] :
     F'.Faithful := by

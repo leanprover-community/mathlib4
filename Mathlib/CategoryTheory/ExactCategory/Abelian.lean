@@ -77,7 +77,8 @@ lemma gAdmissible_eq_epimorphisms :
 
 end OfAbelian
 
-noncomputable def ofAbelian : ExactCategory C where
+@[implicit_reducible]
+def ofAbelian : ExactCategory C where
   shortExact' := OfAbelian.shortExact
   respectsIso_shortExact' := OfAbelian.respectsIso_shortExact
   shortExact_kernel' S hS := ⟨hS.fIsKernel⟩

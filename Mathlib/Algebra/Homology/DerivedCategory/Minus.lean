@@ -52,7 +52,7 @@ namespace Minus
 
 variable [HasDerivedCategory C]
 
-def Qh : HomotopyCategory.Minus C ⥤ Minus C :=
+noncomputable def Qh : HomotopyCategory.Minus C ⥤ Minus C :=
   t.minus.lift (HomotopyCategory.Minus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨⟨X⟩, n, h⟩
     exact ⟨n, t.isLE_of_iso ((quotientCompQhIso C).symm.app X) n⟩)
@@ -61,6 +61,7 @@ noncomputable instance : (Qh : _ ⥤ Minus C).CommShift ℤ := by
   dsimp only [Qh]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Qh : _ ⥤ Minus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance

@@ -132,6 +132,7 @@ noncomputable def mapBifunctorSingle₂Iso
 
 attribute [local simp] mapBifunctorSingle₂Iso_inv
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapBifunctorSingle₂Iso_inv_naturality {K₁ K₁' : CochainComplex C₁ ℤ} (φ : K₁ ⟶ K₁') :
     (mapBifunctorSingle₂Iso F X₂ K₁).inv ≫ mapBifunctorMap φ (𝟙 _) F (.up ℤ) =

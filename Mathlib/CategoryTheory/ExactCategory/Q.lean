@@ -92,6 +92,7 @@ noncomputable def Hom.id (X : Q C) : Hom X X :=
 noncomputable def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z :=
   Hom.mk' X Z (pullback.fst α.i.arrow β.j ≫ α.j) (pullback.snd _ _ ≫ β.i.arrow)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z₁₂ ⟶ X₁.obj) (i₁ : Z₁₂ ⟶ X₂.obj)
     (j₂ : Z₂₃ ⟶ X₂.obj) (i₂ : Z₂₃ ⟶ X₃.obj) [AdmissibleMono i₁] [AdmissibleMono i₂]
     [AdmissibleEpi j₁] [AdmissibleEpi j₂] (j₂' : Z₁₃ ⟶ Z₁₂) (i₁' : Z₁₃ ⟶ Z₂₃)

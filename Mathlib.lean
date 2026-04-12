@@ -2802,7 +2802,6 @@ public import Mathlib.CategoryTheory.Join.Final
 public import Mathlib.CategoryTheory.Join.Opposites
 public import Mathlib.CategoryTheory.Join.Pseudofunctor
 public import Mathlib.CategoryTheory.Join.Sum
-public import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
 public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.LiftingProperties.Limits

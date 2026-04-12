@@ -53,6 +53,7 @@ noncomputable def leftResolutionπ :
     whiskerRight (filtrationLEMinusFunctorCompWhiskeringRightObjιIso A).hom _ ≫
     (filtrationLEFunctorCompColimIso A).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance quasiIso_leftResolutionπ_app [HasExactColimitsOfShape ℤ A]
     [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
     QuasiIso ((leftResolutionπ α).app K) := by
@@ -89,6 +90,7 @@ noncomputable def resolutionNatTrans : Λ.resolutionFunctor ⟶ 𝟭 _ :=
   CochainComplex.leftResolutionπ
     (whiskerRight Λ.minusResolutionNatTrans (Minus.ι A))
 
+set_option backward.isDefEq.respectTransparency false in
 instance quasiIso_resolutionNatTrans_app
     [HasExactColimitsOfShape ℤ A] (K : CochainComplex A ℤ) :
     QuasiIso (Λ.resolutionNatTrans.app K) := by

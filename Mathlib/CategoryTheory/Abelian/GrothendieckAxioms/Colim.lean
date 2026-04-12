@@ -177,6 +177,7 @@ open CategoryTheory Limits
 
 namespace HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def functorEquivalenceInverseCompMapHomologicalComplexColim
     (C : Type*) [Category C] [HasZeroMorphisms C]
     {ι : Type*} (c : ComplexShape ι) (J : Type*) [Category J] [HasColimitsOfShape J C] :

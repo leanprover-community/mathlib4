@@ -44,15 +44,15 @@ def objIso₂ (i j : J) (hij : j < i) : obj f i j ≅ Y j :=
 def map (i₁ i₂ : J) (h : i₁ ≤ i₂) (j : J) :
     obj f i₁ j ⟶ obj f i₂ j :=
   if hi₂ : i₂ ≤ j then
-    (objIso₁ f i₁ j (by lia)).hom ≫ (objIso₁ f i₂ j hi₂).inv
+    (objIso₁ f i₁ j (by grind)).hom ≫ (objIso₁ f i₂ j hi₂).inv
   else
     if hi₁ : i₁ ≤ j then
-      (objIso₁ f i₁ j hi₁).hom ≫ f j ≫ (objIso₂ f i₂ j (by lia)).inv
+      (objIso₁ f i₁ j hi₁).hom ≫ f j ≫ (objIso₂ f i₂ j (by grind)).inv
     else
-      (objIso₂ f i₁ j (by lia)).hom ≫ (objIso₂ f i₂ j (by lia)).inv
+      (objIso₂ f i₁ j (by grind)).hom ≫ (objIso₂ f i₂ j (by grind)).inv
 
 lemma map_eq_of_le₂ (i₁ i₂ : J) (h : i₁ ≤ i₂) (j : J) (hi₂ : i₂ ≤ j) :
-    map f i₁ i₂ h j = (objIso₁ f i₁ j (by lia)).hom ≫ (objIso₁ f i₂ j hi₂).inv := by
+    map f i₁ i₂ h j = (objIso₁ f i₁ j (by grind)).hom ≫ (objIso₁ f i₂ j hi₂).inv := by
   grind [map]
 
 @[simp]
@@ -71,7 +71,7 @@ def objι (i j : J) :
   if hi : i ≤ j then
     (objIso₁ f i j hi).hom ≫ f j
   else
-    (objIso₂ f i j (by lia)).hom
+    (objIso₂ f i j (by grind)).hom
 
 @[reassoc (attr := simp)]
 lemma objIso₁_inv_objι (i j : J) (hi : i ≤ j) :
@@ -85,7 +85,7 @@ lemma map_objι (i₁ i₂ : J) (hi : i₁ ≤ i₂) (j : J) :
 
 @[reassoc (attr := simp)]
 lemma objIso₂_inv_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (j : J) (hi₁ : j < i₁) :
-    (objIso₂ f i₁ j hi₁).inv ≫ map f i₁ i₂ hi j = (objIso₂ f i₂ j (by lia)).inv := by
+    (objIso₂ f i₁ j hi₁).inv ≫ map f i₁ i₂ hi j = (objIso₂ f i₂ j (by grind)).inv := by
   grind [map]
 
 @[simps]
@@ -173,6 +173,7 @@ instance [OrderBot J] : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
       ((diagramFunctor f).isColimitOfIsWellOrderContinuous m hm)⟩
 
 open Classical in
+set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (i : J) :
     IsPushout ((objIso₁ f i i le_rfl).inv ≫ Sigma.ι _ i) (f i)
       (colimMap ((diagramFunctor f).map (homOfLE (Order.le_succ i))))
@@ -190,7 +191,7 @@ lemma isPushout (i : J) :
           (objIso₂ f (Order.succ i) j (Order.lt_succ_of_le hij.le)).hom ≫
             (objIso₂ f i j hij).inv ≫ Sigma.ι _ j ≫ s.inl
         else
-          haveI hij : i = j := by lia
+          haveI hij : i = j := by grind
           (objIso₂ f (Order.succ i) j (by simp [hij])).hom ≫
             eqToHom (by rw [hij]) ≫ s.inr
     have hφ₁ (s) :
@@ -200,8 +201,8 @@ lemma isPushout (i : J) :
       dsimp [φ]
       split_ifs with h₁ h₂
       · simp [map, dif_pos h₁]
-      · simp [map, dif_neg h₁, dif_neg (show ¬ i ≤ j by lia)]
-      · obtain rfl : i = j := by lia
+      · simp [map, dif_neg h₁, dif_neg (show ¬ i ≤ j by grind)]
+      · obtain rfl : i = j := by grind
         have := s.condition
         rw [Category.assoc] at this
         simp [← cancel_epi (objIso₁ f i i le_rfl).inv, this, map]
@@ -221,7 +222,7 @@ lemma isPushout (i : J) :
         dsimp [map]
         split_ifs
         · infer_instance
-        · lia
+        · grind
         · infer_instance
       rwa [← cancel_epi (map f _ _ (Order.le_succ i) j)]⟩
 
@@ -232,6 +233,7 @@ section
 variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
 
 open transfiniteCompositionOfShapeSigmaMap in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def transfiniteCompositionOfShapeSigmaMap :
     TransfiniteCompositionOfShape (MorphismProperty.ofHoms f).pushouts J
       (Limits.Sigma.map f) where
@@ -265,6 +267,7 @@ noncomputable def binaryCofanOfIsColimitCofanOption :
     BinaryCofan (∐ X ∘ Option.some) (X none) :=
   BinaryCofan.mk (Sigma.desc (fun i ↦ c.inj (some i))) (c.inj none)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def isColimitBinaryCofanOfIsColimitCofanOption :
     IsColimit (binaryCofanOfIsColimitCofanOption c) := by
   have := hc
@@ -279,6 +282,7 @@ noncomputable def isColimitBinaryCofanOfIsColimitCofanOption :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderFiniteCoproducts.mk'
     [HasFiniteCoproducts C]
     [W.IsStableUnderCoproductsOfShape PEmpty.{1}]
@@ -325,13 +329,14 @@ instance [W.ContainsIdentities] [W.RespectsIso] :
   condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ fac := by
     let hX₁ : IsInitial c₁.pt :=
       (IsColimit.equivOfNatIsoOfIso X₁.uniqueFromEmpty _ _
-        (by exact Cocones.ext (Iso.refl _))).1 hc₁
+        (by exact Cocone.ext (Iso.refl _))).1 hc₁
     let hX₂ : IsInitial c₂.pt :=
       (IsColimit.equivOfNatIsoOfIso X₂.uniqueFromEmpty _ _
-        (by exact Cocones.ext (Iso.refl _))).1 hc₂
+        (by exact Cocone.ext (Iso.refl _))).1 hc₂
     have : IsIso φ := ⟨hX₂.to _, hX₁.hom_ext _ _, hX₂.hom_ext _ _⟩
     exact W.of_isIso φ
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasFiniteCoproducts C] [W.IsMultiplicative]
     [W.IsStableUnderCobaseChange] :
     W.IsStableUnderCoproductsOfShape WalkingPair := by

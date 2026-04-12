@@ -55,6 +55,7 @@ variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C]
   [TotalComplexShape c₁ c₂ c]
   [((singleRow C c₁ c₂ i₂).obj K).HasTotal c]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma singleRow_d₁ (x x' : ι₁) (hx : c₁.Rel x x') (n : ι)
     (hn : π c₁ c₂ c (x', i₂) = n) :
@@ -64,6 +65,7 @@ lemma singleRow_d₁ (x x' : ι₁) (hx : c₁.Rel x x') (n : ι)
         ((singleRow C c₁ c₂ i₂).obj K).ιTotal c x' i₂ n hn := by
   simp [d₁_eq _ _ hx _ _ hn, ← singleRow_obj_d_f_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma singleRow_d₂ (x : ι₁) (y : ι₂) (n : ι) :
     ((singleRow C c₁ c₂ i₂).obj K).d₂ c x y n = 0 := by
@@ -117,6 +119,7 @@ lemma singleRow_ιTotal
       (singleRowXXIso (up ℤ) L x y).hom ≫(singleRowObjTotalXIso L x y n h).inv := by
   rw [singleRowObjTotalXIso_inv, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def singleRowObjTotal (L : CochainComplex C ℤ) (y y' : ℤ) (h : y + y' = 0) :
     ((singleRow C (up ℤ) (up ℤ) y).obj L).total (up ℤ) ≅ L⟦y'⟧ :=
   Iso.symm (HomologicalComplex.Hom.isoOfComponents
@@ -161,6 +164,7 @@ noncomputable def singleRow₀ObjTotal (L : CochainComplex C ℤ) :
     ((singleRow C (up ℤ) (up ℤ) 0).obj L).total (up ℤ) ≅ L :=
   singleRowObjTotal L 0 0 (add_zero 0) ≪≫ (shiftFunctorZero _ _).app L
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma singleRow₀ObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     total.map ((singleRow C (up ℤ) (up ℤ) 0).map φ) (up ℤ) ≫ (singleRow₀ObjTotal L).hom =

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.CoversTop
-public import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
 /-! Internal hom of sheaves
 
@@ -258,6 +258,7 @@ lemma overPullback_map_sheafHomSectionsEquiv_apply
 
 variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} {Y : I → C}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.CoversTop.jointlyReflectIsomorphisms (hY : J.CoversTop Y)
     (A : Type u') [Category.{v'} A] :
     JointlyReflectIsomorphisms (fun i => J.overPullback A (Y i)) where
@@ -270,7 +271,7 @@ lemma GrothendieckTopology.CoversTop.jointlyReflectIsomorphisms (hY : J.CoversTo
         infer_instance
       rw [← cancel_mono ((J.overPullback A Z).map φ)]
       simp [f, sheafHom, sheafHom']
-    refine ⟨(sheafHomSectionsEquiv G F) (hf.section_ hY (Sheaf.cond _)), ?_, ?_⟩
+    refine ⟨(sheafHomSectionsEquiv G F) (hf.section_ hY (sheafHom G F).property), ?_, ?_⟩
     all_goals
       exact (sheafHomSectionsEquiv _ _).symm.injective
         (hY.sections_ext _ (fun i => (by simp [f])))

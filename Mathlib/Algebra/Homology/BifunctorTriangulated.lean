@@ -32,6 +32,7 @@ variable [Preadditive C₁] [HasBinaryBiproducts C₁]
   [∀ (X₁ : C₁), (F.obj X₁).Additive]
   [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def map₂CochainComplexFlipObjMapMappingConeTriangleIso
     {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) (K₂ : CochainComplex C₂ ℤ) :
     (F.map₂CochainComplex.flip.obj K₂).mapTriangle.obj (mappingCone.triangle f) ≅
@@ -49,6 +50,7 @@ noncomputable def map₂CochainComplexFlipObjMapMappingConeTriangleIso
         mapBifunctorShift₁Iso, HomologicalComplex₂.totalShift₁Iso,
         HomologicalComplex₂.totalShift₁XIso])
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def bifunctorMapCochainComplexObjMapMappingConeTriangleIso
     (K₁ : CochainComplex C₁ ℤ) {K₂ L₂ : CochainComplex C₂ ℤ} (f : K₂ ⟶ L₂) :
     (F.map₂CochainComplex.obj K₁).mapTriangle.obj (mappingCone.triangle f) ≅

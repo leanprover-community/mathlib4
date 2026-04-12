@@ -85,6 +85,7 @@ variable (A) in
 abbrev HasFunctorialFlatResolution : Prop :=
   Nonempty (LeftResolution (ObjectProperty.flat.ι : _ ⥤ A))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasFunctorialFlatResolution.mk {C : Type*} [Category C] {ι : C ⥤ A}
     [ι.Full] [ι.Faithful] (Λ : LeftResolution ι) (hι : ι.essImage ≤ ObjectProperty.flat) :
     HasFunctorialFlatResolution A := ⟨{

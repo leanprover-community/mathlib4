@@ -110,6 +110,7 @@ def localizerMorphism :
 
 variable [HasKInjectiveResolutions C]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (K : CochainComplex C ℤ) :
     IsConnected ((localizerMorphism C).RightResolution K) := by
   obtain ⟨L, _, i, _, _⟩ := HasKInjectiveResolutions.exists_isKInjective K
@@ -180,7 +181,7 @@ section
 
 variable [HasDerivedCategory C]
 
-def Qh : KInjectives C ⥤ DerivedCategory C :=
+noncomputable def Qh : KInjectives C ⥤ DerivedCategory C :=
   ι ⋙ DerivedCategory.Qh
 
 instance : (Qh (C := C)).Full where

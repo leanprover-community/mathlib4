@@ -35,6 +35,7 @@ attribute [local instance] AbelianOfCategoryWithHomologyOfBalanced.hasKernels
 
 variable [HasFiniteProducts C] [Balanced C]
 
+@[implicit_reducible]
 noncomputable def abelianOfCategoryWithHomologyOfBalanced : Abelian C where
   normalMonoOfMono f _ := ⟨_, _, _,
     ((ShortComplex.mk _ _ (cokernel.condition f)).exact_of_g_is_cokernel
