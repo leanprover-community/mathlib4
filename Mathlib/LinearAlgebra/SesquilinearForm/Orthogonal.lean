@@ -10,9 +10,9 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
-# Sesquilinear maps
+# Orthogonal complement
 
-Orthogonality with respect to a general sesqui-blinear map.
+This file defines the orthogonal submodule of a submodule with respect to a sesqui-blinear map.
 
 ## Main declarations
 
@@ -116,7 +116,7 @@ variable (B) in
 @[deprecated (since := "2026-04-12")]
 alias orthogonalBilin_le := orthogonalBilin_le_orthogonalBilin
 
-/-- Any submodule is contained in its double orthogonalBilin submodule. -/
+/-- Every submodule is contained in the orthogonal complement of its orthogonal complement. -/
 theorem le_orthogonalBilin_orthogonalBilin :
     S ≤ orthogonalBilin B.flip (orthogonalBilin B S) := fun _x hx _y hy ↦ hy _ hx
 
