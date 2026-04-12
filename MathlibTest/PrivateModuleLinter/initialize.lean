@@ -4,6 +4,8 @@ import Mathlib.Tactic.Linter.PrivateModule
 
 open Lean
 
+set_option linter.privateModule true
+
 -- Should not fire, since `initialize` has effects downstream despite creating a private decl here.
 initialize pure ()
 
