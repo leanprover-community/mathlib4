@@ -17,11 +17,11 @@ import Mathlib.Geometry.Manifold.Notation
 ## Main results
 
 * `exists_isMIntegralCurveAt_of_contMDiffAt_boundaryless`: Existence of local integral curves for a
-$C^1$ vector field. This follows from the existence theorem for solutions to ODEs
-(`exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt`).
+  $C^1$ vector field. This follows from the existence theorem for solutions to ODEs
+  (`exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt`).
 * `isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless`: Uniqueness of local integral curves for a
-$C^1$ vector field. This follows from the uniqueness theorem for solutions to ODEs
-(`ODE_solution_unique_of_mem_set_Ioo`). This requires the manifold to be Hausdorff (`T2Space`).
+  $C^1$ vector field. This follows from the uniqueness theorem for solutions to ODEs
+  (`ODE_solution_unique_of_mem_set_Ioo`). This requires the manifold to be Hausdorff (`T2Space`).
 
 ## Implementation notes
 
@@ -271,7 +271,7 @@ lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
   refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
   intro h
   rw [Injective] at h
-  push_neg at h
+  push Not at h
   obtain ⟨a, b, heq, hne⟩ := h
   refine ⟨|a - b|, ?_, ?_⟩
   · rw [gt_iff_lt, abs_pos, sub_ne_zero]

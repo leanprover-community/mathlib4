@@ -7,16 +7,16 @@ Jovan Gerbscheid
 module
 
 public meta import Lean.Compiler.NoncomputableAttr
-public meta import Lean.Elab.Tactic.Ext
+public meta import Lean.Elab.App
+public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
+public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
@@ -78,8 +78,19 @@ we can choose to only translate `α` by writing `to_additive (dont_translate := 
 
 syntax dontTranslateOption := &"dont_translate" " := " (ident <|> num)+
 
+syntax renameRule := ident (" → " <|> " ↔ ") ident
+
+attribute [nolint docBlame] renameRule
+
+/--
+The `(rename := ...)` option takes a comma-separated list of rename rules of the form
+`oldName → newName` specifying the argument names of the translated constant. The syntax
+`firstName ↔ secondName` can also be used for swapping two argument names.
+-/
+syntax renameOption := &"rename" " := " renameRule,+
+
 syntax bracketedOption := "(" attrOption <|> reorderOption <|>
-  relevantArgOption <|> dontTranslateOption ")"
+  relevantArgOption <|> dontTranslateOption <|> renameOption ")"
 
 /-- A hint about the translated declaration
 
@@ -135,7 +146,7 @@ register_option linter.translateReorder : Bool := {
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
-/-- Linter used by translate attributes that checks if the relevant_arg is
+/-- Linter used by translate attributes that checks if the `relevant_arg` is
 automatically generated. -/
 register_option linter.translateRelevantArg : Bool := {
   defValue := true
@@ -225,6 +236,21 @@ def findTranslation? (env : Environment) (t : TranslateData) : Name → Option T
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
   (findTranslation? env t n).map (·.translation)
 
+/-- Check if the given constant exists in the environment, also checking for reserved names.
+This function is based on `Lean.realizeGlobalName`. -/
+private def realizeGlobalConst (c : Name) : CoreM Bool := do
+  let env ← getEnv
+  if env.contains c then
+    return true
+  unless isReservedName env c do
+    return false
+  try
+    executeReservedNameAction c
+    return (← getEnv).containsOnBranch c
+  catch ex =>
+    logError m!"Failed to realize constant {c}:{indentD ex.toMessageData}"
+    return false
+
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`.
@@ -235,12 +261,8 @@ def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option Transl
     return info
   let .str n postFix := n | return none
   let some info := go env n [postFix] | return none
-  if env.contains (skipRealize := false) info.translation then
-    return info
-  if isReservedName env info.translation then
-    executeReservedNameAction info.translation
-    return info
-  return none
+  unless ← realizeGlobalConst info.translation do return none
+  return info
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
   In such a case, we inherit the `relevantArg` option from the translation. -/
@@ -291,14 +313,14 @@ structure Config : Type where
   /-- The given name of the target. -/
   tgt : Name := Name.anonymous
   /-- An optional doc string. -/
-  doc : Option String := none
+  doc : Option String := .none
   /-- If `allowAutoName` is `false` (default) then
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder? : Option Reorder := none
+  reorder? : Option Reorder := .none
   /-- The argument used to determine whether this constant should be translated. -/
-  relevantArg? : Option RelevantArg := none
+  relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
@@ -319,6 +341,8 @@ structure Config : Type where
   /-- An optional flag for not giving the new declaration a user-facing name.
   This is achieved by appending e.g. `_to_dual_1` to the name of the original declaration. -/
   none : Bool := false
+  /-- A map specifying the binder names of the translated declaration. -/
+  rename : NameMap Name := {}
 
 /-- Eta expands `e` exactly `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
@@ -352,6 +376,7 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     ReplacementM (Option Expr) := do
   let visitedFVars : IO.Ref (Array FVarId) ← IO.mkRef #[]
   let dontTranslate ← read
+  let lctx ← getLCtx
   let rec visit (e : Expr) : ExceptT Expr (StateT (PtrSet Expr) BaseIO) Unit := do
     if (← get).contains e then
       return
@@ -380,7 +405,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .fvar fvarId       =>
       if dontTranslate.contains fvarId then
         throw e
-      visitedFVars.modify (·.push fvarId)
+      if let some value := (lctx.get! fvarId).value? (allowNondep := true) then
+        visit value
+      else
+        visitedFVars.modify (·.push fvarId)
     /- We do not translate the order on `Prop`.
     TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
     `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
@@ -421,11 +449,11 @@ where
   translated, which would create type-incorrect terms. Instead, we give the free variables
   their original type and the translated type is only used when constructing the final term. -/
   visit (e : Expr) : ReplacementM Expr :=
-    withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} translating {e}") do
+    withTraceNode `translate_detail (fun _ => return m!"translating {e}") do
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
-      | .lam ..     => visitLambda e
+      | .lam ..     => visitLambda e []
       | .letE ..    => visitLet e
       | .mdata _ b  => return e.updateMData! (← visit b)
       | .proj ..    => visitApp e
@@ -486,16 +514,24 @@ where
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
       return mkAppN f' (← args.mapM visit)
+    | .lam .. => return mkAppN (← visitLambda f args.toList) (← args.mapM visit)
     | _ => return mkAppN (← visit f) (← args.mapM visit)
   /- In `visitLambda`, `visitForall` and `visitLet`,
   we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
-  This is because the local context in the `MetaM` monad stores their original types. -/
-  visitLambda (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+  This is because the local context in the `MetaM` monad stores their original types.
+
+  In `visitLambda`, we keep track of the value of  variables, which helps in `shouldTranslate`. -/
+  visitLambda (e : Expr) (values : List Expr) (fvars : Array Expr := #[])
+      (tmpLCtx : LocalContext := {}) := do
     if let .lam n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitLambda b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      if let value :: values := values then
+        withLetDecl n d value fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
+      else
+        withLocalDecl n bi d fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkLambda fvars e
@@ -503,8 +539,8 @@ where
     if let .forallE n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitForall b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      withLocalDecl n bi d fun x =>
+        visitForall b (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkForall fvars e
@@ -512,26 +548,33 @@ where
     if let .letE n t v b nondep := e then
       let t := t.instantiateRev fvars; let v := v.instantiateRev fvars
       let t' ← visit t; let v' ← visit v
-      withLetDecl n t v (nondep := nondep) fun x => do
-        visitLet b (fvars.push x) (tmpLCtx.addDecl
-          (((← getFVarLocalDecl x).setType t').setValue v'))
+      withLetDecl n t v (nondep := nondep) fun x =>
+        visitLet b (fvars.push x) (tmpLCtx.mkLetDecl x.fvarId! n t' v' nondep)
     else
       let e ← visit (e.instantiateRev fvars)
       -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
-  src.mapForallBinderNames fun
-    | .str p s => .str p (GuessName.guessName t.guessNameData s)
+def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+  src.mapForallBinderNames fun n => (rename.get? n).getD <|
+    match n with
+    | .str p s => .str p <|
+      let s' := GuessName.guessName t.guessNameData s
+      if s' != s then s' else
+      -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
+      if let some suffix := s.dropPrefix? 'h' then
+        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+      else
+        s
     | n => n
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the type {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the type {e}") do
   forallTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
@@ -553,8 +596,8 @@ def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : E
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the value {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the value {e}") do
   lambdaTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
@@ -570,7 +613,7 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : Reorder) (dont : List Nat)
-    (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) :
+    (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name) :
     MetaM (ConstantInfo × Option RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
     throwError "`{t.attrName}` does not support mutually recursive declarations."
@@ -589,7 +632,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
   type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -603,14 +646,15 @@ and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat) : MetaM (ConstantInfo × Option RelevantArg) :=
+    (reorder : Reorder) (dont : List Nat) (rename : NameMap Name) :
+    MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
   let decl ←
     if let some unfoldBoundaries := t.unfoldBoundaries? then
       let env ← getEnv
       -- First attempt to generate the translation without unfold boundaries.
-      let declAttempt ← updateDecl t tgt srcDecl reorder dont none
+      let declAttempt ← updateDecl t tgt srcDecl reorder dont none rename
       try
         addDecl declAttempt.1.toDeclaration!
         trace[translate] "generating\n{tgt} : {declAttempt.1.type} :=\
@@ -618,9 +662,9 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         return declAttempt -- early return
       catch _ =>
         setEnv env
-        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env)
+        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env) rename
     else
-      updateDecl t tgt srcDecl reorder dont none
+      updateDecl t tgt srcDecl reorder dont none rename
   trace[translate] "generating\n{tgt} : {decl.1.type} :=\
     {indentExpr <| decl.1.value! (allowOpaque := true)}"
   try
@@ -641,7 +685,7 @@ The reason why we can't just translate them is that they are generated by the `@
 so it would require a change in the implementation of `@[simp]` to add these translations.
 Additionally, these lemmas have very short proofs, so unfolding them is not costly. -/
 def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let unfold (e : Expr) := deltaExpand e fun
+  let unfold (e : Expr) := deltaExpand e (allowOpaque := true) fun
     | .str _ s => "_simp_".isPrefixOf s || "_gcongr_".isPrefixOf s
     | _ => false
   let mut decl := decl
@@ -699,15 +743,15 @@ def getRelevantArg (t : TranslateData) (cfg : Config) (relevantArg? : Option Rel
   else
     return relevantArg
 
-/-- Translate the declaration `src` and recursively all declarations `pre._proof_i`
+/-- Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
 occurring in `src` using the `translations` dictionary.
 
-`replace_all`, `trace`, `ignore` and `reorder` are configuration options.
-
-`pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
-declaration. -/
+- `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
+- `src` is assumed to have a value available in the environment.
+- `reorder` is used only for the translation of `src`.
+-/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
-    (reorder : Reorder := {}) : CoreM Unit := do
+    (reorder : Reorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -734,7 +778,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
-    discard <| transformDeclRec t cfg rootSrc rootTgt n
+    transformDeclRec t cfg rootSrc rootTgt n
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
@@ -745,7 +789,8 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
   -- now transform the source declaration
-  let (tgtDecl, relevantArg?) ← MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate
+  let (tgtDecl, relevantArg?) ←
+    MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
   let relevantArg ←
     if src == rootSrc then
       getRelevantArg t cfg relevantArg? src
@@ -838,11 +883,11 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
     (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
-  for (nm, lemmas) in names.zip auxLemmas do
+  for nm in names, lemmas in auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
-    for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
+  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
+    for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
       insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
@@ -865,7 +910,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
-  let pre := Name.mapPrefix (findTranslationName? (← getEnv) t) pre
+  let pre := translateNamespace (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -881,6 +926,13 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   if cfg.tgt != .anonymous then
     trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
+where
+  translateNamespace (env : Environment) (n : Name) : Name :=
+    let n' := Name.mapPrefix (findTranslationName? env t) n
+    if n' == n && isPrivateName n then
+      mkPrivateName env <| .mapPrefix (findTranslationName? env t) (privateToUserName n)
+    else
+      n'
 
 /-- Verify that the type of `srcDecl` translates to that of `tgtDecl`.
 Also try to autogenerate the `reorder` option for this translation. -/
@@ -917,13 +969,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  let srcDecl := srcDecl.updateLevelParams (reorder.permuteUniv srcDecl.levelParams)
-  -- instantiate both types with the same universes. `instantiateLevelParams` does some
-  -- normalization, so we apply it to both types.
   srcType := srcType.instantiateLevelParams
-    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let tgtType := tgtDecl.type.instantiateLevelParams
-    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+    (reorder.permuteUniv srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
@@ -966,6 +1014,26 @@ def proceedFields (t : TranslateData) (src tgt : Name) (reorder : Reorder)
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
+/-- Elaboration of the `(rename := ...)` option. -/
+def elabRename (stx : Array (TSyntax ``renameRule)) (declName : Name) (argNames : Array Name) :
+    MetaM (NameMap Name) :=
+  stx.foldlM elabRule {}
+where
+  elabRule rename stx := do
+    match stx with
+    | `(renameRule| $old → $new) =>
+      addRule old new rename
+    | `(renameRule| $first ↔ $second) =>
+      addRule first second rename >>= addRule second first
+    | _ => throwUnsupportedSyntax
+  addRule old new rename := do
+    if !argNames.contains old.getId then
+      throwErrorAt old
+        "invalid argument `{old.getId}`, it is not an argument of `{.ofConstName declName}`"
+    if rename.contains old.getId then
+      throwErrorAt old "rename rule for `{old.getId}` already specified"
+    return rename.insert old.getId new.getId
+
 /-- Elaboration of the configuration options for a translation attribute. It is assumed that
 - `stx[0]` is the attribute (e.g. `to_additive`)
 - `stx[1]` is the optional tracing `?`
@@ -983,6 +1051,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     let mut reorder? := none
     let mut relevantArg? := none
     let mut dontTranslate := []
+    let mut rename : NameMap Name := {}
     for opt in opts do
       match opt with
       | `(bracketedOption| (attr := $[$stxs],*)) =>
@@ -1001,6 +1070,10 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (dont_translate := $[$types]*)) =>
         dontTranslate := dontTranslate ++
           (← types.toList.mapM (elabArgStx · argNames xs (.ofConstName declName)))
+      | `(bracketedOption| (rename := $[$rules],*)) =>
+        if !rename.isEmpty then
+          throwErrorAt opt "cannot specify `rename` multiple times"
+        rename ← elabRename rules declName argNames
       | _ => throwUnsupportedSyntax
     let mut existing := false; let mut self := false; let mut none := false
     match hint with
@@ -1047,7 +1120,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     return {
       trace := !stx[1].isNone
       tgt := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
-      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none
+      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
@@ -1075,8 +1148,6 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
     warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-    -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr cfg.ref simpsAttr t.attrName `simps src tgt
     warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
@@ -1094,10 +1165,10 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
-    if attr.name == `simps then
+    if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
         translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
-          (simpsTacFromSyntax · attr.stx)
+          (impl · attr.stx attr.kind)
     else
       for decl in allDecls do
         Term.applyAttributes decl #[attr]
@@ -1134,7 +1205,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
-  let alreadyExists := (← getEnv).contains tgt
+  let alreadyExists ← realizeGlobalConst tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
@@ -1150,9 +1221,11 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     trace[translate_detail] "declaration {tgt} already exists."
     proceedFields t src tgt reorder relevantArg cfg.ref
   else
+    unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
+      throwError "`{t.attrName}` cannot translate `{.ofConstName src}` because it has no value."
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
-    transformDeclRec t cfg src tgt src reorder
+    transformDeclRec t cfg src tgt src reorder cfg.rename
   let nestedNames ← copyMetaData t cfg src
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)

@@ -73,9 +73,11 @@ theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deri
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
-variable [SMulCommClass ℝ 𝕜 F]
-
 open LineDeriv
+
+section fderiv
+
+variable [SMulCommClass ℝ 𝕜 F]
 
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
@@ -133,14 +135,6 @@ alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
 theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
   f.differentiableAt.lineDeriv_eq_fderiv.symm
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
-theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
-    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
-    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
-  ext x
-  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
-
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
 
@@ -168,6 +162,16 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
+
+end fderiv
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 end Derivatives
 

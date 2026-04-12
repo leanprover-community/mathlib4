@@ -64,7 +64,6 @@ lemma adjunction_unit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj :
 @[deprecated (since := "2026-03-05")]
 alias adjunction_unit_app_val := adjunction_unit_app_hom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_counit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).hom =

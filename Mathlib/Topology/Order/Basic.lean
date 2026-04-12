@@ -75,6 +75,7 @@ class OrderTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop 
 `(a, ∞) = { x ∣ a < x }, (-∞, b) = {x ∣ x < b}` for all `a, b` in `α`. We do not register it as an
 instance as many ordered sets are already endowed with the same topology, most often in a non-defeq
 way though. Register as a local instance when necessary. -/
+@[implicit_reducible]
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s : Set α | ∃ a : α, s = { b : α | a < b } ∨ s = { b : α | b < a } }
 
@@ -863,6 +864,6 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
 the function is between conditionally complete linear orders with order topologies, and the domain
 is densely ordered. -/
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
-    ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
+    ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
 end ConditionallyCompleteLinearOrder

@@ -32,7 +32,7 @@ theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]
   rw [Ideal.mem_span_pair]
   constructor <;> intro h
   · rcases h with ⟨_, _, rfl⟩
-    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
+    simp
   · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
     rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
     exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩
@@ -59,8 +59,8 @@ namespace Algebra
 variable {R S : Type*}
 
 lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (I : Ideal R)
-    {y : adjoin R {x}} :
-    y ∈ I.map (algebraMap R (adjoin R {x})) ↔
+    {y : R[x]} :
+    y ∈ I.map (algebraMap R (R[x])) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
   constructor
   · intro H
@@ -91,7 +91,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
 
 lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R] [CommRing S]
     [Algebra R S] (x : S) (I : Ideal R) (hI : I ≠ ⊤) [Invertible x]
-    (h : I.map (algebraMap R (adjoin R {x})) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
+    (h : I.map (algebraMap R (R[x])) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
     ∃ p : R[X], p.leadingCoeff - 1 ∈ I ∧ p.aeval ⅟x = 0 := by
   rw [← Ideal.one_eq_top, ← Ideal.add_eq_sup, Ideal.add_eq_one_iff] at h
   have ⟨y, hy, z, hz, eq⟩ := h
