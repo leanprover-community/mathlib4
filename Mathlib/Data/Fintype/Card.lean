@@ -257,7 +257,7 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
 /-- Given an injective map `f : α → β` such that `β` has cardinality one more
 than `α`, there exists a unique element of `β` not in the image of `f`. -/
 theorem existsUnique_notMem_image_of_injective_of_card_succ [DecidableEq β] (f : α ↪ β)
-    (h : Fintype.card β = Fintype.card α + 1) : ∃! x, x ∉ Finset.image f Finset.univ := by
+    (h : card β = card α + 1) : ∃! x, x ∉ Finset.image f ⊤ := by
   have hcard : (Finset.univ \ Finset.image f Finset.univ).card = 1 := by
     have h := Finset.card_image_of_injective Finset.univ f.inj'
     simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h
