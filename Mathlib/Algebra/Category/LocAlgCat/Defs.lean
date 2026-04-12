@@ -101,7 +101,7 @@ abbrev of (X : Type w) [CommRing X] [IsLocalRing X] [Algebra Λ X] [Algebra X k]
     [IsScalarTower Λ X k] (h : Surjective (algebraMap X k)) : LocAlgCat Λ k :=
   ⟨X, h⟩
 
-@[simp]
+variable (X) in
 lemma coe_of : (of Λ k X hX : Type w) = X := rfl
 
 @[simp]
