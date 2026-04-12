@@ -5,21 +5,15 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Algebra.Algebra.ZMod
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.CharP.MixedCharZero
-public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.Ideal
-public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Flat
@@ -78,9 +72,8 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   have char := CharP.exists' k
   simp only [charpos, false_or] at char
   rcases char with ⟨p, _, char⟩
-  let _ := ZMod.algebra k p
-  let _ : Algebra (ResidueField (PadicInt p)) k :=
-    ((algebraMap (ZMod p) k).comp PadicInt.residueField.toRingHom).toAlgebra
+  let := ZMod.algebra k p
+  let := ((algebraMap (ZMod p) k).comp PadicInt.residueField.toRingHom).toAlgebra
   rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
     map_natCast] at maxeq
@@ -95,7 +88,9 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   have reg : (p : R) ∈ nonZeroDivisors R := by
     refine mem_nonZeroDivisors_iff_right.mpr (fun x hx ↦ ?_)
     have regaux : IsSMulRegular R (p : R) := by
-      simpa using IsSMulRegular.of_flat (IsSMulRegular.of_ne_zero PadicInt.irreducible_p.ne_zero)
+      have : IsSMulRegular ℤ_[p] (p : ℤ_[p]) :=
+        IsSMulRegular.of_ne_zero PadicInt.irreducible_p.ne_zero
+      simpa using IsSMulRegular.of_flat this
     apply isSMulRegular_iff_right_eq_zero_of_smul.mp regaux x
     simp [← hx, mul_comm]
   have mem_of_mem_succ {n : ℕ} {r : R} (mem : p • r ∈ (maximalIdeal R) ^ (n + 1)) :
@@ -133,17 +128,17 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     absurd Disjoint.notMem_of_mem_right disj reg'
     simpa [maxeq'] using Ideal.subset_span (Set.mem_singleton _)
   have dimle := ringKrullDim_le_spanFinrank_maximalIdeal R'
-  let _ : IsRegularLocalRing R' :=
+  have : IsRegularLocalRing R' :=
     (isRegularLocalRing_iff _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
-  let _ : IsDiscreteValuationRing R' :=
+  have : IsDiscreteValuationRing R' :=
     IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one _
       (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
-  let _ : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
+  have : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
   use R', inferInstance, inferInstance
   let e : k ≃+* ResidueField R' := iso.toRingEquiv.trans
     (RingEquiv.ofBijective _ (AdicCompletion.residueField_map_bijective_of_fg maxfg))
   refine ⟨⟨?_⟩, ⟨e.symm⟩⟩
-  let _ := e.toRingHom.toAlgebra
+  let := e.toRingHom.toAlgebra
   rw [← Algebra.ringChar_eq k, ringChar.eq k p, maxeq']
 
 /-- A variant of `PadicInt.toZModPow`. -/
@@ -213,14 +208,25 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
     (char : CharP (ResidueField R) p) (n : ℕ) (ne0 : n ≠ 0) : (Ideal.quotientMap
       (I := Ideal.span {(p ^ n : ℤ)}) (Ideal.span {(p ^ n : R)}) (Int.castRingHom R)
       (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span])).FormallySmooth := by
-  let _ : Fact (Nat.Prime p) := ⟨prime⟩
+  have : Fact (Nat.Prime p) := ⟨prime⟩
   induction n with
   | zero => simp at ne0
   | succ n ih =>
     by_cases eq0 : n = 0
     · rw [eq0, zero_add]
-      --should be able to obtain by extension is separable
-      sorry
+      let := (Ideal.quotientMap (I := Ideal.span {(p ^ 1 : ℤ)}) (Ideal.span {(p ^ 1 : R)})
+        (Int.castRingHom R) (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span])).toAlgebra
+      have : (Ideal.span {(p : ℤ) ^ 1}).IsMaximal := by
+        simpa [pow_one] using  Int.ideal_span_isMaximal_of_prime p
+      let : Field (ℤ ⧸ Ideal.span {(p : ℤ) ^ 1}) := Ideal.Quotient.field _
+      have : (Ideal.span {(p : R) ^ 1}).IsMaximal := by
+        rw [pow_one, ← ringChar.eq (ResidueField R) p, ← IsCohenRing.span]
+        infer_instance
+      let : Field (R ⧸ Ideal.span {(p : R) ^ 1}) := Ideal.Quotient.field _
+      have : Algebra.IsTranscendentalSeparable (ℤ ⧸ Ideal.span {(p : ℤ) ^ 1})
+        (R ⧸ Ideal.span {(p : R) ^ 1}) :=
+        Algebra.isTranscendentalSeparable_of_perfectField _
+      exact Algebra.FormallySmooth.of_isTranscendentalSeparable
     · have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
       have le' : Ideal.span {(p ^ (n + 1) : R)} ≤ Ideal.span {(p ^ n : R)} :=
@@ -263,10 +269,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     (char : CharZero (ResidueField R)) :
     ∃ (f : ResidueField R →+* R), (IsLocalRing.residue R).comp f = RingHom.id _ := by
-  let _ : Algebra ℚ (ResidueField R) := DivisionRing.toRatAlgebra
-  let _ : Algebra.FormallySmooth ℚ (ResidueField R) :=
-    --should be able to obtain by extension is separable
-    sorry
+  let : Algebra ℚ (ResidueField R) := DivisionRing.toRatAlgebra
+  have : Algebra.IsTranscendentalSeparable ℚ (ResidueField R) :=
+    Algebra.isTranscendentalSeparable_of_perfectField ℚ
+  have : Algebra.FormallySmooth ℚ (ResidueField R) :=
+    Algebra.FormallySmooth.of_isTranscendentalSeparable
   obtain ⟨alg⟩ := (EqualCharZero.nonempty_algebraRat_iff R).mpr (fun I ne ↦
     let tores : (R ⧸ I) →+* (ResidueField R) := Ideal.Quotient.factor (le_maximalIdeal ne)
     tores.charZero)
