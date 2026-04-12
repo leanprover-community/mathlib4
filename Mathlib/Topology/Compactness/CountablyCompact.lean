@@ -34,8 +34,8 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
   any countable open cover.
 * `isCountablyCompact_iff_countable_open_cover`: countable compactness is equivalent to the
   finite subcover property for countable covers.
-* `IsCompact.IsCountablyCompact`: compact sets are countably compact.
-* `IsSeqCompact.IsCountablyCompact`: sequentially compact sets are countably compact.
+* `IsCompact.isCountablyCompact`: compact sets are countably compact.
+* `IsSeqCompact.isCountablyCompact`: sequentially compact sets are countably compact.
 * `IsCountablyCompact.isSeqCompact`: in a first-countable space, countable compactness implies
   sequential compactness.
 * `IsCountablyCompact.exists_accPt_of_infinite`: every infinite subset of a countably compact

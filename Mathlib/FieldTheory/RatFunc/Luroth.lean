@@ -499,7 +499,7 @@ lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
   · rw [natDegree_mul (C_ne_zero.mpr (num_ne_zero (generator_ne_zero h)))
       (Polynomial.map_ne_zero (generator E).denom_ne_zero), natDegree_C, zero_add, natDegree_map]
 
-/-- Equation (11.3.8) from Cohns proof, viewed as an equation of polynomials with coefficients
+/-- Equation (11.3.8) from Cohn's proof, viewed as an equation of polynomials with coefficients
 in `K⟮X⟯`. -/
 lemma Q₀_mul_Φ (h : E ≠ ⊥) :
     Q₀ E * (Φ E).map (algebraMap K[X] K⟮X⟯) = (θ E).map (algebraMap K[X] K⟮X⟯) := by
@@ -536,7 +536,7 @@ lemma Q₁_ne_zero (h : E ≠ ⊥) : Q₁ h ≠ 0 := by
   rw [map_Q₁, Polynomial.map_zero]
   exact Q₀_ne_zero h
 
-/-- Equation (11.3.8) from Cohns proof, viewed as an equation of bivariate polynomials. -/
+/-- Equation (11.3.8) from Cohn's proof, viewed as an equation of bivariate polynomials. -/
 lemma Q₁_mul_Φ (h : E ≠ ⊥) : Q₁ h * Φ E = θ E := by
   apply_fun Polynomial.map (algebraMap K[X] K⟮X⟯) using
     Polynomial.map_injective _ (algebraMap_injective K)
@@ -569,7 +569,7 @@ lemma Q₂_ne_zero (h : E ≠ ⊥) : Q₂ h ≠ 0 := by
   rw [Polynomial.map_zero, Q₂_map]
   exact Q₁_ne_zero h
 
-/-- Equation (11.3.8) from Cohns proof, where we view `Q` as a univariate polynomial. -/
+/-- Equation (11.3.8) from Cohn's proof, where we view `Q` as a univariate polynomial. -/
 lemma Q₂_mul_Φ (h : E ≠ ⊥) : (Q₂ h).map Polynomial.C * Φ E = θ E := by
   rw [Q₂_map h, Q₁_mul_Φ h]
 
@@ -621,7 +621,7 @@ abbrev Q₃ (h : E ≠ ⊥) : K := (Q₂ h).coeff 0
 lemma Q₃_map (h : E ≠ ⊥) : Polynomial.C (Q₃ h) = Q₂ h :=
   (eq_C_of_natDegree_eq_zero (Q₂_natDegree h)).symm
 
-/-- Equation (11.3.8) from Cohns proof, where we view `Q` as a constant. -/
+/-- Equation (11.3.8) from Cohn's proof, where we view `Q` as a constant. -/
 lemma Q₃_mul_Φ (h : E ≠ ⊥) : (Polynomial.C (Q₃ h)).map Polynomial.C * Φ E = θ E := by
   rw [Q₃_map h, Q₂_mul_Φ h]
 

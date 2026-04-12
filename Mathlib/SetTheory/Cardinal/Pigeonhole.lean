@@ -97,9 +97,9 @@ theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) 
 has an uncountable fiber. -/
 theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) [Uncountable β] :
     ∃ a : α, Uncountable (f ⁻¹' {a}) := by
-  simp_rw [← Cardinal.aleph1_le_mk_iff]
+  simp_rw [← Cardinal.aleph0_lt_mk_iff, ← aleph_one_le_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · exact infinite_pigeonhole_card f ℵ₁ (aleph1_le_mk β) aleph0_lt_aleph_one.le
+  · exact infinite_pigeonhole_card f ℵ₁ (by simp) aleph0_lt_aleph_one.le
       (by rw [isRegular_aleph_one.cof_ord]; exact hα.trans aleph0_lt_aleph_one)
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     rw [← Order.succ_le_succ_iff, succ_aleph0] at hα

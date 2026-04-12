@@ -523,7 +523,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     refine le_antisymm (fun x hx ↦ ?_) (fun x hx y hy ↦ ?_)
     · simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx
       specialize hx (coroot α) (Submodule.mem_span_singleton_self _)
-      simp only [LinearMap.BilinForm.isOrtho_def, traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
+      simp only [traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
         Nat.cast_ofNat, mul_eq_zero, OfNat.ofNat_ne_zero, inv_eq_zero, false_or] at hx
       simpa using hx.resolve_left (root_apply_cartanEquivDual_symm_ne_zero hα)
     · have := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot hx hy

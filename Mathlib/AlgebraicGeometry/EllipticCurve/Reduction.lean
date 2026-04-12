@@ -281,7 +281,6 @@ class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W whe
 
 @[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
     HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm

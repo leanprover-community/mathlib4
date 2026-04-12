@@ -853,7 +853,7 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     rcases h' y x_y with ⟨z, x_z, z_y⟩
     exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, x_z, hz⟩
     exact (h z x_z).mono <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
@@ -881,7 +881,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     obtain ⟨z, y_z, z_x⟩ := h' y y_x
     exact y_z.trans_le (le_limsup_of_frequently_le ((h z z_x).mono (fun _ ↦ le_of_lt)) h₂)
   · apply le_limsup_of_frequently_le _ h₂
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, z_x, hz⟩
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
@@ -1029,9 +1029,9 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
     simp_rw [if_pos H', hv.liminf_eq_sSup_iUnion_iInter, A, iUnion_empty]
   rw [if_neg H']
   apply hv.liminf_eq_ciSup_ciInf
-  · push_neg at H
+  · push Not at H
     simpa only [nonempty_iff_ne_empty] using H
-  · push_neg at H'
+  · push Not at H'
     exact H'
 
 /-- Given an indexed family of sets `s j` and a function `f`, then `limsup_reparam j` is equal

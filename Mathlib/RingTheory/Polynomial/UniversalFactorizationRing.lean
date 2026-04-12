@@ -637,7 +637,6 @@ lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [CommRing 
   simp [homEquiv, UniversalFactorizationRing.homEquiv, Polynomial.map_map]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,
 then there exists `Q : Spec R_univ` in the universal coprime factorization ring lying over `P`,

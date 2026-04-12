@@ -159,6 +159,12 @@ end One
 theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
     A ⊙ A = A ↔ ∀ i j, IsIdempotentElem (A i j) := ext_iff.symm
 
+theorem transpose_hadamard [Mul α] (A B : Matrix m n α) : (A ⊙ B)ᵀ = Aᵀ ⊙ Bᵀ :=
+  ext fun _ _ => rfl
+
+theorem conjTranspose_hadamard [Mul α] [StarMul α] (A B : Matrix m n α) : (A ⊙ B)ᴴ = Bᴴ ⊙ Aᴴ :=
+  ext fun _ _ => StarMul.star_mul _ _
+
 section single
 
 variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]

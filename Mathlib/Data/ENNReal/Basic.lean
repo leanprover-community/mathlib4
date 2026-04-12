@@ -687,11 +687,7 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithT
 
 end CompleteLattice
 
-section Bit
-
 -- TODO: add lemmas about `OfNat.ofNat`
-
-end Bit
 
 end ENNReal
 

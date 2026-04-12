@@ -404,6 +404,7 @@ variable
 /--
 The composition of a meromorphic and an analytic function is meromorphic.
 -/
+@[fun_prop]
 lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
     (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
     MeromorphicAt (f ∘ g) x := by

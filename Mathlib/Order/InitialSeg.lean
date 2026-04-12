@@ -194,7 +194,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
   intro h b
-  push_neg at h
+  push Not at h
   apply IsWellFounded.induction s b
   intro x IH
   obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x

@@ -61,8 +61,8 @@ protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
     aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
 
 instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
-    [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) := by
-  dsimp [SimpleGraph.map]; infer_instance
+    [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
+  inferInstanceAs <| Decidable (_ ∧ _)
 
 @[simp]
 theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :

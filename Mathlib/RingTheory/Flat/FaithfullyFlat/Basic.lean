@@ -87,7 +87,6 @@ end proper_ideal
 
 section faithful
 
-set_option backward.isDefEq.respectTransparency false in
 instance rTensor_nontrivial
     [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by

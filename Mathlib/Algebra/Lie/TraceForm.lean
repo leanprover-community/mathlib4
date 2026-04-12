@@ -237,7 +237,6 @@ lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
@@ -376,7 +375,7 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext x
-  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
+  simp [LinearMap.ext_iff, LieModule.traceForm_comm R L L x]
 
 lemma restrict_killingForm :
     (killingForm R L).restrict I = LieModule.traceForm R I L :=
