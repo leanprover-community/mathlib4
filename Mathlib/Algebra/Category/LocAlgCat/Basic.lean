@@ -9,7 +9,7 @@ module
 public import Mathlib.Algebra.Category.LocAlgCat.Defs
 
 /-!
-# Basic Quotient Constructions in `LocAlgCat`
+# Basic Constructions and Lemmas in `LocAlgCat`
 
 This file develops several basic constructions for the category of
 local `Λ`-algebras with a fixed residue field `k`.
