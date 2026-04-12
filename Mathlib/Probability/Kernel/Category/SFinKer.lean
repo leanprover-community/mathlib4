@@ -21,13 +21,15 @@ The category of measurable spaces with s-finite kernels is a copy-discard catego
 * `CopyDiscardCategory SFinKer`: `SFinKer` is a copy-discard category.
 
 ## References
+
 * [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+
 -/
 
 @[expose] public section
 
-open CategoryTheory ProbabilityTheory MeasureTheory
+open CategoryTheory MeasureTheory ProbabilityTheory
 
 open scoped MonoidalCategory ComonObj
 
