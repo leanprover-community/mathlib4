@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Jacobson.Semiprimary
@@ -27,14 +28,6 @@ if the relation `<` on submodules is well founded.
 
 A ring is said to be left (or right) Artinian if it is Artinian as a left (or right) module over
 itself, or simply Artinian if it is both left and right Artinian.
-
-## Main definitions
-
-Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodule of `M`.
-
-* `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module. It is a class,
-  implemented as the predicate that the `<` relation on submodules is well founded.
-* `IsArtinianRing R` is the proposition that `R` is a left Artinian ring.
 
 ## Main results
 
@@ -65,15 +58,6 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 @[expose] public section
 
 open Set Filter Pointwise
-
-/-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
-implemented as the well-foundedness of submodule inclusion. -/
-abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
-  WellFoundedLT (Submodule R M)
-
-theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
-    WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
-  isWellFounded_iff _ _
 
 section Semiring
 
@@ -172,11 +156,6 @@ theorem eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
     atTop.EventuallyConst f := by
   simp_rw [eventuallyConst_atTop, eq_comm]
   exact monotone_stabilizes f
-
-/-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
-theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) :
-    P I :=
-  WellFoundedLT.induction I hgt
 
 open Function
 
@@ -391,22 +370,6 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
--- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization IsLocalRing
-
-/-- A ring is Artinian if it is Artinian as a module over itself.
-
-Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
-convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`.
-
-For equivalent definitions, see `Mathlib/RingTheory/Artinian/Ring.lean`.
--/
-@[stacks 00J5]
-abbrev IsArtinianRing (R) [Semiring R] :=
-  IsArtinian R R
-
-theorem isArtinianRing_iff {R} [Semiring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
-
 instance DivisionSemiring.instIsArtinianRing {K : Type*} [DivisionSemiring K] : IsArtinianRing K :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
@@ -441,11 +404,9 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsNoetherianRing R] :
     IsNoetherianRing (Matrix n n R) := .of_finite R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsArtinianRing R] :
     IsArtinianRing (Matrix n n R) := .of_finite R _
 

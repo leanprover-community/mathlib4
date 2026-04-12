@@ -133,6 +133,8 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_comp_comul := (·.map_comp_comul)
   map_mul := (·.map_mul')
 
+instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
+
 @[simp, norm_cast]
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
@@ -160,7 +162,7 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[simp]
+@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
 theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
   rfl
 

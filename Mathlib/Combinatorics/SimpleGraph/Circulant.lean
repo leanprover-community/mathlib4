@@ -60,12 +60,21 @@ theorem circulantGraph_adj_translate {s : Set G} {u v d : G} :
 
 /-- Cycle graph over `Fin n` -/
 def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
-  | 0 => ⊥
-  | _ + 1 => circulantGraph {1}
+  | 0 | 1 => ⊥
+  | _ + 2 => {
+    Adj a b := a - b = 1 ∨ b - a = 1
+    symm _ _ := Or.symm
+    loopless.irrefl _ h := h.elim (by simp) (by simp)
+  }
 
 instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj
-  | 0 => fun _ _ => inferInstanceAs (Decidable False)
-  | _ + 1 => inferInstanceAs (DecidableRel (circulantGraph _).Adj)
+  | 0 | 1 => fun _ _ => inferInstanceAs (Decidable False)
+  | _ + 2 => by unfold cycleGraph; infer_instance
+
+theorem cycleGraph_eq_circulantGraph (n : ℕ) : cycleGraph (n + 1) = circulantGraph {1} := by
+  cases n
+  · exact edgeFinset_inj.mp rfl
+  · aesop
 
 theorem cycleGraph_zero_adj {u v : Fin 0} : ¬(cycleGraph 0).Adj u v := id
 
@@ -83,14 +92,10 @@ theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
   decide
 
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
-  rw [cycleGraph_one_eq_bot]
-  exact id
+  simp [cycleGraph_one_eq_bot]
 
 theorem cycleGraph_adj {n : ℕ} {u v : Fin (n + 2)} :
-    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := by
-  simp only [cycleGraph, circulantGraph_adj, Set.mem_singleton_iff, and_iff_right_iff_imp]
-  intro _ _
-  simp_all
+    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := Iff.rfl
 
 theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
     (cycleGraph n).Adj u v ↔ (u - v).val = 1 ∨ (v - u).val = 1 := by
@@ -119,7 +124,6 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   match n with
   | 0 | 1 => simp

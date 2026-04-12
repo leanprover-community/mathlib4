@@ -5,12 +5,10 @@ example (a b : ENat) (h : a = b) : a - b = b - a := by
   enat_to_nat
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 example (a b : ENat) (h : a ≤ b) : a - b < b + 1 := by
   enat_to_nat
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 example (a b : ENat) (h : a ≤ b) : a - 2 * b ≤ b + 1 := by
   enat_to_nat
   lia

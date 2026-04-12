@@ -6,6 +6,7 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Flat.Stability
 
 /-!
@@ -87,7 +88,6 @@ end proper_ideal
 
 section faithful
 
-set_option backward.isDefEq.respectTransparency false in
 instance rTensor_nontrivial
     [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
@@ -187,7 +187,6 @@ lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
 instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
     [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
@@ -200,7 +199,6 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
   apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
   classical exact of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
@@ -251,6 +249,7 @@ Let `N₁ -l₁₂-> N₂ -l₂₃-> N₃` be two linear maps.
   This is `range_le_ker_of_exact_rTensor`.
 - Then in `rTensor_reflects_exact`, we show `ker l₂₃ = range l₁₂` by considering the cohomology
   `ker l₂₃ ⧸ range l₁₂`.
+
 This shows that when `M` is faithfully flat, `- ⊗ M` reflects exact sequences. For details, see
 comments in the proof. Since `M` is flat, `- ⊗ M` preserves exact sequences.
 
@@ -604,3 +603,41 @@ lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
   ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
 end Module
+
+namespace Submodule
+
+open LinearMap Module
+
+variable {R M A : Type*} [CommRing R] [Ring A] [Algebra R A] [FaithfullyFlat R A]
+  [AddCommGroup M] [Module R M] {p q : Submodule R M}
+
+@[simp]
+theorem baseChange_le_iff : p.baseChange A ≤ q.baseChange A ↔ p ≤ q := by
+  refine ⟨fun h ↦ ?_, baseChange_mono A⟩
+  rwa [← q.ker_mkQ, le_ker_iff_comp_subtype_eq_zero, FaithfullyFlat.zero_iff_lTensor_zero R A,
+    lTensor_comp, ← range_le_ker_iff, lTensor_mkQ, ← restrictScalars_le R]
+
+theorem baseChange_inj : p.baseChange A = q.baseChange A ↔ p = q := by
+  simp [le_antisymm_iff]
+
+theorem baseChange_injective (h : p.baseChange A = q.baseChange A) : p = q :=
+  baseChange_inj.mp h
+
+variable (R M A) in
+/-- `Submodule.baseChange` as an order embedding. -/
+@[simps]
+def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
+  toFun := baseChange A
+  inj' _ _ := baseChange_injective
+  map_rel_iff' := baseChange_le_iff
+
+theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
+    (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
+  rw [isNoetherian_iff'] at h ⊢
+  exact (baseChangeOrderEmbedding R M A).wellFoundedGT
+
+theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
+    (h : IsArtinian A (A ⊗[R] M)) : IsArtinian R M :=
+  (baseChangeOrderEmbedding R M A).wellFoundedLT
+
+end Submodule

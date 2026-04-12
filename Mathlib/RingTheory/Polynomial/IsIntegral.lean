@@ -188,7 +188,6 @@ instance {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R] :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :
