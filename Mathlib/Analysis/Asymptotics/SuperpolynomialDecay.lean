@@ -158,14 +158,10 @@ variable {l k f}
 
 theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay l k f)
     (hfg : abs ∘ g ≤ᶠ[l] abs ∘ f) : SuperpolynomialDecay l k g := by
-  rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf ⊢
-  refine fun z =>
-    tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
-      (Eventually.of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
-  calc
-    |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
-    _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
-    _ = |k x ^ z * f x| := (abs_mul (k x ^ z) (f x)).symm
+  rw [superpolynomialDecay_iff_superpolynomialDecay_abs] at hf ⊢
+  exact (superpolynomialDecay_zero l (fun a => |k a|)).trans_eventuallyLE
+    (Eventually.of_forall fun x => abs_nonneg (k x)) hf
+    (Eventually.of_forall fun x => abs_nonneg (g x)) hfg
 
 theorem SuperpolynomialDecay.trans_abs_le (hf : SuperpolynomialDecay l k f)
     (hfg : ∀ x, |g x| ≤ |f x|) : SuperpolynomialDecay l k g :=

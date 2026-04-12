@@ -747,12 +747,8 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
     (hc : ContinuousOn f (Box.Icc I)) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
   apply integrable_of_bounded_and_ae_continuousWithinAt
-  · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ).1
-                        (I.isCompact_Icc.image_of_continuousOn hc).isBounded
-    use ‖C‖, fun x hx ↦ by
-      simpa only [smul_unitClosedBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
-  · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
-    rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
+  · exact I.isCompact_Icc.exists_bound_of_continuousOn hc
+  · exact ae_restrict_of_forall_mem I.measurableSet_Icc fun x hx ↦ hc.continuousWithinAt hx
 
 variable {l}
 
