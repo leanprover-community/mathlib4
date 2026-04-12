@@ -62,7 +62,7 @@ open Finset Fintype Function
 
 universe u
 namespace SimpleGraph
-variable {α : Type u} {ι : Type*}
+variable {α : Type u} {ι : Type*} {G : SimpleGraph α} {s : Set α}
 
 /-- `G.IsCompleteMultipartiteWith f` iff adjacency in `G`
     is determined by inequality of `f`-values. -/
@@ -71,7 +71,7 @@ def IsCompleteMultipartiteWith (G : SimpleGraph α) (f : α → ι) : Prop :=
 
 namespace IsCompleteMultipartiteWith
 
-variable {G : SimpleGraph α} {f : α → ι} {C : G.IsCompleteMultipartiteWith f}
+variable {f : α → ι} {C : G.IsCompleteMultipartiteWith f}
 include C
 
 /-- For a complete multipartite graph labelled via `f`, `u` and `v` are adjacent iff `f u ≠ f v`. -/
