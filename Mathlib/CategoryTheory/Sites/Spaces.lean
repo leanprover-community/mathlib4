@@ -57,6 +57,9 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
 
+lemma mem_grothendieckTopology {U : Opens T} {S : Sieve U} :
+    S ∈ Opens.grothendieckTopology T U ↔ ∀ x ∈ U, ∃ (V : _) (f : V ⟶ U), S f ∧ x ∈ V := .rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
