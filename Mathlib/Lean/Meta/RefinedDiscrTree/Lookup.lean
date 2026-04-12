@@ -79,7 +79,7 @@ replacing it with the evaluated value,
 and returning the `Trie α`.
 
 Performance note: In the `apply` search discrimination tree, after root node `⟨Eq, 3⟩`,
-there are about `150.000` entries in the `pending` array.
+there are about `150,000` entries in the `pending` array.
 To deal with this smoothly, we parallellize the computation into chunks of `5000` entries.
 -/
 private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
@@ -89,19 +89,14 @@ private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let numTasks := node.pending.size / 5000 + 1
   Core.checkInterrupted
   let tasks ← numTasks.foldM (init := #[]) fun i _ tasks ↦ do
-    return tasks.push <| ← BaseIO.asTask <|
+    return tasks.push <| ← EIO.asTask <|
       Core.withCurrHeartbeats (processPending node.pending (i * 5000) ((i + 1) * 5000))
         |>.run' (← readThe _) (← getThe _)
         |>.run' (← readThe _) (← getThe _)
-        |>.catchExceptions fun ex ↦ do
-        if let .internal id _ := ex then
-          if id == interruptExceptionId then
-            return (#[], #[])
-        panic! "error while processing the discrimination tree:\n{← ex.toMessageData.toString}"
   setTrie trie default -- reduce the reference count to `node` to be 1
   let mut { values, star, labelledStars, children, .. } := node
   for task in tasks do
-    let (values', newEntries) := task.get
+    let (values', newEntries) ← MonadExcept.ofExcept task.get
     values := values ++ values'
     for (key, entry) in newEntries do
       match key with
