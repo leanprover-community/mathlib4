@@ -202,7 +202,7 @@ info: Try these:
 -/
 #guard_msgs in
 open Polynomial in
-example : natDegree (X + 2 : Nat[X]) ≤ 1 := by hint
+example : natDegree ((X + 2) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp
