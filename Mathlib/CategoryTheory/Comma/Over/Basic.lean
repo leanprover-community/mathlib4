@@ -901,7 +901,7 @@ lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
-lemma post_forget_eq_forget_post (F : T ⥤ D) (X : T) :
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
     post F ⋙ forget (F.obj X) = forget X ⋙ F :=
   rfl
 
