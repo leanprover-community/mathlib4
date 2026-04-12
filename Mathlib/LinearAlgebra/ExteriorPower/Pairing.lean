@@ -40,7 +40,7 @@ lemma toTensorPower_apply_ιMulti {n : ℕ} (v : Fin n → M) :
     MultilinearMap.alternatization_apply, MultilinearMap.domDomCongr_apply]
 
 /-- The canonical `n`-alternating map from the dual of the `R`-module `M`
-to the dual of `⨂[R]^n M`. -/
+to the dual of `⋀[R]^n M`. -/
 noncomputable def alternatingMapToDual (n : ℕ) :
     AlternatingMap R (Module.Dual R M) (Module.Dual R (⋀[R]^n M)) (Fin n) where
   toMultilinearMap := (toTensorPower R M n).dualMap.compMultilinearMap
