@@ -99,10 +99,8 @@ lemma localInverseAt_apply_other {p k : M}
     (h' : ⟦k⟧ ∈ (localInverseAt G p).source) :
     (localInverseAt G p) ⟦k⟧ = k := by
   refine (localHomeomorphAt G p).injOn ?_ h ?_
-  · simp only [localInverseAt,
-               OpenPartialHomeomorph.map_target (localHomeomorphAt G p) h']
-  · simp only [localInverseAt, (localHomeomorphAt G p).right_inv h',
-               localHomeomorphAt_eq_quotientMk]
+  · simp [localInverseAt, (localHomeomorphAt G p).map_target h']
+  · simp [localInverseAt, (localHomeomorphAt G p).right_inv h', localHomeomorphAt_eq_quotientMk]
 
 /-- The local inverse at `p` sends the class `⟦p⟧` back to `p`. -/
 lemma localInverseAt_apply_self {p : M}
