@@ -109,16 +109,8 @@ lemma surjective_toAlgHom_toOfQuot [Nontrivial (A ⧸ I)] : Surjective (A.toOfQu
   Ideal.Quotient.mk_surjective
 
 theorem map_toAlgHom_toOfQuot_maximalIdeal_eq [Nontrivial (A ⧸ I)] :
-    (maximalIdeal A).map (A.toOfQuot I).toAlgHom = maximalIdeal (A.ofQuot I) := eq_maximalIdeal (by
-  rcases Ideal.map_eq_top_or_isMaximal_of_surjective _ (surjective_toAlgHom_toOfQuot (I := I))
-    (maximalIdeal.isMaximal A) with h' | _
-  · rw [← (Ideal.comap_injective_of_surjective _ surjective_toAlgHom_toOfQuot).eq_iff,
-      Ideal.comap_top, Ideal.comap_map_of_surjective' _ surjective_toAlgHom_toOfQuot,
-      ker_toAlgHom_toOfQuot, sup_eq_left.mpr (le_maximalIdeal
-        (by rwa [← Ideal.Quotient.nontrivial_iff]))] at h'
-    have := (maximalIdeal.isMaximal A).ne_top
-    contradiction
-  · assumption)
+    (maximalIdeal A).map (A.toOfQuot I).toAlgHom = maximalIdeal (A.ofQuot I) :=
+  map_maximalIdeal_of_surjective _ surjective_toAlgHom_toOfQuot
 
 /-- The morphism between quotient objects in `LocAlgCat` induced by a morphism `f : A ⟶ B`.
 This is the categorical counterpart to `Ideal.quotientMapₐ`. -/
