@@ -71,13 +71,12 @@ set_option backward.isDefEq.respectTransparency false in
 all pairings with elementary dual tensors are nonnegative. -/
 @[simp]
 theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
-    z ∈ maxTensorProduct (R := R) C₁ C₂ ↔
+    z ∈ maxTensorProduct C₁ C₂ ↔
       ∀ φ ∈ dual (Dual.eval R G) C₁,
       ∀ ψ ∈ dual (Dual.eval R H) C₂,
-      0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct]
-  rw [← hull_eq C₁, ← hull_eq C₂, mem_dual_hull]
-  simp only [Set.forall_mem_image2, SetLike.mem_coe, mem_dual]
+        0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
+  simp only [maxTensorProduct, minTensorProduct, mem_dual_hull,
+    Set.forall_mem_image2, SetLike.mem_coe]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
