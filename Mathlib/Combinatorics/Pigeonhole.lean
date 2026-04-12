@@ -308,7 +308,6 @@ lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → 
     (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j)) (h₃ : #(s.biUnion f) < #s) :
     ∃ x ∈ s.biUnion f, s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
   set k := s.inf' h₁ (fun j ↦ #(f j)) with hk
-  have nek : NeZero k := ⟨by rwa [hk, Nat.ne_zero_iff_zero_lt, Finset.lt_inf'_iff h₁]⟩
   contrapose! h₃
   suffices #s • k ≤ #(s.biUnion f) • k by simp_all
   simp only [← Finset.sum_const]
