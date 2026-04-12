@@ -294,7 +294,7 @@ theorem exists_card_fiber_le_of_card_le_mul (ht : t.Nonempty) (hn : #s ≤ #t * 
 /-- A version of the pigeonhole principle for set-valued functions.
 
 Given a family of sets `f : α → Finset β` and a choice of indices `s : Finset α`.
-Let `k` denote the minimum cardinality of the `f j`'s.
+Let `k` denote the minimum cardinality of the `f j`s.
 If the cardinality of the union `s.biUnion f` is less than `s.card`, then
 there exists an element `x ∈ s.biUnion f` which is covered by more than `k` of the sets
 `f j` (i.e., `k < #{j ∈ s | x ∈ f j}`).
