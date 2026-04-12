@@ -5,9 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 module
 
--- TODO: avoid the TangentSpace import!
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.Topology.VectorBundle.Basic
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Notation for Elaborators for differential geometry
@@ -67,6 +65,9 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
+@[match_pattern, expose] def _root_.Lean.mkApp12 (f a b c d e₁ e₂ e₃ e₄ e₅ e₆ e₇ e₈ : Expr) :=
+  mkApp6 (mkApp6 f a b c d e₁ e₂) e₃ e₄ e₅ e₆ e₇ e₈
+
 /--
 Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
@@ -93,15 +94,17 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
     let tgtHasLooseBVars := tgt.hasLooseBVars
     let tgt := tgt.instantiate1 x
     -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
-    match_expr tgt with
-    | Bundle.Trivial E E' _ =>
+    /- Note: we do not use `match_expr` here since that would require importing
+    `Mathlib.Geometry.Manifold.IsManifold.Basic` to resolve `TangentBundle`. -/
+    match tgt with
+    | mkApp3 (.const `Bundle.Trivial _) E E' _ => do
       trace[Elab.Bundle.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
       -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
         mkLambdaFVars #[x] body
       else return e
-    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
+    | mkApp12 (.const `TangentSpace _) _k _ E _ _ _H _ _I M _ _ _x =>
       trace[Elab.Bundle.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
       mkLambdaFVars #[x] body
