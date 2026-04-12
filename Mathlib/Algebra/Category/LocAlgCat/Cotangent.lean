@@ -15,20 +15,20 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 
 This file contains results about cotangent spaces for objects in the category of local `Λ`-algebras
 with a fixed residue field `k`. It introduces the canonical `k`-vector space structures,
-induced linear maps, and fundamental exactness properties.
+induced linear maps, and exactness properties.
 
 ## Main Results
 
 * `LocAlgCat.mapCotangent`: The canonical `k`-linear map between cotangent spaces induced by
   a morphism `f : A ⟶ B` in `LocAlgCat`.
 
-* `LocAlgCat.surjective_mapCotangent_toOfQuot`: The cotangent map induced by the quotient by
-  a surjective morphism is surjective.
+* `LocAlgCat.surjective_mapCotangent_toOfQuot`: The cotangent map induced by a surjective morphism
+  is surjective.
 
 * `LocAlgCat.baseCotangentMap`: The canonical `k`-linear map from the base-changed cotangent space
   of the base ring `Λ` to the cotangent space of `A`.
 
-* `LocAlgCat.exact_baseCotangentMap_mapCotangent_toSpecialFiber`: The right-exactness of
+* `LocAlgCat.exact_baseCotangentMap_mapCotangent_toSpecialFiber`: The exactness of
   the conormal sequence for the special fiber.
 
 -/
