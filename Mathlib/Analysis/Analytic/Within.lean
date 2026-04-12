@@ -119,9 +119,9 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
     · rintro y ⟨ys, yb⟩
-      simpa only [add_sub_cancel] using
-        h.sum (y := y - x) (by simpa only [add_sub_cancel] using ys)
-          (by simpa only [mem_eball, edist_eq_enorm_sub, sub_zero] using yb)
+      have : f (x + (y - x)) = p.sum (y - x) :=
+        h.sum (y := y - x) (by simpa using ys) (by simpa [edist_eq_enorm_sub] using yb)
+      simpa using this
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt
       simp only [add_sub_cancel_left]

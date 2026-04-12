@@ -123,7 +123,7 @@ lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
 
 lemma exists_dist_le_coveringRadius (D : DeloneSet X) (x : X) :
     ∃ y ∈ D, dist x y ≤ D.coveringRadius := by
-  simpa [edist_dist] using D.isCover_coveringRadius (x := x) (by trivial)
+  simpa [edist_dist] using D.isCover_coveringRadius (by trivial)
 
 lemma eq_of_mem_ball (D : DeloneSet X) {r : ℝ≥0} (hr : r ≤ D.packingRadius / 2)
     {x y z : X} (hx : x ∈ D) (hy : y ∈ D) (hxz : x ∈ ball z r) (hyz : y ∈ ball z r) :

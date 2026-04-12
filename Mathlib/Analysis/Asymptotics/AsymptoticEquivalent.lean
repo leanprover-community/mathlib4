@@ -120,7 +120,7 @@ theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
   rw [IsEquivalent]
   change (u - const α c) =o[l] (fun _ : α => c) ↔ Tendsto u l (𝓝 c)
-  simpa [show u - const α c = (fun x ↦ u x - c) by rfl, isLittleO_const_iff h] using (Filter.tendsto_sub_const_iff (b := c) (c := c) (f := u) (l := l))
+  simpa [isLittleO_const_iff h] using tendsto_sub_const_iff c (c := c)
 
 theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) := by
   rcases em <| c = 0 with rfl | h
@@ -205,10 +205,11 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
   rw [IsEquivalent, isLittleO_iff_tendsto' (hz.mono fun x hx hx0 => (hx hx0).elim)]
   change Tendsto (fun x ↦ (u x - v x) / v x) l (𝓝 0) ↔ Tendsto (u / v) l (𝓝 1)
-  rw [show Tendsto (fun x ↦ (u x - v x) / v x) l (𝓝 0) ↔
-      Tendsto (fun x ↦ u x / v x - 1) l (𝓝 0) from
-      tendsto_congr' <| hz.mono fun x hx => by simp [sub_div, hx]]
-  simpa using (Filter.tendsto_sub_const_iff (b := (1 : β)) (c := (1 : β)) (f := u / v) (l := l))
+  have : Tendsto (fun x ↦ (u x - v x) / v x) l (𝓝 0) ↔
+      Tendsto (fun x ↦ u x / v x - 1) l (𝓝 0) :=
+    tendsto_congr' <| hz.mono fun x hx => by simp [sub_div, hx]
+  rw [this]
+  exact tendsto_sub_nhds_zero_iff
 
 end NormedField
 
