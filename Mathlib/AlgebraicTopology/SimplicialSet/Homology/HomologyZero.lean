@@ -67,6 +67,9 @@ noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
     ext
     simp [chainComplex, SSet.chainComplexFunctor, π₀.fromChainComplexXZero]
 
+/-- A homology data saying that the singular homology in degree `0`
+of a simplicial set with coefficients in `R` identify to a coproduct
+of copies of `X` indexed by `π₀ X`. -/
 noncomputable def homologyData₀ :
     ((X.chainComplex R).sc' 1 0 0).HomologyData :=
   ShortComplex.HomologyData.ofIsColimitCokernelCofork _ (by cat_disch) _
@@ -74,6 +77,8 @@ noncomputable def homologyData₀ :
 
 variable [CategoryWithHomology C]
 
+/-- The homology of a simplicial set in degree `0` with coefficients
+in `R` identifies to a coproduct of copies of `R` indexed by `π₀ X`. -/
 noncomputable def homology₀Iso :
     X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R) :=
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
