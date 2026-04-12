@@ -51,7 +51,7 @@ instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
 @[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
 
-lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
+lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := .rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
@@ -312,7 +312,7 @@ section Ring
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
-@[simp] lemma neg_ofSubmodule {S : Submodule R E} : -(ofSubmodule S) = S := by
+@[simp] lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = S := by
   ext x; simp
 
 end Ring
@@ -333,9 +333,9 @@ def lineal (C : PointedCone R E) : Submodule R E where
 
 @[simp] lemma ofSubmodule_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C := rfl
 
-@[simp] lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by rfl
+@[simp] lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := .rfl
 
-@[simp] theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup := rfl
+@[simp] theorem support_eq (C : PointedCone R E) : C.support = C.lineal.toAddSubgroup := rfl
 
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
