@@ -177,7 +177,6 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
   let eS : (P.Ring ⧸ J) ≃ₗ[P.Ring] S :=
     (Submodule.quotEquivOfEq _ _ rfl).trans
     ((Algebra.linearMap P.Ring S).quotKerEquivOfSurjective surjP)
-  let _ : IsScalarTower P.Ring (P.Ring ⧸ J) J.Cotangent := Module.IsTorsionBySet.isScalarTower _
   let toJcot : (S →₀ S) →ₗ[P.Ring] J.Cotangent :=
     Finsupp.lsum P.Ring (fun s ↦ ((LinearMap.toSpanSingleton (P.Ring ⧸ J) J.Cotangent
       (Classical.choose (cotsurj (toJ'cot (Finsupp.single s 1))))).restrictScalars P.Ring).comp
