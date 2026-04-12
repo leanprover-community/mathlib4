@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Bingyu Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
+Authors: Bingyu Xia, Wenrong Zou
 -/
 module
 
@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.RingTheory.MvPowerSeries.Rename
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 # Equivalences related to power series rings
@@ -22,6 +24,8 @@ This file establishes a number of equivalences related to power series rings.
 -/
 
 @[expose] public section
+
+universe u v w
 
 noncomputable section
 
@@ -161,9 +165,9 @@ end MvPowerSeries
 section toMvPowerSeries
 
 variable {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
-
 variable {σ τ : Type*} {f : PowerSeries R} (i : σ) (r : R)
 
+open Function PowerSeries Filter Finsupp
 namespace PowerSeries
 
 /-- Given a power series p(X) ∈ R⟦X⟧ and an index i, we may view it as a
@@ -197,7 +201,7 @@ theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
   const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
   coeff_zero d := Set.Finite.subset (Finite.of_fintype ↥d.support) fun s => by classical
     contrapose
-    simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, mem_setOf_eq]
+    simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, Set.mem_setOf_eq]
     have : (MvPowerSeries.subst (MvPowerSeries.X (R := R) ∘ fun x ↦ s) f)
       = f.subst (MvPowerSeries.X s) := rfl
     intro hd
