@@ -30,7 +30,7 @@ The main results are the following:
 @[expose] public section
 
 open Set Function Filter NormedSpace
-open scoped Topology Manifold ContDiff
+open scoped Topology Bundle Manifold ContDiff
 
 noncomputable section
 
