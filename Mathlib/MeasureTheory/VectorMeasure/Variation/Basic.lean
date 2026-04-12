@@ -98,3 +98,16 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
   · exact μ.not_measurable' hsm
 
 end MeasureTheory.VectorMeasure
+
+section
+
+open MeasureTheory VectorMeasure
+
+variable {X V : Type*} {mX : MeasurableSpace X} [NormedAddCommGroup V] (μ : VectorMeasure X V)
+
+theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ⊤) :
+    ‖μ E‖ ≤ μ.variation.real E := by
+  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (enorm_ne_top) hE]
+  exact enorm_measure_le_variation μ E
+
+end
