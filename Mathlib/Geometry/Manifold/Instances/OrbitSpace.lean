@@ -38,7 +38,6 @@ The atlas is obtained by composing a local inverse of the projection map
 
 noncomputable section
 
-open scoped Manifold
 open MulAction QuotientMk
 
 variable {M : Type*} [TopologicalSpace M]
