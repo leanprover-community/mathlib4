@@ -1,7 +1,7 @@
 module
 
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.SetNotation
+import Mathlib.Tactic.SetNotationForOrder
 
 attribute [use_set_notation_for_order] Set
 
