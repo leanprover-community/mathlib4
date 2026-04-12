@@ -6565,6 +6565,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand
+public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.MvPowerSeries.LexOrder
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
