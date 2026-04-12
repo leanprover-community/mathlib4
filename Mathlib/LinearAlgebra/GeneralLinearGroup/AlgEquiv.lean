@@ -48,7 +48,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
     congr; ext; simp
   have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := Projective.exists_dual_eq_one K hz
-    exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
+    exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd, -AlgEquiv.toAlgHom_toLinearMap]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| LinearMap.ext fun z ↦ ?_

@@ -187,6 +187,9 @@ def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
 
 theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
+@[simp] lemma toLinearMap_restrictScalars (f : A →ₐ[S] B) :
+    (f.restrictScalars R).toLinearMap = f.toLinearMap.restrictScalars R := rfl
+
 @[simp]
 theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+* B) = f := rfl
 
@@ -228,6 +231,12 @@ def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
       exact f.commutes (algebraMap R S r) }
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+@[simp] lemma toAlgHom_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toAlgHom = f.toAlgHom.restrictScalars R := rfl
+
+@[simp] lemma toLinearEquiv_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
 theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl

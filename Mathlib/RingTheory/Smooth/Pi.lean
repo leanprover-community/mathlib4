@@ -92,7 +92,7 @@ theorem pi_iff [Finite I] :
     ext i x
     simp only [AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
       LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
-      AlgEquiv.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
+      Ideal.Quotient.mkₐ_eq_mk]
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (a i x)
     have hy' : Ideal.Quotient.mk (Ideal.span {1 - e i}) (y * e i) = a i x := by
       have : Ideal.Quotient.mk (Ideal.span {1 - e i}) (e i) = 1 := by

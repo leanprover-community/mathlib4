@@ -85,7 +85,7 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
   letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
-    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+    to_finiteDimensional := (SemilinearEquivClass.semilinearEquiv e : K ≃ₗ[ℚ] L).finiteDimensional
   }
 
 /-- The ring of integers (or number ring) corresponding to a number field
