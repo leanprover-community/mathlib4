@@ -257,7 +257,7 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 
-theorem mem_of_eq_singleton : s = {a} → a ∈ s  := by
+theorem mem_of_eq_singleton : s = {a} → a ∈ s := by
  grind only [eq_singleton_iff_unique_mem]
 
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
