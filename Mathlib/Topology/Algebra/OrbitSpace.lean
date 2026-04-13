@@ -30,9 +30,8 @@ variable {M : Type*} [TopologicalSpace M]
 
 namespace MulAction
 
-/-- If a group `G` acts properly discontinuously on a topological space `M`,
-then the quotient map `Quotient.mk _ : M → M⧸G`
-is a covering map. -/
+/-- If a group `G` acts properly discontinuously on a topological space `M`, the quotient map
+`Quotient.mk _ : M → M⧸G` is a covering map. -/
 lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   IsQuotientCoveringMap.isCoveringMap (G := _) (f := _)
@@ -46,16 +45,14 @@ namespace QuotientMk
 
 open MulAction
 
-/-- If a group `G` acts properly discontinuously on a topological space `M`,
-then the quotient map `Quotient.mk : M → M⧸G`
-is a local homeomorphism. -/
+/-- If a group `G` acts properly discontinuously on a topological space `M`, the quotient map
+`Quotient.mk : M → M⧸G` is a local homeomorphism. -/
 lemma isLocalHomeomorph_of_properlyDiscontinuousSMul :
     IsLocalHomeomorph (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
 
 variable (G) in
-/-- A chosen local homeomorphism for the quotient map
-`Quotient.mk : M → M⧸G` at a point `p : M`. -/
+/-- A chosen local homeomorphism for the quotient map `Quotient.mk : M → M⧸G` at a point `p : M`. -/
 def localHomeomorphAt (p : M) : OpenPartialHomeomorph M (orbitRel.Quotient G M) :=
   Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
 
@@ -64,8 +61,7 @@ lemma mem_localHomeomorphAt_source {p : M} :
     p ∈ (localHomeomorphAt G p).source :=
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).1
 
-/-- The local homeomorphism `localHomeomorphAt p` coincides with
-`Quotient.mk : M → M⧸G`. -/
+/-- The local homeomorphism `localHomeomorphAt p` coincides with `Quotient.mk : M → M⧸G`. -/
 lemma localHomeomorphAt_eq_quotientMk {p : M} :
     localHomeomorphAt G p = (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).2.symm
@@ -78,8 +74,7 @@ lemma mem_localHomeomorphAt_target {p : M} :
   rw [localHomeomorphAt_eq_quotientMk]
 
 variable (G) in
-/-- A chosen local inverse for the quotient map
-`Quotient.mk : M → M⧸G` at a point `p : M`. -/
+/-- A chosen local inverse for the quotient map `Quotient.mk : M → M⧸G` at a point `p : M`. -/
 def localInverseAt (p : M) : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   (localHomeomorphAt G p).symm
 
@@ -88,9 +83,8 @@ lemma mem_localInverseAt_source {p : M} :
     ⟦p⟧ ∈ (localInverseAt G p).source := by
   simp [localInverseAt, mem_localHomeomorphAt_target]
 
-/-- If a point `k` lies on the source of `localHomeomorphAt p`
-and its class `⟦k⟧` lies on the source of `localInverseAt p`,
-then `localInverseAt p` sends `⟦k⟧` back to its representative `k`. -/
+/-- If a point `k` lies on the source of `localHomeomorphAt p` and its class `⟦k⟧` lies on the
+source of `localInverseAt p`, then `localInverseAt p` sends `⟦k⟧` back to its representative `k`. -/
 lemma localInverseAt_apply_other {p k : M}
     (h : k ∈ (localHomeomorphAt G p).source)
     (h' : ⟦k⟧ ∈ (localInverseAt G p).source) :
