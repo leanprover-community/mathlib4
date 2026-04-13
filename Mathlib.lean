@@ -52,7 +52,6 @@ public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.AlgebraicCard
-public import Mathlib.Algebra.ArithmeticGeometric
 public import Mathlib.Algebra.Azumaya.Basic
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.Algebra.Azumaya.Matrix
@@ -1952,7 +1951,6 @@ public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-public import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
@@ -2186,10 +2184,8 @@ public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.Analysis.NormedSpace.Alternating.Basic
 public import Mathlib.Analysis.NormedSpace.Alternating.Curry
 public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
-public import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 public import Mathlib.Analysis.NormedSpace.Connected
 public import Mathlib.Analysis.NormedSpace.ENormedSpace
-public import Mathlib.Analysis.NormedSpace.Extend
 public import Mathlib.Analysis.NormedSpace.Extr
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
@@ -2452,7 +2448,6 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-public import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Lax
@@ -2475,7 +2470,6 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
-public import Mathlib.CategoryTheory.Bicategory.Strict
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Yoneda
@@ -4081,7 +4075,6 @@ public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Nat.Pairing
 public import Mathlib.Data.Nat.Periodic
-public import Mathlib.Data.Nat.PowModTotient
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Prime.Factorial
@@ -4170,7 +4163,6 @@ public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Hom
-public import Mathlib.Data.Real.Irrational
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
@@ -4300,7 +4292,6 @@ public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.Data.ZMod.ValMinAbs
 public import Mathlib.Deprecated.Aliases
-public import Mathlib.Deprecated.Sort
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
@@ -4753,7 +4744,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -5054,7 +5044,6 @@ public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.LinearAlgebra.SesquilinearForm
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
@@ -5515,12 +5504,8 @@ public import Mathlib.NumberTheory.ClassNumber.FunctionField
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.NumberTheory.Cyclotomic.CyclotomicCharacter
 public import Mathlib.NumberTheory.Cyclotomic.Discriminant
-public import Mathlib.NumberTheory.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.Cyclotomic.Gal
-public import Mathlib.NumberTheory.Cyclotomic.PID
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.NumberTheory.Cyclotomic.Rat
-public import Mathlib.NumberTheory.Cyclotomic.Three
 public import Mathlib.NumberTheory.Dioph
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 public import Mathlib.NumberTheory.DiophantineApproximation.ContinuedFractions
@@ -5638,7 +5623,6 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCon
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.ClassNumber
-public import Mathlib.NumberTheory.NumberField.Completion
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
