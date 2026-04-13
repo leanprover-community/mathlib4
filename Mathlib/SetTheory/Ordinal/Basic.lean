@@ -374,12 +374,14 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
+@[deprecated type_le_iff (since := "2026-04-12")]
 def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.ToType` into `β.ToType`. -/
+@[deprecated type_lt_iff (since := "2026-04-12")]
 def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]

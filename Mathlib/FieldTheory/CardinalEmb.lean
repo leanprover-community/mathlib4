@@ -86,7 +86,6 @@ set_option quotPrecheck false
 local notation "ι" => (Module.rank F E).ord.ToType
 
 set_option backward.privateInPublic true in
-private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
