@@ -79,7 +79,7 @@ instance : RingInvoClass (RingInvo R) R where
   map_mul f := f.map_mul'
   involution f := f.involution'
 
-instance : CoeTC (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
+instance : CoeOut (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
 
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
