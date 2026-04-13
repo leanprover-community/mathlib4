@@ -237,6 +237,7 @@ variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) (v : Infinite
 namespace Completion
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+
 /-- Assume that `w.Completion` forms an algebra over `v.Completion` with continuous scalar action,
 such that `IsScalarTower K v.Completion w.Completion`.
 If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
@@ -291,7 +292,7 @@ variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Com
 
 theorem extensionEmbedding_liesOver_of_isReal (h : v.IsReal) :
     ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) :=
-  letI := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w v
+  let := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w v
 
 end LiesOver
 

@@ -317,6 +317,11 @@ theorem liesOver_iff {φ : L →+* ℂ} {ψ : K →+* ℂ} :
     ComplexEmbedding.LiesOver φ ψ ↔ φ.comp (algebraMap K L) = ψ :=
   ⟨fun _ ↦ LiesOver.over φ ψ, fun h ↦ ⟨h⟩⟩
 
+@[simp]
+theorem liesOver_apply {φ : L →+* ℂ} {ψ : K →+* ℂ} :
+    ComplexEmbedding.LiesOver φ ψ ↔ ∀ x, φ (algebraMap K L x) = ψ x := by
+  simp [liesOver_iff, RingHom.ext_iff]
+
 variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
