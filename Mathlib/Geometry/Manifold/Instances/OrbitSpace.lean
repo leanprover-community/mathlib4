@@ -34,9 +34,7 @@ The atlas is obtained by composing a local inverse of the projection map
 (from covering theory) with a chart of `M`
 -/
 
-@[expose] public section
-
-noncomputable section
+public noncomputable section
 
 open MulAction QuotientMk
 
