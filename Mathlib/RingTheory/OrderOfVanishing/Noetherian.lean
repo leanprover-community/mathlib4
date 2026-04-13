@@ -42,11 +42,8 @@ def ordMonoidHom : R⁰ →* Multiplicative ℕ where
   map_one' := by simp [OneMemClass.coe_one, isUnit_one, ord_of_isUnit]
   map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.2) (ord_ne_top y.2)]
 
-lemma ordMonoidHom_eq_ord (x : R⁰) : ((Nat.cast (Multiplicative.toAdd (ordMonoidHom x))) : ℕ∞) =
-  WithTop.some ((Ring.ord R x).toNat) := rfl
-
 @[simp]
-lemma ord_eq_ordMonoidHom (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
+lemma ordMonoidHom_eq_ord (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
   (ENat.coe_toNat (ord_ne_top x.2))
 
 @[simp]
@@ -76,7 +73,7 @@ lemma ord_le_iff {a b : R} (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDiv
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
-  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, ← ord_eq_ordMonoidHom]
+  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, ← ordMonoidHom_eq_ord]
 
 end NoetherianDimLEOne
 
