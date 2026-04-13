@@ -384,8 +384,7 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-@[no_expose]
-instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
+@[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
 @[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
