@@ -478,17 +478,16 @@ def unitAuxAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
 @[simps! inv_app hom_app]
 def unitAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     yonedaCollectionPresheaf A (restrictedYonedaObj η) ≅ F :=
-  NatIso.ofComponents (fun X => unitAuxAuxAux η X.unop) (by cat_disch)
+  NatIso.ofComponents (fun X => unitAuxAuxAux η X.unop)
 
 /-- Intermediate stage of assembling the unit. -/
-@[simps! hom]
+@[simps! hom_left]
 def unitAux (η : Over A) : (restrictedYoneda A ⋙ costructuredArrowPresheafToOver A).obj η ≅ η :=
-  Over.isoMk (unitAuxAux η.hom) (by cat_disch)
+  Over.isoMk (unitAuxAux η.hom)
 
 /-- The unit of the equivalence we're constructing. -/
-def unit (A : Cᵒᵖ ⥤ Type v) : 𝟭 (Over A) ≅
-    restrictedYoneda A ⋙ costructuredArrowPresheafToOver A :=
-  Iso.symm <| NatIso.ofComponents unitAux (by cat_disch)
+def unit (A : Cᵒᵖ ⥤ Type v) : 𝟭 (Over A) ≅ restrictedYoneda A ⋙ costructuredArrowPresheafToOver A :=
+  Iso.symm <| NatIso.ofComponents unitAux
 
 end unit
 

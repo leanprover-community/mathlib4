@@ -99,7 +99,6 @@ def coneOfConeForget : Cone F where
         ext
         apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -213,7 +212,6 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/

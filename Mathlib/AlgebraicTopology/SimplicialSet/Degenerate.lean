@@ -64,7 +64,6 @@ lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
   ⟨n, by lia, SimplexCategory.σ i, Set.mem_range_self x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
@@ -212,7 +211,6 @@ lemma unique_nonDegenerate_simplex (x : X _⦋n⦌) {m : ℕ}
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :

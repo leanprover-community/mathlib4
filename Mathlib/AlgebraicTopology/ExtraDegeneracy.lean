@@ -245,7 +245,6 @@ variable {C : Type*} [Category* C] (f : Arrow C)
   [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
   (S : SplitEpi f.hom)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The extra degeneracy map on the Čech nerve of a split epi. It is
 given on the `0`-projection by the given section of the split epi,
 and by shifting the indices on the other projections. -/

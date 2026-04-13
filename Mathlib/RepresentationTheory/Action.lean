@@ -81,7 +81,7 @@ variable (k G) in
 @[simps toLinearMap]
 def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.tensorUnit
     (Action (Type w) G))) where
-  __ := Finsupp.LinearEquiv.finsuppUnique k k PUnit|>.symm.toLinearMap
+  __ := Finsupp.LinearEquiv.finsuppUnique k k PUnit |>.symm.toLinearMap
   isIntertwining' g := by ext1; simp [linearize_single _]
 
 lemma ε_one : ε k G 1 = Finsupp.single PUnit.unit 1 := by
@@ -209,7 +209,7 @@ lemma assoc_comp_δ : ((assoc (linearize k G X) (linearize k G Y)
   simp [linearizeMap, δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
 
 lemma leftUnitor_δ (X : Action (Type u) G) : (lid k (linearize k G X)).symm.toIntertwiningMap =
-    (((η k G).rTensor (linearize k G X) ).comp (δ (𝟙_ (Action (Type u) G)) X)).comp
+    (((η k G).rTensor (linearize k G X)).comp (δ (𝟙_ (Action (Type u) G)) X)).comp
       (linearizeMap (λ_ X).inv) := by
   ext
   -- TODO : try not to `simp` with `δ` and `linearizeMap` directly here
