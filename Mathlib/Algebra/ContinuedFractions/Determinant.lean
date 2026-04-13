@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Lie.OfAssociative
 ## Summary
 
 We derive the so-called *determinant formula* for `GenContFract`:
-`Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ₊₁)`.
+`Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`.
 
 ## References
 
@@ -62,7 +62,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     }
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
-/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ₊₁)`. -/
+/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`. -/
 theorem determinant :
     g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1)
       = ∏ i ∈ Finset.range (n + 1), - (g.s.get? i).elim 0 Pair.a := by
