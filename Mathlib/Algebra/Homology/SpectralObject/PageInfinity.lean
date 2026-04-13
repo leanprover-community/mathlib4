@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
+import all Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
 /-!
 # The infinity page
@@ -312,9 +313,7 @@ lemma spectralSequence_edgeEpiStep_compatibility
     hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁', Iso.inv_hom_id_assoc,
     X.spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso data r r' hrr' hr
     _ pq _ rfl rfl i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂]
-  dsimp only [spectralSequenceHomologyData_right_H']
-  rw [Iso.inv_hom_id_assoc]
-  dsimp
+  simp
 
 lemma hasPageInfinityAt (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
     (n₀ n₂ : ℤ) (hn₀ : n₀ = data.deg pq - 1) (hn₂ : n₂ = data.deg pq + 1)
