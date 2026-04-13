@@ -6,6 +6,7 @@ Authors: Joël Riou, Fabian Odermatt
 module
 
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
+public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
 /-!
@@ -36,6 +37,7 @@ Brendan Seamus Murphy (with a different proof).
 universe v u w
 
 open AlgebraicTopology CategoryTheory Limits
+open scoped ContinuousMap
 
 namespace TopCat.Homotopy
 
@@ -50,14 +52,66 @@ noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R
       (((singularChainComplexFunctor C).obj R).map g) :=
   H.toSSet.singularChainComplexFunctorObjMap R
 
+variable [CategoryWithHomology C]
+
 open HomologicalComplex in
 /-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
 singular homology with coefficients in `R` (e.g. `R := ℤ` considered as
 an object of the category of abelian groups). -/
-lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
-    (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
-    homologyMap (((singularChainComplexFunctor C).obj R).map f) n =
-    homologyMap (((singularChainComplexFunctor C).obj R).map g) n :=
+lemma singularHomologyFunctor_obj_map_eq (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
+    (((singularHomologyFunctor C n).obj R)).map f =
+    (((singularHomologyFunctor C n).obj R)).map g :=
   (H.singularChainComplexFunctorObjMap R).homologyMap_eq n
 
+@[deprecated (since := "2026-04-01")]
+alias congr_homologyMap_singularChainComplexFunctor :=
+  singularHomologyFunctor_obj_map_eq
+
 end TopCat.Homotopy
+
+namespace AlgebraicTopology
+
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
+  {X Y : TopCat.{w}} {f g : X ⟶ Y} [CategoryWithHomology C]
+
+/-- A homotopy equivalence between topological spaces induces an isomorphism between the
+singular homology groups. -/
+@[simps] noncomputable
+def singularHomologyFunctorHomotopyEquiv (H : X ≃ₕ Y) (R : C) (n : ℕ) :
+    ((singularHomologyFunctor C n).obj R).obj X ≅ ((singularHomologyFunctor C n).obj R).obj Y where
+  hom := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.toFun)
+  inv := ((singularHomologyFunctor C n).obj R).map (TopCat.ofHom H.symm.toFun)
+  hom_inv_id := by
+    rw [← Functor.map_comp, ← TopCat.ofHom_comp,
+      TopCat.Homotopy.singularHomologyFunctor_obj_map_eq (g := 𝟙 X) (by exact H.left_inv.some)]
+    simp
+  inv_hom_id := by
+    rw [← Functor.map_comp, ← TopCat.ofHom_comp,
+      TopCat.Homotopy.singularHomologyFunctor_obj_map_eq (g := 𝟙 Y) (by exact H.right_inv.some)]
+    simp
+
+theorem isZero_singularHomologyFunctor_of_contractibleSpace
+    (X : TopCat.{w}) [ContractibleSpace X] (R : C) (n : ℕ) (hn : n ≠ 0) :
+    IsZero (((singularHomologyFunctor C n).obj R).obj X) := by
+  rw [(singularHomologyFunctorHomotopyEquiv (X := X) (Y := .of PUnit.{w + 1})
+    ((ContractibleSpace.hequiv X PUnit.{w + 1}).some) R n).isZero_iff]
+  exact isZero_singularHomologyFunctor_of_totallyDisconnectedSpace _ _ _ _ hn
+
+-- TODO: Relax to `PathConnectedSpace` when `n = 0`.
+instance (X : TopCat.{w}) [ContractibleSpace X] (R : C) (n : ℕ) :
+    IsIso (((singularHomologyFunctor C n).obj R).map (terminal.from X)) := by
+  convert (singularHomologyFunctorHomotopyEquiv (X := X) (Y := ⊤_ TopCat)
+    ((ContractibleSpace.hequiv X (⊤_ TopCat)).some) R n).isIso_hom
+  dsimp [singularHomologyFunctorHomotopyEquiv]
+  congr
+  exact terminal.hom_ext _ _
+
+-- TODO(@joelriou): relax to `PathConnectedSpace`.
+/-- The isomorphism `H₀(X, R) ≅ R` for a contractible space `X`. -/
+noncomputable def singularHomologyFunctorZeroOfContractibleSpace
+    (X : TopCat.{w}) [ContractibleSpace X] (R : C) :
+    ((singularHomologyFunctor C 0).obj R).obj X ≅ R :=
+    asIso (((singularHomologyFunctor C 0).obj R).map (terminal.from X)) ≪≫
+    singularHomologyFunctorZeroOfTotallyDisconnectedSpace _ _ _ ≪≫ coproductUniqueIso _
+
+end AlgebraicTopology

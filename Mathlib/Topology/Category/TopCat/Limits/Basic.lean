@@ -321,6 +321,10 @@ def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
 def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
   terminalIsTerminal.uniqueUpToIso isTerminalPUnit
 
+noncomputable
+instance : Unique (⊤_ TopCat.{u}) :=
+  (homeoOfIso terminalIsoPUnit).toEquiv.symm.uniqueCongr inferInstance
+
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
