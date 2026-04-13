@@ -651,15 +651,19 @@ def isPrivateUseAreaChar (c : Char) : Bool :=
 
 /-!
 Ensure parsing back error messages in `parse?_errorContext` works.
+
+**These tests guard against changes in the error message.**
+Changes to the error message may mean the indices in `parse?_errorContext` need to be adjusted
 -/
 
--- These test guard against changes in the error message.
--- Changes to the error message mean the indices in `parse?_errorContext`
--- need to be adjusted
-
+-- This tests if the offending character appears in the error message at the expected position.
+-- This position is also used by `parse?_errorContext`
+-- If the error message is changed, the index used there and also here will also need to change.
+-- Since `parse?_errorContext` is also tested below, this test is strictly speaking redundant.
+-- It can be used to find the correct index.
 /-- info: some "'X'" -/
 #guard_msgs in
-#eval (StyleError.errorMessage (.unwantedUnicode 'X') |>.splitToList (· == ' '))[7]?
+#eval (StyleError.errorMessage (.unwantedUnicode 'X') |>.splitToList (· == ' '))[12]?
 
 /-- info: some "Missing" -/
 #guard_msgs in
@@ -784,8 +788,6 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
   error := .unicodeVariant "\u271d\uFE0F" none,
   lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
 
-set_option linter.unusedTactic false in
-set_option linter.flexible false in
 /-- An error in this proof could mean that `replaceDisallowed` contains a character
 which is not disallowed by `isAllowedCharacter`. -/
 private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :

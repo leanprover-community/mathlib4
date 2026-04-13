@@ -227,7 +227,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           -- extract the offending unicode character from `errorMessage`
           -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
           -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
-          let str ← errorMessage[7]?
+          let str ← errorMessage[12]?
           let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
           StyleError.unwantedUnicode c
         | "ERR_UNICODE_VARIANT" => do
