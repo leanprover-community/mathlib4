@@ -252,6 +252,10 @@ theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
 end ModEq
 
 @[simp]
+theorem modEq_two_abs : |a| ≡ a [ZMOD 2] := by
+  grind [Int.ModEq]
+
+@[simp]
 theorem modulus_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]
 
 @[simp]
