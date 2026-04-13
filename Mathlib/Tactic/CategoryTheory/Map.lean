@@ -62,7 +62,8 @@ Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produc
 `map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D` (using two
 fresh level parameters per generated lemma).
 
-Returns the target category's level names for `levelParams`, after `levelMVarToParam` on the rest.
+Returns the target category's object-level and morphism-level names (`uD`, then `vD`) so the caller
+can place them in the generated declaration's `levelParams` in its preferred order.
 -/
 def mapExpr (pf : Expr) : MetaM (Expr × Array Name) := do
   let uD ← mkFreshUserName `u
@@ -112,7 +113,9 @@ initialize registerBuiltinAttribute {
         let value := value.instantiateLevelParams levels levelMVars
         let (pf, tgtLevelNames) ← mapExpr value
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
-        let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
+        let outLevels := match r.newParamNames.toList, tgtLevelNames.toList with
+          | [srcObj, srcHom], [tgtObj, tgtHom] => [srcHom, tgtHom, srcObj, tgtObj]
+          | _, _ => tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
   | _ => throwUnsupportedSyntax }
 
