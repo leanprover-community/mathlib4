@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
---public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 
 /-!
 # Convergence
@@ -35,16 +34,17 @@ noncomputable def abutment (n : ℤ) : C :=
     (X.H n).obj (mk₁ (homOfLE' ⊥ ⊤ bot_le))
 
 noncomputable def abutmentFiltration (n : ℤ) (j : ι) : C :=
-  X.opcycles n (homOfLE' ⊥ j bot_le) (homOfLE' j ⊤ le_top)
+  X.opcycles (homOfLE' ⊥ j bot_le) (homOfLE' j ⊤ le_top) n
 
 noncomputable def abutmentFiltrationι (n : ℤ) (j : ι) :
     X.abutmentFiltration n j ⟶ X.abutment n :=
-  X.fromOpcycles _ _ _ _ (by simp)
+  X.fromOpcycles _ _ _ (by simp) _
 
 noncomputable def πAbutmentFiltration (n : ℤ) (j : ι) :
     (X.H n).obj (mk₁ (homOfLE' ⊥ j bot_le)) ⟶ X.abutmentFiltration n j :=
-  X.pOpcycles n _ _
+  X.pOpcycles _ _ n
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) (j : ι) : Epi (X.πAbutmentFiltration n j) := by
   dsimp [πAbutmentFiltration]
   infer_instance
@@ -57,8 +57,9 @@ noncomputable def abutmentFiltrationToPageInfinity
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
     (i j : ι) (hij : i ≤ j) :
     X.abutmentFiltration n₁ j ⟶ X.pageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij :=
-  X.opcyclesToE _ _ _ _ _ _ _ _ _ (by simp)
+  X.opcyclesToE _ _ _ _ (by simp) _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i j : ι) (hij : i ≤ j) :
     Epi (X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij) := by
   dsimp [abutmentFiltrationToPageInfinity]
@@ -67,7 +68,7 @@ instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationι_π (n : ℤ) (j : ι) :
     X.abutmentFiltrationι n j ≫ X.abutmentπ n j = 0 :=
-  (X.kernelSequenceOpcycles n _ _ _ rfl).zero
+  (X.kernelSequenceOpcycles  _ _ _ rfl n).zero
 
 @[reassoc (attr := simp)]
 lemma abutmentπ_map (n : ℤ) (j₁ j₂ : ι)
@@ -75,22 +76,23 @@ lemma abutmentπ_map (n : ℤ) (j₁ j₂ : ι)
     X.abutmentπ n j₁ ≫ (X.H n).map φ = X.abutmentπ n j₂ :=
   ((X.H n).map_comp _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) (j : ι) : Mono (X.abutmentFiltrationι n j) := by
   dsimp [abutmentFiltrationι]
   infer_instance
 
 noncomputable def abutmentFiltrationMap (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
     X.abutmentFiltration n j₁ ⟶ X.abutmentFiltration n j₂ :=
-  X.opcyclesMap _ _ _ _ _ (homMk₂ (𝟙 _) (homOfLE h) (𝟙 _))
+  X.opcyclesMap _ _ _ _ (by exact homMk₂ (𝟙 _) (homOfLE h) (𝟙 _)) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationMap_ι (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
     X.abutmentFiltrationMap n j₁ j₂ h ≫ X.abutmentFiltrationι n j₂ =
       X.abutmentFiltrationι n j₁ := by
   dsimp [abutmentFiltrationMap, abutmentFiltrationι]
   rw [← cancel_epi (X.pOpcycles ..), p_fromOpcycles,
-    p_opcyclesMap_assoc _ _ _ _ _ _ _ (by exact homMk₁ (𝟙 _) (homOfLE h)) (by cat_disch) _,
-    p_fromOpcycles, ← Functor.map_comp]
+    p_opcyclesMap_assoc .., p_fromOpcycles, ← Functor.map_comp]
   rfl
 
 @[simps]
