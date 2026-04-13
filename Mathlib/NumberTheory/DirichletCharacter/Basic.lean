@@ -341,21 +341,29 @@ theorem mem_conductorSet_iff_conductor_dvd {d : ℕ} [NeZero n] (hd : d ∣ n) :
     d ∈ χ.conductorSet ↔ χ.conductor ∣ d :=
   ⟨conductor_dvd_of_mem_conductorSet χ, fun h ↦ χ.factorsThrough_conductor.mono χ h hd⟩
 
-private theorem conductor_inv_aux (χ : DirichletCharacter R n) :
-    χ⁻¹.conductor ∣ χ.conductor := by
-  obtain hn | hn := eq_or_ne n 0
-  · rw [conductor_eq_zero_iff_level_eq_zero.mpr hn, conductor_eq_zero_iff_level_eq_zero.mpr hn]
-  have : NeZero n := ⟨hn⟩
+lemma conductor_pow_dvd (χ : DirichletCharacter R n) (m : ℕ) :
+    conductor (χ ^ m) ∣ conductor χ := by
+  obtain rfl | hn := eq_zero_or_neZero n
+  · simp [conductor_eq_zero_iff_level_eq_zero.mpr]
   rw [← mem_conductorSet_iff_conductor_dvd _ χ.conductor_dvd_level, mem_conductorSet_iff]
-  refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter⁻¹, ?_⟩
-  rw [MonoidHom.map_inv, changeLevel_primitiveCharacter]
+  refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter ^ m, ?_⟩
+  rw [MonoidHom.map_pow, changeLevel_primitiveCharacter]
+
+lemma conductor_zpow_dvd (χ : DirichletCharacter R n) (m : ℤ) :
+    conductor (χ ^ m) ∣ conductor χ := by
+  obtain rfl | hn := eq_zero_or_neZero n
+  · simp [conductor_eq_zero_iff_level_eq_zero.mpr]
+  rw [← mem_conductorSet_iff_conductor_dvd _ χ.conductor_dvd_level, mem_conductorSet_iff]
+  refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter ^ m, ?_⟩
+  rw [MonoidHom.map_zpow, changeLevel_primitiveCharacter]
 
 /-- The conductor of χ⁻¹ equals the conductor of χ. -/
 theorem conductor_inv (χ : DirichletCharacter R n) :
     χ⁻¹.conductor = χ.conductor := by
-  refine dvd_antisymm χ.conductor_inv_aux ?_
-  convert conductor_inv_aux χ⁻¹
-  rw [inv_inv]
+  rw [← zpow_neg_one]
+  refine dvd_antisymm (conductor_zpow_dvd ..) ?_
+  nth_rewrite 1 [← inv_inv χ, ← zpow_neg_one, ← zpow_neg_one]
+  exact conductor_zpow_dvd ..
 
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
@@ -378,8 +386,10 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
   primitiveCharacter_isPrimitive _
 
 /-- The conductor of `χ * ψ` divides the lcm of the conductors of `χ` and `ψ`. -/
-theorem conductor_mul_dvd_lcm_conductor [NeZero n] (χ ψ : DirichletCharacter R n) :
+theorem conductor_mul_dvd_lcm_conductor (χ ψ : DirichletCharacter R n) :
     (χ * ψ).conductor ∣ χ.conductor.lcm ψ.conductor := by
+  obtain rfl | hn := eq_zero_or_neZero n
+  · simp [conductor_eq_zero_iff_level_eq_zero.mpr]
   have h := Nat.lcm_dvd χ.conductor_dvd_level ψ.conductor_dvd_level
   rw [← mem_conductorSet_iff_conductor_dvd _ h, mem_conductorSet_iff]
   refine ⟨h, χ.primitiveCharacter.mul ψ.primitiveCharacter, ?_⟩
