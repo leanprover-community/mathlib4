@@ -215,7 +215,7 @@ instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget 
     (fun {_} {x} s s' => by
       use mk (x.hom ≫ IsFiltered.coeqHom s s')
       use homMk (IsFiltered.coeqHom s s') (by simp)
-      simp only [forget_obj, id_obj, mk_right, forget_map, homMk_right]
+      simp only [forget_obj, mk_right, forget_map, homMk_right]
       rw [IsFiltered.coeq_condition])
 
 /-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
