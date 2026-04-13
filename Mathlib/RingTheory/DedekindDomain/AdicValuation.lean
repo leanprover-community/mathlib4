@@ -333,7 +333,7 @@ theorem valuation_lt_one_iff_mem (r : R) :
   rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_mem r
 
 @[simp]
-theorem valuation_eq_one_iff_notMem (r : R) :
+theorem valuation_eq_one_iff_notMem {r : R} :
     v.valuation K (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
   rw [← HeightOneSpectrum.valuation_lt_one_iff_mem (K := K), le_antisymm_iff]
   simp [HeightOneSpectrum.valuation_le_one]
