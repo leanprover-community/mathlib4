@@ -42,7 +42,8 @@ def StructuredArrow (S : D) (T : C ⥤ D) :=
 
 /-- The type of morphisms in the category `StructuredArrow`. -/
 protected def StructuredArrow.Hom {S : D} {T : C ⥤ D}
-    (f g : StructuredArrow S T) := CommaMorphism f g
+    (f g : StructuredArrow S T) : Type v₁ :=
+  CommaMorphism f g
 
 instance {S : D} {T : C ⥤ D} : Category (StructuredArrow S T) where
   Hom := StructuredArrow.Hom
