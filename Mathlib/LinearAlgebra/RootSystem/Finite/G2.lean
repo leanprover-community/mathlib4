@@ -122,7 +122,7 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
     lia
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
-  push_neg
+  push Not
   refine ⟨k, l, ?_⟩
   have aux := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed k l
   simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
