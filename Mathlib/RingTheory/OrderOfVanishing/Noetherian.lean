@@ -76,7 +76,7 @@ lemma ord_le_iff {a b : R} (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDiv
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
-  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, ← ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
+  simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, ← ord_eq_ordMonoidHom]
 
 end NoetherianDimLEOne
 
@@ -209,7 +209,7 @@ open IsDedekindDomain HeightOneSpectrum
 The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
 unit `x`.
 -/
-lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing (x : R) :
+lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
 simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
