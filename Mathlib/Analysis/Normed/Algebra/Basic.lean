@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 
@@ -34,7 +34,6 @@ namespace IntermediateField
 
 variable {K L : Type*} [NontriviallyNormedField K] [NormedField L] [NormedAlgebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : IntermediateField K L) : NontriviallyNormedField F where
   __ := SubfieldClass.toNormedField F
   non_trivial := by

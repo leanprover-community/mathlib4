@@ -227,8 +227,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  norm_num
-  exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -397,12 +396,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       use ((z - l) / (u - l))
       constructor
       · norm_cast
-        rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp only [sub_re, hz₁, ofReal_re, sub_im, ofReal_im, sub_zero, ofReal_sub, sub_self,
-          mul_zero, zero_div, add_zero]
-        rw [div_mul_eq_div_div_swap, mul_div_assoc,
-          div_self (by norm_cast; linarith),
-          mul_one, div_self (by norm_cast; linarith)]
+        grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp only [one_mul, add_sub_cancel, hz₂]
   rw [this]
