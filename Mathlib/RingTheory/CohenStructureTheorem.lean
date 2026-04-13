@@ -221,8 +221,8 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
       let : Field (R ⧸ Ideal.span {(p : R) ^ 1}) := Ideal.Quotient.field _
       have : Algebra.IsTranscendentalSeparable (ℤ ⧸ Ideal.span {(p : ℤ) ^ 1})
         (R ⧸ Ideal.span {(p : R) ^ 1}) :=
-        Algebra.isTranscendentalSeparable_of_perfectField _
-      exact Algebra.FormallySmooth.of_isTranscendentalSeparable
+        Algebra.isTranscendentalSeparable_of_perfectField _ _
+      exact Algebra.FormallySmooth.of_isTranscendentalSeparable _ _
     · have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
       have le' : Ideal.span {(p ^ (n + 1) : R)} ≤ Ideal.span {(p ^ n : R)} :=
@@ -267,9 +267,9 @@ lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     ∃ (f : ResidueField R →+* R), (IsLocalRing.residue R).comp f = RingHom.id _ := by
   let : Algebra ℚ (ResidueField R) := DivisionRing.toRatAlgebra
   have : Algebra.IsTranscendentalSeparable ℚ (ResidueField R) :=
-    Algebra.isTranscendentalSeparable_of_perfectField ℚ
+    Algebra.isTranscendentalSeparable_of_perfectField _ _
   have : Algebra.FormallySmooth ℚ (ResidueField R) :=
-    Algebra.FormallySmooth.of_isTranscendentalSeparable
+    Algebra.FormallySmooth.of_isTranscendentalSeparable _ _
   obtain ⟨alg⟩ := (EqualCharZero.nonempty_algebraRat_iff R).mpr (fun I ne ↦
     let tores : (R ⧸ I) →+* (ResidueField R) := Ideal.Quotient.factor (le_maximalIdeal ne)
     tores.charZero)
