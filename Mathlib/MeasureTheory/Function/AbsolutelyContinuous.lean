@@ -339,6 +339,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
+    -- TODO: linter false positive!
     convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
