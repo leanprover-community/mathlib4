@@ -88,6 +88,36 @@ instance : LawfulXor USize where
   xor_self _ := USize.xor_self
   xor_zero _ := USize.xor_zero
 
+instance : LawfulXor Int8 where
+  xor_assoc := Int8.xor_assoc
+  xor_comm := Int8.xor_comm
+  xor_self _ := Int8.xor_self
+  xor_zero _ := Int8.xor_zero
+
+instance : LawfulXor Int16 where
+  xor_assoc := Int16.xor_assoc
+  xor_comm := Int16.xor_comm
+  xor_self _ := Int16.xor_self
+  xor_zero _ := Int16.xor_zero
+
+instance : LawfulXor Int32 where
+  xor_assoc := Int32.xor_assoc
+  xor_comm := Int32.xor_comm
+  xor_self _ := Int32.xor_self
+  xor_zero _ := Int32.xor_zero
+
+instance : LawfulXor Int64 where
+  xor_assoc := Int64.xor_assoc
+  xor_comm := Int64.xor_comm
+  xor_self _ := Int64.xor_self
+  xor_zero _ := Int64.xor_zero
+
+instance : LawfulXor ISize where
+  xor_assoc := ISize.xor_assoc
+  xor_comm := ISize.xor_comm
+  xor_self _ := ISize.xor_self
+  xor_zero _ := ISize.xor_zero
+
 lemma xor_right_involutive (a : α) : Function.Involutive (a ^^^ ·) := xor_cancel_left a
 
 lemma xor_left_involutive (a : α) : Function.Involutive (· ^^^ a) := (xor_cancel_right · a)
