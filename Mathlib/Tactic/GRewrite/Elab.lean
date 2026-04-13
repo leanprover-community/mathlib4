@@ -82,7 +82,7 @@ To rewrite only in the `n`-th position, use `nth_grewrite n`.
 This is useful when `grewrite` tries to rewrite in a position that is not valid for the given
 relation.
 `apply_rewrite [e₁, ..., eₙ]` is a shorthand for `grewrite +implicationHyp [e₁, ..., eₙ]`: it
-interprets `· → ·` as a relation instead of adding side conditions.
+interprets `· → ·` as a relation instead of adding the hypothesis as a side condition.
 
 * `grewrite [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing
   occurrences of `b` with `a`.
@@ -126,7 +126,7 @@ A future version of `grw` may get special support for making better use of stric
 To rewrite only in the `n`-th position, use `nth_grw n`.
 This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
 `apply_rw [rules]` is a shorthand for `grw +implicationHyp [rules]`: it interprets `· → ·` as a
-relation instead of adding side conditions.
+relation instead of adding the hypothesis as a side condition.
 
 * `grw [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing occurrences
   of `b` with `a`.
