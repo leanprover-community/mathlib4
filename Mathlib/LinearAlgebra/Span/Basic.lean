@@ -506,10 +506,8 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     _ = map (-LinearMap.id) (span R s) := (map_span (-LinearMap.id) _).symm
     _ = span R s := by simp
 
-instance : IsModularLattice (Submodule R M) where
-  sup_inf_le_assoc_of_le _ _ hxy _ _ := by
-    rwa [← sup_inf_assoc_of_le_of_neg_le _ hxy]
-    rwa [neg_eq_self]
+instance : IsModularLattice (Submodule R M) := ⟨
+  fun _ _ hxy _ _ => by rwa [← sup_inf_assoc_of_le_of_neg_le _ hxy (by simpa)]⟩
 
 lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
     (h₁ : IsCompl q r) (h₂ : q ≤ p) :
