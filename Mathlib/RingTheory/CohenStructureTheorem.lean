@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
@@ -467,8 +468,15 @@ end
 section fromPR
 
 instance MvPowerSeries.isAdicComplete (σ : Type*) [Finite σ] :
-    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) :=
-  sorry
+    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
+  have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
+    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
+    simp_rw [Ideal.map_span, ← Set.range_comp]
+    congr 2; ext1
+    simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
+  rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
+    IsAdicComplete.map_algebraMap_iff]
+  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
 
 end fromPR
 
