@@ -312,6 +312,7 @@ Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a sc
 `IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
 isomorphism `Submodule S M ≃o Submodule R M`.
 -/
+@[simps apply symm_apply]
 def orderIsoOfAlgebraMapSurjective
     {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
     [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
@@ -321,19 +322,6 @@ def orderIsoOfAlgebraMapSurjective
   left_inv _ := rfl
   right_inv _ := rfl
   map_rel_iff' := .rfl
-
-@[simp]
-lemma orderIsoOfAlgebraMapSurjective_apply {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
-    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) (N : Submodule S M) :
-    orderIsoOfAlgebraMapSurjective h N = N.restrictScalars R := rfl
-
-@[simp]
-lemma orderIsoOfAlgebraMapSurjective_inv_apply {R S M : Type*} [CommRing R] [Ring S]
-    [AddCommGroup M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) (N : Submodule R M) :
-    (orderIsoOfAlgebraMapSurjective h).invFun N =
-    ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩ := rfl
 
 end Submodule
 
