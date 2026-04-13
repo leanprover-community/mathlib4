@@ -69,7 +69,8 @@ def Reorder.permuteUniv {α} (r : Reorder) (us : List α) : List α :=
   else us
 
 /-- Return `true` if the reorder doesn't do anything. -/
-def Reorder.isEmpty (r : Reorder) : Bool := r matches {}
+def Reorder.isEmpty : Reorder → Bool
+  | { perm, argReorders } => perm.isEmpty && argReorders.isEmpty
 
 /-- Permute an array of arguments using the given reorder. -/
 def Reorder.permute! {α} [Inhabited α] (r : Reorder) : Array α → Array α :=

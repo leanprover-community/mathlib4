@@ -180,8 +180,7 @@ theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexS
     Sigma.ι (summand K Δ) A ≫ map K θ =
       Termwise.mapMono K i ≫ Sigma.ι (summand K Δ') (Splitting.IndexSet.mk e) := by
   simp only [map, colimit.ι_desc, Cofan.mk_ι_app]
-  have h := SimplexCategory.image_eq fac
-  subst h
+  obtain rfl := SimplexCategory.image_eq fac
   congr
   · exact SimplexCategory.image_ι_eq fac
   · dsimp only [SimplicialObject.Splitting.IndexSet.pull]

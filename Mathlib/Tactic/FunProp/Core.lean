@@ -128,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -630,7 +631,7 @@ mutual
       (fun _ => do pure s!"{← ppExpr e}") do
 
     -- check cache for successful goals
-    if let some { expr := _, proof? := some proof } := (← get).cache.find? e then
+    if let some { expr := _, proof? := some proof, .. } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
       return some { proof := proof }
     else if (← get).failureCache.contains e then

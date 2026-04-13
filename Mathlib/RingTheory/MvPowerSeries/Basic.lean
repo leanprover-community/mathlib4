@@ -93,32 +93,32 @@ open Finsupp
 variable {σ R : Type*}
 
 instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
-  ⟨fun _ => default⟩
+  inferInstanceAs <| Inhabited ((σ →₀ ℕ) → R)
 
 instance [Zero R] : Zero (MvPowerSeries σ R) :=
-  Pi.instZero
+  inferInstanceAs <| Zero ((σ →₀ ℕ) → R)
 
 instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
-  Pi.addMonoid
+  inferInstanceAs <| AddMonoid ((σ →₀ ℕ) → R)
 
 instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
-  Pi.addGroup
+  inferInstanceAs <| AddGroup ((σ →₀ ℕ) → R)
 
 instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid ((σ →₀ ℕ) → R)
 
 instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup ((σ →₀ ℕ) → R)
 
 instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
-  Function.nontrivial
+  inferInstanceAs <| Nontrivial ((σ →₀ ℕ) → R)
 
 instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R ((σ →₀ ℕ) → A)
 
 instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower R S ((σ →₀ ℕ) → A)
 
 section Semiring
 
@@ -207,11 +207,10 @@ theorem coeff_zero_one : coeff (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
 theorem monomial_zero_one : monomial (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 
-instance : AddMonoidWithOne (MvPowerSeries σ R) :=
-  { show AddMonoid (MvPowerSeries σ R) by infer_instance with
-    natCast := fun n => monomial 0 n
-    natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
+instance : AddMonoidWithOne (MvPowerSeries σ R) where
+  natCast := fun n => monomial 0 n
+  natCast_zero := by simp [Nat.cast]
+  natCast_succ := by simp [Nat.cast, monomial_zero_one]
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
@@ -291,35 +290,27 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 
-instance : Semiring (MvPowerSeries σ R) :=
-  { (inferInstance : AddMonoidWithOne (MvPowerSeries σ R)),
-    (inferInstance : Mul (MvPowerSeries σ R)),
-    (inferInstance : AddCommMonoid (MvPowerSeries σ R)) with
-    mul_one := MvPowerSeries.mul_one
-    one_mul := MvPowerSeries.one_mul
-    mul_assoc := MvPowerSeries.mul_assoc
-    mul_zero := MvPowerSeries.mul_zero
-    zero_mul := MvPowerSeries.zero_mul
-    left_distrib := MvPowerSeries.mul_add
-    right_distrib := MvPowerSeries.add_mul }
+instance : Semiring (MvPowerSeries σ R) where
+  mul_one := MvPowerSeries.mul_one
+  one_mul := MvPowerSeries.one_mul
+  mul_assoc := MvPowerSeries.mul_assoc
+  mul_zero := MvPowerSeries.mul_zero
+  zero_mul := MvPowerSeries.zero_mul
+  left_distrib := MvPowerSeries.mul_add
+  right_distrib := MvPowerSeries.add_mul
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
-  { show Semiring (MvPowerSeries σ R) by infer_instance with
-    mul_comm := fun φ ψ =>
-      ext fun n => by
-        classical
-        simpa only [coeff_mul, mul_comm] using
-          sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ }
+instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
+  mul_comm := fun φ ψ =>
+    ext fun n => by
+      classical
+      simpa only [coeff_mul, mul_comm] using
+        sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ
 
-instance [Ring R] : Ring (MvPowerSeries σ R) :=
-  { (inferInstance : Semiring (MvPowerSeries σ R)),
-    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
+instance [Ring R] : Ring (MvPowerSeries σ R) where
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
-  { (inferInstance : CommSemiring (MvPowerSeries σ R)),
-    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
+instance [CommRing R] : CommRing (MvPowerSeries σ R) where
 
 section Semiring
 

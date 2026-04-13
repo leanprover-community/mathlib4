@@ -35,7 +35,6 @@ open Polynomial TensorProduct PrimeSpectrum
 
 variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/
 lemma isNilpotent_tensor_residueField_iff
@@ -46,13 +45,16 @@ lemma isNilpotent_tensor_residueField_iff
   · have := (algebraMap R (A ⊗[R] I.ResidueField)).codomain_trivial
     simp [Subsingleton.elim I ⊤, Subsingleton.elim (f ⊗ₜ[R] (1 : I.ResidueField)) 0]
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
-    rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
+    rw [Module.finrank_tensorProduct]
+    erw [Module.finrank_self]
+    rw [one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
     LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  simp_rw [this, ← ((LinearMap.mul R A) f).charpoly_natDegree]
+  erw [this]
+  simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
     replace e := congr(($e).coeff i)
@@ -105,7 +107,6 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     ext a
     exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A`. -/
@@ -197,7 +198,6 @@ namespace MvPolynomial
 
 variable {σ : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   classical

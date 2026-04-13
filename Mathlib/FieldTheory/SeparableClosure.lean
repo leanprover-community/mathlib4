@@ -370,6 +370,7 @@ end Field
 
 namespace IntermediateField
 
+set_option maxHeartbeats 800000 in -- This blows up after leanprover/lean4#12897
 /-- In a finitely generated field extension, there exists a maximal
 separably generated field extension. -/
 lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure

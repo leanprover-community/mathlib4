@@ -9,11 +9,10 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-13132"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.92-pre1" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets not up-to-date. \
-    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
-    If this does not work, report your issue on the Lean Zulip."
+    "ProofWidgets failed to reuse pre-built JS code. \
+    Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require plausible from git "https://github.com/Kha/plausible" @ "push-nuzuuroszpvz"
@@ -122,6 +121,10 @@ lean_exe «lint-style» where
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
+/-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
+lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
 
 lean_exe mathlib_test_executable where

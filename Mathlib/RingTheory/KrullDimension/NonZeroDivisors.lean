@@ -76,7 +76,6 @@ lemma ringKrullDim_mvPolynomial_of_isEmpty (σ : Type*) [IsEmpty σ] :
     ringKrullDim (MvPolynomial σ R) = ringKrullDim R :=
   ringKrullDim_eq_of_ringEquiv (isEmptyRingEquiv _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite σ] :
     ringKrullDim R + Nat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by

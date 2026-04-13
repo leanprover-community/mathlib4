@@ -284,7 +284,6 @@ to the approximating linear map.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at most `m` for any `m > det A`. -/
 theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -321,7 +320,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I
     exact (H.and self_mem_nhdsWithin).exists
-  have : Iio (⟨ε, εpos.le⟩ : ℝ≥0) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
+  have : Iio (.mk ε εpos.le) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
   filter_upwards [this]
   -- fix a function `f` which is close enough to `A`.
   intro δ hδ s f hf
@@ -390,6 +389,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   rw [add_zero] at L
   exact ge_of_tendsto L J
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at least `m` for any `m < det A`. -/
 theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -596,6 +596,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
       exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
     _ = 0 := by simp only [tsum_zero, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of **Sard's lemma** in fixed dimension: given a differentiable function from `E`
 to `E` and a set where the differential is not invertible, then the image of this set has
 zero measure. Here, we give an auxiliary statement towards this result. -/
@@ -803,6 +804,7 @@ directions, first up to controlled errors and then letting these errors tend to 
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) {ε : ℝ≥0} (εpos : 0 < ε) :
     μ (f '' s) ≤ (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s := by

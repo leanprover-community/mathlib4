@@ -91,14 +91,9 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       let argExpectedType ← instantiateMVars mvarDecl.type
       let arg := args[i]!
       if ← isProp argExpectedType then
-        let actualType ← inferType arg
-        if ← withDefault <| isDefEq argExpectedType actualType then
-          if ← withTransparency .instances <| isDefEq argExpectedType actualType then
-            mvarId.assign arg
-          else
-            -- Wrap in an aux theorem if the types differ at instances transparency,
-            -- indicating a binder type mismatch that needs fixing.
-            mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
+        -- For proofs, create an auxiliary theorem of the expected type.
+        if ← withDefault <| isDefEq argExpectedType (← inferType arg) then
+          mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
       -- Recurse into instance arguments of the constructor

@@ -634,10 +634,10 @@ namespace Conv
 open Conv
 
 @[inherit_doc depRewriteSeq]
-syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq : conv
 
 @[inherit_doc depRwSeq]
-syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRw) "rw!" optConfig rwRuleSeq : conv
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -655,28 +655,18 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
     updateLhs r.eNew r.eqProof
     changeLhs (← withTransparency config.castTransparency
-      (withMainContext <| cleanupCasts (← getMainTarget)))
+      (withMainContext <| cleanupCasts (← getLhs)))
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
 @[tactic depRewrite, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (DepRewrite.depRewriteLocalDecl term symm · cfg)
-      (depRewriteTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRewriteTarget term symm cfg
 
 @[tactic depRw, inherit_doc depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (depRwLocalDecl term symm · cfg)
-      (depRwTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRwTarget term symm cfg
 
 end Conv
 end Mathlib.Tactic.DepRewrite

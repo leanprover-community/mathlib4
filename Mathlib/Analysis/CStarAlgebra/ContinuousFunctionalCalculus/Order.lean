@@ -63,7 +63,6 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
     exact continuous_subtype_val.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -117,7 +116,6 @@ lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_inr {a : A} : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
   by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff] at ha
   · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
@@ -290,6 +288,7 @@ lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by c
   norm_num
   exact rpow_zero _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a unital C⋆-algebra, if `a` is strictly positive, and `a ≤ b`, then `b` is
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
@@ -411,6 +410,17 @@ lemma _root_.isStrictlyPositive_add {a b : A}
     IsStrictlyPositive (a + b) := by
   grind [IsStrictlyPositive.add_nonneg, IsStrictlyPositive.nonneg_add]
 
+lemma antitoneOn_ringInverse : AntitoneOn Ring.inverse {a : A | IsStrictlyPositive a} := by
+  intro a (apos : IsStrictlyPositive a) b (bpos : IsStrictlyPositive b) hab
+  rw [Ring.inverse_of_isUnit (by grind), Ring.inverse_of_isUnit (by grind)]
+  exact CStarAlgebra.inv_le_inv (Units.isStrictlyPositive_iff.mp apos) hab
+
+open Ring in
+@[gcongr]
+lemma ringInverse_le_ringInverse {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
+    b⁻¹ʳ ≤ a⁻¹ʳ :=
+  antitoneOn_ringInverse ha (IsStrictlyPositive.of_le ha hab) hab
+
 end CStarAlgebra
 
 end Inv
@@ -423,14 +433,12 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 namespace CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
@@ -478,7 +486,6 @@ lemma star_right_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cf
 @[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul' :=
   star_right_conjugate_le_norm_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
@@ -500,7 +507,6 @@ section Icc
 
 open Unitization Set Metric
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
@@ -520,7 +526,6 @@ end Icc
 
 end CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization CFC in
 lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
     (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by

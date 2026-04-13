@@ -33,8 +33,10 @@ import Mathlib.Init
 proof_wanted please_prove_this : True
 
 -- Guard against the shake tool modifying our imports
-/-- info: [public import Init, import Mathlib.Init] -/
+/-- info: [public import Init, public meta import Init, import Mathlib.Init] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
 
 theorem test_type_star (α : Type*) : α = α := rfl
+
+lemma test_lemma : True := trivial

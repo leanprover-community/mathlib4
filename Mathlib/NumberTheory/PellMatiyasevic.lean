@@ -188,13 +188,9 @@ def pellZd (n : ℕ) : ℤ√(d a1) :=
 theorem re_pellZd (n : ℕ) : (pellZd a1 n).re = xn a1 n :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias pellZd_re := re_pellZd
-
 @[simp]
 theorem im_pellZd (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias pellZd_im := im_pellZd
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

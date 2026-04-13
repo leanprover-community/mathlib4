@@ -150,7 +150,7 @@ register_option linter.translateReorder : Bool := {
 automatically generated. -/
 register_option linter.translateRelevantArg : Bool := {
   defValue := true
-  descr := "Linter used by translate attributes that checks if the `relevant_arg` is \
+  descr := "Linter used by translate attributes that checks if the relevant_arg is \
     automatically generated" }
 
 /-- Linter used by translate attributes that checks if the attribute was already applied -/
@@ -376,6 +376,7 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     ReplacementM (Option Expr) := do
   let visitedFVars : IO.Ref (Array FVarId) ← IO.mkRef #[]
   let dontTranslate ← read
+  let lctx ← getLCtx
   let rec visit (e : Expr) : ExceptT Expr (StateT (PtrSet Expr) BaseIO) Unit := do
     if (← get).contains e then
       return
@@ -404,7 +405,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .fvar fvarId       =>
       if dontTranslate.contains fvarId then
         throw e
-      visitedFVars.modify (·.push fvarId)
+      if let some value := (lctx.get! fvarId).value? (allowNondep := true) then
+        visit value
+      else
+        visitedFVars.modify (·.push fvarId)
     /- We do not translate the order on `Prop`.
     TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
     `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
@@ -449,7 +453,7 @@ where
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
-      | .lam ..     => visitLambda e
+      | .lam ..     => visitLambda e []
       | .letE ..    => visitLet e
       | .mdata _ b  => return e.updateMData! (← visit b)
       | .proj ..    => visitApp e
@@ -510,16 +514,24 @@ where
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
       return mkAppN f' (← args.mapM visit)
+    | .lam .. => return mkAppN (← visitLambda f args.toList) (← args.mapM visit)
     | _ => return mkAppN (← visit f) (← args.mapM visit)
   /- In `visitLambda`, `visitForall` and `visitLet`,
   we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
-  This is because the local context in the `MetaM` monad stores their original types. -/
-  visitLambda (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+  This is because the local context in the `MetaM` monad stores their original types.
+
+  In `visitLambda`, we keep track of the value of  variables, which helps in `shouldTranslate`. -/
+  visitLambda (e : Expr) (values : List Expr) (fvars : Array Expr := #[])
+      (tmpLCtx : LocalContext := {}) := do
     if let .lam n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitLambda b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      if let value :: values := values then
+        withLetDecl n d value fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
+      else
+        withLocalDecl n bi d fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkLambda fvars e
@@ -527,8 +539,8 @@ where
     if let .forallE n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitForall b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      withLocalDecl n bi d fun x =>
+        visitForall b (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkForall fvars e
@@ -536,9 +548,8 @@ where
     if let .letE n t v b nondep := e then
       let t := t.instantiateRev fvars; let v := v.instantiateRev fvars
       let t' ← visit t; let v' ← visit v
-      withLetDecl n t v (nondep := nondep) fun x => do
-        visitLet b (fvars.push x) (tmpLCtx.addDecl
-          (((← getFVarLocalDecl x).setType t').setValue v'))
+      withLetDecl n t v (nondep := nondep) fun x =>
+        visitLet b (fvars.push x) (tmpLCtx.mkLetDecl x.fvarId! n t' v' nondep)
     else
       let e ← visit (e.instantiateRev fvars)
       -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
@@ -958,13 +969,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  let srcDecl := srcDecl.updateLevelParams (reorder.permuteUniv srcDecl.levelParams)
-  -- instantiate both types with the same universes. `instantiateLevelParams` does some
-  -- normalization, so we apply it to both types.
   srcType := srcType.instantiateLevelParams
-    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let tgtType := tgtDecl.type.instantiateLevelParams
-    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+    (reorder.permuteUniv srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"

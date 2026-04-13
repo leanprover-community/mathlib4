@@ -198,10 +198,10 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive (attr := implicit_reducible)
-      /-- A group is commutative if the quotient by the center is cyclic. -/]
+/-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
-    CommGroup G :=
-  { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
+    CommGroup G where
+  mul_comm := commutative_of_cyclic_center_quotient f hf
 
 end QuotientCenter
 
@@ -247,15 +247,14 @@ end CommSimpleGroup
 
 end IsSimpleGroup
 
+open scoped IsMulCommutative in
 @[to_additive]
 theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
-    IsSimpleGroup α ↔ (Nat.card α).Prime :=
-  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
 @[deprecated (since := "2025-11-19")]

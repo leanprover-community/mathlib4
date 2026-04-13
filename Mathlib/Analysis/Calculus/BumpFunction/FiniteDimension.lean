@@ -77,6 +77,7 @@ theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s
 @[deprecated (since := "2025-12-17")]
 alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
 theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen s) :
@@ -118,6 +119,11 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `obtain` on the next line. It is not yet clear whether this is due to defeq
+    abuse in Mathlib or a problem in the new canonicalizer; a minimization would help. -/
+    obtain ⟨n, hn⟩ := hg ▸ iT
     grind
   have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1

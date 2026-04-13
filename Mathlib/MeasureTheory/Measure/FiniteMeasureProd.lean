@@ -67,9 +67,11 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
   rw [← ENNReal.toNNReal_mul]
   exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 

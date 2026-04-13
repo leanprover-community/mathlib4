@@ -600,8 +600,8 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x hx).2 (G.presheaf.germ U x hx t)
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
-  obtain ⟨V₁, hxV₁, s₁, hs₁⟩ := F.presheaf.germ_exist x s₀
-  subst hs₁; rename' hs₀ => hs₁
+  obtain ⟨V₁, hxV₁, s₁, rfl⟩ := F.presheaf.germ_exist x s₀
+  rename' hs₀ => hs₁
   rw [stalkFunctor_map_germ_apply V₁ x hxV₁ f.1 s₁] at hs₁
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on
   -- some open neighborhood `V₂`.

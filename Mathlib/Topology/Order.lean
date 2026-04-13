@@ -91,7 +91,7 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
 
 lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
     {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
-  simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
+  simp only [nhds_generateFrom, @forall_comm (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
@@ -1026,7 +1026,7 @@ theorem generateFrom_iInter (f : ι → TopologicalSpace α) :
 theorem generateFrom_iInter_of_generateFrom_eq_self (f : ι → Set (Set α))
     (hf : ∀ i, { s | IsOpen[generateFrom (f i)] s } = f i) :
     generateFrom (⋂ i, f i) = ⨆ i, generateFrom (f i) :=
-  (gciGenerateFrom α).u_iSup_of_lu_eq_self f hf
+  (gciGenerateFrom α).u_iSup_of_l_u_eq_self f hf
 
 variable {t : ι → TopologicalSpace α}
 

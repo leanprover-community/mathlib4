@@ -447,7 +447,6 @@ instance : IdemCommSemiring X.IdealSheafData where
   npow n I := I ^ n
   npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
-  bot_le _ := bot_le
 
 instance : IsOrderedRing X.IdealSheafData where
 
@@ -870,7 +869,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
       have inst : QuasiCompact (𝒰.f i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
-        (by change CompactSpace (Spec _); infer_instance)
+        (inferInstanceAs <| CompactSpace (Spec _))
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.f i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f

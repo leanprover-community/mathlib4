@@ -366,7 +366,7 @@ theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (
   induction x using TensorProduct.induction_on with
   | zero => rfl
   | tmul => rfl
-  | add _ _ ihx ihy => grind
+  | add _ _ ihx ihy => erw [LinearMap.map_add, LinearMap.map_add]; grind
 
 end ExtendScalars
 
@@ -1042,7 +1042,6 @@ lemma extendScalars_id_comp :
   erw [extendScalarsId_hom_app_one_tmul]
   rfl
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a strange error. -/
 @[reassoc]
 lemma extendScalars_comp_id :
     (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ Functor.whiskerLeft _ (extendScalarsId R₂).hom ≫

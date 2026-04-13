@@ -39,11 +39,8 @@ variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A predicate on arrows with codomain `X`. -/
 def Presieve (X : C) :=
-  ∀ ⦃Y⦄, (Y ⟶ X) → Prop -- deriving CompleteLattice
-
-instance : CompleteLattice (Presieve X) := by
-  dsimp [Presieve]
-  infer_instance
+  ∀ ⦃Y⦄, (Y ⟶ X) → Prop
+deriving CompleteLattice, Inhabited
 
 @[simp]
 lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
@@ -54,9 +51,6 @@ lemma bot_apply (f : Y ⟶ X) : (⊥ : Presieve X) f ↔ False :=
   .rfl
 
 namespace Presieve
-
-noncomputable instance : Inhabited (Presieve X) :=
-  ⟨⊤⟩
 
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
@@ -122,8 +116,6 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
 /-- The singleton presieve. -/
 inductive singleton : Presieve X
   | mk : singleton f
-
-@[deprecated (since := "2025-08-22")] alias singleton' := singleton
 
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
@@ -320,9 +312,6 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
 class HasPairwisePullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
-
-@[deprecated (since := "2025-08-28")]
-alias hasPullbacks := HasPairwisePullbacks
 
 instance (R : Presieve X) [HasPullbacks C] : R.HasPairwisePullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
@@ -1264,13 +1253,13 @@ def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
 def uliftFunctorInclusion (S : Sieve X) :
-    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+    S.uliftFunctor ⟶ uliftYoneda.{w}.obj X :=
   Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.toFunctor` with universe lifting. -/
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
-    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
+    uliftYoneda.{w}.obj Y ⟶ Sieve.uliftFunctor.{w} S where
   app Z g := ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
@@ -1287,7 +1276,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]
-def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.obj.{w} X) :
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.{w}.obj X) :
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by
