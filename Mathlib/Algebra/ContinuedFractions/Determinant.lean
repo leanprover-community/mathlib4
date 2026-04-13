@@ -42,7 +42,6 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
   | zero => simp [contsAux]
   | succ n IH =>
     -- set up some shorthand notation
-    let g := g
     let conts := contsAux g (n + 2)
     set pred_conts := contsAux g (n + 1) with pred_conts_eq
     set ppred_conts := contsAux g n with ppred_conts_eq
