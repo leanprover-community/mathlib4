@@ -54,9 +54,6 @@ section CommRing
 variable [CommRing R]
 variable {p q : MvPolynomial σ R}
 
-instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
-  inferInstanceAs <| CommRing (AddMonoidAlgebra R (σ →₀ ℕ))
-
 variable (σ a a')
 
 @[simp]

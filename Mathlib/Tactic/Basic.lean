@@ -8,7 +8,6 @@ module  -- shake: keep-all, shake: keep-downstream
 public meta import Lean
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.OldObtain
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 
@@ -55,35 +54,38 @@ def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
       pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
 
 /--
-The tactic `introv` allows the user to automatically introduce the variables of a theorem and
-explicitly name the non-dependent hypotheses.
-Any dependent hypotheses are assigned their default names.
+`introv` introduces the parameters to a dependent function according to their parameter name. If the
+first parameter is not depended on by the rest of the function type, `introv` with no (remaining)
+arguments does nothing.
+
+* `introv h₁ h₂ ...` introduces non-depended-on parameters in between sequences of depended-on
+  parameters, using the names `h₁`, `h₂`, ... in turn. Use `_` to anonymize a specific hypothesis.
 
 Examples:
 ```
 example : ∀ a b : Nat, a = b → b = a := by
-  introv h,
+  introv h
+  /-
+  The goal state is:
+  a b : ℕ,
+  h : a = b
+  ⊢ b = a
+  -/
   exact h.symm
-```
-The state after `introv h` is
-```
-a b : ℕ,
-h : a = b
-⊢ b = a
 ```
 
 ```
 example : ∀ a b : Nat, a = b → ∀ c, b = c → a = c := by
-  introv h₁ h₂,
+  introv h₁ h₂
+  /-
+  The goal state is:
+  a b : ℕ,
+  h₁ : a = b,
+  c : ℕ,
+  h₂ : b = c
+  ⊢ a = c
+  -/
   exact h₁.trans h₂
-```
-The state after `introv h₁ h₂` is
-```
-a b : ℕ,
-h₁ : a = b,
-c : ℕ,
-h₂ : b = c
-⊢ a = c
 ```
 -/
 syntax (name := introv) "introv" (ppSpace colGt binderIdent)* : tactic

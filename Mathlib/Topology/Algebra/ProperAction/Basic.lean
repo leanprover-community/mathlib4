@@ -132,13 +132,10 @@ then this topological space is T2. -/]
 theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
-    refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
-    · let g := fun gx : G × X ↦ gx.2
-      have : Function.LeftInverse g f := fun x ↦ by simp [f, g]
-      exact this.isEmbedding (by fun_prop) (by fun_prop)
-    · have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
-      rw [this]
-      exact isClosed_singleton.prod isClosed_univ
+    refine IsClosedEmbedding.isProperMap ⟨isEmbedding_prodMkRight 1, ?_⟩
+    have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
+    rw [this]
+    exact isClosed_singleton.prod isClosed_univ
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper

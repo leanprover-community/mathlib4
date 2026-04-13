@@ -301,8 +301,8 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
     (e : E) : IsDiscreteValuationRing B where
   principal := (isPrincipalIdealRing_iff _).1 <|
-    IsPrincipalIdealRing.of_surjective _ (e : A ≃+* B).surjective
-  __ : IsLocalRing B := (e : A ≃+* B).isLocalRing
+    .of_surjective _ (EquivLike.surjective e)
+  __ : IsLocalRing B := (RingEquivClass.toRingEquiv e).isLocalRing
   not_a_field' := by
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
       <| IsDiscreteValuationRing.not_a_field A)
@@ -461,7 +461,6 @@ lemma addVal_eq_zero_of_unit (u : Rˣ) :
   rw [addVal_def (u : R) u hϖ 0] <;>
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma addVal_eq_zero_iff {x : R} :
     addVal R x = 0 ↔ IsUnit x := by
   rcases eq_or_ne x 0 with rfl | hx

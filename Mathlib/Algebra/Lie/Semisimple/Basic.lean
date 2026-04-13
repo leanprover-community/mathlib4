@@ -108,6 +108,15 @@ instance : HasTrivialRadical R L := by
 
 end IsSimple
 
+lemma isSimple_iff_of_not_isLieAbelian (hL : ¬ IsLieAbelian L) :
+    IsSimpleOrder (LieIdeal R L) ↔ IsSimple R L :=
+  ⟨fun _ ↦ ⟨IsSimpleOrder.eq_bot_or_eq_top, hL⟩, fun _ ↦ inferInstance⟩
+
+@[nontriviality]
+lemma not_isSimple_of_subsingleton [Subsingleton L] :
+    ¬ IsSimple R L :=
+  fun contra ↦ contra.non_abelian inferInstance
+
 namespace IsSemisimple
 
 open CompleteLattice IsCompactlyGenerated
@@ -270,7 +279,6 @@ noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
   (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]

@@ -120,7 +120,6 @@ theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An action is preprimitive iff it is `1`-preprimitive. -/
 @[to_additive
 /-- An action is preprimitive iff it is `1`-preprimitive. -/]
@@ -157,7 +156,6 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is `n.succ-`preprimitive
 iff the action of stabilizers is `n`-preprimitive. -/
 @[to_additive /-- A pretransitive action is `n.succ-`preprimitive
@@ -246,7 +244,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
     apply isPreprimitive_of_is_two_pretransitive
     have hs' : s.encard = m := by
-      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
+      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1] at hs
       exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
     have : Finite s := Set.finite_of_encard_eq_coe hs'
     apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)

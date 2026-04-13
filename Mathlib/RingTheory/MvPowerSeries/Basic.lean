@@ -207,11 +207,10 @@ theorem coeff_zero_one : coeff (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
 theorem monomial_zero_one : monomial (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 
-instance : AddMonoidWithOne (MvPowerSeries σ R) :=
-  { show AddMonoid (MvPowerSeries σ R) by infer_instance with
-    natCast := fun n => monomial 0 n
-    natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
+instance : AddMonoidWithOne (MvPowerSeries σ R) where
+  natCast := fun n => monomial 0 n
+  natCast_zero := by simp [Nat.cast]
+  natCast_succ := by simp [Nat.cast, monomial_zero_one]
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
@@ -291,35 +290,27 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 
-instance : Semiring (MvPowerSeries σ R) :=
-  { (inferInstance : AddMonoidWithOne (MvPowerSeries σ R)),
-    (inferInstance : Mul (MvPowerSeries σ R)),
-    (inferInstance : AddCommMonoid (MvPowerSeries σ R)) with
-    mul_one := MvPowerSeries.mul_one
-    one_mul := MvPowerSeries.one_mul
-    mul_assoc := MvPowerSeries.mul_assoc
-    mul_zero := MvPowerSeries.mul_zero
-    zero_mul := MvPowerSeries.zero_mul
-    left_distrib := MvPowerSeries.mul_add
-    right_distrib := MvPowerSeries.add_mul }
+instance : Semiring (MvPowerSeries σ R) where
+  mul_one := MvPowerSeries.mul_one
+  one_mul := MvPowerSeries.one_mul
+  mul_assoc := MvPowerSeries.mul_assoc
+  mul_zero := MvPowerSeries.mul_zero
+  zero_mul := MvPowerSeries.zero_mul
+  left_distrib := MvPowerSeries.mul_add
+  right_distrib := MvPowerSeries.add_mul
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
-  { show Semiring (MvPowerSeries σ R) by infer_instance with
-    mul_comm := fun φ ψ =>
-      ext fun n => by
-        classical
-        simpa only [coeff_mul, mul_comm] using
-          sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ }
+instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
+  mul_comm := fun φ ψ =>
+    ext fun n => by
+      classical
+      simpa only [coeff_mul, mul_comm] using
+        sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ
 
-instance [Ring R] : Ring (MvPowerSeries σ R) :=
-  { (inferInstance : Semiring (MvPowerSeries σ R)),
-    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
+instance [Ring R] : Ring (MvPowerSeries σ R) where
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
-  { (inferInstance : CommSemiring (MvPowerSeries σ R)),
-    (inferInstance : AddCommGroup (MvPowerSeries σ R)) with }
+instance [CommRing R] : CommRing (MvPowerSeries σ R) where
 
 section Semiring
 
@@ -359,6 +350,16 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
+
+@[grind inj]
+theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
+  intro a b h
+  rw [← coeff_zero_C a, h, coeff_zero_C]
+
+theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
+  fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using coeff_apply _ _⟩
+
+@[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
 
 /-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
