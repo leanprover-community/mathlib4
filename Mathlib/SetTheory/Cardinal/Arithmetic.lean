@@ -351,8 +351,11 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
 
 end add
 
+/-- Infinite types permit a relation where fewer elements than its cardinality
+are missed along all verticals and fewer elements than its cardinality are hit
+along all horizontals. -/
 theorem exists_pathological_rel (α : Type*) [Infinite α] :
-    ∃ r : α → α → Prop, (∀ x, #{y | ¬ r x y} < #α) ∧ (∀ y, #{x | r x y} < #α) := by
+    ∃ r : α → α → Prop, (∀ x, #{y // ¬ r x y} < #α) ∧ (∀ y, #{x // r x y} < #α) := by
   obtain ⟨α, _, hα⟩ := Cardinal.exists_ord_eq_type_lt α
   refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ Cardinal.mk_Iio_lt _ hα⟩
   simp_rw [not_lt]
