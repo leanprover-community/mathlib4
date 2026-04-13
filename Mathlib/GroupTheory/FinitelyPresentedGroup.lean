@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Algebra.Group.PUnit
 
 /-!
 # Finitely Presented Groups
@@ -67,3 +68,8 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
 end Group.IsFinitelyPresented
+
+open Group
+
+instance : IsFinitelyPresented Unit :=
+  sorry
