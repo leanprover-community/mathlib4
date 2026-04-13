@@ -183,8 +183,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 lemma ordMonoidWithZeroHom_eq_intValutation {R : Type u_1} [CommRing R] [IsDomain R]
     [IsDiscreteValuationRing R] (x : R) (h : x ∈ nonZeroDivisors R) :
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  simp only [ordMonoidWithZeroHom_eq_ord h, ord_eq_addVal,
-    IsDiscreteValuationRing.intValuation_maximalIdeal, inv_inv]
+  simp [ordMonoidWithZeroHom_eq_ord h, IsDiscreteValuationRing.intValuation_maximalIdeal]
 
 lemma ordFrac_eq_intValuation {R K : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
     [Field K] [Algebra R K] [IsFractionRing R K]
