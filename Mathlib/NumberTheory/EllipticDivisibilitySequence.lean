@@ -356,7 +356,8 @@ Strong recursion principle for a normalised EDS: if we have
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-  then we have `P n` for all `n : ℕ`.
+
+then we have `P n` for all `n : ℕ`.
 -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
@@ -372,6 +373,7 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
@@ -479,6 +481,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
@@ -493,6 +496,7 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
