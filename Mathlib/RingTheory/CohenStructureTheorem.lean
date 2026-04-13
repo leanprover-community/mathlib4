@@ -40,9 +40,9 @@ lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R 
       (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
     letI : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
     IsBaseChange (R ⧸ I) (Ideal.Quotient.mkₐ R J).toLinearMap := by
-  let _ := (Ideal.quotientMap (I := I) J (algebraMap R S)
+  let := (Ideal.quotientMap (I := I) J (algebraMap R S)
     (by simp [← Ideal.map_le_iff_le_comap, eq])).toAlgebra
-  let _ : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower R (R ⧸ I) (S ⧸ J) := IsScalarTower.of_algebraMap_eq' rfl
   let e : TensorProduct R (R ⧸ I) S ≃ₗ[R] S ⧸ J :=
     (TensorProduct.quotTensorEquivQuotSMul S I).trans (Submodule.quotEquivOfEq _ _ (by simp [eq])
     ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R J)
@@ -77,7 +77,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     use {(p : R)}
     simp [maxeq]
   let R' := AdicCompletion (maximalIdeal R) R
-  let _ : IsLocalRing R' := AdicCompletion.isLocalRing_of_fg maxfg
+  have : IsLocalRing R' := AdicCompletion.isLocalRing_of_fg maxfg
   have maxeq' : maximalIdeal R' = Ideal.span {(p : R')} := by
     rw [AdicCompletion.maximalIdeal_eq_map_of_fg maxfg]
     simp [maxeq, Ideal.map_span]
@@ -109,8 +109,8 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
     rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, smul_eq_mul, Ideal.mul_top] at this
     simpa [← x.2 (Nat.le_succ n), ← hy, AdicCompletion.transitionMap, Submodule.factorPow,
       Ideal.Quotient.eq_zero_iff_mem] using mem_of_mem_succ this
-  let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
-  let _ : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
+  let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
+  have : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
   have spanle : (maximalIdeal R').spanFinrank ≤ 1 := by
     rw [maxeq']
     exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton _))
@@ -118,7 +118,7 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   have dimge : 1 ≤ ringKrullDim R' := by
     apply (WithBot.one_le_iff_pos _).mpr
     by_contra! le
-    let _ : Ring.KrullDimLE 0 R' := Ring.krullDimLE_iff.mpr le
+    let : Ring.KrullDimLE 0 R' := Ring.krullDimLE_iff.mpr le
     have disj := Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes
       (Ideal.mem_minimalPrimes_of_krullDimLE_zero (maximalIdeal R'))
     absurd Disjoint.notMem_of_mem_right disj reg'
@@ -182,7 +182,7 @@ noncomputable def padicIntOfCharP [IsLocalRing R] [IsAdicComplete (maximalIdeal 
 lemma padicIntOfCharP_flat_of_isCohenRing [IsLocalRing R] [IsDomain R] [IsCohenRing R]
     (p : ℕ) [Fact (Nat.Prime p)] (char : CharP (ResidueField R) p) :
     (padicIntOfCharP R p char).Flat := by
-  let _ := (padicIntOfCharP R p char).toAlgebra
+  let := (padicIntOfCharP R p char).toAlgebra
   have inj : Function.Injective (padicIntOfCharP R p char) := by
     rw [RingHom.injective_iff_ker_eq_bot]
     by_contra ne
@@ -194,7 +194,7 @@ lemma padicIntOfCharP_flat_of_isCohenRing [IsLocalRing R] [IsDomain R] [IsCohenR
       absurd IsCohenRing.span (R := R)
       simpa [ringChar.eq (ResidueField R) p, eq0] using IsDiscreteValuationRing.not_a_field R
     simp [ne] at this
-  let _ : Module.IsTorsionFree ℤ_[p] R := {
+  have : Module.IsTorsionFree ℤ_[p] R := {
     isSMulRegular x hx := (isLeftRegular_iff_isRegular.mpr
       (IsRegular.of_ne_zero ((map_ne_zero_iff _ inj).mpr hx.ne_zero))).isSMulRegular}
   dsimp only [RingHom.Flat]
@@ -355,8 +355,8 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
       (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span]))
     let E : S ⧸ Ideal.span {(p ^ (n + 1 + 1) : S)} ≃+* S ⧸ (maximalIdeal S) ^ (n + 1 + 1) :=
       Ideal.quotEquivOfEq (by simp [cohen.span, ringChar.eq, Ideal.span_singleton_pow])
-    let _ := (E.toRingHom.comp F).toAlgebra
-    let _ : Algebra.FormallySmooth (ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
+    let := (E.toRingHom.comp F).toAlgebra
+    have : Algebra.FormallySmooth (ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
       (S ⧸ maximalIdeal S ^ (n + 1 + 1)) :=
       (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega)).comp
       (RingHom.FormallySmooth.of_bijective E.bijective)
@@ -365,8 +365,8 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
         simp only [Ideal.span_singleton_le_iff_mem, Ideal.mem_comap, eq_intCast, Int.cast_pow]
         apply Ideal.pow_mem_pow
         simp [← Ideal.Quotient.eq_zero_iff_mem, char.cast_eq_zero])
-    let _ := G.toAlgebra
-    let _ := (H.comp G).toAlgebra
+    let := G.toAlgebra
+    let := (H.comp G).toAlgebra
     let H' : R ⧸ maximalIdeal R ^ (n + 1 + 1) →ₐ[ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)}]
       R ⧸ maximalIdeal R ^ (n + 1) := {
       __ := H
@@ -384,9 +384,9 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
     ext x
     change H'.comp g x = _
     simp [this, f']
-  let _ : Unique (S ⧸ maximalIdeal S ^ 0) :=
+  have : Unique (S ⧸ maximalIdeal S ^ 0) :=
     @uniqueOfSubsingleton _ (Ideal.Quotient.subsingleton_iff.mpr (by simp)) 0
-  let _ : Unique (R ⧸ maximalIdeal R ^ 0) :=
+  have : Unique (R ⧸ maximalIdeal R ^ 0) :=
     @uniqueOfSubsingleton _ (Ideal.Quotient.subsingleton_iff.mpr (by simp)) 0
   let f0 : S ⧸ maximalIdeal S ^ 0 ≃+* R ⧸ maximalIdeal R ^ 0 := RingEquiv.ofUnique
   let f1 : S ⧸ maximalIdeal S ^ 1 ≃+* R ⧸ maximalIdeal R ^ 1 :=
@@ -454,7 +454,7 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   have : RingHom.ker ((residue R).comp f) = maximalIdeal S := by
     simp [eqe, ← RingHom.comap_ker, ← RingHom.ker_eq_comap_bot, IsLocalRing.ker_residue]
   rw [← RingHom.comap_ker, IsLocalRing.ker_residue] at this
-  let _ : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 0 4).mpr this
+  have : IsLocalHom f := ((IsLocalRing.local_hom_TFAE f).out 0 4).mpr this
   use f, ‹_›
   rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
   exact e.bijective
