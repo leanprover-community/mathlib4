@@ -21,7 +21,7 @@ In this file we define these concepts and provide some related definitions and r
 
   * `LieModule.IsTrivial`
   * `IsLieAbelian`
-  * `commutative_ring_iff_abelian_lie_ring`
+  * `isMulCommutative_iff_isLieAbelian`
   * `LieModule.ker`
   * `LieModule.maxTrivSubmodule`
   * `LieAlgebra.center`
@@ -83,12 +83,13 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
     IsLieAbelian L₁ ↔ IsLieAbelian L₂ :=
   ⟨e.symm.injective.isLieAbelian, e.injective.isLieAbelian⟩
 
-theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
-    Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
-  have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
-    ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
+theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
+    IsMulCommutative A ↔ IsLieAbelian A := by
+  have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
+  simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
+
+@[deprecated (since := "2026-04-01")]
+alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
@@ -142,7 +143,6 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
     IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
   refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
