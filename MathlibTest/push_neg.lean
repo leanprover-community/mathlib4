@@ -164,6 +164,11 @@ def inductive_proof : True := by
   push Not at inductive_proof
   trivial
 
+-- XXX: can the error message mention the constant being pushed?
+/-- error: `push` made no progress on the goal -/
+#guard_msgs in
+example {P : Prop} (h : P) : P := by push Not
+
 section use_distrib
 
 example (h : ¬ p ∨ ¬ q) : ¬ (p ∧ q) := by
