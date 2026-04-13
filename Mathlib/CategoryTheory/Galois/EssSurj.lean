@@ -67,7 +67,6 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
