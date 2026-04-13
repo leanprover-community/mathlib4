@@ -100,7 +100,7 @@ instance (priority := 950) instModule'
     Module R (WeakDual 𝕜 E) :=
   inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
 
-instance instModule : Module 𝕜 (WeakDual 𝕜 E) := by infer_instance
+instance instModule : Module 𝕜 (WeakDual 𝕜 E) := inferInstance
 
 end WeakDual
 
