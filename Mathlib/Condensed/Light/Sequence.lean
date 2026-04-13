@@ -342,7 +342,7 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
     -- triangle commutes is equivalent to proving that the upper triangle
     -- commutes, which is true by the universal property of the colimit.
     rw [hc.fac]
-    -- simp? [← comm]:
+    -- simp? [← comm] says:
     simp only [comp_obj, Limits.parallelPair_obj_one, Functor.comp_map, Functor.map_comp,
       assoc, cocone_pt, cocone_ι_app, eqToHom_refl, Preadditive.comp_add, Preadditive.comp_sub,
       id_comp, Preadditive.add_comp, Preadditive.sub_comp, ← comm]
