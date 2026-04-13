@@ -967,8 +967,6 @@ scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``tangentMap #[srcI, tgtI, ef]
 
--- TODO: add tests for the three elaborators above!
-
 end Manifold
 
 section trace
