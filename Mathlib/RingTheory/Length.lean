@@ -107,6 +107,15 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
+@[simp]
+lemma Module.finiteDimensionalOrder_submodule_iff :
+    FiniteDimensionalOrder (Submodule R M) ↔ IsFiniteLength R M := by
+  rw [← Module.length_ne_top_iff_finiteDimensionalOrder, Module.length_ne_top_iff]
+
+instance [IsArtinian R M] [IsNoetherian R M] : FiniteDimensionalOrder (Submodule R M) := by
+  rw [Module.finiteDimensionalOrder_submodule_iff, isFiniteLength_iff_isNoetherian_isArtinian]
+  tauto
+
 lemma Module.length_submodule {N : Submodule R M} :
     Module.length R N = Order.height N := by
   apply WithBot.coe_injective
@@ -298,7 +307,6 @@ theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A 
 
 theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
     (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
-  rw [Module.length_eq_add_of_exact p.subtype p.mkQ p.subtype_injective p.mkQ_surjective
-    (LinearMap.exact_subtype_mkQ p)]
-  exact ENat.lt_add_left Module.length_ne_top
-    (Module.length_pos_iff.mpr (nontrivial_iff_ne_bot.mpr h))
+  rw [Module.length_quotient, Module.length, WithBot.lt_unbot_iff, ← Order.coheight_bot_eq_krullDim,
+    WithBot.coe_lt_coe]
+  exact Order.coheight_strictAnti (bot_lt_iff_ne_bot.mpr h) (Order.coheight_lt_top p)
