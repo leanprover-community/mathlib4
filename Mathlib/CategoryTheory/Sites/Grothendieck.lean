@@ -347,7 +347,6 @@ theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff (J : GrothendieckTopology C) : J = ⊤ ↔ ∀ X, ⊥ ∈ J X := by
   refine ⟨fun h ↦ h ▸ by simp, fun h ↦ ?_⟩
   rw [_root_.eq_top_iff]
