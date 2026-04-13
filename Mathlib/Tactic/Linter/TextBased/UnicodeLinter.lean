@@ -39,7 +39,6 @@ public def String.printCodepointHex (s : String) : String :=
   -- note: must not contain spaces because of the error message parsing below!
   ";".intercalate <| s.toList.map Char.printCodepointHex
 
-
 /-- Allowed (by the linter) whitespace characters -/
 def ASCII.allowedWhitespace (c : Char) : Bool := #[' ', '\n'].contains c
 

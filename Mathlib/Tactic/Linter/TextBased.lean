@@ -94,8 +94,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
-  | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the allowlist \
-    '{c}' ({c.printCodepointHex}). \
+  | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the \
+    allowlist '{c}' ({c.printCodepointHex}). \
     For adding new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
   | StyleError.unicodeVariant s selector =>
     let variantText := if selector == UnicodeVariant.emoji then
