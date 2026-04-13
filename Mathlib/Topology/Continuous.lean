@@ -149,6 +149,10 @@ theorem Continuous.tendsto' (hf : Continuous f) (x : X) (y : Y) (h : f x = y) :
 theorem Continuous.continuousAt (h : Continuous f) : ContinuousAt f x :=
   h.tendsto x
 
+theorem Continuous.preimage_mem_nhds {t : Set Y} (h : Continuous f)
+    (ht : t ∈ 𝓝 (f x)) : f ⁻¹' t ∈ 𝓝 x :=
+  h.continuousAt.preimage_mem_nhds ht
+
 theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :=
   ⟨Continuous.tendsto, fun hf => continuous_def.2 fun _U hU => isOpen_iff_mem_nhds.2 fun x hx =>
     hf x <| hU.mem_nhds hx⟩
