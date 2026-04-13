@@ -95,10 +95,10 @@ Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp
 `@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
 version.
 -/
-syntax (name := map) "map" optAttrArg : attr
+syntax (name := mapStx) "map" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
-  name := `map
+  name := `mapStx
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
