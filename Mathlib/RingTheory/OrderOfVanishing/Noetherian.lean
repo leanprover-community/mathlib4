@@ -71,6 +71,7 @@ lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] {a : R} (ha : a ∈ nonZeroDiv
   simp [← ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
 
 variable [Nontrivial R]
+
 /--
 Helper lemma to pass between the orders on `ℕ∞` and `ℤᵐ⁰` (which notably have different behaviour at
 `∞`). Note that here we're using the fact that the order of any non zero divisor is finite, hence
