@@ -397,8 +397,7 @@ protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [
 variable (α β) in
 /-- The submonoid of functions `α → β` with compact multiplicative support. -/
 @[to_additive /-- The additive submonoid of functions `α → β` with compact support. -/]
-def HasCompactMulSupport.submonoid :
-    Submonoid (α → β) where
+def HasCompactMulSupport.submonoid : Submonoid (α → β) where
   carrier := {f | HasCompactMulSupport f}
   one_mem' := .one
   mul_mem' := .mul
