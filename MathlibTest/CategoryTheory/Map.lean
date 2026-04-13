@@ -55,6 +55,16 @@ lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
 #guard_msgs in
 #check comp_map_dual_map
 
+/-- error: `@[map]` expects an equality -/
+#guard_msgs in
+@[map]
+def one : Nat := 1
+
+/-- error: `@[map]` expects an equality of morphisms -/
+#guard_msgs in
+@[map]
+lemma one_plus_one : 1 + 1 = 2 := rfl
+
 /-!
 `map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each
 side.

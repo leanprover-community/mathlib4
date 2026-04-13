@@ -93,8 +93,10 @@ in some category `C`, creates a new lemma named `H_map` of the form
 `simp only [Functor.map_comp, Functor.map_id]`.
 
 Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
-`@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
-version.
+`@[map (attr := reassoc)]` to generate reassociated versions of both the original lemma and the
+`_map` lemma (`@[reassoc (attr := map)]` generates `_map` versions of both the original and the
+reassociated lemma, but this is of course less general than `@[map (attr := reassoc)]`). All four
+lemmas can be registered as `simp` lemmas with `@[map (attr := reassoc (attr := simp))]`.
 -/
 syntax (name := mapStx) "map" optAttrArg : attr
 
