@@ -115,6 +115,18 @@ theorem of_eq_tot {g : ℕ → ℕ} {O} (hf : Nat.RecursiveIn O f)
     (H : ∀ n, g n ∈ f n) : Nat.RecursiveIn O g :=
   of_eq hf fun n => eq_some_iff.2 (H n)
 
+/-- Every function is recursive in the singleton oracle set containing it. -/
+theorem oracle_self (f : ℕ →. ℕ) : Nat.RecursiveIn {f} f :=
+  .oracle f rfl
+
+/-- The first function in a two-element oracle set is recursive in that set. -/
+theorem oracle_pair_left (f g : ℕ →. ℕ) : Nat.RecursiveIn ({f, g} : Set _) f :=
+  .oracle f <| .inl rfl
+
+/-- The second function in a two-element oracle set is recursive in that set. -/
+theorem oracle_pair_right (f g : ℕ →. ℕ) : Nat.RecursiveIn ({f, g} : Set _) g :=
+  .oracle g <| .inr rfl
+
 /-- If every element of `O` is `Nat.RecursiveIn O'`, then any function which is
 `Nat.RecursiveIn O` is also `Nat.RecursiveIn O'`. -/
 theorem subst {O O'} {f : ℕ →. ℕ} (hf : Nat.RecursiveIn O f)
@@ -370,8 +382,7 @@ private theorem rfind_eqTest_eq (v cmp : ℕ →. ℕ) (n : ℕ)
       (fun m => decide (m = 0)) <$> eqTest v (n.pair k)) :
     (Nat.rfind fun k => (fun m => decide (m = 0)) <$>
       cmp (n.pair k)) = v n := by
-  rw [show _ = fun k => _ <$> eqTest v (n.pair k)
-    from funext hv]
+  simp_rw [hv]
   convert Partrec.kronecker_rfind (v := v n) using 1
   simp [eqTest, Nat.unpair_pair, Seq.seq,
     Part.map_eq_map, Part.bind_some_eq_map]

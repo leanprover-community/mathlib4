@@ -123,32 +123,24 @@ open Encodable Partrec
 
 /-- `f` is Turing reducible to the join `f ⊕ g`. -/
 lemma left_le_join (f g : ℕ →. ℕ) : f ≤ᵀ (f ⊕ g) := by
-  set j := f ⊕ g
-  have hj := Nat.RecursiveIn.oracle j
-    (show j ∈ ({j} : Set _) by simp)
   refine (Nat.RecursiveIn.div2.comp
-    (hj.comp_at_even)).of_eq fun n => ?_
-  simp only [Join.even, Part.bind_eq_bind, Part.bind_map, j]
+    (Nat.RecursiveIn.oracle_self _).comp_at_even).of_eq fun n => ?_
+  simp only [Join.even, Part.bind_eq_bind, Part.bind_map]
   simp [Nat.div2_bit0]
 
 /-- `g` is Turing reducible to the join `f ⊕ g`. -/
 lemma right_le_join (f g : ℕ →. ℕ) : g ≤ᵀ (f ⊕ g) := by
-  set j := f ⊕ g
-  have hj := Nat.RecursiveIn.oracle j
-    (show j ∈ ({j} : Set _) by simp)
   refine (Nat.RecursiveIn.div2.comp
-    (hj.comp_at_odd)).of_eq fun n => ?_
-  simp only [Join.odd, Part.bind_eq_bind, Part.bind_map, j]
+    (Nat.RecursiveIn.oracle_self _).comp_at_odd).of_eq fun n => ?_
+  simp only [Join.odd, Part.bind_eq_bind, Part.bind_map]
   simp
 
 /-- The join is recursive in the pair of oracles `{f, g}`. -/
 lemma join_recursiveIn_pair (f g : ℕ →. ℕ) :
     Nat.RecursiveIn ({f, g} : Set (ℕ →. ℕ)) (f ⊕ g) := by
-  set O : Set (ℕ →. ℕ) := {f, g}
-  have hfO : Nat.RecursiveIn O f := .oracle f (by simp [O])
-  have hgO : Nat.RecursiveIn O g := .oracle g (by simp [O])
   refine (Nat.RecursiveIn.cond' Computable.nat_bodd
-    (hgO.encode_odd) (hfO.encode_even)).of_eq fun n => ?_
+    (Nat.RecursiveIn.oracle_pair_right f g).encode_odd
+    (Nat.RecursiveIn.oracle_pair_left f g).encode_even).of_eq fun n => ?_
   by_cases hbn : Nat.bodd n <;>
     simp [join, hbn, Part.bind_some_eq_map]
 
@@ -161,15 +153,23 @@ lemma join_le (f g h : ℕ →. ℕ) (hf : f ≤ᵀ h) (hg : g ≤ᵀ h) :
     · exact hf
     · rw [Set.mem_singleton_iff.mp hkg]; exact hg
 
+/-- If `f ≤ᵀ f'`, then `f` is reducible to any join with `f'` on the left. -/
+theorem TuringReducible.le_join_of_le_left {f f' : ℕ →. ℕ} (hf : f ≤ᵀ f') (g : ℕ →. ℕ) :
+    f ≤ᵀ (f' ⊕ g) :=
+  hf.trans (left_le_join f' g)
+
+/-- If `g ≤ᵀ g'`, then `g` is reducible to any join with `g'` on the right. -/
+theorem TuringReducible.le_join_of_le_right {g g' : ℕ →. ℕ} (hg : g ≤ᵀ g') (f : ℕ →. ℕ) :
+    g ≤ᵀ (f ⊕ g') :=
+  hg.trans (right_le_join f g')
+
 namespace TuringDegree
 
 /-- The Turing join respects Turing reducibility: if `f ≤ᵀ f'` and `g ≤ᵀ g'`,
 then `f ⊕ g ≤ᵀ f' ⊕ g'`. -/
 theorem join_mono {f f' g g' : ℕ →. ℕ} (hf : f ≤ᵀ f') (hg : g ≤ᵀ g') :
-    (f ⊕ g) ≤ᵀ (f' ⊕ g') := by
-  have hf' : f ≤ᵀ (f' ⊕ g') := hf.trans (left_le_join f' g')
-  have hg' : g ≤ᵀ (f' ⊕ g') := hg.trans (right_le_join f' g')
-  exact join_le f g (f' ⊕ g') hf' hg'
+    (f ⊕ g) ≤ᵀ (f' ⊕ g') :=
+  join_le f g (f' ⊕ g') (hf.le_join_of_le_left g') (hg.le_join_of_le_right f')
 
 /-- The Turing join respects Turing equivalence. -/
 theorem join_congr {f f' g g' : ℕ →. ℕ} (hf : f ≡ᵀ f') (hg : g ≡ᵀ g') :
