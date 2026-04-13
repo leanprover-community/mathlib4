@@ -1,7 +1,8 @@
 /-
-Copyright (c) 2026 Michael Rothgang, Pepa Montero. All rights reserved.
+Copyright (c) 2025 Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz,
+Juan José Madrigal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang, Pepa Montero
+Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan José Madrigal
 -/
 module
 
