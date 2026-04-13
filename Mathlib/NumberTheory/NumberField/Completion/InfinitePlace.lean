@@ -259,7 +259,7 @@ theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Com
 
 omit [Algebra K L] in
 @[simp]
-theorem extensionEmbedding_apply {φ : w.Completion →+* ℂ}
+theorem liesOver_extensionEmbedding_apply {φ : w.Completion →+* ℂ}
     [ComplexEmbedding.LiesOver φ (extensionEmbedding v)] {x : v.Completion} :
     φ (algebraMap v.Completion w.Completion x) = (extensionEmbedding v) x := by
   simp_all [liesOver_iff, RingHom.ext_iff]
