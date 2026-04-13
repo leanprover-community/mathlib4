@@ -181,6 +181,7 @@ instance (priority := low) Algebra.FormallySmooth.of_perfectField
     convert H <;> simp
   exact .of_algebraicIndependent_of_isSeparable hs.1
 
+variable (K L) in
 lemma Algebra.FormallySmooth.of_isTranscendentalSeparable [Algebra.IsTranscendentalSeparable K L] :
     Algebra.FormallySmooth K L := by
   refine (Algebra.formallySmooth_iff _ _).mpr ⟨inferInstance, ?_⟩
