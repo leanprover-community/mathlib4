@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
 # Distributions
