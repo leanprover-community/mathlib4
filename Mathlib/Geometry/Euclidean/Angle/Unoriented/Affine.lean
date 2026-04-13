@@ -225,7 +225,6 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p₁ p₂ p₃ : P} (hp₁p₂ :
     norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he => hp₁p₂ (vsub_eq_zero_iff_eq.1 he))
       fun he => hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p₁ p₂ : P) (hp₁p₂ : p₁ ≠ p₂) : ∠ p₁ (midpoint ℝ p₁ p₂) p₂ = π := by
   simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
@@ -398,6 +397,15 @@ same ray. -/
 theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
     ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
   simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
+
+lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) = π - ∠ p₁ p₂ p₃ := by
+  by_cases! h₃₂ : p₃ = p₂
+  · simp [h₃₂]
+    field
+  rw [eq_sub_iff_add_eq]
+  apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
+  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

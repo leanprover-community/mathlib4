@@ -43,7 +43,7 @@ theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   contrapose! h2f
   use b
   simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  exact Succ.rec (P := fun i _ ↦ f i ≤ b) hb (by aesop)
+  exact Succ.rec (P := fun i _ ↦ f i ≤ b) hb (by simp_all)
 
 /-- Union formula for `Set.Ioc (f i) (f (Order.succ i))` over `i ∈ Ici a`. See also
 `iUnion_Ioc_map_succ_eq_Ioi` for the specialization `a = ⊥`. -/
@@ -55,7 +55,7 @@ theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   intro b hb
   contrapose! h2f
   suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
-  exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
+  exact Succ.rec (P := fun i _ ↦ f i < b) hb (by simp_all)
 
 /-- Special case `a = ⊥` of `biUnion_Ici_Ico_map_succ`. -/
 theorem iUnion_Ico_map_succ_eq_Ici [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]

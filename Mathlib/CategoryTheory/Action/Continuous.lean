@@ -137,19 +137,13 @@ open ContAction
 
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
 def DiscreteContAction : Type _ := ObjectProperty.FullSubcategory (IsDiscrete (V := V) (G := G))
+deriving Category, ConcreteCategory
 
 namespace DiscreteContAction
 
-instance : Category (DiscreteContAction V G) :=
-  ObjectProperty.FullSubcategory.category (IsDiscrete (V := V) (G := G))
-
-example : HasForget₂ V TopCat := inferInstance
-
-instance : ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
-  FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
-  FullSubcategory.hasForget₂ (IsDiscrete (V := V) (G := G))
+  inferInstanceAs <| HasForget₂ (ObjectProperty.FullSubcategory _) _
 
 instance : HasForget₂ (DiscreteContAction V G) TopCat :=
   HasForget₂.trans (DiscreteContAction V G) (ContAction V G) TopCat
@@ -202,7 +196,6 @@ def mapContActionCongr
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Continuous version of `Equivalence.mapAction`. -/
 @[simps functor inverse]
 def Equivalence.mapContAction (E : V ≌ W)

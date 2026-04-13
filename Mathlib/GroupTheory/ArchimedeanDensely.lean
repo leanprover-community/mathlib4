@@ -100,7 +100,6 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -136,9 +135,9 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       rcases max_cases y y⁻¹ with H | H <;>
       simp [hy', H.left]
     refine ⟨⟨⟨
-      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨y' ^ (mem_closure_singleton.mp
         (by simpa [hxc] using a.prop)).choose, ?_⟩,
-      fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨x' ^ (mem_closure_singleton.mp
         (by simpa [hyc] using a.prop)).choose, ?_⟩,
         ?_, ?_⟩, ?_⟩, ?_⟩
     · rw [hyc, mem_closure_singleton]
@@ -394,7 +393,6 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
   · intro
     simp [Function.onFun, neg_le]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by

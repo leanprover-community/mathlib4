@@ -32,42 +32,15 @@ noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
-
-set_option backward.isDefEq.respectTransparency false in
-instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
-instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
-instance : InfSet EReal := inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
-
-instance : CompleteLinearOrder EReal :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℝ)))
-
-instance : LinearOrder EReal :=
-  inferInstanceAs (LinearOrder (WithBot (WithTop ℝ)))
-
-instance : IsOrderedAddMonoid EReal :=
-  inferInstanceAs (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
-
-instance : AddCommMonoidWithOne EReal :=
-  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
-
-set_option backward.isDefEq.respectTransparency false in
-instance : DenselyOrdered EReal :=
-  inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
-
-instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
+deriving Nontrivial,
+  Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
+  Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
+  ZeroLEOneClass, IsOrderedAddMonoid
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
 
 namespace EReal
-
--- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLT : DecidableLT EReal :=
-  WithBot.decidableLT
-
--- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
-instance : Top EReal := ⟨WithBot.some ⊤⟩
 
 instance : Coe ℝ EReal := ⟨Real.toEReal⟩
 
@@ -99,6 +72,14 @@ protected theorem coe_ne_coe_iff {x y : ℝ} : (x : EReal) ≠ (y : EReal) ↔ x
 @[simp, norm_cast]
 protected theorem coe_natCast {n : ℕ} : ((n : ℝ) : EReal) = n := rfl
 
+/-- The order embedding of `ℝ` into `EReal`. -/
+def orderEmbedding : ℝ ↪o EReal where
+  toFun := Real.toEReal
+  inj' := EReal.coe_injective
+  map_rel_iff' {x y} := by simp
+
+theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
+
 /-- The canonical map from nonnegative extended reals to extended reals. -/
 @[coe] def _root_.ENNReal.toEReal : ℝ≥0∞ → EReal
   | ⊤ => ⊤
@@ -117,13 +98,26 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-When working in term mode, note that pattern matching can be used directly. -/
+When working in term mode, note that pattern matching can be used directly,
+although this is prone to leaking the implementation details in terms of `Option`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {motive : EReal → Sort*}
     (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
   | ⊥ => bot
   | (a : ℝ) => coe a
   | ⊤ => top
+
+@[simp] theorem rec_bot {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊥ = bot :=
+  rfl
+
+@[simp] theorem rec_top {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊤ = top :=
+  rfl
+
+@[simp] theorem rec_coe {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) (a : ℝ) :
+    EReal.rec bot coe top a = coe a := rfl
 
 protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
@@ -372,7 +366,6 @@ lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
   lift x to ℝ using by aesop
   simpa using hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
   lift x to ℝ using by aesop
   simpa using hx
@@ -387,7 +380,6 @@ lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
     use (x : EReal)
     simpa using hx
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
   ext x
   constructor
@@ -413,7 +405,6 @@ theorem le_coe_toReal {x : EReal} (h : x ≠ ⊤) : x ≤ x.toReal := by
   · simp only [h', bot_le]
   · simp only [le_refl, coe_toReal h h']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_toReal_le {x : EReal} (h : x ≠ ⊥) : ↑x.toReal ≤ x := by
   by_cases h' : x = ⊤
   · simp only [h', le_top]
@@ -506,7 +497,7 @@ lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
 
 @[simp]
 lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
-  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
+  change ((WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (⊥ : WithBot (WithTop ℝ))) : Set ℝ) = _
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
 
@@ -522,10 +513,9 @@ lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
-  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (⊤ : WithTop ℝ))) = _
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
 
@@ -729,7 +719,6 @@ lemma toENNReal_of_nonpos {x : EReal} (hx : x ≤ 0) : x.toENNReal = 0 := by
 lemma toENNReal_bot : (⊥ : EReal).toENNReal = 0 := toENNReal_of_nonpos bot_le
 lemma toENNReal_zero : (0 : EReal).toENNReal = 0 := toENNReal_of_nonpos le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toENNReal_eq_zero_iff {x : EReal} : x.toENNReal = 0 ↔ x ≤ 0 := by
   induction x <;> simp [toENNReal]
 
@@ -750,7 +739,6 @@ lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
   rcases le_total 0 x with (hx | hx)
   · rw [coe_toENNReal hx, max_eq_right hx]
@@ -775,7 +763,6 @@ lemma toENNReal_eq_toENNReal {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x.toENNReal = y.toENNReal ↔ x = y := by
   induction x <;> induction y <;> simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toENNReal := by
   induction x
   · simp

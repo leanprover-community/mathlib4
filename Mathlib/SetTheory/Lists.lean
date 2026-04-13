@@ -231,9 +231,9 @@ theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
 instance : Inhabited (Lists α) :=
   ⟨of' Lists'.nil⟩
 
-instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
+instance [DecidableEq α] : DecidableEq (Lists α) := inferInstanceAs <| DecidableEq (Sigma _)
 
-instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := inferInstanceAs <| SizeOf (Sigma _)
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
@@ -313,7 +313,6 @@ instance instSetoidLists : Setoid (Lists α) :=
 
 section Decidable
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
     true_or, add_pos_iff, zero_lt_one]

@@ -12,17 +12,20 @@ public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
+
 The following conditions are equivalent for a ring `R`:
 1. Every radical ideal `I` is equal to its Jacobson radical
 2. Every radical ideal `I` can be written as an intersection of maximal ideals
 3. Every prime ideal `I` is equal to its Jacobson radical
+
 Any ring satisfying any of these equivalent conditions is said to be Jacobson.
 Some particular examples of Jacobson rings are also proven.
-`isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
-`isJacobsonRing_localization` says the localization of a Jacobson ring
+- `isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
+- `isJacobsonRing_localization` says the localization of a Jacobson ring
   to a single element is Jacobson.
-`isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
+- `isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
   form a Jacobson ring.
+
 ## Main definitions
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
@@ -35,6 +38,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   `f : R →+* S` is surjective, then `S` is also a Jacobson ring
 * `MvPolynomial.isJacobsonRing` says that multi-variate polynomials
   over a Jacobson ring are Jacobson.
+
 ## Tags
 Jacobson, Jacobson Ring
 -/
@@ -168,7 +172,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
-    push_neg at this
+    push Not at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = I.map (algebraMap R S)
@@ -179,13 +183,8 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
-  · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
-    · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
-    · have := congr_arg (Ideal.map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
-      · rwa [map_comap (powers y) S I, Ideal.map_top] at this
-      refine fun hI' => hI.right ?_
-      rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
-      exact map_mono hI'
+  · simp only [Ideal.mem_comap, and_imp]
+    exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
@@ -268,7 +267,6 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
@@ -367,7 +365,6 @@ theorem jacobson_bot_of_integral_localization
         (IsLocalization.surjective_quotientMap_of_maximal_of_localization (Submonoid.powers x) Rₘ
           (by rwa [comap_comap, hcomm, ← bot_quotient_isMaximal_iff]))).trans _ _ (hφ'.quotient _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Used to bootstrap the proof of `isJacobsonRing_polynomial_iff_isJacobsonRing`.
   That theorem is more general and should be used instead of this one. -/
 private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
@@ -434,7 +431,6 @@ section
 variable {R : Type*} [CommRing R]
 variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
     (hP' : ∀ x : R, C x ∈ P → x = 0) :
     IsMaximal (comap (C : R →+* R[X]) P : Ideal R) := by
@@ -517,7 +513,6 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
 
 variable [IsJacobsonRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a Jacobson ring, and `P` is a maximal ideal of `R[X]`,
   then `R → R[X]/P` is an integral map. -/
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
@@ -558,8 +553,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {S : Type*} [Field S] (f
   rw [← hfg, RingHom.comp_assoc]
   refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f)).trans _ g
     (g.isIntegral_of_surjective ?_)
-  rw [← hfg] at hf
-  norm_num at hf
+  rw [← hfg, RingHom.coe_comp] at hf
   exact Function.Surjective.of_comp hf
 
 end
@@ -611,7 +605,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    simp only [AlgHom.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]
@@ -662,8 +656,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, RingHom.comp_assoc]
     refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f')).trans _ g
       (g.isIntegral_of_surjective ?_)
-    rw [← hfg] at hf'
-    norm_num at hf'
+    rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
   convert this

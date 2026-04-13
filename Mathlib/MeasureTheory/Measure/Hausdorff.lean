@@ -337,7 +337,6 @@ theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0�
     exact ⟨zero_le _, ht.trans_lt hr'.2⟩
   · simp [h0]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : OuterMeasure X) = ⊤ := by
   simp_rw [mkMetric, mkMetric', mkMetric'.pre, extend_top, boundedBy_top, eq_top_iff]
@@ -369,7 +368,6 @@ theorem mkMetric_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0∞} (hc : c �
   simp only [mkMetric, mkMetric', mkMetric'.pre]
   simp_rw [smul_iSup, smul_boundedBy hc, ennreal_smul_extend _ hc', Pi.smul_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mkMetric_nnreal_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0} (hc : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
   rw [ENNReal.smul_def, ENNReal.smul_def,
@@ -484,7 +482,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, if_true]
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr; rcases htr with ⟨n, hn⟩
+    push Not at htr; rcases htr with ⟨n, hn⟩
     refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     · exact hn.not_ge
@@ -742,7 +740,6 @@ end LipschitzWith
 
 open scoped Pointwise
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
@@ -859,6 +856,11 @@ theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsIsometricSMul α X] {d
   (isometry_smul X c).hausdorffMeasure_image h _
 
 @[to_additive]
+instance {α : Type*} [Group α] [MulAction α X] [IsIsometricSMul α X] {d : ℝ} :
+    SMulInvariantMeasure α X μH[d] where
+  measure_preimage_smul c _ _ := (IsometryEquiv.constSMul c).hausdorffMeasure_preimage _ _
+
+@[to_additive]
 instance {d : ℝ} [Group X] [IsIsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
   map_mul_left_eq_self x := (IsometryEquiv.constSMul x).map_hausdorffMeasure _
 
@@ -871,7 +873,6 @@ instance {d : ℝ} [Group X] [IsIsometricSMul Xᵐᵒᵖ X] : IsMulRightInvarian
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the space `ι → ℝ`, the Hausdorff measure coincides exactly with the Lebesgue measure. -/
 @[simp]
 theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :

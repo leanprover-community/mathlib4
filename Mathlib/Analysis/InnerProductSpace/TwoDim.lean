@@ -186,7 +186,6 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
   rw [real_inner_comm]
   simp [o.areaForm_swap y x]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
@@ -404,7 +403,6 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       smul_eq_mul, mul_zero, and_true]
     positivity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
 real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
@@ -474,7 +472,6 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
   · positivity
   · positivity
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
   rcases eq_zero_or_eq_zero_of_mul_eq_zero this with h | h
@@ -525,7 +522,6 @@ protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (con
     Matrix.cons_val_one, mul_im, conj_re, conj_im]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem rightAngleRotation (z : ℂ) :
     Complex.orientation.rightAngleRotation z = I * z := by
@@ -536,7 +532,6 @@ protected theorem rightAngleRotation (z : ℂ) :
     neg_re, neg_im, I_re, I_im]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = z * conj w := by
   rw [Orientation.kahler_apply_apply]

@@ -625,7 +625,7 @@ lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
         (lift fWX fWY h) f := by
       rw [← IsPullback.paste_vert_iff this.flip (by ext <;> simp [f])]
       simpa using .of_hasPullback _ _
-    convert inferInstanceAs (IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
+    convert (inferInstance : IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
     aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
   exact MorphismProperty.of_zeroHypercover_target (P := .isomorphisms Scheme)
     (Scheme.Pullback.openCoverOfLeft 𝒰 fXZ fYZ) H₁
@@ -782,7 +782,6 @@ lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_base :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap R _)) =

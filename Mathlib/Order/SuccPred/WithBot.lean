@@ -54,11 +54,7 @@ variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderBot α] [SuccOrder 
 theorem succ_eq_bot (a : WithBot α) : WithBot.succ a = ⊥ ↔ a = ⊥ := by
   cases a
   · simp
-  · simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
-    apply ne_of_gt
-    by_contra! h
-    have h₂ : _ = ⊥ := le_bot_iff.mp ((Order.le_succ _).trans h)
-    exact not_isMax_bot (h₂ ▸ Order.max_of_succ_le (h.trans bot_le))
+  · simpa [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false] using Order.succ_ne_bot _
 
 end LinearOrder
 end WithBot
@@ -79,13 +75,11 @@ lemma pred_eq_pred : ∀ a : WithTop α, pred a = Order.pred a
   | ⊤ => rfl
   | (a : α) => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pred_mono : Monotone (pred : WithTop α → α)
   | _, ⊤, _ => by simp
   | ⊤, (a : α), hab => by simp at hab
   | (a : α), (b : α), hab => Order.pred_le_pred (by simpa using hab)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pred_strictMono [NoMinOrder α] : StrictMono (pred : WithTop α → α)
   | (b : α), ⊤, hab => by simp
   | (a : α), (b : α), hab => Order.pred_lt_pred (by simpa using hab)
@@ -99,13 +93,7 @@ variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderTop α] [PredOrder 
 
 @[simp]
 theorem pred_eq_top (a : WithTop α) : WithTop.pred a = ⊤ ↔ a = ⊤ := by
-  cases a
-  · simp
-  · simp only [WithTop.pred_coe, WithTop.coe_ne_top, iff_false]
-    apply ne_of_lt
-    by_contra! h
-    have h₂ : _ = ⊤ := top_le_iff.mp (h.trans (Order.pred_le _))
-    exact not_isMin_top (h₂ ▸ Order.min_of_le_pred (le_top.trans h))
+  cases a <;> simp [Order.pred_ne_top]
 
 end LinearOrder
 end WithTop

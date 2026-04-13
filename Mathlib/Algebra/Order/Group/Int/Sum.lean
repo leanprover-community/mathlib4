@@ -31,9 +31,8 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
     _ ≤ ∑ x ∈ s ∩ r, x + #(s \ r) • (c - #s) := by
       rw [← sum_inter_add_sum_diff s r _]
       gcongr
-      refine sum_le_card_nsmul _ _ _ fun x mx ↦ ?_
-      rw [mem_sdiff, mem_Ioc, not_and'] at mx
-      have := mx.2 (hs _ mx.1); grind
+      apply sum_le_card_nsmul
+      grind
     _ = ∑ x ∈ r ∩ s, x + #(r \ s) • (c - #s) := by
       rw [inter_comm, card_sdiff_comm]
       rw [Int.card_Ioc, sub_sub_cancel, Int.toNat_natCast]
@@ -67,8 +66,7 @@ lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
       rw [Int.card_Ico, add_sub_cancel_left, Int.toNat_natCast]
     _ ≤ _ := by
       grw [← sum_inter_add_sum_diff s r, card_nsmul_le_sum _ _ _ fun x mx ↦ ?_]
-      rw [mem_sdiff, mem_Ico, not_and] at mx
-      have := mx.2 (hs _ mx.1); grind
+      grind
 
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `range` version. -/
 lemma sum_range_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :

@@ -31,7 +31,7 @@ section toFn
 variable {R : Type*} [Semiring R]
 
 /-- `toFn n f` is the vector of the first `n` coefficients of the polynomial `f`. -/
-def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R := LinearMap.pi (fun i ↦ lcoeff R i)
+noncomputable def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R := LinearMap.pi (fun i ↦ lcoeff R i)
 
 theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
 
@@ -72,8 +72,9 @@ theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
 
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
-theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) : (ofFn n v).coeff i = 0 :=
-  by simp [ofFn, Nat.not_lt_of_ge hi]
+theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) :
+    (ofFn n v).coeff i = 0 := by
+  simp [ofFn, Nat.not_lt_of_ge hi]
 
 /-- `ofFn n v` has `natDegree` smaller than `n`. -/
 theorem ofFn_natDegree_lt {n : ℕ} (h : 1 ≤ n) (v : Fin n → R) : (ofFn n v).natDegree < n := by

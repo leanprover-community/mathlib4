@@ -43,7 +43,7 @@ theorem of_is_product {c : BinaryFan X Y} (h : Limits.IsLimit c) (t : IsTerminal
   of_isLimit
     (isPullbackOfIsTerminalIsProduct _ _ _ _ t
       (IsLimit.ofIsoLimit h
-        (Limits.Cones.ext (Iso.refl c.pt)
+        (Limits.Cone.ext (Iso.refl c.pt)
           (by
             rintro ⟨⟨⟩⟩ <;> simp))))
 
@@ -116,28 +116,37 @@ lemma of_iso' (h : IsPullback fst snd f g)
 
 section
 
-variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y}
 
-lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
-  h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+    IsIso fst := h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
-lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
-    (h : IsPullback fst snd f f) : IsIso snd :=
-  h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
+lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+    IsIso snd := h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
 
 end
 
 section
 
-lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) [IsIso g] : IsIso fst := by
+lemma mono_fst_of_mono (h : IsPullback fst snd f g) (inst : Mono g := by infer_instance) :
+    Mono fst := by
+  constructor
+  intro W fst' snd' heq
+  exact h.hom_ext heq (by simp [← cancel_mono g, ← h.w, reassoc_of% heq])
+
+lemma mono_snd_of_mono (h : IsPullback fst snd f g) (inst : Mono f := by infer_instance) :
+    Mono snd :=
+  h.flip.mono_fst_of_mono
+
+lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) (inst : IsIso g := by infer_instance) :
+    IsIso fst := by
   have := h.hasPullback
   rw [← h.isoPullback_hom_fst]
   infer_instance
 
-lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) [IsIso f] : IsIso snd := by
-  have := h.hasPullback
-  rw [← h.isoPullback_hom_snd]
-  infer_instance
+lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) (inst : IsIso f := by infer_instance) :
+    IsIso snd :=
+  h.flip.isIso_fst_of_isIso
 
 end
 
@@ -358,6 +367,24 @@ lemma of_isLimit_binaryFan_of_isTerminal
         rfl)⟩
 end
 
+lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (w : fst ≫ f = snd ≫ g)
+    (hom_ext : ∀ ⦃T : C⦄ ⦃φ φ' : T ⟶ P⦄ (_ : φ ≫ fst = φ' ≫ fst)
+      (_ : φ ≫ snd = φ' ≫ snd), φ = φ')
+    (exists_lift : ∀ ⦃T : C⦄ (a : T ⟶ X) (b : T ⟶ Y)
+      (_ : a ≫ f = b ≫ g), ∃ (l : T ⟶ P), l ≫ fst = a ∧ l ≫ snd = b) :
+    IsPullback fst snd f g where
+  w := w
+  isLimit' := by
+    let l (s : PullbackCone f g) := exists_lift _ _ s.condition
+    exact ⟨PullbackCone.IsLimit.mk _
+      (fun s ↦ (l s).choose)
+      (fun s ↦ (l s).choose_spec.1)
+      (fun s ↦ (l s).choose_spec.2)
+      (fun s m h₁ h₂ ↦ hom_ext
+        (h₁.trans (l s).choose_spec.1.symm)
+        (h₂.trans (l s).choose_spec.2.symm))⟩
+
 end IsPullback
 namespace IsPushout
 
@@ -371,7 +398,7 @@ theorem of_is_coproduct {c : BinaryCofan X Y} (h : Limits.IsColimit c) (t : IsIn
   of_isColimit
     (isPushoutOfIsInitialIsCoproduct _ _ _ _ t
       (IsColimit.ofIsoColimit h
-        (Limits.Cocones.ext (Iso.refl c.pt)
+        (Limits.Cocone.ext (Iso.refl c.pt)
           (by
             rintro ⟨⟨⟩⟩ <;> simp))))
 
@@ -428,27 +455,35 @@ lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y
 
 section
 
-variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
+variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X}
 
-lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
-  h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
+lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+    IsIso inl := h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
 
-lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
-  h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
+lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+    IsIso inr := h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
 
 end
 
 section
 
-lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) [IsIso g] : IsIso inl := by
+lemma epi_inl_of_epi (h : IsPushout f g inl inr) (inst : Epi g := by infer_instance) :
+    Epi inl := by
+  constructor
+  intro W fst' snd' heq
+  exact h.hom_ext heq (by simp [← cancel_epi g, ← h.w_assoc,heq])
+
+lemma epi_inr_of_epi (h : IsPushout f g inl inr) (inst : Epi f := by infer_instance) :
+    Epi inr := h.flip.epi_inl_of_epi
+
+lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) (inst : IsIso g := by infer_instance) :
+    IsIso inl := by
   have := h.hasPushout
   rw [← h.inl_isoPushout_inv]
   infer_instance
 
-lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) [IsIso f] : IsIso inr := by
-  have := h.hasPushout
-  rw [← h.inr_isoPushout_inv]
-  infer_instance
+lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) (inst : IsIso f := by infer_instance) :
+    IsIso inr := h.flip.isIso_inl_of_isIso
 
 end
 
@@ -675,6 +710,23 @@ lemma of_isColimit_binaryCofan_of_isInitial
       · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
         rfl)⟩
 
+lemma mk' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (w : f ≫ inl = g ≫ inr)
+    (hom_ext : ∀ ⦃T : C⦄ ⦃φ φ' : P ⟶ T⦄ (_ : inl ≫ φ = inl ≫ φ')
+      (_ : inr ≫ φ = inr ≫ φ'), φ = φ')
+    (exists_desc : ∀ ⦃T : C⦄ (a : X ⟶ T) (b : Y ⟶ T)
+      (_ : f ≫ a = g ≫ b), ∃ (l : P ⟶ T), inl ≫ l = a ∧ inr ≫ l = b) :
+    IsPushout f g inl inr where
+  w := w
+  isColimit' := by
+    let l (s : PushoutCocone f g) := exists_desc _ _ s.condition
+    exact ⟨PushoutCocone.IsColimit.mk _
+      (fun s ↦ (l s).choose)
+      (fun s ↦ (l s).choose_spec.1)
+      (fun s ↦ (l s).choose_spec.2)
+      (fun s m h₁ h₂ ↦ hom_ext
+        (h₁.trans (l s).choose_spec.1.symm)
+        (h₂.trans (l s).choose_spec.2.symm))⟩
 
 end IsPushout
 
@@ -771,6 +823,46 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
+
+lemma IsPullback.app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄)
+    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
+
+lemma IsPullback.of_forall_isPullback_app {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
+    (h : ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
+    IsPullback f₁ f₂ f₃ f₄ where
+  w := by
+    ext X
+    simpa using (h X).w
+  isLimit' := ⟨evaluationJointlyReflectsLimits _ fun X =>
+    (PullbackCone.isLimitMapConeEquiv _ _).symm (h X).isLimit⟩
+
+lemma IsPullback.iff_app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
+    IsPullback f₁ f₂ f₃ f₄ ↔ ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  ⟨.app, .of_forall_isPullback_app⟩
+
+lemma IsPushout.app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄)
+    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
+
+lemma IsPushout.of_forall_isPushout_app {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
+    (h : ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
+    IsPushout f₁ f₂ f₃ f₄ where
+  w := by
+    ext X
+    simpa using (h X).w
+  isColimit' := ⟨evaluationJointlyReflectsColimits _ fun X =>
+    (PushoutCocone.isColimitMapCoconeEquiv _ _).symm (h X).isColimit⟩
+
+lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
+    IsPushout f₁ f₂ f₃ f₄ ↔ ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  ⟨.app, .of_forall_isPushout_app⟩
 
 end Functor
 

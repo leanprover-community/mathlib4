@@ -83,7 +83,6 @@ def centroid (p : ι → P) : P :=
 theorem centroid_def (p : ι → P) : s.centroid k p = s.affineCombination k p (s.centroidWeights k) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem centroid_univ (s : Finset P) : univ.centroid k ((↑) : s → P) = s.centroid k id := by
   rw [centroid, centroid, ← s.attach_affineCombination_coe]
   congr
@@ -103,8 +102,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
   · simp [h]
   · have hc : (#{i₁, i₂} : k) ≠ 0 := by
       rw [card_insert_of_notMem (notMem_singleton.2 h), card_singleton]
-      norm_num
-      exact Invertible.ne_zero _
+      simpa using Invertible.ne_zero _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]

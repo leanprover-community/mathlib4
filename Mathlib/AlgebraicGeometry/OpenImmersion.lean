@@ -59,8 +59,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
-    · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _
+    exact Subtype.range_coe_subtype
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -124,7 +123,6 @@ lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
   rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_le_opensRange (U : X.Opens) : f ''ᵁ U ≤ f.opensRange := by
   simpa using f.image_mono le_top
 

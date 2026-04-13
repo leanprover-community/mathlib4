@@ -76,7 +76,6 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simpa [hl] using h2
   · simp [hl, h0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     σ.cycleType.count n =
       Fintype.card {c : σ.cycleFactorsFinset // #(c : Perm α).support = n } := by
@@ -130,8 +129,6 @@ theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[deprecated (since := "2025-08-26")] alias Disjoint.cycleType := Disjoint.cycleType_mul
-
 @[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
@@ -157,7 +154,6 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
 theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
   σ.sum_cycleType ▸ Finset.card_le_univ σ.support
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
@@ -371,7 +367,6 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Function in
 /-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
 and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
@@ -550,7 +545,6 @@ theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (
 
 end Cauchy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
     [d : DecidablePred (· ∈ H)] {τ : Perm α} (h0 : (Fintype.card α).Prime)
     (h1 : Fintype.card α ∣ Fintype.card H) (h2 : τ ∈ H) (h3 : IsSwap τ) : H = ⊤ := by
@@ -680,7 +674,6 @@ section
 
 variable [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ c) (bc : b ≠ c) :
     IsThreeCycle (swap a b * swap a c) := by
   suffices h : support (swap a b * swap a c) = {a, b, c} by

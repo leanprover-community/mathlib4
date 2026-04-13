@@ -443,9 +443,12 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   induction f₂ using Quotient.inductionOn'
   rfl
 
-theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Quotient.mk'' f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
-  inf_eq_map_pullback' f₁ f₂
+theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
+    (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
+  convert inf_eq_map_pullback' (representative.obj f₁) f₂
+  ext1
+  nth_rw 1 [← thinSkeleton_mk_representative_eq_self f₁]
+  congr
 
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
@@ -623,8 +626,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
-  sInf_le := sInf_le
-  le_sInf := le_sInf
+  isGLB_sInf _ := ⟨sInf_le _, le_sInf _⟩
 
 end Inf
 
@@ -676,8 +678,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
-  le_sSup := le_sSup
-  sSup_le := sSup_le
+  isLUB_sSup _ := ⟨le_sSup _, sSup_le _⟩
 
 end Sup
 

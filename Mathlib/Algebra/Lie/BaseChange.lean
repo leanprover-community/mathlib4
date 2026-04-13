@@ -183,7 +183,6 @@ variable (N : LieSubmodule R L M)
 
 open LieModule
 
-set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.

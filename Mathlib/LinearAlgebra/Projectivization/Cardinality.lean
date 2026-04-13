@@ -72,7 +72,7 @@ lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   cases finite_or_infinite V with
   | inr h =>
     have := not_iff_not.mpr (finite_iff_of_finite k V)
-    push_neg at this
+    push Not at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
   | inl h =>
@@ -102,7 +102,6 @@ lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 
   rw [card k, Nat.mul_div_cancel]
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V

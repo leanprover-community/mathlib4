@@ -53,7 +53,6 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 @[simp, grind =] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion]
@@ -201,7 +200,6 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 @[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
@@ -264,7 +262,7 @@ lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
 @[simp]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
-  rw [exists_swap]
+  rw [exists_comm]
   simp [exists_and_left]
 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :

@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 
@@ -70,7 +71,6 @@ def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
 ## The chain complex relation `d ≫ d`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
@@ -198,6 +198,11 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] 
       rfl
     · ext n
       rfl
+
+instance : (alternatingFaceMapComplex C).Additive where
+
+instance [Limits.HasPullbacks C] : (alternatingFaceMapComplex C).PreservesMonomorphisms where
+  preserves _ _ := HomologicalComplex.mono_of_mono_f _ fun _ ↦ by dsimp; infer_instance
 
 theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =

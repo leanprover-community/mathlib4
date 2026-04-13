@@ -20,7 +20,7 @@ representations of reals as sequences of digits in positional system.
 
 * `ofDigits`: takes a sequence of digits `(d₀, d₁, ...)` (as an `ℕ → Fin b`),
   and returns the real number `0.d₀d₁d₂...`.
-* `digits`: takes a real number in [0,1) and returns the sequence of its digits.
+* `digits`: takes a real number in $[0,1)$ and returns the sequence of its digits.
 
 ## Main Statements
 
@@ -124,7 +124,6 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
@@ -136,7 +135,6 @@ theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     mul_sub, inv_pow, mul_inv_cancel₀ (by positivity)]
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_ofDigitsTerm_digits_le {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by

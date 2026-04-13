@@ -132,7 +132,6 @@ theorem ascPochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
   rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, ← C_eq_natCast,
     eval_C_mul, Nat.cast_comm, ← mul_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
     (ascPochhammer S (n + 1)).comp (X + 1) =
       ascPochhammer S (n + 1) + (n + 1) • (ascPochhammer S n).comp (X + 1) := by
@@ -407,7 +406,7 @@ theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
     rw [descPochhammer_succ_right, Nat.descFactorial_succ, mul_sub, eval_sub, eval_mul_X,
       ← Nat.cast_comm k, eval_natCast_mul, ← Nat.cast_comm n, ← sub_mul, ih]
     by_cases! h : n < k
-    · rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero]
+    · rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero, mul_zero, Nat.cast_zero]
     · rw [Nat.cast_mul, Nat.cast_sub h]
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :

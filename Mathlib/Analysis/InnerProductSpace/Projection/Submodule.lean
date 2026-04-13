@@ -166,7 +166,6 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.top_orthogonal_eq_bot]
   · rw [h, Submodule.bot_orthogonal_eq_top]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalProjection_apply_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
@@ -208,27 +207,12 @@ open Submodule
 
 variable {K} {x y : E}
 
-theorem eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
-  have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
-    hK continuous_const (Subtype.forall.1 h)
-  simpa using congr_fun this x
-
 theorem eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
-  eq_zero_of_inner_left hK fun v ↦ (mem_orthogonal' _ _).1 h _ v.2
+  eq_zero_of_inner_left 𝕜 hK fun _ ↦ (mem_orthogonal' _ _).1 h _
 
 /-- If `S` is dense and `x - y ∈ Kᗮ`, then `x = y`. -/
 theorem eq_of_sub_mem_orthogonal (hK : Dense (K : Set E)) (h : x - y ∈ Kᗮ) : x = y :=
   sub_eq_zero.1 <| eq_zero_of_mem_orthogonal hK h
-
-theorem eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
-  hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_left h)
-
-theorem eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
-    x = y :=
-  hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_right h)
-
-theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
-  hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 
 end Dense
 

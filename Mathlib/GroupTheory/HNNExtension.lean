@@ -418,7 +418,6 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -536,7 +535,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         -- simp [equiv_symm_eq_conj, mul_assoc].
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
-        grind [equiv_symm_eq_conj, mul_assoc]
+        erw [equiv_symm_eq_conj, mul_assoc, mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
@@ -567,9 +566,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
-set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
@@ -584,11 +580,8 @@ theorem prod_smul_empty (w : NormalWord d) :
     --   -SetLike.coe_sort_coe]
     -- ext <;> simp [-SetLike.coe_sort_coe]
     simp only [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
-      smul_cons]
-    ext <;> simp [-SetLike.coe_sort_coe]
-    rw [(d.compl _).equiv_snd_eq_inv_mul,
-      (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-    simp
+      (d.compl _).equiv_snd_eq_inv_mul, inv_one, one_mul, mul_inv_cancel, one_smul, smul_cons]
+    ext <;> simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/

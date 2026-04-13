@@ -82,7 +82,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   by_cases H : x ≠ 0 ∨ 0 ≤ m
   · exact (hasDerivAt_zpow m x H).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
-    push_neg at H
+    push Not at H
     rcases H with ⟨rfl, hm⟩
     rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 
@@ -94,7 +94,6 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
     derivWithin (fun x => x ^ m) s x = (m : 𝕜) * x ^ (m - 1) :=
   (hasDerivWithinAt_zpow m x h s).derivWithin hxs
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =

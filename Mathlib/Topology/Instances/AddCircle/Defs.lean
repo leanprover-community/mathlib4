@@ -328,12 +328,41 @@ theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
   rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
+@[simp]
+lemma coe_equivIco {y : AddCircle p} :
+    (equivIco p a y : AddCircle p) = y :=
+  (equivIco p a).left_inv y
+
+@[simp]
+lemma coe_equivIoc {y : AddCircle p} :
+    (equivIoc p a y : AddCircle p) = y :=
+  (equivIoc p a).left_inv y
+
+lemma equivIco_coe_of_mem {y : 𝕜} (hy : y ∈ Ico a (a + p)) :
+    equivIco p a y = y := by
+  have : equivIco p a y = ⟨y, hy⟩ := (equivIco p a).right_inv ⟨y, hy⟩
+  simp [this]
+
+lemma equivIoc_coe_of_mem {y : 𝕜} (hy : y ∈ Ioc a (a + p)) :
+    equivIoc p a y = y := by
+  have : equivIoc p a y = ⟨y, hy⟩ := (equivIoc p a).right_inv ⟨y, hy⟩
+  simp [this]
+
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
+  exact h
+
+/-- Ioc version of `coe_eq_coe_iff_of_mem_Ico`. -/
+lemma coe_eq_coe_iff_of_mem_Ioc {x y : 𝕜} (hx : x ∈ Ioc a (a + p)) (hy : y ∈ Ioc a (a + p)) :
+    (x : AddCircle p) = y ↔ x = y := by
+  refine ⟨fun h => ?_, by tauto⟩
+  suffices (⟨x, hx⟩ : Ioc a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
+  apply_fun equivIoc p a at h
+  rw [← (equivIoc p a).right_inv ⟨x, hx⟩, ← (equivIoc p a).right_inv ⟨y, hy⟩]
   exact h
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
@@ -344,16 +373,28 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc_coe_eq hx]
 
+theorem liftIoc_eq_liftIco_of_ne {f : 𝕜 → B} {x : AddCircle p}
+    (x_ne_a : x ≠ a) : liftIoc p a f x = liftIco p a f x := by
+  have x_eq_b : x = ↑(equivIco p a x) := coe_equivIco.symm
+  rw [x_eq_b, liftIco_coe_apply (equivIco p a x).coe_prop]
+  exact liftIoc_coe_apply (by grind)
+
 lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
 
 lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
-lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
   exact ⟨b.1, by simpa only [zero_add] using b.2,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
+
+/-- `Ioc` version of `eq_coe_Ico`. -/
+lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
+  let b := QuotientAddGroup.equivIocMod hp.out 0 a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIocMod hp.out 0).symm_apply_apply a⟩
 
 lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
     (a : AddCircle p) = 0 ↔ a = 0 := by
@@ -411,9 +452,6 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   continuousOn_invFun := by
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
-
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  partialHomeomorphCoe := openPartialHomeomorphCoe
 
 end Continuity
 
@@ -479,8 +517,8 @@ variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
   ⟨equivAddCircle p q hp hq,
-    (continuous_quotient_mk'.comp (continuous_mul_right (p⁻¹ * q))).quotient_lift _,
-    (continuous_quotient_mk'.comp (continuous_mul_right (q⁻¹ * p))).quotient_lift _⟩
+    (continuous_quotient_mk'.comp (continuous_mul_const (p⁻¹ * q))).quotient_lift _,
+    (continuous_quotient_mk'.comp (continuous_mul_const (q⁻¹ * p))).quotient_lift _⟩
 
 @[simp]
 theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
@@ -512,7 +550,6 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 
-set_option backward.isDefEq.respectTransparency false in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by simp
@@ -571,7 +608,6 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     n • u = 0 ↔ ∃ m < n, ↑(↑m / ↑n * p) = u := by
   refine ⟨QuotientAddGroup.induction_on u fun k hk ↦ ?_, ?_⟩
@@ -720,7 +756,6 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from `[a, a + p] ⊂ 𝕜` with endpoints identified to `𝕜 / ℤ • p`, as a
 homeomorphism of topological spaces. -/
 def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot (EndpointIdent p a) where

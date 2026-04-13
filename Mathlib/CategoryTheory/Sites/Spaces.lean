@@ -46,7 +46,7 @@ open CategoryTheory TopologicalSpace CategoryTheory.Limits
 
 /-- The Grothendieck topology associated to a topological space. -/
 def grothendieckTopology : GrothendieckTopology (Opens T) where
-  sieves X S := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), S f ∧ x ∈ U
+  sieves X := {S | ∀ x ∈ X, ∃ (U : Opens T) (f : U ⟶ X), S f ∧ x ∈ U}
   top_mem' _ _ hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
@@ -57,10 +57,9 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
-  coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
+  coverings X := {R | ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U}
   has_isos _ _ f _ _ hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
@@ -73,7 +72,6 @@ def pretopology : Pretopology (Opens T) where
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space is the largest pretopology that
 generates the Grothendieck topology associated to the space. -/
 @[simp]
@@ -85,12 +83,8 @@ theorem toPretopology_grothendieckTopology :
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
-    exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
+    exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
-@[deprecated (since := "2025-09-19")]
-alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]

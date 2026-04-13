@@ -98,8 +98,7 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
         conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
         rfl
       simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
-  le_sSup s x hxs := le_sSup (s := ideal '' s) ⟨_, hxs, rfl⟩
-  sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
+  isLUB_sSup _ := .of_image (f := ideal) le_def (isLUB_sSup _)
 
 /-- The largest ideal sheaf contained in a family of ideals. -/
 def ofIdeals (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
@@ -167,10 +166,10 @@ instance : SemilatticeInf (IdealSheafData X) where
   le_inf I J K hIJ hIK U := le_inf (hIJ U) (hIK U)
 
 instance : CompleteLattice (IdealSheafData X) where
-  __ := inferInstanceAs (OrderTop (IdealSheafData X))
-  __ := inferInstanceAs (OrderBot (IdealSheafData X))
-  __ := inferInstanceAs (SemilatticeInf (IdealSheafData X))
-  __ := inferInstanceAs (CompleteSemilatticeSup (IdealSheafData X))
+  __ := (inferInstance : OrderTop (IdealSheafData X))
+  __ := (inferInstance : OrderBot (IdealSheafData X))
+  __ := (inferInstance : SemilatticeInf (IdealSheafData X))
+  __ := (inferInstance : CompleteSemilatticeSup (IdealSheafData X))
   __ := IdealSheafData.gci.liftCompleteLattice
 
 @[simp]
@@ -448,7 +447,6 @@ instance : IdemCommSemiring X.IdealSheafData where
   npow n I := I ^ n
   npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
-  bot_le _ := bot_le
 
 instance : IsOrderedRing X.IdealSheafData where
 
@@ -461,7 +459,6 @@ end Semiring
 
 section IsAffine
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ideal sheaf induced by an ideal of the global sections. -/
 @[simps! ideal coe_support]
 def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
@@ -473,7 +470,6 @@ def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
       simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
         SetLike.mem_coe, hxU, not_true_eq_false, iff_self_or, IsEmpty.forall_iff])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
     (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ ≤ J.ideal ⟨⊤, isAffineOpen_top X⟩) : I ≤ J := by
   intro U
@@ -564,7 +560,7 @@ set_option backward.isDefEq.respectTransparency false in
 which is the largest ideal sheaf whose support is equal to it.
 The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
-nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
     (fun U ↦ vanishingIdeal (U.2.fromSpec ⁻¹' Z))
     (fun U f ↦ by
@@ -642,7 +638,6 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
     IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma vanishingIdeal_bot : vanishingIdeal (X := X) ⊥ = ⊤ := gc.u_top
 
 @[simp] lemma vanishingIdeal_top : vanishingIdeal (X := X) ⊤ = X.nilradical := by
@@ -675,7 +670,6 @@ section IsReduced
 lemma nilradical_eq_bot [IsReduced X] : X.nilradical = ⊥ := by
   ext; simp [nilradical, Ideal.radical_eq_iff.mpr (Ideal.isRadical_bot)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IdealSheafData.support_eq_top_iff [IsReduced X] {I : X.IdealSheafData} :
     I.support = ⊤ ↔ I = ⊥ := by
   rw [← top_le_iff, le_support_iff_le_vanishingIdeal,
@@ -817,8 +811,6 @@ lemma Hom.iUnion_support_ker_openCover_map_comp
 lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
     (U : Y.Opens) (V : U.toScheme.affineOpens) :
     (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
-  have inst : QuasiCompact (f ∣_ U) := MorphismProperty.of_isPullback
-      (isPullback_morphismRestrict _ _).flip inferInstance
   ext x
   simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
     (ConcreteCategory.bijective_of_isIso
@@ -873,7 +865,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
       have inst : QuasiCompact (𝒰.f i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
-        (by change CompactSpace (Spec _); infer_instance)
+        (inferInstanceAs <| CompactSpace (Spec _))
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.f i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f

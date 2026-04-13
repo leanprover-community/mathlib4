@@ -201,6 +201,7 @@ variable (e : OpenPartialHomeomorph α H)
 whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `IsOpenEmbedding.singletonChartedSpace`.) -/
+@[implicit_reducible]
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -242,6 +243,7 @@ variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
+@[implicit_reducible]
 def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 
@@ -340,9 +342,6 @@ lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : OpenPartialHomeomorph
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
 
-@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
-  StructureGroupoid.subtypeRestr_mem_maximalAtlas
-
 /-! ### Structomorphisms -/
 
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
@@ -425,7 +424,6 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
 theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
     {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)

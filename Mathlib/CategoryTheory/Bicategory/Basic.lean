@@ -252,6 +252,12 @@ theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η]
   apply IsIso.inv_eq_of_hom_inv_id
   simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
 
+@[inherit_doc whiskerLeftIso]
+scoped infixr:82 " ◁ᵢ " => whiskerLeftIso
+
+@[inherit_doc whiskerRightIso]
+scoped infixl:82 " ▷ᵢ " => whiskerRightIso
+
 @[reassoc (attr := simp)]
 theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i =
