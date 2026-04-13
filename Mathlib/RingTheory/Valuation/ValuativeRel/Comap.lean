@@ -24,7 +24,8 @@ namespace ValuativeRel
 
 variable {A B : Type*} [CommRing A] [CommRing B]
 
-/-- The pullback of a `ValuativeRel` along `φ : A →+* B`: `a₁ ≤ᵥ a₂ ↔ φ(a₁) ≤ᵥ φ(a₂)`. -/
+/-- The pullback of a `ValuativeRel` along `φ : A →+* B`:
+`a₁ ≤ᵥ a₂ ↔ φ(a₁) ≤ᵥ φ(a₂)`. -/
 @[reducible]
 def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
   vle a₁ a₂ := v.vle (φ a₁) (φ a₂)
