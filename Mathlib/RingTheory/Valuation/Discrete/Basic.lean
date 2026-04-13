@@ -554,10 +554,10 @@ lemma intValuation_maximalIdeal (x : A) :
       (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd <| Nat.cast · ) (addVal A x))⁻¹ := by
   by_cases hx : x = 0
   · simp [hx]
-  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible A
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
-  have : (maximalIdeal R).intValuation ↑u = 1 := by simp [maximalIdeal]
-  simp [(maximalIdeal R).intValuation_singleton hϖ.ne_zero
+  have : (maximalIdeal A).intValuation ↑u = 1 := by simp [maximalIdeal]
+  simp [(maximalIdeal A).intValuation_singleton hϖ.ne_zero
     hϖ.maximalIdeal_eq, hϖ, this, WithZero.exp_eq_coe_ofAdd (n : ℤ)]
 
 end IsDiscreteValuationRing
