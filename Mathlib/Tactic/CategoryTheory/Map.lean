@@ -125,7 +125,14 @@ produces the corresponding statement with a functor applied and
 `simp only [Functor.map_comp, Functor.map_id]` on each side.
 -/
 elab "map_of% " t:term : term => do
-  let e ← Term.withSynthesizeLight <| Term.elabTerm t none
+  let e ← Term.withSynthesizeLight do
+    match t with
+    | `(term| @$id:ident) | `(term| $id:ident) =>
+      if (← withRef id <| Term.isLocalIdent? id).isNone then
+        try mkConstWithFreshMVarLevels (← resolveGlobalConstNoOverload id)
+        catch _ => Term.elabTerm t none
+      else Term.elabTerm t none
+    | _ => Term.elabTerm t none
   mapExprMVars e
 
 end Mathlib.Tactic.CategoryTheory.Map

@@ -59,8 +59,18 @@ lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
 `map_of%` pushes `Functor.map` through an equality and applies `simp only [Functor.map_comp, Functor.map_id]` on each
 side.
 -/
+
 example {x y z : C} {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
     (w : f ≫ g = h) : F.map f ≫ F.map g = F.map h := by
   exact (map_of% w) F
+
+lemma foo {x y z : C} {f : x ⟶ y} {g : y ⟶ z} {h : x ⟶ z} (w : f ≫ g = h) :
+    f ≫ g = h := w
+
+example {D : Type*} [Category* D] {x y z : C} (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (w : f ≫ g = h) :
+    F.map f ≫ F.map g = F.map h := by
+  rw [map_of% foo]
+  exact w
 
 end Tests.Map
