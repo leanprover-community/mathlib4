@@ -190,6 +190,68 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
+noncomputable section
+
+private def freeAbPresheaf (U : Opens X) : (Opens X)ᵒᵖ ⥤ AddCommGrpCat.{u} :=
+  yoneda.obj U ⋙ AddCommGrpCat.free
+
+private def freeAbSheaf (U : Opens X) : TopCat.Sheaf AddCommGrpCat.{u} X :=
+  (presheafToSheaf (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).obj
+    (freeAbPresheaf U)
+
+private def freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
+  (presheafToSheaf (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).map
+    (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
+
+private def freeAbSheafHomEquiv (U : Opens X) (I : TopCat.Sheaf AddCommGrpCat.{u} X) :
+    (freeAbSheaf U ⟶ I) ≃ (CategoryTheory.forget AddCommGrpCat).obj (I.obj.obj (op U)) :=
+  ((sheafificationAdjunction (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).homEquiv
+    (freeAbPresheaf U) I).trans <|
+  ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
+    (sheafToPresheaf _ _ |>.obj I)).trans <|
+  yonedaEquiv
+
+set_option backward.isDefEq.respectTransparency false in
+private lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
+    (I : TopCat.Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
+    freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
+      (I.obj.map i.op) (freeAbSheafHomEquiv V I f) := by
+  simp [freeAbSheafHomEquiv, freeAbSheafMap]
+  erw [Adjunction.homEquiv_naturality_left]
+  erw [Adjunction.homEquiv_naturality_left]
+  simp +decide [yonedaEquiv]
+  convert (NatTrans.naturality
+    ((Adjunction.whiskerRight (Opens X)ᵒᵖ AddCommGrpCat.adj).homEquiv
+      (yoneda.obj V) I.obj
+      ((sheafificationAdjunction (Opens.grothendieckTopology X)
+        AddCommGrpCat).homEquiv (freeAbPresheaf V) I f))
+    i.op) using 1
+  exact ⟨fun _ => (NatTrans.naturality
+      ((Adjunction.whiskerRight (Opens X)ᵒᵖ AddCommGrpCat.adj).homEquiv
+        (yoneda.obj V) I.obj
+        ((sheafificationAdjunction (Opens.grothendieckTopology X)
+          AddCommGrpCat).homEquiv (freeAbPresheaf V) I f)) i.op),
+    fun h => by convert congr_arg (fun g => g (𝟙 V)) h using 1⟩
+
+set_option backward.isDefEq.respectTransparency false in
+private instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
+    Mono (freeAbSheafMap i) :=
+  haveI : PreservesFiniteLimits (presheafToSheaf (Opens.grothendieckTopology X)
+      AddCommGrpCat.{u}) := HasSheafify.isLeftExact
+  Functor.map_mono _ _
+
+end
+
+-- Injective sheaves are flasque (proved by Aristotle 8f42abaa).
+-- Uses free abelian sheaf + Yoneda identification + Injective.factors.
+theorem isFlasque_of_injective {X : TopCat.{u}}
+    (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
+  epi := by
+    intro U V i
+    rw [AddCommGrpCat.epi_iff_surjective]
+    intro s; obtain ⟨h, hh⟩ := Injective.factors ((freeAbSheafHomEquiv (unop V) I).symm s) (freeAbSheafMap i.unop)
+    exact ⟨freeAbSheafHomEquiv (unop U) I h, by erw [← freeAbSheafHomEquiv_naturality i.unop I h, hh]; simp⟩
+
 /-- Injective sheaves are flasque. -/
 instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
   epi := fun i => epi_map_of_injective I (leOfHom i.unop)
