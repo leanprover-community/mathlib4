@@ -43,13 +43,13 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 ## References
 
 * [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
@@ -322,12 +322,58 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       convert sym_filterNe_mem a hm
       rw [erase_insert ha]
 
-/-- A “multinomial” theorem for divided powers — without multinomial coefficients -/
-theorem dpow_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : ι → A}
-    (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
+variable {ι : Type*} [DecidableEq ι]
+
+/-- A “multinomial” theorem for divided powers — without multinomial coefficients. -/
+theorem dpow_sum {s : Finset ι} {x : ι → A} (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
     hI.dpow n (s.sum x) =
       (s.sym n).sum fun k ↦ s.prod fun i ↦ hI.dpow (Multiset.count i k) (x i) :=
   dpow_sum' hI.dpow hI.dpow_zero hI.dpow_add hI.dpow_eval_zero hx
+
+/-- A "multinomial" theorem for divided powers — without multinomial coefficients — for finitely
+supported functions. -/
+theorem dpow_finsupp_sum {x : ι →₀ A} (hx : ∀ i, x i ∈ I) {n : ℕ} :
+    hI.dpow n (x.sum fun _ r ↦ r) =
+      ∑ k ∈ (x.support.sym n), x.prod fun i r ↦ hI.dpow (Multiset.count i k) r := by
+  simp [Finsupp.sum, hI.dpow_sum (fun i _ ↦ hx i), Finsupp.prod]
+
+theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : Ideal S}
+    (hJ : DividedPowers J) {b : ι → S} {x : ι →₀ A} (hx : ∀ i ∈ x.support, b i ∈ J) {n : ℕ} :
+    hJ.dpow n (x.sum fun i r ↦ r • (b i)) =
+      ∑ k ∈ x.support.sym n,
+        x.prod fun i r ↦ r ^ (Multiset.count i k) • hJ.dpow (Multiset.count i k) (b i) := by
+  rw [Finsupp.sum, hJ.dpow_sum (fun i hi ↦ Submodule.smul_of_tower_mem J _ (hx i hi))]
+  apply Finset.sum_congr rfl
+  intros
+  apply Finset.prod_congr rfl
+  intro i hi
+  rw [Algebra.smul_def, hJ.dpow_mul (hx i hi), ← map_pow, ← Algebra.smul_def]
+
+/-- Given a nonempty `s : Finset ι` and a family `r : ι → R` such that `r i ∈ I` for all `i ∈ S`,
+  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
+  for all `n : ℕ`. -/
+theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
+    (hs' : ∀ i ∈ s, r i ∈ I) {n : ℕ} :
+    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp_all
+  | @insert a s has hrec =>
+    rw [Finset.prod_insert has]
+    by_cases h : s.Nonempty
+    · rw [dpow_mul]
+      · simp only [Finset.card_insert_of_notMem has, add_tsub_cancel_right, nsmul_eq_mul,
+          Nat.cast_pow, Finset.prod_insert has,
+          hrec h (fun i hi ↦ hs' i (mem_insert_of_mem hi)), ← mul_assoc]
+        apply congr_arg₂ _ _ rfl
+        have : #s = #s - 1 + 1 := by grind
+        nth_rewrite 2 [this]
+        rw [mul_comm, pow_succ, mul_assoc, hI.factorial_mul_dpow_eq_pow]
+        exact hs' a (mem_insert_self a s)
+      · obtain ⟨j, hj⟩ := h
+        rw [Finset.prod_eq_prod_diff_singleton_mul hj]
+        exact I.mul_mem_left _ (hs' j (mem_insert_of_mem hj))
+    · simp [not_nonempty_iff_eq_empty.mp h]
 
 end BasicLemmas
 

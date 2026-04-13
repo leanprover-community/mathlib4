@@ -126,7 +126,7 @@ lemma Hom.w' {x y : F ⊡ G} (f : x ⟶ y) :
     G.map f.snd ≫ y.iso.inv = x.iso.inv ≫ F.map f.fst := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, f.w]
 
-/-- Extensionnality principle for morphisms in `CategoricalPullback F G`. -/
+/-- Extensionality principle for morphisms in `CategoricalPullback F G`. -/
 @[ext]
 theorem hom_ext {x y : F ⊡ G} {f g : x ⟶ y}
     (hₗ : f.fst = g.fst) (hᵣ : f.snd = g.snd) : f = g := by

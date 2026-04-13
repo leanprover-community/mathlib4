@@ -74,7 +74,6 @@ theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto (· * a) (cobounded α) (cobounded α) :=
   (map_mul_right_cobounded ha).le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsGT_zero, ← inv_atTop₀,
@@ -106,7 +105,7 @@ theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
     UniformContinuousOn Inv.inv s := by
   rw [Metric.uniformContinuousOn_iff_le]
   intro ε hε
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
+  rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
   simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
   have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
   refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
@@ -131,7 +130,6 @@ theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
   simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
   exact hf.inv₀ hf₀
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
@@ -173,7 +171,6 @@ theorem TendstoLocallyUniformly.inv₀ {X ι : Type*} [TopologicalSpace X]
     TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
   hF.inv₀_of_disjoint fun x ↦ disjoint_nhds_nhds.2 (hf₀ x) |>.mono_left (hf.tendsto x)
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α where
   continuousAt_inv₀ x hx := by
@@ -317,7 +314,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     rw [div_le_one (kpos.trans_lt hx)]
     exact hx.le.trans' (hk (by simp))
   obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
-  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  refine ⟨a * x, (((continuous_mul_const x).tendsto a).comp ha').congr ?_⟩
   have hx' : x ≠ 0 := by
     contrapose! hx
     simp [hx, kpos]

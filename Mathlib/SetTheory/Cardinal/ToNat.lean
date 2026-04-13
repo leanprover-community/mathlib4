@@ -120,7 +120,7 @@ theorem zero_toNat : toNat 0 = 0 := map_zero _
 theorem one_toNat : toNat 1 = 1 := map_one _
 
 theorem toNat_eq_iff {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c = n := by
-  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_nat]
+  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_natCast]
 
 /-- A version of `toNat_eq_iff` for literals -/
 theorem toNat_eq_ofNat {n : ℕ} [Nat.AtLeastTwo n] :

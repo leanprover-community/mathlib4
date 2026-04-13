@@ -657,7 +657,7 @@ lemma sqrt_eq_one_iff (a : A) (ha : 0 ≤ a := by cfc_tac) :
 set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
     sqrt a = 1 ↔ a = 1 := by
-  refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ h ▸ sqrt_one⟩
+  refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ by subst h; exact sqrt_one⟩
   rw [sqrt, cfcₙ] at h
   cfc_tac
 
@@ -687,7 +687,6 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0

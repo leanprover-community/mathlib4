@@ -289,7 +289,7 @@ theorem nonempty_of_nonempty_type (x : PSet) [h : Nonempty x.Type] : PSet.Nonemp
 
 /-- Two pre-sets are equivalent iff they have the same members. -/
 theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y :=
-  equiv_iff_mem.trans Set.ext_iff.symm
+  equiv_iff_mem.trans <| .symm Set.ext_iff
 
 instance : Coe PSet (Set PSet) :=
   ⟨toSet⟩
@@ -393,7 +393,7 @@ theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y => x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p => ⟨p, fun y => x.Func y.1⟩⟩
 
 @[simp]
 theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x

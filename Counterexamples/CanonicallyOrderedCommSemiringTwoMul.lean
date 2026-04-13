@@ -205,7 +205,7 @@ instance : CanonicallyOrderedAdd L where
   le_self_add := le_self_add
 
 instance : NoZeroDivisors L where
-  eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero)
+  eq_zero_or_eq_zero_of_mul_eq_zero := @eq_zero_or_eq_zero_of_mul_eq_zero
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/

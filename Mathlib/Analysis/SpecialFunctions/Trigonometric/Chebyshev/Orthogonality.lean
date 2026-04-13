@@ -48,12 +48,11 @@ noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), measureT,
     restrict_withDensity (by measurability),
-    integral_withDensity_eq_integral_smul (by measurability)]
+    integral_withDensity_eq_integral_smul (by fun_prop)]
   congr! 2 with x hx
   simp [NNReal.smul_def, mul_comm]
 
@@ -63,14 +62,13 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
   replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
   have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
   rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
   rw [measureT, restrict_withDensity (by measurability),
-    integrable_withDensity_iff (by measurability) (by simp)]
+    integrable_withDensity_iff (by fun_prop) (by simp)]
   unfold IntegrableOn at this
   convert this
 

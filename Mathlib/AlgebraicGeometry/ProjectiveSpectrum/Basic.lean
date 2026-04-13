@@ -94,7 +94,6 @@ lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
   refine x.not_irrelevant_le (hf.trans ?_)
   rwa [Ideal.span_le, Set.range_subset_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ xᵢ }` are homogeneous and span `A` as an `A₀` algebra, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     (hfn : ∀ i, ∃ n, f i ∈ 𝒜 n)
@@ -151,7 +150,6 @@ lemma basicOpenToSpec_app_top :
   erw [Scheme.Hom.comp_app]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The structure map `Proj A ⟶ Spec A₀`. -/
 noncomputable
 def toSpecZero : Proj 𝒜 ⟶ Spec (.of <| 𝒜 0) :=
@@ -240,7 +238,7 @@ lemma awayMap_awayToSection :
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
   use 1
-  simp only [OneMemClass.coe_one, RingHom.id_apply, one_mul, hx]
+  simp [hx]
   ring
 
 @[reassoc]
@@ -342,7 +340,7 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
 
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
-noncomputable
+@[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
     (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by

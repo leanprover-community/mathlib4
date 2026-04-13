@@ -298,7 +298,6 @@ theorem openPartialHomeomorphSubtypeCoe_source :
 @[deprecated (since := "2025-08-29")] alias
   partialHomeomorphSubtypeCoe_source := openPartialHomeomorphSubtypeCoe_source
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_target :
     (s.openPartialHomeomorphSubtypeCoe hs).target = s := by

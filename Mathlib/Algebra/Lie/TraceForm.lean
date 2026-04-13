@@ -217,7 +217,6 @@ open TensorProduct
 
 variable [LieRing.IsNilpotent L] [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
@@ -323,7 +322,6 @@ lemma traceForm_eq_of_le_idealizer :
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 include h hy in
 /-- Note that this result is slightly stronger than it might look at first glance: we only assume
 that `N` is trivial over `I` rather than all of `L`. This means that it applies in the important
@@ -409,7 +407,6 @@ namespace LieModule
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 variable [LieRing.IsNilpotent L] [LinearWeights K L M] [IsTriangularizable K L M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
@@ -430,7 +427,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

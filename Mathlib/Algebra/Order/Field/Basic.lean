@@ -507,12 +507,10 @@ theorem one_div_le_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a ≤ 1 / b �
 theorem one_div_lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a < 1 / b ↔ b < a := by
   simpa [one_div] using inv_lt_inv_of_neg ha hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_div_lt_neg_one (h1 : a < 0) (h2 : -1 < a) : 1 / a < -1 :=
   suffices 1 / a < 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_lt_one_div_of_neg_of_lt h1 h2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
   suffices 1 / a ≤ 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_le_one_div_of_neg_of_le h1 h2
@@ -662,10 +660,11 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
-@[simp]
+@[simp, grind =]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
+@[grind =]
 theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
   map_div₀ (absHom : α →*₀ α) a b
 

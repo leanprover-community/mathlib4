@@ -50,7 +50,6 @@ namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
     (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
     P I = 0 := by

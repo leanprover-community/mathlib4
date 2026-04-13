@@ -296,8 +296,7 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
 theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :=
   rfl
 
---this should be a simp lemma but causes a lint timeout
-theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
+theorem toRingEquiv_symm : (e : A₁ ≃+* A₂).symm = e.symm :=
   rfl
 
 @[simp]
@@ -833,7 +832,7 @@ lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
 end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
-@[simps! apply, simps! -isSimp symm_apply]
+@[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
@@ -852,6 +851,7 @@ variable {R S T : Type*} [CommSemiring R] [Semiring S]
 
 attribute [local instance] ULift.algebra' in
 /-- `ULift` is functorial for algebra homomorphisms. -/
+@[pp_with_univ]
 def AlgHom.ulift (f : S →ₐ[R] T) :
     ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
   __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)

@@ -20,7 +20,7 @@ This definition provides a canonical full and faithful inclusion functor
 
 We prove that functors out of `AugmentedSimplexCategory` are equivalent to augmented cosimplicial
 objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
-objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
+objects, and we provide a translation of the main constructions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 -/

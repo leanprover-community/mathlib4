@@ -177,6 +177,7 @@ theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   exact condExp_of_stronglyMeasurable hm stronglyMeasurable_zero (integrable_zero _ _ _)
 
+@[fun_prop]
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]; exact stronglyMeasurable_zero

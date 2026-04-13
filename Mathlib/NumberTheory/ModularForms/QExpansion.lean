@@ -124,7 +124,6 @@ lemma differentiableOn_cuspFunction_ball [ModularFormClass F Γ k]
   fun _ hz ↦ (differentiableAt_cuspFunction f hh hΓ <| mem_ball_zero_iff.mp hz)
     |>.differentiableWithinAt
 
-set_option backward.isDefEq.respectTransparency false in
 lemma analyticAt_cuspFunction_zero [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     AnalyticAt ℂ (cuspFunction h f) 0 :=
@@ -152,7 +151,6 @@ lemma qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h ∈ 
     (qExpansion h f).coeff 0 = valueAtInfty f := by
   simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
@@ -212,7 +210,6 @@ lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k]
     ← NNReal.coe_lt_one, coe_nnnorm] at hy
   simpa [qExpansionFormalMultilinearSeries, mul_comm] using hasSum_qExpansion_of_norm_lt f hh hΓ hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
 -/
 lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k]

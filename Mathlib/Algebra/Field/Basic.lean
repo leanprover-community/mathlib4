@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
 
 import Mathlib.Tactic.Tauto
 
@@ -205,7 +206,6 @@ section NoncomputableDefs
 
 variable {R : Type*} [Nontrivial R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 -- See note [reducible non-instances]
 noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :

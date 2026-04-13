@@ -484,7 +484,6 @@ end FEPair
 ## Relation to the Dirichlet series for `1 < re s`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `completedCosZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :

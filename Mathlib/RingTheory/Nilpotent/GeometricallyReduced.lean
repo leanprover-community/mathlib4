@@ -41,6 +41,7 @@ namespace Algebra
 
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
   reduced. -/
 @[mk_iff]

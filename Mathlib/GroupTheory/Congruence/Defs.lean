@@ -554,11 +554,7 @@ instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   one := Quotient.mk'' (1 : M)
   -- one := ((1 : M) : c.Quotient)
 
-instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
-    SMul ℕ c.Quotient where
-  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
-
-@[to_additive existing AddCon.Quotient.nsmul]
+@[to_additive]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
   pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -652,16 +648,11 @@ type with a subtraction. -/]
 instance hasDiv : Div c.Quotient :=
   ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 
-/-- The integer scaling induced on the quotient by a congruence relation on a type with a
-subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
-    SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
-
 /-- The integer power induced on the quotient by a congruence relation on a type with a
 division. -/
-@[to_additive existing AddCon.Quotient.zsmul]
-instance zpowinst : Pow c.Quotient ℤ :=
+@[to_additive /-- The integer scaling induced on the quotient by a congruence relation on a type
+with a subtraction. -/]
+instance instZPow : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/

@@ -48,7 +48,6 @@ open Real
 
 namespace Bertrand
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A refined version of the `Bertrand.main_inequality` below.
 This is not best possible: it actually holds for 464 ≤ x.
 -/

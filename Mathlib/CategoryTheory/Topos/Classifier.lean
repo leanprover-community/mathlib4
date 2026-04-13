@@ -54,7 +54,7 @@ Let `C` refer to a category with a terminal object.
 
 @[expose] public section
 
-universe u v u₀ v₀
+universe v v₀ u u₀
 
 namespace CategoryTheory
 
@@ -83,7 +83,7 @@ structure Classifier where
   /-- The truth morphism of the subobject classifier -/
   truth : Ω₀ ⟶ Ω
   /-- The truth morphism is a monomorphism -/
-  mono_truth : Mono truth
+  mono_truth : Mono truth := by infer_instance
   /-- The top arrow in the pullback square -/
   χ₀ (U : C) : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
@@ -449,4 +449,85 @@ theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
     exact Classifier.SubobjectRepresentableBy.classifier h
 
 end Representability
+
+section Iso
+
+/-- The unique morphism between classifiers mapping each others characteristic maps -/
+def Classifier.hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ 𝒞₁.truth
+
+@[reassoc (attr := simp)]
+lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
+  𝒞₃.uniq _ <| (𝒞₂.isPullback _).paste_vert (𝒞₃.isPullback _)
+
+@[simp]
+lemma Classifier.hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
+  (𝒞₁.uniq (χ₀' := 𝟙 _) 𝒞₁.truth IsPullback.of_id_snd).symm
+
+@[reassoc (attr := simp)]
+lemma Classifier.χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
+    𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
+  𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback 𝒞₁.truth))
+
+@[reassoc (attr := simp)]
+lemma Classifier.truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
+  𝒞₁.truth ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ₀ _ ≫ 𝒞₂.truth := (𝒞₂.isPullback _).w
+
+/-- a concrete equivalence of any two subobject classifiers -/
+@[simps]
+def Classifier.uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ 𝒞₂.Ω where
+  hom := 𝒞₁.hom 𝒞₂
+  inv := 𝒞₂.hom 𝒞₁
+
+instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞₁.uniqueUpToIso 𝒞₂).isIso_hom
+
+/-- Being a subobject classifier is preserved under isomorphism. -/
+@[simps]
+def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
+    (from' : ∀ C, C ⟶ Ω₀) (t : Ω₀ ⟶ Ω) (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom := by cat_disch) :
+    Classifier C where
+  Ω₀ := Ω₀
+  Ω := Ω
+  truth := t
+  mono_truth := ht ▸ inferInstance
+  χ₀ := from'
+  χ {F G} m _ := 𝒞.χ m ≫ eΩ.hom
+  isPullback {F G} m _ := by
+    rw [eΩ₀.comp_inv_eq.mp (Subsingleton.elim (from' F ≫ eΩ₀.inv) (𝒞.χ₀ F))]
+    exact (𝒞.isPullback m).paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
+  uniq {F G} m _ := by
+    intro χ₀' χ' hχ'
+    have : χ' ≫ eΩ.inv = 𝒞.χ m := by
+      apply 𝒞.uniq m (χ₀' := χ₀' ≫ eΩ₀.inv)
+      exact hχ'.paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
+    simpa using this =≫ eΩ.hom
+
+end Iso
+
+section Equivalence
+
+variable {D : Type*} [Category* D]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The image of a subobject classifier under an equivalence of categories is a subobject classifier.
+-/
+@[simps]
+def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier D where
+  Ω₀ := e.functor.obj 𝒞₁.Ω₀
+  Ω := e.functor.obj 𝒞₁.Ω
+  truth := e.functor.map 𝒞₁.truth
+  χ₀ Y := e.counitInv.app Y ≫ e.functor.map (𝒞₁.χ₀ (e.inverse.obj Y))
+  χ m := e.counitInv.app _ ≫ e.functor.map (𝒞₁.χ (e.inverse.map m))
+  isPullback {F G} m _ := by
+    apply ((𝒞₁.isPullback (e.inverse.map m)).map e.functor).of_iso (e.counitIso.app _)
+      (e.counitIso.app _) (.refl _) (.refl _) <;> simp
+  uniq {F G} m _ := by
+    intro χ₀' χ' hχ'
+    have : e.inverse.map χ' ≫ e.unitInv.app _ = 𝒞₁.χ (e.inverse.map m) := by
+      apply 𝒞₁.uniq (e.inverse.map m) (χ₀' := e.inverse.map χ₀' ≫ e.unitInv.app _)
+      exact (hχ'.map e.inverse).paste_vert <| IsPullback.of_vert_isIso_mono .mk
+    simpa using congr(e.counitInv.app G ≫ e.functor.map $this)
+
+end Equivalence
+
 end CategoryTheory

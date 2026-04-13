@@ -74,6 +74,7 @@ section Triangular
 
 
 /-- An upper-block-triangular matrix is invertible if its diagonal is. -/
+@[implicit_reducible]
 def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
   invertibleOfLeftInverse _ (fromBlocks (⅟A) (-(⅟A * B * ⅟D)) 0 (⅟D)) <| by
@@ -82,6 +83,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
       fromBlocks_one]
 
 /-- A lower-block-triangular matrix is invertible if its diagonal is. -/
+@[implicit_reducible]
 def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] : Invertible (fromBlocks A 0 C D) :=
   invertibleOfLeftInverse _
@@ -91,14 +93,12 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, neg_add_cancel,
       fromBlocks_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟(fromBlocks A B 0 D) = fromBlocks (⅟A) (-(⅟A * B * ⅟D)) 0 (⅟D) := by
   letI := fromBlocksZero₂₁Invertible A B D
   convert (rfl : ⅟(fromBlocks A B 0 D) = _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟(fromBlocks A 0 C D) = fromBlocks (⅟A) 0 (-(⅟D * C * ⅟A)) (⅟D) := by
@@ -229,6 +229,7 @@ section Block
 
 /-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
 is. -/
+@[implicit_reducible]
 def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟D * C)] :
     Invertible (fromBlocks A B C D) := by
@@ -256,6 +257,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
 
 /-- A block matrix is invertible if the top left corner and the corresponding Schur complement
 is. -/
+@[implicit_reducible]
 def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟A * B)] :
     Invertible (fromBlocks A B C D) := by
@@ -270,7 +272,6 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟D * C)]
     [Invertible (fromBlocks A B C D)] :
@@ -280,7 +281,6 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
   letI := fromBlocks₂₂Invertible A B C D
   convert (rfl : ⅟(fromBlocks A B C D) = _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟A * B)]
     [Invertible (fromBlocks A B C D)] :
@@ -292,6 +292,7 @@ theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
 Schur complement. -/
+@[implicit_reducible]
 def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (fromBlocks A B C D)] :
     Invertible (A - B * ⅟D * C) := by
@@ -309,6 +310,7 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
 Schur complement. -/
+@[implicit_reducible]
 def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (fromBlocks A B C D)] :
     Invertible (D - C * ⅟A * B) := by
@@ -369,7 +371,6 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
   rw [fromBlocks_eq_of_invertible₁₁ (A := A), det_mul, det_mul, det_fromBlocks_zero₂₁,
     det_fromBlocks_zero₂₁, det_fromBlocks_zero₁₂, det_one, det_one, one_mul, one_mul, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
@@ -387,7 +388,6 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
     cases i <;> cases j <;> rfl
   rw [this, det_submatrix_equiv_self, det_fromBlocks₁₁]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by

@@ -21,9 +21,9 @@ l|      |r
     b
 ```
 * If this is a pullback square, then the induced map `kernel t ⟶ kernel b`
-is an isomorphism.
+  is an isomorphism.
 * If this is a pushout square, then the induced map `cokernel t ⟶ cokernel b`
-is an isomorphism.
+  is an isomorphism.
 
 (Similar results for the (co)kernels of the vertical maps can be obtained
 by applying these results to the flipped square.)

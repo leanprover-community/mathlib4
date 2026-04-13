@@ -13,10 +13,10 @@ public import Mathlib.RingTheory.Localization.Defs
 
 # Extension of algebras
 
-## Main definition
+## Main definitions
 
 - `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
-surjection `P →ₐ[R] R`.
+  surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
   ```

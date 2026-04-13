@@ -99,7 +99,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset (Discrete α)) C]
     [HasCoproduct f] : IsColimit (finiteSubcoproductsCocone f) :=
   IsColimit.ofIsoColimit (colimit.isColimit _)
-    (Cocones.ext (IsColimit.coconePointUniqueUpToIso
+    (Cocone.ext (IsColimit.coconePointUniqueUpToIso
       (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) :) (by
     intro S
     simp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
@@ -232,7 +232,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasProduct f] : IsLimit (finiteSubproductsCone f) :=
   IsLimit.ofIsoLimit (limit.isLimit _)
-    (Cones.ext (IsLimit.conePointUniqueUpToIso
+    (Cone.ext (IsLimit.conePointUniqueUpToIso
       (liftToFinsetLimitCone (Discrete.functor f)).isLimit (limit.isLimit _) :) (by
     intro S
     simp only [limit.cone_x, Functor.const_obj_obj, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,

@@ -402,13 +402,11 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
     s.affineCombination k p w₁ -ᵥ s.affineCombination k p w₂ = s.weightedVSub p (w₁ - w₂) := by
   rw [← AffineMap.linearMap_vsub, affineCombination_linear, vsub_eq_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp [affineCombination, hf]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
   classical rw [attach_affineCombination_of_injective s w ((↑) : s → P) Subtype.coe_injective,
@@ -531,12 +529,11 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     simp_rw [weightedVSubOfPoint_apply]
     constructor
     · rintro ⟨fs, hfs, w, rfl, rfl⟩
-      exact ⟨fs.subtype s, fun i => w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
+      exact ⟨fs.subtype (· ∈ s), fun i => w i, sum_subtype_of_mem _ hfs,
+        (sum_subtype_of_mem _ hfs).symm⟩
     · rintro ⟨fs, w, rfl, rfl⟩
-      refine
-          ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
-            if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;>
-        simp
+      refine ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
+        if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;> simp
 
 variable (k)
 
@@ -597,6 +594,14 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
   · convert Finset.sum_const_zero with i hi
     simp [hp₁ i hi]
   · exact (hp₂ i hi).symm
+
+/-- Applying `AffineMap.lineMap` on two `Finset.affineCombination` over the same set of points
+is equivalent to applying `AffineMap.lineMap` to the weights. -/
+theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p : ι → P) :
+    AffineMap.lineMap (s.affineCombination k p w₁) (s.affineCombination k p w₂) r =
+    s.affineCombination k p (AffineMap.lineMap w₁ w₂ r) := by
+  simp_rw [Finset.affineCombination_apply, ← AffineMap.lineMap_vadd, AffineMap.lineMap_apply_module,
+    map_add, map_smul]
 
 variable (k)
 
@@ -708,13 +713,23 @@ theorem affineCombination_affineCombinationLineMapWeights [DecidableEq ι] (p : 
     weightedVSub_const_smul, s.affineCombination_affineCombinationSingleWeights k p hi,
     s.weightedVSub_weightedVSubVSubWeights k p hj hi, AffineMap.lineMap_apply]
 
+/-- Applying `AffineMap.homothety` on `Finset.affineCombination` towards one of the weighted points
+  is equivalent to moving the weights towards `Finset.affineCombinationSingleWeights`. -/
+-- Redeclaring all variables because `AffineMap.homothety` requires `[CommRing k]`
+theorem homothety_affineCombination {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+    [AffineSpace V P] {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → P) (w : ι → k) {i : ι}
+    (hi : i ∈ s) (r : k) :
+    AffineMap.homothety (p i) r (s.affineCombination k p w) = s.affineCombination k p
+      (AffineMap.lineMap (Finset.affineCombinationSingleWeights k i) w r) := by
+  rw [AffineMap.homothety_eq_lineMap, ← Finset.lineMap_affineCombination,
+    Finset.affineCombination_affineCombinationSingleWeights _ _ _ hi]
+
 end Finset
 
 section AffineSpace'
 
 variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/
 theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i ∈ s, w i = 0)

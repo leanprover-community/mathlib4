@@ -37,7 +37,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
       refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (WithTerminal.isLimitEquiv.symm hc)
       · exact NatIso.ofComponents (fun i ↦ i.casesOn (fun _ ↦ .refl _) (.refl _)) <| by
           rintro (i | _) (j | _) <;> (try rintro ⟨⟩) <;> simp
-      · exact Cones.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
+      · exact Cone.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
         i.casesOn H (.of_isIso (𝟙 F))⟩ f
   refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ i j f ↦ ⟨⟨by simp⟩, ⟨Limits.PullbackCone.isLimitAux' _ fun s ↦ ?_⟩⟩⟩
   let hcᵢ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj i) hc

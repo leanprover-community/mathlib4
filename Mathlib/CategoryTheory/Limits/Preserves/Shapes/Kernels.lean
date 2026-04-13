@@ -56,7 +56,7 @@ def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
+  exact Cone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
@@ -185,7 +185,7 @@ def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cocones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
+  exact Cocone.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
@@ -325,5 +325,26 @@ lemma preservesCokernel_zero' (f : X ⟶ Y) (hf : f = 0) :
     PreservesColimit (parallelPair f 0) G := by
   rw [hf]
   infer_instance
+
+section ZeroObject
+
+variable [HasZeroObject C] [HasZeroObject D]
+
+variable {X Y : C} (f : X ⟶ Y)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Mapping a `zeroKernelFork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
+is isomorphic to the `zeroKernelFork` of `G.map f`. -/
+def mapZeroKernelFork :
+    (kernel.zeroKernelFork f).map G ≅ (kernel.zeroKernelFork (G.map f)) :=
+  Fork.ext G.mapZeroObject
+
+/-- Mapping a `zeroCokernelCofork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
+is isomorphic to the `zeroCokernelCofork` of `G.map f`. -/
+def mapZeroCokernelCofork :
+    (cokernel.zeroCokernelCofork f).map G ≅ (cokernel.zeroCokernelCofork (G.map f)) :=
+  Cofork.ext G.mapZeroObject
+
+end ZeroObject
 
 end CategoryTheory.Limits

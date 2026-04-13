@@ -507,7 +507,6 @@ theorem adjoin_iUnion {α : Type*} (s : α → Set A) :
     adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
   (@Algebra.gc R A _ _ _).l_iSup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
     adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
 
@@ -890,6 +889,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

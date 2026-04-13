@@ -215,7 +215,7 @@ variable {F₁ F₂ : Sheaf J D} (φ : F₁ ⟶ F₂)
 `Presheaf.IsLocallyInjective J φ.val`. Under suitable assumptions, it
 is equivalent to the injectivity of all maps `φ.val.app X`,
 see `isLocallyInjective_iff_injective`. -/
-abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.val
+abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.hom
 
 lemma isLocallyInjective_sheafToPresheaf_map_iff :
     Presheaf.IsLocallyInjective J ((sheafToPresheaf J D).map φ) ↔ IsLocallyInjective φ := by rfl
@@ -225,8 +225,8 @@ instance isLocallyInjective_of_iso [IsIso φ] : IsLocallyInjective φ := by
   infer_instance
 
 lemma mono_of_injective
-    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X)) : Mono φ :=
-  have : ∀ X, Mono (φ.val.app X) := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
+    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.hom.app X)) : Mono φ :=
+  have : ∀ X, Mono (φ.hom.app X) := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
   (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.1)
 
 variable [J.HasSheafCompose (forget D)]
@@ -236,7 +236,7 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
   Presheaf.isLocallyInjective_forget J φ.1
 
 lemma isLocallyInjective_iff_injective :
-    IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
+    IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.hom.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
     apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]

@@ -153,7 +153,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F where
   functor := Cone.toCostructuredArrow F
   inverse := Cone.fromCostructuredArrow F
-  unitIso := NatIso.ofComponents Cones.eta
+  unitIso := NatIso.ofComponents Cone.eta
   counitIso := NatIso.ofComponents fun _ => (CostructuredArrow.eta _).symm
 
 /-- A cone is a limit cone iff it is terminal. -/
@@ -318,7 +318,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) where
   functor := Cocone.toStructuredArrow F
   inverse := Cocone.fromStructuredArrow F
-  unitIso := NatIso.ofComponents Cocones.eta
+  unitIso := NatIso.ofComponents Cocone.eta
   counitIso := NatIso.ofComponents fun _ => (StructuredArrow.eta _).symm
 
 /-- A cocone is a colimit cocone iff it is initial. -/

@@ -221,6 +221,20 @@ lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
         (Functor.associator _ _ _).symm ≪≫
         (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
 
+instance IsLocalizedEquivalence.id :
+    (id W₁).IsLocalizedEquivalence :=
+  have : ((LocalizerMorphism.id W₁).functor ⋙ W₁.Q).IsLocalization W₁ :=
+    Functor.IsLocalization.of_iso _ (Functor.leftUnitor _).symm
+  of_isLocalization_of_isLocalization _ W₁.Q
+
+instance IsLocalizedEquivalence.comp [Φ.IsLocalizedEquivalence]
+    (Ψ : LocalizerMorphism W₂ W₃)
+    [Ψ.IsLocalizedEquivalence] :
+    (Φ.comp Ψ).IsLocalizedEquivalence :=
+  have : ((Φ.comp Ψ).functor ⋙ W₃.Q).IsLocalization W₁ :=
+    Functor.IsLocalization.of_iso _ (Functor.associator _ _ _).symm
+  of_isLocalization_of_isLocalization _ W₃.Q
+
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
 @[simps]

@@ -51,10 +51,7 @@ theorem IsChain.count_not_cons :
     count (!b) l = count b l + length l % 2
   | _, [], _h => rfl
   | b, x :: l, h => by
-    obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_isChain_cons_cons h)
-    rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm,
-      IsChain.count_not_cons h.of_cons, length, add_assoc,
-      Nat.mod_two_add_succ_mod_two]
+    grind [h.of_cons.count_not_cons]
 
 @[deprecated (since := "2025-09-21")]
 alias Chain.count_not := IsChain.count_not_cons
@@ -67,9 +64,7 @@ theorem count_not_eq_count (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (
     count (!b) l = count b l := by
   rcases l with - | ⟨x, l⟩
   · rfl
-  rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
-  suffices count (!x) (x :: l) = count x (x :: l) by grind
-  rw [count_cons_of_ne x.not_ne_self.symm, hl.count_not_cons, h2, count_cons_self]
+  grind [count_cons_of_ne x.not_ne_self.symm, hl.count_not_cons]
 
 theorem count_false_eq_count_true (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) :
     count false l = count true l :=
@@ -79,11 +74,7 @@ theorem count_not_le_count_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
   rcases l with - | ⟨x, l⟩
   · exact zero_le _
-  obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
-  · rw [count_cons_of_ne b.not_ne_self.symm, count_cons_self, hl.count_not_cons, add_assoc]
-    lia
-  · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm, hl.count_not_cons]
-    lia
+  grind [hl.count_not_cons]
 
 theorem count_false_le_count_true_add_one (hl : IsChain (· ≠ ·) l) :
     count false l ≤ count true l + 1 :=
@@ -93,14 +84,10 @@ theorem count_true_le_count_false_add_one (hl : IsChain (· ≠ ·) l) :
     count true l ≤ count false l + 1 :=
   hl.count_not_le_count_add_one false
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_mul_count_bool_of_even (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]
 
--- TODO: is there a nice way to fix the linter? simp is run on 8 goals at once,
--- with slightly different simp sets
-set_option linter.flexible false in
 theorem two_mul_count_bool_eq_ite (hl : IsChain (· ≠ ·) l) (b : Bool) :
     2 * count b l =
       if Even (length l) then length l else
@@ -109,16 +96,11 @@ theorem two_mul_count_bool_eq_ite (hl : IsChain (· ≠ ·) l) (b : Bool) :
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
   · rcases l with - | ⟨x, l⟩
     · exact (h2 .zero).elim
-    simp only [if_neg h2, count_cons, mul_add, head?]
-    rw [length_cons, Nat.even_add_one, not_not] at h2
-    replace hl : l.IsChain (· ≠ ·) := hl.tail
-    rw [hl.two_mul_count_bool_of_even h2]
-    cases b <;> cases x <;> split_ifs <;> simp <;> contradiction
+    grind [hl.tail.two_mul_count_bool_of_even]
 
 theorem length_sub_one_le_two_mul_count_bool (hl : IsChain (· ≠ ·) l) (b : Bool) :
     length l - 1 ≤ 2 * count b l := by
-  rw [hl.two_mul_count_bool_eq_ite]
-  split_ifs <;> simp [Nat.le_succ_of_le]
+  grind [hl.two_mul_count_bool_eq_ite]
 
 theorem length_div_two_le_count_bool (hl : IsChain (· ≠ ·) l) (b : Bool) :
     length l / 2 ≤ count b l := by
@@ -127,8 +109,7 @@ theorem length_div_two_le_count_bool (hl : IsChain (· ≠ ·) l) (b : Bool) :
 
 theorem two_mul_count_bool_le_length_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     2 * count b l ≤ length l + 1 := by
-  rw [hl.two_mul_count_bool_eq_ite]
-  split_ifs <;> simp [Nat.le_succ_of_le]
+  grind [hl.two_mul_count_bool_eq_ite]
 
 end IsChain
 

@@ -971,6 +971,7 @@ theorem triangle_bimod {X Y Z : Mon C} (M : Bimod X Y) (N : Bimod Y Z) :
   simp only [Category.assoc]
 
 /-- The bicategory of algebras (monoids) and bimodules, all internal to some monoidal category. -/
+@[implicit_reducible]
 noncomputable def monBicategory : Bicategory (Mon C) where
   Hom X Y := Bimod X Y
   homCategory X Y := (inferInstance : Category (Bimod X Y))

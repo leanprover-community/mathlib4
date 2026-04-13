@@ -69,7 +69,13 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
     [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) where
   «v» := valuation R
-  is_topological_valuation := mem_nhds_zero_iff
+  is_topological_valuation := by
+    simp_rw [Valuation.restrict_lt_iff_lt_embedding]
+    convert mem_nhds_zero_iff (R := R)
+    refine ⟨fun ⟨γ, hγ⟩ ↦ ⟨ Units.map valueGroupWithZero_equiv_valueGroup₀.symm.toMonoidHom γ,
+      hγ⟩, fun ⟨γ, hγ⟩ ↦ ⟨Units.map valueGroupWithZero_equiv_valueGroup₀.toMonoidHom γ, ?_⟩⟩
+    convert hγ
+    simp [valueGroupWithZero_equiv_valueGroup₀ ]
 
 lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :
@@ -176,7 +182,6 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x = r} :=
   isClopen_sphere hr |>.isOpen
 
-set_option backward.isDefEq.respectTransparency false in
 open WithZeroTopology in
 lemma continuous_valuation : Continuous v := by
   simp only [continuous_iff_continuousAt, ContinuousAt]

@@ -200,7 +200,6 @@ protected theorem Metric.unitSphere.coe_div [NormedDivisionRing 𝕜] (x y : sph
     ↑(x / y) = (x / y : 𝕜) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance Metric.unitSphere.instZPow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ where
   pow x n := .mk ((x : 𝕜) ^ n) <| by
     rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]

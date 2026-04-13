@@ -127,11 +127,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
       rw [← Nat.succ_injective h2]
       apply h1
   rw [h]
-  simp only [Finset.map_val, Function.comp_apply, Function.Embedding.coeFn_mk, Multiset.map_map]
-  refine congr (congr rfl ?_) rfl
-  ext a
-  rw [mul_comm]
-  simp [coeff_mul_X]
+  simp
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
@@ -155,11 +151,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
   constructor <;> intro h
   · ext n
-    by_cases h0 : n ∈ p.support
-    · rw [h n h0, coeff_zero]
-    · rw [mem_support_iff] at h0
-      push_neg at h0
-      simp [h0]
+    simp_all
   · intro x
     simp [h]
 

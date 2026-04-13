@@ -118,7 +118,7 @@ lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finr
   intro k
   apply Polynomial.natDegree_add_le_of_degree_le
   · apply (Polynomial.natDegree_C_mul_le _ _).trans
-    simp only [natDegree_X, le_rfl]
+    simp
   · simp only [natDegree_C, zero_le]
 
 end engel_isBot_of_isMin

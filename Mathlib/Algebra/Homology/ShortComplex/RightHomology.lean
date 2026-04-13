@@ -228,7 +228,7 @@ data by choosing another cokernel and kernel that are isomorphic to the ones in 
   wι := by simp [IsCokernel.cokernelIso]
   hι := IsLimit.equivOfNatIsoOfIso
     (parallelPair.ext eQ.symm (Iso.refl S.X₃) (by simp [IsCokernel.cokernelIso]) (by simp)) _ _
-    (Cones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsCokernel.cokernelIso])) h.hι
+    (Cone.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsCokernel.cokernelIso])) h.hι
 
 end RightHomologyData
 

@@ -485,7 +485,6 @@ theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
   apply setToL1_unique hT'' (A := setToL1 hT + setToL1 hT') _ f
   simp [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left' hT hT' hT'' h_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α →₁[μ] E) :
     setToL1 (hT.smul c) f = c • setToL1 hT f := by
   apply setToL1_unique (hT.smul c) (A := c • setToL1 hT) _ f
@@ -969,7 +968,6 @@ theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c �
       mt fun h => h.of_measure_le_smul hc hμ_le
     simp_rw [setToFun_undef _ hf, setToFun_undef _ (h_int f hf)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setToFun_congr_measure_of_add_right {μ' : Measure α}
     (hT_add : DominatedFinMeasAdditive (μ + μ') T C') (hT : DominatedFinMeasAdditive μ T C)
     (f : α → E) (hf : Integrable f (μ + μ')) :

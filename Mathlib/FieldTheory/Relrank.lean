@@ -122,11 +122,9 @@ theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E 
 
 variable (A B)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 

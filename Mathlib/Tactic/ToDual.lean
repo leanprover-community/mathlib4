@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Translate.ToDual
 public meta section
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
+attribute [to_dual self (reorder := 2 (1 2))] LE.mk LT.mk
 
 to_dual_insert_cast_fun DecidableLE := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a

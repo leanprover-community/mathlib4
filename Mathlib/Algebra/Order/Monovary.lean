@@ -31,7 +31,7 @@ variable {ι α β : Type*}
 section OrderedCommGroup
 
 section
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] [PartialOrder β]
+variable [CommGroup α] [Preorder α] [IsOrderedMonoid α] [PartialOrder β]
   {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
@@ -138,7 +138,7 @@ end
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
-variable [PartialOrder α] [CommGroup β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
+variable [Preorder α] [CommGroup β] [LinearOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι → α}
   {g g₁ g₂ : ι → β}
 
 @[to_additive] lemma MonovaryOn.mul_right (h₁ : MonovaryOn f g₁ s) (h₂ : MonovaryOn f g₂ s) :

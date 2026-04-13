@@ -127,7 +127,6 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
@@ -158,7 +157,6 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply leibniz_lie
 
-set_option backward.isDefEq.respectTransparency false in
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
   lie_smul := by
     intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y

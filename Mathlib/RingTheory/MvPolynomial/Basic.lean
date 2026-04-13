@@ -129,7 +129,6 @@ lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
       Submodule.span_le, Set.mul_subset_iff]
     simp +contextual [Set.add_mem_add]
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 @[simp] lemma restrictSupport_zero : restrictSupport R (0 : Set (σ →₀ ℕ)) = 1 := by
   classical

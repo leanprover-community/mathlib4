@@ -82,7 +82,7 @@ attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[simps! -isSimp, implicit_reducible]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
@@ -295,8 +295,6 @@ lemma one_associator {M N P : C} [MonObj M] [MonObj N] [MonObj P] :
   slice_lhs 2 3 => rw [associator_naturality]
   slice_rhs 1 2 => rw [← Category.id_comp η, ← tensorHom_comp_tensorHom]
   slice_lhs 1 2 => rw [tensorHom_id, ← leftUnitor_tensor_inv]
-  rw [← cancel_epi (λ_ (𝟙_ C)).inv]
-  slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp
 
 lemma one_leftUnitor {M : C} [MonObj M] :
@@ -943,6 +941,7 @@ def monToLaxMonoidal : Mon C ⥤ LaxMonoidalFunctor (Discrete PUnit.{w + 1}) C w
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def unitIso :

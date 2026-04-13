@@ -194,6 +194,13 @@ lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
   ext v w
   aesop
 
+/-- `coe` can be embedded in `spanningCoe`. -/
+@[simps]
+def coeEmbeddingSpanningCoe (G' : Subgraph G) : G'.coe ↪g G'.spanningCoe where
+  toFun := Subtype.val
+  inj' := Subtype.val_injective
+  map_rel_iff' := .rfl
+
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
 def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
@@ -255,6 +262,10 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
+
+@[simp]
+lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
+  rfl
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -463,16 +474,15 @@ instance : BoundedOrder (Subgraph G) where
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
   le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
-  -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-  le_sSup s G' hG' := ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
-  sSup_le s G' hG' :=
-    ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
-      rintro a b ⟨H, hH, hab⟩
-      exact (hG' _ hH).2 hab⟩
-  sInf_le _ G' hG' := ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
-  le_sInf _ G' hG' :=
-    ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
-      ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+  isLUB_sSup _ :=
+    ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
+      fun G' hG' ↦
+        ⟨Set.iUnion₂_subset fun _ hH => (hG' hH).1, fun a b ⟨H, hH, hab⟩ ↦ (hG' hH).2 hab⟩⟩
+  isGLB_sInf _ :=
+    ⟨fun G' hG' ↦ ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩,
+      fun G' hG' ↦
+        ⟨Set.subset_iInter₂ fun _ hH => (hG' hH).1, fun _ _ hab =>
+          ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
   iInf_iSup_eq f := Subgraph.ext (by simpa using iInf_iSup_eq)
     (by ext; simp [Classical.skolem])
 
@@ -710,10 +720,8 @@ def inclusion {x y : Subgraph G} (h : x ≤ y) : x.coe →g y.coe where
   toFun v := ⟨↑v, And.left h v.property⟩
   map_rel' hvw := h.2 hvw
 
-theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) := by
-  intro v w h
-  rw [inclusion, DFunLike.coe, Subtype.mk_eq_mk] at h
-  exact Subtype.ext h
+theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) :=
+  fun _ _ h ↦ Subtype.ext congr(Subtype.val $h)
 
 /-- There is an induced injective homomorphism of a subgraph of `G` into `G`. -/
 @[simps]
@@ -756,6 +764,7 @@ instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
 /-- If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
 
 This is not an instance because `G''` cannot be inferred. -/
+@[implicit_reducible]
 def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G'') (v : G'.verts)
     [Fintype (G''.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G''.neighborSet v) (neighborSet_subset_of_subgraph h v)
@@ -850,7 +859,6 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :

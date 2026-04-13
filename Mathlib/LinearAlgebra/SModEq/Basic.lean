@@ -60,7 +60,7 @@ lemma of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
   simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
   exact h hxy
 
-@[refl]
+@[refl, simp]
 protected theorem refl (x : M) : x ≡ x [SMOD U] :=
   @rfl _ _
 
@@ -161,5 +161,8 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
     f.eval x ≡ f.eval y [SMOD I] := by
   simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
   gcongr
+
+theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
+    x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
 
 end SModEq

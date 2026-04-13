@@ -653,7 +653,7 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
 set_option linter.unusedTactic false in
 set_option linter.flexible false in
 /-- An error in this proof could mean that `replaceDisallowed` contains a character
-which is not dissallowed by `isAllowedCharacter`. -/
+which is not disallowed by `isAllowedCharacter`. -/
 private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
     !isAllowedCharacter c := by
   contrapose creplaced

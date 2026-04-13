@@ -106,7 +106,6 @@ theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
     MapsTo f (Metric.closedBall x r) (Metric.closedBall (f x) (K * r)) := fun _y hy =>
   hf.dist_le_mul_of_le hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dist_lt_mul_of_lt (hf : LipschitzWith K f) (hK : K ≠ 0) (hr : dist x y < r) :
     dist (f x) (f y) < K * r :=
   (hf.dist_le_mul x y).trans_lt <| by gcongr

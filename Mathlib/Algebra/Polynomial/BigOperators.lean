@@ -5,7 +5,9 @@ Authors: Aaron Anderson, Jalex Stark
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
@@ -282,14 +284,52 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
+lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+    {v : ι → A} (h : LinearIndepOn R v s) :
+    (∑ i ∈ s, v i • (f i).map (algebraMap R A)).degree = s.sup (fun i ↦ (f i).degree) := by
+  apply le_antisymm
+  · exact (degree_sum_le s _).trans <| Finset.sup_le fun i hi ↦ (degree_smul_le _ _).trans <|
+      degree_map_le.trans <| Finset.le_sup (f := fun i ↦ (f i).degree) hi
+  · apply Finset.sup_le
+    intro i hi
+    by_cases hf : f i = 0
+    · simp [hf]
+    rw [degree_eq_natDegree hf]
+    apply le_degree_of_ne_zero
+    rw [finset_sum_coeff]
+    conv in (fun _ ↦ _) =>
+      ext
+      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+    intro H
+    exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
+
+-- Note: Proof duplicated from the `degree` version, since the statements don't
+-- trivially follow from each other.
+lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+    {v : ι → A} (h : LinearIndepOn R v s) :
+    (∑ i ∈ s, v i • (f i).map (algebraMap R A)).natDegree = s.sup (fun i ↦ (f i).natDegree) := by
+  apply le_antisymm
+  · exact natDegree_sum_le_of_forall_le _ _ fun i hi ↦ (natDegree_smul_le _ _).trans <|
+      natDegree_map_le.trans <| Finset.le_sup (f := fun i ↦ (f i).natDegree) hi
+  · apply Finset.sup_le
+    intro i hi
+    by_cases hf : f i = 0
+    · simp [hf]
+    apply le_natDegree_of_ne_zero
+    rw [finset_sum_coeff]
+    conv in (fun _ ↦ _) =>
+      ext
+      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+    intro H
+    exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
+
 variable [Nontrivial R]
 
 @[simp]
 lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
   rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
-  · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
-      mul_one]
+  · simp
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
 
 @[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :

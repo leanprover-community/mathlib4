@@ -46,7 +46,6 @@ noncomputable def indToCoindAux (g : G) : A →ₗ[k] (G → A) :=
 
 variable {A}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_self (g : G) (a : A) :
     indToCoindAux A g a g = a := by
@@ -58,7 +57,6 @@ lemma indToCoindAux_of_not_rel (g g₁ : G) (a : A) (h : ¬(QuotientGroup.rightR
     indToCoindAux A g a g₁ = 0 := by
   simp [indToCoindAux, dif_neg h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
     indToCoindAux A g a (s * g₁) = A.ρ s (indToCoindAux A g a g₁) := by
@@ -69,7 +67,6 @@ lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel _ _ _ h, indToCoindAux_of_not_rel, map_zero]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
@@ -82,7 +79,6 @@ lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma indToCoindAux_snd_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A g₁ a (g₂ * g₃⁻¹) = indToCoindAux A (g₁ * g₃) a g₂ := by
@@ -103,7 +99,6 @@ lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
   · simp [S.1.smul_def, hom_comm_apply]
   · simp [indToCoindAux_of_not_rel (h := h)]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a subgroup and `A` a `k`-linear `S`-representation. This is the `k`-linear map
 `Ind_S^G(A) →ₗ[k] Coind_S^G(A)` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
@@ -116,7 +111,6 @@ variable [S.FiniteIndex]
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is the `k`-linear map
@@ -132,7 +126,6 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
   map_smul' _ _ := by simpa [Finset.smul_sum] using Finset.sum_congr rfl fun z _ =>
     Quotient.inductionOn z fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
     (hx : f.1.support ⊆ MulAction.orbit S g) :
@@ -150,7 +143,6 @@ lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
@@ -220,16 +212,13 @@ lemma resIndAdjunction_homEquiv_apply
     {B : Rep k G} (f : (Action.res _ S.subtype).obj B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv S.subtype B A f ≫ (indCoindIso A).inv := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   rfl
 
 lemma resIndAdjunction_homEquiv_symm_apply
     {B : Rep k G} (f : B ⟶ (indFunctor k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
       (resCoindHomEquiv S.subtype B A).symm (f ≫ (indCoindIso A).hom) := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 variable (k S) in
@@ -249,31 +238,27 @@ set_option backward.isDefEq.respectTransparency false in
 lemma coindResAdjunction_counit_app (B : Rep k G) :
     (coindResAdjunction k S).counit.app B = (indCoindIso <| (Action.res _ S.subtype).obj B).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
-    indResAdjunction]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫
       (Action.res _ S.subtype).map (indCoindIso A).hom := by
-  ext
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
-    indResAdjunction]
+  rfl
 
 lemma coindResAdjunction_homEquiv_apply {B : Rep k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
       indResHomEquiv S.subtype A B ((indCoindIso A).hom ≫ f) := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply
     {B : Rep k G} (f : A ⟶ (Action.res _ S.subtype).obj B) :
     ((coindResAdjunction k S).homEquiv _ _).symm f =
       (indCoindIso A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [coindResAdjunction, indResAdjunction,
+    Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
+  simp
   rfl
 
 end Rep

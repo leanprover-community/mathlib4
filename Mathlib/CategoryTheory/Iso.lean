@@ -62,7 +62,8 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   inv_hom_id : inv ≫ hom = 𝟙 Y := by cat_disch
 
 attribute [to_dual existing inv] Iso.hom
-attribute [to_dual self] Iso.mk
+attribute [to_dual self] Iso.mk Iso.casesOn
+attribute [to_dual none] Iso.mk.hcongr_8 -- needed in `Iso.ext`
 
 attribute [reassoc +to_dual (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 
@@ -74,20 +75,13 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 namespace Iso
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-@[ext, grind ext]
+set_option linter.existingAttributeWarning false in
+@[ext, grind ext, to_dual ext_inv]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
   calc
     α.inv = α.inv ≫ β.hom ≫ β.inv := by grind
     _     = β.inv                 := by grind
-
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-@[to_dual existing ext] -- `existing`, because `to_dual` cannot deal with `Iso.casesOn`.
-theorem ext_inv ⦃α β : X ≅ Y⦄ (w : α.inv = β.inv) : α = β :=
-  suffices α.hom = β.hom by grind [Iso]
-  calc
-    α.hom = α.hom ≫ β.inv ≫ β.hom := by grind
-    _     = β.hom                 := by grind
 
 /-- Inverse isomorphism. -/
 @[symm]

@@ -757,6 +757,7 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
     IsSimpleOrder αᵒᵈ := isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
+@[implicit_reducible]
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -769,6 +770,7 @@ protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 
 /-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
+@[implicit_reducible]
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -825,12 +827,14 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 /-- A simple partial ordered `BoundedOrder` induces a lattice.
 This is not an instance to prevent loops -/
+@[implicit_reducible]
 protected def lattice {α} [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] :
     Lattice α :=
   @LinearOrder.toLattice α IsSimpleOrder.linearOrder
 
 /-- A lattice that is a `BoundedOrder` is a distributive lattice.
 This is not an instance to prevent loops -/
+@[implicit_reducible]
 protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
     le_sup_inf := fun x y z => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
@@ -869,6 +873,7 @@ def orderIsoBool : α ≃o Bool :=
         · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
+@[implicit_reducible]
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
   { inferInstanceAs (BoundedOrder α), IsSimpleOrder.distribLattice with
@@ -888,40 +893,40 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
+@[implicit_reducible]
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
     sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
     sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
-    le_sSup := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_pos h]
-    sSup_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_neg]
-        intro con
-        exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
-      · exact le_top
-    sInf_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_pos h]
-      · exact le_top
-    le_sInf := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_neg]
-        intro con
-        exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
+    isLUB_sSup s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_pos h]
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_neg]
+          intro con
+          exact bot_ne_top (eq_top_iff.2 (h con))
+        · exact le_top
+    isGLB_sInf s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_pos h]
+        · exact le_top
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_neg]
+          intro con
+          exact top_ne_bot (eq_bot_iff.2 (h con)) }
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
+@[implicit_reducible]
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 
@@ -1278,7 +1283,6 @@ namespace Set
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
   ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine
     ⟨?_, by
@@ -1290,7 +1294,6 @@ theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
     ⟨x, eq_singleton_iff_unique_mem.2
         ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]
   simp_rw [@eq_comm _ s, compl_eq_comm]
@@ -1300,7 +1303,6 @@ theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
 
 instance : IsAtomistic (Set α) := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsCoatomistic (Set α) := inferInstance
 
 end Set

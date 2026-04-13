@@ -267,17 +267,17 @@ def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
 by whiskering the cone and postcomposing with a suitable isomorphism. -/
 def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCone ≅
-      (Cones.postcompose (Discrete.functorComp f g).inv).obj
+      (Cone.postcompose (Discrete.functorComp f g).inv).obj
         (c.toCone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cones.ext (Iso.refl _) (by simp)
+  Cone.ext (Iso.refl _) (by simp)
 
 /-- Taking the cocone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cocone and precomposing with a suitable isomorphism. -/
 def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCocone ≅
-      (Cocones.precompose (Discrete.functorComp f g).hom).obj
+      (Cocone.precompose (Discrete.functorComp f g).hom).obj
         (c.toCocone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cocones.ext (Iso.refl _) (by simp)
+  Cocone.ext (Iso.refl _) (by simp)
 
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
@@ -882,7 +882,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
-def kernelForkBiproductToSubtype (p : Set K) :
+def kernelForkBiproductToSubtype (p : K → Prop) :
     LimitCone (parallelPair (biproduct.toSubtype f p) 0) where
   cone :=
     KernelFork.ofι (biproduct.fromSubtype f pᶜ)
@@ -907,12 +907,12 @@ def kernelForkBiproductToSubtype (p : Set K) :
           simpa using w.symm)
       (by cat_disch)
 
-instance (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
+instance (p : K → Prop) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
-def kernelBiproductToSubtypeIso (p : Set K) :
+def kernelBiproductToSubtypeIso (p : K → Prop) :
     kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 
@@ -920,7 +920,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone exhibiting `⨁ Subtype.restrict pᶜ f` as the cokernel of
 `biproduct.fromSubtype f p` -/
 @[simps]
-def cokernelCoforkBiproductFromSubtype (p : Set K) :
+def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
     ColimitCocone (parallelPair (biproduct.fromSubtype f p) 0) where
   cocone :=
     CokernelCofork.ofπ (biproduct.toSubtype f pᶜ)
@@ -941,16 +941,16 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         simp only [biproduct.toSubtype_fromSubtype_assoc, Pi.compl_apply, biproduct.ι_map_assoc]
         split_ifs with h
         · simp
-        · replace w := biproduct.ι _ (⟨j, not_not.mp h⟩ : p) ≫= w
+        · replace w := biproduct.ι _ (⟨j, not_not.mp h⟩ : Subtype p) ≫= w
           simpa using w.symm)
       (by cat_disch)
 
-instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
+instance (p : K → Prop) : HasCokernel (biproduct.fromSubtype f p) :=
   HasColimit.mk (cokernelCoforkBiproductFromSubtype f p)
 
 /-- The cokernel of `biproduct.fromSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
-def cokernelBiproductFromSubtypeIso (p : Set K) :
+def cokernelBiproductFromSubtypeIso (p : K → Prop) :
     cokernel (biproduct.fromSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   colimit.isoColimitCocone (cokernelCoforkBiproductFromSubtype f p)
 

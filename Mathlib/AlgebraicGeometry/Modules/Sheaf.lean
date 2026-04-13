@@ -65,7 +65,7 @@ def fullyFaithfulToPresheafOfModules : (Modules.toPresheafOfModules X).FullyFait
 instance : (toPresheafOfModules X).Full := fullyFaithfulToPresheafOfModules.full
 instance : (toPresheafOfModules X).Faithful := fullyFaithfulToPresheafOfModules.faithful
 instance : (toPresheafOfModules X).IsRightAdjoint :=
-  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.val)).isRightAdjoint
+  (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)).isRightAdjoint
 
 variable (X) in
 /-- The forgetful functor from `𝒪ₓ`-modules to presheaves of abelian groups. -/
@@ -427,19 +427,19 @@ lemma restrictFunctorCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmer
 def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     restrictFunctor f ⋙ toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ x ≅
     toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ (f x) :=
-  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
+  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
   (toPresheaf _ ⋙ (Functor.whiskeringLeft (OpenNhds (f x))ᵒᵖ Y.Opensᵒᵖ Ab).obj
       (OpenNhds.inclusion (f x)).op).isoWhiskerLeft
-      (Functor.Final.colimIso (f.isOpenEmbedding.isOpenMap.functorNhds x).op)
+      (Functor.Final.colimIso (f.isOpenEmbedding.functorNhds x).op)
 
 @[simp]
 lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
     (x : X) (M : Y.Modules) (hxU : x ∈ U) :
     ((restrictFunctor f).obj M).presheaf.germ U _ hxU ≫
       (restrictStalkNatIso f x).hom.app M = M.presheaf.germ _ _ (by simpa) :=
-  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
+  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
   Functor.Final.ι_colimitIso_hom
-    (f.isOpenEmbedding.isOpenMap.functorNhds x).op
+    (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
 set_option backward.isDefEq.respectTransparency false in

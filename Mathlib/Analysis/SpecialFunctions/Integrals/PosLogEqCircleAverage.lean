@@ -38,7 +38,6 @@ lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖�
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm smaller than one, then `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -73,7 +72,6 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 -- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
 private lemma circleAverage_log_norm_sub_const₁_integral :
     ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
@@ -102,7 +100,6 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
       (by norm_num : (4 : ℝ) = 2 * 2), log_mul two_ne_zero two_ne_zero]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
@@ -156,7 +153,6 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `a : ℂ` has norm greater than one, then `circleAverage (log ‖· - a‖) 0 1` equals `log ‖a‖`.
 -/

@@ -203,7 +203,6 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -281,7 +280,6 @@ section
 variable (hα : α ≠ 0)
 include hα
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainTopCoeff_add_one :
     letI := Classical.propDecidable
     chainTopCoeff α β + 1 =

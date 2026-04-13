@@ -51,6 +51,12 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
   Finset.coe_injective (by simp)
 
 @[simp]
+theorem disjoint_preimage {f : α → β} {s t : Finset β}
+    {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
+    Disjoint (s.preimage f hs) (t.preimage f ht) := by
+  grind [not_disjoint_iff, mem_preimage]
+
+@[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
     (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
@@ -93,7 +99,6 @@ theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Fins
     s.map f ⊆ t ↔ s ⊆ t.preimage f f.injective.injOn := by
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
     (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
   card_nbij f (by simp [Set.MapsTo]) (by simpa) (fun b hb ↦ by aesop)
@@ -148,7 +153,6 @@ end Finset
 
 namespace Equiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
 from `e ⁻¹' s` to `s`. -/
 @[simps]

@@ -447,6 +447,7 @@ theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : OrdConnected { r
   ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_eball h₂.2).trans h₁⟩
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/
+@[implicit_reducible]
 def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=

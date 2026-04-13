@@ -268,7 +268,6 @@ variable {N2 : Type*} [AddCommGroup N2] [Module R N2]
 variable {N3 : Type*} [AddCommGroup N3] [Module R N3]
 variable (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is faithfully flat, then exactness of `N₁ ⊗ M -> N₂ ⊗ M -> N₃ ⊗ M` implies that the
 composition `N₁ -> N₂ -> N₃` is `0`.
@@ -317,7 +316,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by

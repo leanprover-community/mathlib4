@@ -100,7 +100,6 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -136,9 +135,9 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       rcases max_cases y y⁻¹ with H | H <;>
       simp [hy', H.left]
     refine ⟨⟨⟨
-      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨y' ^ (mem_closure_singleton.mp
         (by simpa [hxc] using a.prop)).choose, ?_⟩,
-      fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨x' ^ (mem_closure_singleton.mp
         (by simpa [hyc] using a.prop)).choose, ?_⟩,
         ?_, ?_⟩, ?_⟩, ?_⟩
     · rw [hyc, mem_closure_singleton]

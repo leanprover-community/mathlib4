@@ -30,6 +30,19 @@ normed algebra, character space, continuous functional calculus
 
 @[expose] public section
 
+namespace IntermediateField
+
+variable {K L : Type*} [NontriviallyNormedField K] [NormedField L] [NormedAlgebra K L]
+
+set_option backward.isDefEq.respectTransparency false in
+instance (F : IntermediateField K L) : NontriviallyNormedField F where
+  __ := SubfieldClass.toNormedField F
+  non_trivial := by
+    obtain ⟨k, hk⟩ :=  @NontriviallyNormedField.non_trivial K _
+    use algebraMap K F k
+    simp [hk]
+
+end IntermediateField
 
 variable {𝕜 : Type*} {A : Type*}
 
@@ -43,7 +56,6 @@ theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toStrongDual (φ : We
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
   have h : characterSpace 𝕜 A ⊆ toStrongDual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by

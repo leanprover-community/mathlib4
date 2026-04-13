@@ -90,6 +90,10 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
+
 ## Implementation notes
 
 The transport process generally works by taking all the names of
@@ -257,10 +261,10 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
+      let ids ← match stx with
+        | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat - 1)
+        | _ => throwUnsupportedSyntax
+      return ids.toList }
 
 @[inherit_doc TranslateData.doTranslateAttr]
 initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _

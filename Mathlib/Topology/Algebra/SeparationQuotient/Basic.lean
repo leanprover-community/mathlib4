@@ -125,11 +125,11 @@ def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M 
   map_mul' := mk_mul
   map_one' := mk_one
 
-instance (priority := 900) instNSmul [AddMonoid M] [ContinuousAdd M] :
+instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
     SMul ℕ (SeparationQuotient M) :=
   inferInstance
 
-@[to_additive existing instNSmul]
+@[to_additive existing]
 instance instPow [Monoid M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ where
   pow x n := Quotient.map' (s₁ := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
 

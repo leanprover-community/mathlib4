@@ -6,6 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.Tactic.FinCases
 
@@ -305,6 +306,6 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]
-  apply Finset.card_bij f (f_img hn) (f_inj) (f_surj hn.ne_zero)
+  apply Finset.card_bij f (f_img hn) f_inj (f_surj hn.ne_zero)
 
 end Nat

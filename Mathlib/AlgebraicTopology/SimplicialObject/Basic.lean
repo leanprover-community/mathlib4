@@ -49,13 +49,8 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
-def SimplicialObject :=
+abbrev SimplicialObject :=
   SimplexCategoryᵒᵖ ⥤ C
-
-@[simps!]
-instance : Category (SimplicialObject C) := by
-  dsimp only [SimplicialObject]
-  infer_instance
 
 namespace SimplicialObject
 
@@ -67,7 +62,6 @@ scoped[Simplicial]
 
 open Simplicial
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
@@ -76,7 +70,6 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
 instance [HasLimits C] : HasLimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
@@ -224,34 +217,11 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ 
   whiskeringRight _ _ _
 
 /-- Truncated simplicial objects. -/
-def Truncated (n : ℕ) :=
-  (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+abbrev Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 
 variable {C}
 
 namespace Truncated
-
-set_option backward.isDefEq.respectTransparency false in
-instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
-    HasLimitsOfShape J (SimplicialObject.Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
-
-instance {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) :=
-  ⟨inferInstance⟩
-
-set_option backward.isDefEq.respectTransparency false in
-instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
-    HasColimitsOfShape J (SimplicialObject.Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
-
-instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
-  ⟨inferInstance⟩
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
@@ -524,6 +494,15 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
 -- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
+
+/-- The augmented simplicial object that is deduced from a simplicial object and
+a terminal object. -/
+@[simps!]
+def augmentOfIsTerminal (X : SimplicialObject C) {T : C} (hT : IsTerminal T) :
+    Augmented C where
+  left := X
+  right := T
+  hom := { app _ := hT.from _ }
 
 end SimplicialObject
 
@@ -885,6 +864,15 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
 -- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
     (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
+
+/-- The coaugmented cosimplicial object that is deduced from a cosimplicial object and
+an initial object. -/
+@[simps!]
+def augmentOfIsInitial (X : CosimplicialObject C) {T : C} (hT : IsInitial T) :
+    Augmented C where
+  right := X
+  left := T
+  hom := { app _ := hT.to _ }
 
 end CosimplicialObject
 

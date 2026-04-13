@@ -105,7 +105,6 @@ theorem countable_setOf_isolated_left [SecondCountableTopology α] :
     { x : α | 𝓝[<] x = ⊥ }.Countable :=
   countable_setOf_isolated_right (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of points in a set which are isolated on the right in this set is countable when the
 space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :

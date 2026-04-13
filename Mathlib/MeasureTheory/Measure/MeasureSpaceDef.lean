@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.CountableInter
 /-!
 # Measure spaces
 
-This file defines measure spaces, the almost-everywhere filter and ae_measurable functions.
+This file defines measure spaces, the almost-everywhere filter and `AEMeasurable` functions.
 See `MeasureTheory.MeasureSpace` for their properties and for extended documentation.
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the

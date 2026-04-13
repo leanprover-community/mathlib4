@@ -259,13 +259,13 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
+abbrev isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
 
 /-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
+abbrev monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+abbrev epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 
 @[simp]
 lemma op_isomorphisms : (isomorphisms C).op = isomorphisms Cᵒᵖ := by

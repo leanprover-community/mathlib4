@@ -11,17 +11,18 @@ public import Mathlib.Data.Matrix.Basis
 /-!
 # Composition of matrices
 
-This file shows that Mₙ(Mₘ(R)) ≃ Mₙₘ(R), Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ
-and also different levels of equivalence when R is an AddCommMonoid,
-Semiring, and Algebra over a CommSemiring K.
+This file shows that `Mₙ(Mₘ(R)) ≃ Mₙₘ(R)`, `Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ`
+and also different levels of equivalence when `R` is an `AddCommMonoid`,
+`Semiring`, and `Algebra` over a `CommSemiring K`.
 
-## Main results
+## Main definitions
 
 * `Matrix.comp` is an equivalence between `Matrix I J (Matrix K L R)` and
   `I × K` by `J × L` matrices.
-* `Matrix.swap` is an equivalence between `(I × J)` by `(K × L)` matrices and
-  `J × I` by `L × K` matrices.
-
+* `Matrix.compAddEquiv`: `Matrix.comp` as an `AddEquiv`
+* `Matrix.compRingEquiv`: `Matrix.comp` as a `RingEquiv`
+* `Matrix.compLinearEquiv`: `Matrix.comp` as a `LinearEquiv`
+* `Matrix.compAlgEquiv`: `Matrix.comp` as an `AlgEquiv`
 -/
 
 @[expose] public section
@@ -30,8 +31,8 @@ namespace Matrix
 
 variable (I J K L R R' : Type*)
 
-/-- I by J matrix where each entry is a K by L matrix is equivalent to
-    I × K by J × L matrix -/
+/-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
+    an `I × K` by `J × L` matrix -/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2

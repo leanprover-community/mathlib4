@@ -303,17 +303,24 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
 
 section Extension
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
+`φ` to `K` is `ψ`. -/
+protected class LiesOver (φ : L →+* ℂ) (ψ : K →+* ℂ) : Prop where
+  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+
+variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // ComplexEmbedding.LiesOver φ ψ }
 
 namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]
@@ -346,6 +353,22 @@ abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsR
 theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
   aesop (add simp [IsReal.comp])
+
+variable {K} (L) (ψ)
+
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are mixed. -/
+def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsMixed K φ }
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are unmixed. -/
+def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsUnmixed K φ }
+
+theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    Disjoint (unmixedEmbeddingsOver L ψ) (mixedEmbeddingsOver L ψ) := by
+  grind [mixedEmbeddingsOver, unmixedEmbeddingsOver]
+
+theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
+      { φ | ComplexEmbedding.LiesOver φ ψ } := by
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
 
 end Extension
 

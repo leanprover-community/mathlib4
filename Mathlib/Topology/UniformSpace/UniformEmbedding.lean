@@ -414,6 +414,7 @@ theorem isUniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : 
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
+@[implicit_reducible]
 def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
@@ -506,7 +507,7 @@ section DenseExtension
 variable {α β : Type*} [UniformSpace α] [UniformSpace β]
 
 theorem isUniformInducing_val (s : Set α) :
-    IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
+    IsUniformInducing ((↑) : s → α) := ⟨uniformity_setCoe⟩
 
 @[simp]
 theorem uniformContinuous_rangeFactorization_iff {f : α → β} :

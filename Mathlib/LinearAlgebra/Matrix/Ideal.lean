@@ -160,12 +160,10 @@ theorem matrix_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matrix (R := R) n) :=
   matrix_monotone n |>.strictMono_of_injective <| matrix_injective _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem matrix_bot : (⊥ : RingCon R).matrix n = ⊥ :=
   eq_bot_iff.2 fun _ _ h ↦ Matrix.ext h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem matrix_top : (⊤ : RingCon R).matrix n = ⊤ :=
   eq_top_iff.2 fun _ _ _ _ _ ↦ by simp

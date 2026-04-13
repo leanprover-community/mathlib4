@@ -23,6 +23,7 @@ namespace CliffordAlgebra
 variable (Q)
 
 /-- If the quadratic form of a vector is invertible, then so is that vector. -/
+@[implicit_reducible]
 def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) where
   invOf := ι Q (⅟(Q m) • m)
   invOf_mul_self := by
@@ -30,7 +31,6 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
   mul_invOf_self := by
     rw [map_smul, mul_smul_comm, ι_sq_scalar, Algebra.smul_def, ← map_mul, invOf_mul_self, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a vector with invertible quadratic form, $v^{-1} = \frac{v}{Q(v)}$ -/
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
     ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
@@ -59,6 +59,7 @@ variable [Invertible (2 : R)]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
+@[implicit_reducible]
 def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
   ExteriorAlgebra.invertibleAlgebraMapEquiv M (Q m) <|
     .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|

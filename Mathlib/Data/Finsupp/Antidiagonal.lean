@@ -9,6 +9,8 @@ public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.Multiset.Antidiagonal
 
+import Mathlib.Data.Finsupp.Order
+
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
 
@@ -29,13 +31,13 @@ variable {α : Type u} [DecidableEq α]
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 The finitely supported function `antidiagonal s` is equal to the multiplicities of these pairs. -/
-def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
+noncomputable def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
   Multiset.toFinsupp
     ((Finsupp.toMultiset f).antidiagonal.map (Prod.map Multiset.toFinsupp Multiset.toFinsupp))
 
 /-- The antidiagonal of `s : α →₀ ℕ` is the finset of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)`
 such that `t₁ + t₂ = s`. -/
-instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
+noncomputable instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
   antidiagonal f := f.antidiagonal'.support
   mem_antidiagonal {f} {p} := by
     rcases p with ⟨p₁, p₂⟩
@@ -71,5 +73,20 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
       exact h.imp Eq.symm Eq.symm
   · rintro ⟨a, b, rfl, rfl, rfl⟩
     exact (single_add _ _ _).symm
+
+theorem image_prodMap_embDomain_antidiagonal {β : Type*} [DecidableEq β] (f : α ↪ β)
+    (y : α →₀ ℕ) : image (Prod.map (embDomain f) (embDomain f)) (antidiagonal y) =
+      antidiagonal (embDomain f y) := by
+  ext ⟨u, v⟩
+  simp only [mem_image, mem_antidiagonal, Prod.exists, Prod.map_apply,
+    Prod.mk.injEq]
+  refine ⟨fun ⟨w, z, h, hw, hz⟩ ↦ ?_, fun h ↦ ⟨u.comapDomain f f.injective.injOn,
+    ⟨v.comapDomain f f.injective.injOn, ?_, ?_, ?_⟩⟩⟩
+  · rw [← hw, ← hz, ← embDomain_add, h]
+  · rw [← comapDomain_add_of_injective f.injective, h, comapDomain_embDomain]
+  · rw [embDomain_comapDomain ((mem_range_embDomain_iff ..).mp
+      (isLowerSet_range_embDomain f (le_iff_exists_add.mpr ⟨v, h.symm⟩) (by simp)))]
+  · rw [embDomain_comapDomain ((mem_range_embDomain_iff ..).mp
+      (isLowerSet_range_embDomain f (le_iff_exists_add'.mpr ⟨u, h.symm⟩) (by simp)))]
 
 end Finsupp

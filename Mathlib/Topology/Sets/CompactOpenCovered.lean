@@ -94,7 +94,6 @@ lemma of_biUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : 
   have := hf.to_subtype
   exact of_iUnion_eq_of_finite (fun i : s ↦ i.1) (by simpa) (by simpa)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompact U)
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by

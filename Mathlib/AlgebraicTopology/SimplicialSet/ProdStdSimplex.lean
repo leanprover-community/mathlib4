@@ -51,11 +51,11 @@ def objEquiv {n : ℕ} :
 
 @[simp]
 lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    (objEquiv x i).1 = x.1 i := rfl
+    dsimp% (objEquiv x i).1 = x.1 i := rfl
 
 @[simp]
 lemma objEquiv_apply_snd {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    (objEquiv x i).2 = x.2 i := rfl
+    dsimp% (objEquiv x i).2 = x.2 i := rfl
 
 lemma objEquiv_naturality {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌)
     (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
@@ -121,7 +121,6 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
   simp only [Fin.strictMono_iff_lt_succ]
   exact forall_congr' (fun i ↦ (this _ _ ((objEquiv x).monotone i.castSucc_le_succ)).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
   degenerate_eq_top n hn := by
     ext x

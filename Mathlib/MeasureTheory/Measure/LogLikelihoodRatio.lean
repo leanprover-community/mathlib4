@@ -104,6 +104,14 @@ lemma llr_smul_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ �
     simp [hx_pos.ne', hx_ne_top.ne]
   ring
 
+lemma llr_smul_nnreal_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr (c • μ) ν =ᵐ[μ] fun x ↦ llr μ ν x + log c := by
+  rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_left hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
+  simp
+
 lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     llr μ (c • ν) =ᵐ[μ] fun x ↦ llr μ ν x - log c.toReal := by
@@ -121,6 +129,39 @@ lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ 
     simp [hx_pos.ne', hx_ne_top.ne]
   rw [ENNReal.toReal_inv, log_inv]
   ring
+
+lemma llr_smul_nnreal_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr μ (c • ν) =ᵐ[μ] fun x ↦ llr μ ν x - log c := by
+  rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_right hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
+  simp
+
+lemma llr_smul_inv_left_eq_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+    llr (c⁻¹ • μ) ν =ᵐ[μ] llr μ (c • ν) := by
+  have hc' : c⁻¹ ≠ 0 := by simp [hc_ne_top]
+  have hc_ne_top' : c⁻¹ ≠ ∞ := by simp [hc]
+  filter_upwards [llr_smul_left hμν c⁻¹ hc' hc_ne_top', llr_smul_right hμν c hc hc_ne_top] with
+    x hx_left hx_right
+  rw [hx_left, hx_right]
+  simp [sub_eq_add_neg]
+
+lemma llr_smul_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+    llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
+  simp only [llr_def]
+  lift c to ℝ≥0 using hc_ne_top
+  norm_cast at hc
+  filter_upwards [hμν.ae_le (Measure.rnDeriv_smul_same μ ν hc)] with x hx using by simp [hx]
+
+lemma llr_smul_nnreal_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
+  simp_rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_same hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
 
 lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν] (hμν : μ ≪ ν) :
     Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν

@@ -53,7 +53,7 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
     obtain ⟨r, hr⟩ := map_surjective _ Ideal.Quotient.mk_surjective
       (IsLocalization.integerNormalization (R ⧸ I)⁰ x)
     obtain ⟨s, hs, hr⟩ : ∃ s ∉ I, r.map (algebraMap _ _) = s • x := by
-      obtain ⟨⟨b, hb0⟩, hb⟩ := IsLocalization.integerNormalization_map_to_map (R ⧸ I)⁰ x
+      obtain ⟨b, hb0, hb⟩ := IsLocalization.integerNormalization_spec (R ⧸ I)⁰ x
       obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective b
       refine ⟨s, by simpa [Ideal.Quotient.eq_zero_iff_mem] using hb0, ?_⟩
       simpa [← hr, map_map, ← Ideal.Quotient.algebraMap_eq] using hb

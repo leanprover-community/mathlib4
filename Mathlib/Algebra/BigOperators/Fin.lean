@@ -520,7 +520,7 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
   ext i
   refine inductionOn i ?_ ?_
-  · simp only [partialProd_zero, Function.comp_apply, succ_succAbove_zero]
+  · simp
   · intro i hi
     simp only [Function.comp_apply, succ_succAbove_succ] at *
     rw [partialProd_succ, partialProd_succ, hi]
@@ -575,7 +575,6 @@ end PartialProd
 
 end Fin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=

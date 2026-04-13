@@ -173,14 +173,12 @@ end
 
 variable (A : Rep k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
 abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     Rep k G :=
   Rep.of (A.ρ.subrepresentation W le_comap)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural inclusion of a subrepresentation into the ambient representation. -/
 @[simps]
 def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
@@ -435,7 +433,6 @@ variable (α : Type u) (A : Rep k G)
 abbrev finsupp : Rep k G :=
   Rep.of (Representation.finsupp A.ρ α)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
@@ -533,7 +530,6 @@ variable {α}
 
 omit [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     DFunLike.coe (F := ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)) →ₗ[k] α →₀ G →₀ k)
@@ -541,7 +537,6 @@ lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G
       single i (single g (r * s)) := by
   simp [leftRegularTensorTrivialIsoFree, tensorObj_carrier]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (α →₀ G →₀ k) →ₗ[k] ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)))
@@ -796,7 +791,6 @@ theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom =

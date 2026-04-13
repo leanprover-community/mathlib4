@@ -651,12 +651,12 @@ theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Fork f g} : Fork.ι ((Cones.postcompose α).obj c) = c.ι ≫ α.app _ :=
+    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app _ :=
   rfl
 
 @[simp]
 theorem Cofork.π_precompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Cofork f' g'} : Cofork.π ((Cocones.precompose α).obj c) = α.app _ ≫ c.π :=
+    {c : Cofork f' g'} : Cofork.π ((Cocone.precompose α).obj c) = α.app _ ≫ c.π :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -700,7 +700,7 @@ def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) :
     Fork f g ≌ Fork f' g' :=
-  Cones.postcomposeEquivalence <|
+  Cone.postcomposeEquivalence <|
     parallelPair.ext e₀ e₁ (by simp [comm₁]) (by simp [comm₂])
 
 @[simp]

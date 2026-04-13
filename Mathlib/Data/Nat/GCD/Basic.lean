@@ -38,7 +38,6 @@ theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e :
 
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = a ^ (c % b) - 1 := by
   rcases eq_zero_or_pos a with rfl | ha0

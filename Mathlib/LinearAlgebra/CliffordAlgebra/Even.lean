@@ -202,7 +202,6 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
@@ -215,7 +214,6 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
       rw [foldr_ι, foldr_ι]
       exact mul_one _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aux_algebraMap (r) :
     aux f (algebraMap R (even Q) r) = algebraMap R A r :=

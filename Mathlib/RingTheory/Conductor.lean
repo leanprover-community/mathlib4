@@ -54,7 +54,7 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
 theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
     Algebra.adjoin R {x} = ⊤ :=
   Algebra.eq_top_iff.mpr fun y ↦
-    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+    one_mul y ▸ mem_conductor_iff.mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
     conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
@@ -117,7 +117,6 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
   · intro y hy
     exact lem ((Finsupp.mem_supported _ l).mp H hy)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A technical result telling us that `(I * S) ∩ R<x> = I * R<x>` for any ideal `I` of `R`. -/
 theorem comap_map_eq_map_adjoin_of_coprime_conductor
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)

@@ -47,6 +47,7 @@ an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
   map_mul' _ _ := rfl
+
 /-- The kernel of a multiplicative homomorphism as a congruence relation. -/
 @[to_additive /-- The kernel of an additive homomorphism as an additive congruence relation. -/]
 def ker (f : F) : Con M where

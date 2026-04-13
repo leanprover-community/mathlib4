@@ -6,7 +6,7 @@ Authors: Patrick Stevens, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Choose.Dvd
@@ -63,7 +63,6 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
 theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
   induction n using Nat.strong_induction_on with | h n ihn =>
   rcases n with - | n; · rfl

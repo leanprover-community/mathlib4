@@ -327,7 +327,6 @@ theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
       mapShortComplexH1 (MonoidHom.id G) φ ≫ mapShortComplexH1 (MonoidHom.id G) ψ :=
   mapShortComplexH1_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `Z₁(G, A) ⟶ Z₁(H, B)`. -/
 noncomputable abbrev mapCycles₁ :
@@ -759,7 +758,6 @@ theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
       mapShortComplexH2 (MonoidHom.id G) φ ≫ mapShortComplexH2 (MonoidHom.id G) ψ :=
   mapShortComplexH2_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `Z₂(G, A) ⟶ Z₂(H, B)`. -/
 noncomputable abbrev mapCycles₂ :

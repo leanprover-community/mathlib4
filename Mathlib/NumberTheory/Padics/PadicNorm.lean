@@ -86,8 +86,8 @@ theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
 
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
-    (neq : p ≠ q) : padicNorm p q = 1 := by
-  have p : padicValRat p q = 0 := mod_cast padicValNat_primes neq
+    (ne : p ≠ q) : padicNorm p q = 1 := by
+  have p : padicValRat p q = 0 := mod_cast padicValNat_primes ne
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 
@@ -139,7 +139,6 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
       have : (p : ℚ) ≠ 0 := by simp [hp.1.ne_zero]
       simp [padicNorm, *, padicValRat.mul, zpow_add₀ this, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `p`-adic norm respects division. -/
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
@@ -226,7 +225,6 @@ instance : IsAbsoluteValue (padicNorm p) where
   abv_add' := padicNorm.triangle_ineq
   abv_mul' := padicNorm.mul
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
   · norm_cast at hz
@@ -240,7 +238,6 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
     · exact_mod_cast hz
     · exact_mod_cast hp.out.one_lt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/
 theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   nth_rw 2 [← pow_one p]

@@ -156,7 +156,7 @@ theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
     (∏ j ∈ range n, f (n - 1 - j)) = ∏ j ∈ range n, f j := by
   cases n
   · simp
-  · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub]
+  · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub, tsub_zero]
     rw [prod_Ico_reflect _ _ le_rfl]
     simp
 
@@ -173,7 +173,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
 
 section GaussSum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gauss' summation formula -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1) :=
   calc

@@ -168,7 +168,6 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
 
 variable {s t}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by simpa [edge]
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by

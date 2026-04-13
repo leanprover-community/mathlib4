@@ -165,6 +165,7 @@ theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
+@[implicit_reducible]
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
@@ -418,7 +419,6 @@ theorem mul_card_edgeFinset_turanGraph_le :
   rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     let n := Fintype.card V;
     #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by

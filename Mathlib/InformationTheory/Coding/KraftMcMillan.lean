@@ -70,7 +70,7 @@ private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
-    _  = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s :=
+    _ = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s :=
       Finset.sum_congr rfl fun x hx ↦ by simp [Finset.mem_filter.mp hx]
     _ = (T.filter fun x => x.length = s).card * (1 / Fintype.card α) ^ s := by
       simp only [Finset.sum_const, nsmul_eq_mul]

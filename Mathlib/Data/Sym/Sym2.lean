@@ -628,7 +628,6 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
 @[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
   simp [Set.subset_def, Sym2.forall, Reflexive]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
   refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
@@ -718,6 +717,10 @@ def toFinset (z : Sym2 α) : Finset α := (z.toMultiset : Multiset α).toFinset
 @[simp]
 theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
+
+@[simp]
+theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ := by
+  exact Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
