@@ -107,7 +107,6 @@ def IsExtendible (σ : Lifts F E K) : Prop :=
 section Chain
 variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The union of a chain of lifts. -/
 noncomputable def union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
@@ -138,7 +137,6 @@ theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
 theorem exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
     ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, le_union c hc⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
     (union c hc).IsExtendible := fun S ↦ by
@@ -176,7 +174,6 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
 
 end Chain
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
     Nonempty (E →ₐ[F] K) := by
@@ -196,7 +193,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
       AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
-  simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push_neg at ϕ_max
+  simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push Not at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
   classical
   have ⟨θ, hθϕ, hθ⟩ := ϕ_ext ({α} ∪ Finset.univ.biUnion S)
@@ -206,7 +203,6 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
   exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
 theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
@@ -224,7 +220,6 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
 any lift can be extended to one whose carrier contains `s`. -/
 theorem exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -236,7 +231,6 @@ end Lifts
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
@@ -255,7 +249,6 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
 
-set_option backward.isDefEq.respectTransparency false in
 include hK in
 theorem exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
@@ -269,7 +262,7 @@ theorem exists_algHom_adjoin_of_splits' :
     · ext x
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
-      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
@@ -277,7 +270,7 @@ theorem exists_algHom_adjoin_of_splits' :
   convert (hK s hs).2
   ext
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-    AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+    AlgHom.coe_comp, Function.comp_apply, f']
   exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in

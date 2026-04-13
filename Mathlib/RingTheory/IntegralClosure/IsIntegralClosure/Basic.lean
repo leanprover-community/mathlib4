@@ -32,15 +32,13 @@ open Algebra
 
 variable {R S : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A nonzero element in a domain integral over a field is a unit. -/
 theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
     (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
-  have : FiniteDimensional R (adjoin R {x}) := .of_fg int.fg_adjoin_singleton
-  (FiniteDimensional.isUnit R (K := adjoin R {x})
-    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
+  have : FiniteDimensional R (R[x]) := .of_fg int.fg_adjoin_singleton
+  (FiniteDimensional.isUnit R (K := R[x])
+    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (R[x]).val
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
@@ -53,13 +51,12 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
 
 variable [Field R] [DivisionRing S] [Algebra R S] {x : S} {A : Subalgebra R S}
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
+theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ R[x] := by
   obtain rfl | h0 := eq_or_ne x 0
   · rw [inv_zero]; exact Subalgebra.zero_mem _
-  have : FiniteDimensional R (adjoin R {x}) := .of_fg int.fg_adjoin_singleton
+  have : FiniteDimensional R (R[x]) := .of_fg int.fg_adjoin_singleton
   obtain ⟨⟨y, hy⟩, h1⟩ := FiniteDimensional.exists_mul_eq_one R
-    (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
+    (K := R[x]) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
   rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel₀ h0).symm)]
 
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
@@ -67,7 +64,6 @@ theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {
 theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
   adjoin_le (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
 theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
   ((isIntegral_algHom_iff A.val Subtype.val_injective).mpr <|
@@ -133,7 +129,6 @@ theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
   simp only [SetLike.mem_coe, Set.singleton_subset_iff]
   exact hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
     S ≤ integralClosure R A ↔ Algebra.IsIntegral R S :=
   SetLike.forall.symm.trans <|
@@ -142,23 +137,19 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
         isIntegral_algebraMap_iff Subtype.coe_injective).trans
       Algebra.isIntegral_def.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
     Algebra.IsIntegral R (adjoin R S) :=
   le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
       (Subalgebra.topEquiv (R := R) (A := A)).isIntegral_iff] -- explicit arguments for speedup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.isIntegral_sup {S T : Subalgebra R A} :
     Algebra.IsIntegral R (S ⊔ T : Subalgebra R A) ↔
       Algebra.IsIntegral R S ∧ Algebra.IsIntegral R T := by
   simp_rw [← le_integralClosure_iff_isIntegral, sup_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.isIntegral_iSup {ι} (S : ι → Subalgebra R A) :
     Algebra.IsIntegral R ↑(iSup S) ↔ ∀ i, Algebra.IsIntegral R (S i) := by
   simp_rw [← le_integralClosure_iff_isIntegral, iSup_le_iff]
@@ -197,14 +188,12 @@ def AlgEquiv.mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S) :
 theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
     (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
   ⟨integralClosure.isIntegral⟩
 
@@ -281,7 +270,6 @@ theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegr
 attribute [local instance] Polynomial.algebra in
 instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
@@ -323,7 +311,6 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
     ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
@@ -498,10 +485,10 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
     convert hp; apply p.map_toSubring S.toSubring⟩
-  let Sx := Subalgebra.toSubmodule (adjoin S {x})
+  let Sx := Subalgebra.toSubmodule (S[x])
   let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
   have : Module.Finite S Sx := .of_fg hSx.fg_adjoin_singleton
-  refine .of_mem_of_fg ((adjoin S {x}).restrictScalars R) ?_ _
+  refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Module.Finite.iff_fg]
   letI : SMul S Sx := { MSx with } -- need this even though MSx is there
@@ -643,9 +630,16 @@ theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
 
+variable (R)
+theorem Algebra.ker_algebraMap_isMaximal_of_isIntegral (k : Type*) [Field k] [Algebra R k]
+    [Algebra.IsIntegral R k] : (RingHom.ker (algebraMap R k)).IsMaximal := by
+  have := Ideal.bot_isMaximal (K := k)
+  rw [RingHom.ker, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+  exact isField_of_isIntegral_of_isField Ideal.algebraMap_quotient_injective
+    (Ideal.Quotient.field _).toIsField
+
 end Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
     integralClosure (integralClosure R A) A = ⊥ :=
   letI := (integralClosure R A).algebra

@@ -5,11 +5,7 @@ Authors: Adam Topaz, Thomas R. Murrills
 -/
 module
 
-public import Lean.Util.CollectLevelParams
-public import Lean.Elab.Term.TermElabM
 public import Mathlib.Init
-public import Mathlib.Lean.Elab.Term
-meta import Batteries.Data.Array.Basic
 
 /-!
 # Support for `Category* C`.

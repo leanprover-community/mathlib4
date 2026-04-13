@@ -75,8 +75,8 @@ satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+  letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
+  haveI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: StrongDual ℝ p` be the real part of `f`.
   let fr := reCLM.comp (f.restrictScalars ℝ)
@@ -105,7 +105,6 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
 
 open Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.

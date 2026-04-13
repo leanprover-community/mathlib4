@@ -176,7 +176,6 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
 
 variable (f)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U
@@ -253,9 +252,9 @@ namespace TopologicalSpace.Opens
 
 instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
-    [Functor.IsContinuous.{w} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
-    [Functor.IsContinuous.{w} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
-    Functor.IsContinuous.{w} (F ⋙ G) (Opens.grothendieckTopology _)
+    [Functor.IsContinuous F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
+    [Functor.IsContinuous G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
+    Functor.IsContinuous (F ⋙ G) (Opens.grothendieckTopology _)
       (Opens.grothendieckTopology _) :=
   Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
 

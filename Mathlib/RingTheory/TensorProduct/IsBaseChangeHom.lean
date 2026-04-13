@@ -63,7 +63,7 @@ variable [Free R M] [Module.Finite R M]
 
 variable {S}
 
-/-- The base change isomorphism funderlying `IsBaseChange.linearMapRight` -/
+/-- The base change isomorphism underlying `IsBaseChange.linearMapRight` -/
 noncomputable def linearMapRightBaseChangeEquiv
     {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
     S ⊗[R] (M →ₗ[R] N) ≃ₗ[S] (M →ₗ[R] P) := by

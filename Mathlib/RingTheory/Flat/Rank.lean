@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 # Results for the rank of a finite flat algebra
 
-In this file we study a finite, flat `R`-algebra `S` and relate injectivity and bijective of `R → S`
-with the rank of `S` over `R`.
+In this file we study a finite, flat `R`-algebra `S` and relate injectivity and
+bijectivity of `R → S` with the rank of `S` over `R`.
 
 ## Main results
 
@@ -36,7 +36,6 @@ attribute [local instance] Module.free_of_flat_of_isLocalRing
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S] [Module.Finite R S]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap (p : PrimeSpectrum R) :
     0 < Module.rankAtStalk (R := R) S p ↔ p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
   rw [Module.rankAtStalk_eq, Module.finrank_pos_iff, p.nontrivial_iff_mem_rangeComap]
@@ -60,7 +59,7 @@ lemma PrimeSpectrum.comap_surjective_iff_injective_of_finite :
   intro p _
   rw [← faithfulSMul_iff_algebraMap_injective]
   obtain ⟨⟨Q, _⟩, hQ⟩ := h ⟨p, inferInstance⟩
-  have : Q.LiesOver p := ⟨(congr($(hQ).asIdeal)).symm⟩
+  have : Q.LiesOver p := ⟨congr($(hQ).asIdeal).symm⟩
   have : Nontrivial (Localization.AtPrime p ⊗[R] S) := by
     let f : Localization.AtPrime p ⊗[R] S →ₐ[R] Localization.AtPrime Q :=
       Algebra.TensorProduct.lift (IsScalarTower.toAlgHom R _ _)
@@ -72,25 +71,6 @@ lemma Module.rankAtStalk_pos_iff_algebraMap_injective :
     (∀ p, 0 < Module.rankAtStalk (R := R) S p) ↔ Function.Injective (algebraMap R S) := by
   rw [← PrimeSpectrum.comap_surjective_iff_injective_of_finite,
     PrimeSpectrum.rankAtStalk_pos_iff_comap_surjective]
-
-/-- If `S` is free of rank `1` over `R`, the map `R →+* S` is an isomorphism. -/
-lemma Module.Free.bijective_algebraMap_of_finrank_eq_one [Nontrivial R] [Free R S]
-    (h : finrank R S = 1) :
-    Function.Bijective (algebraMap R S) := by
-  refine ⟨Module.rankAtStalk_pos_iff_algebraMap_injective.mp
-    (fun p ↦ by simp [Module.rankAtStalk_eq_finrank_of_free, h]), ?_⟩
-  have : Free R (Module.End R S) := .of_equiv (dualTensorHomEquiv R S S)
-  let f : S →ₐ[R] (S →ₗ[R] S) := Algebra.lmul R S
-  have h1 : LinearMap.trace R S ∘ₗ f ∘ₗ Algebra.linearMap R S = LinearMap.id := by ext; simp [h]
-  let b : Basis (Unit × Unit) R (End R S) :=
-    .map (.tensorProduct (.dualBasis <| basisUnique Unit h) (basisUnique Unit h))
-      (dualTensorHomEquiv R S S)
-  have h2 : (f ∘ₗ Algebra.linearMap R S) ∘ₗ LinearMap.trace R S = LinearMap.id :=
-    b.ext fun i ↦
-      (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct])
-  let eq : R ≃ₗ[R] End R S := .ofLinear (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
-  have hf : Function.Bijective f := ⟨Algebra.lmul_injective, .of_comp eq.surjective⟩
-  exact (Function.Bijective.of_comp_iff' hf _).mp eq.bijective |>.2
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma Module.algebraMap_surjective_of_rankAtStalk_le_one (h : ∀ p, rankAtStalk (R := R) S p ≤ 1) :

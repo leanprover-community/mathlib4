@@ -204,7 +204,7 @@ lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [Has
   letI := preservesInitialObject_of_preservesZeroMorphisms F
   letI := preservesColimitsOfShape_pempty_of_preservesInitial F
   letI : PreservesFiniteCoproducts F :=
-    ⟨fun _ ↦ preservesFiniteCoproductsOfPreservesBinaryAndInitial F _⟩
+    ⟨fun _ ↦ PreservesFiniteCoproducts.of_preserves_binary_and_initial F _⟩
   exact preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts F
 
 end FiniteColimits

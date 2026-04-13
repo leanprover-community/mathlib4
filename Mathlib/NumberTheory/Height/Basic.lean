@@ -44,7 +44,7 @@ We define the following variants.
   This is the height of an element of `K`.
 * `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
   of a tuple of elements of `K` representing a point in projective space. When `x = 0`, we
-  define the multiplicative height to be `1` (so the loarithmic height is `0`).
+  define the multiplicative height to be `1` (so the logarithmic height is `0`).
   It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
@@ -107,7 +107,7 @@ variable {K}
 /-!
 ### Heights of field elements
 
-We use the subscipt `₁` to denote multiplicative and logarithmic heights of field elements
+We use the subscript `₁` to denote multiplicative and logarithmic heights of field elements
 (this is because we are in the one-dimensional case of (affine) heights).
 -/
 
@@ -128,7 +128,7 @@ lemma mulHeight₁_zero : mulHeight₁ (0 : K) = 1 := by
 lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
   simp [mulHeight₁_eq]
 
-/-- The mutliplicative height of a field element is always at least `1`. -/
+/-- The multiplicative height of a field element is always at least `1`. -/
 lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x :=
   one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun _ _ ↦ le_max_right ..) <|
     one_le_finprod fun _ ↦ le_max_right ..
@@ -446,6 +446,56 @@ lemma logHeight_eq_zero_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
     logHeight x = 0 := by
   simp [logHeight_eq_log_mulHeight]
 
+section tuple
+
+/-
+This section contains `simp` lemmas that remove a zero from one of the first three positions
+in a tuple, when `mulHeight` or `logHeight` is applied to it.
+
+TODO: Write a `simproc` that removes *all* (syntactic) zeros from a tuple in this situation.
+-/
+
+open Matrix
+
+variable {n : ℕ} (a b : K) (x : Fin n → K)
+
+@[simp]
+lemma mulHeight_cons_zero : mulHeight (vecCons 0 x) = mulHeight x := by
+  let e := (Equiv.sumComm ..).trans <| finSumFinEquiv.trans <| finCongr n.one_add
+  have he : Matrix.vecCons 0 x ∘ ⇑e = Sum.elim x 0 := by
+    ext j : 1
+    match j with
+    | .inl _ => simp [e]
+    | .inr ⟨i, h⟩ =>
+      simp [show i = 0 by lia, e, show Fin.castAdd n 0 = 0 from Fin.castAdd_mk _ _ zero_lt_one]
+  rw [← mulHeight_comp_equiv e, he, mulHeight_sumElim_zero_eq]
+
+@[simp]
+lemma logHeight_cons_zero : logHeight (Matrix.vecCons 0 x) = logHeight x := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_zero : mulHeight (vecCons a (vecCons 0 x)) = mulHeight (vecCons a x) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap 0 1)]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_zero : logHeight (vecCons a (vecCons 0 x)) = logHeight (vecCons a x) := by
+  simp [logHeight_eq_log_mulHeight]
+
+@[simp]
+lemma mulHeight_cons_cons_cons_zero :
+    mulHeight (vecCons a (vecCons b (vecCons 0 x))) = mulHeight (vecCons a (vecCons b x)) := by
+  rw [← mulHeight_comp_equiv (Equiv.swap (Fin.succ 0) (Fin.succ 1)), ← cons_swap]
+  simp
+
+@[simp]
+lemma logHeight_cons_cons_cons_zero :
+    logHeight (vecCons a (vecCons b (vecCons 0 x))) = logHeight (vecCons a (vecCons b x)) := by
+  simp [logHeight_eq_log_mulHeight]
+
+end tuple
+
 end Height
 
 /-!
@@ -512,13 +562,7 @@ lemma logHeight₁_eq_logHeight (x : K) : logHeight₁ x = logHeight ![x, 1] := 
 lemma mulHeight₁_div_eq_mulHeight (x y : K) :
     mulHeight₁ (x / y) = mulHeight ![x, y] := by
   rcases eq_or_ne y 0 with rfl | hy
-  · simp only [div_zero, mulHeight₁_zero]
-    rcases eq_or_ne x 0 with rfl | hx
-    · rw [show (![0, 0] : Fin 2 → K) = 0 by simp]
-      simp
-    · have := mulHeight_smul_eq_mulHeight ![1, 0] hx
-      simp only [Matrix.smul_cons, smul_eq_mul, mul_one, mul_zero, Matrix.smul_empty] at this
-      rw [this, mulHeight_swap, ← mulHeight₁_eq_mulHeight, mulHeight₁_zero]
+  · simp
   · rw [mulHeight₁_eq_mulHeight, ← mulHeight_smul_eq_mulHeight _ hy]
     simp [mul_div_cancel₀ x hy]
 
@@ -526,7 +570,6 @@ lemma logHeight₁_div_eq_logHeight (x y : K) :
     logHeight₁ (x / y) = logHeight ![x, y] := by
   rw [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_div_eq_mulHeight x y]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicative height of the coordinate-wise `n`th power of a tuple
 is the `n`th power of its multiplicative height. -/
 lemma mulHeight_pow (x : ι → K) (n : ℕ) :
@@ -572,7 +615,7 @@ lemma mulHeight₁_pow (x : K) (n : ℕ) : mulHeight₁ (x ^ n) = mulHeight₁ x
   fin_cases i <;> simp
 
 /-- The logarithmic height of the `n`th power of a field element `x` (with `n : ℕ`)
-is `n` times the logaritmic height of `x`. -/
+is `n` times the logarithmic height of `x`. -/
 lemma logHeight₁_pow (x : K) (n : ℕ) : logHeight₁ (x ^ n) = n * logHeight₁ x := by
   simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_pow, log_pow]
 

@@ -331,7 +331,6 @@ lemma ker_toNormalization : f.toNormalization.ker = ⊥ := by
   rw [MorphismProperty.monomorphisms, @ConcreteCategory.mono_iff_injective_of_preservesPullback]
   exact Subtype.val_injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsDominant f.toNormalization := by
   have := congr(($(f.ker_toNormalization).support : Set f.normalization))
   rw [IdealSheafData.support_bot, Scheme.Hom.support_ker, TopologicalSpace.Closeds.coe_top] at this

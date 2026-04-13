@@ -146,7 +146,7 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
 /-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
-order-preserving bijection with the interval (-∞, I] in the prime spectrum of R. -/
+order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
     ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
@@ -280,6 +280,16 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
+/-- Isomorphic rings have isomorphic localizations. -/
+@[simps]
+noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P) (hIJ : I = J.comap f) :
+    Localization.AtPrime I ≃+* Localization.AtPrime J where
+  __ := localRingHom I J f hIJ
+  invFun := localRingHom J I f.symm
+    (by rw [hIJ, ← Ideal.comap_coe f, Ideal.comap_comap, RingEquiv.comp_symm, Ideal.comap_id])
+  left_inv x := by simp [localRingHom, map_map]
+  right_inv x := by simp [localRingHom, map_map]
+
 variable {S} in
 /-- For an algebra hom `f : S →ₐ[R] P` and a prime ideal `J` in `P`, the induced ring hom from the
 localization of `R` at `J ∩ S` to the localization of `P` at `J`. -/
@@ -295,6 +305,15 @@ variable {S} in
 @[simp] lemma localAlgHom_apply [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S →ₐ[R] P) (hIJ : I = J.comap f) (x) :
     localAlgHom I J f hIJ x = localRingHom I J f.toRingHom hIJ x := rfl
+
+variable {S} in
+/-- Isomorphic algebras have isomorphic localizations. -/
+@[simps]
+noncomputable def localAlgEquiv [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : S ≃ₐ[R] P) (hIJ : I = J.comap f) :
+    Localization.AtPrime I ≃ₐ[R] Localization.AtPrime J where
+  __ := localAlgHom I J f.toAlgHom hIJ
+  __ := localRingEquiv I J f.toRingEquiv hIJ
 
 lemma localRingHom_bijective_of_saturated_inf_eq_top
     {P : Ideal S} [P.IsPrime] {s : Subalgebra R S}
@@ -458,7 +477,6 @@ variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime
 
 open IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
 noncomputable
@@ -478,7 +496,7 @@ def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
     have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
       rw [← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
       exact s.prop
-    refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
+    refine ((inferInstance : (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
     rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
       ← map_mul, ← map_sub, ← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p,
       mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
@@ -491,7 +509,6 @@ theorem equivQuotMaximalIdeal_apply_mk (x : R) :
     equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
     (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
@@ -515,7 +532,6 @@ variable [IsScalarTower R S Sₚ]
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comap_map_eq_map :
     (Ideal.map (algebraMap R Sₚ) p).comap (algebraMap S Sₚ) = pS := by
   rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
@@ -547,7 +563,6 @@ lemma comap_map_eq_map :
 
 variable [IsScalarTower R Rₚ Sₚ]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (S Sₚ) in
 /--
 The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
