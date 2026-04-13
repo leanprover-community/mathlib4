@@ -128,7 +128,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
     π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
-      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
+      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
     _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by
