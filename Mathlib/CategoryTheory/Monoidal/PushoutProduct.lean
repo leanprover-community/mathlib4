@@ -137,16 +137,11 @@ def whiskerRightIso
       (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by simp) (by simp))
 
 -- helper instance for `PushoutProduct.associator`
-local instance {D : Type u'} [Category.{v'} D] {F : D ⥤ C} {h : C → C ⥤ C} {W : C}
-    [PreservesColimit F (h W)] : PreservesColimit F (h ((𝟭 C).obj W)) := by
-  simpa only [id_obj]
-
--- helper instance for `PushoutProduct.associator`
 local instance {F : C ⥤ C}
     [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) F] :
-    PreservesColimit (span (((curriedTensor C).map X₁.hom).app ((𝟭 C).obj X₂.left))
-      (((curriedTensor C).obj ((𝟭 C).obj X₁.left)).map X₂.hom)) F := by
-  simpa only [id_obj, curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map]
+    PreservesColimit (span (((curriedTensor C).map X₁.hom).app X₂.left)
+      (((curriedTensor C).obj X₁.left).map X₂.hom)) F := by
+  simpa only [curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is associative: `(X₁ □ X₂) □ X₃ ≅ X₁ □ X₂ □ X₃`. -/
