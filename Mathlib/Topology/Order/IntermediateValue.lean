@@ -528,8 +528,8 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
     exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 
-instance {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [PreconnectedSpace α] :
-    DenselyOrdered α where
+theorem denselyOrdered_of_preconnectedSpace {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [PreconnectedSpace α] : DenselyOrdered α where
   dense x y hxy := by
     have := nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
       (by use x; exact Set.mem_Iio.mpr hxy)
