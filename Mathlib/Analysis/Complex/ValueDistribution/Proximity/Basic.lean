@@ -163,26 +163,22 @@ proximity functions of the summand, plus `log` of the number of summands.
 theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
     (hf : ∀ a ∈ s, Meromorphic (f a)) :
     proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
-  simp only [proximity_top, Finset.sum_apply]
   intro r
+  simp [proximity_top]
   have h₂f : ∀ i ∈ s, CircleIntegrable (log⁺ ‖f i ·‖) 0 r :=
     fun i hi ↦ MeromorphicOn.circleIntegrable_posLog_norm (fun x hx ↦ hf i hi x)
-  simp only [Pi.add_apply, Finset.sum_apply]
-  calc circleAverage (log⁺ ‖∑ c ∈ s, f c ·‖) 0 r
-    _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
-      apply circleAverage_mono
-      · apply (Meromorphic.fun_sum hf).meromorphicOn.circleIntegrable_posLog_norm
-      · apply (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
-      · intro x hx
-        rw [add_comm]
-        apply posLog_norm_sum_le
-    _ = ∑ c ∈ s, circleAverage (log⁺ ‖f c ·‖) 0 r + log s.card := by
-      nth_rw 2 [← circleAverage_const (log s.card) 0 r]
-      rw [← circleAverage_sum h₂f, ← circleAverage_add (CircleIntegrable.sum s h₂f)
-        (circleIntegrable_const (log s.card) 0 r)]
-      congr 1
-      ext x
-      simp
+  calc
+    circleAverage (log⁺ ‖∑ c ∈ s, f c ·‖) 0 r
+      ≤ circleAverage ((fun x ↦ ∑ c ∈ s, log⁺ ‖f c x‖) + fun _ ↦ log s.card) 0 r := by
+        apply circleAverage_mono
+        · apply (Meromorphic.fun_sum hf).meromorphicOn.circleIntegrable_posLog_norm
+        · exact (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
+        · intro x hx; simpa [add_comm] using (posLog_norm_sum_le s (fun c ↦ f c x))
+    _ = (∑ c ∈ s, circleAverage (log⁺ ‖f c ·‖) 0 r) + log s.card := by
+      change circleAverage (fun z ↦ (∑ c ∈ s, log⁺ ‖f c z‖) + log s.card) 0 r = _
+      rw [circleAverage_fun_add (CircleIntegrable.fun_sum s h₂f)
+          (circleIntegrable_const (log s.card) 0 r), circleAverage_const]
+      simpa using (circleAverage_fun_sum (c := 0) (R := r) (f := fun c x ↦ log⁺ ‖f c x‖) (h := h₂f))
 
 /--
 The proximity function of `f + g` at `⊤` is less than or equal to the sum of the proximity functions
@@ -200,25 +196,21 @@ The proximity function `f * g` at `⊤` is less than or equal to the sum of the 
 -/
 theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f₁) (h₁f₂ : Meromorphic f₂) :
     proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
-  calc proximity (f₁ * f₂) ⊤
-    _ = circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 := by
-      simp [proximity]
-    _ ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖) 0 := by
-      intro r
-      apply circleAverage_mono
-      · simp_rw [← norm_mul]
-        apply MeromorphicOn.circleIntegrable_posLog_norm
-        apply Meromorphic.meromorphicOn
-        fun_prop
-      · apply (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₁ x)).add
-          (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x))
-      · exact fun _ _ ↦ posLog_mul
-    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0 := by
-      ext r
-      apply circleAverage_add
-      · exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₁ x)
-      · exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x)
-    _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
+  intro r
+  simp [proximity_top]
+  calc
+    circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 r
+      ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖) 0 r := by
+        apply circleAverage_mono
+        · simpa [norm_mul] using
+            ((h₁f₁.mul h₁f₂).meromorphicOn.circleIntegrable_posLog_norm (c := 0) (R := r))
+        · exact (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₁ x)).add
+            (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x))
+        · intro x hx
+          exact posLog_mul
+    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 r + circleAverage (log⁺ ‖f₂ ·‖) 0 r := by
+      exact circleAverage_add (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₁ x))
+        (MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x))
 
 @[deprecated (since := "2025-12-11")] alias proximity_top_mul_le := proximity_mul_top_le
 

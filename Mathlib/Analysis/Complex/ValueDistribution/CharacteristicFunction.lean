@@ -98,36 +98,6 @@ theorem characteristic_eventually_nonneg :
 -/
 
 /--
-For `1 ≤ r`, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of the
-characteristic functions of `f` and `g`, respectively, plus `log 2` (where `2` is the number of
-summands).
--/
-theorem characteristic_add_top_le {f₁ f₂ : ℂ → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
-    (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
-    characteristic (f₁ + f₂) ⊤ r ≤ characteristic f₁ ⊤ r + characteristic f₂ ⊤ r + log 2 := by
-  simp only [characteristic]
-  calc proximity (f₁ + f₂) ⊤ r + logCounting (f₁ + f₂) ⊤ r
-    _ ≤ (proximity f₁ ⊤ r + proximity f₂ ⊤ r + log 2)
-      + (logCounting f₁ ⊤ r + logCounting f₂ ⊤ r) := by
-      gcongr
-      · apply proximity_add_top_le h₁f₁ h₁f₂
-      · exact logCounting_add_top_le h₁f₁ h₁f₂ hr
-    _ = proximity f₁ ⊤ r + logCounting f₁ ⊤ r + (proximity f₂ ⊤ r + logCounting f₂ ⊤ r)
-      + log 2 := by
-      ring
-
-/--
-Asymptotically, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of
-the characteristic functions of `f` and `g`, respectively.
--/
-theorem characteristic_add_top_eventuallyLE {f₁ f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
-    (h₁f₂ : Meromorphic f₂) :
-    characteristic (f₁ + f₂) ⊤
-      ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ + fun _ ↦ log 2 := by
-  filter_upwards [Filter.eventually_ge_atTop 1] with r hr
-    using characteristic_add_top_le h₁f₁ h₁f₂ hr
-
-/--
 For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is less than or equal to the sum
 of the characteristic functions of `f ·`, plus `log s.card`.
 -/
@@ -155,6 +125,28 @@ theorem characteristic_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α
       ≤ᶠ[Filter.atTop] ∑ a ∈ s, (characteristic (f a) ⊤) + fun _ ↦ log s.card := by
   filter_upwards [Filter.eventually_ge_atTop 1]
     using fun _ hr ↦ characteristic_sum_top_le s f hf hr
+
+/--
+For `1 ≤ r`, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of the
+characteristic functions of `f` and `g`, respectively, plus `log 2` (where `2` is the number of
+summands).
+-/
+theorem characteristic_add_top_le {f₁ f₂ : ℂ → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
+    (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
+    characteristic (f₁ + f₂) ⊤ r ≤ characteristic f₁ ⊤ r + characteristic f₂ ⊤ r + log 2 := by
+  simpa using characteristic_sum_top_le (s := Finset.univ) (f := ![f₁, f₂])
+    (by simpa using ⟨h₁f₁, h₁f₂⟩) hr
+
+/--
+Asymptotically, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of
+the characteristic functions of `f` and `g`, respectively.
+-/
+theorem characteristic_add_top_eventuallyLE {f₁ f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
+    (h₁f₂ : Meromorphic f₂) :
+    characteristic (f₁ + f₂) ⊤
+      ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ + fun _ ↦ log 2 := by
+  filter_upwards [Filter.eventually_ge_atTop 1] with r hr
+    using characteristic_add_top_le h₁f₁ h₁f₂ hr
 
 /--
 For `1 ≤ r`, the characteristic function for the zeros of `f * g` is less than or equal to the sum

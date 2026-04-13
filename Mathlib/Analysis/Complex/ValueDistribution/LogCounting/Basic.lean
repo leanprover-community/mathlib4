@@ -589,13 +589,9 @@ theorem Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_c
     {f : ℂ → ℂ} (h : Meromorphic f) (hR : R ≠ 0) :
     logCounting (divisor f ⊤) R =
       circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
-  have h₁f : MeromorphicOn f (closedBall 0 |R|) := by tauto
-  simp only [MeromorphicOn.circleAverage_log_norm hR h₁f, logCounting, top_eq_univ,
-    AddMonoidHom.coe_mk, ZeroHom.coe_mk, zero_sub, norm_neg, add_sub_cancel_right]
-  congr 1
-  · simp_all
-  · rw [divisor_apply, divisor_apply]
-    all_goals aesop
+  rw [eq_sub_iff_add_eq]
+  simpa [logCounting, top_eq_univ, locallyFinsuppWithin.toClosedBall_divisor h] using
+    (MeromorphicOn.circleAverage_log_norm hR (by tauto : MeromorphicOn f (closedBall 0 |R|))).symm
 
 /--
 Variant of `locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const`, using

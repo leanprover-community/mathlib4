@@ -151,19 +151,16 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
 
 theorem hasConstantSpeedOnWith_zero_iff :
     HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
-  dsimp [HasConstantSpeedOnWith]
-  simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
+  rw [hasConstantSpeedOnWith_iff_variationOnFromTo_eq]
   constructor
-  · by_contra! ⟨h, hfs⟩
-    simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
-    push Not at hfs
-    obtain ⟨x, xs, y, ys, hxy⟩ := hfs
-    rcases le_total x y with (xy | yx)
-    · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
-    · rw [edist_comm] at hxy
-      exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
-  · rintro h x _ y _
-    simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
+  · rintro ⟨hf, h0⟩ x xs y ys
+    simpa using variationOnFromTo.edist_zero_of_eq_zero hf xs ys (by simpa using h0 xs ys)
+  · intro h
+    have hf : LocallyBoundedVariationOn f s := fun x y xs ys ↦
+      ((eVariationOn.eq_zero_iff f).2 fun a ha b hb ↦ h a ha.1 b hb.1).trans_lt
+        ENNReal.zero_lt_top |>.ne
+    exact ⟨hf, fun x xs y ys ↦ by
+      simpa using (variationOnFromTo.eq_zero_iff hf xs ys).2 fun a ha b hb ↦ h a ha.1 b hb.1⟩
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
@@ -212,14 +209,10 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
     EqOn φ id (Icc 0 s) := by
   rw [← φst] at hf
   convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
-  have : φ 0 = 0 := by
-    have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
-    obtain ⟨x, xs, hx⟩ := hm
-    apply le_antisymm ((φm ⟨le_rfl, hs⟩ xs xs.1).trans_eq hx) _
-    have := φst ▸ mapsTo_image φ (Icc 0 s)
-    exact (mem_Icc.mp (@this 0 (by rw [mem_Icc]; exact ⟨le_rfl, hs⟩))).1
-  simp only [tsub_zero, this, add_zero]
-  rfl
+  have hφ0 : φ 0 = 0 :=
+    (φm.map_isLeast (isLeast_Icc hs)).unique <| by
+      simpa [φst] using (isLeast_Icc ht : IsLeast (Icc 0 t) 0)
+  exact funext fun y => by simp [hφ0]
 
 /-- The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
 * has unit speed on `s` (by `has_unit_speed_naturalParameterization`).

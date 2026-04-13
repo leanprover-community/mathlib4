@@ -228,15 +228,13 @@ theorem Convex.translate (hs : Convex 𝕜 s) (z : E) : Convex 𝕜 ((fun x => z
 
 /-- The translation of a convex set is also convex. -/
 theorem Convex.translate_preimage_right (hs : Convex 𝕜 s) (z : E) :
-    Convex 𝕜 ((fun x => z + x) ⁻¹' s) := by
-  intro x hx y hy a b ha hb hab
-  have h := hs hx hy ha hb hab
-  rwa [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul] at h
+    Convex 𝕜 ((fun x => z + x) ⁻¹' s) :=
+  fun x hx => (hs (show z + x ∈ s from hx)).preimage_add_right
 
 /-- The translation of a convex set is also convex. -/
 theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
-    Convex 𝕜 ((fun x => x + z) ⁻¹' s) := by
-  simpa only [add_comm] using hs.translate_preimage_right z
+    Convex 𝕜 ((fun x => x + z) ⁻¹' s) :=
+  fun x hx => (hs (show x + z ∈ s from hx)).preimage_add_left
 
 section OrderedAddCommMonoid
 
@@ -468,14 +466,12 @@ theorem Convex.sub (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s - 
 variable [AddRightMono 𝕜]
 
 theorem Convex.add_smul_mem (hs : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : x + y ∈ s) {t : 𝕜}
-    (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • y ∈ s := by
-  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> noncomm_ring
-  rw [h]
-  exact hs hx hy (sub_nonneg_of_le ht.2) ht.1 (sub_add_cancel _ _)
+    (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • y ∈ s :=
+  (hs hx).add_smul_mem hy ht.1 ht.2
 
 theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 : E) ∈ s) (hx : x ∈ s)
-    {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s := by
-  simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
+    {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s :=
+  (hs zero_mem).smul_mem hx ht.1 ht.2
 
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
@@ -486,9 +482,8 @@ theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y 
   h.mapsTo_lineMap hx hy ht
 
 theorem Convex.add_smul_sub_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
-    (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • (y - x) ∈ s := by
-  rw [add_comm]
-  exact h.lineMap_mem hx hy ht
+    (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • (y - x) ∈ s :=
+  (h hx).add_smul_sub_mem hy ht.1 ht.2
 
 end AddCommGroup
 
@@ -550,10 +545,8 @@ theorem convex_iff_div :
   forall₂_congr fun _ _ => starConvex_iff_div
 
 theorem Convex.mem_smul_of_zero_mem (h : Convex 𝕜 s) {x : E} (zero_mem : (0 : E) ∈ s) (hx : x ∈ s)
-    {t : 𝕜} (ht : 1 ≤ t) : x ∈ t • s := by
-  rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
-  exact h.smul_mem_of_zero_mem zero_mem hx
-    ⟨inv_nonneg.2 (zero_le_one.trans ht), inv_le_one_of_one_le₀ ht⟩
+    {t : 𝕜} (ht : 1 ≤ t) : x ∈ t • s :=
+  (h zero_mem).mem_smul hx ht
 
 theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜} (hx : x ∈ s) (hy : y ∈ s)
     (hp : 0 ≤ p) (hq : 0 ≤ q) : ∃ z ∈ s, (p + q) • z = p • x + q • y := by
@@ -584,12 +577,8 @@ section
 
 theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
     [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E}
-    (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
-  refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
-  obtain hxy | hyx := h.total hx hy
-  · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
-  · rw [segment_symm]
-    exact (segment_subset_Icc hyx).trans (hs.out hy hx)
+    (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s :=
+  fun x hx => hs.starConvex hx fun y hy => show x ≤ y ∨ y ≤ x from h.total hx hy
 
 theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
     [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.OrdConnected) :
