@@ -5,8 +5,6 @@ Authors: Michael Rothgang, Pepa Montero
 -/
 module
 
-public import Mathlib.Topology.Algebra.ConstMulAction
-public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Quotient
 
 /-!

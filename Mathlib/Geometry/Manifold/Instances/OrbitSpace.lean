@@ -5,8 +5,8 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ChartedSpace
 public import Mathlib.Topology.Algebra.OrbitSpace
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Manifold structure on orbit spaces
