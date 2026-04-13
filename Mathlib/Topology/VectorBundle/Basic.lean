@@ -515,7 +515,6 @@ theorem continuousAt_zeroSection (R : Type*) [NontriviallyNormedField R] [∀ x,
     ContinuousAt (zeroSection F E) x :=
   (continuous_zeroSection R).continuousAt
 
-
 /-! ### Constructing vector bundles -/
 
 variable (B F)
