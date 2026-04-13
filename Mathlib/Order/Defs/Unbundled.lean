@@ -144,7 +144,7 @@ lemma antisymm_def : Std.Antisymm r ↔ ∀ ⦃a b⦄, r a b → r b a → a = b
 lemma asymm_def : Std.Asymm r ↔ ∀ ⦃a b⦄, r a b → ¬r b a :=
   ⟨(·.asymm), .mk⟩
 
-lemma total_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b  ∨ r b a :=
+lemma total_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b ∨ r b a :=
   ⟨(·.total), .mk⟩
 
 lemma trichotomous_def : Std.Trichotomous r ↔ ∀ ⦃a b⦄, ¬r a b → ¬r b a → a = b :=
