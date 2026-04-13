@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
@@ -5,7 +6,7 @@ import Mathlib.Tactic.Ring
 private axiom test_sorry : ∀ {α}, α
 universe u
 section
-variable {α : Type u} [LinearOrderedField α] (a b c d : α)
+variable {α : Type u} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d : α)
 
 -- prior to https://github.com/leanprover-community/mathlib4/pull/12083, `cancel_denoms` would not make progress on this
 example : ¬ (4 / 2 : ℚ) = 3 := by cancel_denoms
@@ -51,7 +52,7 @@ end
 
 -- Some tests with a concrete type universe.
 section
-variable {α : Type} [LinearOrderedField α] (a b c d : α)
+variable {α : Type} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d : α)
 
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
@@ -62,6 +63,7 @@ example (h : a > 0) : a / 5 > 0 := by
   exact h
 
 variable {α : Type} [Field α] [CharZero α] (a b c d : α)
+
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   rw [← h]
@@ -111,15 +113,15 @@ example (h : a * 5 + b * 6 = 30 * c) : a * 2⁻¹ * 3⁻¹ + b * 5⁻¹ = c := b
   cancel_denoms
   assumption
 
-example (h : 5 * a^2 + 4 * b^3 = 0) : a ^ 2 / 4 + b ^ 3 / 5 = 0 := by
+example (h : 5 * a ^ 2 + 4 * b ^ 3 = 0) : a ^ 2 / 4 + b ^ 3 / 5 = 0 := by
   cancel_denoms
   assumption
 
-example (h : 5 * a^3 * b^2 = 72 * c) : (a/2)^3 * (b/3)^2 = c/5 := by
+example (h : 5 * a ^ 3 * b ^ 2 = 72 * c) : (a / 2) ^ 3 * (b / 3) ^ 2 = c / 5 := by
   cancel_denoms
   assumption
 
-example (h: (5 * a ^ 3 + 8)^2 = 1600 * c) : ((a / 2) ^ 3 + 1/5)^2 = c := by
+example (h : (5 * a ^ 3 + 8) ^ 2 = 1600 * c) : ((a / 2) ^ 3 + 1 / 5) ^ 2 = c := by
   cancel_denoms
   assumption
 

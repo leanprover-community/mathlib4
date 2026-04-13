@@ -3,14 +3,18 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Conditionally complete lattices and finite sets.
 
 -/
+
+public section
 
 
 open Set
@@ -60,8 +64,7 @@ theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ �
     intro i
     split_ifs
     · exact ⟨_, by assumption, le_rfl⟩
-    · obtain ⟨a, ha, ha'⟩ := h
-      exact ⟨a, ha, ha'⟩
+    · assumption
   · simp only [Set.mem_image, mem_coe, ciSup_eq_ite, dite_eq_ite, Set.mem_range,
       exists_exists_eq_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro i hi
@@ -73,7 +76,7 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   classical
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
-  simp only [Function.comp_apply, toDual_iInf]
+  simp only [toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
   simp only [image_image]
   congr
@@ -111,19 +114,12 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciSup_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]
-  · intro H
-    have := hs.ciSup_mem_image _ h
-    simp only [mem_image] at this
-    obtain ⟨_, hmem, hx⟩ := this
-    rw [← hx]
-    exact H _ hmem
+  · have := hs.ciSup_mem_image _ h
+    grind
 
 theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     (h : ∃ x ∈ s, f x ≤ sInf ∅) :
@@ -136,10 +132,7 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciInf_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]

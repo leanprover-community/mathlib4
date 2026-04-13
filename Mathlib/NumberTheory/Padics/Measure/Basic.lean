@@ -39,9 +39,9 @@ def ContinuousMap.comapCLM (f : C(X, Y)) : C(Y, E) →L[R] C(X, E) where
 def ContinuousMap.prodMul : C(X, R) →ₗ[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
   LinearMap.mk₂ R (fun f g ↦ (f.comp .fst) * (g.comp .snd))
     (fun f f' g ↦ by ext; simp [add_mul])
-    (fun r f g ↦ by ext; simp [mul_assoc])
+    (fun r f g ↦ by ext; simp)
     (fun f g g' ↦ by ext; simp [mul_add])
-    (fun r f g ↦ by ext; simp [mul_left_comm])
+    (fun r f g ↦ by ext; simp)
 
 lemma ContinuousMap.prodMul_apply (f : C(X, R)) (g : C(Y, R)) (p : X × Y) :
     f.prodMul g p  = f p.1 * g p.2 := rfl
@@ -262,11 +262,13 @@ section Profinite
 
 variable [CompactSpace X] [CompactSpace Y] [T2Space X] [T2Space Y] [TotallyDisconnectedSpace X]
 
+-- TODO: Does this work if the target is only a uniform group (not a normed one)?
+set_option backward.isDefEq.respectTransparency false in
 /-- For profinite spaces, the two product structures on distributions agree. -/
 lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   ext f
   rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine le_of_forall_lt' (fun ε hε ↦ ?_)
+  refine le_of_forall_gt (fun ε hε ↦ ?_)
   have hε2 : 0 < ε / 2 := div_pos hε zero_lt_two
   have := (Metric.continuousAt_iff.mp <| (μ.prodMk ν).continuous.continuousAt (x := f)) _ hε2
   rcases this with ⟨δ, hδ, hhδ⟩
@@ -304,7 +306,7 @@ section Weak
 The weak topology on `AbstractMeasure G R E` (the weakest topology such that `μ ↦ μ f` is
 continuous for all `f`).
 -/
-def WeakTopology : TopologicalSpace (AbstractMeasure X R E) :=
+@[reducible] def WeakTopology : TopologicalSpace (AbstractMeasure X R E) :=
   .induced (fun μ f ↦ μ f) inferInstance
 
 scoped [AbstractMeasure.WeakTopology] attribute [instance] WeakTopology
@@ -321,7 +323,7 @@ noncomputable instance : Norm (AbstractMeasure X 𝕜 E) :=
   inferInstanceAs (Norm (C(X, 𝕜) →L[𝕜] E))
 
 /-- The strong topology on `AbstractMeasure G 𝕜 E` (the topology induced by the norm). -/
-def StrongTopology : TopologicalSpace (AbstractMeasure X 𝕜 E) :=
+@[reducible] def StrongTopology : TopologicalSpace (AbstractMeasure X 𝕜 E) :=
   inferInstanceAs (TopologicalSpace (C(X, 𝕜) →L[𝕜] E))
 
 end Topology

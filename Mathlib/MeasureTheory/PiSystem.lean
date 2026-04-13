@@ -3,9 +3,12 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Data.Set.Dissipate
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -49,10 +52,12 @@ import Mathlib.Order.Disjointed
 
 ## Implementation details
 
-* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the galois
+* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
-  lattice and galois insertion on the subtype corresponding to `IsPiSystem`.
+  lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
+
+@[expose] public section
 
 
 open MeasurableSpace Set
@@ -103,6 +108,17 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
 
+/-- For a `π`-system `C` over `α` and a sequence of sets `s` belonging to `C`,
+`dissipate s n` belongs to `C`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
+    (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+    dissipate s n ∈ C := by
+  induction n with
+  | zero => simpa using h 0
+  | succ n hn =>
+    rw [dissipate_succ] at h' ⊢
+    exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
+
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
     IsPiSystem (⋃ n, p n) := by
@@ -123,6 +139,19 @@ lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) 
   rintro _ ⟨s₁, hs₁, t₁, ht₁, rfl⟩ _ ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
   rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
+
+/-- A nonempty finite intersection of sets in a π-system belongs to the π-system. -/
+lemma IsPiSystem.biInter_mem {S : Set (Set α)} (h_pi : IsPiSystem S) {t : Finset (Set α)}
+    (t_ne : t.Nonempty) (ht : ∀ s ∈ t, s ∈ S) (h' : (⋂ s ∈ t, s).Nonempty) :
+    (⋂ s ∈ t, s) ∈ S := by
+  classical
+  induction t_ne using Finset.Nonempty.cons_induction with
+  | singleton a => simpa using ht
+  | cons a t hat t_ne ih =>
+    simp only [Finset.cons_eq_insert, Finset.mem_insert, iInter_iInter_eq_or_left] at h' ht ⊢
+    refine h_pi _ (ht a (Or.inl rfl)) _ ?_ h'
+    refine ih (fun s hs ↦ ?_) h'.right
+    exact ht s (Or.inr hs)
 
 section Order
 
@@ -255,23 +284,21 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
     (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b, g b)) :
     ∃ (T : Finset β) (f : β → Set α), (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   classical
-  induction' h_t with s h_s s t' h_gen_s h_gen_t' h_nonempty h_s h_t'
-  · rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
+  induction h_t with
+  | @base s h_s =>
+    rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
     refine ⟨{b}, fun _ => s, ?_⟩
     simpa using h_s_in_t'
-  · rcases h_t' with ⟨T_t', ⟨f_t', ⟨rfl, h_t'⟩⟩⟩
+  | inter h_gen_s h_gen_t' h_nonempty h_s h_t' =>
+    rcases h_t' with ⟨T_t', ⟨f_t', ⟨rfl, h_t'⟩⟩⟩
     rcases h_s with ⟨T_s, ⟨f_s, ⟨rfl, h_s⟩⟩⟩
     use T_s ∪ T_t', fun b : β =>
       if b ∈ T_s then if b ∈ T_t' then f_s b ∩ f_t' b else f_s b
       else if b ∈ T_t' then f_t' b else (∅ : Set α)
     constructor
     · ext a
-      simp_rw [Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union, or_imp]
-      rw [← forall_and]
-      constructor <;> intro h1 b <;> by_cases hbs : b ∈ T_s <;> by_cases hbt : b ∈ T_t' <;>
-          specialize h1 b <;>
-        simp only [hbs, hbt, if_true, if_false, true_imp_iff, and_self_iff, false_imp_iff] at h1 ⊢
-      all_goals exact h1
+      simp_rw [Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union]
+      grind
     intro b h_b
     split_ifs with hbs hbt hbt
     · refine h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono ?_ h_nonempty)
@@ -291,7 +318,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
     suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
-    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
+    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
     rfl
   rcases @mem_generatePiSystem_iUnion_elim α (Subtype s) (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
@@ -301,14 +328,14 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
       Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
     constructor <;>
-      · simp (config := { proj := false }) only
+      · simp -proj only
           [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
         intro h1 b h_b h_b_in_T
         have h2 := h1 b h_b h_b_in_T
         revert h2
         rw [Subtype.val_injective.extend_apply]
         apply id
-  · intros b h_b
+  · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     obtain ⟨h_b_w, h_b_h⟩ := h_b
@@ -347,9 +374,9 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       exact Or.inl (hfπ i hi)
     · have ht_empty : t = ∅ := by
         ext1 x
-        simp only [Finset.not_mem_empty, iff_false]
+        simp only [Finset.notMem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      simp [ht_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
+      simp [ht_empty, iInter_univ, Set.mem_singleton univ]
   · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
@@ -358,7 +385,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       · simp only [Finset.mem_singleton, iInter_iInter_eq_left]
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
-        imp_true_iff, Finset.not_mem_empty, iInter_false, iInter_univ, true_and,
+        imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
         exists_const] using hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
@@ -367,11 +394,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
   ext1 s'
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
   refine ⟨fun h => ?_, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
-  obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  refine ⟨t, htS, ?_⟩
-  congr! 3
-  apply hft_eq
-  assumption
+  grind
 
 theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     generateFrom (piiUnionInter (fun k => {s k}) S) = generateFrom { t | ∃ k ∈ S, s k = t } := by
@@ -400,17 +423,8 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
-    · split_ifs with h_1 h_2 h_2
-      exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
-        ⟨Set.mem_univ _, Set.mem_univ _⟩]
-    · specialize h i (Or.inl hi1)
-      rw [if_pos hi1] at h
-      exact h.1
-    · specialize h i (Or.inr hi2)
-      rw [if_pos hi2] at h
-      exact h.2
+    simp only [inf_eq_inter, mem_inter_iff, mem_iInter]
+    grind
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
@@ -420,8 +434,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine le_antisymm (Set.iInter_subset_of_subset n ?_) (Set.empty_subset _)
     refine Set.iInter_subset_of_subset hn ?_
-    simp_rw [g, if_pos hn1, if_pos hn2]
-    exact h.subset
+    grind
   · simp [hf1m n hn1]
   · simp [hf2m n h]
   · exact absurd hn (by simp [hn1, h])
@@ -595,6 +608,7 @@ instance : Inhabited (DynkinSystem α) :=
   ⟨generate univ⟩
 
 /-- If a Dynkin system is closed under binary intersection, then it forms a `σ`-algebra. -/
+@[implicit_reducible]
 def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :
     MeasurableSpace α where
   MeasurableSet' := d.Has
@@ -622,7 +636,6 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
       d.has_diff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
-    simp only []
     rw [iUnion_inter]
     refine d.has_iUnion_nat ?_ hf
     exact hd.mono fun i j => Disjoint.mono inter_subset_left inter_subset_left

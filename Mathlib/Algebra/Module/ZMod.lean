@@ -3,13 +3,17 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.Sylow
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -86,8 +90,6 @@ theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := 
 def toZModLinearMapEquiv : (M →+ M₁) ≃+ (M →ₗ[ZMod n] M₁) where
   toFun f := f.toZModLinearMap n
   invFun g := g
-  left_inv f := rfl
-  right_inv g := rfl
   map_add' f₁ f₂ := by ext; simp
 
 end AddMonoidHom
@@ -100,8 +102,6 @@ See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 @[simp]

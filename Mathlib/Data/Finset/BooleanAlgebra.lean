@@ -3,11 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
 
 /-!
-# `Finset`s are a boolean algebra
+# `Finset`s are a Boolean algebra
 
 This file provides the `BooleanAlgebra (Finset α)` instance, under the assumption that `α` is a
 `Fintype`.
@@ -15,8 +18,10 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 ## Main results
 
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
-* `Finset.booleanAlgebra`: `Finset α` is a boolean algebra if `α` is finite
+* `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -48,15 +53,23 @@ theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
 theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
-  rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
+  contrapose!; exact univ_nonempty_iff
 
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
 
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
+
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
+
+@[simp] lemma singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ := by
+  apply SetLike.coe_ne_coe.1
+  simp
 
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
@@ -67,7 +80,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { (inferInstance : OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 
@@ -103,7 +116,7 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 @[simp]
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
-theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
@@ -113,6 +126,12 @@ theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
 @[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
 
 lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
+
+lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
+  le_compl_iff_disjoint_right (α := Finset α)
+
+lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
+  le_compl_iff_disjoint_left (α := Finset α)
 
 @[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
   rw [subset_compl_comm, singleton_subset_iff, mem_compl]
@@ -222,8 +241,7 @@ theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => 
 /-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
 theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
     [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
-  letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
-  exact univ_filter_exists f
+  grind
 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
     (univ.filter p : Set α) = { x | p x } := by simp

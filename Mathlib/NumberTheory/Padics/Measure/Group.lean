@@ -53,7 +53,6 @@ variable [LocallyCompactSpace G]
 -/
 
 noncomputable instance : NonUnitalNonAssocRing D(G, R) where
-  __ := inferInstanceAs (AddCommGroup D(G, R))
   mul μ ν := map ⟨fun p : G × G ↦ p.1 * p.2, continuous_mul⟩ (μ.prodMk' ν)
   zero_mul ν := by
     change map _ _ = 0
@@ -99,7 +98,6 @@ lemma convolveFunRight_mul (μ ν : D(G, R)) (f : C(G, R)) :
   simp only [convolveFunRight_apply, ContinuousMap.coe_mk, mul_assoc]
 
 noncomputable instance : NonUnitalRing D(G, R) where
-  __ := inferInstanceAs (NonUnitalNonAssocRing D(G, R))
   mul_assoc _ _ _ := by ext; simp only [mul_apply, convolveFunRight_mul]
 
 end Semigroup
@@ -134,7 +132,6 @@ lemma convolveFunRight_apply_zero (μ : D(G, R)) (f : C(G, R)) :
 variable [LocallyCompactSpace G]
 
 noncomputable instance : NonAssocRing D(G, R) where
-  __ := inferInstanceAs (NonUnitalNonAssocRing D(G, R))
   one_mul _ := by ext; simp only [mul_apply, one_apply, convolveFunRight_apply_zero]
   mul_one _ := by ext; simp only [mul_apply, convolveFunRight_one]
 
@@ -151,8 +148,6 @@ section Monoid
 variable [Monoid G] [ContinuousMul G] [LocallyCompactSpace G]
 
 noncomputable instance : Ring D(G, R) where
-  __ := inferInstanceAs (NonUnitalRing D(G, R))
-  __ := inferInstanceAs (NonAssocRing D(G, R))
 
 /-- Measures form a `R`-algebra. -/
 noncomputable instance : Algebra R D(G, R) := Algebra.ofModule smul_mul_assoc mul_smul_comm
@@ -164,10 +159,10 @@ noncomputable instance : Module D(G, R) C(G, R) where
   zero_smul := LinearMap.zero_apply
   smul_add μ := map_add _
   add_smul μ ν f := by
-    show convolveFunRight _ _ = convolveFunRight _ _ + convolveFunRight _ _
+    change convolveFunRight _ _ = convolveFunRight _ _ + convolveFunRight _ _
     simp only [map_add, LinearMap.add_apply]
   mul_smul μ ν f := by
-    show convolveFunRight _ _ = convolveFunRight _ (convolveFunRight _ _)
+    change convolveFunRight _ _ = convolveFunRight _ (convolveFunRight _ _)
     ext g
     simp only [convolveFunRight_apply, mul_apply]
     congr 1 with h
@@ -180,21 +175,14 @@ section Commutative
 variable [CompactSpace G] [T2Space G] [TotallyDisconnectedSpace G]
 
 noncomputable instance [CommMagma G] [ContinuousMul G] : NonUnitalNonAssocCommRing D(G, R) where
-  __ := inferInstanceAs (NonUnitalNonAssocRing D(G, R))
   mul_comm μ ν := by
-    ext f
-    simp only [mul_apply, convolveFunRight, LinearMap.comp_apply, LinearMap.lcomp_apply,
-      ContinuousLinearMap.coe_coe, ContinuousMap.comapCLM_apply, ContinuousMap.comp,
-      ContinuousMap.coe_mk, Function.comp_def, ← prodMk'_apply, prodMk'_flip μ ν, prodMk_eq_prodMk',
-      ContinuousMap.prodSwap_apply, mul_comm]
+    ext
+    simp [mul_apply, convolveFunRight, ContinuousMap.comp, Function.comp_def,
+      ← prodMk'_apply, prodMk'_flip μ ν, prodMk_eq_prodMk', mul_comm]
 
 noncomputable instance [CommSemigroup G] [ContinuousMul G] : NonUnitalCommRing D(G, R) where
-  __ := inferInstanceAs (NonUnitalRing D(G, R))
-  __ := inferInstanceAs (NonUnitalNonAssocCommRing D(G, R))
 
 noncomputable instance [CommMonoid G] [ContinuousMul G] : CommRing D(G, R) where
-  __ := inferInstanceAs (Ring D(G, R))
-  __ := inferInstanceAs (NonUnitalNonAssocCommRing D(G, R))
 
 end Commutative
 

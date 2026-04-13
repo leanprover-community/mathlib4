@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 /-!
 # Density of simple functions
@@ -26,17 +28,17 @@ by a sequence of simple functions.
   approximations `MeasureTheory.SimpleFunc.approxOn f hf s y₀ h₀ n`, evaluated at `x`,
   tends to `f x` as `n` tends to `∞`.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
 
+@[expose] public section
 
-open Set Function Filter TopologicalSpace ENNReal EMetric Finset
+open Set Function Filter TopologicalSpace Metric MeasureTheory
+open scoped Topology ENNReal
 
-open Topology ENNReal MeasureTheory
-
-variable {α β ι E F 𝕜 : Type*}
+variable {α β : Type*}
 
 noncomputable section
 
@@ -53,7 +55,7 @@ variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 
 /-- `nearestPtInd e N x` is the index `k` such that `e k` is the nearest point to `x` among the
 points `e 0`, ..., `e N`. If more than one point are at the same distance from `x`, then
-`nearestPtInd e N x` returns the least of their indexes. -/
+`nearestPtInd e N x` returns the least of their indices. -/
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
@@ -85,20 +87,23 @@ theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
   simp
 
 theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
-  induction' N with N ihN; · simp
-  simp only [nearestPtInd_succ]
-  split_ifs
-  exacts [le_rfl, ihN.trans N.le_succ]
+  induction N with
+  | zero => simp
+  | succ N ihN =>
+    simp only [nearestPtInd_succ]
+    split_ifs
+    exacts [le_rfl, ihN.trans N.le_succ]
 
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
-  induction' N with N ihN generalizing k
-  · simp [nonpos_iff_eq_zero.1 hk, le_refl]
-  · simp only [nearestPt, nearestPtInd_succ, map_apply]
+  induction N generalizing k with
+  | zero => simp [nonpos_iff_eq_zero.1 hk]
+  | succ N ihN =>
+    simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h
     · rcases hk.eq_or_lt with (rfl | hk)
       exacts [le_rfl, (h k (Nat.lt_succ_iff.1 hk)).le]
-    · push_neg at h
+    · push Not at h
       rcases h with ⟨l, hlN, hxl⟩
       rcases hk.eq_or_lt with (rfl | hk)
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]
@@ -131,7 +136,16 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
   rintro (_ | n)
   exacts [h₀, Subtype.mem _]
 
-@[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
+lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}
+    (hf : 0 ≤ f) {hfm : Measurable f} [SeparableSpace (range f ∪ {0} : Set α)] (n : ℕ) :
+    0 ≤ approxOn f hfm (range f ∪ {0}) 0 (by simp) n := by
+  have : range f ∪ {0} ⊆ Set.Ici 0 := by
+    simp only [Set.union_singleton, Set.insert_subset_iff, Set.mem_Ici, le_refl, true_and]
+    rintro - ⟨x, rfl⟩
+    exact hf x
+  exact fun _ ↦ this <| approxOn_mem ..
+
+@[simp]
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
@@ -142,9 +156,9 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
-  simp (config := { iota := false }) only [approxOn, coe_comp]
+  simp -iota only [approxOn, coe_comp]
   refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
-  simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
+  simp -iota only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
       subset_union_right
@@ -166,7 +180,7 @@ theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y
     edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
         edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
       edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := add_le_add_left (edist_approxOn_le hf h₀ x n) _
+    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 
@@ -220,7 +234,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       contrapose! H
       rw [← Function.mem_support] at H
       exact fs (subset_tsupport _ H)
-    simp [SimpleFunc.piecewise_apply, H, ite_false, this, hε]
+    simp [SimpleFunc.piecewise_apply, H, this, hε]
 
 /-- A continuous function with compact support on a product space is measurable for the product
 sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the

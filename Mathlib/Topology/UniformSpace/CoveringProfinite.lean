@@ -40,7 +40,7 @@ lemma exists_disjoint_nonempty_clopen_cover_of_mem_uniformity (hS : S ∈ 𝓤 V
     obtain ⟨R, hR, hR', hRS⟩ := comp_symm_of_uniformity hS
     obtain ⟨U, hUB, hUo, hUx⟩ := mem_nhds_iff.mp <|  (f.continuousAt x).preimage_mem_nhds
       <| UniformSpace.ball_mem_nhds _ hR
-    exact ⟨⟨U, hUo⟩, hUx, fun y hy z hz ↦ hRS <| prod_mk_mem_compRel (hR' <| hUB hy) (hUB hz)⟩
+    exact ⟨⟨U, hUo⟩, hUx, fun y hy z hz ↦ hRS <| SetRel.prodMk_mem_comp (hR' <| hUB hy) (hUB hz)⟩
   choose U hUx hUS using step1
   have hUc : IsOpenCover U := by ext x; simpa using ⟨x, hUx x⟩
   -- Now refine it to a disjoint covering.
@@ -73,16 +73,16 @@ lemma exists_fin_comp_of_mem_uniformity (hS : S ∈ 𝓤 V) :
 If `f` is a continuous map from a profinite space to a uniform space with a group structure, then
 we can uniformly approximate `f` by finite products of indicator functions of clopen sets.
 -/
-@[to_additive "If `f` is a continuous map from a profinite space to a uniform space with an
+@[to_additive /-- If `f` is a continuous map from a profinite space to a uniform space with an
 additive group structure, then we can uniformly approximate `f` by finite sums of indicator
-functions of clopen sets."]
+functions of clopen sets. -/]
 lemma exists_sum_const_mulIndicator_approx [CommGroup V] (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by
   obtain ⟨n, g, h, hg, hgh⟩ := exists_fin_comp_of_mem_uniformity f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
   convert hgh x
-  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_not_mem hi.symm _).trans
+  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_notMem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 
 variable {R Y : Type*} [TopologicalSpace Y] [CompactSpace Y]
@@ -90,7 +90,7 @@ variable {R Y : Type*} [TopologicalSpace Y] [CompactSpace Y]
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the
 form `f x • g y`. -/
-lemma exists_sum_smul_approx [AddCommGroup V] [UniformAddGroup V] [MulActionWithZero R V]
+lemma exists_sum_smul_approx [AddCommGroup V] [IsUniformAddGroup V] [MulActionWithZero R V]
     (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
@@ -107,7 +107,7 @@ lemma exists_sum_smul_approx [AddCommGroup V] [UniformAddGroup V] [MulActionWith
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the form
 `f x * g y`. -/
-lemma exists_sum_mul_approx (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) [Ring V] [UniformAddGroup V]:
+lemma exists_sum_mul_approx (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) [Ring V] [IsUniformAddGroup V] :
     ∃ (n : ℕ) (g : Fin n → C(X, V)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x * h i y) ∈ S :=
   exists_sum_smul_approx f hS

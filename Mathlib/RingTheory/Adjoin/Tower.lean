@@ -3,18 +3,22 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Adjoin.FG
+module
+
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
 
 ## Main results
 
- * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
-   then `A` is finitely generated as `R`-algebra
- * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
-   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
+* `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
+  then `A` is finitely generated as `R`-algebra
+* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is Noetherian, and
+  C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
+
+public section
 
 
 open Pointwise
@@ -36,12 +40,7 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     ext x
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
-  ext x
-  constructor
-  · rintro ⟨y, hy⟩
-    exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
-  · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
-    exact ⟨z, Eq.trans h1 h2⟩
+  simp
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
@@ -90,7 +89,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   obtain ⟨y, hy⟩ := hBC
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
-  choose f hf using this
+  choose f _ hf using this
   classical
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
@@ -138,7 +137,7 @@ variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
-A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
+A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
 
 References: Atiyah--Macdonald Proposition 7.8; Altman--Kleiman 16.17. -/

@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Set.Function
 
 /-!
 # Fixed points of a self-map
@@ -21,6 +23,8 @@ We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Se
 fixed point
 -/
 
+@[expose] public section
+
 
 open Equiv
 
@@ -35,6 +39,10 @@ open Function (Commute)
 /-- Every point is a fixed point of `id`. -/
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
   (rfl :)
+
+/-- A function fixes every point iff it is the identity. -/
+@[simp] theorem forall_isFixedPt_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
+  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
 
 namespace IsFixedPt
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotence of the Karoubi envelope
@@ -12,6 +14,8 @@ In this file, we construct the equivalence of categories
 `KaroubiKaroubi.equivalence C : Karoubi C ≌ Karoubi (Karoubi C)` for any category `C`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Category
@@ -24,9 +28,8 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
@@ -46,14 +49,14 @@ instance [Preadditive C] : Functor.Additive (inverse C) where
 /-- The unit isomorphism of the equivalence -/
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
-  eqToIso (Functor.ext (by aesop_cat) (by simp))
+  eqToIso (Functor.ext (by cat_disch) (by simp))
 
 attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
 @[simps]
 def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C)) where
   hom := { app := fun P => { f := { f := P.p.1 } } }
-  inv := { app := fun P => { f := { f := P.p.1 }  } }
+  inv := { app := fun P => { f := { f := P.p.1 } } }
 
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/
 @[simps]
@@ -64,10 +67,10 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   counitIso := KaroubiKaroubi.counitIso C
 
 instance equivalence.additive_functor [Preadditive C] :
-  Functor.Additive (equivalence C).functor where
+    Functor.Additive (equivalence C).functor where
 
 instance equivalence.additive_inverse [Preadditive C] :
-  Functor.Additive (equivalence C).inverse where
+    Functor.Additive (equivalence C).inverse where
 
 end KaroubiKaroubi
 

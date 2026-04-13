@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-! # Semiquotients
 
@@ -15,6 +17,8 @@ which return something in a range of values (represented by the
 predicate `S`) but are not completely determined.
 -/
 
+@[expose] public section
+
 
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
   and in the VM is represented by an element of `α`; the relation
@@ -22,7 +26,6 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α` -/
   s : Set α
@@ -195,6 +198,7 @@ theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by

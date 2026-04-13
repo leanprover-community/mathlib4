@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Restriction of a function indexed by a preorder
@@ -22,6 +24,8 @@ and `Preorder.frestrictLe₂`.
 ## Main definitions
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
+
+@[expose] public section
 
 namespace Preorder
 
@@ -81,6 +85,14 @@ theorem frestrictLe₂_comp_frestrictLe {a b : α} (hab : a ≤ b) :
 
 theorem frestrictLe₂_comp_frestrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (frestrictLe₂ (π := π) hab) ∘ (frestrictLe₂ hbc) = frestrictLe₂ (hab.trans hbc) := rfl
+
+theorem piCongrLeft_comp_restrictLe {a : α} :
+    ((Equiv.IicFinsetSet a).symm.piCongrLeft (fun i : Iic a ↦ π i)) ∘ (restrictLe a) =
+    frestrictLe a := rfl
+
+theorem piCongrLeft_comp_frestrictLe {a : α} :
+    ((Equiv.IicFinsetSet a).piCongrLeft (fun i : Set.Iic a ↦ π i)) ∘ (frestrictLe a) =
+    restrictLe a := rfl
 
 section updateFinset
 

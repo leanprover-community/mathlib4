@@ -3,7 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie groups
@@ -12,9 +15,9 @@ A Lie group is a group that is also a `C^n` manifold, in which the group operati
 multiplication and inversion are `C^n` maps. Regularity of the group multiplication means that
 multiplication is a `C^n` mapping of the product manifold `G` × `G` into `G`.
 
-Note that, since a manifold here is not second-countable and Hausdorff a Lie group here is not
-guaranteed to be second-countable (even though it can be proved it is Hausdorff). Note also that Lie
-groups here are not necessarily finite dimensional.
+Note that, since a manifold here is not second-countable and Hausdorff, a Lie group here is not
+guaranteed to be second-countable (even though it can be proved that it is Hausdorff). Note also
+that Lie groups here are not necessarily finite dimensional.
 
 ## Main definitions
 
@@ -47,6 +50,8 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped Manifold ContDiff
@@ -59,7 +64,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
     (n : WithTop ℕ∞) (G : Type*)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
-  contMDiff_neg : ContMDiff I I n fun a : G => -a
+  contMDiff_neg : CMDiff n fun a : G ↦ -a
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
@@ -70,7 +75,7 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
     (n : WithTop ℕ∞) (G : Type*)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
-  contMDiff_inv : ContMDiff I I n fun a : G => a⁻¹
+  contMDiff_inv : CMDiff n fun a : G ↦ a⁻¹
 
 /-!
   ### Smoothness of inversion, negation, division and subtraction
@@ -117,18 +122,15 @@ section
 variable (I n)
 
 /-- In a Lie group, inversion is `C^n`. -/
-@[to_additive "In an additive Lie group, inversion is a smooth map."]
-theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
+@[to_additive /-- In an additive Lie group, inversion is a smooth map. -/]
+theorem contMDiff_inv : CMDiff n fun x : G ↦ x⁻¹ :=
   LieGroup.contMDiff_inv
-
-@[deprecated (since := "2024-11-21")] alias smooth_inv := contMDiff_inv
-@[deprecated (since := "2024-11-21")] alias smooth_neg := contMDiff_neg
 
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive "An additive Lie group is an additive topological group. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
+for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -136,61 +138,41 @@ end
 
 @[to_additive]
 theorem ContMDiffWithinAt.inv {f : M → G} {s : Set M} {x₀ : M}
-    (hf : ContMDiffWithinAt I' I n f s x₀) : ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s x₀ :=
+    (hf : CMDiffAt[s] n f x₀) : CMDiffAt[s] n (fun x ↦ (f x)⁻¹) x₀ :=
   (contMDiff_inv I n).contMDiffAt.contMDiffWithinAt.comp x₀ hf <| Set.mapsTo_univ _ _
 
 @[to_additive]
-theorem ContMDiffAt.inv {f : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x₀) :
-    ContMDiffAt I' I n (fun x => (f x)⁻¹) x₀ :=
+theorem ContMDiffAt.inv {f : M → G} {x₀ : M} (hf : CMDiffAt n f x₀) :
+    CMDiffAt n (fun x ↦ (f x)⁻¹) x₀ :=
   (contMDiff_inv I n).contMDiffAt.comp x₀ hf
 
 @[to_additive]
-theorem ContMDiffOn.inv {f : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s) :
-    ContMDiffOn I' I n (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv
+theorem ContMDiffOn.inv {f : M → G} {s : Set M} (hf : CMDiff[s] n f) :
+    CMDiff[s] n (fun x ↦ (f x)⁻¹) := fun x hx ↦ (hf x hx).inv
 
 @[to_additive]
-theorem ContMDiff.inv {f : M → G} (hf : ContMDiff I' I n f) : ContMDiff I' I n fun x => (f x)⁻¹ :=
-  fun x => (hf x).inv
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.inv := ContMDiffWithinAt.inv
-@[deprecated (since := "2024-11-21")] alias SmoothAt.inv := ContMDiffAt.inv
-@[deprecated (since := "2024-11-21")] alias SmoothOn.inv := ContMDiffOn.inv
-@[deprecated (since := "2024-11-21")] alias Smooth.inv := ContMDiff.inv
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.neg := ContMDiffWithinAt.neg
-@[deprecated (since := "2024-11-21")] alias SmoothAt.neg := ContMDiffAt.neg
-@[deprecated (since := "2024-11-21")] alias SmoothOn.neg := ContMDiffOn.neg
-@[deprecated (since := "2024-11-21")] alias Smooth.neg := ContMDiff.neg
+theorem ContMDiff.inv {f : M → G} (hf : CMDiff n f) : CMDiff n fun x ↦ (f x)⁻¹ :=
+  fun x ↦ (hf x).inv
 
 @[to_additive]
 theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
-    (hf : ContMDiffWithinAt I' I n f s x₀) (hg : ContMDiffWithinAt I' I n g s x₀) :
-    ContMDiffWithinAt I' I n (fun x => f x / g x) s x₀ := by
+    (hf : CMDiffAt[s] n f x₀) (hg : CMDiffAt[s] n g x₀) :
+    CMDiffAt[s] n (fun x ↦ f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
-theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x₀)
-    (hg : ContMDiffAt I' I n g x₀) : ContMDiffAt I' I n (fun x => f x / g x) x₀ := by
+theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : CMDiffAt n f x₀)
+    (hg : CMDiffAt n g x₀) : CMDiffAt n (fun x ↦ f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
-theorem ContMDiffOn.div {f g : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s)
-    (hg : ContMDiffOn I' I n g s) : ContMDiffOn I' I n (fun x => f x / g x) s := by
+theorem ContMDiffOn.div {f g : M → G} {s : Set M} (hf : CMDiff[s] n f)
+    (hg : CMDiff[s] n g) : CMDiff[s] n (fun x ↦ f x / g x) := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
-theorem ContMDiff.div {f g : M → G} (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
-    ContMDiff I' I n fun x => f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.div := ContMDiffWithinAt.div
-@[deprecated (since := "2024-11-21")] alias SmoothAt.div := ContMDiffAt.div
-@[deprecated (since := "2024-11-21")] alias SmoothOn.div := ContMDiffOn.div
-@[deprecated (since := "2024-11-21")] alias Smooth.div := ContMDiff.div
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.sub := ContMDiffWithinAt.sub
-@[deprecated (since := "2024-11-21")] alias SmoothAt.sub := ContMDiffAt.sub
-@[deprecated (since := "2024-11-21")] alias SmoothOn.sub := ContMDiffOn.sub
-@[deprecated (since := "2024-11-21")] alias Smooth.sub := ContMDiff.sub
+theorem ContMDiff.div {f g : M → G} (hf : CMDiff n f) (hg : CMDiff n g) :
+    CMDiff n fun x ↦ f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 end PointwiseDivision
 
@@ -199,14 +181,14 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}
     [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} {G' : Type*} [TopologicalSpace G'] [ChartedSpace H' G']
     [Group G'] [LieGroup I' n G'] : LieGroup (I.prod I') n (G × G') :=
-  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prod_mk contMDiff_snd.inv }
+  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prodMk contMDiff_snd.inv }
 
 end Product
 
@@ -231,9 +213,7 @@ class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} 
     (n : WithTop ℕ∞) (G : Type*)
     [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
   /-- Inversion is `C^n` away from `0`. -/
-  contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I n (fun y ↦ y⁻¹) x
-
-@[deprecated (since := "2025-01-09")] alias SmoothInv₀ := ContMDiffInv₀
+  contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → CMDiffAt n (fun (y : G) ↦ y⁻¹) x
 
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
@@ -259,10 +239,10 @@ instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : C
 instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ω G] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le le_top
 
-instance [HasContinuousInv₀ G] : ContMDiffInv₀ I 0 G := by
+instance [ContinuousInv₀ G] : ContMDiffInv₀ I 0 G := by
   have : T1Space G := I.t1Space G
   constructor
-  have A : ContMDiffOn I I 0 (fun (x : G) ↦ x⁻¹) {0}ᶜ := by
+  have A : CMDiff[{0}ᶜ] 0 (fun (x : G) ↦ x⁻¹) := by
     rw [contMDiffOn_zero_iff]
     exact continuousOn_inv₀
   intro x hx
@@ -278,46 +258,32 @@ variable [ContMDiffInv₀ I n G]
 theorem contMDiffAt_inv₀ {x : G} (hx : x ≠ 0) : ContMDiffAt I I n (fun y ↦ y⁻¹) x :=
   ContMDiffInv₀.contMDiffAt_inv₀ hx
 
-@[deprecated (since := "2024-11-21")] alias smoothAt_inv₀ := contMDiffAt_inv₀
-
 include I n in
 /-- In a manifold with `C^n` inverse away from `0`, the inverse is continuous away from `0`.
 This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/
-theorem hasContinuousInv₀_of_hasContMDiffInv₀ : HasContinuousInv₀ G :=
+theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
-@[deprecated (since := "2025-01-09")]
-alias hasContinuousInv₀_of_hasSmoothInv₀ := hasContinuousInv₀_of_hasContMDiffInv₀
-
-theorem contMDiffOn_inv₀ : ContMDiffOn I I n (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
-  (contMDiffAt_inv₀ hx).contMDiffWithinAt
-
-@[deprecated (since := "2024-11-21")] alias smoothOn_inv₀ := contMDiffOn_inv₀
-@[deprecated (since := "2024-11-21")] alias SmoothOn_inv₀ := contMDiffOn_inv₀
+theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) :=
+  fun _x hx ↦ (contMDiffAt_inv₀ hx).contMDiffWithinAt
 
 variable {s : Set M} {a : M}
 
-theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
-    ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
+theorem ContMDiffWithinAt.inv₀ (hf : CMDiffAt[s] n f a) (ha : f a ≠ 0) :
+    CMDiffAt[s] n (fun x ↦ (f x)⁻¹) a :=
   (contMDiffAt_inv₀ ha).comp_contMDiffWithinAt a hf
 
-theorem ContMDiffAt.inv₀ (hf : ContMDiffAt I' I n f a) (ha : f a ≠ 0) :
-    ContMDiffAt I' I n (fun x ↦ (f x)⁻¹) a :=
+theorem ContMDiffAt.inv₀ (hf : CMDiffAt n f a) (ha : f a ≠ 0) : CMDiffAt n (fun x ↦ (f x)⁻¹) a :=
   (contMDiffAt_inv₀ ha).comp a hf
 
-theorem ContMDiff.inv₀ (hf : ContMDiff I' I n f) (h0 : ∀ x, f x ≠ 0) :
-    ContMDiff I' I n (fun x ↦ (f x)⁻¹) :=
+theorem ContMDiff.inv₀ (hf : CMDiff n f) (h0 : ∀ x, f x ≠ 0) :
+    CMDiff n (fun x ↦ (f x)⁻¹) :=
   fun x ↦ ContMDiffAt.inv₀ (hf x) (h0 x)
 
-theorem ContMDiffOn.inv₀ (hf : ContMDiffOn I' I n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    ContMDiffOn I' I n (fun x => (f x)⁻¹) s :=
+theorem ContMDiffOn.inv₀ (hf : CMDiff[s] n f) (h0 : ∀ x ∈ s, f x ≠ 0) :
+    CMDiff[s] n (fun x ↦ (f x)⁻¹) :=
   fun x hx ↦ ContMDiffWithinAt.inv₀ (hf x hx) (h0 x hx)
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.inv₀ := ContMDiffWithinAt.inv₀
-@[deprecated (since := "2024-11-21")] alias SmoothAt.inv₀ := ContMDiffAt.inv₀
-@[deprecated (since := "2024-11-21")] alias SmoothOn.inv₀ := ContMDiffOn.inv₀
-@[deprecated (since := "2024-11-21")] alias Smooth.inv₀ := ContMDiff.inv₀
 
 end ContMDiffInv₀
 
@@ -339,24 +305,18 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {f g : M → G} {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.div₀
-    (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
-    ContMDiffWithinAt I' I n (f / g) s a := by
+    (hf : CMDiffAt[s] n f a) (hg : CMDiffAt[s] n g a) (h₀ : g a ≠ 0) : CMDiffAt[s] n (f / g) a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
-    (h₀ : ∀ x ∈ s, g x ≠ 0) : ContMDiffOn I' I n (f / g) s := by
+theorem ContMDiffOn.div₀ (hf : CMDiff[s] n f) (hg : CMDiff[s] n g)
+    (h₀ : ∀ x ∈ s, g x ≠ 0) : CMDiff[s] n (f / g) := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiffAt.div₀ (hf : ContMDiffAt I' I n f a) (hg : ContMDiffAt I' I n g a)
-    (h₀ : g a ≠ 0) : ContMDiffAt I' I n (f / g) a := by
+theorem ContMDiffAt.div₀ (hf : CMDiffAt n f a) (hg : CMDiffAt n g a)
+    (h₀ : g a ≠ 0) : CMDiffAt n (f / g) a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiff.div₀ (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) (h₀ : ∀ x, g x ≠ 0) :
-    ContMDiff I' I n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
-
-@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.div₀ := ContMDiffWithinAt.div₀
-@[deprecated (since := "2024-11-21")] alias SmoothAt.div₀ := ContMDiffAt.div₀
-@[deprecated (since := "2024-11-21")] alias SmoothOn.div₀ := ContMDiffOn.div₀
-@[deprecated (since := "2024-11-21")] alias Smooth.div₀ := ContMDiff.div₀
+theorem ContMDiff.div₀ (hf : CMDiff n f) (hg : CMDiff n g) (h₀ : ∀ x, g x ≠ 0) :
+    CMDiff n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 end Div

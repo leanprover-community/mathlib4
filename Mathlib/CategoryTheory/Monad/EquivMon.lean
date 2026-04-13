@@ -3,29 +3,33 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 
-# The equivalence between `Monad C` and `Mon_ (C ⥤ C)`.
+# The equivalence between `Monad C` and `Mon (C ⥤ C)`.
 
 A monad "is just" a monoid in the category of endofunctors.
 
-# Definitions/Theorems
+## Definitions/Theorems
 
 1. `toMon` associates a monoid object in `C ⥤ C` to any monad on `C`.
 2. `monadToMon` is the functorial version of `toMon`.
 3. `ofMon` associates a monad on `C` to any monoid object in `C ⥤ C`.
-4. `monadMonEquiv` is the equivalence between `Monad C` and `Mon_ (C ⥤ C)`.
+4. `monadMonEquiv` is the equivalence between `Monad C` and `Mon (C ⥤ C)`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
 
-open Category
+open Category MonObj
 
 universe v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -35,65 +39,60 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
-/-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def toMon (M : Monad C) : Mon_ (C ⥤ C) where
-  X := (M : C ⥤ C)
+instance (M : Monad C) : MonObj (M : C ⥤ C) where
   one := M.η
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
 
-variable (C) in
-/-- Passing from `Monad C` to `Mon_ (C ⥤ C)` is functorial. -/
+/-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
-def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
+def toMon (M : Monad C) : Mon (C ⥤ C) where
+  X := (M : C ⥤ C)
+
+set_option backward.isDefEq.respectTransparency false in
+variable (C) in
+/-- Passing from `Monad C` to `Mon (C ⥤ C)` is functorial. -/
+@[simps]
+def monadToMon : Monad C ⥤ Mon (C ⥤ C) where
   obj := toMon
-  map f := { hom := f.toNatTrans }
+  map f := .mk' f.toNatTrans
 
 /-- To every monoid object in `C ⥤ C` we associate a `Monad C`. -/
-@[simps η μ]
-def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
+@[simps «η» «μ»]
+def ofMon (M : Mon (C ⥤ C)) : Monad C where
   toFunctor := M.X
-  η := M.one
-  μ := M.mul
+  «η» := η[M.X]
+  «μ» := μ[M.X]
   left_unit := fun X => by
-    -- Porting note: now using `erw`
-    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
-    rfl
+    simpa [-MonObj.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
   right_unit := fun X => by
-    -- Porting note: now using `erw`
-    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
-    rfl
+    simpa [-MonObj.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
   assoc := fun X => by
-    rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
-    -- Porting note: had to add this step:
-    erw [M.mul_assoc]
-    simp
+    simpa [-MonObj.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
-@[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
+@[simp] lemma ofMon_obj (M : Mon (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
 
 variable (C)
 
-/-- Passing from `Mon_ (C ⥤ C)` to `Monad C` is functorial. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- Passing from `Mon (C ⥤ C)` to `Monad C` is functorial. -/
 @[simps]
-def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
+def monToMonad : Mon (C ⥤ C) ⥤ Monad C where
   obj := ofMon
   map {X Y} f :=
     { f.hom with
-      app_η := by
-        intro X
-        erw [← NatTrans.comp_app, f.one_hom]
-        simp only [Functor.id_obj, ofMon_obj, ofMon_η]
-      app_μ := by
-        intro Z
-        erw [← NatTrans.comp_app, f.mul_hom]
-        dsimp
-        simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
+      app_η X := by
+        simpa [-IsMonHom.one_hom] using congrArg (fun t ↦ t.app X) (IsMonHom.one_hom f.hom)
+      app_μ Z := by
+        simpa [-IsMonHom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMonHom.mul_hom f.hom) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
-def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C) where
+def monadMonEquiv : Monad C ≌ Mon (C ⥤ C) where
   functor := monadToMon _
   inverse := monToMonad _
   unitIso :=

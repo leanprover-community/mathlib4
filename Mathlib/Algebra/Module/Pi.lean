@@ -3,16 +3,20 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Pi instances for modules
 
 This file defines instances for module and related structures on Pi Types
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -27,26 +31,6 @@ namespace Pi
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
   funext fun i => hk i (congr_fun h i :)
-
-instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
-    SMulWithZero α (∀ i, f i) :=
-  { Pi.instSMul with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
-
-instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
-    [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.smul' with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
-
-instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
-    [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
-  { Pi.mulAction _, Pi.smulWithZero _ with }
-
-instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
-    [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.mulAction', Pi.smulWithZero' with }
 
 variable (I f)
 

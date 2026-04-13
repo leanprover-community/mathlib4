@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -17,6 +19,8 @@ We provide `path_composition : paths C ⥤ C`.
 We check that the quotient of the path category of a category by the canonical relation
 (paths are related if they compose to the same path) is equivalent to the original category.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -30,8 +34,10 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (V : Type u₁) [Unique V] : Unique (Paths V) where
+  uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
@@ -40,8 +46,6 @@ instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 
-variable {V}
-
 /-- The inclusion of a quiver `V` into its path category, as a prefunctor.
 -/
 @[simps]
@@ -49,24 +53,27 @@ def of : V ⥤q Paths V where
   obj X := X
   map f := f.toPath
 
+variable {V}
+
 /-- To prove a property on morphisms of a path category with given source `a`, it suffices to
 prove it for the identity and prove that the property is preserved under composition on the right
 with length 1 paths. -/
 lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) → Prop)
     (id : P (𝟙 a))
-    (comp : ∀ {u v : V} (p : a ⟶ of.obj u) (q : u ⟶ v), P p → P (p ≫ of.map q)) :
+    (comp : ∀ {u v : V} (p : a ⟶ (of V).obj u) (q : u ⟶ v), P p → P (p ≫ (of V).map q)) :
     ∀ {b : Paths V} (f : a ⟶ b), P f := by
   intro _ f
   induction f with
   | nil => exact id
   | cons _ w h => exact comp _ w h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
 with length 1 paths. -/
 lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) → Prop)
     (id : P (𝟙 b))
-    (comp : ∀ {u v : V} (p : of.obj v ⟶ b) (q : u ⟶ v), P p → P (of.map q ≫ p)) :
+    (comp : ∀ {u v : V} (p : (of V).obj v ⟶ b) (q : u ⟶ v), P p → P ((of V).map q ≫ p)) :
     ∀ {a : Paths V} (f : a ⟶ b), P f := by
   intro a f
   generalize h : f.length = k
@@ -81,16 +88,18 @@ lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) →
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the right with length 1 paths. -/
 lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V}
+      (p : (of V).obj u ⟶ (of V).obj v) (q : v ⟶ w), P p → P (p ≫ (of V).map q)) :
     ∀ {a b : Paths V} (f : a ⟶ b), P f :=
   fun {_} ↦ induction_fixed_source _ id comp
 
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the left with length 1 paths. -/
 lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V} (p : u ⟶ v)
+      (q : (of V).obj v ⟶ (of V).obj w), P q → P ((of V).map p ≫ q)) :
     ∀ {a b : Paths V} (f : a ⟶ b), P f := by
   intro a b
   revert a
@@ -98,8 +107,9 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 
 attribute [local ext (iff := false)] Functor.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
-def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
+def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
@@ -117,30 +127,31 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
       rw [ih, Category.assoc]
 
 @[simp]
-theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
+theorem lift_nil {C} [Category* C] (φ : V ⥤q C) (X : V) :
     (lift φ).map Quiver.Path.nil = 𝟙 (φ.obj X) := rfl
 
 @[simp]
-theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
+theorem lift_cons {C} [Category* C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
     (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 
 @[simp]
-theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
+theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
     (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunctor = φ := by
+theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
     rfl
   · rintro X Y f
     rcases φ with ⟨φo, φm⟩
     dsimp [lift, Quiver.Hom.toPath]
-    simp only [Category.id_comp]
+    simp
 
-theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
-    (hΦ : of ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
+set_option backward.isDefEq.respectTransparency false in
+theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
+    (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   fapply Functor.ext
   · rintro X
@@ -161,7 +172,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
 @[ext (iff := false)]
-theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
+theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
     F = G := by
@@ -169,14 +180,15 @@ theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.ob
   · intro X
     rw [h_obj]
   · intro X Y f
-    induction' f with Y' Z' g e ih
-    · erw [F.map_id, G.map_id, Category.id_comp, eqToHom_trans, eqToHom_refl]
-    · erw [F.map_comp g (Quiver.Hom.toPath e), G.map_comp g (Quiver.Hom.toPath e), ih, h]
+    induction f with
+    | nil => erw [F.map_id, G.map_id, Category.id_comp, eqToHom_trans, eqToHom_refl]
+    | cons g e ih =>
+      erw [F.map_comp g (Quiver.Hom.toPath e), G.map_comp g (Quiver.Hom.toPath e), ih, h]
       simp only [Category.id_comp, eqToHom_refl, eqToHom_trans_assoc, Category.assoc]
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
@@ -192,18 +204,18 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 open Quiver
 
--- Porting note:
--- This def was originally marked `@[simp]`, but the meaning is different in lean4: https://github.com/leanprover/lean4/issues/2042
--- So, the `@[simp]` was removed, and the two equational lemmas below added instead.
 /-- A path in a category can be composed to a single morphism. -/
+@[simp]
 def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
   | _, .nil => 𝟙 X
   | _, .cons p e => composePath p ≫ e
 
-@[simp] lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
+-- This lemma was marked as `@[simp]` but it is generated by `@[simp]` on `composePath`.
+lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
 
-@[simp] lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
-  composePath (p.cons e) = composePath p ≫ e := rfl
+-- This lemma was marked as `@[simp]` but it is generated by `@[simp]` on `composePath`.
+lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
+    composePath (p.cons e) = composePath p ≫ e := rfl
 
 @[simp]
 theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
@@ -211,13 +223,13 @@ theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f :=
 @[simp]
 theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
     composePath (f.comp g) = composePath f ≫ composePath g := by
-  induction' g with Y' Z' g e ih
-  · simp
-  · simp [ih]
+  induction g with
+  | nil => simp
+  | cons g e ih => simp [ih]
 
 @[simp]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO get rid of `(id X : C)` somehow?
-theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
+-- TODO get rid of `(id X : C)` somehow?
+theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (show C from X) := rfl
 
 @[simp]
 theorem composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -247,8 +259,8 @@ def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
-  map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
-  map_comp f g := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
+  map_id X := Quot.sound (HomRel.CompClosure.of (by simp))
+  map_comp f g := Quot.sound (HomRel.CompClosure.of (by simp))
 
 /-- The functor from the canonical quotient of a path category of a category
 to the original category. -/
@@ -264,14 +276,11 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
-        apply Quot.sound
-        apply Quotient.CompClosure.of
-        simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
+      (Quot.ind fun f => by exact Quot.sound (HomRel.CompClosure.of (by simp)))
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X
-    simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,
+    simp only [Functor.id_obj,
                quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
                NatIso.ofComponents_hom_app, Iso.refl_hom, quotientPathsTo_map, Category.comp_id]
     rfl

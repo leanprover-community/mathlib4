@@ -3,9 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.Multiset.Filter
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Order.MinMax
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -18,6 +21,8 @@ operators:
 * `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
   occurrences of `a` in `s` and `t`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -64,7 +69,7 @@ lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
 lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {s t : Multiset α} :
     map f (s ∪ t) = map f s ∪ map f t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ =>
-    congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
+    congr_arg ofList (by rw [List.map_append, List.map_diff finj])
 
 @[simp] lemma zero_union : 0 ∪ s = s := by simp [union_def, Multiset.zero_sub]
 @[simp] lemma union_zero : s ∪ 0 = s := by simp [union_def]
@@ -101,23 +106,24 @@ lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s �
   Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
-  induction' s using Multiset.induction_on with a s IH generalizing t
-  · exact (zero_inter t).symm ▸ zero_le _
-  by_cases h : a ∈ t
-  · simpa [h] using cons_le_cons a (IH (t := t.erase a))
-  · simp [h, IH]
+  induction s using Multiset.induction_on generalizing t with
+  | empty => exact (zero_inter t).symm ▸ zero_le _
+  | cons a s IH =>
+    by_cases h : a ∈ t
+    · simpa [h] using cons_le_cons a (IH (t := t.erase a))
+    · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
+  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intro s u h₁ h₂
   · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
     exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
   · rw [cons_inter_of_neg _ h]
-    exact IH ((le_cons_of_not_mem <| mt (mem_of_le h₂) h).1 h₁) h₂
+    exact IH ((le_cons_of_notMem <| mt (mem_of_le h₂) h).1 h₁) h₂
 
 @[simp]
 lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
@@ -165,7 +171,7 @@ lemma inter_add_distrib (s t u : Multiset α) : s ∩ t + u = (s + u) ∩ (t + u
   obtain ⟨a, ha⟩ := lt_iff_cons_le.1 <| h.lt_of_le <| le_inter
     (Multiset.add_le_add_right inter_le_left) (Multiset.add_le_add_right inter_le_right)
   rw [← cons_add] at ha
-  exact (lt_cons_self (s ∩ t) a).not_le <| le_inter
+  exact (lt_cons_self (s ∩ t) a).not_ge <| le_inter
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_left))
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_right))
 
@@ -191,7 +197,7 @@ lemma sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   revert s; refine Multiset.induction_on t (by simp) fun a t IH s => ?_
   by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
-  · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
+  · rw [cons_inter_of_neg _ h, sub_cons, erase_of_notMem h, IH]
 
 lemma sub_inter (s t : Multiset α) : s - s ∩ t = s - t :=
   (Multiset.eq_sub_of_add_eq <| sub_add_inter ..).symm
@@ -237,36 +243,27 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
-    simp_all only [Multiset.mem_add, Multiset.count_add]
+    simp_all only [Multiset.count_add]
   omega
 
 /-! ### Disjoint multisets -/
 
-
-/-- `Disjoint s t` means that `s` and `t` have no elements in common. -/
-@[deprecated _root_.Disjoint (since := "2024-11-01")]
-protected def Disjoint (s t : Multiset α) : Prop :=
-  ∀ ⦃a⦄, a ∈ s → a ∈ t → False
-
 theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
   refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩
   · simpa using h (singleton_le.mpr hs) (singleton_le.mpr ht)
-  · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_not_mem]
+  · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_notMem]
     exact fun a ha ↦ h (subset_of_le hs ha) (subset_of_le ht ha)
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_left_multiset, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.notMem_of_mem_left_multiset, _⟩ := disjoint_left
 
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
   disjoint_left
 
-@[deprecated (since := "2024-11-01")] protected alias Disjoint.symm := _root_.Disjoint.symm
-@[deprecated (since := "2024-11-01")] protected alias disjoint_comm := _root_.disjoint_comm
-
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
   disjoint_comm.trans disjoint_left
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right_multiset, _⟩ := disjoint_right
+alias ⟨_root_.Disjoint.notMem_of_mem_right_multiset, _⟩ := disjoint_right
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]
@@ -278,9 +275,6 @@ theorem disjoint_of_subset_left {s t u : Multiset α} (h : s ⊆ u) (d : Disjoin
 theorem disjoint_of_subset_right {s t u : Multiset α} (h : t ⊆ u) (d : Disjoint s u) :
     Disjoint s t :=
   (disjoint_of_subset_left h d.symm).symm
-
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_left := Disjoint.mono_left
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_right := Disjoint.mono_right
 
 @[simp]
 theorem zero_disjoint (l : Multiset α) : Disjoint 0 l := disjoint_bot_left
@@ -317,7 +311,7 @@ theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
 
 @[simp]
 theorem disjoint_union_left [DecidableEq α] {s t u : Multiset α} :
-    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=  disjoint_sup_left
+    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := disjoint_sup_left
 
 @[simp]
 theorem disjoint_union_right [DecidableEq α] {s t u : Multiset α} :
@@ -352,5 +346,30 @@ theorem map_set_pairwise {f : α → β} {r : β → β → Prop} {m : Multiset 
   fun b₁ h₁ b₂ h₂ hn => by
     obtain ⟨⟨a₁, H₁, rfl⟩, a₂, H₂, rfl⟩ := Multiset.mem_map.1 h₁, Multiset.mem_map.1 h₂
     exact h H₁ H₂ (mt (congr_arg f) hn)
+
+section Nodup
+
+variable {s t : Multiset α} {a : α}
+
+theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append, disjoint_iff_ne]
+
+theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
+  (nodup_add.1 d).2.2
+
+theorem Nodup.add_iff (d₁ : Nodup s) (d₂ : Nodup t) : Nodup (s + t) ↔ Disjoint s t := by
+  simp [nodup_add, d₁, d₂]
+
+lemma Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) := nodup_of_le inter_le_left
+lemma Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) := nodup_of_le inter_le_right
+
+@[simp]
+theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
+  ⟨fun h => ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ =>
+    nodup_iff_count_le_one.2 fun a => by
+      rw [count_union]
+      exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
+
+end Nodup
 
 end Multiset

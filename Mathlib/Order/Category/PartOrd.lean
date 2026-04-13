@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Category.Preord
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Category.Preord
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Category of partial orders
@@ -13,12 +15,16 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 This defines `PartOrd`, the category of partial orders with monotone maps.
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 universe u
 
 /-- The category of partial orders. -/
 structure PartOrd where
+  /-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying partially ordered type. -/
   (carrier : Type*)
   [str : PartialOrder carrier]
@@ -34,9 +40,7 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
-/-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [PartialOrder X] : PartOrd := ⟨X⟩
-
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
@@ -44,11 +48,15 @@ structure Hom (X Y : PartOrd.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -80,7 +88,7 @@ lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : PartOrd} (f : X ⟶ Y) :
-    (forget PartOrd).map f = f := rfl
+    (forget PartOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -109,12 +117,11 @@ lemma hom_ext {X Y : PartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
-lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -171,10 +178,12 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x
-    exact Quotient.inductionOn' x fun x => Quotient.map'_mk'' _ (fun a b => id) _
+    induction x using Quotient.inductionOn'
+    exact Quotient.map'_mk'' _ (fun a b ↦ id) _
   map_comp f g := by
     ext x
-    exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
+    induction x using Quotient.inductionOn'
+    exact OrderHom.antisymmetrization_apply_mk ..
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
@@ -187,19 +196,26 @@ def preordToPartOrdForgetAdjunction :
           invFun f := PartOrd.ofHom
             ⟨fun a => Quotient.liftOn' a f (fun _ _ h => (AntisymmRel.image h f.hom.mono).eq),
               fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.hom.mono h⟩
-          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl
-          right_inv _ := Preord.ext fun _ => rfl }
+          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
       homEquiv_naturality_left_symm _ _ :=
         PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
 
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
 /-- `PreordToPartOrd` and `OrderDual` commute. -/
-@[simps! inv_app_hom_coe, simps! (config := .lemmasOnly) hom_app_hom_coe]
+@[simps! -isSimp hom_app_hom_coe inv_app_hom_coe]
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl)
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe
+-- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
+@[simp]
+lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
+    (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+    (PartOrd.Hom.hom
+        (X := preordToPartOrd.obj (Preord.dual.obj X))
+        (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+        (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+      (OrderIso.dualAntisymmetrization ↑X).symm a :=
+  rfl

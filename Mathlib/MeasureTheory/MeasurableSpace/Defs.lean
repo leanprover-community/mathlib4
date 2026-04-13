@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Countable
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.Measurability
+module
+
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Measurable spaces and measurable functions
@@ -35,6 +37,10 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+@[expose] public section
+
+assert_not_exists Covariant MonoidWithZero
+
 open Set Encodable Function Equiv
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
@@ -58,13 +64,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
@@ -142,7 +144,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -207,6 +209,20 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
+protected lemma MeasurableSet.imp {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x → q x} := by
+  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by grind
+  rw [h_eq]
+  exact hs.compl.union ht
+
+protected lemma MeasurableSet.iff {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x ↔ q x} := by
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  rw [h_eq]
+  exact (hs.imp ht).inter (ht.imp hs)
+
 /-- Every set has a measurable superset. Declare this as local instance as needed. -/
 theorem nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=
   ⟨⟨univ, subset_univ s, MeasurableSet.univ⟩⟩
@@ -237,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]
@@ -251,7 +266,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
+    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
@@ -274,6 +289,7 @@ namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
 definitional equalities. -/
+@[implicit_reducible]
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
@@ -310,6 +326,7 @@ inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
       GenerateMeasurable s (⋃ i, f i)
 
 /-- Construct the smallest measure space containing a collection of basic sets -/
+@[implicit_reducible]
 def generateFrom (s : Set (Set α)) : MeasurableSpace α where
   MeasurableSet' := GenerateMeasurable s
   measurableSet_empty := .empty
@@ -341,8 +358,8 @@ theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
 
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :
-    generateFrom { s : Set α | MeasurableSet s } = ‹_› :=
-  le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
+    generateFrom {s : Set α | MeasurableSet s} = ‹_› :=
+  le_antisymm (generateFrom_le fun _ => id) fun _ h => measurableSet_generateFrom h
 
 theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
@@ -356,6 +373,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
+@[implicit_reducible]
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :
     MeasurableSpace α :=
   (generateFrom g).copy (· ∈ g) <| Set.ext_iff.1 hg.symm
@@ -368,7 +386,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
   on one side and the collection of measurable sets on the other side. -/
 def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
-  le_l_u _ _ := measurableSet_generateFrom
+  le_l_u _ _ h := measurableSet_generateFrom h
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
   choice_eq _ _ := mkOfClosure_sets
 
@@ -423,9 +441,10 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
--- this lemma doesn't simplify LHS
-theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
+@[simp]
+-- The `m₁` parameter gets filled in by typeclass instance synthesis (for some reason...)
+-- so we have to order it *after* `m₂`. Otherwise `simp` can't apply this lemma.
+theorem measurableSet_inf {m₂ m₁ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
 
@@ -439,7 +458,8 @@ theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
   rw [iInf, measurableSet_sInf, forall_mem_range]
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
-    MeasurableSet[m₁ ⊔ m₂] s ↔ GenerateMeasurable (MeasurableSet[m₁] ∪ MeasurableSet[m₂]) s :=
+    MeasurableSet[m₁ ⊔ m₂] s ↔
+      GenerateMeasurable {s | MeasurableSet[m₁] s ∨ MeasurableSet[m₂] s} s :=
   Iff.rfl
 
 theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
@@ -448,9 +468,10 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
-  simp only [iSup, measurableSet_sSup, exists_range_iff]
+  simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
     ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
@@ -472,6 +493,11 @@ end MeasurableSpace
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 
+add_aesop_rules safe tactic
+  (rule_sets := [Measurable])
+  (index := [target @Measurable ..])
+  (by fun_prop (disch := measurability))
+
 namespace MeasureTheory
 
 set_option quotPrecheck false in
@@ -485,27 +511,27 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+attribute [local push ←] Function.comp_def
+@[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
--- This is needed due to reducibility issues with the `measurability` tactic.
-@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
-protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+attribute [fun_prop] Measurable.fun_comp
 
-@[simp, fun_prop, measurability]
+@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
+
+@[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
+@[fun_prop]
 theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 
@@ -530,13 +556,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
-
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
-lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
-
-@[deprecated Measurable.of_discrete (since := "2024-08-25")]
-lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
+@[fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

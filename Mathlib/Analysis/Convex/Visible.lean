@@ -3,13 +3,15 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Points in sight
@@ -23,15 +25,19 @@ The art gallery problem can be stated using the visibility predicate: A set `A` 
 guarded by a finite set `G` (the guards) iff `∀ a ∈ A, ∃ g ∈ G, IsVisible ℝ sᶜ a g`.
 -/
 
+@[expose] public section
+
 open AffineMap Filter Finset Set
 open scoped Cardinal Pointwise Topology
 
 variable {𝕜 V P : Type*}
 
 section AddTorsor
-variable [LinearOrderedField 𝕜] [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P]
   {s t : Set P} {x y z : P}
 
+omit [IsOrderedRing 𝕜] in
 variable (𝕜) in
 /-- Two points are visible to each other through a set if no point of that set lies strictly
 between them.
@@ -39,12 +45,15 @@ between them.
 By convention, a point `x` sees itself through any set `s`, even when `x ∈ s`. -/
 def IsVisible (s : Set P) (x y : P) : Prop := ∀ ⦃z⦄, z ∈ s → ¬ Sbtw 𝕜 x z y
 
-@[simp, refl] lemma IsVisible.rfl : IsVisible 𝕜 s x x := by simp [IsVisible]
+@[simp, refl]
+lemma IsVisible.rfl : IsVisible 𝕜 s x x := by simp [IsVisible]
 
-lemma isVisible_comm : IsVisible 𝕜 s x y ↔ IsVisible 𝕜 s y x := by simp [IsVisible, sbtw_comm]
+lemma isVisible_comm : IsVisible 𝕜 s x y ↔ IsVisible 𝕜 s y x := by
+  simp [IsVisible, sbtw_comm]
 
 @[symm] alias ⟨IsVisible.symm, _⟩ := isVisible_comm
 
+omit [IsOrderedRing 𝕜] in
 lemma IsVisible.mono (hst : s ⊆ t) (ht : IsVisible 𝕜 t x y) : IsVisible 𝕜 s x y :=
   fun _z hz ↦ ht <| hst hz
 
@@ -56,7 +65,8 @@ lemma isVisible_iff_lineMap (hxy : x ≠ y) :
 end AddTorsor
 
 section Module
-variable [LinearOrderedField 𝕜] [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
 
 /-- If a point `x` sees a convex combination of points of a set `s` through `convexHull ℝ s ∌ x`,
 then it sees all terms of that combination.
@@ -97,12 +107,11 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
         rw [smul_sum]
         simp_rw [smul_smul, mul_div_cancel₀ _ hwi.ne']
         exact add_sum_erase _ (fun i ↦ w i • a i) hi
-      simp_rw [lineMap_apply_module, ← this, smul_add, smul_smul]
-      match_scalars <;> field_simp <;> ring
+      simp_rw [lineMap_apply_module, ← this]
+      match_scalars <;> field
     refine (convex_convexHull _ _).mem_of_wbtw this hε <| (convex_convexHull _ _).sum_mem ?_ ?_ ?_
-    · intros j hj
-      have := hw₀ j <| erase_subset _ _ hj
-      positivity
+    · intro j hj
+      positivity [hw₀ j <| erase_subset _ _ hj]
     · rw [← sum_div, sum_erase_eq_sub hi, hw₁, div_self hwi.ne']
     · exact fun j hj ↦ subset_convexHull _ _ <| ha _ <| erase_subset _ _ hj
   · exact lt_add_of_pos_left _ <| by positivity
@@ -163,7 +172,7 @@ lemma IsClosed.exists_wbtw_isVisible (hs : IsClosed s) (hy : y ∈ s) (x : V) :
   replace hδ₀ : 0 < δ := hδ₀.lt_of_ne' <| by rintro hδ₀; simp [hδ₀] at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
   rw [lineMap_lineMap_right] at hε
-  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_lt <| mul_lt_of_lt_one_left hδ₀ hε₁
+  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_gt <| mul_lt_of_lt_one_left hδ₀ hε₁
 
 -- TODO: Once we have cone hulls, the RHS can be strengthened to
 -- `coneHull ℝ x {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}`

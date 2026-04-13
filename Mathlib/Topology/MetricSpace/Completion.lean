@@ -3,12 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Instances.Real.Defs
+module
+
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # The completion of a metric space
@@ -19,6 +19,7 @@ by extending the distance to the completion and checking that it is indeed a dis
 it defines the same uniformity as the already defined uniform structure on the completion
 -/
 
+@[expose] public section
 
 open Set Filter UniformSpace Metric
 
@@ -45,7 +46,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg :)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prodMk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
@@ -100,12 +101,12 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
-        by_cases h : ε ≤ dist x y
+        by_cases! h : ε ≤ dist x y
         · exact Or.inl h
-        · have Z := hε (not_le.1 h)
+        · have Z := hε h
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
-    simp only [not_le.mpr hxy, false_or, not_le] at this
+    simp only [not_le.mpr hxy, false_or] at this
     exact ts this
   · /- Start from a set `s` containing an ε-neighborhood of the diagonal in `Completion α`. To show
         that it is an entourage, we use the fact that `dist` is uniformly continuous on
@@ -118,22 +119,15 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     let r : Set (ℝ × ℝ) := { p | dist p.1 p.2 < ε }
     have : r ∈ uniformity ℝ := Metric.dist_mem_uniformity εpos
     have T := uniformContinuous_def.1 (@Completion.uniformContinuous_dist α _) r this
-    simp only [uniformity_prod_eq_prod, mem_prod_iff, exists_prop, Filter.mem_map,
-      Set.mem_setOf_eq] at T
+    simp only [uniformity_prod_eq_prod, mem_prod_iff, Filter.mem_map] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
     refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
-      have I := ht this
-      simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
-        simp only [Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
-          Completion.dist_comm, zero_sub, abs_neg, r] at I
-      exact lt_of_le_of_lt (le_abs_self _) I
-    show t1 ⊆ s
-    rintro ⟨a, b⟩ hp
-    have : dist a b < ε := A a b hp
-    exact hε this
+      exact lt_of_le_of_lt (le_abs_self _)
+        (by simpa [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] using ht this)
+    grind
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
@@ -143,12 +137,12 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp +contextual [lt_min_iff]
+    simp +contextual
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 
-/-- Metric space structure on the completion of a pseudo_metric space. -/
+/-- Metric space structure on the completion of a `PseudoMetric` space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
@@ -166,23 +160,17 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
 
-instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M α] :
-    BoundedSMul M (Completion α) where
+instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :
+    IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by
     induction x₁, x₂ using induction_on₂ with
-    | hp =>
-      exact isClosed_le
-        ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
-        (continuous_const.mul (continuous_fst.dist continuous_snd))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x₁ x₂ =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with
-    | hp =>
-      exact isClosed_le
-        ((continuous_const_smul _).dist (continuous_const_smul _))
-        (continuous_const.mul (continuous_id.dist continuous_const))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x =>
       rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
       exact dist_pair_smul c₁ c₂ x
@@ -201,8 +189,8 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
   one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
 
-theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
-    (h : Isometry f) : Isometry (Completion.extension f) :=
+theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
+    {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
@@ -210,3 +198,32 @@ theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : �
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
+
+section extension_maps
+
+variable [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β]
+
+/-- The extension of an isometry to the completion of the domain. -/
+def Isometry.extensionHom [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f) :
+    Completion α →+* β := Completion.extensionHom f h.continuous
+
+@[simp]
+theorem Isometry.extensionHom_coe [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f)
+    (x : α) : h.extensionHom x = f x := Completion.extensionHom_coe f h.continuous _
+
+/-- The lift of an isometry to completions. -/
+def Isometry.mapRingHom {f : α →+* β} (h : Isometry f) : Completion α →+* Completion β :=
+  Completion.mapRingHom f h.continuous
+
+theorem Isometry.mapRingHom_coe {f : α →+* β} (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
+  Completion.mapRingHom_coe h.uniformContinuous.continuous _
+
+theorem Isometry.isometry_mapRingHom {f : α →+* β} (h : Isometry f) : Isometry h.mapRingHom :=
+  Isometry.of_dist_eq fun x y => by
+    induction x, y using induction_on₂ with
+    | hp => exact isClosed_eq (continuous_dist.comp₂ (continuous_map.comp continuous_fst)
+        (continuous_map.comp continuous_snd)) (by fun_prop)
+    | ih x y => simp only [Completion.dist_eq, mapRingHom_coe, h.dist_eq]
+
+end extension_maps

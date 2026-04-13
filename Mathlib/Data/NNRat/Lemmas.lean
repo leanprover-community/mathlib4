@@ -3,10 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Order.Field.Rat
+module
+
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Tactic.Zify
 
 /-!
 # Field and action structures on the nonnegative rationals
@@ -15,24 +18,18 @@ This file provides additional results about `NNRat` that cannot live in earlier 
 cycles.
 -/
 
+@[expose] public section
+
 open Function
 open scoped NNRat
 
 namespace NNRat
 variable {α : Type*} {q : ℚ≥0}
 
-/-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
-  MulAction.compHom α coeHom.toMonoidHom
-
-/-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
-  DistribMulAction.compHom α coeHom.toMonoidHom
-
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
-  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
+  map_indicator coeHom _ _ _
 
 end NNRat
 
@@ -65,5 +62,27 @@ variable {q : ℚ≥0}
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
 protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
   rw [← num_div_den q]; apply h
+
+theorem mul_num (q₁ q₂ : ℚ≥0) :
+    (q₁ * q₂).num = q₁.num * q₂.num / Nat.gcd (q₁.num * q₂.num) (q₁.den * q₂.den) := by
+  zify
+  convert Rat.mul_num q₁ q₂ <;> norm_cast
+
+theorem mul_den (q₁ q₂ : ℚ≥0) :
+    (q₁ * q₂).den = q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num) (q₁.den * q₂.den) := by
+  convert Rat.mul_den q₁ q₂
+  norm_cast
+
+/-- A version of `NNRat.mul_den` without division. -/
+theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ≥0) :
+    q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
+  convert Rat.den_mul_den_eq_den_mul_gcd q₁ q₂
+  norm_cast
+
+/-- A version of `NNRat.mul_num` without division. -/
+theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ≥0) :
+    q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
+  zify
+  convert Rat.num_mul_num_eq_num_mul_gcd q₁ q₂ <;> norm_cast
 
 end NNRat

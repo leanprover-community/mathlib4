@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Tactic.Polyrith
 
 /-!
 # IMO 1962 Q4
@@ -60,7 +59,7 @@ Now we can solve for `x` using basic-ish trigonometry.
 -/
 theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_sq]
-  simp only [add_right_eq_self, div_eq_zero_iff]
+  simp only [add_eq_left, div_eq_zero_iff]
   norm_num
   rw [cos_eq_zero_iff]
   constructor <;>
@@ -97,8 +96,8 @@ theorem formula {R : Type*} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
       ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 := by
   constructor <;> intro h
-  · apply pow_eq_zero (n := 2)
-    apply mul_left_injective₀ (b := 2) (by norm_num)
+  · apply eq_zero_of_pow_eq_zero (n := 2)
+    apply mul_left_injective₀ (b := 2) (by simp)
     linear_combination (8 * a ^ 4 - 10 * a ^ 2 + 3) * h
   · linear_combination 2 * a * h
 

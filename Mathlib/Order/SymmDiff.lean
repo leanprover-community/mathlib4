@@ -3,8 +3,10 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -31,7 +33,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 * `symmDiff_comm`: commutative, and
 * `symmDiff_assoc`: associative.
 
-## Notations
+## Notation
 
 * `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`
@@ -48,6 +50,8 @@ Proof from the Book" by John McCuan:
 boolean ring, generalized boolean algebra, boolean algebra, symmetric difference, bi-implication,
 Heyting
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -237,7 +241,7 @@ theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c
 theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
-theorem bihimp_eq_inf_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
+theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]
@@ -697,10 +701,12 @@ end Prod
 
 namespace Pi
 
+@[push ←]
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ∆ b = fun i => a i ∆ b i :=
   rfl
 
+@[push ←]
 theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ⇔ b = fun i => a i ⇔ b i :=
   rfl

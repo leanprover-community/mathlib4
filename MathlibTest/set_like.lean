@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
@@ -25,6 +26,11 @@ example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n
 
 example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - y + z ^ m ∈ Subring.closure S := by
+  aesop
+
+example [CommRing R] [Ring A] [Algebra R A]
+    (r : R) (a b c : A) (n : ℕ) :
+    -b + (algebraMap R A r) + a ^ n * c ∈ Algebra.adjoin R {a, b, c} := by
   aesop
 
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]

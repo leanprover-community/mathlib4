@@ -3,15 +3,17 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
 
 * Shows that if a functor `G : Grothendieck F ⥤ H`, with `F : C ⥤ Cat`, has a colimit, and every
   fiber of `G` has a colimit, then so does the fiberwise colimit functor `C ⥤ H`.
-* Vice versa, if a each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
+* Vice versa, if each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
   then `G` has a colimit.
 * Shows that colimits of functors on the Grothendieck construction are colimits of
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
@@ -20,9 +22,13 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
+
+open Functor
 
 namespace Limits
 
@@ -34,27 +40,28 @@ variable (G : Grothendieck F ⥤ H)
 
 noncomputable section
 
-variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit ((F.map f).toFunctor ⋙ Grothendieck.ι F Y ⋙ G)]
 
 @[local instance]
 lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
-  fun X => hasColimitOfIso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
-    (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
-    (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
+  fun X => hasColimit_of_iso (F := (F.map (𝟙 _)).toFunctor ⋙ Grothendieck.ι F X ⋙ G) <|
+    (leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
+    (isoWhiskerRight (eqToIso congr($((F.map_id X).symm).toFunctor)) (Grothendieck.ι F X ⋙ G))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
 @[simps]
 def fiberwiseColimit : C ⥤ H where
   obj X := colimit (Grothendieck.ι F X ⋙ G)
   map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
-    (Functor.associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
+    (associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f).toFunctor
   map_id X := by
     ext d
     simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj, ι_colimMap_assoc,
       NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app, Category.comp_id,
       colimit.ι_pre]
     conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F X ⋙ G)
-      (j := (F.map (𝟙 X)).obj d) (by simp)]
+      (j := (F.map (𝟙 X)).toFunctor.obj d) (by simp)]
     rw [← eqToHom_map G (by simp), Grothendieck.eqToHom_eq]
     rfl
   map_comp {X Y Z} f g := by
@@ -64,17 +71,20 @@ def fiberwiseColimit : C ⥤ H where
       colimit.ι_pre_assoc]
     rw [← Category.assoc, ← G.map_comp]
     conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F Z ⋙ G)
-      (j := (F.map (f ≫ g)).obj d) (by simp)]
+      (j := (F.map (f ≫ g)).toFunctor.obj d) (by simp)]
     rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.eqToHom_eq]
     congr 2
     fapply Grothendieck.ext
-    · simp only [Cat.comp_obj, eqToHom_refl, Category.assoc, Grothendieck.comp_base,
+    · simp only [eqToHom_refl, Category.assoc, Grothendieck.comp_base,
         Category.comp_id]
-    · simp only [Grothendieck.ι_obj, Cat.comp_obj, eqToHom_refl, Cat.id_obj,
+    · simp only [Grothendieck.ι_obj, eqToHom_refl,
         Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber, Functor.map_id]
-      conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
+      conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z)).toFunctor]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: find a good way to fix the linter; simp cannot be combined with the subsequent apply
+set_option linter.flexible false in
 variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
 `(Grothendieck F ⥤ H) ⥤ (C ⥤ H)` between functor categories. -/
@@ -87,6 +97,7 @@ def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤
   map_id G := by ext; simp; apply Functor.map_id colim
   map_comp α β := by ext; simp; apply Functor.map_comp colim
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every functor `G : Grothendieck F ⥤ H` induces a natural transformation from `G` to the
 composition of the forgetful functor on `Grothendieck F` with the fiberwise colimit on `G`. -/
 @[simps]
@@ -103,6 +114,7 @@ def natTransIntoForgetCompFiberwiseColimit :
     congr 2
     apply Grothendieck.ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- A cocone on a functor `G : Grothendieck F ⥤ H` induces a cocone on the fiberwise colimit
 on `G`. -/
@@ -112,8 +124,9 @@ def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) 
   ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
          naturality := fun _ _ f => by dsimp; ext; simp }
 
+set_option backward.isDefEq.respectTransparency false in
 variable {G} in
-/-- If `c` is a colimit cocone on `G : Grockendieck F ⥤ H`, then the induced cocone on the
+/-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
 fiberwise colimit on `G` is a colimit cocone, too. -/
 def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where
@@ -123,9 +136,9 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
   uniq s m hm := hc.hom_ext fun X => by
     have := hm X.base
     simp only [Functor.const_obj_obj, IsColimit.fac, NatTrans.comp_app, Functor.comp_obj,
-      Grothendieck.forget_obj, fiberwiseColim_obj, natTransIntoForgetCompFiberwiseColimit_app,
+      Grothendieck.forget_obj, natTransIntoForgetCompFiberwiseColimit_app,
       whiskerLeft_app]
-    simp only [fiberwiseColim_obj, coconeFiberwiseColimitOfCocone_pt, Functor.const_obj_obj,
+    simp only [coconeFiberwiseColimitOfCocone_pt, Functor.const_obj_obj,
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this]
 
@@ -134,6 +147,7 @@ lemma hasColimit_fiberwiseColimit [HasColimit G] : HasColimit (fiberwiseColimit 
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColimit G` induces a
 cocone over `G` itself. -/
 @[simps]
@@ -149,17 +163,15 @@ def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G 
           rw [← colimit.w _ g, ← Category.assoc, Functor.comp_map, ← G.map_comp]
           congr <;> simp }
 
-/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, than the induced cocone
+set_option backward.isDefEq.respectTransparency false in
+/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, then the induced cocone
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
   desc s := hc.desc <| Cocone.mk s.pt <|
     { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
-    simp only [fiberwiseColimit_obj, Functor.const_obj_obj, fiberwiseColimit_map,
-      Functor.const_obj_map, Cocone.whisker_pt, id_eq, Functor.comp_obj, Cocone.whisker_ι,
-      whiskerLeft_app, NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app,
-      whiskerLeft_twice, eq_mpr_eq_cast, IsColimit.fac]
+    simp only [fiberwiseColimit_obj, Functor.const_obj_obj, IsColimit.fac]
     simp only [coconeOfCoconeFiberwiseColimit_pt, Functor.const_obj_obj,
       coconeOfCoconeFiberwiseColimit_ι_app, Category.assoc] at hm
     ext d
@@ -183,12 +195,14 @@ def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) :
     colimit.ι (Grothendieck.ι F X ⋙ G) d ≫ colimit.ι (fiberwiseColimit G) X ≫
       (colimitFiberwiseColimitIso G).hom = colimit.ι G ⟨X, d⟩ := by
   simp [colimitFiberwiseColimitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_colimitFiberwiseColimitIso_inv (X : Grothendieck F) :
     colimit.ι G X ≫ (colimitFiberwiseColimitIso G).inv =
@@ -208,6 +222,7 @@ noncomputable section FiberwiseColim
 
 variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape C H]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `colimitFiberwiseColimitIso` induces an isomorphism of functors `(J ⥤ C) ⥤ C`
 between `fiberwiseColim F H ⋙ colim` and `colim`. -/
 @[simps!]

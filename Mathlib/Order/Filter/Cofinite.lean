@@ -3,13 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Order.Filter.Ker
-import Mathlib.Order.Filter.Pi
+module
+
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Order.Filter.Ker
+public import Mathlib.Order.Filter.Pi
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Heyting.Boundary
 
 /-!
 # The cofinite filter
@@ -24,6 +29,8 @@ and prove its basic properties. In particular, we prove that for `ℕ` it is equ
 
 Define filters for other cardinalities of the complement.
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -76,19 +83,19 @@ alias ⟨_, _root_.Set.Infinite.cofinite_inf_principal_neBot⟩ := cofinite_inf_
 theorem _root_.Set.Finite.compl_mem_cofinite {s : Set α} (hs : s.Finite) : sᶜ ∈ @cofinite α :=
   mem_cofinite.2 <| (compl_compl s).symm ▸ hs
 
-theorem _root_.Set.Finite.eventually_cofinite_nmem {s : Set α} (hs : s.Finite) :
+theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite) :
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-theorem _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
-  s.finite_toSet.eventually_cofinite_nmem
+theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
+  s.finite_toSet.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
   frequently_cofinite_iff_infinite.symm
 
 theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
-  (Set.finite_singleton x).eventually_cofinite_nmem
+  (Set.finite_singleton x).eventually_cofinite_notMem
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => ?_⟩
@@ -98,9 +105,13 @@ theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ �
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
   le_cofinite_iff_compl_singleton_mem
 
-/-- If `α` is a preorder with no maximal element, then `atTop ≤ cofinite`. -/
-theorem atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ cofinite :=
+/-- If `α` is a preorder with no top element, then `atTop ≤ cofinite`. -/
+theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
+
+/-- If `α` is a preorder with no bottom element, then `atBot ≤ cofinite`. -/
+theorem atBot_le_cofinite [Preorder α] [NoBotOrder α] : (atBot : Filter α) ≤ cofinite :=
+  le_cofinite_iff_eventually_ne.mpr eventually_ne_atBot
 
 theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
@@ -206,18 +217,18 @@ lemma Nat.eventually_pos : ∀ᶠ (k : ℕ) in Filter.atTop, 0 < k :=
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by
-  rcases em (∃ y ∈ s, ∃ x, f y < x) with (⟨y, hys, x, hx⟩ | not_all_top)
+  by_cases! all_top : ∃ y ∈ s, ∃ x, f y < x
   · -- the set of points `{y | f y < x}` is nonempty and finite, so we take `min` over this set
+    rcases all_top with ⟨y, hys, x, hx⟩
     have : { y | ¬x ≤ f y }.Finite := Filter.eventually_cofinite.mp (tendsto_atTop.1 hf x)
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
-    refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
-    exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
+    exact ⟨a₀, ha₀s, fun a ha => all_top a ha (f a₀)⟩
 
 theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atTop) : ∃ a₀, ∀ a, f a₀ ≤ f a :=
@@ -241,6 +252,11 @@ theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) 
 theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
     Tendsto f cofinite cofinite := fun _ h => h.preimage hf.injOn
 
+/-- For a function with finite fibres, inverse images of finite sets are finite. -/
+theorem Filter.Tendsto.cofinite_of_finite_preimage_singleton {f : α → β}
+    (hf : ∀ b, Finite (f ⁻¹' {b})) : Tendsto f cofinite cofinite :=
+  fun _ h => h.preimage' fun b _ ↦ hf b
+
 /-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.
 See also `Filter.comap_cofinite_le` and `Function.Injective.tendsto_cofinite`. -/
 theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) :
@@ -251,3 +267,64 @@ theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) 
 theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f) :
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
+
+lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[𝓟 {a}ᶜ] f := by
+  filter_upwards [mem_principal_self _] with u hu using Function.update_of_ne hu _ _
+
+lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[cofinite] f :=
+  (Function.update_eventuallyEq f a b).filter_mono (by simp)
+
+variable {f : Filter α}
+
+/-- A filter is free iff it is smaller than the cofinite filter. -/
+theorem le_cofinite_iff_ker : f ≤ cofinite ↔ f.ker = ∅ := by
+  rw [le_cofinite_iff_compl_singleton_mem, ker_def, iInter₂_eq_empty_iff]
+  exact forall_congr' fun x => ⟨fun h => ⟨{x}ᶜ, h, by simp⟩,
+    fun ⟨s, hs, hx⟩ => mem_of_superset hs (by simpa using hx)⟩
+
+theorem le_cofinite_iff_boundary : f ≤ cofinite ↔ Coheyting.boundary f = f := by
+  rw [← Coheyting.inf_hnot_self, inf_eq_left, le_cofinite_iff_ker,
+    Filter.hnot_def, le_principal_iff]
+  constructor
+  · intro h
+    simp [h]
+  · intro h
+    rw [eq_empty_iff_forall_notMem]
+    intro x hx
+    exact hx f.kerᶜ h hx
+
+variable (f)
+
+theorem boundary_le_cofinite : Coheyting.boundary f ≤ cofinite :=
+  le_cofinite_iff_boundary.2 (Coheyting.boundary_boundary f)
+
+@[simp]
+theorem boundary_principal (s : Set α) : Coheyting.boundary (𝓟 s) = ⊥ := by
+  simp [← Coheyting.inf_hnot_self]
+
+/-- Every filter is the disjoint supremum of
+a principal filter and a free filter in a unique way. -/
+theorem existsUnique_eq_principal_sup_free :
+    ∃! p : Set α × Filter α, p.2 ≤ cofinite ∧ Disjoint (𝓟 p.1) p.2 ∧ f = 𝓟 p.1 ⊔ p.2 := by
+  refine ⟨(f.ker, Coheyting.boundary f), ⟨?_, ?_, ?_⟩, fun q hq => ?_⟩
+  · exact boundary_le_cofinite f
+  · rw [disjoint_principal_left]
+    exact mem_inf_of_right (mem_principal_self f.kerᶜ)
+  · rw [← compl_compl f.ker, ← hnot_principal, ← Filter.hnot_def,
+      Coheyting.hnot_hnot_sup_boundary]
+  · have hqk := congrArg Filter.ker hq.2.2
+    rw [ker_sup, ker_principal, le_cofinite_iff_ker.mp hq.1, union_empty] at hqk
+    refine congrArg₂ Prod.mk hqk.symm (le_antisymm (le_inf ?_ ?_) ?_)
+    · rw [hq.2.2]
+      exact le_sup_right
+    · rw [Filter.hnot_def, le_principal_iff, ← disjoint_principal_left, hqk]
+      exact hq.2.1
+    · grw [hq.2.2, Coheyting.boundary_sup_le, boundary_principal, bot_sup_eq]
+      exact Coheyting.boundary_le
+
+/-- Every filter is the disjoint supremum of a principal filter and a free filter. -/
+theorem exists_eq_principal_sup_free :
+    ∃ s g, g ≤ cofinite ∧ Disjoint (𝓟 s) g ∧ f = 𝓟 s ⊔ g :=
+  Prod.exists.mp (existsUnique_eq_principal_sup_free f).exists
