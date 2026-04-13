@@ -103,6 +103,7 @@ section
 
 open DerivedCategory.Plus.TStructure
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.rightDerivedFunctorPlus.RightTExact t t where
   objGE X n hX := by
     obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_resolution X n
@@ -148,6 +149,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
   simpa only [← ObjectProperty.prop_map_obj_iff (ObjectProperty.ofNatTrans
       (F.rightDerivedFunctorPlusUnit)) (HomotopyCategory.Plus.ι C)] using hK
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_rightDerivedFunctorPlusUnit_app
     (K : CochainComplex C ℤ) (a : ℤ) [ha : K.IsStrictlyGE a]
     (hK : ∀ (i : ℤ) (_ : a ≤ i),
@@ -189,7 +191,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
     apply isIso_rightDerivedFunctorPlusUnit_app_of_bounded _ _ a (n + 1)
     intro i hi hi'
     exact (NatTrans.isIso_app_iff_of_iso _
-      (Functor.mapIso _ (asIso' (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
+      (Functor.mapIso _ (Iso.ofIsIso (K.isIso_πStupidTrunc_f (n + 1) i hi')))).1 (hK i hi)
   have : (DerivedCategory.Plus.Qh.obj M').IsGE (n + 2) := by
     rw [← DerivedCategory.Plus.isGE_ι_obj_iff]
     apply DerivedCategory.TStructure.t.isGE_of_iso
@@ -212,11 +214,12 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
   have e'' : Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
     ((F.rightDerivedFunctorPlusUnit).app K')) ≅
       Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
-        ((F.rightDerivedFunctorPlusUnit).app L')) := Arrow.isoMk (asIso' h₁) (asIso' h₂) (by
-      dsimp
-      simp only [← Functor.map_comp]
-      congr 1
-      exact F.rightDerivedFunctorPlusUnit.naturality T'.mor₂)
+        ((F.rightDerivedFunctorPlusUnit).app L')) :=
+      Arrow.isoMk (Iso.ofIsIso h₁) (Iso.ofIsIso h₂) (by
+        dsimp
+        simp only [← Functor.map_comp]
+        congr 1
+        exact F.rightDerivedFunctorPlusUnit.naturality T'.mor₂)
   apply ((MorphismProperty.isomorphisms D).arrow_mk_iso_iff e'').2
   change IsIso _
   infer_instance
