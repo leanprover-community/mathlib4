@@ -94,8 +94,9 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
-  | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
-    '{c}' ({c.printCodepointHex})."
+  | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the \
+    allowlist '{c}' ({c.printCodepointHex}). \
+    For adding new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
   | StyleError.unicodeVariant s selector =>
     let variantText := if selector == UnicodeVariant.emoji then
       "emoji"
@@ -226,7 +227,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           -- extract the offending unicode character from `errorMessage`
           -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
           -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
-          let str ← errorMessage[7]?
+          let str ← errorMessage[12]?
           let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
           StyleError.unwantedUnicode c
         | "ERR_UNICODE_VARIANT" => do
