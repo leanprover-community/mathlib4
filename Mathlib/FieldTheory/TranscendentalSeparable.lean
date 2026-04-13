@@ -103,9 +103,9 @@ end
 
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
-    letI := min.1.1
+    letI := Ideal.minimalPrimes_isPrime min
     IsField (Localization.AtPrime p) := by
-  let := min.1.1
+  let := Ideal.minimalPrimes_isPrime min
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
@@ -129,7 +129,7 @@ lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsRedu
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
   rcases Ideal.exists_minimalPrimes_le (bot_le (a := q)) with ⟨p, min, hp⟩
-  let := min.1.1
+  let := Ideal.minimalPrimes_isPrime min
   apply hp
   rw [← IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
   have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by simp [hx]
@@ -182,7 +182,7 @@ lemma isReduced_of_quotient_separable_of_field (S : Type*) [Field S] (f : S[X])
       exact ih g.natDegree (by linarith) g sep.of_mul_right rfl
     exact isReduced_of_injective _ (Ideal.quotientMulEquivQuotientProd _ _ cop).injective
 
-variable (S : Type*) [CommRing S]
+variable (S : Type*) [CommRing S] [Algebra k S]
 
 lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X]) (mon : f.Monic)
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
@@ -199,14 +199,14 @@ lemma isReduced_of_quotient_separable [IsDomain S] (f : S[X]) (mon : f.Monic)
   simp [← RingHom.comap_ker, eq]
 
 /-- The canonical isomorphism `K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X]` for `k`-algebra `S, K`. -/
-noncomputable def polynomialTensorProductEquiv [Algebra k S] : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X] :=
+noncomputable def polynomialTensorProductEquiv : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[k] S)[X] :=
   ((((Algebra.TensorProduct.congr (polyEquivTensor' k K) AlgEquiv.refl).trans
     (Algebra.TensorProduct.assoc k k K K k[X] S)).trans
       (Algebra.TensorProduct.congr AlgEquiv.refl (Algebra.TensorProduct.comm k k[X] S))).trans
         (Algebra.TensorProduct.assoc k k K K S k[X]).symm).trans
           ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
 
-lemma polynomialTensorProductEquiv_map_algebraMap [Algebra k S] (f : K[X]) :
+lemma polynomialTensorProductEquiv_map_algebraMap (f : K[X]) :
     f.map (algebraMap K (K ⊗[k] S)) =
     (polynomialTensorProductEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) := by
   obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
@@ -220,7 +220,7 @@ lemma polynomialTensorProductEquiv_map_algebraMap [Algebra k S] (f : K[X]) :
     simpa [- polyEquivTensor_symm_apply_tmul_eq_smul, polynomialTensorProductEquiv]
 
 /-- The equivalence of adjoining on root inside tensor product and outside tensor product. -/
-noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) [Algebra k S] :
+noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) :
     (K[X] ⧸ Ideal.span {f}) ⊗[k] S ≃ₐ[K]
     (K ⊗[k] S)[X] ⧸ Ideal.span {f.map (algebraMap K (K ⊗[k] S))} :=
   let : IsScalarTower K (K[X] ⧸ Ideal.span {f})
@@ -234,8 +234,8 @@ noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) [Algebra k S] 
             polynomialTensorProductEquiv_map_algebraMap]))
 
 open IntermediateField.algebraAdjoinAdjoin in
-lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain
-    [Algebra k S] [IsDomain S] {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
+    {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -275,17 +275,15 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain
   exact isReduced_of_injective _ eTen.injective
 
 open IntermediateField.algebraAdjoinAdjoin in
-lemma tensorProduct_isReduced_of_isSeparablyGenerated_isDomain
-    (S : Type*) [CommRing S] [Algebra k S] [IsDomain S]
+lemma tensorProduct_isReduced_of_isSeparablyGenerated_isDomain [IsDomain S]
     [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K] :
     IsReduced (TensorProduct k K S) := by
   obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
   have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K S f isT
 
-lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced
-    [Algebra k S] [IsReduced S] [Algebra.FiniteType k S]
-    {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
+lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S]
+    [Algebra.FiniteType k S] {ι : Type v} (f : ι → K) (isT : IsTranscendenceBasis k f)
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] :
     IsReduced (TensorProduct k K S) := by
@@ -314,18 +312,16 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced
   exact isReduced_of_injective _ inj
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
-    (S : Type*) [CommRing S] [Algebra k S] [Algebra.FiniteType k S] [IsReduced S]
-    [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K] :
-    IsReduced (TensorProduct k K S) := by
+    [Algebra.FiniteType k S] [IsReduced S] [Algebra.IsSeparablyGenerated k K]
+    [Algebra.EssFiniteType k K] : IsReduced (TensorProduct k K S) := by
   classical
   obtain ⟨ι, f, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
   have := Algebra.EssFiniteType.of_comp k (IntermediateField.adjoin k (Set.range f)) K
   exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced k K S f isT
 
 @[stacks 030U "Part 1"]
-lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra k S] [IsReduced S]
-    (K : Type*) [Field K] [Algebra k K] [Algebra.IsTranscendentalSeparable k K] :
-    IsReduced (TensorProduct k K S) := by
+lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [IsReduced S]
+    [Algebra.IsTranscendentalSeparable k K] : IsReduced (TensorProduct k K S) := by
   refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun B hB ↦ ?_)
   have : Algebra.FiniteType k B := (Subalgebra.fg_iff_finiteType B).mp hB
   have : IsReduced B := isReduced_of_injective B.val Subtype.val_injective
@@ -338,9 +334,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced [Algebra
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K B).injective
 
 @[stacks 030U "Part 2"]
-lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [Algebra k S] [IsReduced S]
-    (K : Type*) [Field K] [Algebra k K] [Algebra.IsSeparablyGenerated k K] :
-    IsReduced (TensorProduct k K S) := by
+lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
+    [Algebra.IsSeparablyGenerated k K] : IsReduced (TensorProduct k K S) := by
   refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun B hB ↦ ?_)
   have : Algebra.FiniteType k B := (Subalgebra.fg_iff_finiteType B).mp hB
   have : IsReduced B := isReduced_of_injective B.val Subtype.val_injective
@@ -473,7 +468,7 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
   tfae_have 1 → 4 := by
     intro sep
     have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
-      k (AlgebraicClosure k) K
+      k K (AlgebraicClosure k)
     apply (Algebra.isGeometricallyReduced_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
@@ -527,7 +522,7 @@ lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSepar
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
-    have := tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced k (adjoinPthRoots k p) K
+    have := tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced k K (adjoinPthRoots k p)
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ _).injective
 
 lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteType
@@ -538,8 +533,8 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
   exact Algebra.isSeparablyGenerated_of_equiv IntermediateField.topEquiv
 
 @[stacks 030Y "Equivalence to the alternative definition."]
-lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k]
-    {K : Type*} [Field K] [Algebra k K] : Algebra.IsTranscendentalSeparable k K := by
+lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
+    Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
