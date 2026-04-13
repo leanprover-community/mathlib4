@@ -139,11 +139,6 @@ lemma ordFrac_ge_one_of_ne_zero {x : R} (hx : x ≠ 0) :
   simp_rw [ordFrac_eq_ord R hx, ordMonoidWithZeroHom_eq_coe _ (by simpa) hm.symm,
     WithZero.one_le_coe, ← ofAdd_zero, Multiplicative.ofAdd_le, Nat.cast_nonneg _]
 
-/--
-For `R` an `S` algebra (with a corresponding compatible action on `K`, the field of fractions
-of `R`), for `f : K` and `a : S`, we have that `ordFrac R f ≤ ordFrac R (a • f)` as long as
-`algebraMap S R a ≠ 0`.
--/
 lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
     [IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
@@ -205,11 +200,6 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
 simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
-/--
-For a discrete valuation ring `R` with fraction ring `K`,
-multiplicative kernel of `ordFrac R` is precisely the elements of `K`
-which are in the image of a unit of `R` under the algebra map.
--/
 lemma mker_ordFrac_eq_isUnitSubmonoid :
     MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
   rw [ordFrac_eq_inverse_comp_valuation, ←MonoidWithZeroHom.comap_mker,
