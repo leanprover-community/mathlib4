@@ -2,13 +2,19 @@ name: Remove unnecessary set_option lines
 
 on:
   schedule:
-    - cron: "0 4 * * 1" # At 04:00 UTC on Monday.
+    # Run several hours before the technical debt report which runs Mondays at 04:00 UTC
+    - cron: "20 23 * * 0" # At 23:20 UTC on Sunday.
   workflow_dispatch:
     inputs:
       dry_run:
         description: 'If true, only scan and report without modifying files or opening a PR'
         required: false
         default: false
+        type: boolean
+      auto_merge:
+        description: 'If true, apply the auto-merge-after-CI label when creating a PR'
+        required: false
+        default: true
         type: boolean
       global_timeout:
         description: 'Global timeout in seconds (default: 18000 = 5 hours)'
@@ -121,7 +127,7 @@ jobs:
           base: master
           title: "chore: remove unnecessary set_option lines"
           body: ${{ steps.pr_body.outputs.body }}
-          # labels: "auto-merge-after-CI"
+          labels: ${{ toJson(inputs.auto_merge) == 'true' && 'auto-merge-after-CI' || '' }}
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'
