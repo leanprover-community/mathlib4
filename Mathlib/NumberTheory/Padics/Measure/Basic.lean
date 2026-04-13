@@ -3,9 +3,10 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.Padics.MahlerBasis
-import Mathlib.Topology.UniformSpace.CoveringProfinite
+public import Mathlib.NumberTheory.Padics.MahlerBasis
+public import Mathlib.Topology.UniformSpace.ProdApproximation
 
 /-!
 # Abstract measures on topological spaces
@@ -14,6 +15,8 @@ We define an "abstract measure" on `X`, with values in a normed ring `R`, to be 
 functional on continuous maps `X → R`. This is an important construction in p-adic analysis (where
 the Iwasawa algebra is defined as the space of abstract measures on `ℤ_[p]` with values in `ℚ_[p]`).
 -/
+
+@[expose] public section
 
 open ContinuousMap
 
@@ -275,7 +278,8 @@ lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   have := (Metric.continuousAt_iff.mp <| (μ.prodMk' ν).continuous.continuousAt (x := f)) _ hε2
   rcases this with ⟨δ', hδ', hhδ'⟩
   simp only [dist_eq_norm_sub'] at hhδ hhδ'
-  obtain ⟨n, G, H, hh⟩ := exists_sum_mul_approx f (Metric.dist_mem_uniformity <| lt_min hδ hδ')
+  obtain ⟨n, G, H, hh⟩ := exists_finite_sum_mul_approximation_of_mem_uniformity f
+    (Metric.dist_mem_uniformity <| lt_min hδ hδ')
   let T : C(X × Y, R) := ∑ i, (G i).comp .fst * (H i).comp snd
   replace hh : ‖f - T‖ < δ ⊓ δ' := by
     simpa [ContinuousMap.norm_lt_iff _ <| lt_min hδ hδ', T, dist_eq_norm_sub] using hh
@@ -329,3 +333,5 @@ noncomputable instance : Norm (AbstractMeasure X 𝕜 E) :=
 end Topology
 
 end AbstractMeasure
+
+end

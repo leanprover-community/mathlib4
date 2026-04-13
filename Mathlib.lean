@@ -7842,7 +7842,6 @@ public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.CompareReals
 public import Mathlib.Topology.UniformSpace.CompleteSeparated
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.UniformSpace.CoveringProfinite
 public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.UniformSpace.Dini
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity

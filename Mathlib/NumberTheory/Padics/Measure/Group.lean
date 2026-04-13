@@ -3,14 +3,18 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.Padics.Measure.Basic
+public import Mathlib.NumberTheory.Padics.Measure.Basic
 
 /-!
 # Distributions on a topological monoid
 
 We show that if `G` is a monoid, then `D(G, R)` inherits a convolution product from `G`.
 -/
+
+public section
+
 variable {G : Type*} [TopologicalSpace G] {R : Type*} [NormedCommRing R]
 
 attribute [local ext] DFunLike.ext -- why is this not set by default?
@@ -32,7 +36,7 @@ function.
 For `μ` a measure and `f` a function, return the convolution of `f` with `μ` acting on the right,
 i.e. the function `fun x ↦ ∫ y, f (x + y) dμ` (bundled as a continuous map).
 -/
-noncomputable def convolveFunRight : D(G, R) →ₗ[R] C(G, R) →ₗ[R] C(G, R) :=
+@[expose] noncomputable def convolveFunRight : D(G, R) →ₗ[R] C(G, R) →ₗ[R] C(G, R) :=
   ((ContinuousMap.comapCLM ⟨_, continuous_mul⟩).toLinearMap.lcomp _ _).comp contractSnd
 
 lemma convolveFunRight_apply (μ : D(G, R)) (f : C(G, R)) (x : G) :
@@ -187,3 +191,5 @@ noncomputable instance [CommMonoid G] [ContinuousMul G] : CommRing D(G, R) where
 end Commutative
 
 end AbstractMeasure
+
+end
