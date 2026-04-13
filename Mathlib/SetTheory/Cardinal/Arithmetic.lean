@@ -324,6 +324,10 @@ theorem mk_Iic_lt {α : Type*} [LinearOrder α] [WellFoundedLT α] (i : α)
   rw [← Iio_insert, mk_insert self_notMem_Iio]
   exact add_one_lt_of_lt hα (mk_Iio_lt i h)
 
+theorem mk_Ici_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α)
+    (h : ord #α = typeLT αᵒᵈ) (hα : ℵ₀ ≤ #α) : #(Ici i) < #α :=
+  mk_Iic_lt (OrderDual.toDual i) h hα
+
 protected theorem eq_of_add_eq_add_left {a b c : Cardinal} (h : a + b = a + c) (ha : a < ℵ₀) :
     b = c := by
   rcases le_or_gt ℵ₀ b with hb | hb
