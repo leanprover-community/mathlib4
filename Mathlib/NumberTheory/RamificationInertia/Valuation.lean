@@ -44,7 +44,7 @@ theorem intValuation_liesOver (x : A) :
     v.intValuation x ^ (v.asIdeal.ramificationIdx w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
   rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  rw [intValuation_eq_coe_neg_multiplicity v hx, intValuation_eq_coe_neg_multiplicity w (by simpa),
+  rw [intValuation_eq_coe_neg_multiplicity v hx, intValuation_eq_exp_neg_multiplicity w (by simpa),
     ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
     Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
   refine multiplicity_eq_of_emultiplicity_eq_some ?_ |>.symm

@@ -193,7 +193,7 @@ instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
 instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
   instIsScalarTowerInteger
 
-instance instIsLocalHomValuationSubring : IsLocalHom (algebraMap K₀ L₀) :=
+instance : IsLocalHom (algebraMap K₀ L₀) :=
   instIsLocalHomValuationInteger
 
 lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
