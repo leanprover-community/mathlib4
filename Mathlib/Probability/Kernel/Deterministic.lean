@@ -11,32 +11,32 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 
 /-!
-# IsDeterministic
+# IsDeterministicKernel
 
-This file defines the class `IsDeterministic` of deterministic kernels, and proves some
+This file defines the class `IsDeterministicKernel` of deterministic kernels, and proves some
 properties about them.
 
 ## Main definitions
 
-* `MeasureTheory.IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0`
+* `IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0`
   and `1`.
-* `ProbabilityTheory.Kernel.IsDeterministic`: a kernel is deterministic if it commutes with
+* `Kernel.IsDeterministicKernel`: a kernel is deterministic if it commutes with
   the copy kernel, i.e. sampling and then copying the output is the same as running the kernel twice
   independently.
 
 ## Main statements
 
-* `ProbabilityTheory.Kernel.is_deterministic_iff_zero_one`: a finite kernel is deterministic if and
+* `is_deterministic_iff_zero_one`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
 
-* `ProbabilityTheory.Kernel.parallelComp_id_comp_copy_comp`: if the composition of two Markov
-  kernels `η ∘ₖ κ` is deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by
-  computing `η ∘ₖ κ` and `κ` independently.
+* `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
+ deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+and `κ` independently.
 
 ## References
 
-Section 10 & 11 in [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020].
+* [A synthetic approach to
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020].
 
 -/
 
@@ -123,17 +123,17 @@ lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : Mea
 
 /-- A kernel is deterministic if it satisfies the naturality condition with respect to the copy
 kernel. -/
-class IsDeterministic (κ : Kernel α β) : Prop where
+class IsDeterministicKernel (κ : Kernel α β) : Prop where
   comp_natural' : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
 
-lemma comp_natural (κ : Kernel α β) [IsDeterministic κ] :
-    (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ := IsDeterministic.comp_natural'
+lemma comp_natural (κ : Kernel α β) [IsDeterministicKernel κ] :
+    (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ := IsDeterministicKernel.comp_natural'
 
 lemma deterministic_is_deterministic {f : α → β} (hf : Measurable f) :
-    IsDeterministic <| deterministic f hf := ⟨deterministic_comp_copy hf⟩
+    IsDeterministicKernel <| deterministic f hf := ⟨deterministic_comp_copy hf⟩
 
 lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
-    IsDeterministic κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
+    IsDeterministicKernel κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
   constructor
   · intro h a
     refine ⟨fun s hs ↦ ?_⟩
@@ -151,11 +151,11 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
     rw [copy_comp_apply_prod _ _ hs ht]
     exact inter_eq_prod hs ht
 
-lemma zero_one (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] :
+lemma zero_one (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministicKernel κ] :
     ∀ a, IsZeroOneMeasure (κ a) := (is_deterministic_iff_zero_one κ).mp ‹_›
 
 lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
-    {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministic (η ∘ₖ κ)] :
+    {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministicKernel (η ∘ₖ κ)] :
     η ∘ₖ κ ∥ₖ κ ∘ₖ copy α = η ∥ₖ Kernel.id ∘ₖ copy β ∘ₖ κ := by
   simp only [parallelComp_comp_copy]
   ext a : 1
