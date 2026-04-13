@@ -164,7 +164,7 @@ theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f
     (hf : ∀ a ∈ s, Meromorphic (f a)) :
     proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
   intro r
-  simp [proximity_top]
+  simp only [proximity_top, Finset.sum_apply, Pi.add_apply]
   have h₂f : ∀ i ∈ s, CircleIntegrable (log⁺ ‖f i ·‖) 0 r :=
     fun i hi ↦ MeromorphicOn.circleIntegrable_posLog_norm (fun x hx ↦ hf i hi x)
   calc
@@ -197,9 +197,8 @@ The proximity function `f * g` at `⊤` is less than or equal to the sum of the 
 theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f₁) (h₁f₂ : Meromorphic f₂) :
     proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
   intro r
-  simp [proximity_top]
-  calc
-    circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 r
+  simp only [proximity_top, Pi.mul_apply, Complex.norm_mul, Pi.add_apply]
+  calc circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 r
       ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖) 0 r := by
         apply circleAverage_mono
         · simpa [norm_mul] using
