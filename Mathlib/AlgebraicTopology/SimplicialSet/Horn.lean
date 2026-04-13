@@ -141,7 +141,7 @@ lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
 
 lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
-    stdSimplex.objEquiv.symm f ∉ (horn.{u} n i).obj (op d) := by
+    stdSimplex.objEquiv.symm.{u} f ∉ Λ[n, i].obj (op d) := by
   rw [mem_horn_iff, ne_eq, not_not]
   ext i
   simpa using Or.inr ⟨inv f i, by simp [stdSimplex.coe_asOrderHom_objEquiv_symm.{u}]⟩
