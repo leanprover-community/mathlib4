@@ -464,13 +464,10 @@ If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
 def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⋙ map (a.counit.app Y) ⊣ post G where
   unit.app A := homMk (a.unit.app A.left)
-  counit.app A := homMk (a.counit.app A.left) (by simp [dsimp% a.counit_naturality A.hom])
-  unit.naturality _ _ f := by
-    ext
-    simpa using (a.unit_naturality f.left).symm
+  counit.app A := homMk (a.counit.app A.left)
   counit.naturality _ _ f := by
     ext
-    simpa using a.counit_naturality f.left
+    exact a.counit_naturality f.left
   left_triangle_components A := by
     ext
     simp [-Functor.id_obj]
@@ -952,14 +949,14 @@ If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given 
 @[simps]
 def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⊣ post G ⋙ map (a.unit.app X) where
-  unit.app A := homMk (a.unit.app A.right) (by simp [dsimp% a.unit_naturality A.hom])
-  counit.app A := homMk (a.counit.app A.right) (by simp [dsimp% a.counit_naturality A.hom])
+  unit.app A := homMk (a.unit.app A.right)
+  counit.app A := homMk (a.counit.app A.right)
   unit.naturality _ _ f := by
     ext
-    simpa using (a.unit_naturality f.right).symm
+    exact (a.unit_naturality f.right).symm
   counit.naturality _ _ f := by
     ext
-    simpa using (a.counit_naturality f.right)
+    exact (a.counit_naturality f.right)
   left_triangle_components A := by
     ext
     simp [-Functor.id_obj]
