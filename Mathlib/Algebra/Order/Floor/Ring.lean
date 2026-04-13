@@ -272,16 +272,19 @@ theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a
   rw [Nat.cast_comm, mul_natCast_floor_div_cancel hn]
 
 theorem mul_fract_eq_one_iff_exists_int
-    {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [FloorRing R]
     {x : R} {k : R} (hk : 1 < k) :
     k * fract x = 1 ↔ ∃ n : ℤ, k * x = k * n + 1 := by
-  rw [fract, mul_sub, sub_eq_iff_eq_add']
+  have : PosMulReflectLT R := PosMulMono.toPosMulReflectLT
+  conv_rhs => right; ext n; rw [← sub_eq_iff_eq_add', ← mul_sub]
   refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
   rintro ⟨n, hn⟩
-  convert hn
-  have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
-  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
-  simp [mul_add, hk]
+  suffices ⌊x⌋ = n by rw [fract, this, hn]
+  rw [← sub_eq_zero, ← floor_sub_intCast, floor_eq_zero_iff]
+  have hk0 : 0 ≤ k := zero_le_one.trans hk.le
+  refine ⟨(pos_of_mul_pos_right (hn ▸ zero_lt_one) hk0).le,
+    lt_of_mul_lt_mul_of_nonneg_left ?_ hk0⟩
+  rwa [hn, mul_one]
 
 end LinearOrderedRing
 
