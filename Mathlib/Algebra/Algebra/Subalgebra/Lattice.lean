@@ -627,7 +627,7 @@ theorem adjoin_singleton_zero : R[0 : A] = ⊥ :=
   mod_cast adjoin_singleton_natCast R A 0
 
 @[simp]
-theorem adjoin_singleton_one : R[1 : A]= ⊥ :=
+theorem adjoin_singleton_one : R[1 : A] = ⊥ :=
   mod_cast adjoin_singleton_natCast R A 1
 
 variable {A} (s)
