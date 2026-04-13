@@ -34,7 +34,6 @@ namespace IntermediateField
 
 variable {K L : Type*} [NontriviallyNormedField K] [NormedField L] [NormedAlgebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : IntermediateField K L) : NontriviallyNormedField F where
   __ := SubfieldClass.toNormedField F
   non_trivial := by
