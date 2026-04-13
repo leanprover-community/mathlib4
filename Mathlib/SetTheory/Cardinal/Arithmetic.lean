@@ -358,7 +358,7 @@ end add
 /-- Infinite types permit a relation where fewer elements than its cardinality
 are missed along all verticals and fewer elements than its cardinality are hit
 along all horizontals. -/
-theorem exists_rel_card_fibers_lt (α : Type*) [Infinite α] :
+theorem exists_rel_mk_fibers_lt (α : Type*) [Infinite α] :
     ∃ r : α → α → Prop, (∀ x, #{y // ¬ r x y} < #α) ∧ (∀ y, #{x // r x y} < #α) := by
   obtain ⟨α, _, hα⟩ := exists_ord_eq_type_lt α
   refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ mk_Iio_lt _ hα⟩
