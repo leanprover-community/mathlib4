@@ -152,8 +152,7 @@ lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
   obtain (rfl | ha) := eq_or_ne c 0
   · simp
   · have : Invertible c := invertibleOfNonzero ha
-    ext x
-    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+    simp [fderivWithin_const_smul_of_invertible c hs]
 
 @[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
   fderivWithin_const_smul_field
@@ -568,7 +567,6 @@ theorem differentiable_neg_iff : Differentiable 𝕜 (-f) ↔ Differentiable �
 
 theorem fderivWithin_fun_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
-  classical
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
   · rw [fderivWithin_zero_of_not_differentiableWithinAt h,

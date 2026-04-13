@@ -108,7 +108,11 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
-  grind [hσ', hσ]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind [hσ', hσ]` -/
+  simp [hσ', hσ, ha]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
