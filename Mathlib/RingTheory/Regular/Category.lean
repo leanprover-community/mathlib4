@@ -30,6 +30,9 @@ lemma LinearMap.exact_lsmul_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
+@[deprecated (since := "2025-12-06")]
+alias LinearMap.exact_smul_id_smul_top_mkQ := LinearMap.exact_lsmul_smul_top_mkQ
+
 namespace ModuleCat
 
 /-- The short (exact) complex `M → M → M⧸xM` obtain from the scalar multiple of `x : R` on `M`. -/
