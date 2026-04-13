@@ -82,8 +82,6 @@ for `f, s : A`. -/
 instance instTopologicalSpace : TopologicalSpace (Spv A) :=
   TopologicalSpace.generateFrom { U | ∃ f s : A, U = basicOpen f s }
 
-/-! ### Functoriality of Spv -/
-
 section Functoriality
 
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
@@ -130,8 +128,6 @@ lemma comap_injective {φ : A →+* B} (hφ : Function.Surjective φ) :
 
 end Functoriality
 
-/-! ### Support of a point of `Spv A` -/
-
 /-- The support prime ideal `{ a ∈ A | v(a) = 0 }` of a point `v ∈ Spv A`. -/
 def supp (v : Spv A) : Ideal A :=
   @ValuativeRel.supp A _ v.toValuativeRel
@@ -159,8 +155,6 @@ lemma ofValuation_valuation (v : Spv A) :
   apply ValuationSpectrum.ext; funext x y
   let : ValuativeRel A := v.toValuativeRel
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
-
-/-! ### Quotient -/
 
 section Quotient
 
@@ -225,8 +219,6 @@ end Quotient
 lemma not_vle_zero_of_isUnit {f : A} (hu : IsUnit f) (v : Spv A) : ¬ v.vle f 0 :=
   let : ValuativeRel A := v.toValuativeRel; ValuativeRel.not_vle_zero_of_isUnit hu
 
-/-! ### Localization -/
-
 section Localization
 
 variable (S : Submonoid A) (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
@@ -269,8 +261,6 @@ lemma comap_localization_range :
     fun h ↦ ⟨localizationLift S B v h, comap_localizationLift S B v h⟩⟩
 
 end Localization
-
-/-! ### Support map to PrimeSpectrum -/
 
 /-- The support map `Spv A → Spec A`. -/
 def suppFun : Spv A → PrimeSpectrum A := fun v ↦ ⟨v.supp, inferInstance⟩
