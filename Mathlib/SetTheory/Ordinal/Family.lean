@@ -15,43 +15,34 @@ This file proves basic results about the suprema of families of ordinals.
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 assert_not_exists Field Module
 
-noncomputable section
-
-open Function Cardinal Set Equiv Order
-open scoped Ordinal
+open Function Cardinal Set Order
 
 universe u v w
 
 namespace Ordinal
 
-variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
-
-/-! ### Families of ordinals
-
-There are two kinds of indexed families that naturally arise when dealing with ordinals: those
-indexed by some type in the appropriate universe, and those indexed by ordinals less than another.
-The following API allows one to convert from one kind of family to the other.
-
-In many cases, this makes it easy to prove claims about one kind of family via the corresponding
-claim on the other. -/
-
+variable {α β : Type*}
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
+@[deprecated enum (since := "2026-04-06")]
 def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
     ∀ a < type r, α := fun a ha => f (enum r ⟨a, ha⟩)
 
+set_option linter.deprecated false in
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a well-ordering
 given by the axiom of choice. -/
+@[deprecated enum (since := "2026-04-06")]
 def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingRel ι), α :=
   bfamilyOfFamily' WellOrderingRel
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a specified
 well-ordering. -/
+@[deprecated typein (since := "2026-04-06")]
 def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
   f (typein r i)
@@ -59,42 +50,56 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
       rw [← ho]
       exact typein_lt_type r i)
 
+set_option linter.deprecated false in
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
+@[deprecated typein (since := "2026-04-06")]
 def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.ToType → α :=
   familyOfBFamily' (· < ·) (type_toType o) f
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem bfamilyOfFamily'_typein {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) (i) :
     bfamilyOfFamily' r f (typein r i) (typein_lt_type r i) = f i := by
   simp only [bfamilyOfFamily', enum_typein]
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
     bfamilyOfFamily f (typein _ i) (typein_lt_type _ i) = f i :=
   bfamilyOfFamily'_typein _ f i
 
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r ⟨i, by rwa [ho]⟩) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f (enum (α := o.ToType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
     = f i hi :=
   familyOfBFamily'_enum _ (type_toType o) f _ _
 
 /-- The range of a family indexed by ordinals. -/
+@[deprecated range (since := "2026-04-06")]
 def brange (o : Ordinal) (f : ∀ a < o, α) : Set α :=
   { a | ∃ i hi, f i hi = a }
 
+set_option linter.deprecated false in
+@[deprecated mem_range (since := "2026-04-06")]
 theorem mem_brange {o : Ordinal} {f : ∀ a < o, α} {a} : a ∈ brange o f ↔ ∃ i hi, f i hi = a :=
   Iff.rfl
 
+set_option linter.deprecated false in
+@[deprecated mem_range_self (since := "2026-04-06")]
 theorem mem_brange_self {o} (f : ∀ a < o, α) (i hi) : f i hi ∈ brange o f :=
   ⟨i, hi, rfl⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem range_familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) : range (familyOfBFamily' r ho f) = brange o f := by
   refine Set.ext fun a => ⟨?_, ?_⟩
@@ -103,11 +108,13 @@ theorem range_familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrd
   · rintro ⟨i, hi, rfl⟩
     exact ⟨_, familyOfBFamily'_enum _ _ _ _ _⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem range_familyOfBFamily {o} (f : ∀ a < o, α) : range (familyOfBFamily o f) = brange o f :=
   range_familyOfBFamily' _ _ f
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem brange_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
     brange _ (bfamilyOfFamily' r f) = range f := by
   refine Set.ext fun a => ⟨?_, ?_⟩
@@ -116,28 +123,38 @@ theorem brange_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOr
   · rintro ⟨b, rfl⟩
     exact ⟨_, _, bfamilyOfFamily'_typein _ _ _⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamilyOfFamily f) = range f :=
   brange_bfamilyOfFamily' _ _
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "brange is deprecated" (since := "2026-04-06")]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
   rw [← range_familyOfBFamily]
   exact @Set.range_const _ o.ToType (nonempty_toType_iff.2 ho) c
 
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem comp_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α)
     (g : α → β) : (fun i hi => g (bfamilyOfFamily' r f i hi)) = bfamilyOfFamily' r (g ∘ f) :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "bfamilyOfFamily is deprecated" (since := "2026-04-06")]
 theorem comp_bfamilyOfFamily {ι : Type u} (f : ι → α) (g : α → β) :
     (fun i hi => g (bfamilyOfFamily f i hi)) = bfamilyOfFamily (g ∘ f) :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem comp_familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (g : α → β) :
     g ∘ familyOfBFamily' r ho f = familyOfBFamily' r ho fun i hi => g (f i hi) :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
     g ∘ familyOfBFamily o f = familyOfBFamily o fun i hi => g (f i hi) :=
   rfl
@@ -295,7 +312,7 @@ theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).or
 
 theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
-  rw [← mk_Iio_ordinal]
+  rw [← Cardinal.mk_Iio_ordinal]
   refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
   rw [← not_notMem]
   exact notMem_of_lt_csInf' hx
@@ -363,11 +380,14 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
 
 section bsup
 
+set_option linter.deprecated false in
+@[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal} (ho : type r = o) (ho' : type r' = o) (f : ∀ a < o, Ordinal) :
     iSup (familyOfBFamily' r ho f) = iSup (familyOfBFamily' r' ho' f) :=
-  congrArg sSup (by simp)
+  congrArg sSup (by simp_rw [range_familyOfBFamily'])
 
+set_option linter.deprecated false in
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
 `o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
 `familyOfBFamily`. -/
