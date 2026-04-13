@@ -595,10 +595,8 @@ theorem continuousOn_proj : ContinuousOn proj e.source :=
 /-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous at any point in the base set -/
 theorem continuousAt_symm_prodMk_left {b : B} {v : F} (hb : b ∈ e.baseSet) :
     ContinuousAt (e.symm ∘ (·, v)) b :=
-  ContinuousAt.comp (f := fun q => (q, v))
-    (e.toOpenPartialHomeomorph.continuousOn_symm.continuousAt
-      (e.toOpenPartialHomeomorph.open_target.mem_nhds (e.mem_target.mpr hb)))
-    (continuousAt_id.prodMk continuousAt_const)
+  ContinuousAt.comp (e.continuousOn_symm.continuousAt
+    (e.open_target.mem_nhds (e.mem_target.mpr hb))) (continuousAt_id.prodMk continuousAt_const)
 
 /-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous on `e.baseSet` -/
 theorem continuousOn_symm_prodMk_left {v : F} :
