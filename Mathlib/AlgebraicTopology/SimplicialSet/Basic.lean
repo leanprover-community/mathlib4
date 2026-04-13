@@ -74,6 +74,11 @@ lemma const_comp {X Y Z : SSet.{u}} (y : Y _⦋0⦌) (g : Y ⟶ Z) :
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
+/-- The functor which sends `n : SimplexCategoryᵒᵖ` to the evaluation
+functor `SSet.{u} ⥤ Type u` on the object `n`. -/
+protected abbrev evaluation : SimplexCategoryᵒᵖ ⥤ SSet.{u} ⥤ Type u :=
+  evaluation _ _
+
 /-- Truncated simplicial sets. -/
 abbrev Truncated (n : ℕ) := SimplicialObject.Truncated (Type u) n
 
