@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
@@ -392,6 +393,19 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
     HasCompactMulSupport (1 : α → β) := by
   simp [HasCompactMulSupport]
+
+/-- A finite product of functions with compact multiplicative support has compact
+multiplicative support. -/
+@[to_additive]
+theorem HasCompactMulSupport.finset_prod {α β ι : Type*} [TopologicalSpace α] [CommMonoid β]
+    (s : Finset ι) {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
+    HasCompactMulSupport (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction with
+  | empty => exact HasCompactMulSupport.one
+  | cons a s ha ih =>
+    rw [Finset.prod_cons]
+    exact (hf _ (Finset.mem_cons_self _ _)).mul
+      (ih (fun i hi => hf i (Finset.mem_cons_of_mem hi)))
 
 end Monoid
 
