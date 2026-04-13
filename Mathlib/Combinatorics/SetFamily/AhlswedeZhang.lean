@@ -86,8 +86,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
       card α / ((card α - x) * (card α).choose x) := by
     intro n s hs
     rw [mem_powersetCard_univ.1 hs]
-  simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
-    mul_comm, ← mul_div]
+  simp_rw [Finset.sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul,
+    mul_div, mul_comm, ← mul_div]
   rw [← mul_sum, ← mul_inv_cancel₀ (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
     add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) notMem_range_self,
     ← range_add_one]
@@ -95,7 +95,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
       ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
     rw [div_mul_cancel_right₀]
     exact cast_ne_zero.2 (choose_pos <| mem_range_succ_iff.1 hn).ne'
-  simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
+  simp only [Finset.sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
   convert Or.inl <| sum_range_reflect _ _ with a ha
   rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]
 
@@ -358,14 +358,14 @@ def supSum (𝒜 : Finset (Finset α)) : ℚ :=
 lemma supSum_union_add_supSum_infs (𝒜 ℬ : Finset (Finset α)) :
     supSum (𝒜 ∪ ℬ) + supSum (𝒜 ⊼ ℬ) = supSum 𝒜 + supSum ℬ := by
   unfold supSum
-  rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
+  rw [← sum_add_distrib, ← sum_add_distrib, Finset.sum_congr rfl fun s _ ↦ _]
   simp_rw [← add_div, ← Nat.cast_add, card_truncatedSup_union_add_card_truncatedSup_infs]
   simp
 
 lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
     infSum (𝒜 ∪ ℬ) + infSum (𝒜 ⊻ ℬ) = infSum 𝒜 + infSum ℬ := by
   unfold infSum
-  rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
+  rw [← sum_add_distrib, ← sum_add_distrib, Finset.sum_congr rfl fun s _ ↦ _]
   simp_rw [← add_div, ← Nat.cast_add, card_truncatedInf_union_add_card_truncatedInf_sups]
   simp
 
