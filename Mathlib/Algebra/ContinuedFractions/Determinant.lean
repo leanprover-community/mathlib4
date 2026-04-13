@@ -11,7 +11,7 @@ public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
-# Determinant Formula for Simple Continued Fraction
+# Determinant Formula for Generalised Continued Fraction
 
 ## Summary
 
