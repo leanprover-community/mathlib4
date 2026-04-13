@@ -183,7 +183,7 @@ lemma ord_le_ord_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
   suffices Ideal.span {a * x} ≤ Ideal.span {x} by
     let g : (R ⧸ Ideal.span {a * x}) →ₗ[R] (R ⧸ Ideal.span {x}) := Submodule.factor this
     refine Module.length_le_of_surjective (Submodule.factor this) (Submodule.factor_surjective this)
-  rw [@Ideal.span_singleton_le_span_singleton]
+  rw [Ideal.span_singleton_le_span_singleton]
   exact Dvd.intro_left (Algebra.algebraMap a) rfl
 
 lemma ord_le_ord_of_dvd {a x : R} (h : a ∣ x) : ord R a ≤ ord R x := by
