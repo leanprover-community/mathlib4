@@ -389,9 +389,11 @@ instance : SuccOrder Cardinal := ConditionallyCompleteLinearOrder.toSuccOrder
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
   dif_neg <| not_isMax c
 
+@[simp]
 theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
   bot_lt_succ
 
+@[simp]
 theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
   (succ_pos _).ne'
 
