@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Ring topologised by a valuation
@@ -195,6 +195,15 @@ instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
+
+instance : IsValuativeTopology (WithVal v) where
+  mem_nhds_iff {s x} := by
+    simp only [Set.image_add_left, Set.preimage_setOf_eq, Valued.mem_nhds]
+    let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (WithVal.valuation v)
+    apply (show Valued.v = WithVal.valuation v by rfl ▸ e).unitsCongr.symm.exists_congr fun a ↦ ?_
+    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
+      e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
+    rfl
 
 end CommRing
 
@@ -469,6 +478,7 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
@@ -496,6 +506,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   rw [restrict_lt_iff] at hx
   exact hx
 
+attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
@@ -593,6 +604,7 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
       embedding_strictMono.lt_iff_lt, map_zero]
     refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
+attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}

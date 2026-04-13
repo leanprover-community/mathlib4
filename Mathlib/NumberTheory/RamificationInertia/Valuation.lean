@@ -5,14 +5,11 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Valuation.Extension
-public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Algebra.Order.Hom.Units
+public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
-public import Mathlib.Topology.Algebra.Valued.ValuativeRel
-public import Mathlib.Algebra.Order.Hom.Units
+
 
 /-!
 # Ramification theory for valuations
@@ -62,24 +59,9 @@ theorem valuation_liesOver (x : K) :
   simp [valuation_of_algebraMap, div_pow, ← IsScalarTower.algebraMap_apply A K L,
     IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
-instance {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    (v : Valuation K Γ₀) : IsValuativeTopology (WithVal v) where
-  mem_nhds_iff {s x} := by
-    simp only [Set.image_add_left, Set.preimage_setOf_eq]
-    rw [Valued.mem_nhds]
-    have : Valued.v = WithVal.valuation v := rfl
-    let e := this ▸ ValuativeRel.ValueGroupWithZero.orderMonoidIso (WithVal.valuation v)
-    apply Equiv.exists_congr e.unitsCongr.symm
-    intro a
-    simp only [OrderMonoidIso.toEquiv_symm, OrderMonoidIso.coe_toEquiv_symm,
-      OrderMonoidIso.unitsCongr_symm_apply]
-    simp [e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
-    rfl
+variable (K)
 
-attribute [-instance] ValuativeRel.isUniformAddGroup
-
-set_option backward.isDefEq.respectTransparency false in
-variable (K) in
+attribute [-instance] ValuativeRel.isUniformAddGroup in
 theorem uniformContinuous_algebraMap_liesOver :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
