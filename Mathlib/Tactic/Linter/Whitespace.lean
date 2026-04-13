@@ -335,7 +335,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   let fmt : Option Format := ←
       try
-        some <$> liftCoreM <| PrettyPrinter.ppCategory `command stx
+        liftCoreM <| some <$> PrettyPrinter.ppCategory `command stx
       catch _ =>
         Linter.logLintIf linter.style.whitespace.verbose (stx.getHead?.getD stx)
           m!"The `whitespace` linter had some parsing issues: \
