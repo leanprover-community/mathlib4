@@ -990,9 +990,9 @@ def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
     CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
   functor := preEquivalence.functor F f
   inverse := preEquivalence.inverse F f
-  unitIso := NatIso.ofComponents (fun X ↦ isoMk (isoMk (Iso.refl _)
+  unitIso := NatIso.ofComponents (fun X => isoMk (isoMk (Iso.refl _)
     (by simpa using X.hom.w)))
-  counitIso := NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
 
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
