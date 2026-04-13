@@ -133,7 +133,8 @@ variable {F G : Sheaf J AddCommGrpCat.{w}} (f : F ⟶ G)
 noncomputable def H.map (n : ℕ) : H F n →+ H G n :=
   ((Ext.mk₀ f).postcomp ((constantSheaf J AddCommGrpCat).obj (of (ULift ℤ))) (add_zero n))
 
-lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEquiv₀ x ≫ f := by
+@[reassoc]
+lemma H.addEquiv₀_map (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEquiv₀ x ≫ f := by
   delta Ext.addEquiv₀ H.map
   apply (Ext.mk₀_bijective _ G).injective
   simp only [AddEquiv.coe_mk, Ext.mk₀_homEquiv₀_apply, Ext.mk₀_homEquiv₀_apply, ← Ext.mk₀_comp_mk₀]
@@ -143,7 +144,7 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
 theorem H.equiv₀_naturality (x : H F 0) :
     f.hom.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
   simp only [equiv₀, AddEquiv.trans_apply]
-  erw[addEquiv₀_comp f x]
+  erw [addEquiv₀_map f x]
   rfl
 
 theorem H.equiv₀_symm_naturality (x : F.obj.obj (op T)) :
