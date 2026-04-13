@@ -89,11 +89,9 @@ lemma spectralSequence_page_d_eq_zero_iff_isIso₂
       _ i₀ i₁ i₂ i₃ i₃' rfl hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁'
   let e := X.spectralSequencePageXIso data r hr pq'
     i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁'
-  let φ := X.map _ _ _ _ _ _
-        (fourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃'
-          (data.le₀₁' r hr pq' hi₀ hi₁) (data.le₁₂' pq' hi₁ hi₂)
-          (data.le₂₃' r hr pq' hi₂ hi₃) (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
-          n₀ n₁ n₂ hn₁ hn₂
+  let φ := X.map _ _ _ _ _ _ (fourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃'
+    (data.le₀₁' r hr pq' hi₀ hi₁) (data.le₁₂' pq' hi₁ hi₂)
+    (data.le₂₃' r hr pq' hi₂ hi₃) (data.le₃₃' hrr' hr pq' hi₃ hi₃')) n₀ n₁ n₂
   have fac : H.right.p = e.hom ≫ φ := X.spectralSequenceHomologyData_right_p ..
   have eq₁ : IsIso H.right.p ↔ IsIso φ := by
     apply (MorphismProperty.isomorphisms C).arrow_mk_iso_iff
@@ -278,11 +276,10 @@ lemma spectralSequence_edgeMonoStep_compatibility
       X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃ (data.i₀_le' hrr' hr pq hi₀' hi₀) _ _ _ n₀ n₁ n₂ hn₁ hn₂  ≫
     ((X.spectralSequencePageXIso data r hr pq
       i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃ n₀ n₁ n₂ hn₁' hn₁ hn₂)).inv := by
-  rw [← (X.spectralSequenceHomologyData_left_i data r r' hrr' hr _ pq _ rfl rfl
-    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁),
+  rw [← X.spectralSequenceHomologyData_left_i data r r' hrr' hr _ pq _ rfl rfl
+    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁,
     ← ((X.spectralSequence data).leftHomologyData_π_edgeMonoStep_compatibility r r' _
-    pq _ rfl rfl (X.spectralSequenceHomologyData data r r' hrr' hr _ pq _ rfl rfl
-    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁).left),
+    pq _ rfl rfl),
     X.spectralSequence_iso_hom_assoc data r r' hrr' hr _ pq _ rfl rfl i₀' i₀ i₁ i₂ i₃ i₃'
     hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁', Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
   dsimp
@@ -307,24 +304,17 @@ lemma spectralSequence_edgeEpiStep_compatibility
       i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁' hn₁ hn₂).hom ≫
     X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
       (data.le₃₃' hrr' hr pq hi₃ hi₃') n₀ n₁ n₂ hn₁ hn₂ := by
-  sorry /-
-  let H := X.spectralSequenceHomologyData data r r' hrr' hr _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
-    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-  refine Eq.trans ?_ ((X.spectralSequence data).rightHomologyData_ι_edgeEpiStep_compatibility
-      r r' _ pq _ rfl rfl H.right)
-  congr 1
-  simp only [← assoc]
-  congr 1
-  simp only [homOfLE_leOfHom, assoc]
-  obtain rfl : n₀ = n₁ - 1 := by lia
-  subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-  rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
-  dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
-  erw [id_comp]
-  dsimp [SpectralSequence.iso, spectralSequence,
-    SpectralSequence.homologyIso, SpectralSequence.homologyIso']
-  erw [id_comp, spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso,
-    Iso.inv_hom_id]-/
+  rw [← X.spectralSequenceHomologyData_right_p data r r' hrr' hr _ pq _ rfl rfl
+    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'  n₀ n₁ n₂ hn₁' hn₁,
+    ← ((X.spectralSequence data).rightHomologyData_ι_edgeEpiStep_compatibility
+      r r' _ pq _ rfl rfl),
+    X.spectralSequence_iso_inv_assoc data r r' hrr' hr _ pq _ rfl rfl i₀' i₀ i₁ i₂ i₃ i₃'
+    hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁', Iso.inv_hom_id_assoc,
+    X.spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso data r r' hrr' hr
+    _ pq _ rfl rfl i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂]
+  dsimp only [spectralSequenceHomologyData_right_H']
+  rw [Iso.inv_hom_id_assoc]
+  dsimp
 
 lemma hasPageInfinityAt (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
     (n₀ n₂ : ℤ) (hn₀ : n₀ = data.deg pq - 1) (hn₂ : n₂ = data.deg pq + 1)
