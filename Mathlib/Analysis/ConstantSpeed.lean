@@ -153,8 +153,8 @@ theorem hasConstantSpeedOnWith_zero_iff :
     HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
   rw [hasConstantSpeedOnWith_iff_variationOnFromTo_eq]
   constructor
-  · rintro ⟨hf, h0⟩ x xs y ys
-    simpa using variationOnFromTo.edist_zero_of_eq_zero hf xs ys (by simpa using h0 xs ys)
+  · intro ⟨hf, h0⟩ x xs y ys
+    exact variationOnFromTo.edist_zero_of_eq_zero hf xs ys (by simp [h0 xs ys])
   · intro h
     have hf : LocallyBoundedVariationOn f s := fun x y xs ys ↦
       ((eVariationOn.eq_zero_iff f).2 fun a ha b hb ↦ h a ha.1 b hb.1).trans_lt

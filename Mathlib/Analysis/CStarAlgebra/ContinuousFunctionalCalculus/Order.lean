@@ -293,10 +293,10 @@ invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
     (h : IsStrictlyPositive a := by cfc_tac) : IsUnit b := by
   nontriviality A; rw [← spectrum.zero_notMem_iff ℝ]; intro h0
-  obtain ⟨r, hr, hr_le⟩ := (CFC.exists_pos_algebraMap_le_iff h.isSelfAdjoint).2 fun x hx ↦
-    h.spectrum_pos hx
-  exact not_le_of_gt hr ((algebraMap_le_iff_le_spectrum (a := b) (ha := .of_nonneg
-    (h.nonneg.trans hab))).1 (hr_le.trans hab) 0 h0)
+  obtain ⟨r, hr, hr_le⟩ : ∃ r > 0, (algebraMap ℝ A) r ≤ a :=
+    (exists_pos_algebraMap_le_iff h.isSelfAdjoint).2 fun x hx ↦ h.spectrum_pos hx
+  exact not_le_of_gt hr <| (algebraMap_le_iff_le_spectrum <| .of_nonneg <| h.nonneg.trans hab).1
+    (hr_le.trans hab) 0 h0
 
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
@@ -442,8 +442,8 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
       this a b (by simpa) (by rwa [Unitization.inr_le_iff a b (.of_nonneg ha) (.of_nonneg hb)])
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
-  exact (CStarAlgebra.norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <|
-    hab.trans <| IsSelfAdjoint.le_algebraMap_norm_self (.of_nonneg hb)
+  exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
+    IsSelfAdjoint.le_algebraMap_norm_self (.of_nonneg hb)
 
 theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖₊ ≤ ‖b‖₊ :=

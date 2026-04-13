@@ -1036,9 +1036,7 @@ theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw
 
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
-  simpa [Set.insert_comm] using
-    (collinear_insert_of_mem_affineSpan_pair (k := R) h.mem_affineSpan :
-      Collinear R ({y, x, z} : Set P))
+  simpa [Set.insert_comm] using collinear_insert_of_mem_affineSpan_pair h.mem_affineSpan
 
 theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} : Set P)) :
     Wbtw R x y z ∨ Wbtw R y z x ∨ Wbtw R z x y := by
@@ -1065,8 +1063,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
       exact Or.inl (wbtw_or_wbtw_smul_vadd_of_nonneg _ _ hy0.le hz0.le)
 
 theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  rw [← wbtw_vsub_const_iff (R := R) (p := x), ← mem_segment_iff_wbtw, mem_segment_iff_sameRay]
-  simp [vsub_sub_vsub_cancel_right]
+  simp [← wbtw_vsub_const_iff x, ← mem_segment_iff_wbtw, mem_segment_iff_sameRay]
 
 lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
     Wbtw R x y z ∨ Wbtw R x z y := by
