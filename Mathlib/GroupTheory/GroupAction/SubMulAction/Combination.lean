@@ -61,7 +61,7 @@ def subMulAction : SubMulAction G (Finset α) where
 
 @[to_additive]
 instance : MulAction G (Set.powersetCard α n) :=
-  (subMulAction G α n).mulAction
+  inferInstanceAs <| MulAction G (subMulAction G α n)
 
 variable {G}
 

@@ -188,15 +188,6 @@ end FDRep
 
 namespace FDRep
 
-variable {k G : Type u} [Field k] [Group G]
-
--- Verify that the right rigid structure is available when the monoid is a group.
-example : RigidCategory (FDRep k G) := by infer_instance
-
-end FDRep
-
-namespace FDRep
-
 -- The variables in this section are slightly weird, living half in `Representation` and half in
 -- `FDRep`. When we have a better API for general monoidal closed and rigid categories and these
 -- structures on `FDRep`, we should remove the dependency of statements about `FDRep` on

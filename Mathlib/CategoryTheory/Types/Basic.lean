@@ -204,7 +204,7 @@ def uliftFunctor : Type u ⥤ Type max u v where
   map {X} {_} f := fun x : ULift.{v} X => ULift.up (f x.down)
 
 @[simp]
-theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
+theorem uliftFunctor_obj {X : Type u} : uliftFunctor.{v}.obj X = ULift.{v} X :=
   rfl
 
 @[simp]

@@ -390,6 +390,17 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
   hasDerivAt_exp_smul_const_of_mem_ball' _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
+variable (𝕂) in
+@[fun_prop]
+lemma differentiable_exp_smul_const (x : 𝔸) :
+    Differentiable 𝕂 (fun t : 𝕂 ↦ exp (t • x)) :=
+  (⟨_, hasDerivAt_exp_smul_const x ·⟩)
+
+@[fun_prop]
+lemma differentiableAt_exp_smul_const (x : 𝔸) (r : 𝕂) :
+    DifferentiableAt 𝕂 (fun t : 𝕂 ↦ exp (t • x)) r :=
+  differentiable_exp_smul_const 𝕂 x |>.differentiableAt
+
 end RCLike
 
 end exp_smul

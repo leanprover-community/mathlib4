@@ -113,7 +113,7 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
 
 -- Horizontal composition has two possible definitions that are dual to each other,
 -- and we need to prove to `to_dual` that these are equivalent.
-attribute [to_dual none] CategoryStruct.comp.hcongr_7 hcomp._proof_2 hcomp._proof_3
+attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
 to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 
 /-- Notation for horizontal composition of natural transformations. -/

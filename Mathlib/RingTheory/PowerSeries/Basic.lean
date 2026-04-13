@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kenny Lau
+Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 -/
 module
 
@@ -136,6 +136,9 @@ theorem monomial_mul_monomial (m n : ℕ) (a b : R) :
 /-- The constant coefficient of a formal power series. -/
 def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff
+
+theorem constantCoeff_eq (f : R⟦X⟧) :
+    constantCoeff f = MvPowerSeries.constantCoeff f := rfl
 
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=

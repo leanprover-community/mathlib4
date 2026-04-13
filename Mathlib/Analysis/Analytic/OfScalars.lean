@@ -175,6 +175,7 @@ open scoped Topology NNReal
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
+@[simp]
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
   rw [ofScalars, norm_smul]
@@ -184,9 +185,8 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
   exact (mul_le_of_le_one_right (norm_nonneg _)
     (ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos hn))
 
-@[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
-  simp [ofScalars_norm_eq_mul]
+  simp
 
 end Seminormed
 

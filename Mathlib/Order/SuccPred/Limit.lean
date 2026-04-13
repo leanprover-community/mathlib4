@@ -95,7 +95,7 @@ theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
 @[to_dual]
 protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬ IsMin a := h.1
 
-@[to_dual]
+@[to_dual (attr := simp)]
 protected theorem IsSuccLimit.isSuccPrelimit (h : IsSuccLimit a) : IsSuccPrelimit a := h.2
 
 @[deprecated IsPredLimit.isPredPrelimit (since := "2026-02-22")]

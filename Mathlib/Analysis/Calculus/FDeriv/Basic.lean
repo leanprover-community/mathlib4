@@ -406,7 +406,6 @@ protected theorem HasFDerivAt.fderiv
     [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
     (h : HasFDerivAt f f' x) :
     fderiv 𝕜 f x = f' := by
-  ext
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
 theorem fderiv_eq

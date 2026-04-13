@@ -8,33 +8,14 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 
 /-! Tests for the `globalAttributeIn` linter. -/
 
--- Test disabling the linter.
-set_option linter.globalAttributeIn false
-
 -- After https://github.com/leanprover/lean4/pull/12263,
 -- we need to add `instance_reducible` before we can add `instance` to `Int.add`.
 set_option allowUnsafeReducibility true in
 attribute [instance_reducible] Int.add
 
-set_option autoImplicit false in
-attribute [instance] Int.add in
-instance : Inhabited Int where
-  default := 0
-
-set_option linter.globalAttributeIn true
-
-set_option linter.globalAttributeIn false in
-attribute [instance] Int.add in
-instance : Inhabited Int where
-  default := 0
-
--- Global instances with `in`, are linted, as they are a footgun.
-
 /--
-warning: Despite the `in`, the attribute 'instance 1100' is added globally to 'Int.add'
+error: Despite the `in`, the attribute instance 1100 is added globally to Int.add
 please remove the `in` or make this a `local instance 1100`
-
-Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 set_option autoImplicit false in
@@ -44,10 +25,8 @@ instance : Inhabited Int where
   default := 0
 
 /--
-warning: Despite the `in`, the attribute 'instance' is added globally to 'Int.add'
+error: Despite the `in`, the attribute instance is added globally to Int.add
 please remove the `in` or make this a `local instance`
-
-Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [instance] Int.add in
@@ -55,10 +34,8 @@ instance : Inhabited Int where
   default := 0
 
 /--
-warning: Despite the `in`, the attribute 'simp' is added globally to 'Int.add'
+error: Despite the `in`, the attribute simp is added globally to Int.add
 please remove the `in` or make this a `local simp`
-
-Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [simp] Int.add in
@@ -73,15 +50,11 @@ namespace X
 theorem foo (x y : Nat) : x = y := sorry
 
 /--
-warning: Despite the `in`, the attribute 'simp' is added globally to 'foo'
+error: Despite the `in`, the attribute simp is added globally to foo
 please remove the `in` or make this a `local simp`
-
-Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 ---
-warning: Despite the `in`, the attribute 'ext' is added globally to 'foo'
+error: Despite the `in`, the attribute ext is added globally to foo
 please remove the `in` or make this a `local ext`
-
-Note: This linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in

@@ -158,6 +158,9 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
     HasSubst a :=
   hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
 
+lemma HasSubst.X_X {i j : σ} : HasSubst (S := R) ![X i, X j] :=
+  hasSubst_of_constantCoeff_zero (by simp)
+
 protected lemma HasSubst.pow {n : ℕ} (hn : n ≠ 0) {a : σ → MvPowerSeries τ S} (h : HasSubst a) :
     HasSubst (a ^ n) :=
   hasSubstIdeal.pow_mem_of_mem h _ (by lia)
@@ -339,6 +342,16 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   intro d
   simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
     ← coeff_map, Finsupp.prod]
+
+lemma HasSubst.cons_subst_zero_left {f : MvPowerSeries (Fin 2) R} (i j k : σ)
+    (hF : constantCoeff f = 0) : HasSubst (![subst ![X i, X j] f, X k]) (S := R) :=
+  hasSubst_of_constantCoeff_zero fun s => by
+    fin_cases s <;> simp_all [constantCoeff_subst_eq_zero .X_X]
+
+lemma HasSubst.cons_subst_zero_right {f : MvPowerSeries (Fin 2) R} (i j k : σ)
+    (hF : constantCoeff f = 0) : HasSubst ![X i, subst ![X j, X k] f] (S := R) :=
+  hasSubst_of_constantCoeff_zero fun s => by
+    fin_cases s <;> simp_all [constantCoeff_subst_eq_zero .X_X]
 
 variable
     {T : Type*} [CommRing T]

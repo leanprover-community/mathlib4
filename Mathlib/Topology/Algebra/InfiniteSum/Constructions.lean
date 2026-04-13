@@ -269,7 +269,7 @@ end CompleteSpace
 section Pi
 
 variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
-{L : SummationFilter ι}
+  {L : SummationFilter ι}
 
 @[to_additive]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :

@@ -68,7 +68,7 @@ open scoped ENNReal Topology Function
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
-{G : Type*} [AddCommMonoid G]
+  {G : Type*} [AddCommMonoid G]
 
 variable (G) in
 /-- An additive content is a set function with value 0 at the empty set which is finitely additive

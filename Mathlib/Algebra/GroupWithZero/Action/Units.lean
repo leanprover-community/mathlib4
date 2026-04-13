@@ -69,12 +69,24 @@ lemma eq_inv_smul_iff₀ (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y ↔ a • 
   eq_inv_smul_iff (g := Units.mk0 a ha)
 
 @[simp]
+lemma SemiconjBy.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y z : β}
+    (ha : a ≠ 0) : SemiconjBy x (a • y) (a • z) ↔ SemiconjBy x y z :=
+  smul_right_iff (r := Units.mk0 a ha)
+
+@[simp]
+lemma SemiconjBy.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y z : β}
+    (ha : a ≠ 0) : SemiconjBy (a • x) y z ↔ SemiconjBy x y z :=
+  smul_left_iff (r := Units.mk0 a ha)
+
+@[simp]
 lemma Commute.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
-    (ha : a ≠ 0) : Commute x (a • y) ↔ Commute x y := Commute.smul_right_iff (g := Units.mk0 a ha)
+    (ha : a ≠ 0) : Commute x (a • y) ↔ Commute x y :=
+  SemiconjBy.smul_right_iff₀ ha
 
 @[simp]
 lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
-    (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y := Commute.smul_left_iff (g := Units.mk0 a ha)
+    (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y :=
+  SemiconjBy.smul_left_iff₀ ha
 
 /-- Right scalar multiplication as an order isomorphism. -/
 @[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where

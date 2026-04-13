@@ -61,6 +61,9 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
   rw [conjTranspose, diagonal_transpose, diagonal_map (star_zero _)]
   rfl
 
+theorem map_diagonal_star [AddMonoid α] [StarAddMonoid α] (x : n → α) :
+    (diagonal x).map star = diagonal (star x) := diagonal_map (star_zero _)
+
 end Diagonal
 
 section Diag
@@ -69,6 +72,8 @@ section Diag
 theorem diag_conjTranspose [Star α] (A : Matrix n n α) :
     diag Aᴴ = star (diag A) :=
   rfl
+
+@[simp] theorem diag_map_star [Star α] (A : Matrix n n α) : diag (A.map star) = star (diag A) := rfl
 
 end Diag
 
@@ -117,6 +122,10 @@ theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → 
     (vecMulVec w v)ᴴ = vecMulVec (star v) (star w) :=
   ext fun _ _ => star_mul _ _
 
+@[simp] theorem map_vecMulVec_star [Mul α] [StarMul α] (w : m → α) (v : n → α) :
+    (vecMulVec w v).map star = (vecMulVec (star v) (star w))ᵀ := by
+  rw [← conjTranspose_vecMulVec]; rfl
+
 section ConjTranspose
 
 open Matrix
@@ -158,8 +167,11 @@ theorem conjTranspose_injective [InvolutiveStar α] :
 theorem conjTranspose_eq_diagonal [DecidableEq n] [AddMonoid α] [StarAddMonoid α]
     {M : Matrix n n α} {v : n → α} :
     Mᴴ = diagonal v ↔ M = diagonal (star v) :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
-    by rw [diagonal_conjTranspose]
+  (conjTranspose_involutive n α).eq_iff.trans <| by rw [diagonal_conjTranspose]
+
+@[simp] theorem map_star_eq_diagonal [DecidableEq n] [AddMonoid α] [StarAddMonoid α]
+    {M : Matrix n n α} {v : n → α} : M.map star = diagonal v ↔ M = diagonal (star v) :=
+  map_involutive star_involutive |>.eq_iff.trans <| by rw [map_diagonal_star]
 
 @[simp]
 theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n α)ᴴ = 0 :=
@@ -170,6 +182,9 @@ theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n 
     Mᴴ = 0 ↔ M = 0 := by
   rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
+@[simp] theorem map_star_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
+    M.map star = 0 ↔ M = 0 := by simp [← ext_iff]
+
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] :
     (1 : Matrix n n α)ᴴ = 1 := by
@@ -178,8 +193,11 @@ theorem conjTranspose_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] :
 @[simp]
 theorem conjTranspose_eq_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] {M : Matrix n n α} :
     Mᴴ = 1 ↔ M = 1 :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
-    by rw [conjTranspose_one]
+  (conjTranspose_involutive n α).eq_iff.trans <| by rw [conjTranspose_one]
+
+@[simp] theorem map_star_eq_one [DecidableEq n] [NonAssocSemiring α] [StarRing α]
+    {M : Matrix n n α} : M.map star = 1 ↔ M = 1 :=
+  map_involutive star_involutive |>.eq_iff.trans <| by simp
 
 @[simp]
 theorem conjTranspose_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ) :
@@ -187,16 +205,26 @@ theorem conjTranspose_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α
   simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
 
 @[simp]
+theorem map_natCast_star [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ) :
+    (d : Matrix n n α).map star = d := by simp [Matrix.map_natCast, diagonal_natCast]
+
+@[simp]
 theorem conjTranspose_eq_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} :
     Mᴴ = d ↔ M = d :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
-    by rw [conjTranspose_natCast]
+  (conjTranspose_involutive n α).eq_iff.trans <| by rw [conjTranspose_natCast]
+
+@[simp] theorem map_star_eq_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing α]
+    {M : Matrix n n α} {d : ℕ} : M.map star = d ↔ M = d :=
+  (map_involutive star_involutive).eq_iff.trans <| by rw [map_natCast_star]
 
 @[simp]
 theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ)
     [d.AtLeastTwo] : (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
+
+@[simp] theorem map_ofNat_star [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ)
+    [d.AtLeastTwo] : (ofNat(d) : Matrix n n α).map star = OfNat.ofNat d := map_natCast_star _
 
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
@@ -204,17 +232,27 @@ theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     Mᴴ = ofNat(d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
+@[simp] theorem map_star_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α}
+    {d : ℕ} [d.AtLeastTwo] : M.map star = ofNat(d) ↔ M = OfNat.ofNat d := map_star_eq_natCast
+
 @[simp]
 theorem conjTranspose_intCast [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
     (d : Matrix n n α)ᴴ = d := by
   simp [conjTranspose, Matrix.map_intCast, diagonal_intCast]
 
+@[simp] theorem map_intCast_star [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
+    (d : Matrix n n α).map star = d := by simp [Matrix.map_intCast, diagonal_intCast]
+
 @[simp]
 theorem conjTranspose_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
     {M : Matrix n n α} {d : ℤ} :
     Mᴴ = d ↔ M = d :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+  (conjTranspose_involutive n α).eq_iff.trans <|
     by rw [conjTranspose_intCast]
+
+@[simp] theorem map_star_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
+    {M : Matrix n n α} {d : ℤ} : M.map star = d ↔ M = d :=
+  (map_involutive star_involutive).eq_iff.trans <| by rw [map_intCast_star]
 
 @[simp]
 theorem conjTranspose_add [AddMonoid α] [StarAddMonoid α] (M N : Matrix m n α) :

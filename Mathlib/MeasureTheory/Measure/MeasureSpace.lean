@@ -856,6 +856,11 @@ instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (
 theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure α) : μ = 0 :=
   Subsingleton.elim μ 0
 
+@[simp]
+theorem ofMeasurable_zero : ofMeasurable (α := α) (fun _ _ => 0) rfl (by simp) = 0 := by
+  ext s
+  simp [ofMeasurable, ← toOuterMeasure_apply, inducedOuterMeasure_zero MeasurableSet.iUnion]
+
 instance instInhabited {_ : MeasurableSpace α} : Inhabited (Measure α) :=
   ⟨0⟩
 

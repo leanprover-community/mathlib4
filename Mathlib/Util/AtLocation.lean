@@ -56,7 +56,7 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
+  if failIfUnchanged && unchanged then throwError "{proc} made no progress on the goal"
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none

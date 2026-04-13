@@ -208,6 +208,14 @@ instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
     [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 
+instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
+    [h : IndiscreteTopology X] [hY : IndiscreteTopology Y] : IndiscreteTopology (X × Y) :=
+  ⟨inf_eq_top_iff.2 <| by simp [h.eq_top, hY.eq_top]⟩
+
+instance Pi.indiscreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
+    [h : ∀ i, IndiscreteTopology (Y i)] : IndiscreteTopology ((i : ι) → Y i) :=
+  ⟨iInf_eq_top.2 fun _ => by simp only [(h _).eq_top, induced_top]⟩
+
 @[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
     comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range
 

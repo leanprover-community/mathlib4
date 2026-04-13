@@ -67,7 +67,7 @@ variable [Module R A] [Module R A'] [Module R B]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  fast_instance% Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
