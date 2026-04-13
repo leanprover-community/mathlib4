@@ -209,7 +209,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
     freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
-      (I.obj.map i.op) (freeAbSheafHomEquiv V I f) := by
+      I.obj.map i.op (freeAbSheafHomEquiv V I f) := by
   dsimp [freeAbSheafHomEquiv, freeAbSheafMap]
   erw [Adjunction.homEquiv_naturality_left]
   erw [Adjunction.homEquiv_naturality_left]
@@ -241,10 +241,12 @@ end
 theorem isFlasque_of_injective {X : TopCat.{u}}
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
   epi := by
-    intro U V i
-    rw [AddCommGrpCat.epi_iff_surjective]
-    intro s; obtain ⟨h, hh⟩ := Injective.factors ((freeAbSheafHomEquiv (unop V) I).symm s) (freeAbSheafMap i.unop)
-    exact ⟨freeAbSheafHomEquiv (unop U) I h, by erw [← freeAbSheafHomEquiv_naturality i.unop I h, hh]; simp⟩
+    intro U V i; rw [AddCommGrpCat.epi_iff_surjective]; intro s
+    obtain ⟨h, hh⟩ :=
+      Injective.factors ((freeAbSheafHomEquiv (unop V) I).symm s) (freeAbSheafMap i.unop)
+    exact ⟨freeAbSheafHomEquiv (unop U) I h, by
+      erw [← freeAbSheafHomEquiv_naturality i.unop I h, hh]
+      simp⟩
 
 /-- Injective sheaves are flasque. -/
 instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
