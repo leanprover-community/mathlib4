@@ -949,8 +949,8 @@ If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given 
 @[simps]
 def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⊣ post G ⋙ map (a.unit.app X) where
-  unit.app A := homMk (a.unit.app A.right)
-  counit.app A := homMk (a.counit.app A.right)
+  unit.app A := homMk <| a.unit.app A.right
+  counit.app A := homMk <| a.counit.app A.right
   unit.naturality _ _ f := by
     ext
     exact (a.unit_naturality f.right).symm
