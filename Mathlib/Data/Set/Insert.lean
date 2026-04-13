@@ -186,9 +186,6 @@ theorem singleton_injective : Injective (singleton : α → Set α) := fun _ _ =
 theorem mem_singleton_of_eq {x y : α} (H : x = y) : x ∈ ({y} : Set α) :=
   H
 
-theorem mem_of_eq_singleton : s = {a} → a ∈ s  := by
-  grind
-
 theorem insert_eq (x : α) (s : Set α) : insert x s = ({x} : Set α) ∪ s :=
   rfl
 
@@ -259,6 +256,9 @@ theorem eq_singleton_iff_unique_mem : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a
 theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a :=
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
+
+theorem mem_of_eq_singleton : s = {a} → a ∈ s  := by
+ grind only [eq_singleton_iff_unique_mem]
 
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
