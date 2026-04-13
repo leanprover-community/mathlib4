@@ -77,27 +77,19 @@ theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFi
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
 
-theorem Function.const.birkhoffAverage_eq₀ {f : α → α} (a : M) {n : ℕ} (hn : (n : R) ≠ 0)
-    (x : α) : birkhoffAverage R f (fun _ ↦ a) n x = a := by
-  rw [birkhoffAverage, birkhoffSum, Finset.sum_const, Finset.card_range, ← Nat.cast_smul_eq_nsmul R,
-    inv_smul_smul₀ hn]
-
-theorem Function.const.birkhoffAverage_eq₀' {f : α → α} (a : M) {n : ℕ} (hn : (n : R) ≠ 0) :
+theorem Function.birkhoffAverage_const_eq₀ (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a := by
-  ext x; exact Function.const.birkhoffAverage_eq₀ R a hn x
-
-open Classical in
-theorem Function.const.birkhoffAverage_eq {f : α → α} (a : M) (n : ℕ)
-    (x : α) : birkhoffAverage R f (fun _ ↦ a) n x = if (n : R) = 0 then 0 else a := by
-  by_cases h : (n : R) = 0
-  · simp [h, birkhoffAverage]
-  simpa [h] using Function.const.birkhoffAverage_eq₀ R a h x
+  ext x
+  simp [hn, birkhoffAverage, birkhoffSum, ← Nat.cast_smul_eq_nsmul R]
 
 open Classical in
 @[simp]
-theorem Function.const.birkhoffAverage_eq' {f : α → α} (a : M) (n : ℕ) :
+theorem Function.birkhoffAverage_const_eq (f : α → α) (a : M) (n : ℕ) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ if (n : R) = 0 then 0 else a := by
-  ext x; exact Function.const.birkhoffAverage_eq R a n x
+  by_cases h : (n : R) = 0
+  · ext
+    simp [h, birkhoffAverage]
+  simp [h, Function.birkhoffAverage_const_eq₀]
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
