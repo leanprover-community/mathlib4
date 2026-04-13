@@ -245,25 +245,7 @@ theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
     IsFundamentalSequence (f a) o fun b hb => f (g b hb) := by
   refine ⟨?_, @fun i j _ _ h => hf.strictMono (hg.2.1 _ _ h), ?_⟩
-  · rcases exists_lsub_cof (f a) with ⟨ι, f', hf', hι⟩
-    rw [← hg.cof_eq, ord_le_ord, ← hι]
-    suffices (lsub.{u, u} fun i => sInf { b : Ordinal | f' i ≤ f b }) = a by
-      rw [← this]
-      apply cof_lsub_le
-    have H : ∀ i, ∃ b < a, f' i ≤ f b := fun i => by
-      have := lt_lsub.{u, u} f' i
-      rw [hf', ← IsNormal.blsub_eq.{u, u} hf ha, lt_blsub_iff] at this
-      simpa using this
-    refine (lsub_le fun i => ?_).antisymm (le_of_forall_lt fun b hb => ?_)
-    · rcases H i with ⟨b, hb, hb'⟩
-      exact lt_of_le_of_lt (csInf_le' hb') hb
-    · have := hf.strictMono hb
-      rw [← hf', lt_lsub_iff] at this
-      obtain ⟨i, hi⟩ := this
-      rcases H i with ⟨b, _, hb⟩
-      exact
-        ((le_csInf_iff'' ⟨b, by exact hb⟩).2 fun c hc =>
-          hf.strictMono.le_iff_le.1 (hi.trans hc)).trans_lt (lt_lsub _ i)
+  · grind [Ordinal.IsFundamentalSequence, cof_map_of_isNormal]
   · rw [@blsub_comp.{u, u, u} a _ (fun b _ => f b) (@fun i j _ _ h => hf.strictMono.monotone h) g
         hg.2.2]
     exact IsNormal.blsub_eq.{u, u} hf ha

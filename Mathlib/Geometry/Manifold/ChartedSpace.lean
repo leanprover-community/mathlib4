@@ -423,10 +423,10 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
+  inferInstanceAs <| Inhabited (∀ i, Hi i)
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (∀ i, Hi i)
 
 end
 
