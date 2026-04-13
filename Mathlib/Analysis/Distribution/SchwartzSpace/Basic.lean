@@ -257,7 +257,8 @@ private theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).trans_le ?_
   rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
+  gcongr
+  exact f.le_seminormAux k n x
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
