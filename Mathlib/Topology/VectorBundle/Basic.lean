@@ -491,8 +491,7 @@ noncomputable def VectorBundle.continuousLinearEquivAt (b : B) : E b ≃L[R] F :
   (trivializationAt F E b).continuousLinearEquivAt R b (FiberBundle.mem_baseSet_trivializationAt' b)
 
 /-- The zero section of a vector bundle is continuous. -/
-theorem continuous_zeroSection (R : Type*) [NontriviallyNormedField R] [∀ x, Module R (E x)]
-    [NormedSpace R F] [VectorBundle R F E] :
+theorem continuous_zeroSection [VectorBundle R F E] :
     Continuous (zeroSection F E) := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -504,14 +503,12 @@ theorem continuous_zeroSection (R : Type*) [NontriviallyNormedField R] [∀ x, M
     using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection R hy
 
 /-- The zero section of a vector bundle is continuous on any set. -/
-theorem continuousOn_zeroSection (R : Type*) [NontriviallyNormedField R] [∀ x, Module R (E x)]
-    [NormedSpace R F] [VectorBundle R F E] (s : Set B) :
+theorem continuousOn_zeroSection [VectorBundle R F E] (s : Set B) :
     ContinuousOn (zeroSection F E) s :=
   (continuous_zeroSection R).continuousOn
 
 /-- The zero section of a vector bundle is continuous at each point. -/
-theorem continuousAt_zeroSection (R : Type*) [NontriviallyNormedField R] [∀ x, Module R (E x)]
-    [NormedSpace R F] [VectorBundle R F E] (x : B) :
+theorem continuousAt_zeroSection [VectorBundle R F E] (x : B) :
     ContinuousAt (zeroSection F E) x :=
   (continuous_zeroSection R).continuousAt
 
