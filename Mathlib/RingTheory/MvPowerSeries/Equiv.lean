@@ -546,8 +546,8 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = .C (X j)
 theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.comp
     (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := RingHom.ext fun r ↦ by
   classical
-  rw [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.symm_toRingEquiv, RingEquiv.toRingHom_eq_coe,
-    RingHom.coe_comp, RingHom.coe_coe, comp_apply, RingEquiv.symm_apply_eq]
+  rw [AlgEquiv.symm_toRingEquiv, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
+    RingHom.coe_coe, comp_apply, RingEquiv.symm_apply_eq]
   ext; simp only [RingHom.coe_comp, comp_apply, PowerSeries.coeff_C,
     AlgEquiv.coe_ringEquiv, coeff_coeff_finSuccEquiv, coeff_C]
   rw [← single_zero 0]
