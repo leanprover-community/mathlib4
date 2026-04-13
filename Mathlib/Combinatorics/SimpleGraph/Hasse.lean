@@ -67,9 +67,9 @@ theorem cliqueFree_hasse_three : (hasse α).CliqueFree 3 := by
   classical
   intro _ ⟨hc, hcard⟩
   obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := Finset.card_eq_three.mp hcard
-  have h1 := hc (by simp) (by simp) hab
-  have h2 := hc (by simp) (by simp) hbc
-  have h3 := hc (by simp) (by simp) hac
+  have := hc (by simp) (by simp) hab
+  have := hc (by simp) (by simp) hbc
+  have := hc (by simp) (by simp) hac
   grind [hasse_adj, CovBy]
 
 end Preorder
