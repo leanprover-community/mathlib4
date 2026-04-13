@@ -261,15 +261,9 @@ variable {R} in
 If `x` is a non zero divisor, `ordMonoidWithZeroHom` is equal to the canonical embedding
 of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 -/
-@[simp]
 theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
   (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dif_pos h
-
-@[simp]
-lemma _root_.ENat.map'_toMultiplicative_cast_eq_ofAdd {n : ℕ} :
-    (map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) (n : ℕ∞) =
-    ↑(Multiplicative.ofAdd (n : ℤ)) := rfl
 
 lemma ordMonoidWithZeroHom_eq_coe
     [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :
@@ -301,8 +295,17 @@ theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     Nat.cast_zero, zero_add]
   exact (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hx).trans (Order.KrullDimLE.krullDim_le)
 
-variable [Nontrivial R] [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
+variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+
+variable {R} in
+lemma ord_ne_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
+  simp [isFiniteLength_quotient_span_singleton R ha, Ring.ord, Module.length_ne_top_iff]
+
+variable {R} in
+lemma ord_lt_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a < ⊤ := (ord_ne_top ha).lt_top
+
+variable [Nontrivial R]
 /--
 Order of vanishing function for elements of the fraction field defined as the extension of
 `CommRing.ordMonoidWithZeroHom` to the field of fractions.
@@ -325,7 +328,7 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
     simpa [this]
   f this
 
-lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) :
+lemma ordFrac_eq_ord {x : R} (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
