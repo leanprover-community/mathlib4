@@ -69,6 +69,9 @@ variable [ModularFormClass F Γ(1) k]
 
 lemma one_mem_strictPeriods_SL2Z : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
 
+lemma one_mem_strictPeriods_SL : (1 : ℝ) ∈ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).strictPeriods :=
+  Gamma_one_coe_eq_SL ▸ one_mem_strictPeriods_SL2Z
+
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)
@@ -104,12 +107,16 @@ lemma levelOne_weight_zero_const [ModularFormClass F Γ(1) 0] (f : F) :
 
 end ModularFormClass
 
-lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
+lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 0) = 1 := by
+  haveI : ModularFormClass (ModularForm 𝒮ℒ 0) Γ(1) 0 :=
+    Gamma_one_coe_eq_SL ▸ inferInstance
   refine rank_eq_one (const 1) (by simp [DFunLike.ne_iff]) fun g ↦ ?_
   obtain ⟨c', hc'⟩ := levelOne_weight_zero_const g
   aesop
 
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
-    Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
+    Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
+  haveI : ModularFormClass (ModularForm 𝒮ℒ k) Γ(1) k :=
+    Gamma_one_coe_eq_SL ▸ inferInstance
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
   simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f

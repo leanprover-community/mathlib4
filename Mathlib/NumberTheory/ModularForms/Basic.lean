@@ -370,6 +370,18 @@ lemma coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) :
 lemma toSlashInvariantForm_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) :
     (z : ModularForm Γ 0).toSlashInvariantForm = z := rfl
 
+/-- Transport a modular form along an equality of subgroups. -/
+def ofSubgroupEq {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : ModularForm Γ k) :
+    ModularForm Γ' k where
+  toFun := f
+  slash_action_eq' A hA := f.slash_action_eq' A (h ▸ hA)
+  holo' := f.holo'
+  bdd_at_cusps' hc := f.bdd_at_cusps' (h ▸ hc)
+
+@[simp]
+lemma ofSubgroupEq_apply {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : ModularForm Γ k)
+    (z : ℍ) : (f.ofSubgroupEq h) z = f z := rfl
+
 end ModularForm
 
 namespace CuspForm
@@ -503,6 +515,33 @@ instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFo
   slash_action_eq := SlashInvariantFormClass.slash_action_eq
   holo := CuspFormClass.holo
   bdd_at_cusps f _ hc g hg := (CuspFormClass.zero_at_cusps f hc g hg).boundedAtFilter
+
+/-- The underlying modular form of a cusp form. -/
+def toModularForm (f : CuspForm Γ k) : ModularForm Γ k where
+  toSlashInvariantForm := f.toSlashInvariantForm
+  holo' := f.holo'
+  bdd_at_cusps' hc g hg := (f.zero_at_cusps' hc g hg).boundedAtFilter
+
+@[simp]
+lemma toModularForm_apply (f : CuspForm Γ k) (z : ℍ) : (toModularForm f) z = f z := rfl
+
+/-- A cusp form can be viewed as a modular form. -/
+instance : Coe (CuspForm Γ k) (ModularForm Γ k) := ⟨toModularForm⟩
+
+@[simp]
+lemma coe_toModularForm (f : CuspForm Γ k) (z : ℍ) : ((f : ModularForm Γ k) : ℍ → ℂ) z = f z := rfl
+
+/-- Transport a cusp form along an equality of subgroups. -/
+def ofSubgroupEq {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : CuspForm Γ k) :
+    CuspForm Γ' k where
+  toFun := f
+  slash_action_eq' A hA := f.slash_action_eq' A (h ▸ hA)
+  holo' := f.holo'
+  zero_at_cusps' hc := f.zero_at_cusps' (h ▸ hc)
+
+@[simp]
+lemma ofSubgroupEq_apply {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : CuspForm Γ k)
+    (z : ℍ) : (f.ofSubgroupEq h) z = f z := rfl
 
 end CuspForm
 
