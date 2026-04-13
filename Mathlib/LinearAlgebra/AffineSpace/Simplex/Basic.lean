@@ -617,9 +617,9 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
     (s.face h).closedInterior ⊆ s.closedInterior := by
   intro p hp
   have hp' : p ∈ affineSpan k (Set.range s.points) :=
-    Set.mem_of_mem_of_subset
-      (Set.mem_of_mem_of_subset hp (s.face h).closedInterior_subset_affineSpan)
-      (affineSpan_mono k (by simp))
+    Set.mem_of_mem_of_subset hp <|
+      (s.face h).closedInterior_subset_affineSpan.trans <|
+        affineSpan_mono k <| by simp
   obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp'
   rw [affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ hw1] at hp
   rw [affineCombination_mem_closedInterior_iff hw1]
