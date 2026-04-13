@@ -953,8 +953,8 @@ def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
   functor := preEquivalenceFunctor F f
   inverse := preEquivalenceInverse F f
-  unitIso := NatIso.ofComponents (fun X ↦ isoMk (isoMk (Iso.refl _) (by simpa using X.hom.w.symm)))
-  counitIso := NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+  unitIso := NatIso.ofComponents (fun X => isoMk (isoMk (Iso.refl _) (by simpa using X.hom.w.symm)))
+  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
 
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
