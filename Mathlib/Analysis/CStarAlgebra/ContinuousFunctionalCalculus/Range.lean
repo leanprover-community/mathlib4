@@ -136,13 +136,9 @@ lemma range_cfc_nnreal
   rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfc _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   rintro _ ⟨f, hf, rfl⟩
-  simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
-  obtain (⟨h₁, h₂⟩ | h | h) := by
-    simpa only [not_and_or] using em (ContinuousOn f (spectrum ℝ a) ∧ IsSelfAdjoint a)
-  · refine ⟨f, ?_, rfl⟩
-    rwa [cfc_nonneg_iff f a] at hf
-  · exact ⟨0, by simp, by simp [cfc_apply_of_not_continuousOn a h]⟩
-  · exact ⟨0, by simp, by simp [cfc_apply_of_not_predicate a h]⟩
+  exact cfc_cases (p := IsSelfAdjoint) _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
+    ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa [Set.mem_preimage, Set.mem_setOf_eq] using hf),
+      by simp [cfc_apply f a ha' hf']⟩
 
 end Unital
 
@@ -253,14 +249,8 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
-  simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
-  obtain (⟨h₁, h₂, h₃⟩ | h | h | h) := by
-    simpa only [not_and_or] using
-      em (ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a)
-  · refine ⟨f, ?_, rfl⟩
-    rwa [cfcₙ_nonneg_iff f a] at hf
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_continuousOn a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
+  exact cfcₙ_cases (p := IsSelfAdjoint) _ a f ⟨0, by simp, by simp⟩ fun hf' h0 ha' ↦
+    ⟨f, (cfcₙ_nonneg_iff f a hf' h0 ha').mp
+      (by simpa [Set.mem_preimage, Set.mem_setOf_eq] using hf), by simp [cfcₙ_apply f a hf' h0 ha']⟩
 
 end NonUnital
