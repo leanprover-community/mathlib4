@@ -165,6 +165,24 @@ equality, coming from the choice axiom, so that we don't have to provide
 `[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
 noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
 
+instance : HVAdd M (Submodule R M) (Set M) where
+  hVAdd a p := (fun x => a + x) '' p
+
+instance : HVAdd (Submodule R M) M (Set M) where
+  hVAdd p a := (fun x => x + a) '' p
+
+instance : HVAdd M (Set M) (Set M) where
+  hVAdd a p := (fun x ↦ a + x) '' p
+
+instance : HVAdd (Set M) M (Set M) where
+  hVAdd p a := (fun x => x + a) '' p
+
+@[simp]
+lemma vadd_eq_vadd_left {a : M} {p : Submodule R M} : a +ᵥ p = a +ᵥ (p : Set M) := rfl
+
+@[simp]
+lemma vadd_eq_vadd_right {a : M} {p : Submodule R M} : p +ᵥ a = (p : Set M) +ᵥ a := rfl
+
 end Submodule
 
 namespace SMulMemClass

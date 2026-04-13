@@ -171,19 +171,20 @@ instance : CompleteSpace 𝒪[K] :=
 instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
   haus' := (inferInstance : IsHausdorff 𝓂[K] 𝒪[K]).haus
   prec' f hf := by
-    obtain ⟨L, hL⟩ : (⋂ n, ((fun x ↦ f n + x) '' ↑(𝓂[K] ^ n))).Nonempty := by
-      have hc (n : ℕ) : IsClosed ((fun x ↦ f n + x) '' ↑(𝓂[K] ^ n)) := by
+    obtain ⟨L, hL⟩ : (⋂ n, (f n +ᵥ (𝓂[K] ^ n))).Nonempty := by
+      have hc (n : ℕ) : IsClosed (f n +ᵥ (𝓂[K] ^ n)) := by
         convert (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)) |>.preimage
           (show Continuous fun x ↦ - f n + x from by fun_prop) using 1
-        grind
+        ext x
+        grind [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, vadd_eq_add]
       refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _ ?_
-        (fun _ ↦ Set.Nonempty.of_subtype) (hc 0).isCompact hc
-      intro n x ⟨y, hy1, hy2⟩
-      simp only [smul_eq_mul, Ideal.mul_top, Set.image_add_left, SetLike.mem_coe,
-        Set.mem_preimage, ← hy2] at *
-      convert Ideal.add_mem _ ((Submodule.Quotient.eq _).mp (hf (Nat.le_succ _)).symm)
-        (Ideal.pow_le_pow_right (Nat.le_succ _) hy1) using 1
-      ring
+        (by simp [Submodule.nonempty]) (hc 0).isCompact hc
+      · intro n x ⟨y, hy1, hy2⟩
+        simp only [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, smul_eq_mul, Ideal.mul_top,
+          Submodule.vadd_eq_vadd_left, SetLike.mem_coe, ← hy2, vadd_eq_add] at *
+        refine ⟨f (n + 1) - f n + y, ?_, by ring⟩
+        · exact Ideal.add_mem _ ((Submodule.Quotient.eq _).mp (hf (Nat.le_succ _)).symm)
+            (Ideal.pow_le_pow_right (Nat.le_succ _) hy1)
     refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, hfy⟩ := Set.mem_iInter.mp hL n
     rw [smul_eq_mul, Ideal.mul_top, SModEq.sub_mem, ← hfy]
