@@ -129,7 +129,7 @@ lemma subcomplex_le_horn_iff {n : ℕ}
         exact face_le_horn _ _ (by rintro rfl; tauto)
 
 lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
-    stdSimplex.face.{u} S ≤ horn (n + 1) j ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
+    stdSimplex.face.{u} S ≤ Λ[n + 1, j] ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
   rw [subcomplex_le_horn_iff, stdSimplex.face_le_face_iff, ← not_iff_not]
   simp only [Finset.le_eq_subset, Decidable.not_not, ne_eq, not_and_or]
   refine ⟨fun h ↦ ?_, by aesop⟩
