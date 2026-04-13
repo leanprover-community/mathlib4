@@ -117,7 +117,7 @@ class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 -- see Note [lower instance priority]
-attribute [instance 50] ESeminormedAddMonoid.toAddMonoid
+attribute [instance 200] ESeminormedAddMonoid.toAddMonoid
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
@@ -134,7 +134,7 @@ class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 -- see Note [lower instance priority]
-attribute [instance 50] ESeminormedMonoid.toMonoid
+attribute [instance 200] ESeminormedMonoid.toMonoid
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
@@ -153,7 +153,7 @@ class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddMonoid E, AddCommMonoid E where
 
 -- see Note [lower instance priority]
-attribute [instance 50] ESeminormedAddCommMonoid.toAddCommMonoid
+attribute [instance 200] ESeminormedAddCommMonoid.toAddCommMonoid
 
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
@@ -170,7 +170,7 @@ class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedMonoid E, CommMonoid E where
 
 -- see Note [lower instance priority]
-attribute [instance 50] ESeminormedCommMonoid.toCommMonoid
+attribute [instance 200] ESeminormedCommMonoid.toCommMonoid
 
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
 which is positive definite. -/
@@ -186,7 +186,7 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] SeminormedAddGroup.toAddGroup
+attribute [instance 200] SeminormedAddGroup.toAddGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a
 pseudometric space structure. -/
@@ -197,7 +197,7 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] SeminormedGroup.toGroup
+attribute [instance 200] SeminormedGroup.toGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖` defines
 a metric space structure. -/
@@ -207,7 +207,7 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] NormedAddGroup.toAddGroup
+attribute [instance 200] NormedAddGroup.toAddGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a metric
 space structure. -/
@@ -218,7 +218,7 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] NormedGroup.toGroup
+attribute [instance 200] NormedGroup.toGroup
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
@@ -229,7 +229,7 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 200] SeminormedAddCommGroup.toAddCommGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖`
 defines a pseudometric space structure. -/
@@ -240,7 +240,7 @@ class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricS
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] SeminormedCommGroup.toCommGroup
+attribute [instance 200] SeminormedCommGroup.toCommGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖` defines
 a metric space structure. -/
@@ -250,7 +250,7 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] NormedAddCommGroup.toAddCommGroup
+attribute [instance 200] NormedAddCommGroup.toAddCommGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a metric
 space structure. -/
@@ -261,7 +261,7 @@ class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E whe
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 50] NormedCommGroup.toCommGroup
+attribute [instance 200] NormedCommGroup.toCommGroup
 
 -- See note [lower instance priority]
 @[to_additive]
