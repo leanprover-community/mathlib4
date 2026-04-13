@@ -39,7 +39,6 @@ deterministic process.
 
 * [Fritz, *A synthetic approach to Markov kernels, conditional independence
   and theorems on sufficient statistics*][fritz2020]
-
 -/
 
 @[expose] public section
