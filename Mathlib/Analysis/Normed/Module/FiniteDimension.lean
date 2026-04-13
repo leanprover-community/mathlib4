@@ -550,8 +550,7 @@ theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
 
 /-- A family of continuous linear maps is continuous at a point if all its applications are. -/
 theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} {x : X} :
-    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q => f q y) x := by
+    {f : X → E →L[𝕜] F} {x : X} : ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q => f q y) x := by
   refine ⟨fun h y => (ContinuousLinearMap.apply 𝕜 F y).continuous.continuousAt.comp h, fun h => ?_⟩
   let d := finrank 𝕜 E
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
