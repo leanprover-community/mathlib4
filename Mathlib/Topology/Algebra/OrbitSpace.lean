@@ -83,7 +83,7 @@ source of `localInverseAt p`, then `localInverseAt p` sends `⟦k⟧` back to it
 lemma localInverseAt_apply_other {p k : M}
     (h : k ∈ (localHomeomorphAt G p).source)
     (h' : ⟦k⟧ ∈ (localInverseAt G p).source) :
-    (localInverseAt G p) ⟦k⟧ = k := by
+    localInverseAt G p ⟦k⟧ = k := by
   refine (localHomeomorphAt G p).injOn ?_ h ?_
   · simp [localInverseAt, (localHomeomorphAt G p).map_target h']
   · simp [localInverseAt, (localHomeomorphAt G p).right_inv h', localHomeomorphAt_eq_quotientMk]
