@@ -57,8 +57,7 @@ def localHomeomorphAt (p : M) : OpenPartialHomeomorph M (orbitRel.Quotient G M) 
   Classical.choose (isLocalHomeomorph_of_properlyDiscontinuousSMul p)
 
 /-- The point `p` lies in the source of `localHomeomorphAt p`. -/
-lemma mem_localHomeomorphAt_source {p : M} :
-    p ∈ (localHomeomorphAt G p).source :=
+lemma mem_localHomeomorphAt_source {p : M} : p ∈ (localHomeomorphAt G p).source :=
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).1
 
 /-- The local homeomorphism `localHomeomorphAt p` coincides with `Quotient.mk : M → M⧸G`. -/
@@ -67,8 +66,7 @@ lemma localHomeomorphAt_eq_quotientMk {p : M} :
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).2.symm
 
 /-- The equivalence class `⟦p⟧` lies in the target of `localHomeomorphAt p`. -/
-lemma mem_localHomeomorphAt_target {p : M} :
-    ⟦p⟧ ∈ (localHomeomorphAt G p).target := by
+lemma mem_localHomeomorphAt_target {p : M} : ⟦p⟧ ∈ (localHomeomorphAt G p).target := by
   rw [← OpenPartialHomeomorph.image_source_eq_target, Set.mem_image]
   refine ⟨p, mem_localHomeomorphAt_source, ?_⟩
   rw [localHomeomorphAt_eq_quotientMk]
@@ -79,8 +77,7 @@ def localInverseAt (p : M) : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   (localHomeomorphAt G p).symm
 
 /-- The equivalence class `⟦p⟧` lies in the source of `localInverseAt p`. -/
-lemma mem_localInverseAt_source {p : M} :
-    ⟦p⟧ ∈ (localInverseAt G p).source := by
+lemma mem_localInverseAt_source {p : M} : ⟦p⟧ ∈ (localInverseAt G p).source := by
   simp [localInverseAt, mem_localHomeomorphAt_target]
 
 /-- If a point `k` lies on the source of `localHomeomorphAt p` and its class `⟦k⟧` lies on the
@@ -94,8 +91,7 @@ lemma localInverseAt_apply_other {p k : M}
   · simp [localInverseAt, (localHomeomorphAt G p).right_inv h', localHomeomorphAt_eq_quotientMk]
 
 /-- The local inverse at `p` sends the class `⟦p⟧` back to `p`. -/
-lemma localInverseAt_apply_self {p : M}
-    : (localInverseAt G p) ⟦p⟧ = p :=
+lemma localInverseAt_apply_self {p : M} : (localInverseAt G p) ⟦p⟧ = p :=
   localInverseAt_apply_other mem_localHomeomorphAt_source mem_localInverseAt_source
 
 end QuotientMk
