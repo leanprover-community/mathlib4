@@ -126,7 +126,7 @@ instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).t
 
 @[simp]
 theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
-  algebraMap K (FiniteAdeleRing R K) k v = k := rfl
+    algebraMap K (FiniteAdeleRing R K) k v = k := rfl
 
 instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
