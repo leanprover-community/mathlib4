@@ -73,6 +73,7 @@ lemma kFlat_iff_preservesQuasiIso (K : CochainComplex A ℤ) :
     (quasiIso A (.up ℤ)).kFlat K ↔
       preservesQuasiIso (tensorLeft K) ∧ preservesQuasiIso (tensorRight K) := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (quasiIso A (.up ℤ)).kFlat.ContainsZero where
   exists_zero := ⟨_, isZero_zero _, by
     rw [kFlat_iff_preservesQuasiIso]
@@ -409,6 +410,8 @@ lemma kFlat_cylinder (K : CochainComplex A ℤ)
     exact CochainComplex.kFlat_biprod hK hK
 
 open HomologicalComplex
+
+set_option backward.isDefEq.respectTransparency false in
 instance : (L A).functor.IsLocalization (WL A) :=
   Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _
     (fun _ _ f hf ↦ by
@@ -484,10 +487,12 @@ noncomputable def kFlatResolutionNatTrans :
     Λ.kFlatResolutionFunctor hι ⋙ CochainComplex.ιKFlat A ⟶ 𝟭 _ :=
   Λ.resolutionNatTrans
 
+set_option backward.isDefEq.respectTransparency false in
 instance (K : CochainComplex A ℤ) : QuasiIso ((Λ.kFlatResolutionNatTrans hι).app K) := by
   dsimp [kFlatResolutionNatTrans]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 include Λ hι in
 lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=

@@ -77,6 +77,6 @@ noncomputable example : MonoidalCategory (DerivedCategory (ModuleCat.{u} R)) :=
 open DerivedCategory.TStructure
 
 protected noncomputable def tor (P Q : ModuleCat.{u} R) (n : ℤ) : ModuleCat.{u} R :=
-  (t.homology (-n)).obj ((t.ιHeart.obj P ⊗ t.ιHeart.obj Q))
+  ((t (C := ModuleCat.{u} R)).homology (-n)).obj (t.ιHeart.obj P ⊗ t.ιHeart.obj Q)
 
 end ModuleCat
