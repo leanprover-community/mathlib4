@@ -22,10 +22,11 @@ open ComplexConjugate Topology Filter Set
 namespace Complex
 variable {z : ℂ}
 
+@[no_expose]
 instance instNorm : Norm ℂ where
   norm z := √(normSq z)
 
-theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := rfl
+theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := (rfl)
 
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
