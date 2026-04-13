@@ -68,7 +68,8 @@ pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagra
 ```
 -/
 noncomputable
-abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] := (curriedTensor C).leibnizPushout
+abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] :
+    Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
 
 /-- Notation for the pushout-product of morphisms. -/
 notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
