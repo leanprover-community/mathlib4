@@ -318,6 +318,19 @@ theorem domCongr_refl : domCongr R A (.refl M) = .refl := by ext; simp
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
+    (domCongr R A e).trans (domCongr R A f) = domCongr R A (e.trans f) := by
+  ext
+  simp
+
+/-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
+@[simps]
+def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
+  toFun := MonoidAlgebra.domCongr R A
+  map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
+  map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, trans_domCongr_domCongr]
+
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive (dont_translate := R)
@@ -379,6 +392,17 @@ lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
+@[to_additive (attr := simp)]
+lemma mapAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
+    mapAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
+    mapAlgHom G (g.comp f) = (mapAlgHom G g).comp (mapAlgHom G f) := by
+  ext; simp
+
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapAlgHom_single
 
 variable (R M) in
@@ -395,15 +419,23 @@ noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) :
-    (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
+lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) : (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
 
 @[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
-    mapAlgEquiv R M (e₁.trans e₂) =
-      (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
+    mapAlgEquiv R M (e₁.trans e₂) = (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+
+@[deprecated (since := "2026-03-27")] alias mapRangeAlgEquiv_trans := mapAlgEquiv_trans
+
+variable (R M) in
+/-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `A ≃ₐ[R] A`. -/
+@[simps]
+def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end mapRange
 
@@ -599,7 +631,25 @@ alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
+variable (R A) in
+/-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
+@[simps]
+def domCongrAut : AddAut M →* A[M] ≃ₐ[R] A[M] where
+  toFun := AddMonoidAlgebra.domCongr R A
+  map_one' := by ext; simp [AddAut.one_def]
+  map_mul' _ _ := by ext; simp [AddAut.mul_def]
+
 end lift
+
+variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
+
+variable (R M) in
+/-- `AddMonoidAlgebra.mapAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
+@[simps]
+def mapAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end AddMonoidAlgebra
 

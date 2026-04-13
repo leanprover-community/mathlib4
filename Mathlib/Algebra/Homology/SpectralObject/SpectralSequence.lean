@@ -59,8 +59,8 @@ we provide a limit kernel fork `kf` and
 a limit cokernel cofork `cc` of the differentials on the `r`th page,
 together with an epi-mono factorization `fac` which allows
 to obtain that the homology of the `r`th page identifies to the next page (see the definitions
-`SpectralObject.SpectralSequence.homologyData` (TODO) and
-`SpectralObject.spectralSequenceHomologyData` (TODO)).
+`SpectralObject.SpectralSequence.homologyData` and
+`SpectralObject.spectralSequenceHomologyData`).
 
 ## Spectral objects indexed by `EInt`.
 

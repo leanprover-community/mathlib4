@@ -32,8 +32,6 @@ We distinguish two different distributivity properties:
 * `Order.Coframe`: Coframe: A complete lattice whose `⊔` distributes over `⨅`.
 * `CompleteDistribLattice`: Complete distributive lattices: A complete lattice whose `⊓` and `⊔`
   distribute over `⨆` and `⨅` respectively.
-* `CompleteBooleanAlgebra`: Complete Boolean algebra: A Boolean algebra whose `⊓`
-  and `⊔` distribute over `⨆` and `⨅` respectively.
 * `CompletelyDistribLattice`: Completely distributive lattices: A complete lattice whose
   `⨅` and `⨆` satisfy `iInf_iSup_eq`.
 * `CompleteBooleanAlgebra`: Complete Boolean algebra: A Boolean algebra whose `⊓`
@@ -871,6 +869,49 @@ protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Max α] [Min �
   __ := hf.completelyDistribLattice f
     le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp map_hnot map_sdiff
   __ := hf.booleanAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `Frame` across an `Equiv`. -/
+protected abbrev frame [Frame β] : Frame α := by
+  let completeLattice := e.completeLattice
+  let heytingAlgebra := e.heytingAlgebra
+  apply e.injective.frame <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `Coframe` across an `Equiv`. -/
+protected abbrev coframe [Coframe β] : Coframe α := by
+  let completeLattice := e.completeLattice
+  let coheytingAlgebra := e.coheytingAlgebra
+  apply e.injective.coframe <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CompleteDistribLattice` across an `Equiv`. -/
+protected abbrev completeDistribLattice [CompleteDistribLattice β] : CompleteDistribLattice α := by
+  let completeLattice := e.completeLattice
+  let biheytingAlgebra := e.biheytingAlgebra
+  apply e.injective.completeDistribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CompletelyDistribLattice` across an `Equiv`. -/
+protected abbrev completelyDistribLattice [CompletelyDistribLattice β] :
+    CompletelyDistribLattice α := by
+  let completeDistribLattice := e.completeDistribLattice
+  apply e.injective.completelyDistribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CompleteBooleanAlgebra` across an `Equiv`. -/
+protected abbrev completeBooleanAlgebra [CompleteBooleanAlgebra β] : CompleteBooleanAlgebra α := by
+  let completeLattice := e.completeLattice
+  let booleanAlgebra := e.booleanAlgebra
+  apply e.injective.completeBooleanAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CompleteAtomicBooleanAlgebra` across an `Equiv`. -/
+protected abbrev completeAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra β] :
+    CompleteAtomicBooleanAlgebra α := by
+  let completeBooleanAlgebra := e.completeBooleanAlgebra
+  apply e.injective.completeAtomicBooleanAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+end Equiv
 
 end lift
 

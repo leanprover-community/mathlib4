@@ -123,6 +123,7 @@ register_linter_set linter.nightlyRegressionSet :=
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
   linter.style.docStringVerso
+  linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType

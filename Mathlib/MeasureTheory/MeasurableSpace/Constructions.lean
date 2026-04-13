@@ -392,7 +392,6 @@ theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fu
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 
-@[measurability]
 theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a).1)
     (hf₂ : Measurable fun a => (f a).2) : Measurable f :=
   Measurable.of_le_map <|

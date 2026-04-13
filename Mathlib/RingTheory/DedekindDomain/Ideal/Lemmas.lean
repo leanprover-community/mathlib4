@@ -467,6 +467,9 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+instance : Coe (HeightOneSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
+
 /--
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
 to an element of type `HeightOneSpectrum R`.

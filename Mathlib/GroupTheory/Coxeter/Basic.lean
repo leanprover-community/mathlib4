@@ -109,8 +109,7 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
 protected def Group : Type _ := PresentedGroup M.relationsSet
-
-instance : Group M.Group := QuotientGroup.Quotient.group _
+deriving Group
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i

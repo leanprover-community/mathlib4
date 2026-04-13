@@ -153,7 +153,8 @@ section MulOneClass
 variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] [MulOneClass N']
   [MulOneClass P]
 
-@[to_additive] protected instance : MulOneClass (M ∗ N) := Con.mulOneClass _
+@[to_additive] protected instance : MulOneClass (M ∗ N) :=
+  inferInstanceAs <| MulOneClass (coprodCon M N).Quotient
 
 /-- The natural projection `FreeMonoid (M ⊕ N) →* M ∗ N`. -/
 @[to_additive /-- The natural projection `FreeAddMonoid (M ⊕ N) →+ AddMonoid.Coprod M N`. -/]

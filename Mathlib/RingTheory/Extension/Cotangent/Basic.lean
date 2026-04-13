@@ -412,6 +412,12 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+omit [IsScalarTower R S S'] in
+@[simp]
+lemma H1Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.H1Cotangent) :
+    map (g.comp f) x = map g (map f x) :=
+  congr($(H1Cotangent.map_comp f g) x)
+
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]

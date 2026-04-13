@@ -255,10 +255,10 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
 instance : Category LightDiagram :=
-  inferInstanceAs (Category (InducedCategory _ toProfinite))
+  inferInstanceAs <| Category (InducedCategory _ toProfinite)
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
-  InducedCategory.concreteCategory toProfinite
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toProfinite) _
 
 end LightDiagram
 

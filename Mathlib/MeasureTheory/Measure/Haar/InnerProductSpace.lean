@@ -233,3 +233,21 @@ theorem WithLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (U × V)) :=
   (volume_preserving_symm_measurableEquiv_toLp_prod U V).symm
 
 end Prod
+
+/-- Volume on a 1-dimensional real vector space is equivalent to a scaled volume on ℝ. -/
+theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1) {v : E}
+    (hv : v ≠ 0) : (volume : Measure E) = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := calc
+  volume = ((volume : Measure ℝ).map (‖v‖⁻¹ • ·)).map (· • v) := by
+    have hv' : Submodule.span ℝ {‖v‖⁻¹ • v} = ⊤ := by
+      rw [Submodule.span_singleton_eq_top_iff]
+      apply exists_smul_eq_of_finrank_eq_one h
+      simpa
+    let f : ℝ ≃ₗᵢ[ℝ] E := (LinearIsometryEquiv.toSpanUnitSingleton (‖v‖⁻¹ • v)
+      (by simp [norm_smul, hv])).trans (LinearIsometryEquiv.ofTop E _ hv')
+    rw [map_map (by fun_prop) (by fun_prop)]
+    convert f.measurePreserving.map_eq.symm
+    ext x
+    simp [f, mul_comm, smul_smul]
+  _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by
+    rw [map_addHaar_smul _ (by simpa using hv)]
+    simp

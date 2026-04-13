@@ -74,7 +74,7 @@ theorem mem_principal_ideals_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     simp [I.ne_zero.symm] at hx
 
 instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal :=
-  Subgroup.normal_of_comm _
+  Subgroup.normal_of_isMulCommutative _
 
 end
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 
 /-!
 # Topological (sub)algebras
@@ -62,6 +63,22 @@ theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraM
 instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
     [ContinuousSMul A X] : ContinuousSMul S X :=
   Subsemiring.continuousSMul S.toSubsemiring X
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Icc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Icc.coeMonoidWithZeroHom
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ico (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ico.coeMulHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioc.coeMonoidHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioo (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioo.coeMulHom
 
 section
 variable [ContinuousSMul R A]
@@ -659,7 +676,7 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 
 open scoped IsMulCommutative in
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  commSemiringTopologicalClosure _ mul_comm
+  fast_instance% commSemiringTopologicalClosure _ mul_comm
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsSemitopologicalSemiring A] [Algebra R A] (x : A) :

@@ -137,8 +137,7 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
-  obtain ⟨n, hn⟩ := n
-  induction n using SimplexCategory.rec with | _ n
+  obtain ⟨⟨n⟩, hn⟩ := n
   match n with
   | 0 => exact f₀
   | 1 => exact f₁
