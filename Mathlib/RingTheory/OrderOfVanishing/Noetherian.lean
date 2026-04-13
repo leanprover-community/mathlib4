@@ -156,11 +156,6 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
   simp [IsScalarTower.algebraMap_eq S R K, ordFrac_ge_one_of_ne_zero ha]
 
 @[simp]
-lemma ENat.multiplicative_cast_zero_eq_one :
-    (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ)))
-      (0 : ℕ∞) = 1 := rfl
-
-@[simp]
 lemma ordFrac_of_isUnit {x : R} (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
   simp [ordFrac_eq_ord R (IsUnit.ne_zero hx), IsUnit.mem_nonZeroDivisors hx,
       ordMonoidWithZeroHom_eq_ord, ord_of_isUnit hx]
