@@ -79,12 +79,10 @@ instance [HasBinaryBiproducts C] : HasHomotopyFiber φ where
 
 variable [HasHomotopyFiber φ] [DecidableRel c.Rel]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasHomotopyCofiber ((opFunctor C c).map φ.op) where
   hasBinaryBiproduct i j hij := by
     have := HasHomotopyFiber.hasBinaryBiproduct φ j i hij
-    dsimp
-    infer_instance
+    exact instHasBinaryBiproductOppositeOp
 
 noncomputable def homotopyFiber : HomologicalComplex C c :=
   (unopFunctor C c.symm).obj (op (homotopyCofiber ((opFunctor C c).map φ.op)))
@@ -97,8 +95,18 @@ variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
   dsimp; infer_instance
 
+-- why??
+@[reducible]
+instance : Preadditive (HomologicalComplex Cᵒᵖ c.symm) :=
+  instPreadditive
+
 set_option backward.isDefEq.respectTransparency false in
-abbrev HasPathObject := HasHomotopyCofiber (biprod.lift (𝟙 K.op) (-𝟙 K.op))
+instance : HasBinaryBiproduct K.op K.op :=
+  instHasBinaryBiproduct K.op K.op
+
+noncomputable abbrev biprodLiftIdNeg := biprod.lift (𝟙 K.op) (-𝟙 K.op)
+
+abbrev HasPathObject := HasHomotopyCofiber (biprodLiftIdNeg K)
 
 variable [K.HasPathObject]
 
@@ -172,25 +180,33 @@ variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive
 
 instance : H.op.PreservesZeroMorphisms := { }
 
+noncomputable abbrev biprodLiftIdNegMapHomologicalComplexObj
+    [HasBinaryBiproduct ((H.op.mapHomologicalComplex c.symm).obj K.op)
+    ((H.op.mapHomologicalComplex c.symm).obj K.op)] :
+    (H.op.mapHomologicalComplex c.symm).obj K.op ⟶
+    ((H.op.mapHomologicalComplex c.symm).obj K.op) ⊞
+      ((H.op.mapHomologicalComplex c.symm).obj K.op) :=
+  biprod.lift (𝟙 _) (-𝟙 _)
+
 variable
   [∀ (i : α),
     HasBinaryBiproduct (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)
       (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)]
   [HasBinaryBiproduct ((H.op.mapHomologicalComplex c.symm).obj K.op)
     ((H.op.mapHomologicalComplex c.symm).obj K.op)]
-  [HasHomotopyCofiber
-    (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
-    (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
+  [HasHomotopyCofiber (biprodLiftIdNegMapHomologicalComplexObj K H)]
   [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
+  [∀ (i : α), HasBinaryBiproduct (K.op.X i) (K.op.X i)]
 
 variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (K.pathObject) ≅
-      pathObject ((H.mapHomologicalComplex c).obj K) := by
-  (unopFunctor _ _).mapIso
-    (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
+      pathObject ((H.mapHomologicalComplex c).obj K) :=
+  (unopFunctor _ _).mapIso (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexObjIso_hom_map_π₀ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₀ K) =
@@ -198,6 +214,7 @@ lemma mapHomologicalComplexObjIso_hom_map_π₀ :
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₀_mapHomologicalComplexObjIso_hom K.op H.op hc))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexObjIso_hom_map_π₁ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₁ K) =

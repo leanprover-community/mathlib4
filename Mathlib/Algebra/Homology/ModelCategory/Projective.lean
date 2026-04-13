@@ -88,6 +88,7 @@ def opEquivalence : (Minus C)ᵒᵖ ≌ Plus Cᵒᵖ where
     ext : 1
     exact (CochainComplex.opEquivalence C).functor_unit_comp (op X.unop.obj)
 
+set_option backward.isDefEq.respectTransparency false in
 open Plus.modelCategoryQuillen in
 scoped instance : ModelCategory (CochainComplex.Minus C) := by
   apply ModelCategory.transport (opEquivalence C).rightOp

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Plus
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.Factorizations.CM5a
 public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
@@ -98,7 +99,7 @@ lemma exists_injective_resolution [EnoughInjectives C]
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n)
       (i : K ⟶ (InjectiveObject.ι C).mapCochainComplexPlus.obj L),
         quasiIso C i := by
-  obtain ⟨L, i, _, _, _⟩ := CochainComplex.exists_injective_resolution K.obj n
+  obtain ⟨L, i, _, _, _⟩ := modelCategoryQuillen.exists_injective_resolution K.obj n
   let L' : CochainComplex (InjectiveObject C) ℤ :=
     HomologicalComplex.liftObjectProperty _ L inferInstance
   have hL' : L'.IsStrictlyGE n := by
@@ -191,6 +192,7 @@ instance : (fibrantObjectLocalizerMorphism C).IsInduced where
 instance : (fibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsRightDerivabilityStructure := by
   rw [LocalizerMorphism.isRightDerivabilityStructure_iff_of_equivalences
     (T := localizerMorphism C) (B := (FibrantObject.localizerMorphism (Plus C)))
@@ -212,6 +214,7 @@ def localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma isIso_quotient_map
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
@@ -237,6 +240,7 @@ def L : LocalizerMorphism
 instance : (L C).IsInduced where
   inverseImage_eq := by ext; apply isIso_quotient_map
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
   functor := HomotopyCategory.Plus.quotient C
@@ -247,6 +251,7 @@ def R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
 instance : (R C).IsInduced where
   inverseImage_eq := by ext; apply quotient_map_mem_quasiIso_iff
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
@@ -272,6 +277,7 @@ instance : (L C).IsLocalizedEquivalence := by
     inferInstanceAs ((HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization _)
   exact LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization (L C) (𝟭 _)
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIso C)] :
     (quotient C ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
@@ -306,6 +312,7 @@ instance : (R C).functor.EssSurj := by dsimp; infer_instance
 def iso : (CochainComplex.Plus.localizerMorphism C).functor ⋙
   (R C).functor ≅ (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex CochainComplex in
 instance : TwoSquare.GuitartExact (iso C).hom :=
   TwoSquare.GuitartExact.quotient' (iso C).symm (by
@@ -333,6 +340,7 @@ instance isRightDerivabilityStructure : (localizerMorphism C).IsRightDerivabilit
   LocalizerMorphism.isRightDerivabilityStructure_of_isLocalizedEquivalence
     (isRightDerivabilityStructure.iso C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions := by
   intro f
   obtain ⟨K₁, K₂, f, rfl⟩ := Arrow.mk_surjective f
@@ -364,6 +372,7 @@ instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions
 noncomputable instance : (HomotopyCategory.Plus.localizerMorphism C).functor.CommShift ℤ := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (HomotopyCategory.Plus.localizerMorphism C).functor.IsTriangulated := by
   dsimp; infer_instance
 

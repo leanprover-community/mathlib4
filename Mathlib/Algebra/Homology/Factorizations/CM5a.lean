@@ -653,7 +653,7 @@ variable (K)
 
 open ZeroObject
 
-lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
+public lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
       (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE (n-1) := by
   have : K.IsStrictlyGE (n - 1 + 1) := by
@@ -668,7 +668,7 @@ lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
       hom_inv_id := by simp [← cancel_mono (kernel.ι _)]
       inv_hom_id := by simp }
 
-lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
+public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
   have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
@@ -711,19 +711,21 @@ section
 
 variable (n : ℤ) [K.IsStrictlyGE n]
 
-noncomputable def injectiveResolution : CochainComplex C ℤ :=
+@[no_expose]
+public noncomputable def injectiveResolution : CochainComplex C ℤ :=
   (exists_injective_resolution K n).choose
 
-noncomputable def ιInjectiveResolution : K ⟶ injectiveResolution K n :=
+@[no_expose]
+public noncomputable def ιInjectiveResolution : K ⟶ injectiveResolution K n :=
   (exists_injective_resolution K n).choose_spec.choose
 
-instance : QuasiIso (ιInjectiveResolution K n) :=
+public instance : QuasiIso (ιInjectiveResolution K n) :=
   (exists_injective_resolution K n).choose_spec.choose_spec.choose
 
-instance (q : ℤ) : Injective ((injectiveResolution K n).X q) :=
+public instance (q : ℤ) : Injective ((injectiveResolution K n).X q) :=
   (exists_injective_resolution K n).choose_spec.choose_spec.choose_spec.choose q
 
-instance : (injectiveResolution K n).IsStrictlyGE n :=
+public instance : (injectiveResolution K n).IsStrictlyGE n :=
   (exists_injective_resolution K n).choose_spec.choose_spec.choose_spec.choose_spec
 
 end

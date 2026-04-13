@@ -18,9 +18,8 @@ public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 
 open CategoryTheory Limits
 
-/-- `asIso'`. -/
-noncomputable abbrev CategoryTheory.asIso' {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y}
-  (_ : IsIso f) : X ≅ Y := asIso f
+noncomputable abbrev CategoryTheory.Iso.ofIsIso {C : Type*} [Category C]
+    {X Y : C} {f : X ⟶ Y} (_ : IsIso f) : X ≅ Y := asIso f
 
 variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C] [HasZeroObject C]
 
@@ -45,7 +44,6 @@ noncomputable def isoSingle (K : CochainComplex C ℤ) (n : ℤ)
   inv_hom_id := by
     apply from_single_hom_ext
     simp [toSingleEquiv, fromSingleEquiv]
-    rfl
 
 variable {ι : Type*} {c : ComplexShape ι} (e : c.Embedding (ComplexShape.up ℤ))
   [e.IsRelIff]
@@ -116,14 +114,14 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
             exact CochainComplex.isZero_of_isStrictlyGE _ b _ h₃
           · obtain ⟨k, hk⟩ := Int.le.dest h₂
             exact S.prop_of_iso ((singleFunctor C 0).mapIso
-              ((asIso' (K.isIso_ιStupidTrunc_f (ComplexShape.embeddingUpIntGE m) (i := k)
+              ((Iso.ofIsIso (K.isIso_ιStupidTrunc_f (ComplexShape.embeddingUpIntGE m) (i := k)
                   (by dsimp; omega))).symm))
                 (hK m (by omega) h₂)
         · dsimp
           refine @h _ a (a + n) inferInstance inferInstance (fun m h₁ h₂ => ?_) rfl
           obtain ⟨k, hk⟩ := Int.le.dest h₂
           exact S.prop_of_iso ((singleFunctor C 0).mapIso
-            (asIso' (K.isIso_πStupidTrunc_f (ComplexShape.embeddingUpIntLE (a + n)) (i := k)
+            (Iso.ofIsIso (K.isIso_πStupidTrunc_f (ComplexShape.embeddingUpIntLE (a + n)) (i := k)
             (by dsimp; omega)))) (hK m h₁ (by omega))
 
 end HomotopyCategory

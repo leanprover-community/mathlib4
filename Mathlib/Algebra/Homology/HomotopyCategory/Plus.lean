@@ -43,6 +43,7 @@ lemma CochainComplex.plus_cylinder (K : CochainComplex C ℤ) (hK : CochainCompl
   · simp only [ComplexShape.up_Rel] at hj
     exact K.isZero_of_isStrictlyGE n _ (by lia)
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 attribute [local instance] ComplexShape.decidableRelSymm in
 variable {C} [HasBinaryBiproducts C] in
@@ -68,6 +69,7 @@ namespace HomotopyCategory
 def plus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
   fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
 
+set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 instance : (plus C).IsTriangulated where
   exists_zero := by
@@ -155,6 +157,7 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 open HomologicalComplex in
 instance :
@@ -224,6 +227,7 @@ noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
   dsimp only [mapHomotopyCategoryPlus]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
   dsimp only [mapHomotopyCategoryPlus]

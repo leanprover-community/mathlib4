@@ -150,7 +150,7 @@ instance : (trivialCofibrations (Plus C)).HasFactorization (fibrations (Plus C))
     obtain ⟨(f : K ⟶ L), rfl⟩ := ObjectProperty.homMk_surjective f
     obtain ⟨d, _, _⟩ : ∃ (d : ℤ), K.IsStrictlyGE (d + 1) ∧ L.IsStrictlyGE d := by
       refine ⟨min (n - 1) m, K.isStrictlyGE_of_ge _ n (by simp), L.isStrictlyGE_of_ge _ m (by simp)⟩
-    obtain ⟨K', _, i, p, _, _, hp, fac⟩ := CochainComplex.cm5a f d
+    obtain ⟨K', _, i, p, _, _, hp, fac⟩ := cm5a f d
     exact ⟨{
       Z := ⟨K', d, inferInstance⟩
       i := ObjectProperty.homMk i

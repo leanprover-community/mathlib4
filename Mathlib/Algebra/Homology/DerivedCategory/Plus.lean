@@ -54,7 +54,7 @@ open TStructure
 variable [HasDerivedCategory C]
 namespace Plus
 
-def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
+noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨⟨X⟩, n, h⟩
     exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app X) n⟩)
@@ -63,10 +63,12 @@ noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
   dsimp only [Qh]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
   have := CochainComplex.IsKInjective.Qh_map_bijective K.1 L.1.as
@@ -219,7 +221,7 @@ lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
       exact h
     apply isIso_of_fully_faithful ι
 
-def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
+noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
   HomotopyCategory.Plus.quotient C ⋙ Qh
 
 end Plus

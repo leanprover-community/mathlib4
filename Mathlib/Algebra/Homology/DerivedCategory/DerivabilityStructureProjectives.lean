@@ -44,7 +44,7 @@ instance closedUnderLimitsOfShapeDiscrete (J : Type*) :
     have : HasColimit (Discrete.functor (p.diag.obj ∘ Discrete.mk)) := by
       change HasCoproduct X
       infer_instance
-    have : ∀ j, Projective (X j) := fun j => p.prop_diag_obj ⟨j⟩
+    have (j : J) : Projective (X j) := p.prop_diag_obj ⟨j⟩
     have e' : ∐ X ≅ Y := IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
       ((IsColimit.precomposeInvEquiv e _).symm p.isColimit)
     exact Projective.of_iso e' inferInstance
@@ -148,6 +148,7 @@ instance : (cofibrantObjectLocalizerMorphism C).IsInduced where
 instance : (cofibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsLeftDerivabilityStructure := by
   rw [LocalizerMorphism.isLeftDerivabilityStructure_iff_of_equivalences
     (T := localizerMorphism C) (B := (CofibrantObject.localizerMorphism (Minus C)))
@@ -168,6 +169,7 @@ def localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma isIso_quotient_map
     {K L : CochainComplex.Minus (ProjectiveObject C)} (f : K ⟶ L) :
@@ -193,6 +195,7 @@ def L : LocalizerMorphism
 instance : (L C).IsInduced where
   inverseImage_eq := by ext; apply isIso_quotient_map
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def R : LocalizerMorphism (CochainComplex.Minus.quasiIso C) (quasiIso C) where
   functor := HomotopyCategory.Minus.quotient C
@@ -203,6 +206,7 @@ def R : LocalizerMorphism (CochainComplex.Minus.quasiIso C) (quasiIso C) where
 instance : (R C).IsInduced where
   inverseImage_eq := by ext; apply quotient_map_mem_quasiIso_iff
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexMinus_projectivesι :
     (CochainComplex.Minus.quasiIso C).inverseImage (ProjectiveObject.ι C).mapCochainComplexMinus =
@@ -228,6 +232,7 @@ instance : (L C).IsLocalizedEquivalence := by
     inferInstanceAs ((HomotopyCategory.Minus.quotient (ProjectiveObject C)).IsLocalization _)
   exact LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization (L C) (𝟭 _)
 
+set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 instance {D : Type*} [Category* D] (L : Minus C ⥤ D) [L.IsLocalization (quasiIso C)] :
     (quotient C ⋙ L).IsLocalization (CochainComplex.Minus.quasiIso C) := by
