@@ -42,7 +42,7 @@ lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
     IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) :=
   (IsAdicComplete.map_algebraMap_iff _ _).mpr (AdicCompletion.isAdicComplete fg)
 
-lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
+lemma AdicCompletion.isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
     (m.map (algebraMap R (AdicCompletion I R))).IsMaximal := by
   have compeq : (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
     (Ideal.Quotient.mk I) := rfl
@@ -74,7 +74,7 @@ lemma AdicCompletion.isLocalRing_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG
     IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
   @isLocalRing_of_isAdicComplete_maximal _ _
     ((maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)))
-    (AdicCompletion.isMaximal_map _ _ (le_refl _) fg)
+    (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)
     (AdicCompletion.isAdicComplete_self _ fg)
 
 instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
@@ -85,12 +85,12 @@ lemma AdicCompletion.maximalIdeal_eq_map_of_fg [IsLocalRing R] (fg : (maximalIde
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   letI := AdicCompletion.isLocalRing_of_fg fg
-  (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map _ _ (le_refl _) fg)).symm
+  (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)).symm
 
 lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
-  (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map _ _ (le_refl _)
+  (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
 
 lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
@@ -141,7 +141,7 @@ lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (max
     change (of (maximalIdeal R) R z) - y ∈ _
     rw [pow_smul_top_eq_ker_eval fg]
     simpa [eval, sub_eq_zero] using hz
-  simpa using this
+  simpa
 
 variable (R) in
 lemma AdicCompletion.residueField_map_bijective [IsNoetherianRing R] [IsLocalRing R] :
