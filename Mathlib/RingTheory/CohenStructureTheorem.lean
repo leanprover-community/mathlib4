@@ -466,8 +466,6 @@ end
 
 section fromPR
 
-open WithIdeal
-
 instance MvPowerSeries.isAdicComplete (σ : Type*) [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) :=
   sorry
@@ -487,8 +485,8 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
   let : WithIdeal S := { i := maximalIdeal S }
   have f_cont : Continuous f := (WithIdeal.uniformContinuous_of_map_le
     (((IsLocalRing.local_hom_TFAE f).out 0 2).mp ‹_›)).continuous
-  let : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
-  let : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
+  have : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
+  have : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
   rcases fg with ⟨s, hs⟩
   have hasEval_equivFin : HasEval (Subtype.val ∘ s.equivFin.symm) := by
     refine ⟨fun j ↦ ?_, by simp [Filter.cofinite_eq_bot]⟩
@@ -511,7 +509,7 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
   have : IsAdicComplete (I.map F) R := by simpa [map_F_I]
   have F_C (s : S) : F (C s) = f s := by
     simp [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_C, IsDenseInducing.extend_eq _ aux_cont]
-  refine ⟨s.card, F, ?_, by ext; exact F_C _⟩
+  refine ⟨s.card, F, ?_, RingHom.ext fun x ↦ F_C x⟩
   refine surjective_of_mk_map_comp_surjective (I := I) F fun z ↦ ?_
   rcases bij.surjective (Ideal.quotEquivOfEq map_F_I z) with ⟨w, hw⟩
   induction w using Submodule.Quotient.induction_on with
@@ -551,7 +549,7 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
   · rw [← map_maximalIdeal_of_surjective _ surj]
     exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal R).fg_of_isNoetherianRing
   · let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
-    let _ := fin.fintype
+    let := fin.fintype
     let := surj.isLocalHom f
     rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
     apply le_of_le_of_eq _ (Submodule.FG.generators_ncard (maximalIdeal R').fg_of_isNoetherianRing)
