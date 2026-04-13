@@ -1001,7 +1001,7 @@ def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : 
     (u : S.obj d ⟶ e) :
     map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
       (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _))
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 end Pre
 
