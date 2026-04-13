@@ -98,7 +98,6 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
 
 variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
 multiplication). -/
 theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
