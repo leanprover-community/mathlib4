@@ -145,7 +145,8 @@ instance instIsPrimeSupp (v : Spv A) : v.supp.IsPrime := by
 /-- The support of `ofValuation v` equals `v.supp`. -/
 lemma supp_ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (v : Valuation A Γ₀) : (ofValuation v).supp = v.supp := by
-  ext x; rw [mem_supp_iff, Valuation.mem_supp_iff]
+  ext x
+  rw [mem_supp_iff, Valuation.mem_supp_iff]
   change v x ≤ v 0 ↔ _
   simp
 
@@ -163,7 +164,7 @@ variable (𝔞 : Ideal A)
 /-- `𝔞 ≤ supp(comap(mk 𝔞, w))` for all `w : Spv (A ⧸ 𝔞)`. -/
 lemma ideal_le_supp_comap_mk (w : Spv (A ⧸ 𝔞)) :
     𝔞 ≤ (comap (Ideal.Quotient.mk 𝔞) w).supp :=
-  fun a ha => by simp [Ideal.Quotient.eq_zero_iff_mem.mpr ha]
+  fun a ha ↦ by simp [Ideal.Quotient.eq_zero_iff_mem.mpr ha]
 
 /-- Lift a point `v ∈ Spv A` with `𝔞 ≤ supp v` to `Spv (A ⧸ 𝔞)`. -/
 noncomputable def quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) : Spv (A ⧸ 𝔞) :=
