@@ -135,7 +135,7 @@ variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivi
 variable {IB}
 
 theorem mdifferentiableOn_coordChangeL :
-    MDiff[e.baseSet ∩ e'.baseSet] (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))  :=
+    MDiff[e.baseSet ∩ e'.baseSet] (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) :=
   (contMDiffOn_coordChangeL e e').mdifferentiableOn one_ne_zero
 
 theorem mdifferentiableOn_symm_coordChangeL :
