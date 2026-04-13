@@ -402,24 +402,23 @@ def HasCompactMulSupport.submonoid (α β : Type*) [TopologicalSpace α] [MulOne
   one_mem' := .one
   mul_mem' := .mul
 
-/-- A product over a `List` of functions with compact multiplicative support has compact
-multiplicative support. -/
+@[to_additive (attr := simp)]
+theorem HasCompactMulSupport.mem_submonoid {α β : Type*} [TopologicalSpace α] [MulOneClass β]
+    {f : α → β} : f ∈ HasCompactMulSupport.submonoid α β ↔ HasCompactMulSupport f :=
+  Iff.rfl
+
 @[to_additive]
 theorem HasCompactMulSupport.list_prod {α β : Type*} [TopologicalSpace α] [Monoid β]
     {l : List (α → β)} (hl : ∀ f ∈ l, HasCompactMulSupport f) :
     HasCompactMulSupport l.prod :=
   list_prod_mem (S := HasCompactMulSupport.submonoid α β) hl
 
-/-- A product over a `Multiset` of functions with compact multiplicative support has compact
-multiplicative support. -/
 @[to_additive]
 theorem HasCompactMulSupport.multiset_prod {α β : Type*} [TopologicalSpace α] [CommMonoid β]
     (m : Multiset (α → β)) (hm : ∀ f ∈ m, HasCompactMulSupport f) :
     HasCompactMulSupport m.prod :=
   multiset_prod_mem (S := HasCompactMulSupport.submonoid α β) m hm
 
-/-- A finite product of functions with compact multiplicative support has compact
-multiplicative support. -/
 @[to_additive]
 theorem HasCompactMulSupport.finset_prod {α β ι : Type*} [TopologicalSpace α] [CommMonoid β]
     {s : Finset ι} {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
