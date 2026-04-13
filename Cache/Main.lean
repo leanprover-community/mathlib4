@@ -100,10 +100,7 @@ def isKnownOpt (opt : String) : Bool :=
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  if args.isEmpty then
-    println help
-    Process.exit 0
-  if parseFlagOpt "help" args then
+  if args.isEmpty || parseFlagOpt "help" args then
     println help
     Process.exit 0
   CacheM.run do
