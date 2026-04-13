@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
@@ -397,7 +396,7 @@ protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [
 
 /-- The submonoid of functions `α → β` with compact multiplicative support. -/
 @[to_additive /-- The additive submonoid of functions `α → β` with compact support. -/]
-def HasCompactMulSupport.submonoid (α β : Type*) [TopologicalSpace α] [CommMonoid β] :
+def HasCompactMulSupport.submonoid (α β : Type*) [TopologicalSpace α] [MulOneClass β] :
     Submonoid (α → β) where
   carrier := {f | HasCompactMulSupport f}
   one_mem' := .one
@@ -406,7 +405,7 @@ def HasCompactMulSupport.submonoid (α β : Type*) [TopologicalSpace α] [CommMo
 /-- A product over a `List` of functions with compact multiplicative support has compact
 multiplicative support. -/
 @[to_additive]
-theorem HasCompactMulSupport.list_prod {α β : Type*} [TopologicalSpace α] [CommMonoid β]
+theorem HasCompactMulSupport.list_prod {α β : Type*} [TopologicalSpace α] [Monoid β]
     {l : List (α → β)} (hl : ∀ f ∈ l, HasCompactMulSupport f) :
     HasCompactMulSupport l.prod :=
   list_prod_mem (S := HasCompactMulSupport.submonoid α β) hl
@@ -423,7 +422,7 @@ theorem HasCompactMulSupport.multiset_prod {α β : Type*} [TopologicalSpace α]
 multiplicative support. -/
 @[to_additive]
 theorem HasCompactMulSupport.finset_prod {α β ι : Type*} [TopologicalSpace α] [CommMonoid β]
-    (s : Finset ι) {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
+    {s : Finset ι} {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
     HasCompactMulSupport (∏ i ∈ s, f i) :=
   prod_mem (S := HasCompactMulSupport.submonoid α β) hf
 
