@@ -129,7 +129,7 @@ theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralVa
 theorem spectralValueTerms_nonneg (p : R[X]) (n : ℕ) : 0 ≤ spectralValueTerms p n := by
   simp only [spectralValueTerms]
   split_ifs with h
-  · exact rpow_nonneg (norm_nonneg _) _
+  · positivity
   · exact le_refl _
 
 /-- The spectral value of a polynomial is nonnegative. -/

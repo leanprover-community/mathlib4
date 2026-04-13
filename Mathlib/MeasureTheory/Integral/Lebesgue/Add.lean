@@ -198,8 +198,8 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     apply EventuallyEq.symm
     exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 
-/-- **Fatou's lemma**, version with `AEMeasurable` functions. -/
-theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
+/-- **Fatou's lemma**, version with `AEMeasurable` functions indexed by `ℕ`. -/
+private theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   calc
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
@@ -210,9 +210,27 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := iSup_mono fun _ => le_iInf₂_lintegral _
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
 
+/-- **Fatou's lemma**, version with `AEMeasurable` functions. -/
+theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Filter ι}
+    [IsCountablyGenerated u] (h_meas : ∀ i, AEMeasurable (f i) μ) :
+    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u := by
+  by_cases! hu : ¬ u.NeBot
+  · simp_all
+  · obtain ⟨g, hg⟩ : ∃ g : ℕ → ι,
+        Tendsto (fun n => ∫⁻ a, f (g n) a ∂μ) atTop (𝓝 (liminf (fun i => ∫⁻ a, f i a ∂μ) u)) ∧
+        Tendsto g atTop u :=
+      exists_seq_tendsto_liminf
+    calc
+    _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ :=
+      lintegral_mono fun a => hg.2.liminf_le_liminf_comp
+    _ ≤ liminf (fun n => ∫⁻ a, f (g n) a ∂μ) atTop :=
+      lintegral_liminf_nat_le' (fun n => h_meas (g n))
+    _ = _ := hg.1.liminf_eq
+
 /-- **Fatou's lemma**, version with `Measurable` functions. -/
-theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) :
-    ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
+theorem lintegral_liminf_le {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Filter ι}
+    [IsCountablyGenerated u] (h_meas : ∀ i, Measurable (f i)) :
+    ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u :=
   lintegral_liminf_le' fun n => (h_meas n).aemeasurable
 
 end MonotoneConvergence
@@ -231,6 +249,11 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
         exact monotone_eapprox f h
     _ = ⨆ n, (eapprox f n).lintegral μ := by
       congr; ext n; rw [(eapprox f n).lintegral_eq_lintegral]
+
+/-- Generalization of `lintegral_eq_iSup_eapprox_lintegral` to ae-measurable functions. -/
+theorem lintegral_eq_iSup_eapprox_lintegral' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    ∫⁻ a, f a ∂μ = ⨆ n, (eapprox (hf.mk f) n).lintegral μ := by
+  rw [lintegral_congr_ae hf.ae_eq_mk, lintegral_eq_iSup_eapprox_lintegral hf.measurable_mk]
 
 lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (n : ℕ) :
     (eapprox f n).lintegral μ ≤ ∫⁻ x, f x ∂μ := by

@@ -392,8 +392,8 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
             intro k hkm
             apply le_trans _ (hm k hkm)
             rw [rpow_mul (apply_nonneg μ x), rpow_natCast]
-            exact rpow_le_rpow (apply_nonneg μ _) (map_pow_le_pow' hμ1 x _)
-              (one_div_nonneg.mpr (cast_nonneg _))
+            gcongr
+            exact map_pow_le_pow' hμ1 x _
           · use 0
             simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le,
               Set.mem_setOf_eq, forall_exists_index]
@@ -543,7 +543,8 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     have hn : 0 ≤ 1 / (n : ℝ) := by simp only [one_div, inv_nonneg, cast_nonneg]
     simp only [smoothingSeminormSeq]
     rw [← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _), mul_pow]
-    exact rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) hn
+    gcongr
+    exact map_mul_le_mul μ _ _
 
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingSeminorm μ 1 ≤ 1`. -/
 theorem smoothingSeminorm_map_one_le_one (hμ1 : μ 1 ≤ 1)
