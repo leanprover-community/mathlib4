@@ -626,10 +626,18 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
   intro i
   by_cases hi : i ∈ fs <;> aesop
 
+proof_wanted closedInterior_face_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
+    (s.face h).closedInterior ⊂ s.closedInterior
+
 theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     (s.faceOpposite i).closedInterior ⊆ s.closedInterior :=
   s.closedInterior_face_subset_closedInterior _
+
+proof_wanted closedInterior_faceOpposite_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    (s.faceOpposite i).closedInterior ⊂ s.closedInterior
 
 end PartialOrder
 
