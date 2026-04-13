@@ -592,6 +592,7 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /--
 *Weak approximation for infinite places*

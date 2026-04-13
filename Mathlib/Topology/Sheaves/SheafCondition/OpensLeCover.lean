@@ -56,6 +56,7 @@ def OpensLeCover : Type w :=
   ObjectProperty.FullSubcategory fun V : Opens X ↦ ∃ i, V ≤ U i
 deriving Category
 
+set_option backward.isDefEq.respectTransparency false in
 instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
   ⟨⟨⊥, let ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩
 

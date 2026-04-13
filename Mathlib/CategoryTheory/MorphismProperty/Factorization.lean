@@ -183,6 +183,7 @@ section
 
 variable (J : Type*) [Category* J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where

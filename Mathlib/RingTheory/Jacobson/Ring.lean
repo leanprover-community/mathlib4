@@ -553,7 +553,8 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {S : Type*} [Field S] (f
   rw [← hfg, RingHom.comp_assoc]
   refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f)).trans _ g
     (g.isIntegral_of_surjective ?_)
-  rw [← hfg, RingHom.coe_comp] at hf
+  rw [← hfg] at hf
+  norm_num at hf
   exact Function.Surjective.of_comp hf
 
 end
@@ -656,7 +657,8 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, RingHom.comp_assoc]
     refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f')).trans _ g
       (g.isIntegral_of_surjective ?_)
-    rw [← hfg, coe_comp] at hf'
+    rw [← hfg] at hf'
+    norm_num at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
   convert this

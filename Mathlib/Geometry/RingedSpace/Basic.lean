@@ -197,6 +197,7 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   · simp [mem_basicOpen (hx := hx)]
   · simp [mt (basicOpen_le X _ ·) hx]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basicOpen_pow {U : Opens X} (f : X.presheaf.obj (op U)) (n : ℕ) (h : 0 < n) :
     X.basicOpen (f ^ n) = X.basicOpen f := by

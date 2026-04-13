@@ -82,7 +82,7 @@ lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.
 /-- The horizontal identity 2-square. -/
 @[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
-  (Functor.leftUnitor L).hom ≫ (Functor.rightUnitor L).inv
+  𝟙 _
 
 /-- Notation for the horizontal identity 2-square. -/
 scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
@@ -90,7 +90,7 @@ scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
 /-- The vertical identity 2-square. -/
 @[simps!]
 def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
-  (Functor.rightUnitor T).hom ≫ (Functor.leftUnitor T).inv
+  𝟙 _
 
 /-- Notation for the vertical identity 2-square. -/
 scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v

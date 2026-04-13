@@ -69,6 +69,7 @@ instance : (geometrically P).IsStableUnderBaseChange := by
   rw [geometrically_eq_universally]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderIsomorphisms] : IsZariskiLocalAtTarget (geometrically P) := by
   rw [geometrically_eq_universally]
   refine universally_isZariskiLocalAtTarget _ fun {X} Y f ι U hU H _ _ ↦ ?_
