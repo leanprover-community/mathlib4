@@ -837,12 +837,12 @@ instance : Mul (lp B ∞) where
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+  { lp.nonUnitalRing, lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
@@ -900,10 +900,14 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     carrier := { f | Memℓp f ∞ }
     one_mem' := one_memℓp_infty
     mul_mem' := Memℓp.infty_mul }
-
+#synth AddCommGroup ↥(lp B ∞)
+-- #synth SMul Nat ↥(lp B ⊤)
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.synthInstance true in
 instance inftyRing : Ring (lp B ∞) :=
-  inferInstanceAs <| Ring (lpInftySubring B)
-
+  inferInstanceAs <|
+   Ring (lpInftySubring B)
+#print inftyRing
 theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ) : Memℓp (f ^ n) ∞ :=
   (lpInftySubring B).pow_mem hf n
 
@@ -934,7 +938,7 @@ instance [Nonempty I] : NormOneClass (lp B ∞) where
 
 instance inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
-
+#print inftyNormedRing
 end NormedRing
 
 section NormedCommRing
@@ -943,7 +947,7 @@ variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, Nor
 
 instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
   mul_comm := mul_comm
-
+#print inftyNormedCommRing
 end NormedCommRing
 
 section Algebra
