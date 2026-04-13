@@ -353,10 +353,9 @@ end add
 
 theorem exists_pathological_rel (α : Type*) [Infinite α] :
     ∃ r : α → α → Prop, (∀ x, #{y | ¬ r x y} < #α) ∧ (∀ y, #{x | r x y} < #α) := by
-  obtain ⟨α, _, hα⟩ := Cardinal.exists_ord_eq_type_lt α
-  refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ Cardinal.mk_Iio_lt _ hα⟩
-  simp_rw [not_lt]
-  exact mk_Iic_lt _ hα (aleph0_le_mk _)
+  obtain ⟨α, _, hα⟩ := exists_ord_eq_type_lt α
+  refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ mk_Iio_lt _ hα⟩
+  simpa using mk_Iic_lt _ hα (aleph0_le_mk _)
 
 /-! ### Properties of `ciSup` -/
 section ciSup
