@@ -900,14 +900,10 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     carrier := { f | Memℓp f ∞ }
     one_mem' := one_memℓp_infty
     mul_mem' := Memℓp.infty_mul }
-#synth AddCommGroup ↥(lp B ∞)
--- #synth SMul Nat ↥(lp B ⊤)
-set_option trace.Meta.isDefEq true in
-set_option trace.Meta.synthInstance true in
+
 instance inftyRing : Ring (lp B ∞) :=
-  inferInstanceAs <|
-   Ring (lpInftySubring B)
-#print inftyRing
+  inferInstanceAs <| Ring (lpInftySubring B)
+
 theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ) : Memℓp (f ^ n) ∞ :=
   (lpInftySubring B).pow_mem hf n
 
@@ -938,7 +934,7 @@ instance [Nonempty I] : NormOneClass (lp B ∞) where
 
 instance inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
-#print inftyNormedRing
+
 end NormedRing
 
 section NormedCommRing
@@ -947,7 +943,7 @@ variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, Nor
 
 instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
   mul_comm := mul_comm
-#print inftyNormedCommRing
+
 end NormedCommRing
 
 section Algebra
