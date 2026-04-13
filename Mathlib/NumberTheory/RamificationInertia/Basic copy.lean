@@ -47,15 +47,6 @@ instance Module.IsTorsionFree.ofFlat {R M : Type*} [CommSemiring R] [AddCommMono
     simpa
 
 -- PRed
-theorem IsField.of_finite (K L : Type*) [Field K] [CommRing L] [Algebra K L]
-    [IsDomain L] [Module.Finite K L] :
-    IsField L where
-  exists_pair_ne := Nontrivial.exists_pair_ne
-  mul_comm := CommSemiring.mul_comm
-  mul_inv_cancel {x} hx :=
-    (LinearMap.mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
-
--- PRed
 theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
     nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
   haveI h0 {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
@@ -66,19 +57,6 @@ theorem MaximalSpectrum.nilradical_pow_eq_iInf (R : Type*) [CommRing R] [IsArtin
   rw [← Ideal.prod_eq_iInf_of_pairwise_isCoprime fun _ _ _ _ h ↦ .pow (h0 h),
     Finset.prod_pow, Ideal.prod_eq_iInf_of_pairwise_isCoprime fun _ _ _ _ ↦ h0]
   simp [Finset.mem_univ, iInf, IsArtinianRing.primeSpectrum_asIdeal_range_eq]
-
-/-- PRed -/
-@[simps!]
-noncomputable def IsArtinainRing.quotNilradicalPowEquivPi
-    (R : Type*) [CommRing R] [IsArtinianRing R] (n : ℕ) :
-    (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
-  haveI h0 {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
-      Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
-  haveI h1 : nilradical R ^ n = ⨅ I : MaximalSpectrum R, I.1 ^ n := by
-    exact MaximalSpectrum.nilradical_pow_eq_iInf R n
-  (Ideal.quotientEquivAlgOfEq R h1).trans
-    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I J h ↦ .pow (h0 h)
-      commutes' _ := rfl}
 
 theorem tada1 (R : Type*) [CommRing R] :
     Function.Injective (algebraMap R (∀ I : MaximalSpectrum R, Localization.AtPrime I.1)) := by
@@ -122,7 +100,7 @@ noncomputable def IsArtinianRing.equivPiLocalizationAux
         refine Ideal.prod_le_inf.trans (Finset.inf_le ?_)
         exact Finset.mem_erase_of_ne_of_mem h (Finset.mem_univ J)
   ((AlgEquiv.piCongrRight fun I ↦ IsLocalization.algEquiv I.1.primeCompl _ _).trans
-    ((IsArtinainRing.quotNilradicalPowEquivPi R (n + 1)).symm.trans
+    ((IsArtinianRing.quotNilradicalPowEquivPi R (n + 1)).symm.trans
       ((Ideal.quotientEquivAlgOfEq R hn).trans (.quotientBot R R)))).symm
 
 /-- An Artinian local ring is isomorphic to the product of its localizations. -/
