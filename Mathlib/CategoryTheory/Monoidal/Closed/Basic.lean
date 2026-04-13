@@ -5,9 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta, Daniel Carranza, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
@@ -84,10 +83,6 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
-
-instance [BraidedCategory C] (A : C) [Closed A] :
-    (tensorRight A).IsLeftAdjoint :=
-  Functor.isLeftAdjoint_of_iso (BraidedCategory.tensorLeftIsoTensorRight A)
 
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=

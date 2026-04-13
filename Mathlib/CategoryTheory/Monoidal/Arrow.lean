@@ -5,6 +5,7 @@ Authors: Jack McKoen
 -/
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
