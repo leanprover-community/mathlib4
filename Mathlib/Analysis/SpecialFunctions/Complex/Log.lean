@@ -162,18 +162,12 @@ theorem exp_eq_one_iff_of_im_nonneg {x : ℂ} (hx : 0 ≤ x.im) :
 theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
     exp (2 * π * I * k / N) = 1 ↔ N ∣ k := by
   have hN' : (N : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hN
-  have h2πI : (2 * ↑π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
   rw [exp_eq_one_iff]
-  constructor
-  · rintro ⟨n, hn⟩
-    have h1 : (k : ℂ) = n * N := by
-      have h := mul_right_cancel₀ h2πI (show (↑k / ↑N) * (2 * ↑π * I) = n * (2 * ↑π * I) by
-        rw [show (↑k : ℂ) / ↑N * (2 * ↑π * I) = 2 * ↑π * I * ↑k / ↑N from by ring]; exact hn)
-      rwa [div_eq_iff hN'] at h
-    have h2 : (k : ℤ) = n * ↑N := by exact_mod_cast h1
-    exact_mod_cast (show (↑N : ℤ) ∣ ↑k from ⟨n, h2.symm ▸ mul_comm n ↑N⟩)
-  · rintro ⟨m, hm⟩
-    exact ⟨m, by subst hm; push_cast; field_simp [hN']⟩
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨m, hm⟩ ↦ ⟨m, by rw [hm]; push_cast; field_simp⟩⟩
+  suffices k = n * N by exact Int.ofNat_dvd.1 ⟨n, by grind⟩
+  have h0 : 2 * π * I ≠ 0 := by simp
+  refine Int.cast_inj.1 ((mul_left_inj' h0).1 ?_)
+  grind [Int.cast_natCast]
 
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
