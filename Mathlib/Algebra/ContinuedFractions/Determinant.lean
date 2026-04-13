@@ -28,14 +28,16 @@ public section
 
 open GenContFract
 
+variable {K : Type*} [Field K]
+
 namespace GenContFract
 
-variable {K : Type*} [Field K] {g : GenContFract K} {n : ℕ}
+variable {g : GenContFract K} {n : ℕ}
 
 theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     (g.contsAux n).a * (g.contsAux (n + 1)).b -
       (g.contsAux n).b * (g.contsAux (n + 1)).a =
-        ∏ i ∈ Finset.range n, (- (g.s.get? i).elim 0 Pair.a) := by
+        ∏ i ∈ Finset.range n, - (g.s.get? i).elim 0 Pair.a := by
   induction n with
   | zero => simp [contsAux]
   | succ n IH =>
@@ -53,18 +55,19 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
     obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
       Option.ne_none_iff_exists'.1 not_terminated_at_n
-    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, (- (g.s.get? i).elim 0 Pair.a) by {
+    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, - (g.s.get? i).elim 0 Pair.a by {
       rw [Finset.prod_range_succ, ← this, s_nth_eq, Option.elim_some]
-      subst conts; rw [contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
+      subst conts
+      rw [contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
       ring
     }
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ₊₁)`. -/
 theorem determinant :
-  g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1)
-  = ∏ i ∈ Finset.range (n + 1), (- (g.s.get? i).elim 0 Pair.a) := by
-  rcases em (TerminatedAt g n) with terminatedAt_n | not_terminatedAt_n
+    g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1)
+      = ∏ i ∈ Finset.range (n + 1), - (g.s.get? i).elim 0 Pair.a := by
+  rcases em <| TerminatedAt g n with terminatedAt_n | not_terminatedAt_n
   swap; · exact determinant_aux <| Or.inr <| not_terminatedAt_n
   rw [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
   rw [nums_stable_of_terminated n.le_succ <| terminatedAt_n]
@@ -75,26 +78,25 @@ end GenContFract
 
 namespace SimpContFract
 
-variable {K : Type*} [Field K] {s : SimpContFract K} {n : ℕ}
+variable {s : SimpContFract K} {n : ℕ}
 
-nonrec theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
+theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
     ((↑s : GenContFract K).contsAux n).a * ((↑s : GenContFract K).contsAux (n + 1)).b -
       ((↑s : GenContFract K).contsAux n).b * ((↑s : GenContFract K).contsAux (n + 1)).a =
         (-1) ^ n := calc
-  _ = ∏ i ∈ Finset.range n, (- ((↑s : GenContFract K).s.get? i).elim 0 Pair.a) :=
-    determinant_aux hyp
-  _ = ∏ i ∈ Finset.range n, -1 := by {
-    apply Finset.prod_congr rfl fun i hi => ?_
+  _ = ∏ i ∈ Finset.range n, - ((↑s : GenContFract K).s.get? i).elim 0 Pair.a :=
+    GenContFract.determinant_aux hyp
+  _ = ∏ i ∈ Finset.range n, -1 := by
+    apply Finset.prod_congr rfl fun i hi ↦ ?_
     simp only [Finset.mem_range] at hi
-    replace hyp := Or.resolve_left hyp (by omega)
+    replace hyp := Or.resolve_left hyp <| by omega
     obtain ⟨gp, s_ith_eq⟩ : ∃ gp, (↑s : GenContFract K).s.get? i = some gp :=
       Option.ne_none_iff_exists'.1 <| mt (terminated_stable <| show i ≤ n - 1 by omega) ‹_›
-    rw [s_ith_eq, Option.elim_some, s.property i _ (partNum_eq_s_a s_ith_eq)]
-  }
+    rw [s_ith_eq, Option.elim_some, s.property i _ <| partNum_eq_s_a s_ith_eq]
   _ = (-1) ^ n := by rw [Finset.prod_const, Finset.card_range]
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)` for `SimpContFract`. -/
-nonrec theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
+theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
     (↑s : GenContFract K).nums n * (↑s : GenContFract K).dens (n + 1) -
       (↑s : GenContFract K).dens n * (↑s : GenContFract K).nums (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminatedAt_n
