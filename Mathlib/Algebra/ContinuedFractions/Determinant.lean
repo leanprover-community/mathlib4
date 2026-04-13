@@ -79,18 +79,18 @@ variable {K : Type*} [Field K] {s : SimpContFract K} {n : ℕ}
 nonrec theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
     ((↑s : GenContFract K).contsAux n).a * ((↑s : GenContFract K).contsAux (n + 1)).b -
       ((↑s : GenContFract K).contsAux n).b * ((↑s : GenContFract K).contsAux (n + 1)).a =
-        (-1) ^ n := by
-  calc _ = ∏ i ∈ Finset.range n, (- ((↑s : GenContFract K).s.get? i).elim 0 Pair.a) :=
+        (-1) ^ n := calc
+  _ = ∏ i ∈ Finset.range n, (- ((↑s : GenContFract K).s.get? i).elim 0 Pair.a) :=
     determinant_aux hyp
-    _ = ∏ i ∈ Finset.range n, -1 := by {
-      apply Finset.prod_congr rfl fun i hi => ?_
-      simp only [Finset.mem_range] at hi
-      replace hyp := Or.resolve_left hyp (by omega)
-      obtain ⟨gp, s_ith_eq⟩ : ∃ gp, (↑s : GenContFract K).s.get? i = some gp :=
-        Option.ne_none_iff_exists'.1 <| mt (terminated_stable <| show i ≤ n - 1 by omega) ‹_›
-      rw [s_ith_eq, Option.elim_some, s.property i _ (partNum_eq_s_a s_ith_eq)]
-    }
-    _ = (-1) ^ n := by rw [Finset.prod_const, Finset.card_range]
+  _ = ∏ i ∈ Finset.range n, -1 := by {
+    apply Finset.prod_congr rfl fun i hi => ?_
+    simp only [Finset.mem_range] at hi
+    replace hyp := Or.resolve_left hyp (by omega)
+    obtain ⟨gp, s_ith_eq⟩ : ∃ gp, (↑s : GenContFract K).s.get? i = some gp :=
+      Option.ne_none_iff_exists'.1 <| mt (terminated_stable <| show i ≤ n - 1 by omega) ‹_›
+    rw [s_ith_eq, Option.elim_some, s.property i _ (partNum_eq_s_a s_ith_eq)]
+  }
+  _ = (-1) ^ n := by rw [Finset.prod_const, Finset.card_range]
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)` for `SimpContFract`. -/
 nonrec theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
