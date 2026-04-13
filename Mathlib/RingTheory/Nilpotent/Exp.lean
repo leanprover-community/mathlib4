@@ -94,9 +94,9 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     calc ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • (a + b) ^ i
         = ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • ∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j := ?_
       _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1),
-            ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) • (a ^ j * b ^ (i - j))) := ?_
+            ((j ! : ℚ)⁻¹ * ((i - j)! : ℚ)⁻¹) • (a ^ j * b ^ (i - j))) := ?_
       _ = ∑ ij ∈ R2N ×ˢ R2N with ij.1 + ij.2 ≤ 2 * N,
-            ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
+            ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
     · refine sum_congr rfl fun i _ ↦ ?_
       rw [Commute.add_pow h₁ i]
     · simp_rw [smul_sum]
@@ -123,7 +123,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
         exact fun x y _ _ _ ↦ ⟨x + y, x, by lia⟩
       · simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ R2N ×ˢ R2N with ¬ ij.1 + ij.2 ≤ 2 * N,
-      ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
+      ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
       rw [mem_filter] at hi
       cases le_or_gt (N + 1) i.1 with
