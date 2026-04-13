@@ -9,7 +9,6 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.StacksAttribute
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Semirings and rings
