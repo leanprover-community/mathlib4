@@ -356,6 +356,10 @@ variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid M₁] [Module R₁ M₁]
 variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable {N L : Submodule R₁ M₁}
+
+section
+
 variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
 variable (B) in
@@ -375,8 +379,6 @@ def orthogonalBilin (N : Submodule R₁ M₁) : Submodule R₂ M₂ where
   smul_mem' c x hx n hn := by
     rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
 
-variable {N L : Submodule R₁ M₁}
-
 @[simp]
 theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B.IsOrtho n m :=
   Iff.rfl
@@ -384,10 +386,16 @@ theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n
 theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
   fun _ hn l hl ↦ hn l (h hl)
 
-variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+end
+
+section
+
+variable {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
+
+end
 
 end Submodule
 
