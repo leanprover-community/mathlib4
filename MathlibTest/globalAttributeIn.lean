@@ -57,6 +57,7 @@ error: Despite the `in`, the attribute ext is added globally to foo
 please remove the `in` or make this a `local ext`
 -/
 #guard_msgs in
+set_option warning.simp.varHead false in
 attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in
 def bar := False
 
