@@ -59,7 +59,7 @@ lemma ofValuation_eq_of_isEquiv {Γ₀ : Type*} [LinearOrderedCommGroupWithZero 
 def basicOpen (f s : A) : Set (Spv A) :=
   { v | v.vle f s ∧ ¬ v.vle s 0 }
 
-/-- `Spv(A)(tf/ts) ⊆ Spv(A)(f/s)` (note after Definition 4.1 in Wedhorn). -/
+/-- `Spv(A)(tf/ts) ⊆ Spv(A)(f/s)`. -/
 lemma basicOpen_mul_subset (t f s : A) :
     basicOpen (t * f) (t * s) ⊆ basicOpen f s := by
   intro v ⟨h1, h2⟩
@@ -69,11 +69,11 @@ lemma basicOpen_mul_subset (t f s : A) :
   exact ⟨v.vle_mul_cancel ht (by rwa [mul_comm t f, mul_comm t s] at h1),
     fun hs ↦ h2 (by have := v.mul_vle_mul_left hs t; rwa [zero_mul, mul_comm s t] at this)⟩
 
-/-- `Spv(A)(1/1) = Spv A`. Note after Definition 4.1 in Wedhorn. -/
+/-- `Spv(A)(1/1) = Spv A`. -/
 lemma basicOpen_one : basicOpen (1 : A) 1 = Set.univ :=
   Set.eq_univ_iff_forall.mpr fun v ↦ ⟨(v.vle_total 1 1).elim id id, v.not_vle_one_zero⟩
 
-/-- `Spv(A)(s/s) = { v ∈ Spv A | v(s) ≠ 0 }`. Note after Definition 4.1 in Wedhorn. -/
+/-- `Spv(A)(s/s) = { v ∈ Spv A | v(s) ≠ 0 }`. -/
 lemma basicOpen_self (s : A) :
     basicOpen s s = { v : Spv A | ¬ v.vle s 0 } :=
   Set.ext fun v ↦ ⟨fun ⟨_, h⟩ ↦ h, fun h ↦ ⟨(v.vle_total s s).elim id id, h⟩⟩
