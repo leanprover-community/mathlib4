@@ -169,7 +169,7 @@ lemma ENat.multiplicative_cast_zero_eq_one :
       (0 : ℕ∞) = 1 := rfl
 
 @[simp]
-lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
+lemma ordFrac_of_isUnit {x : R} (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := IsUnit.ne_zero hx
   have thing : x ∈ nonZeroDivisors R := IsUnit.mem_nonZeroDivisors hx
   simp [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord, ord_of_isUnit hx]
