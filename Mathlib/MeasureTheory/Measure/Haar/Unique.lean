@@ -920,7 +920,6 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact smul_absolutelyContinuous
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass.
