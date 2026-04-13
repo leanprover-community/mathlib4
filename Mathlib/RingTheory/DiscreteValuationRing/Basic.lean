@@ -493,8 +493,7 @@ lemma addVal_eq_iff_associated (x y : R) :
       rw [addVal_eq_top_iff.mp h.symm]
     by_cases hy : y = 0
     · simp_all only [AddValuation.map_zero, associated_zero_iff_eq_zero]
-      have : x = 0 := addVal_eq_top_iff.mp h
-      exact hx this
+      exact hx (addVal_eq_top_iff.mp h)
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     obtain ⟨m, α, hx'⟩ := eq_unit_mul_pow_irreducible hx hϖ
     obtain ⟨n, β, hy'⟩ := eq_unit_mul_pow_irreducible hy hϖ
