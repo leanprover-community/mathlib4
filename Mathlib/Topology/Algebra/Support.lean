@@ -394,17 +394,18 @@ protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [
     HasCompactMulSupport (1 : α → β) := by
   simp [HasCompactMulSupport]
 
+variable (α β) in
 /-- The submonoid of functions `α → β` with compact multiplicative support. -/
 @[to_additive /-- The additive submonoid of functions `α → β` with compact support. -/]
-def HasCompactMulSupport.submonoid (α β : Type*) [TopologicalSpace α] [MulOneClass β] :
+def HasCompactMulSupport.submonoid :
     Submonoid (α → β) where
   carrier := {f | HasCompactMulSupport f}
   one_mem' := .one
   mul_mem' := .mul
 
 @[to_additive (attr := simp)]
-theorem HasCompactMulSupport.mem_submonoid {α β : Type*} [TopologicalSpace α] [MulOneClass β]
-    {f : α → β} : f ∈ HasCompactMulSupport.submonoid α β ↔ HasCompactMulSupport f :=
+theorem HasCompactMulSupport.mem_submonoid_iff {f : α → β} :
+    f ∈ HasCompactMulSupport.submonoid α β ↔ HasCompactMulSupport f :=
   Iff.rfl
 
 @[to_additive]
@@ -413,19 +414,25 @@ theorem HasCompactMulSupport.list_prod {α β : Type*} [TopologicalSpace α] [Mo
     HasCompactMulSupport l.prod :=
   list_prod_mem (S := HasCompactMulSupport.submonoid α β) hl
 
+end Monoid
+
+section CommMonoid
+
+variable [TopologicalSpace α] [CommMonoid β]
+
 @[to_additive]
-theorem HasCompactMulSupport.multiset_prod {α β : Type*} [TopologicalSpace α] [CommMonoid β]
+theorem HasCompactMulSupport.multiset_prod
     (m : Multiset (α → β)) (hm : ∀ f ∈ m, HasCompactMulSupport f) :
     HasCompactMulSupport m.prod :=
   multiset_prod_mem (S := HasCompactMulSupport.submonoid α β) m hm
 
 @[to_additive]
-theorem HasCompactMulSupport.finset_prod {α β ι : Type*} [TopologicalSpace α] [CommMonoid β]
+theorem HasCompactMulSupport.finset_prod {ι : Type*}
     {s : Finset ι} {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
     HasCompactMulSupport (∏ i ∈ s, f i) :=
   prod_mem (S := HasCompactMulSupport.submonoid α β) hf
 
-end Monoid
+end CommMonoid
 
 section DivisionMonoid
 
