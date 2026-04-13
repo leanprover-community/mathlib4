@@ -837,12 +837,12 @@ instance : Mul (lp B ∞) where
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+  { lp.nonUnitalRing, lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
