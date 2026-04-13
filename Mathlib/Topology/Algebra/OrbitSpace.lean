@@ -81,8 +81,7 @@ lemma mem_localInverseAt_source {p : M} : ⟦p⟧ ∈ (localInverseAt G p).sourc
 /-- If a point `k` lies on the source of `localHomeomorphAt p` and its class `⟦k⟧` lies on the
 source of `localInverseAt p`, then `localInverseAt p` sends `⟦k⟧` back to its representative `k`. -/
 lemma localInverseAt_apply_other {p k : M}
-    (h : k ∈ (localHomeomorphAt G p).source)
-    (h' : ⟦k⟧ ∈ (localInverseAt G p).source) :
+    (h : k ∈ (localHomeomorphAt G p).source) (h' : ⟦k⟧ ∈ (localInverseAt G p).source) :
     localInverseAt G p ⟦k⟧ = k := by
   refine (localHomeomorphAt G p).injOn ?_ h ?_
   · simp [localInverseAt, (localHomeomorphAt G p).map_target h']
