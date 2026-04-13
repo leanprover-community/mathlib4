@@ -516,6 +516,21 @@ instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFo
   holo := CuspFormClass.holo
   bdd_at_cusps f _ hc g hg := (CuspFormClass.zero_at_cusps f hc g hg).boundedAtFilter
 
+/-- The underlying modular form of a cusp form. -/
+def toModularForm (f : CuspForm Γ k) : ModularForm Γ k where
+  toSlashInvariantForm := f.toSlashInvariantForm
+  holo' := f.holo'
+  bdd_at_cusps' hc g hg := (f.zero_at_cusps' hc g hg).boundedAtFilter
+
+@[simp]
+lemma toModularForm_apply (f : CuspForm Γ k) (z : ℍ) : (toModularForm f) z = f z := rfl
+
+/-- A cusp form can be viewed as a modular form. -/
+instance : Coe (CuspForm Γ k) (ModularForm Γ k) := ⟨toModularForm⟩
+
+@[simp]
+lemma coe_toModularForm (f : CuspForm Γ k) (z : ℍ) : ((f : ModularForm Γ k) : ℍ → ℂ) z = f z := rfl
+
 /-- Transport a cusp form along an equality of subgroups. -/
 def ofSubgroupEq {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : CuspForm Γ k) :
     CuspForm Γ' k where

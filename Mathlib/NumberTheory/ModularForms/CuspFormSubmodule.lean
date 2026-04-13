@@ -44,16 +44,16 @@ namespace CuspForm
 
 /-- The inclusion of cusp forms into modular forms, as a ℂ-linear map. -/
 def toModularFormₗ [Γ.HasDetOne] : CuspForm Γ k →ₗ[ℂ] ModularForm Γ k where
-  toFun f :=
-    { toSlashInvariantForm := f.toSlashInvariantForm
-      holo' := f.holo'
-      bdd_at_cusps' := fun hc g hg ↦ (f.zero_at_cusps' hc g hg).boundedAtFilter }
+  toFun := toModularForm
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 lemma toModularFormₗ_apply [Γ.HasDetOne] (f : CuspForm Γ k) (z : ℍ) :
     (toModularFormₗ f) z = f z := rfl
+
+lemma toModularFormₗ_eq_coe [Γ.HasDetOne] (f : CuspForm Γ k) :
+    toModularFormₗ f = (f : ModularForm Γ k) := rfl
 
 lemma toModularFormₗ_injective [Γ.HasDetOne] :
     Function.Injective (toModularFormₗ : CuspForm Γ k → ModularForm Γ k) :=
