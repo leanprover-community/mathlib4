@@ -476,6 +476,10 @@ def Homeomorph.ofEqSubtypes {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ 
   continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
   continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
 
+/--
+Homeomorphism between the intersection of two subsets `V` and `W` of a topological space `X` and
+`Subtype.val (p := W) ⁻¹' V`.
+-/
 def Homeomorph.interValPreimage (W V : Set X) : ↑(W ∩ V) ≃ₜ ↑(Subtype.val (p := W) ⁻¹' V) where
   toFun := fun ⟨x, hx⟩ ↦ ⟨⟨x, hx.1⟩, hx.2⟩
   invFun := fun ⟨⟨x, hx1⟩, hx2⟩ ↦ ⟨x, ⟨hx1, hx2⟩⟩
