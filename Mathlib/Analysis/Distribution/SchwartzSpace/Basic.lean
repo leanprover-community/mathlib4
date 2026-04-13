@@ -1327,7 +1327,7 @@ theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p
     ENNReal.toReal_ofReal (by positivity)]
 
 theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂ μ := by
+    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂μ := by
   simpa using norm_toLp' (p := 1) (by simp) (by simp)
 
 theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :

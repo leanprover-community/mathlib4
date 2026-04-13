@@ -626,7 +626,7 @@ lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
     ‖x‖ ≤ ‖y‖ := by
   obtain (rfl | rfl | hp) := p.trichotomy
   · exact hp rfl |>.elim
-  · exact norm_le_of_forall_le (by positivity) fun i ↦(h i).trans <| norm_apply_le_norm hp y i
+  · exact norm_le_of_forall_le (by positivity) fun i ↦ (h i).trans <| norm_apply_le_norm hp y i
   · exact norm_le_of_forall_sum_le hp (norm_nonneg' _) fun s ↦ calc
       ∑ i ∈ s, ‖x i‖ ^ p.toReal
       _ ≤ ∑ i ∈ s, ‖y i‖ ^ p.toReal := by gcongr with i _; exact h i
@@ -736,7 +736,7 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
         exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
-        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable))  }
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
 end Sum
