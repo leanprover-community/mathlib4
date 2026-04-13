@@ -289,17 +289,10 @@ end
 
 section CompatibleSMul
 
-<<<<<<< weakly-etale
-variable (R S T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T]
-  [Semiring A] [Semiring B]
-variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-  [Algebra T A]
-=======
 variable (R S T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T] [Semiring A]
   [Semiring B]
 variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
 variable [Algebra T A] [SMulCommClass R T A] [SMulCommClass S T A]
->>>>>>> master
 variable [SMulCommClass R S A] [CompatibleSMul R S A B]
 
 /-- If A and B are both R- and S-algebras and their actions on them commute,
