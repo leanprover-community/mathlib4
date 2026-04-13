@@ -490,8 +490,7 @@ lemma addVal_eq_iff_associated (x y : R) :
   · intro h
     by_cases hx : x = 0
     · simp_all only [AddValuation.map_zero]
-      have : y = 0 := addVal_eq_top_iff.mp h.symm
-      rw [this]
+      rw [addVal_eq_top_iff.mp h.symm]
     by_cases hy : y = 0
     · simp_all only [AddValuation.map_zero, associated_zero_iff_eq_zero]
       have : x = 0 := addVal_eq_top_iff.mp h
