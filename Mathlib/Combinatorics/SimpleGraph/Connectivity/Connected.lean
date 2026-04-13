@@ -260,6 +260,7 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
+@[simp]
 lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
     (h : G.Preconnected) : G.support = Set.univ := by
   simp only [Set.eq_univ_iff_forall]
@@ -269,6 +270,10 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   cases p with
   | nil => contradiction
   | @cons _ w => exact ⟨w, ‹_›⟩
+
+@[simp]
+lemma Preconnected.not_isIsolated [Nontrivial V] {G : SimpleGraph V} (hG : G.Preconnected) (v : V) :
+    ¬ G.IsIsolated v := by simp [← mem_support_iff_not_isIsolated, hG]
 
 lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
     (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
