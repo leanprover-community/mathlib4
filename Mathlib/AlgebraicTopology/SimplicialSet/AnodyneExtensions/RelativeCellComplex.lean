@@ -426,7 +426,7 @@ lemma exists_or_of_range_m_N {j : ι}
   obtain hd | rfl := (SimplexCategory.le_of_mono g).lt_or_eq
   · rw [Nat.lt_succ_iff] at hd
     obtain hd | rfl := hd.lt_or_eq
-    · exact (hs' (by simp [horn_obj_eq_top x.index d (by lia)])).elim
+    · exact (hs' (by simp [horn_obj_eq_univ x.index d (by lia)])).elim
     · obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono g
       obtain rfl := (objEquiv_symm_δ_notMem_horn_iff _ _).mp hs'
       exact ⟨x, Or.inr rfl⟩
