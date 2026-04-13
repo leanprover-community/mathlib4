@@ -130,6 +130,9 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
     Function.Injective fun M : Matrix m n α => M.map f := fun _ _ h =>
   ext fun i j => hf <| ext_iff.mpr h i j
 
+theorem map_involutive {f : α → α} (hf : Function.Involutive f) :
+    Function.Involutive fun M : Matrix m n α ↦ M.map f := by intro; simp [hf]
+
 /-- The transpose of a matrix. -/
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
@@ -143,46 +146,48 @@ theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
 scoped postfix:1024 "ᵀ" => Matrix.transpose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  inferInstanceAs <| Inhabited <| m → n → α
+  inferInstanceAs <| Inhabited (m → n → α)
 
 instance add [Add α] : Add (Matrix m n α) :=
-  fast_instance% Pi.instAdd
+  inferInstanceAs <| Add (m → n → α)
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
-  fast_instance% Pi.addSemigroup
+  inferInstanceAs <| AddSemigroup (m → n → α)
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
-  fast_instance% Pi.addCommSemigroup
+  inferInstanceAs <| AddCommSemigroup (m → n → α)
 
 instance zero [Zero α] : Zero (Matrix m n α) :=
-  fast_instance% Pi.instZero
+  inferInstanceAs <| Zero (m → n → α)
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
-  fast_instance% Pi.addZeroClass
+  inferInstanceAs <| AddZeroClass (m → n → α)
 
-instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
-  fast_instance% Pi.addMonoid
+instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) where
+  __ : AddMonoid (Matrix m n α) := inferInstanceAs <| AddMonoid (m → n → α)
+  nsmul a b := fun i ↦ a • b i
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
-  fast_instance% Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (m → n → α)
 
 instance neg [Neg α] : Neg (Matrix m n α) :=
-  fast_instance% Pi.instNeg
+  inferInstanceAs <| Neg (m → n → α)
 
 instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
-  Pi.involutiveNeg
+  inferInstanceAs <| InvolutiveNeg (m → n → α)
 
 instance sub [Sub α] : Sub (Matrix m n α) :=
-  fast_instance% Pi.instSub
+  inferInstanceAs <| Sub (m → n → α)
 
-instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
-  fast_instance% Pi.addGroup
+instance addGroup [AddGroup α] : AddGroup (Matrix m n α) where
+  __ : AddGroup (Matrix m n α) := inferInstanceAs <| AddGroup (m → n → α)
+  zsmul a b := fun i ↦ a • b i
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup (m → n → α)
 
 instance unique [Unique α] : Unique (Matrix m n α) :=
-  fast_instance% Pi.unique
+  inferInstanceAs <| Unique (m → n → α)
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   inferInstanceAs <| Subsingleton <| m → n → α
@@ -190,8 +195,8 @@ instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
 
-instance smul [SMul R α] : SMul R (Matrix m n α) :=
-  fast_instance% Pi.instSMul
+instance smul [SMul R α] : SMul R (Matrix m n α) where
+  smul a b := fun i ↦ a • b i
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
@@ -206,14 +211,14 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
   Pi.isCentralScalar
 
 instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
-  fast_instance% Pi.mulAction _
+  inferInstanceAs <| MulAction R (m → n → α)
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
-  fast_instance% Pi.distribMulAction _
+  inferInstanceAs <| DistribMulAction R (m → n → α)
 
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
-  fast_instance% Pi.module _ _ _
+  inferInstanceAs <| Module R (m → n → α)
 
 section
 
@@ -236,11 +241,10 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem dite_apply (P : Prop) [Decidable P]
     (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
     dite P A B i j = dite P (A · i j) (B · i j) := by
-  rw [dite_apply, dite_apply]
+  by_cases h : P <;> simp [h]
 
 protected theorem ite_apply (P : Prop) [Decidable P]
     (A : Matrix m n α) (B : Matrix m n α) (i : m) (j : n) :

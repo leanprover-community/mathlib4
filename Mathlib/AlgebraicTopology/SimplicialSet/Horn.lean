@@ -82,9 +82,8 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
-set_option backward.isDefEq.respectTransparency false in
-lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by lia) :
-    (horn.{u} n i).obj (op ⦋m⦌) = ⊤ := by
+lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by lia) :
+    (horn.{u} n i).obj (op ⦋m⦌) = .univ := by
   ext x
   obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
   obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
@@ -95,7 +94,9 @@ lemma horn_obj_eq_top {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
     lia
-  simpa [horn_eq_iSup] using ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+  have : ∃ j, ¬j = i ∧ ∀ (i : Fin (m + 1)), ¬(stdSimplex.objEquiv.symm.{u} f) i = j :=
+    ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+  simpa [horn_eq_iSup] using this
 
 lemma subcomplex_le_horn_iff {n : ℕ}
     (A : Δ[n + 1].Subcomplex) (i : Fin (n + 2)) :
@@ -109,7 +110,7 @@ lemma subcomplex_le_horn_iff {n : ℕ}
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro d x hx
     by_cases! hd : d < n
-    · simp [horn_obj_eq_top i d]
+    · simp [horn_obj_eq_univ i d]
     · obtain ⟨⟨S, hS⟩, rfl⟩ := stdSimplex.nonDegenerateEquiv'.symm.surjective x
       dsimp at hS
       simp only [stdSimplex.nonDegenerateEquiv'_symm_mem_iff_face_le] at hx ⊢

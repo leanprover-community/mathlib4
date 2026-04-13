@@ -350,8 +350,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     prod_pos fun i hi => rpow_pos_of_pos (inv_pos.2 (hz i hi)) _
   have s_pos : 0 < ∑ i ∈ s, w i * (z i)⁻¹ :=
     sum_pos (fun i hi => mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
-  norm_num at this
-  rw [← inv_le_inv₀ s_pos p_pos] at this
+  simp only [Pi.div_apply, Pi.one_apply, one_div, ← inv_le_inv₀ s_pos p_pos] at this
   apply le_trans this
   have p_pos₂ : 0 < (∏ i ∈ s, (z i) ^ w i)⁻¹ :=
     inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _)
@@ -506,15 +505,8 @@ bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `
 form a `Real.HolderTriple`. -/
 theorem Lr_rpow_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTriple q r) :
     ∑ i ∈ s, (f i * g i) ^ r ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
-  have := hpqr.holderConjugate_div_div
-  calc ∑ i ∈ s, (f i * g i) ^ r
-    _ = ∑ i ∈ s, (f i) ^ r * (g i) ^ r := s.sum_congr rfl fun i hi ↦ mul_rpow ..
-    _ ≤ (∑ i ∈ s, f i ^ p) ^ (r / p) * (∑ i ∈ s, g i ^ q) ^ (r / q) := by
-      apply inner_le_Lp_mul_Lq s _ _ this |>.trans_eq
-      congr! 2
-      all_goals try simp only [fieldEq]
-      all_goals
-        refine s.sum_congr rfl fun i hi ↦ by simp [← rpow_mul, ← mul_div_assoc, hpqr.pos'.ne']
+  simpa [mul_rpow, ← NNReal.rpow_mul, ← mul_div_assoc, hpqr.pos'.ne', fieldEq] using
+    inner_le_Lp_mul_Lq s (fun i ↦ f i ^ r) (fun i ↦ g i ^ r) hpqr.holderConjugate_div_div
 
 /-- **Hölder inequality**: The `L^r` norm of the product of two functions is bounded by the
 product of their `L^p` and `L^q` norms when `p`, `q`, and `r` form a `Real.HolderTriple`. -/
