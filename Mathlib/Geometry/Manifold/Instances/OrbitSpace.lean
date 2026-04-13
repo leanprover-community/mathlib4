@@ -22,7 +22,7 @@ Assume that a group `G` acts properly discontinuously on `M`.
 
 Then the orbit space `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
 
-## TO-DO
+## TODO
 
 * show that the quotient is an `IsManifold I n` for a suitable
   `ModelWithCorners I`.
