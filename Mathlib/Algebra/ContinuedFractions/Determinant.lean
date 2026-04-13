@@ -64,11 +64,12 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
 theorem determinant :
   g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1)
   = ∏ i ∈ Finset.range (n + 1), (- (g.s.get? i).elim 0 Pair.a) := by
-  rcases Decidable.em (TerminatedAt g n) with terminatedAt_n | not_terminatedAt_n
+  rcases em (TerminatedAt g n) with terminatedAt_n | not_terminatedAt_n
   swap; · exact determinant_aux <| Or.inr <| not_terminatedAt_n
-  rw [dens_stable_of_terminated n.le_succ <| terminated_stable (le_refl n) terminatedAt_n,
-  nums_stable_of_terminated n.le_succ <| terminated_stable (le_refl n) terminatedAt_n,
-  Finset.prod_range_succ, terminatedAt_n, Option.elim_none]; ring
+  rw [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
+  rw [nums_stable_of_terminated n.le_succ <| terminatedAt_n]
+  rw [Finset.prod_range_succ, terminatedAt_n, Option.elim_none]
+  ring
 
 end GenContFract
 
