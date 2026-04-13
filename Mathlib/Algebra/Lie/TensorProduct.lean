@@ -187,7 +187,6 @@ variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
 
 Given a Lie ideal `I ⊆ L` and a Lie submodule `N ⊆ M`, by tensoring the inclusion maps and then
