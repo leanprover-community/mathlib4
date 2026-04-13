@@ -302,7 +302,7 @@ lemma mk' (hHG : H ≤ G) (hclosed : ∀ ⦃e x⦄, G.Inc e x → x ∈ V(H) →
   closed _ _ he hx := hclosed he hx
 
 protected lemma trans (h₁ : G ≤c G₁) (h₂ : G₁ ≤c G₂) : G ≤c G₂ :=
-  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦  h₁.closed (h.of_compatible (Compatible.of_ge h₂.le)
+  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦ h₁.closed (h.of_compatible (Compatible.of_ge h₂.le)
     (h₂.closed h (h₁.vertexSet_mono hx))) hx
 
 instance : IsPartialOrder (Graph α β) (· ≤c ·) where
@@ -337,7 +337,7 @@ lemma mem_iff_of_adj (hxy : G.Adj x y) (hHG : H ≤c G) : x ∈ V(H) ↔ y ∈ V
   hHG.mem_iff_of_isLink hxy.choose_spec
 
 lemma anti_right (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) (hHG : H ≤c G) : H ≤c G₁ :=
-  mk' hHG₁ fun  _ _ he hx ↦ hHG.inc_congr hx |>.mpr (he.mono hG₁) |>.edge_mem
+  mk' hHG₁ fun _ _ he hx ↦ hHG.inc_congr hx |>.mpr (he.mono hG₁) |>.edge_mem
 
 end IsClosedSubgraph
 
