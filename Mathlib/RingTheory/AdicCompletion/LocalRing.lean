@@ -38,18 +38,14 @@ open IsLocalRing
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
     IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) :=
   (IsAdicComplete.map_algebraMap_iff _ _).mpr (AdicCompletion.isAdicComplete fg)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
     (m.map (algebraMap R (AdicCompletion I R))).IsMaximal := by
   have compeq : (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
-    (Ideal.Quotient.mk I) := by
-    ext
-    simp
+    (Ideal.Quotient.mk I) := rfl
   have kerle : RingHom.ker (evalOneₐ I).toRingHom ≤ m.map (algebraMap R (AdicCompletion I R)) := by
     intro x hx
     have : x ∈ (AdicCompletion.eval I R 1).ker := by
@@ -97,7 +93,6 @@ lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
     (x : AdicCompletion (maximalIdeal R) R) :
     x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.1 1 = 0 := by
@@ -154,14 +149,11 @@ lemma AdicCompletion.residueField_map_bijective [IsNoetherianRing R] [IsLocalRin
       (algebraMap R (AdicCompletion (maximalIdeal R) R))) :=
     AdicCompletion.residueField_map_bijective_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)).spanFinrank =
     (maximalIdeal R).spanFinrank := by
   have fg : (maximalIdeal R).FG := fg_of_isNoetherianRing (maximalIdeal R)
-  have comapeq : (maximalIdeal (AdicCompletion (maximalIdeal R) R)).comap
-    (algebraMap R (AdicCompletion (maximalIdeal R) R)) = maximalIdeal R :=
-    ((IsLocalRing.local_hom_TFAE _).out 0 4).mp (by infer_instance)
+  have comapeq := IsLocalRing.maximalIdeal_comap (algebraMap R (AdicCompletion (maximalIdeal R) R))
   let f := Ideal.mapCotangent _ _ (Algebra.ofId R (AdicCompletion (maximalIdeal R) R))
     (le_of_eq comapeq.symm)
   have inj : Function.Injective f := by
@@ -195,14 +187,10 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
   have rkeq := rank_eq_of_equiv_equiv _
     (LinearEquiv.ofBijective f ⟨inj, surj⟩).toAddEquiv
     (residueField_map_bijective R) (fun r m ↦ by
-      rcases IsLocalRing.residue_surjective r with ⟨s, hs⟩
-      simp only [← hs]
-      change f (s • m) = _
-      rw [map_smul]
-      rfl )
+      rcases IsLocalRing.residue_surjective r with ⟨s, rfl⟩
+      exact map_smul f s m )
   have fg' : (maximalIdeal (AdicCompletion (maximalIdeal R) R)).FG := by
-    rw [AdicCompletion.maximalIdeal_eq_map]
-    exact fg.map _
+    simpa [AdicCompletion.maximalIdeal_eq_map] using fg.map _
   rw [IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg,
     IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg', eq_comm]
   simp [Module.finrank, CotangentSpace, rkeq]
