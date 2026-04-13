@@ -32,8 +32,7 @@ namespace MulAction
 `Quotient.mk _ : M → M⧸G` is a covering map. -/
 lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
-  IsQuotientCoveringMap.isCoveringMap (G := _) (f := _)
-    isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul
+  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
 
 end MulAction
 
