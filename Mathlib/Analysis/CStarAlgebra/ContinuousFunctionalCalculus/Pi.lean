@@ -43,9 +43,10 @@ lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i)
     (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
     cfcₙ f a = fun i => cfcₙ f (a i) := by
   by_cases hf₀ : f 0 = 0
-  · ext i; letI : Nonempty ι := ⟨i⟩
-    exact (Pi.evalNonUnitalStarAlgHom S A i).map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀
-      (continuous_apply i) ha (ha' i)
+  · ext i
+    have : Nonempty ι := ⟨i⟩
+    let φ := Pi.evalNonUnitalStarAlgHom S A i
+    exact φ.map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀ (continuous_apply i) ha (ha' i)
   · simp only [cfcₙ_apply_of_not_map_zero _ hf₀, Pi.zero_def]
 
 end nonunital_pi
