@@ -212,11 +212,16 @@ section
 
 variable (R A) in
 /-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
-@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+@[mk_iff, stacks 00U1 "Note that this is a different definition from this Stacks entry, but
 <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
+
+lemma Etale.iff_formallyUnramified_and_smooth :
+    Etale R A ↔ FormallyUnramified R A ∧ Smooth R A := by
+  rw [etale_iff, FormallyEtale.iff_formallyUnramified_and_formallySmooth, smooth_iff]
+  tauto
 
 end
 
@@ -225,6 +230,8 @@ namespace Etale
 attribute [instance] formallyEtale finitePresentation
 
 instance [Etale R A] : Smooth R A where
+
+instance (priority := low) [Etale R A] : Unramified R A where
 
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where

@@ -6298,6 +6298,7 @@ public import Mathlib.RingTheory.DividedPowers.SubDPIdeal
 public import Mathlib.RingTheory.DualNumber
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Etale.Descent
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Locus
