@@ -514,7 +514,6 @@ lemma mker_valuation_eq_isUnitSubmonoid :
       not_not] at h
     use b, h
   · obtain ⟨x, h, rfl⟩ := h
-    rw [valuation_eq_one_iff_notMem]
     simpa [IsDiscreteValuationRing.maximalIdeal] using h
 
 theorem associated_of_valuation_eq (x y : K)
