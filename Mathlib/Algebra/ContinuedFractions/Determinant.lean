@@ -95,7 +95,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
     rw [s_ith_eq, Option.elim_some, s.property i _ <| partNum_eq_s_a s_ith_eq]
   _ = (-1) ^ n := by rw [Finset.prod_const, Finset.card_range]
 
-/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)` for `SimpContFract`. -/
+/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1) ^ (n + 1)` for `SimpContFract`. -/
 theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
     (↑s : GenContFract K).nums n * (↑s : GenContFract K).dens (n + 1) -
       (↑s : GenContFract K).dens n * (↑s : GenContFract K).nums (n + 1) = (-1) ^ (n + 1) :=
