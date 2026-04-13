@@ -461,13 +461,14 @@ section completeBipartiteGraph
 
 variable {W₁ W₂ : Type*}
 
-theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
-    Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
+theorem edgeSet_completeBipartiteGraph :
+    (completeBipartiteGraph W₁ W₂).edgeSet =
+    .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
   · cases u <;> cases v <;> simp_all
   · grind [completeBipartiteGraph_adj, mem_edgeSet]
 
-theorem completeBipartiteGraph_edgeSet_encard :
+theorem edgeSet_completeBipartiteGraph_encard :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
   rw [completeBipartiteGraph_edgeSet, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
   exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
@@ -484,6 +485,7 @@ def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
     grind
+
 end completeBipartiteGraph
 
 section
