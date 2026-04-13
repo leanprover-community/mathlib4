@@ -43,7 +43,7 @@ public section
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
 
-open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma
+open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma MatrixGroups
 
 open _root_.UpperHalfPlane hiding I
 
@@ -277,7 +277,8 @@ lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : E
     E hk z = 1 + (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   have : eisensteinSeriesMF (Int.toNat_le.mp hk) 0 z = eisensteinSeriesSIF (N := 1) 0 k z := rfl
-  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeriesSIF_apply 0 k z, eisensteinSeries]
+  rw [E, ModularForm.ofSubgroupEq_apply, ModularForm.IsGLPos.smul_apply, this,
+    eisensteinSeriesSIF_apply 0 k z, eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow hk hk2 z
   have HE2 := tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries hk z
   have z2 : riemannZeta k ≠ 0 := riemannZeta_ne_zero_of_one_lt_re <| by norm_cast; grind
@@ -327,7 +328,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
   set β : ℂ := -(2 * k / bernoulli k : ℂ)
   set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
   suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
-    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z this m).symm
+    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL this m).symm
   intro τ
   have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)

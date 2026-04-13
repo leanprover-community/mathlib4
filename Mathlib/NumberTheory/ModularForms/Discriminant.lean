@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # The modular discriminant Δ
@@ -35,7 +36,8 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup MatrixGroups
+open Function Complex Topology Filter SlashInvariantForm SlashInvariantFormClass
+  CongruenceSubgroup MatrixGroups ModularFormClass
 
 open UpperHalfPlane hiding I
 
@@ -175,7 +177,7 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
     (discriminant_bounded_factor.congr fun z ↦ by congr 1)
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
+@[expose] def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
   toFun := Δ
   slash_action_eq' A hA := by
     obtain ⟨A, rfl⟩ := hA
