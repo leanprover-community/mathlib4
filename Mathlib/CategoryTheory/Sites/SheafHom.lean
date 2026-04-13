@@ -144,7 +144,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
             dsimp
             rw [id_comp, assoc]
             have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
-            simp only [Functor.id_obj, op_id, Functor.map_id, id_apply] at H
+            simp only [op_id, Functor.map_id, id_apply] at H
             let φ : Over.mk f.left ⟶ Over.mk (𝟙 Z₁.left) := Over.homMk f.left
             have H' := (x (Z₁.hom ≫ g) hZ₁).naturality φ.op
             dsimp at H H' ⊢
