@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Rat.Init
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Division (semi)rings and (semi)fields
@@ -180,7 +181,8 @@ If the field has positive characteristic `p`, our division by zero convention fo
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
+instance (priority := 100) Field.toSemifield [Field K] : Semifield K :=
+  fast_instance% { ‹Field K› with }
 
 namespace NNRat
 variable [DivisionSemiring K]
