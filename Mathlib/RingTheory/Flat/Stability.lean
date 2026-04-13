@@ -69,14 +69,19 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
   exact Subtype.val_injective
 
 variable {R M} in
+lemma ulift_iff_left : Flat (ULift.{t} R) M ↔ Flat R M := by
+  refine ⟨fun h ↦ .trans _ (ULift R) _, fun h ↦ ?_⟩
+  have : Module.Flat (ULift.{t} R) R := .of_ulift
+  let _ := ULift.algebra'
+  exact .trans _ R _
+
+variable {R M} in
+lemma ulift_iff_right : Flat R (ULift.{t} M) ↔ Flat R M :=
+  Flat.equiv_iff ULift.moduleEquiv
+
+variable {R M} in
 lemma ulift_iff : Flat (ULift.{t} R) (ULift.{t'} M) ↔ Flat R M := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : Module.Flat R (ULift.{t'} M) := .trans _ (ULift.{t} R) _
-    exact .of_ulift
-  · have : Module.Flat (ULift.{t} R) R := .of_ulift
-    let _ := ULift.algebra'
-    have : Module.Flat (ULift.{t} R) M := .trans _ R _
-    infer_instance
+  rw [ulift_iff_left, ulift_iff_right]
 
 end Composition
 

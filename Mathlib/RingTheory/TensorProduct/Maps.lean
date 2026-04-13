@@ -862,10 +862,10 @@ variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 attribute [local instance] ULift.algebra' in
 /-- `ULift` commutes with tensor products of algebras. -/
 def Algebra.TensorProduct.uliftEquiv :
-    ULift.{u₁} (A ⊗[R] B) ≃ₐ[ULift S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
+    ULift.{u₁} (A ⊗[R] B) ≃ₐ[S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
   AlgEquiv.trans ULift.algEquiv
     (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
-      (Algebra.TensorProduct.equivOfCompatibleSMul _ _ S _ _).restrictScalars _)
+      Algebra.TensorProduct.equivOfCompatibleSMul _ _ _ _ _)
 
 variable {A B}
 
@@ -890,7 +890,7 @@ attribute [local instance] ULift.algebra' in
 lemma Algebra.TensorProduct.lmul'_ulift :
     TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
       (TensorProduct.lmul' (S := S) R).ulift.comp
-        (uliftEquiv R R S S).symm.toAlgHom := by
+        (uliftEquiv _ _ _ _).symm.toAlgHom := by
   ext <;> simp
 
 end
