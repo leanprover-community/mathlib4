@@ -20,3 +20,7 @@ def OrderMonoidIso.unitsCongr {α β : Type*} [Preorder α] [Monoid α] [Preorde
     (e : α ≃*o β) : αˣ ≃*o βˣ where
   __ := Units.mapEquiv e.toMulEquiv
   map_le_map_iff' {x y} := by simp [← Units.val_le_val]
+
+lemma OrderMonoidIso.unitsCongr_symm_apply {α β : Type*} [Preorder α] [Monoid α] [Preorder β] [Monoid β]
+    (e : α ≃*o β) (x : βˣ) : e.unitsCongr.symm x = e.symm x := by
+  rfl
