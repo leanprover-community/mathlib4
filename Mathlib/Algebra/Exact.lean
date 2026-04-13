@@ -92,7 +92,7 @@ lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
   letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
-  simp [MulExact, Set.rangeFactorization, Subtype.ext_iff, this]
+  simp [MulExact, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -430,8 +430,7 @@ def Exact.splitInjectiveEquiv
     · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
-      suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
-      rw [← h₁ z, hz, map_sub, e.1, sub_self]
+      rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
       refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
