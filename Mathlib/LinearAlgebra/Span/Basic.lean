@@ -279,6 +279,28 @@ theorem notMem_span_of_apply_notMem_span_image [RingHomSurjective σ₁₂] (f :
     {s : Set M} (h : f x ∉ Submodule.span R₂ (f '' s)) : x ∉ Submodule.span R s :=
   h.imp (apply_mem_span_image_of_mem_span f)
 
+section DistribMulAction
+
+variable {α : Type*} [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
+
+theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
+  map_span _ _
+
+lemma smul_def (a : α) (S : Submodule R M) : a • S = span R (a • S) := by
+  simp [← smul_span]
+
+theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
+  Eq.symm (span_image _).symm
+
+theorem set_smul_span (s : Set α) (t : Set M) :
+    s • span R t = span R (s • t) := by
+  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
+
+theorem span_set_smul (s : Set α) (t : Set M) :
+    span R (s • t) = s • span R t := (set_smul_span s t).symm
+
+end DistribMulAction
+
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
   refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
@@ -478,19 +500,12 @@ lemma inf_sup_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
     (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := by
   rw [sup_comm, inf_comm, ← sup_inf_assoc_of_le_of_neg_le t hps hnps, inf_comm, sup_comm]
 
--- /-- Over a semiring, symmetric submodules are right-modular in the lattice of submodules.
---   This is a version of `sup_inf_assoc_of_le` for the not-necessarily-modular lattice
---   of submodules over a semiring. -/
--- lemma sup_inf_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
---     {p : Submodule R M} (hsp : s ≤ p) (hp : ∀ x ∈ p, -x ∈ p) :
---     (s ⊔ t) ⊓ p = s ⊔ (t ⊓ p) := sup_inf_assoc_of_le_of_neg_le t hsp (fun x hx => hp x (hsp hx))
-
--- /-- Over a semiring, symmetric submodules are left-modular in the lattice of submodules.
---   This is a version of `inf_sup_assoc_of_le` for the not-necessarily-modular lattice
---   of submodules over a semiring. -/
--- lemma inf_sup_assoc_of_le_of_neg_mem_iff {s : Submodule R M} (t : Submodule R M)
---     {p : Submodule R M} (hsp : p ≤ s) (hp : ∀ x ∈ p, -x ∈ p) :
---     (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := inf_sup_assoc_of_le_of_neg_le t hsp (fun x hx => hsp (hp x hx))
+theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
+  apply le_antisymm
+  · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
+    exact subset_span
+  · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
+    exact subset_span
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
@@ -500,11 +515,7 @@ lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
 
 @[simp]
-theorem span_neg (s : Set M) : span R (-s) = span R s :=
-  calc
-    span R (-s) = span R ((-LinearMap.id : M →ₗ[R] M) '' s) := by simp
-    _ = map (-LinearMap.id) (span R s) := (map_span (-LinearMap.id) _).symm
-    _ = span R s := by simp
+theorem span_neg (s : Set M) : span R (-s) = span R s := by simp [span_neg_eq_neg]
 
 instance : IsModularLattice (Submodule R M) := ⟨
   fun _ _ hxy _ _ => by rwa [← sup_inf_assoc_of_le_of_neg_le _ hxy (by simpa)]⟩
@@ -906,52 +917,3 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
 
 end LinearEquiv
-
-
-
-
-
-
-namespace Submodule
-
-variable {α : Type*} {R : Type*} {M : Type*}
-variable [Semiring R] [AddCommGroup M] [Module R M]
-
-open Pointwise
-
-theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
-  apply le_antisymm
-  · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
-    exact subset_span
-  · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
-    exact subset_span
-
-section
-
-variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
-
-theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
-  map_span _ _
-
-lemma smul_def (a : α) (S : Submodule R M) : a • S = span R (a • S : Set M) := by simp [← smul_span]
-
-theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
-  Eq.symm (span_image _).symm
-
-end
-
-section
-
-variable {S : Type*} [Monoid S]
-variable [DistribMulAction S M]
-
-theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
-    s • span R t = span R (s • t) := by
-  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
-
-theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
-    span R (s • t) = s • span R t := (set_smul_span s t).symm
-
-end
-
-end Submodule
