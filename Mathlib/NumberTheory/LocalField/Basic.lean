@@ -179,12 +179,11 @@ instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
         grind [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, vadd_eq_add]
       refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _ ?_
         (by simp [Submodule.nonempty]) (hc 0).isCompact hc
-      · intro n x ⟨y, hy1, hy2⟩
-        simp only [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, smul_eq_mul, Ideal.mul_top,
-          Submodule.vadd_eq_vadd_left, SetLike.mem_coe, ← hy2, vadd_eq_add] at *
-        refine ⟨f (n + 1) - f n + y, ?_, by ring⟩
-        · exact Ideal.add_mem _ ((Submodule.Quotient.eq _).mp (hf (Nat.le_succ _)).symm)
-            (Ideal.pow_le_pow_right (Nat.le_succ _) hy1)
+      intro n x ⟨y, hy1, hy2⟩
+      simp only [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, smul_eq_mul, Ideal.mul_top,
+        Submodule.vadd_eq_vadd_left, SetLike.mem_coe, ← hy2, vadd_eq_add] at *
+      exact ⟨f (n + 1) - f n + y, Ideal.add_mem _ ((Submodule.Quotient.eq _).mp
+        (hf (Nat.le_succ _)).symm) (Ideal.pow_le_pow_right (Nat.le_succ _) hy1), by ring⟩
     refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, hfy⟩ := Set.mem_iInter.mp hL n
     rw [smul_eq_mul, Ideal.mul_top, SModEq.sub_mem, ← hfy]
