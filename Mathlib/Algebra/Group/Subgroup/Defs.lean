@@ -627,8 +627,10 @@ namespace Subgroup
 variable {H : Subgroup G}
 
 @[to_additive]
-instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm]⟩
+instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
+    H.Normal := ⟨by simp [mul_comm']⟩
+
+@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 
@@ -672,33 +674,36 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")] alias setNormalizer := normalizer
+@[deprecated (since := "2026-03-19")]
+alias setNormalizer := normalizer
+@[deprecated (since := "2026-03-19")]
+alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
 
-variable {H} {S : Set G}
-
-@[to_additive]
-theorem mem_set_normalizer_iff {g : G} : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g * h * g⁻¹ ∈ S :=
-  Iff.rfl
-
-@[to_additive]
-theorem mem_set_normalizer_iff'' {g : G} : g ∈ normalizer S ↔ ∀ h : G, h ∈ S ↔ g⁻¹ * h * g ∈ S := by
-  rw [← inv_mem_iff (x := g), mem_set_normalizer_iff, inv_inv]
+variable {H} {S : Set G} {g : G}
 
 @[to_additive]
-theorem mem_set_normalizer_iff' {g : G} : g ∈ normalizer S ↔ ∀ n, n * g ∈ S ↔ g * n ∈ S :=
+theorem mem_set_normalizer_iff : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g * h * g⁻¹ ∈ S :=
+  .rfl
+
+@[to_additive]
+theorem mem_set_normalizer_iff'' : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g⁻¹ * h * g ∈ S := by
+  rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]
+
+@[to_additive]
+theorem mem_set_normalizer_iff' : g ∈ normalizer S ↔ ∀ h, h * g ∈ S ↔ g * h ∈ S :=
   ⟨fun h n ↦ by rw [h, mul_assoc, mul_inv_cancel_right],
     fun h n ↦ by rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
 
 @[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+theorem mem_normalizer_iff : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
   mem_set_normalizer_iff
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+theorem mem_normalizer_iff'' : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
   mem_set_normalizer_iff''
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+theorem mem_normalizer_iff' : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
   mem_set_normalizer_iff'
 
 @[to_additive]
@@ -708,11 +713,9 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-/-- A subgroup of a commutative group is commutative. -/
-@[to_additive /-- A subgroup of a commutative group is commutative. -/]
-instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H :=
-  ⟨CommMagma.to_isCommutative⟩
+@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H := inferInstance
 
 @[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :

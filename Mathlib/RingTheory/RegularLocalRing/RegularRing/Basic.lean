@@ -12,12 +12,13 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 # Definition of Regular Ring
 
-In this file, we define regular ring as ring with localization at every prime is regular local ring.
+In this file, we define regular rings as noetherian rings whose localization at every prime are
+regular local rings.
 (Note that regular local ring is not natrually regular ring in this definition).
 
 ## TODO
 Show that regular local rings are regular under this definition.
-This follows from localization of regular local rings are still regular (@Thmoas-Guan).
+This follows from localizations of regular local rings being regular (@Thmoas-Guan).
 
 -/
 
@@ -29,7 +30,7 @@ variable (R : Type*) [CommRing R]
 
 /-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing : Prop extends IsNoetherianRing R where
-  localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
+  isRegularLocalRing_localization : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
 
 variable {R} in
