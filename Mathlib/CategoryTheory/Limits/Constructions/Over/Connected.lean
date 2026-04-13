@@ -5,7 +5,7 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
@@ -115,6 +115,29 @@ instance hasLimitsOfShape_of_isConnected {B : D} [IsConnected J] [HasLimitsOfSha
 
 end CostructuredArrow
 
+namespace StructuredArrow
+
+/-- The projection from `StructuredArrow K B` to `C` creates any connected colimit. -/
+instance [IsConnected J] {B : D} : CreatesColimitsOfShape J (StructuredArrow.proj B K) :=
+  letI : CreatesLimitsOfShape Jᵒᵖ (proj B K).op :=
+    inferInstanceAs <| CreatesLimitsOfShape Jᵒᵖ <|
+      (structuredArrowOpEquivalence K B).functor ⋙ CostructuredArrow.proj K.op (.op B)
+  createsColimitsOfShapeOfOp _ _
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The forgetful functor from `StructuredArrow K B` preserves any connected colimit. -/
+instance [IsConnected J] {B : D} : PreservesColimitsOfShape J (StructuredArrow.proj B K) := by
+  have : PreservesLimitsOfShape Jᵒᵖ (proj B K).op :=
+    inferInstanceAs <| PreservesLimitsOfShape Jᵒᵖ <|
+      (structuredArrowOpEquivalence K B).functor ⋙ CostructuredArrow.proj K.op (.op B)
+  apply preservesColimitsOfShape_of_op
+
+instance {B : D} [IsConnected J] [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (StructuredArrow B K) where
+  has_colimit F := hasColimit_of_created F (StructuredArrow.proj B K)
+
+end StructuredArrow
+
 namespace Over
 
 /-- The forgetful functor from the over category creates any connected limit. -/
@@ -160,4 +183,23 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
   isLimitOfReflects (Over.forget _)
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
-end CategoryTheory.Over
+end Over
+
+namespace Under
+
+/-- The forgetful functor from the under category creates any connected limit. -/
+instance createsColimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
+    CreatesColimitsOfShape J (forget B) :=
+  inferInstanceAs <| CreatesColimitsOfShape J (StructuredArrow.proj _ _)
+
+/-- The forgetful functor from the under category preserves any connected limit. -/
+instance preservesColimitsOfShape_forget_of_isConnected [IsConnected J] {B : C} :
+    PreservesColimitsOfShape J (forget B) :=
+  inferInstanceAs <| PreservesColimitsOfShape J (StructuredArrow.proj _ _)
+
+/-- The under category has any connected limit which the original category has. -/
+instance hasColimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (Under B) where
+  has_colimit F := hasColimit_of_created F (forget B)
+
+end CategoryTheory.Under
