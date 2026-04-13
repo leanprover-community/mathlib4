@@ -14,7 +14,8 @@ There are many different versions of Lusin's theorem. All of them roughly say th
 function is continuous on nearly all its domain. Different versions of Lusin's theorem can be
 classified into roughly two types:
 
-1. The first type considers measures that can be approximated (from inside) by closed/compact
+1. (The following is not correct, the second type is probably more general and easier to prove.)
+The first type considers measures that can be approximated (from inside) by closed/compact
 sets and relies on Egoroff's theorem. In most classical textbooks, the codomain usually satisfies
 some countability conditions. We relax this condition by showing that the image of an AEMeasurable
 functions taking values in a pseudometrizable space is always contained in some separable space.
