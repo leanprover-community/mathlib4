@@ -173,6 +173,10 @@ theorem Topology.IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y �
 theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
   IsInducing.subtypeVal.specializes_iff.symm
 
+lemma Specializes.strictMono_val {p : Set X} :
+    @StrictMono _ _ (specializationPreorder p) (specializationPreorder X) Subtype.val :=
+  fun _ _ _ ↦ by simp_all [LT.lt, subtype_specializes_iff, subtype_specializes_iff]
+
 @[simp]
 theorem specializes_prod {x₁ x₂ : X} {y₁ y₂ : Y} : (x₁, y₁) ⤳ (x₂, y₂) ↔ x₁ ⤳ x₂ ∧ y₁ ⤳ y₂ := by
   simp only [Specializes, nhds_prod_eq, prod_le_prod]
