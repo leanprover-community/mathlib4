@@ -81,11 +81,10 @@ variable {N : Type v} [AddCommMonoid N] [Module R N]
 variable {N' : Type v'} [AddCommMonoid N'] [Module R N']
 
 theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
-    {ι : Type v'} {v : ι → N'} (hv : LinearIndependent R v)
-    (cnd : Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Cardinal.mk ι)) :
+    {ι : Type w} {v : ι → N'} (hv : LinearIndependent R v)
+    (cnd : Cardinal.lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} (Cardinal.mk ι)) :
     ∃ f : M →ₗ[R] N', Function.Injective f := by
-  rcases subsingleton_or_nontrivial M with _ | _
-  · exact ⟨0, Function.injective_of_subsingleton _⟩
+  nontriviality M
   have := Module.nontrivial R M
   rcases Module.Free.exists_set R M with ⟨_, ⟨B⟩⟩
   replace cnd := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
@@ -101,7 +100,7 @@ theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
 theorem exists_linearMap_injective_of_lift_rank_lt
     (cnd : Cardinal.lift.{v'} (Module.rank R M) < Cardinal.lift.{v} (Module.rank R N')) :
     ∃ f : M →ₗ[R] N', Function.Injective f := by
-  rcases exists_set_of_lt_lift_rank cnd with ⟨s, hs, hs₂⟩
+  rcases exists_set_linearIndependent_of_lt_lift_rank cnd with ⟨s, hs, hs₂⟩
   exact exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
     hs₂.linearIndependent hs.symm.le
 

@@ -110,18 +110,18 @@ namespace Module
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-theorem exists_set_of_lt_lift_rank {α : Cardinal.{w}}
-    (h : Cardinal.lift.{v} α < Cardinal.lift.{w} (Module.rank R M)) :
-    ∃ s : Set M, Cardinal.lift.{w} (Cardinal.mk s) = Cardinal.lift.{v} α ∧
+theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
+    (h : Cardinal.lift.{v} c < Cardinal.lift.{w} (Module.rank R M)) :
+    ∃ s : Set M, Cardinal.lift.{w} (Cardinal.mk s) = Cardinal.lift.{v} c ∧
                  LinearIndepOn R id s := by
-  rcases Cardinal.lt_lift_iff.mp h with ⟨α', hα', hαα'⟩
-  rcases exists_lt_of_lt_ciSup (by simpa [← hαα', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
+  rcases Cardinal.lt_lift_iff.mp h with ⟨c', hc', hcc'⟩
+  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
   rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
-  exact ⟨t, by simp [ht, hαα'], hs.mono hst⟩
+  exact ⟨t, by simp [ht, hcc'], hs.mono hst⟩
 
-theorem exists_set_of_lt_rank {α : Cardinal.{v}} (h : α < (Module.rank R M)) :
-    ∃ s : Set M, (Cardinal.mk s) = α ∧ LinearIndepOn R id s := by
-  simpa using exists_set_of_lt_lift_rank (Cardinal.lift_lt.mpr h)
+theorem exists_set_linearIndependent_of_lt_rank {c : Cardinal.{v}} (h : c < (Module.rank R M)) :
+    ∃ s : Set M, (Cardinal.mk s) = c ∧ LinearIndepOn R id s := by
+  simpa using exists_set_linearIndependent_of_lt_lift_rank (Cardinal.lift_lt.mpr h)
 
 variable [Nontrivial R]
 
