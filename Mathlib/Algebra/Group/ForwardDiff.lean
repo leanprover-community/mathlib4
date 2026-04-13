@@ -58,7 +58,7 @@ open fwdDiff
 
 section smul
 
-lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) :
+lemma fwdDiff_smul {R : Type*} [Ring R] [Module R G] (f : M → R) (g : M → G) :
     Δ_[h] (f • g) = Δ_[h] f • g + f • Δ_[h] g + Δ_[h] f • Δ_[h] g := by
   ext y
   simp only [fwdDiff, Pi.smul_apply', Pi.add_apply, smul_sub, sub_smul]
@@ -70,7 +70,7 @@ lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) 
     Δ_[h] (r • f) = r • Δ_[h] f :=
   funext fun _ ↦ (smul_sub ..).symm
 
-@[simp] lemma fwdDiff_smul_const {R : Type} [Ring R] [Module R G] (f : M → R) (g : G) :
+@[simp] lemma fwdDiff_smul_const {R : Type*} [Ring R] [Module R G] (f : M → R) (g : G) :
     Δ_[h] (fun y ↦ f y • g) = Δ_[h] f • fun _ ↦ g := by
   ext y
   simp only [fwdDiff, Pi.smul_apply', sub_smul]

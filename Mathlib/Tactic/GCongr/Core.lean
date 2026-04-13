@@ -5,16 +5,15 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public meta import Lean
 public meta import Batteries.Lean.Except
-public meta import Mathlib.Tactic.GCongr.ForwardAttr
-import all Lean.Meta.Tactic.Apply
 public import Batteries.Tactic.Exact
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Symm
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
+
+import all Lean.Meta.Tactic.Apply
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -704,46 +703,53 @@ partial def _root_.Lean.MVarId.gcongr
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
-/-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between an LHS and RHS.  For example,
+/-- `gcongr` applies "generalized congruence" rules to recursively reduce a goal of form
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` to (possibly multiple) goal(s) `⊢ Rᵢ aᵢ bᵢ`, keeping only the
+distinct pairs `aᵢ ≠ bᵢ`, where `Rᵢ` is a possibly different relation (depending on the
+precise rule). The relations `R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
+
+This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
+`@[gcongr]`.
+
+If a "generalized congruence" lemma has a side goal, `gcongr` will try to discharge it using
+`gcongr_discharger`, which is an extensible tactic based on `positivity`. Side goals not discharged
+in this way are left for the user.
+
+* `gcongr with x y ... z` names the variables that are introduced by descending into binders (for
+  example sums or suprema).
+* `gcongr n`, where `n` is a natural number literal, limits the depth of the recursive applications.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+* `gcongr t`, where `t` is a term with `?_` holes, performs congruence up to the holes in `t`.
+  In other words, `gcongr f ?_` turns a goal `⊢ R (f x) (f y)` into `⊢ R x y` (but no further).
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+
+Examples:
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  -- LHS and RHS both have the form x ^ 2 * ?_ + ?_
   gcongr
-  · linarith
-  · linarith
+  · -- New goal: ⊢ a ≤ b
+    linarith
+  · -- ⊢ New goal: c ≤ d
+    linarith
+-- Resulting proof term is:
+--   add_le_add (mul_le_mul_of_nonneg_left ?_ (Even.pow_nonneg (even_two_mul 1) x)) ?_
+-- where `add_le_add` and `mul_le_mul_of_nonneg_left` are generalized congruence lemmas
+-- and the side goal `0 ≤ x ^ 2` is discharged by `gcongr_discharger`.
 ```
-This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
-```
-x ^ 2 * ?_ + ?_
-```
-(with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
-`gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A depth limit or a pattern can be provided explicitly;
-this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
+  -- Using a pattern to limit the depth.
   gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
+  -- New goal: ⊢ a + c ≤ b + d
   linarith
 ```
 
-The "generalized congruence" rules are the library lemmas which have been tagged with the
-attribute `@[gcongr]`.  For example, the first example constructs the proof term
 ```
-add_le_add (mul_le_mul_of_nonneg_left ?_ (Even.pow_nonneg (even_two_mul 1) x)) ?_
-```
-using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.
-
-The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
-side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
-in this way are left for the user.
-
-`gcongr` will descend into binders (for example sums or suprema). To name the bound variables,
-use `with`:
-```
+-- Descending into binders (here: ⨆).
 example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
   gcongr with i
   exact h i
@@ -782,28 +788,29 @@ elab "gcongr" template:(ppSpace colGt term)?
   else
     throwError "gcongr did not make progress"
 
-/-- The `rel` tactic applies "generalized congruence" rules to solve a relational goal by
-"substitution".  For example,
+/-- `rel [h₁, ..., hₙ]` uses "generalized congruence" rules to solve a goal of form
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` by substituting with the terms `hᵢ : Rᵢ aᵢ bᵢ`. The relations
+`R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
+
+This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
+`@[gcongr]`.
+
+If a "generalized congruence" lemma has a side goal, `rel` will try to discharge it using
+`gcongr_discharger`, which is an extensible tactic based on `positivity`. If side goals cannot be
+discharged, or the terms `h₁`, ..., `hₙ` cannot solve the goals, the tactic fails.
+
+Examples:
 ```
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
   rel [h1, h2]
+-- In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c`
+-- of the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
+-- This constructs the proof term:
+--   add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
+-- using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.
 ```
-In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c` of
-the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
-
-The "generalized congruence" rules used are the library lemmas which have been tagged with the
-attribute `@[gcongr]`.  For example, the first example constructs the proof term
-```
-add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
-```
-using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.  If there are
-no applicable generalized congruence lemmas, the tactic fails.
-
-The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
-side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`gcongr_discharger`, which wraps `positivity` but can also be extended. If the side goals cannot
-be discharged in this way, the tactic fails. -/
+-/
 syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic

@@ -5,9 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
