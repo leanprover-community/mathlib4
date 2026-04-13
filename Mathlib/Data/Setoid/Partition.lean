@@ -238,38 +238,53 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
     rwa [← eq_eqv_class_of_mem _ hb hy]
   · exact exists_of_mem_partition hc
 
+/-- The subtype of partitions of a type, endowed with the canonical order on partitions. -/
+def Partitions (α : Type*) : Type _ := Subtype (@IsPartition α)
+
+/-- Interpreting an element of `Partitions α` as a set of sets. -/
+def Partitions.toSet (p : Partitions α) : Set (Set α) :=
+  Subtype.val p
+
+lemma Partitions.ext_iff (p q : Partitions α) : p = q ↔ p.toSet = q.toSet :=
+  Subtype.ext_iff
+
+lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.2
+
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
-instance Partition.le : LE (Subtype (@IsPartition α)) :=
-  ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
+instance Partition.le : LE (Partitions α) :=
+  ⟨fun x y => mkClasses x.toSet x.isPartition.2 ≤ mkClasses y.toSet y.isPartition.2⟩
 
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
-instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
+instance Partition.partialOrder : PartialOrder (Partitions α) where
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
   lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
+    rw [Partitions.ext_iff, ← classes_mkClasses x.toSet x.isPartition,
+      ← classes_mkClasses y.toSet y.isPartition, h]
 
 variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
 partitions of `α` into subsets. -/
-protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
+protected def Partition.orderIso : Setoid α ≃o Partitions α where
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff, ← classes_mkClasses C.1 C.2]
+  right_inv C := by
+    rw [Partitions.ext_iff, ← classes_mkClasses C.toSet C.isPartition]
+    rfl
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
 equivalent complete lattice on equivalence relations. -/
-instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
+instance Partition.completeLattice : CompleteLattice (Partitions α) :=
   GaloisInsertion.liftCompleteLattice <|
-    @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|
+    @OrderIso.toGaloisInsertion _ (Partitions α) _ (PartialOrder.toPreorder) <|
       Partition.orderIso α
 
 end Partition

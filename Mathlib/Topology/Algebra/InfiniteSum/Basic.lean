@@ -650,7 +650,7 @@ lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f
 lemma tprod_mulIndicator_of_mem_union_disjoint (s : γ → Set β) (f : β → α)
     (hs : Pairwise (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
     ∏' d, (s d).mulIndicator f i = f i :=
-  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem  s f i hi (pairwise_disjoint_mono hs
+  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise_disjoint_mono hs
     <| fun _ _ hi ↦ hi.1)
 
 @[to_additive]
