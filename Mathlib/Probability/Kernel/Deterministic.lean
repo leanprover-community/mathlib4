@@ -132,6 +132,9 @@ lemma comp_natural (κ : Kernel α β) [IsDeterministicKernel κ] :
 lemma deterministic_is_deterministic {f : α → β} (hf : Measurable f) :
     IsDeterministicKernel <| deterministic f hf := ⟨deterministic_comp_copy hf⟩
 
+instance : IsDeterministicKernel (Kernel.id (α := α)) :=
+    deterministic_is_deterministic (measurable_id)
+
 lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
     IsDeterministicKernel κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
   constructor
