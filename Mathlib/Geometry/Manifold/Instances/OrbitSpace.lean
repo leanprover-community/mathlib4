@@ -50,8 +50,8 @@ variable {M : Type*} [TopologicalSpace M]
 ## Charted space structure on the orbit space
 -/
 
-/-- The orbit space of a properly discontinuous group action on a
-manifold inherits a `ChartedSpace` structure modeled on the same space. -/
+/-- The orbit space of a properly discontinuous group action on a manifold inherits a
+`ChartedSpace` structure modeled on the same space. -/
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) where
   atlas := {(localInverseAt G q.out).trans (chartAt H q.out) | q : orbitRel.Quotient G M}
   chartAt q := (localInverseAt G q.out).trans (chartAt H q.out)
