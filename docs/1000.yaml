@@ -577,8 +577,10 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
-  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
-  # and https://github.com/fpvandoorn/sard (manifold version)
+  url: https://github.com/urkud/SardMoreira
+  authors: Yury Kudryashov
+  date: 2025-12-16
+  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -588,6 +590,9 @@ Q587081:
 
 Q588218:
   title: Koebe 1/4 theorem
+  url: https://github.com/girving/ray/blob/main/Ray/Koebe/Koebe.lean
+  authors: Geoffrey Irving
+  date: 2025-09-02
 
 Q594571:
   title: Van Aubel's theorem
