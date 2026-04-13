@@ -21,7 +21,7 @@ We also construct chosen local homeomorphisms and their inverses at each
 point, and establish basic properties.
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [TopologicalSpace M]
   {G : Type*} [Group G] [MulAction G M]
