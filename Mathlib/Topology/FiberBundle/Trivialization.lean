@@ -592,6 +592,19 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
+/-- Fixing the fiber coordinate and varying the base point in a trivialization
+inverse is continuous at any point in the target. -/
+theorem continuousAt_symm_prodMk_left {b : B} {v : F} (h : (b, v) ∈ e.target) :
+    ContinuousAt (fun q => e.toOpenPartialHomeomorph.symm (q, v)) b :=
+  ContinuousAt.comp (e.continuousOn_symm.continuousAt (e.open_target.mem_nhds h))
+    (continuousAt_id.prodMk continuousAt_const)
+
+/-- Fixing the fiber coordinate and varying the base point in a trivialization
+inverse is continuous on the base set. -/
+theorem continuousOn_symm_prodMk_left {v : F} :
+    ContinuousOn (fun q => e.toOpenPartialHomeomorph.symm (q, v)) e.baseSet :=
+  fun _ hb => (e.continuousAt_symm_prodMk_left (e.mem_target.mpr hb)).continuousWithinAt
+
 /-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
