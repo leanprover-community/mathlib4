@@ -82,7 +82,7 @@ variable {N' : Type v'} [AddCommMonoid N'] [Module R N']
 
 theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
     {ι : Type w} {v : ι → N'} (hv : LinearIndependent R v)
-    (cnd : Cardinal.lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} (Cardinal.mk ι)) :
+    (cnd : Cardinal.lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} #ι) :
     ∃ f : M →ₗ[R] N', Function.Injective f := by
   nontriviality M
   have := Module.nontrivial R M
@@ -93,7 +93,7 @@ theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
   refine ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
 
 theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
-    {ι : Type v} {v : ι → N} (hv : LinearIndependent R v) (cnd : Module.rank R M ≤ Cardinal.mk ι) :
+    {ι : Type v} {v : ι → N} (hv : LinearIndependent R v) (cnd : Module.rank R M ≤ #ι) :
     ∃ f : M →ₗ[R] N, Function.Injective f :=
   exists_linearMap_injective_of_linearIndependent_of_lift_rank_le hv (by simpa using cnd)
 
