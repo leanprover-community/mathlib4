@@ -59,7 +59,7 @@ lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 
     _ ~[atTop] (fun n => (n ^ k / k.factorial) * (p n) ^ k) :=
       (isEquivalent_choose k).mul IsEquivalent.refl
     _ ~[atTop] (fun n ↦ ((n * p n) ^ k) / k.factorial) :=
-      EventuallyEq.isEquivalent (.of_eq (by ext; field))
+      EventuallyEq.isEquivalent (.of_eq (by ext; ring))
   refine (IsEquivalent.tendsto_nhds_iff this).mpr ?_
   simpa [div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
 
@@ -79,7 +79,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
     filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
     rw [pow_sub₀ _ (by grind) hn]
   refine Tendsto.congr' hEq.symm ?_
-  have : Real.exp (-r) = Real.exp (-r) * (1 ^ k)⁻¹ := by field
+  have : Real.exp (-r) = Real.exp (-r) * (1 ^ k)⁻¹ := by ring
   rw [this]
   refine Tendsto.mul (Real.tendsto_one_add_pow_exp_of_tendsto ?_) ?_
   · simpa using hr.neg

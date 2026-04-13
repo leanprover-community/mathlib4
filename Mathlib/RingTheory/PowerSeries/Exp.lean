@@ -74,7 +74,7 @@ theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
     rw [map_add, map_natCast, map_one]
   rw [key, ← map_mul, factorial_succ, Nat.cast_mul, Nat.cast_add_one]
   congr 1
-  field_simp
+  field
 
 /-! ### Uniqueness characterization -/
 

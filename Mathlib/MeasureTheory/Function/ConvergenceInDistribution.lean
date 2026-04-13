@@ -168,7 +168,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
   suffices ∀ ε > 0, ∀ᶠ n in l, |∫ ω, F ω ∂(μ''.map (Y n)) - ∫ ω, F ω ∂(μ'.map Z)| < L * ε by
     intro ε hε
     convert this (ε / L) (by positivity)
-    field_simp
+    field
   intro ε hε
   -- We cut the difference into three pieces, two of which are small by the convergence assumptions
   have h_le n : |∫ ω, F ω ∂(μ''.map (Y n)) - ∫ ω, F ω ∂(μ'.map Z)|

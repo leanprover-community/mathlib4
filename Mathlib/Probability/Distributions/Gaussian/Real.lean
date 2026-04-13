@@ -97,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       false_or]
     rw [mul_comm]
     left
-    field
+    ring
   exact Integrable.comp_sub_right hg μ
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/

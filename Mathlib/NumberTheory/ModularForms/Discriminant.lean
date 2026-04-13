@@ -147,7 +147,7 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
-  field_simp [z.ne_zero]
+  field [z.ne_zero]
 
 lemma discriminant_bounded_factor :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - eta_q n x) ^ 24) atImInfty (𝓝 1) := by

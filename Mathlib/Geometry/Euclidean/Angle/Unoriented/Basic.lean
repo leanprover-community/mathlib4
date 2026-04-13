@@ -169,7 +169,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
   rcases eq_or_ne x 0 with (rfl | hx); · simp
   rcases eq_or_ne y 0 with (rfl | hy); · simp
   simp only [real_inner_self_eq_norm_mul_norm]
-  field_simp
+  field
 
 /-- The sine of the angle between two vectors. -/
 theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :

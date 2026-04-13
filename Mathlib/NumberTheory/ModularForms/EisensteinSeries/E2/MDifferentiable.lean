@@ -32,6 +32,6 @@ lemma E2_mdifferentiable : MDiff E2 := by
     (hη.deriv isOpen_upperHalfPlaneSet).div hη (fun _ hz ↦ eta_ne_zero hz)
   refine (hlog.const_mul (π * I / 12)⁻¹).congr (fun z hz ↦ ?_)
   simp [ofComplex_apply_of_im_pos hz, logDeriv_eta_eq_E2 ⟨z, hz⟩]
-  field_simp
+  field
 
 end

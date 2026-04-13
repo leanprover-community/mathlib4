@@ -720,7 +720,7 @@ instance : SecondCountableTopology GHSpace := by
             this goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a
             problem in the new canonicalizer; a minimization would help. The original proof was:
             `grind` -/
-            field_simp
+            field
         _ ≤ ε * 1 := by gcongr
         _ = ε := mul_one _
   calc

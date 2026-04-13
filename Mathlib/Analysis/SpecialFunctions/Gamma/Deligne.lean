@@ -56,7 +56,7 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
   rw [Gammaℝ_def, Gammaℝ_def, neg_div, add_div, neg_add, div_self two_ne_zero,
     Gamma_add_one _ (div_ne_zero hs two_ne_zero),
     cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), cpow_neg_one]
-  field_simp
+  ring
 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,

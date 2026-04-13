@@ -238,7 +238,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
     apply le_floor
     norm_cast
     apply one_le_div _ |>.mpr <;> bound
-  _ = (log 4 / log 2) * x.sqrt * x.log := by field
+  _ = (log 4 / log 2) * x.sqrt * x.log := by ring
   _ = _ := by
     congr
     rw [(by norm_num : (4 : ℝ) = 2 ^ 2), Real.log_pow]
