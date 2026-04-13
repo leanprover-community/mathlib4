@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -109,13 +108,6 @@ theorem neg_eq_self_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
 def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
   map_rel_iff' := @neg_le_neg _ _ _ _ _
-
-theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
-  apply le_antisymm
-  · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
-    exact subset_span
-  · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
-    exact subset_span
 
 @[simp]
 theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
@@ -244,14 +236,6 @@ theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔
 theorem smul_iSup' (a : α) {ι : Sort*} (f : ι → Submodule R M) :
     a • ⨆ i, f i = ⨆ i, a • f i :=
   map_iSup _ _
-
-theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
-  map_span _ _
-
-lemma smul_def (a : α) (S : Submodule R M) : a • S = span R (a • S : Set M) := by simp [← smul_span]
-
-theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
-  Eq.symm (span_image _).symm
 
 instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
     [IsCentralScalar α M] : IsCentralScalar α (Submodule R M) :=
@@ -385,13 +369,6 @@ lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
   refine Eq.trans (congrArg sInf ?_) csInf_Ici
   simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
   exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
-
-theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
-    s • span R t = span R (s • t) := by
-  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
-
-theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
-    span R (s • t) = s • span R t := (set_smul_span s t).symm
 
 variable {s N} in
 /--
