@@ -223,8 +223,7 @@ unit `x`.
 -/
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing (x : R) :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
-  rw [ordFrac_eq_valuation_inv, inv_eq_one, valuation_eq_one_iff_notMem]
-  simp [IsDiscreteValuationRing.maximalIdeal]
+simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
 /--
 For a discrete valuation ring `R` with fraction ring `K`,
