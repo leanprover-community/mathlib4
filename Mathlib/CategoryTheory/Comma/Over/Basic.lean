@@ -1173,7 +1173,7 @@ def ofDiagEquivalence.functor (X : T × T) :
 def ofDiagEquivalence.inverse (X : T × T) :
     StructuredArrow X.2 (Under.forget X.1) ⥤ StructuredArrow X (Functor.diag _) :=
   Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
-    (fun f => (f.right.hom, f.hom)) (fun m ↦ by have := m.w; cat_disch)
+    (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; cat_disch)
 
 /-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
