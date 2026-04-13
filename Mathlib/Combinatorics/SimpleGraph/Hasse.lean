@@ -65,8 +65,8 @@ theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
 `not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬a ⋖ c`. -/
 theorem cliqueFree_hasse_three : (hasse α).CliqueFree 3 := by
   classical
-  intro _ ⟨hc, hcard⟩
-  obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := Finset.card_eq_three.mp hcard
+  intro s ⟨hc, hcard⟩
+  obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := s.card_eq_three.mp hcard
   have := hc (by simp) (by simp) hab
   have := hc (by simp) (by simp) hbc
   have := hc (by simp) (by simp) hac
