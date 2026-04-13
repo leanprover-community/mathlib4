@@ -14,7 +14,7 @@ public import Mathlib.Util.AddRelatedDecl
 
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
-`∀ .. {D} (func : C ⥤ D), F.map f = F.map g` and then applies
+`∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
 `simp only [Functor.map_comp, Functor.map_id]`.
 
 There is also a term elaborator `map_of% t` for use within proofs.
