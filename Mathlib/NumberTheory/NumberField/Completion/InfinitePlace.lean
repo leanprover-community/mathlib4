@@ -220,7 +220,7 @@ If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the cor
 to completions are also extensions. -/
 theorem liesOver_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
     [ComplexEmbedding.LiesOver w.embedding v.embedding] :
-    ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v)where
+    ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) where
   over := by
     ext x
     induction x using induction_on
