@@ -64,8 +64,6 @@ namespace PositiveCategory
 
 variable [PositiveCategory C] {X Y : C} {e : X ≅ Y}
 
-attribute [reassoc (attr := simp)] copy_comp_natural
-
 instance : Deterministic (e.hom ≫ e.inv) where
 
 instance : Deterministic (e.inv ≫ e.hom) where
