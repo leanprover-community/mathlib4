@@ -59,6 +59,10 @@ theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
 
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
+
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
@@ -76,7 +80,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { (inferInstance : OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 

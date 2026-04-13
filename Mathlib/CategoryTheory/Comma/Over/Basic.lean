@@ -410,6 +410,10 @@ lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
+  rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
@@ -768,6 +772,7 @@ demonstrate, for instance, that under categories assemble into a
 functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping by the identity morphism is just the identity functor. -/
 theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
   fapply Functor.ext
@@ -894,6 +899,10 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
 
 lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
+  rfl
+
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in

@@ -161,6 +161,9 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
+@[deprecated (since := "2026-04-03")]
+alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
+
 lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x
@@ -223,7 +226,7 @@ lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
     exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
@@ -234,7 +237,7 @@ lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
     exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
@@ -251,7 +254,7 @@ lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Q
   contrapose! hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
-  rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
+  rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
   obtain ⟨a', ha'⟩ := Quotient.eq.mp hx
   exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩

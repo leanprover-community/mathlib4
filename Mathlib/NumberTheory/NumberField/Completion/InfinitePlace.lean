@@ -78,21 +78,18 @@ abbrev Completion := v.1.Completion
 
 namespace Completion
 
-instance : NormedField v.Completion :=
-  letI := v.isometry_embedding.isUniformInducing.completableTopField
-  UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
   UniformSpace.Completion.norm_coe x
 
-set_option backward.isDefEq.respectTransparency false in
-instance : Algebra K v.Completion :=
-  UniformSpace.Completion.algebra (WithAbs v.1) K
+instance : CompletableTopField (WithAbs v.1) :=
+  v.isometry_embedding.isUniformInducing.completableTopField
 
-instance : IsTopologicalRing v.Completion := UniformSpace.Completion.topologicalRing
+example : NormedField v.Completion := inferInstance
+example : Algebra K v.Completion := inferInstance
+example : IsTopologicalRing v.Completion := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
 lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
@@ -109,29 +106,22 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
 def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
   (v.isometry_embedding_of_isReal hv).extensionHom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extensionEmbedding_coe (x : WithAbs v.1) :
     extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
   v.isometry_embedding.extensionHom_coe _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   (v.isometry_embedding_of_isReal hv).extensionHom_coe _
-
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 
 open UniformSpace.Completion in
 @[simp]
@@ -149,9 +139,6 @@ theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v
     Isometry (extensionEmbeddingOfIsReal hv) :=
   (v.isometry_embedding_of_isReal hv).completion_extension
 
-@[deprecated (since := "2025-09-24")]
-alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsReal
-
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
   v.isometry_embedding.completion_extension.isClosedEmbedding.isClosed_range
@@ -161,9 +148,6 @@ inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbeddingOfIsReal hv)) :=
   (v.isometry_embedding_of_isReal hv).completion_extension.isClosedEmbedding.isClosed_range
-
-@[deprecated (since := "2025-09-24")]
-alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmbeddingOfIsReal
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
@@ -204,16 +188,10 @@ theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal
   rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed]
   exact isClosed_image_extensionEmbeddingOfIsReal hv
 
-@[deprecated (since := "2025-09-24")]
-alias surjective_extensionEmbedding_of_isReal := surjective_extensionEmbeddingOfIsReal
-
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is bijective. -/
 theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Bijective (extensionEmbeddingOfIsReal hv) :=
   ⟨(extensionEmbeddingOfIsReal hv).injective, surjective_extensionEmbeddingOfIsReal hv⟩
-
-@[deprecated (since := "2025-09-24")]
-alias bijective_extensionEmbedding_of_isReal := bijective_extensionEmbeddingOfIsReal
 
 /-- The ring isomorphism `v.Completion ≃+* ℝ`, when `v` is real, given by the bijection
 `v.Completion →+* ℝ`. -/
@@ -224,8 +202,6 @@ def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion �
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
-
-attribute [local instance] WithAbs.algebraLeft
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
   [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
@@ -244,7 +220,7 @@ If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the cor
 to completions are also extensions. -/
 theorem liesOver_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
     [ComplexEmbedding.LiesOver w.embedding v.embedding] :
-    ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v)where
+    ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) where
   over := by
     ext x
     induction x using induction_on
@@ -273,8 +249,6 @@ namespace LiesOver
 open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
-
-attribute [local instance] WithAbs.algebraLeft
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by

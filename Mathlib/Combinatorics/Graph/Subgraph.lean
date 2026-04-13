@@ -276,8 +276,7 @@ end IsInducedSubgraph
 
 lemma IsSubgraph.not_isInducedSubgraph_iff (hHG : H ≤ G) :
     ¬ H ≤i G ↔ ∃ e x y, G.IsLink e x y ∧ x ∈ V(H) ∧ y ∈ V(H) ∧ e ∉ E(H) := by
-  rw [not_iff_comm]
-  push_neg
+  contrapose!; symm
   exact ⟨fun hnind ↦ ⟨hHG, fun e x y hxy hx hy => hxy.anti_of_mem hHG (hnind e x y hxy hx hy)⟩,
     fun hind _ _ _ hexy hx hy ↦ hind.isLink_of_mem_mem hexy hx hy |>.edge_mem⟩
 
@@ -303,7 +302,7 @@ lemma mk' (hHG : H ≤ G) (hclosed : ∀ ⦃e x⦄, G.Inc e x → x ∈ V(H) →
   closed _ _ he hx := hclosed he hx
 
 protected lemma trans (h₁ : G ≤c G₁) (h₂ : G₁ ≤c G₂) : G ≤c G₂ :=
-  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦  h₁.closed (h.of_compatible (Compatible.of_ge h₂.le)
+  mk' (h₁.le.trans h₂.le) fun _ _ h hx ↦ h₁.closed (h.of_compatible (Compatible.of_ge h₂.le)
     (h₂.closed h (h₁.vertexSet_mono hx))) hx
 
 instance : IsPartialOrder (Graph α β) (· ≤c ·) where
@@ -338,14 +337,13 @@ lemma mem_iff_of_adj (hxy : G.Adj x y) (hHG : H ≤c G) : x ∈ V(H) ↔ y ∈ V
   hHG.mem_iff_of_isLink hxy.choose_spec
 
 lemma anti_right (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) (hHG : H ≤c G) : H ≤c G₁ :=
-  mk' hHG₁ fun  _ _ he hx ↦ hHG.inc_congr hx |>.mpr (he.mono hG₁) |>.edge_mem
+  mk' hHG₁ fun _ _ he hx ↦ hHG.inc_congr hx |>.mpr (he.mono hG₁) |>.edge_mem
 
 end IsClosedSubgraph
 
 lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_adj (hHG : H ≤i G) :
     ¬ H ≤c G ↔ ∃ x y, G.Adj x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
-  rw [not_iff_comm]
-  push_neg
+  contrapose!; symm
   exact ⟨fun hncl ↦ ⟨hHG, fun e x ⟨y, hexy⟩ hxH =>
     hHG.isLink_of_mem_mem hexy hxH (hncl x y ⟨e, hexy⟩ hxH) |>.edge_mem⟩,
     fun hcl _ _ hexy ↦ (hcl.mem_iff_of_adj hexy).mp⟩

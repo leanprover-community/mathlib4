@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Topos.Classifier
+public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
@@ -113,13 +113,13 @@ lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
 variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
 @[simps! Ω truth Ω₀ χ χ₀]
-def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
+def Presheaf.classifier : Subobject.Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ ((Functor.const Cᵒᵖ).obj PUnit)
     (Functor.isTerminalConst _ (Types.isTerminalPUnit)) (Functor.sieves C) (Presheaf.truth C)
     (Presheaf.χ ·) Presheaf.isPullback_χ_truth (Presheaf.χ_unique ·)
 
 /-- Presheaf categories on an essentially small domain have a subobject classifier. -/
-instance [EssentiallySmall.{w} C] : HasClassifier (Cᵒᵖ ⥤ Type w) where
+instance [EssentiallySmall.{w} C] : HasSubobjectClassifier (Cᵒᵖ ⥤ Type w) where
   exists_classifier := ⟨(Presheaf.classifier (SmallModel C)).ofEquivalence
     (Equivalence.congrLeft (E := Type w) (equivSmallModel C).op).symm⟩
 
@@ -199,7 +199,7 @@ lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)
     (hχ' : IsPullback m ((isTerminalTerminal J _).from F) χ' (Sheaf.truth J)) :
     χ' = Sheaf.χ m := by
   ext : 1
-  rw [← cancel_mono (closedSieves J).ι,χ_hom, Subfunctor.lift_ι]
+  rw [← cancel_mono (closedSieves J).ι, χ_hom, Subfunctor.lift_ι]
   apply Presheaf.χ_unique _
   have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
     (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)
@@ -213,12 +213,12 @@ and `truth` maps for each object `X : C`, an element of `PUnit` to the maximal `
 always closed.
 -/
 @[simps! Ω truth Ω₀ χ χ₀]
-def classifier (J : GrothendieckTopology C) : Classifier (Sheaf J (Type max u v)) :=
+def classifier (J : GrothendieckTopology C) : Subobject.Classifier (Sheaf J (Type max u v)) :=
   .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (isTerminalTerminal _ _) (Sheaf.Ω J)
     (Sheaf.truth J) Sheaf.χ Sheaf.isPullback_χ_truth Sheaf.χ_unique
 
 /-- Sheaf categories on essentially small sites have a subobject classifier. -/
-instance [EssentiallySmall.{w} C] : HasClassifier (Sheaf J (Type w)) where
+instance [EssentiallySmall.{w} C] : HasSubobjectClassifier (Sheaf J (Type w)) where
   exists_classifier := ⟨Sheaf.classifier ((equivSmallModel C).inverse.inducedTopology J)
     |>.ofEquivalence (Equivalence.sheafCongr _ _ (equivSmallModel C) _).symm⟩
 

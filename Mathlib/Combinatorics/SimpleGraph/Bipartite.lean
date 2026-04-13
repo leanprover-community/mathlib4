@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -20,7 +20,7 @@ This file proves results about bipartite simple graphs, including several double
 
 * `SimpleGraph.IsBipartiteWith G s t` is the condition that a simple graph `G` is bipartite in sets
   `s`, `t`, that is, `s` and `t` are disjoint and vertices `v`, `w` being adjacent in `G` implies
-  that `v ∈ s` and `w ∈ t`, or `v ∈ s` and `w ∈ t`.
+  that `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`.
 
   Note that in this implementation, if `G.IsBipartiteWith s t`, `s ∪ t` need not cover the vertices
   of `G`, instead `s ∪ t` is only required to cover the *support* of `G`, that is, the vertices
@@ -365,6 +365,14 @@ theorem completeBipartiteGraph_isContained_iff :
     ⟨.completeBipartiteGraph left right card_left card_right h⟩
 
 end Copy
+
+lemma IsBipartiteWith.subgraph (h : G.IsBipartiteWith s t) (H : Subgraph G) :
+    H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
+  ⟨by grind [h.disjoint], fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
+
+lemma IsBipartite.subgraph (h : G.IsBipartite) (H : Subgraph G) : H.coe.IsBipartite :=
+  let ⟨_, _, hst⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
+  isBipartite_iff_exists_isBipartiteWith.mpr ⟨_, _, IsBipartiteWith.subgraph hst H⟩
 
 section Between
 

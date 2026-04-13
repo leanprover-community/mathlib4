@@ -130,10 +130,8 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
 protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
     (hμ : AEMeasurable f μ) (hν : AEMeasurable f ν) :
     (μ + ν).map f = μ.map f + ν.map f := by
-  rw [Measure.map_congr (hμ.add_measure hν).ae_eq_mk, Measure.map_add _ _ (by fun_prop)]
-  congr 1 <;> apply Measure.map_congr
-  · exact (AbsolutelyContinuous.rfl.add_right ν) (hμ.add_measure hν).ae_eq_mk.symm
-  · exact (AbsolutelyContinuous.rfl.add_right' μ) (hμ.add_measure hν).ae_eq_mk.symm
+  ext
+  simp [*]
 
 @[measurability]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
@@ -439,6 +437,16 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
   rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
   have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
   simp_rw [map_apply_of_aemeasurable (M _) hs]
+
+lemma map_finset_sum {ι β : Type*} {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} {s : Finset ι} (hf : AEMeasurable f (∑ i ∈ s, m i)) :
+    map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
+  rw [← sum_coe_finset, ← sum_coe_finset, Measure.map_sum]
+  rwa [sum_coe_finset]
+
+lemma map_finset_sum' {ι β : Type*} [Fintype ι] {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} (hf : AEMeasurable f (∑ i, m i)) :
+    map f (∑ i, m i) = ∑ i, (m i).map f := map_finset_sum hf
 
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ

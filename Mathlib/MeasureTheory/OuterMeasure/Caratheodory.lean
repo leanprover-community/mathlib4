@@ -212,8 +212,8 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
 theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) : MeasurableSet[(boundedBy m).caratheodory] s := by
   apply ofFunction_caratheodory; intro t
-  rcases t.eq_empty_or_nonempty with h | h
-  · simp [h, Set.not_nonempty_empty]
+  rcases t.eq_empty_or_nonempty with rfl | h
+  · simp [Set.not_nonempty_empty]
   · convert le_trans _ (hs t)
     · simp [h]
     exact add_le_add iSup_const_le iSup_const_le

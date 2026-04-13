@@ -273,10 +273,10 @@ namespace SaturatedSubmonoid
 @[to_additive]
 instance (M : Type*) [MulOneClass M] :
     CompleteLattice (SaturatedSubmonoid M) :=
-  { inferInstanceAs (PartialOrder (SaturatedSubmonoid M)),
-    inferInstanceAs (Top (SaturatedSubmonoid M)),
-    inferInstanceAs (Min (SaturatedSubmonoid M)),
-    inferInstanceAs (CompleteSemilatticeInf (SaturatedSubmonoid M)),
+  { (inferInstance : PartialOrder (SaturatedSubmonoid M)),
+    (inferInstance : Top (SaturatedSubmonoid M)),
+    (inferInstance : Min (SaturatedSubmonoid M)),
+    (inferInstance : CompleteSemilatticeInf (SaturatedSubmonoid M)),
     (Submonoid.giSaturation M).liftCompleteLattice with }
 
 variable {M : Type*}

@@ -175,8 +175,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
         · subst h₁
           simp only [shiftFun_zero, Fin.zero_le]
         · have h₂ : i₂ ≠ 0 := by
-            intro h₂
-            subst h₂
+            rintro rfl
             exact h₁ (le_antisymm hi (Fin.zero_le _))
           obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
           obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
@@ -246,7 +245,6 @@ variable {C : Type*} [Category* C] (f : Arrow C)
   [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
   (S : SplitEpi f.hom)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The extra degeneracy map on the Čech nerve of a split epi. It is
 given on the `0`-projection by the given section of the split epi,
 and by shifting the indices on the other projections. -/
