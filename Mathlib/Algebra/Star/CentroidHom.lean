@@ -76,10 +76,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
-  map_star' f := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
-    exact rfl
+  map_star' _ := rfl
 
 theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
     star (centerToCentroidCenter z) =
@@ -97,9 +94,7 @@ the center of its centroid. -/
 def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
-  map_star' _ := by
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    exact (star_centerToCentroidCenter _).symm
+  map_star' _ := (star_centerToCentroidCenter _).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
