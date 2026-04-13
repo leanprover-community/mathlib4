@@ -222,7 +222,7 @@ theorem sumToIter_Xr (b : τ) : sumToIter σ τ R (X (Sum.inr b)) = C (X b) := b
   simpa [X_def] using sumToIter_monomial ((0 : σ →₀ ℕ).sumElim (single b 1)) 1
 
 variable (R σ τ) in
-/-- Implementation detail for `iterToSum`. Use `MvPowerSeries.iterToSum` instead. -/
+/-- An inverse function of `sumToIter`. -/
 def iterToSumFun (p : MvPowerSeries σ (MvPowerSeries τ R)) :
     MvPowerSeries (σ ⊕ τ) R := fun x ↦ coeff (comapDomain Sum.inr x Sum.inr_injective.injOn)
   (coeff (comapDomain Sum.inl x Sum.inl_injective.injOn) p)
