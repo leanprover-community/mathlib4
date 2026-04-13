@@ -44,7 +44,7 @@ This is often useful since `ℚ` has well-behaved subtraction and division.
 `qify` makes use of the `@[zify_simps]` and `@[qify_simps]` attributes to insert casts into
 propositions, and the `push_cast` tactic to simplify the `ℚ`-valued expressions.
 
-`qify` is in some sense dual to the `lift` tactic. `lift (z : ℚ) to ℤ` will change the type of a
+`qify` is in some sense dual to the `lift` tactic. `lift (q : ℚ) to ℤ` will change the type of a
 rational number `q` (in the supertype) to `ℤ` (the subtype), given a proof that `q.den = 1`;
 propositions concerning `q` will still be over `ℚ`. `qify` changes propositions about `ℕ` or `ℤ`
 (the subtype) to propositions about `ℚ` (the supertype), without changing the type of any variable.
