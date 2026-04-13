@@ -60,6 +60,7 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
 attribute [instance] ModuleCat.isAddCommGroup
 attribute [instance 1100] ModuleCat.isModule
 
