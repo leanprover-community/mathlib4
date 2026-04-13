@@ -277,7 +277,7 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
   by_cases h₄f : {σ ∈ s | f σ x = 0} = ∅
   · exact (Finset.analyticAt_prod _ (fun σ hσ ↦ h₃f hσ (by aesop))).meromorphicNFAt
   rw [Finset.filter_eq_empty_iff] at h₄f
-  push_neg at h₄f
+  push Not at h₄f
   obtain ⟨τ, h₁τ, h₂τ⟩ := h₄f
   have {μ : ι} (hμ : μ ∈ s.erase τ) : f μ x ≠ 0 := by
     by_contra

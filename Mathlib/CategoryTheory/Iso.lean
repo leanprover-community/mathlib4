@@ -63,7 +63,6 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
 
 attribute [to_dual existing inv] Iso.hom
 attribute [to_dual self] Iso.mk Iso.casesOn
-attribute [to_dual none] Iso.mk.hcongr_8 -- needed in `Iso.ext`
 
 attribute [reassoc +to_dual (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 

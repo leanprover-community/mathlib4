@@ -1002,10 +1002,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
-    have hij := h _ i j (by simpa using ij) rfl
-    simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,
-      Sum.elim_inr] at hij
-    exact hij
+    exact h _ i j (by simpa using ij) rfl
   · rintro _ i j ij rfl
     simpa using ij
 
