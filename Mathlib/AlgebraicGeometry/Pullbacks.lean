@@ -43,6 +43,7 @@ variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ 
 variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
+@[implicit_reducible]
 def v (i j : 𝒰.I₀) : Scheme :=
   pullback ((pullback.fst (𝒰.f i ≫ f) g) ≫ 𝒰.f i) (𝒰.f j)
 
@@ -59,7 +60,6 @@ def t (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
   · rw [pullbackSymmetry_hom_comp_snd_assoc, pullback.condition_assoc, Category.comp_id]
   · rw [Category.comp_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t_fst_fst (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
     pullback.snd _ _ := by
@@ -67,14 +67,12 @@ theorem t_fst_fst (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pu
     pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd, pullbackAssoc_inv_fst_fst,
     pullbackSymmetry_hom_comp_fst]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t_fst_snd (i j : 𝒰.I₀) :
     t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.snd _ _ = pullback.fst _ _ ≫ pullback.snd _ _ := by
   simp only [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_snd,
     pullback.lift_snd, Category.comp_id, pullbackAssoc_inv_snd, pullbackSymmetry_hom_comp_snd_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t_snd (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.snd _ _ =
     pullback.fst _ _ ≫ pullback.fst _ _ := by
@@ -82,7 +80,6 @@ theorem t_snd (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.snd _ _ =
     pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_fst, pullbackAssoc_inv_fst_snd,
     pullbackSymmetry_hom_comp_snd_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem t_id (i : 𝒰.I₀) : t 𝒰 f g i i = 𝟙 _ := by
   apply pullback.hom_ext <;> rw [Category.id_comp]
   · apply pullback.hom_ext
@@ -94,7 +91,6 @@ theorem t_id (i : 𝒰.I₀) : t 𝒰 f g i i = 𝟙 _ := by
 abbrev fV (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ pullback (𝒰.f i ≫ f) g :=
   pullback.fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
 `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
 def t' (i j k : 𝒰.I₀) :
@@ -106,7 +102,6 @@ def t' (i j k : 𝒰.I₀) :
   · simp_rw [Category.comp_id, t_fst_fst_assoc, ← pullback.condition]
   · rw [Category.comp_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_fst_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
@@ -115,7 +110,6 @@ theorem t'_fst_fst_fst (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.lift_fst_assoc, t_fst_fst,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_fst_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
@@ -124,7 +118,6 @@ theorem t'_fst_fst_snd (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.lift_fst_assoc, t_fst_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
@@ -133,7 +126,6 @@ theorem t'_fst_snd (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_snd_snd, pullback.lift_snd, Category.comp_id,
     pullbackRightPullbackFstIso_hom_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_snd_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
@@ -142,7 +134,6 @@ theorem t'_snd_fst_fst (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_fst_fst,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_snd_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
@@ -151,7 +142,6 @@ theorem t'_snd_fst_snd (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_fst_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem t'_snd_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
@@ -160,43 +150,36 @@ theorem t'_snd_snd (i j k : 𝒰.I₀) :
     pullbackRightPullbackFstIso_inv_fst_assoc, pullback.lift_fst_assoc, t_snd,
     pullbackRightPullbackFstIso_hom_fst_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_fst_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
   simp only [t'_fst_fst_fst, t'_fst_snd, t'_snd_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_fst_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ ≫
       pullback.snd _ _ = pullback.fst _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
   simp only [t'_fst_fst_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ := by
   simp only [t'_fst_snd, t'_snd_snd, t'_fst_fst_fst]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_snd_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
   simp only [pullback.condition_assoc, t'_snd_fst_fst, t'_fst_snd, t'_snd_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_snd_fst_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.snd _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.snd _ _ := by
   simp only [pullback.condition_assoc, t'_snd_fst_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cocycle_snd_snd (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
   simp only [t'_snd_snd, t'_fst_fst_fst, t'_fst_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 -- `by tidy` should solve it, but it times out.
 theorem cocycle (i j k : 𝒰.I₀) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j = 𝟙 _ := by
   apply pullback.hom_ext <;> rw [Category.id_comp]
@@ -211,7 +194,6 @@ theorem cocycle (i j k : 𝒰.I₀) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i �
       · simp_rw [Category.assoc, cocycle_snd_fst_snd 𝒰 f g i j k]
     · simp_rw [Category.assoc, cocycle_snd_snd 𝒰 f g i j k]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `Uᵢ ×[Z] Y`, this is the glued fibred product `X ×[Z] Y`. -/
 @[simps U V f t t', simps -isSimp J]
 def gluing : Scheme.GlueData.{u} where
@@ -237,13 +219,11 @@ def gluing : Scheme.GlueData.{u} where
 lemma gluing_ι (j : 𝒰.I₀) :
     (gluing 𝒰 f g).ι j = Multicoequalizer.π (gluing 𝒰 f g).diagram j := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The first projection from the glued scheme into `X`. -/
 def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   apply Multicoequalizer.desc (gluing 𝒰 f g).diagram _ fun i ↦ pullback.fst _ _ ≫ 𝒰.f i
   simp [t_fst_fst_assoc, ← pullback.condition]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second projection from the glued scheme into `Y`. -/
 def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
   apply Multicoequalizer.desc _ _ fun i ↦ pullback.snd _ _
