@@ -292,10 +292,6 @@ namespace MorphismProperty.Under
 
 variable (X : T)
 
-instance : HasColimitsOfShape (Discrete PEmpty.{1}) (Under X) := sorry
-instance [HasPushouts T] : HasColimitsOfShape WalkingSpan (Under X) := sorry
-instance [HasFiniteWidePushouts T] : HasFiniteColimits (Under X) := sorry
-
 noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
     CreatesColimitsOfShape (Discrete PEmpty.{1}) (Under.forget P ⊤ X) := by
   apply +allowSynthFailures forgetCreatesColimitsOfShapeOfClosed

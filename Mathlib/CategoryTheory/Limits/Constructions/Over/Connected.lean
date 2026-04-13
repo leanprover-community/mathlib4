@@ -5,7 +5,7 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
@@ -117,29 +117,24 @@ end CostructuredArrow
 
 namespace StructuredArrow
 
-/-- The projection from `CostructuredArrow K B` to `C` creates any connected limit. -/
+/-- The projection from `StructuredArrow K B` to `C` creates any connected colimit. -/
 instance [IsConnected J] {B : D} : CreatesColimitsOfShape J (StructuredArrow.proj B K) :=
-  sorry
+  letI : CreatesLimitsOfShape Jᵒᵖ (proj B K).op :=
+    inferInstanceAs <| CreatesLimitsOfShape Jᵒᵖ <|
+      (structuredArrowOpEquivalence K B).functor ⋙ CostructuredArrow.proj K.op (.op B)
+  createsColimitsOfShapeOfOp _ _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
-instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
-  preservesLimit.preserves hc := ⟨{
-    lift s := (CostructuredArrow.proj K B).map (hc.lift (CreatesConnected.raiseCone s))
-    fac _ _ := by
-      rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
-        CreatesConnected.raiseCone_π_app, CostructuredArrow.proj_map,
-        CostructuredArrow.homMk_left _ _]
-    uniq s m fac :=
-      congrArg (CostructuredArrow.proj K B).map (hc.uniq (CreatesConnected.raiseCone s)
-        (CostructuredArrow.homMk m (by simp [← fac])) fun j =>
-          (CostructuredArrow.proj K B).map_injective (fac j))
-  }⟩
+/-- The forgetful functor from `StructuredArrow K B` preserves any connected colimit. -/
+instance [IsConnected J] {B : D} : PreservesColimitsOfShape J (StructuredArrow.proj B K) := by
+  have : PreservesLimitsOfShape Jᵒᵖ (proj B K).op :=
+    inferInstanceAs <| PreservesLimitsOfShape Jᵒᵖ <|
+      (structuredArrowOpEquivalence K B).functor ⋙ CostructuredArrow.proj K.op (.op B)
+  apply preservesColimitsOfShape_of_op
 
-/-- The over category has any connected limit which the original category has. -/
-instance hasLimitsOfShape_of_isConnected {B : D} [IsConnected J] [HasLimitsOfShape J C] :
-    HasLimitsOfShape J (CostructuredArrow K B) where
-  has_limit F := hasLimit_of_created F (CostructuredArrow.proj K B)
+instance {B : D} [IsConnected J] [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (StructuredArrow B K) where
+  has_colimit F := hasColimit_of_created F (StructuredArrow.proj B K)
 
 end StructuredArrow
 
@@ -188,4 +183,23 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
   isLimitOfReflects (Over.forget _)
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
-end CategoryTheory.Over
+end Over
+
+namespace Under
+
+/-- The forgetful functor from the under category creates any connected limit. -/
+instance createsColimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
+    CreatesColimitsOfShape J (forget B) :=
+  inferInstanceAs <| CreatesColimitsOfShape J (StructuredArrow.proj _ _)
+
+/-- The forgetful functor from the under category preserves any connected limit. -/
+instance preservesColimitsOfShape_forget_of_isConnected [IsConnected J] {B : C} :
+    PreservesColimitsOfShape J (forget B) :=
+  inferInstanceAs <| PreservesColimitsOfShape J (StructuredArrow.proj _ _)
+
+/-- The under category has any connected limit which the original category has. -/
+instance hasColimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (Under B) where
+  has_colimit F := hasColimit_of_created F (forget B)
+
+end CategoryTheory.Under
