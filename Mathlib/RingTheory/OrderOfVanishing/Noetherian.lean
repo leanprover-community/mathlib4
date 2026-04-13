@@ -212,10 +212,8 @@ theorem ordFrac_eq_valuation_inv (x : K) :
 lemma ordFrac_irreducible
     {ϖ : R} (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
   simp [ordFrac_eq_valuation_inv, IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
-    IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
     IsDiscreteValuationRing.intValuation_maximalIdeal,
-    IsDiscreteValuationRing.addVal_uniformizer hϖ]
-  rfl
+    IsDiscreteValuationRing.addVal_uniformizer hϖ, ← WithZero.exp_eq_coe_ofAdd]
 
 open IsDedekindDomain HeightOneSpectrum
 
