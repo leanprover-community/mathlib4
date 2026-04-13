@@ -97,6 +97,13 @@ lemma summable_e2Summand_symmetricIcc : Summable (e2Summand · z) (symmetricIcc 
 lemma G2_eq_tsum_cexp : G2 z = 2 * riemannZeta 2 - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ) :=
   (hasSum_e2Summand_symmetricIcc z).tsum_eq
 
+/-- The q-expansion of the normalised weight-2 Eisenstein series:
+`E₂(z) = 1 - 24 ∑_{n≥1} σ₁(n) qⁿ`. -/
+lemma E2_eq_tsum_cexp : E2 z = 1 - 24 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ) := by
+  simp only [E2, Pi.smul_apply, smul_eq_mul, G2_eq_tsum_cexp, riemannZeta_two]
+  field_simp
+  ring
+
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)
 
