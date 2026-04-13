@@ -192,49 +192,43 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
 
 noncomputable section
 
-private def freeAbPresheaf (U : Opens X) : (Opens X)ᵒᵖ ⥤ AddCommGrpCat.{u} :=
-  yoneda.obj U ⋙ AddCommGrpCat.free
+def freeAbSheaf (U : Opens X) : TopCat.Sheaf AddCommGrpCat.{u} X :=
+  (presheafToSheaf _ _).obj (yoneda.obj U ⋙ AddCommGrpCat.free)
 
-private def freeAbSheaf (U : Opens X) : TopCat.Sheaf AddCommGrpCat.{u} X :=
-  (presheafToSheaf (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).obj
-    (freeAbPresheaf U)
+def freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
+  (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
-private def freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
-  (presheafToSheaf (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).map
-    (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
-
-private def freeAbSheafHomEquiv (U : Opens X) (I : TopCat.Sheaf AddCommGrpCat.{u} X) :
-    (freeAbSheaf U ⟶ I) ≃ (CategoryTheory.forget AddCommGrpCat).obj (I.obj.obj (op U)) :=
-  ((sheafificationAdjunction (Opens.grothendieckTopology (T := X)) AddCommGrpCat.{u}).homEquiv
-    (freeAbPresheaf U) I).trans <|
-  ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
+def freeAbSheafHomEquiv (U : Opens X) (I : TopCat.Sheaf AddCommGrpCat.{u} X) :
+    (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
+  ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
+    ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
     (sheafToPresheaf _ _ |>.obj I)).trans <|
-  yonedaEquiv
+      yonedaEquiv
 
 set_option backward.isDefEq.respectTransparency false in
-private lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
+lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
     freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
       (I.obj.map i.op) (freeAbSheafHomEquiv V I f) := by
-  simp [freeAbSheafHomEquiv, freeAbSheafMap]
+  dsimp [freeAbSheafHomEquiv, freeAbSheafMap]
   erw [Adjunction.homEquiv_naturality_left]
   erw [Adjunction.homEquiv_naturality_left]
-  simp +decide [yonedaEquiv]
+  dsimp [yonedaEquiv]
   convert (NatTrans.naturality
     ((Adjunction.whiskerRight (Opens X)ᵒᵖ AddCommGrpCat.adj).homEquiv
       (yoneda.obj V) I.obj
       ((sheafificationAdjunction (Opens.grothendieckTopology X)
-        AddCommGrpCat).homEquiv (freeAbPresheaf V) I f))
+        AddCommGrpCat).homEquiv (yoneda.obj V ⋙ AddCommGrpCat.free) I f))
     i.op) using 1
   exact ⟨fun _ => (NatTrans.naturality
       ((Adjunction.whiskerRight (Opens X)ᵒᵖ AddCommGrpCat.adj).homEquiv
         (yoneda.obj V) I.obj
         ((sheafificationAdjunction (Opens.grothendieckTopology X)
-          AddCommGrpCat).homEquiv (freeAbPresheaf V) I f)) i.op),
+          AddCommGrpCat).homEquiv (yoneda.obj V ⋙ AddCommGrpCat.free) I f)) i.op),
     fun h => by convert congr_arg (fun g => g (𝟙 V)) h using 1⟩
 
 set_option backward.isDefEq.respectTransparency false in
-private instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
+instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
     Mono (freeAbSheafMap i) :=
   haveI : PreservesFiniteLimits (presheafToSheaf (Opens.grothendieckTopology X)
       AddCommGrpCat.{u}) := HasSheafify.isLeftExact
