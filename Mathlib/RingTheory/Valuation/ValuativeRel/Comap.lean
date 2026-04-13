@@ -3,7 +3,9 @@ Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Comap for Valuative Relations
@@ -19,6 +21,8 @@ We define the pullback (comap) of a `ValuativeRel` along a ring homomorphism.
 
 * `ValuativeRel.not_vle_zero_of_isUnit` : If `f` is a unit, then `¬ f ≤ᵥ 0`.
 -/
+
+@[expose] public section
 
 namespace ValuativeRel
 
@@ -52,3 +56,5 @@ theorem not_vle_zero_of_isUnit [ValuativeRel A] {f : A} (hu : IsUnit f) :
   exact absurd this (not_vle.mpr zero_vlt_one)
 
 end ValuativeRel
+
+end
