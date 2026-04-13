@@ -102,8 +102,7 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
     use R, inferInstance, inferInstance, inferInstance, inferInstance
     let e : R ⊗[R] S ≃ₐ[R] S := TensorProduct.lid R S
     have : IsFiniteSplit R S := by
-      simp only [Nat.cast_zero] at hn
-      rw [Module.rankAtStalk_eq_zero_iff_subsingleton] at hn
+      rw [Nat.cast_zero, Module.rankAtStalk_eq_zero_iff_subsingleton] at hn
       exact of_subsingleton_top
     apply IsFiniteSplit.of_algEquiv e.symm
   | succ n ih =>
@@ -126,10 +125,8 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
         Module.Finite.of_surjective (Algebra.linearMap (S × U) U) (RingHom.snd S U).surjective
       exact Module.Finite.trans (S × U) _
     have (p : PrimeSpectrum S) : Module.rankAtStalk (R := S) (S × U) p = n + 1 := by
-      rw [Module.rankAtStalk_eq_of_equiv e.symm.toLinearEquiv]
-      simp [Module.rankAtStalk_baseChange, hn]
-    simp_rw [Module.rankAtStalk_prod , Module.rankAtStalk_self, Pi.add_apply,
-      Pi.one_apply] at this
+      simp [Module.rankAtStalk_eq_of_equiv e.symm.toLinearEquiv, Module.rankAtStalk_baseChange, hn]
+    simp_rw [Module.rankAtStalk_prod , Module.rankAtStalk_self, Pi.add_apply, Pi.one_apply] at this
     have : Module.rankAtStalk (R := S) U = n := by
       ext p
       simp only [Pi.natCast_def, Nat.cast_id]
