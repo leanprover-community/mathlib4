@@ -173,8 +173,7 @@ variable (R S A B) [Bialgebra R A] [Bialgebra R B]
     ext a <;>
     · dsimp
       rw [← (ℛ R a).eq]
-      simp [TensorProduct.tmul_sum, TensorProduct.sum_tmul]
-      rfl
+      simp [TensorProduct.tmul_sum, TensorProduct.sum_tmul, Algebra.TensorProduct.one_def]
 
 end Homogeneous
 end Bialgebra.TensorProduct
