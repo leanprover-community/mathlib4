@@ -468,7 +468,7 @@ theorem edgeSet_completeBipartiteGraph :
   · cases u <;> cases v <;> simp_all
   · grind [completeBipartiteGraph_adj, mem_edgeSet]
 
-theorem edgeSet_completeBipartiteGraph_encard :
+theorem encard_edgeSet_completeBipartiteGraph :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
   rw [edgeSet_completeBipartiteGraph, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
   exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
@@ -496,10 +496,8 @@ theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
   classical
   grw [hG.edgeSetEmbeddingCompleteBipartiteGraph.encard_le]
-  simp [edgeSet_completeBipartiteGraph_encard]
+  simp [encard_edgeSet_completeBipartiteGraph]
 
-/-- Four times the cardinality of the edge set of a bipartite graph is upper bounded by
-the square of cardinality of the vertex set. -/
 theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
     4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
   refine finite_or_infinite V |>.elim (fun hv ↦ ?_) (fun _ ↦ by simp)
