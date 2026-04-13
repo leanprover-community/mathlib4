@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
 # Weak dual topology
@@ -61,16 +61,13 @@ functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
-deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
+deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
 
 namespace WeakDual
 
-section Semiring
-
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -84,12 +81,6 @@ instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulComm
     [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
   inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
 
-/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
-multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
-instance instModule' (R) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
-    Module R (WeakDual 𝕜 E) :=
-  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
-
 instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
   ⟨fun m =>
@@ -101,6 +92,59 @@ instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommCl
     [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) :=
   ⟨continuous_induced_rng.2 <|
       continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
+
+/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
+multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
+instance (priority := 950) instModule'
+    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
+    Module R (WeakDual 𝕜 E) :=
+  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
+
+instance instModule : Module 𝕜 (WeakDual 𝕜 E) := inferInstance
+
+end WeakDual
+
+namespace StrongDual
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakDual : StrongDual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
+  LinearEquiv.refl 𝕜 (StrongDual 𝕜 E)
+
+theorem coe_toWeakDual (x' : StrongDual 𝕜 E) : (toWeakDual x' : E → 𝕜) = x' := rfl
+
+@[simp]
+theorem toWeakDual_apply (x' : StrongDual 𝕜 E) (y : E) : (toWeakDual x') y = x' y := rfl
+
+theorem toWeakDual_inj (x' y' : StrongDual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toWeakDual).eq_iff
+
+end StrongDual
+
+namespace WeakDual
+
+section Semiring
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
+equivalence `StrongDual.toWeakDual` in the other direction. -/
+def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
+  StrongDual.toWeakDual.symm
+
+@[simp]
+theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
+
+theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
+
+theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toStrongDual).eq_iff
+
 
 theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   continuous_induced_dom
