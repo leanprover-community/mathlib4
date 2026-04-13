@@ -119,7 +119,7 @@ theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
   rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
   exact ⟨t, by simp [ht, hcc'], hs.mono hst⟩
 
-theorem exists_set_linearIndependent_of_lt_rank {c : Cardinal.{v}} (h : c < (Module.rank R M)) :
+theorem exists_set_linearIndependent_of_lt_rank {c : Cardinal.{v}} (h : c < Module.rank R M) :
     ∃ s : Set M, (Cardinal.mk s) = c ∧ LinearIndepOn R id s := by
   simpa using exists_set_linearIndependent_of_lt_lift_rank (Cardinal.lift_lt.mpr h)
 
