@@ -5,8 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.KrullDimension.Basic
 
 /-!
 # Hausdorff-ness for Noetherian rings
@@ -16,7 +18,12 @@ public import Mathlib.RingTheory.Filtration
 
 open IsLocalRing Module
 
-variable {R : Type*} [CommRing R] (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] (I : Ideal R)
+
+section
+
+variable (M : Type*) [AddCommGroup M] [Module R M]
+
 variable [IsNoetherianRing R] [Module.Finite R M]
 
 lemma IsHausdorff.of_le_jacobson (h : I ≤ Ideal.jacobson ⊥) : IsHausdorff I M :=
@@ -33,3 +40,17 @@ lemma IsHausdorff.of_isTorsionFree [IsDomain R] [IsTorsionFree R M] (h : I ≠ �
 
 theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :=
   .of_isTorsionFree I R h
+
+end
+
+lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
+    IsNoetherianRing (AdicCompletion I R) := by
+  sorry
+
+instance [IsNoetherianRing R] : IsNoetherianRing (AdicCompletion I R) :=
+  AdicCompletion.isNoetherianRing_of_fg I I.fg_of_isNoetherianRing
+
+lemma AdicCompletion.ringKrullDim_eq [IsNoetherianRing R] [IsLocalRing R] :
+    ringKrullDim (AdicCompletion (maximalIdeal R) R) = ringKrullDim R := by
+  --!!!
+  sorry
