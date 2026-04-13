@@ -457,10 +457,10 @@ along horizontals). Such a set cannot be measurable as it would contradict Fubin
 We need the continuum hypothesis to construct it.
 -/
 
--- TODO: deprecate in favor of `Cardinal.exists_pathological_rel`
+-- TODO: deprecate in favor of `Cardinal.exists_rel_card_fibers_lt`
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_pathological_rel ℝ
+  obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_card_fibers_lt ℝ
   refine ⟨fun x ↦ setOf (r x), ?_, ?_⟩
   · simpa [Hcont, ← Set.compl_eq_univ_diff] using hr₁
   · simpa [Hcont] using hr₂
