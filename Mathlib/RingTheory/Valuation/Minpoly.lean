@@ -7,7 +7,7 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.LinearAlgebra.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Minimal polynomials.

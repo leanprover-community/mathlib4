@@ -75,8 +75,9 @@ theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 
 open Module in
-lemma charpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
+lemma charpoly_natDegree [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 end Coeff
@@ -143,12 +144,17 @@ theorem Algebra.aeval_self_charpoly_lmul (α : M) :
   Algebra.lmul_injective (R := R) <| by
     simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
 
-theorem minpoly.natDegree_le [Nontrivial R] (α : M) :
+theorem minpoly.natDegree_le (α : M) :
     (minpoly R α).natDegree ≤ Module.finrank R M := by
-  simpa [← (Algebra.lmul _ _ α).charpoly_natDegree] using natDegree_le_natDegree <| minpoly.min _ _
-    (Algebra.lmul R _ α).charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
+  by_cases h : Nontrivial R
+  · let f := Algebra.lmul R _ α
+    have : (minpoly R α).natDegree ≤ f.charpoly.natDegree := natDegree_le_natDegree <|
+      minpoly.min _ _ f.charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
+    simpa [← (Algebra.lmul _ _ α).charpoly_natDegree]
+  · haveI := not_nontrivial_iff_subsingleton.mp h
+    simp [natDegree_of_subsingleton]
 
-theorem minpoly.degree_le [Nontrivial R] (α : M) :
+theorem minpoly.degree_le (α : M) :
     (minpoly R α).degree ≤ Module.finrank R M :=
   degree_le_of_natDegree_le (minpoly.natDegree_le α)
 
