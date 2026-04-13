@@ -87,6 +87,12 @@ lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule ''
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
 
+variable {R E : Type*}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+open Pointwise in
+lemma ofSubmodule_neg (S : Submodule R E) : ofSubmodule (-S) = -(ofSubmodule S) := by ext; simp
+
 end Submodule
 
 section ConvexCone
@@ -290,11 +296,11 @@ variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup
 
 lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
-  sup_inf_assoc_of_le_of_neg_le _ hCS (fun _ hx => by simpa using hCS hx)
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le, ← ofSubmodule_neg])
 
 lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
-  inf_sup_assoc_of_le_of_neg_le _ hSC (fun _ hx => by apply hSC; simpa [hSC] using hx)
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le, ← ofSubmodule_neg])
 
 end AddCommGroup
 
