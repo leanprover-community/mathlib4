@@ -410,11 +410,6 @@ def valueGroupOrderIso₀ : ValueGroup₀ (valuation v) ≃*o ValueGroup₀ v wh
     | .coe _, 0 => simp
     | .coe a, .coe b => simp
 
--- lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
---     valueGroupOrderIso₀ v (Valued.v.restrict b) = v.restrict b.ofVal := by
---   simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
---   by_cases hb : v b.ofVal = 0 <;> simp [hb]
-
 lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
     valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal := by
   simp [(WithVal.valuation v).restrict_def, restrict₀_apply, ← valuation_apply_eq_ofVal,
