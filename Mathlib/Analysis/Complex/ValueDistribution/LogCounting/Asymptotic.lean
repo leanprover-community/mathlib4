@@ -46,28 +46,13 @@ is little o of the logarithmic counting function attached to `single e`.
 -/
 lemma one_isLittleO_logCounting_single [DecidableEq E] [ProperSpace E] {e : E} :
     (1 : ℝ → ℝ) =o[atTop] logCounting (single e 1) := by
-  rw [isLittleO_iff]
-  intro c hc
-  simp only [Pi.one_apply, norm_eq_abs, eventually_atTop, abs_one]
-  use exp (|log ‖e‖| + c⁻¹)
-  intro b hb
-  have h₁b : 1 ≤ b := by
-    calc 1
-      _ ≤ exp (|log ‖e‖| + c⁻¹) := one_le_exp (by positivity)
-      _ ≤ b := hb
-  have h₁c : ‖e‖ ≤ exp (|log ‖e‖| + c⁻¹) := by
-    calc ‖e‖
-      _ ≤ exp (log ‖e‖) := le_exp_log ‖e‖
-      _ ≤ exp (|log ‖e‖| + c⁻¹) :=
-        exp_monotone (le_add_of_le_of_nonneg (le_abs_self _) (inv_pos.2 hc).le)
-  rw [← inv_mul_le_iff₀ hc, mul_one, abs_of_nonneg (logCounting_nonneg
-    (single_pos.2 Int.one_pos).le h₁b)]
-  calc c⁻¹
-    _ ≤ logCounting (single e 1) (exp (|log ‖e‖| + c⁻¹)) := by
-      simp [logCounting_single_eq_log_sub_const h₁c, le_sub_iff_add_le', le_abs_self (log ‖e‖)]
-    _ ≤ logCounting (single e 1) b := by
-      apply logCounting_mono (single_pos.2 Int.one_pos).le (mem_Ioi.2 (exp_pos _)) _ hb
-      simpa [mem_Ioi] using one_pos.trans_le h₁b
+  have hΘ : (fun r : ℝ ↦ log r - log ‖e‖) =Θ[atTop] log :=
+    (IsEquivalent.refl.sub_isLittleO (Real.isLittleO_const_log_atTop (c := log ‖e‖))).isTheta
+  have h₁ : (1 : ℝ → ℝ) =o[atTop] fun r : ℝ ↦ log r - log ‖e‖ :=
+    (hΘ.isLittleO_congr_right).2 Real.isLittleO_const_log_atTop
+  refine h₁.congr' EventuallyEq.rfl ?_
+  filter_upwards [eventually_ge_atTop ‖e‖] with r hr
+  simp [logCounting_single_eq_log_sub_const hr]
 
 /--
 A non-negative function with locally finite support is zero if and only if its logarithmic counting
@@ -124,16 +109,7 @@ theorem logCounting_isBigO_one_iff_analyticOnNhd {f : 𝕜 → E} (h : Meromorph
     logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f univ) univ := by
   simp only [logCounting, reduceDIte]
   rw [← Function.locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _)]
-  constructor
-  · intro h₁f z hz
-    apply (meromorphicNFOn_toMeromorphicNFOn f univ
-      trivial).meromorphicOrderAt_nonneg_iff_analyticAt.1
-    rw [meromorphicOrderAt_toMeromorphicNFOn h.meromorphicOn (by trivial), ← WithTop.untop₀_nonneg,
-      ← h.meromorphicOn.divisor_apply (by trivial), ← negPart_eq_zero,
-      ← locallyFinsuppWithin.negPart_apply]
-    aesop
-  · intro h₁f
-    rwa [negPart_eq_zero, ← h.meromorphicOn.divisor_of_toMeromorphicNFOn,
-      (meromorphicNFOn_toMeromorphicNFOn _ _).divisor_nonneg_iff_analyticOnNhd]
+  rw [negPart_eq_zero, ← h.meromorphicOn.divisor_of_toMeromorphicNFOn,
+    (meromorphicNFOn_toMeromorphicNFOn _ _).divisor_nonneg_iff_analyticOnNhd]
 
 end ValueDistribution

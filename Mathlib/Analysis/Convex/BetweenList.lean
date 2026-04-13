@@ -180,20 +180,11 @@ variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-    rw [wbtw_cons]
-    refine ⟨?_, ih h.pairwise.of_cons.sortedLE⟩
-    clear ih
-    induction tail with
-    | nil => simp
-    | cons head' tail' ih =>
-      rw [pairwise_cons]
-      refine ⟨?_, ih (h.pairwise.sublist ?_).sortedLE⟩
-      · simp_rw [sortedLE_iff_pairwise, pairwise_cons_cons, pairwise_cons] at h
-        exact fun a ha ↦ .of_le_of_le h.1 (h.2.2.1 a ha)
-      · simp
+  rw [List.Wbtw, List.triplewise_iff_getElem]
+  intro i j k hij hjk hk
+  have hik : i < l.length := Nat.lt_trans hij (Nat.lt_trans hjk hk)
+  have hjl : j < l.length := Nat.lt_trans hjk hk
+  exact Wbtw.of_le_of_le (h.getElem_le_getElem_of_le hij.le) (h.getElem_le_getElem_of_le hjk.le)
 
 @[deprecated (since := "2025-10-13")]
 alias Sorted.wbtw := SortedLE.wbtw
