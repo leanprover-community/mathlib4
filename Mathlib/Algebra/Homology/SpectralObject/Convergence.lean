@@ -107,17 +107,17 @@ instance (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁' -/
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i₀ i₁ i₂ : ι)
     (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂) :
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ (h₀₁.trans h₁₂) ≫
-      X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top =
+      X.mapFourδ₂Toδ₁' ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top n₀ n₁ n₂ hn₁ hn₂  =
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ h₁₂ := by
-  dsimp [abutmentFiltration, abutmentFiltrationToPageInfinity, EMapFourδ₂Toδ₁']
-  rw [X.opcyclesToE_EMap _ _ _ _ _ _ _ _ _ _ _ _ _ _ (by rfl) _ (𝟙 _) rfl rfl,
-    opcyclesMap_id, Category.id_comp]
+  dsimp [abutmentFiltration, abutmentFiltrationToPageInfinity, mapFourδ₂Toδ₁']
+  rw [X.opcyclesToE_map .., opcyclesMap_id, Category.id_comp]
 
 end
 
@@ -129,7 +129,7 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 lemma abutmentFiltrationMap_abutmentFiltrationToPageInfinity :
     X.abutmentFiltrationMap n₁ i j hij ≫
       X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij = 0 :=
-  X.opcyclesMap_threeδ₂Toδ₁_opcyclesToE _ _ _ _ _ _ _ _ _ _ _ rfl
+  X.opcyclesMap_threeδ₂Toδ₁_opcyclesToE _ _ _ _ _ _ rfl ..
 
 @[simps!]
 noncomputable
@@ -148,15 +148,15 @@ instance : Epi (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j 
 
 lemma abutmentFiltrationShortComplex_shortExact :
     (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j hij).ShortExact :=
-  X.shortComplexOpcyclesThreeδ₂Toδ₁_shortExact _ _ _ _ _ _ _ _ _ _ _ rfl
+  X.shortComplexOpcyclesThreeδ₂Toδ₁_shortExact _ _ _ _ _ _ rfl ..
 
 end
 
-variable (data : SpectralSequenceMkData ι c r₀)
+variable (data : SpectralSequenceDataCore ι c r₀)
   {σ : Type*} {α : σ → Type*} [∀ n, LinearOrder (α n)]
   (s : SpectralSequence.ConvergenceStripes κ α)
 
-namespace SpectralSequenceMkData
+namespace SpectralSequenceDataCore
 
 structure CompatibleWithConvergenceStripes where
   deg : σ → ℤ
@@ -227,13 +227,13 @@ lemma mapWithBot_pred_le_i₂ (n : σ) (i : WithBot (α n)) (j : α n) (hij : s.
 
 end CompatibleWithConvergenceStripes
 
-end SpectralSequenceMkData
+end SpectralSequenceDataCore
 
-lemma mkDataE₂Cohomological_i₁_eq_i₂ (n : ℤ) (i j : ℤ)
+lemma coreE₂Cohomological_i₁_eq_i₂ (n : ℤ) (i j : ℤ)
     (hij : SpectralSequence.cohomologicalStripes.pred n j = WithBot.some i) (pq : ℤ × ℤ)
     (hpq : SpectralSequence.cohomologicalStripes.position n j = pq) :
-    mkDataE₂Cohomological.i₁ pq =
-      mkDataE₂Cohomological.i₂ (SpectralSequence.cohomologicalStripes.position n i) := by
+    coreE₂Cohomological.i₁ pq =
+      coreE₂Cohomological.i₂ (SpectralSequence.cohomologicalStripes.position n i) := by
   rw [← hpq]
   obtain rfl : j - 1 = i := by
     rw [← WithBot.coe_inj]
@@ -241,15 +241,15 @@ lemma mkDataE₂Cohomological_i₁_eq_i₂ (n : ℤ) (i j : ℤ)
   simp
 
 @[simps]
-def mkDataE₂CohomologicalCompatibility :
-    mkDataE₂Cohomological.CompatibleWithConvergenceStripes
+def coreE₂CohomologicalCompatibility :
+    coreE₂Cohomological.CompatibleWithConvergenceStripes
       SpectralSequence.cohomologicalStripes where
   deg n := n
   i₂_monotone n i j hij := by simpa using hij
 
 @[simps]
-def mkDataE₂CohomologicalNatCompatibility :
-    mkDataE₂CohomologicalNat.CompatibleWithConvergenceStripes
+def coreE₂CohomologicalNatCompatibility :
+    coreE₂CohomologicalNat.CompatibleWithConvergenceStripes
       CohomologicalSpectralSequenceNat.stripes where
   deg n := n
   i₂_monotone n i j hij := by simpa using hij
@@ -283,8 +283,8 @@ def homologicalStripesNat :
     simpa using h
 
 @[simps]
-def mkDataE₂HomologicalNatCompatibility :
-    mkDataE₂HomologicalNat.CompatibleWithConvergenceStripes
+def coreE₂HomologicalNatCompatibility :
+    coreE₂HomologicalNat.CompatibleWithConvergenceStripes
       homologicalStripesNat where
   deg n := -n
   deg_stripe pq := by
@@ -311,18 +311,18 @@ class ConvergesInDegree (n : σ) : Prop where
       (hi₂' : data.i₂ (s.position n j) = i₂')
       (h₁₂ : i₁ < i₂) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
       (hn₁' : hdata.deg n = n₁) :
-    IsIso (X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₁ i₂ i₂' ⊤ bot_le h₁₂.le (by
+    IsIso (X.mapFourδ₂Toδ₁' ⊥ i₁ i₂ i₂' ⊤ bot_le h₁₂.le (by
         rw [← hi₂, ← hi₂']
         apply hdata.i₂_monotone
         rw [← WithBot.coe_le_coe, ← hij]
-        apply s.pred_le) le_top)
+        apply s.pred_le) le_top n₀ n₁ n₂ hn₁ hn₂ )
   isIso₂ (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : κ) (hpq : s.position n j = pq)
       (i₁ i₂ i₂' : ι) (hi₁ : data.i₁ pq = i₁) (hi₂ : hdata.mapWithBot n i = i₂)
       (hi₂' : data.i₂ (s.position n j) = i₂')
       (h₁₂ : i₂ < i₁) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
       (hn₁' : hdata.deg n = n₁) :
-    IsIso (X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₂ i₁ i₂' ⊤ bot_le h₁₂.le (by
-        simpa only [← hi₁, ← hi₂', hpq] using (data.le₁₂ pq)) le_top)
+    IsIso (X.mapFourδ₂Toδ₁' ⊥ i₂ i₁ i₂' ⊤ bot_le h₁₂.le (by
+        simpa only [← hi₁, ← hi₂', hpq] using (data.le₁₂ pq)) le_top n₀ n₁ n₂ hn₁ hn₂)
 
 variable (n : σ) [hX : X.ConvergesInDegree hdata n]
 
@@ -339,17 +339,17 @@ lemma isIso₁_of_convergesInDegree
       (hi₂' : data.i₂ (s.position n j) = i₂')
       (h₁₂ : i₁ ≤ i₂) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
       (hn₁' : hdata.deg n = n₁) :
-    IsIso (X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₁ i₂ i₂' ⊤ bot_le h₁₂ (by
+    IsIso (X.mapFourδ₂Toδ₁' ⊥ i₁ i₂ i₂' ⊤ bot_le h₁₂ (by
       rw [← hi₂, ← hi₂']
       obtain _|i := i
       · exact bot_le
       · apply hdata.i₂_monotone
         change _ = WithBot.some i at hij
         rw [← WithBot.coe_le_coe, ← hij]
-        apply s.pred_le) le_top) := by
+        apply s.pred_le) le_top n₀ n₁ n₂ hn₁ hn₂ ) := by
   obtain rfl|h₁₂ := h₁₂.eq_or_lt
-  · dsimp [EMapFourδ₂Toδ₁']
-    erw [EMap_id]
+  · dsimp [mapFourδ₂Toδ₁']
+    erw [map_id ..]
     infer_instance
   · obtain _|i := i
     · simp at hi₂
@@ -364,11 +364,11 @@ lemma isIso₂_of_convergesInDegree
       (hi₂' : data.i₂ (s.position n j) = i₂')
       (h₁₂ : i₂ ≤ i₁) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
       (hn₁' : hdata.deg n = n₁) :
-    IsIso (X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₂ i₁ i₂' ⊤ bot_le h₁₂ (by
-      simpa only [← hi₁, ← hi₂', hpq] using (data.le₁₂ pq)) le_top) := by
+    IsIso (X.mapFourδ₂Toδ₁' ⊥ i₂ i₁ i₂' ⊤ bot_le h₁₂ (by
+      simpa only [← hi₁, ← hi₂', hpq] using (data.le₁₂ pq)) le_top n₀ n₁ n₂ hn₁ hn₂ ) := by
   obtain rfl|h₁₂ := h₁₂.eq_or_lt
-  · dsimp [EMapFourδ₂Toδ₁']
-    erw [EMap_id]
+  · dsimp [mapFourδ₂Toδ₁']
+    erw [map_id ..]
     infer_instance
   · exact hX.isIso₂ i j hij pq hpq i₁ i₂ i₂' hi₁ hi₂ hi₂' h₁₂ _ _ _ _ _ hn₁'
 
@@ -454,13 +454,14 @@ noncomputable def hom :
     X.pageInfinity (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp)
       (hdata.mapWithBot n i) (data.i₂ (s.position n j))
         (hdata.mapWithBot_pred_le_i₂ n i j hij) :=
-  X.EMapFourδ₂Toδ₁' _ _ _ _ _ _ _ _ _ _ _ h _ _
+  X.mapFourδ₂Toδ₁' _ _ _ _ _ _ h _ _ _ _ _ _ _
 
 instance : IsIso (hom X hdata n i j hij pq hpq h) :=
   X.isIso₁_of_convergesInDegree hdata n i j hij pq hpq _ _ _ rfl rfl rfl _ _ _ _ _ _ rfl
 
 noncomputable def iso := asIso (hom X hdata n i j hij pq hpq h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_pageInfinityIso_hom_iso_hom :
     π X hdata n j pq hpq ≫ (pageInfinityIso X hdata n j pq hpq).hom ≫
@@ -482,7 +483,7 @@ noncomputable def hom' :
         (hdata.mapWithBot_pred_le_i₂ n i j hij) ⟶
     X.pageInfinity (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp)
       (data.i₁ pq) (data.i₂ (s.position n j)) (by simpa only [hpq] using data.le₁₂ pq) :=
-  X.EMapFourδ₂Toδ₁' _ _ _ _ _ _ _ _ _ _ _ h _ _
+  X.mapFourδ₂Toδ₁' _ _ _ _ _ _ h _ _ _ _ _ _ _
 
 instance : IsIso (hom' X hdata n i j hij pq hpq h) :=
   X.isIso₂_of_convergesInDegree hdata n i j hij pq hpq _ _ _ rfl rfl rfl _ _ _ _ _ _ rfl
@@ -490,6 +491,7 @@ instance : IsIso (hom' X hdata n i j hij pq hpq h) :=
 /-- iso' -/
 noncomputable def iso' := (asIso (hom' X hdata n i j hij pq hpq h)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma π_pageInfinityIso_hom :
     π X hdata n j pq hpq ≫ (pageInfinityIso X hdata n j pq hpq).hom =
       X.abutmentFiltrationToPageInfinity _ _ _ _ _ _ _ _ ≫
@@ -534,7 +536,7 @@ noncomputable def iso : composableArrows X hdata n i j hij pq hpq ≅
       (by simp) (by simp) _ _ (hdata.mapWithBot_pred_le_i₂ n i j hij)).toComposableArrows :=
   isoMk₂ (Iso.refl _) (Iso.refl _)
     (pageInfinityIso X hdata n j pq hpq ≪≫ iso₃ X hdata n i j hij pq hpq) (by simp)
-    (by simp [Precomp.map])
+    (by simp [Precomp.map, Precomp.obj])
 
 lemma composableArrows_exact :
     (composableArrows X hdata n i j hij pq hpq).Exact :=
@@ -545,6 +547,7 @@ end
 
 end ConvergesAt
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def convergesAt :
     (X.spectralSequence data).StronglyConvergesToInDegree s n (X.abutment (hdata.deg n)) where
   hasPageInfinityAt pq hpq := by
@@ -564,7 +567,7 @@ noncomputable def convergesAt :
   exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).exact 0
 
 instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℤ) :
-    X.ConvergesInDegree mkDataE₂CohomologicalCompatibility n where
+    X.ConvergesInDegree coreE₂CohomologicalCompatibility n where
   isZero₁ := ⟨1, fun j hj => by
     apply isZero₁_of_isFirstQuadrant
     obtain rfl : j = 0 := by
@@ -578,17 +581,17 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℤ) :
     rintro i j hij pq hpq _ _ _ rfl rfl rfl h
     exfalso
     apply ne_of_lt h
-    exact mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq
+    exact coreE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq
   isIso₂ := by
     rintro i j hij pq hpq _ _ _ rfl rfl rfl h
     exfalso
     apply ne_of_lt h
     induction i using WithBot.recBotCoe with
     | bot => simp at hij
-    | coe i => exact (mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
+    | coe i => exact (coreE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
 
 instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
-    X.ConvergesInDegree mkDataE₂CohomologicalNatCompatibility n where
+    X.ConvergesInDegree coreE₂CohomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
     exfalso
     dsimp at hj ⊢
@@ -613,7 +616,7 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
       · intro n₀ n₁ n₂ hn₁ hn₂ _
         subst hpq
         dsimp
-        apply X.isIso_EMapFourδ₂Toδ₁'
+        apply X.isIso_mapFourδ₂Toδ₁' ..
         · apply X.isIso_H_map_twoδ₁Toδ₀' n₁ n₂ hn₂
           · apply isZero₁_of_isFirstQuadrant
             simp
@@ -639,7 +642,7 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
         rfl
 
 instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
-    X.ConvergesInDegree mkDataE₂HomologicalNatCompatibility n where
+    X.ConvergesInDegree coreE₂HomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
     exfalso
     dsimp at hj
@@ -664,7 +667,7 @@ instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
       subst hpq
       obtain _|j := j
       · intro n₀ n₁ n₂ hn₁ hn₂ hn₁'
-        apply X.isIso_EMapFourδ₂Toδ₁'
+        apply X.isIso_mapFourδ₂Toδ₁' ..
         · apply X.isIso_H_map_twoδ₁Toδ₀' n₁ n₂ hn₂
           · apply X.isZero₂_of_isThirdQuadrant
             subst hn₁'

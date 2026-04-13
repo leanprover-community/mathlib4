@@ -51,7 +51,7 @@ noncomputable def page₂Iso (pq : ℕ × ℕ) :
   ((grothendieckSpectralSequence F G X).page 2).X pq ≅
     (F.rightDerived' pq.2 ⋙ G.rightDerived' pq.1).obj X :=
   t.spectralSequenceNatE₂Iso (F.rightDerivedFunctorPlus.obj ((singleFunctor A 0).obj X))
-    (G.rightDerivedFunctorPlus ⋙ homologyFunctor C 0) pq
+    (G.rightDerivedFunctorPlus ⋙ homologyFunctor C 0) B pq
 
 /-- stronglyConvergesToInDegree' -/
 noncomputable def stronglyConvergesToInDegree' (n : ℕ) :

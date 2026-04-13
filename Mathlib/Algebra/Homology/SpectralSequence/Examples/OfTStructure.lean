@@ -69,6 +69,7 @@ section
 variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
   [H.ShiftSequence ℤ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [t.IsGE X 0] [H.VanishesOnGEOne t] :
     ((t.spectralObject X).mapHomologicalFunctor H).IsFirstQuadrant where
   isZero₁ i j hij hj n := by
@@ -87,13 +88,14 @@ instance [t.IsGE X 0] [H.VanishesOnGEOne t] :
 noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=
   ((t.spectralObject X).mapHomologicalFunctor H).E₂SpectralSequence
 
-variable [t.HasHeart] [HasHomology₀ t] [Functor.ShiftSequence (homology₀ t) ℤ]
+variable (C₀ : Type*) [Category C₀] [Abelian C₀]
+  [t.Heart C₀] [HasHomology₀ t C₀] [Functor.ShiftSequence (homology₀ t (H := C₀)) ℤ]
 
 noncomputable def spectralSequenceE₂Iso (pq : ℤ × ℤ) :
     ((t.spectralSequence X H).page 2).X pq ≅
-      (t.homology pq.2 ⋙ t.ιHeart ⋙ H.shift pq.1).obj X :=
+      (t.homology pq.2 ⋙ t.ιHeart (H := C₀) ⋙ H.shift pq.1).obj X :=
   ((t.spectralObject X).mapHomologicalFunctor H).spectralSequenceFirstPageXIso
-      mkDataE₂Cohomological pq _ rfl _ _ rfl rfl ≪≫
+      coreE₂Cohomological pq _ _ rfl rfl _ rfl ≪≫
     (H.shiftIso _ _ _ (add_comm pq.2 pq.1)).symm.app _ ≪≫
     (H.shift pq.1).mapIso (t.shiftSpectralObjectω₁IsoHomologyιHeart X pq.2 _ rfl)
 
@@ -101,7 +103,7 @@ noncomputable def spectralSequenceStronglyConvergesTo [H.VanishesOnGEOne t] [t.I
     (t.spectralSequence X H).StronglyConvergesToInDegree
       SpectralSequence.cohomologicalStripes n ((H.shift n).obj X) :=
   ((t.spectralObject X).mapHomologicalFunctor H).convergesAt
-    mkDataE₂CohomologicalCompatibility n
+    coreE₂CohomologicalCompatibility n
 
 section
 
@@ -110,13 +112,14 @@ variable [((spectralObject t X).mapHomologicalFunctor H).IsFirstQuadrant]
 noncomputable def spectralSequenceNat : E₂CohomologicalSpectralSequenceNat A :=
   ((t.spectralObject X).mapHomologicalFunctor H).E₂SpectralSequenceNat
 
-variable [t.HasHeart] [HasHomology₀ t] [Functor.ShiftSequence (homology₀ t) ℤ]
+variable (C₀ : Type*) [Category C₀] [Abelian C₀]
+  [t.Heart C₀] [HasHomology₀ t C₀] [Functor.ShiftSequence (homology₀ t (H := C₀)) ℤ]
 
 noncomputable def spectralSequenceNatE₂Iso (pq : ℕ × ℕ) :
     ((t.spectralSequenceNat X H).page 2).X pq ≅
-      (t.homology pq.2 ⋙ t.ιHeart ⋙ H.shift (pq.1 : ℤ)).obj X :=
+      (t.homology pq.2 ⋙ t.ιHeart (H := C₀) ⋙ H.shift (pq.1 : ℤ)).obj X :=
   ((t.spectralObject X).mapHomologicalFunctor H).spectralSequenceFirstPageXIso
-      mkDataE₂CohomologicalNat pq _ rfl _ _ rfl rfl ≪≫
+      coreE₂CohomologicalNat pq _ _ rfl rfl _ rfl ≪≫
     (H.shiftIso _ _ _ (add_comm _ _)).symm.app _ ≪≫
     (H.shift (pq.1 : ℤ)).mapIso (t.shiftSpectralObjectω₁IsoHomologyιHeart X pq.2 _ rfl)
 
@@ -124,7 +127,7 @@ noncomputable def spectralSequenceNatStronglyConvergesTo [t.IsGE X 0] (n : ℕ) 
     (t.spectralSequenceNat X H).StronglyConvergesToInDegree
       CohomologicalSpectralSequenceNat.stripes n ((H.shift (n : ℤ)).obj X) :=
   ((t.spectralObject X).mapHomologicalFunctor H).convergesAt
-    mkDataE₂CohomologicalNatCompatibility n
+    coreE₂CohomologicalNatCompatibility n
 
 end
 
