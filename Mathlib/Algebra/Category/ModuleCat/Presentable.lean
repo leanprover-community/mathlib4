@@ -20,7 +20,8 @@ generator of `ℵ₀`-presentable objects.
 
 ## Main results
 
-- `ModuleCat.forgetAccessible`: the forgetful functor preserves filtered colimits.
+- `ModuleCat.isStrongGenerator_singleton_self`: the singleton `{R}` is a strong
+  generator of `ModuleCat R`.
 - `ModuleCat.isCardinalPresentable_self`: the free rank-1 module `R` is `ℵ₀`-presentable.
 - `ModuleCat.isLocallyFinitelyPresentable`: `ModuleCat R` is locally finitely
   presentable.
@@ -43,63 +44,66 @@ namespace ModuleCat
 
 variable (R : Type u) [CommRing R]
 
+/-- For `m : M`, the `R`-linear map `R → M` sending `r` to `r • m`.
+Maps from the free rank-1 module biject with elements via
+`LinearMap.ringLmapEquivSelf`. -/
+noncomputable abbrev elementMap (M : ModuleCat.{u} R) (m : M) :
+    ModuleCat.of R R ⟶ M :=
+  ModuleCat.ofHom ((LinearMap.ringLmapEquivSelf R R M).symm m)
+
 /-- The forgetful functor `ModuleCat R → Type` preserves filtered colimits,
 hence is `ℵ₀`-accessible. -/
-noncomputable instance forgetAccessible :
-    (forget (ModuleCat.{u} R)).IsCardinalAccessible
-      (ℵ₀ : Cardinal.{u}) :=
-  ⟨fun J _ _ => by
-    have : IsFiltered J := isFiltered_of_isCardinalFiltered J ℵ₀
-    exact PreservesFilteredColimitsOfSize.preserves_filtered_colimits
-      (F := forget (ModuleCat.{u} R)) J⟩
+instance :
+    (forget (ModuleCat.{u} R)).IsCardinalAccessible (ℵ₀ : Cardinal.{u}) where
+  preservesColimitOfShape J _ _ :=
+    haveI : IsFiltered J := isFiltered_of_isCardinalFiltered J ℵ₀
+    inferInstance
 
 /-- The free rank-1 module `R` is `ℵ₀`-presentable: `Hom(R, -)` preserves
 filtered colimits because it identifies with the forgetful functor. -/
-noncomputable instance isCardinalPresentable_self :
+instance isCardinalPresentable_self :
     IsCardinalPresentable (ModuleCat.of R R) (ℵ₀ : Cardinal.{u}) :=
   Functor.isCardinalAccessible_of_natIso (coyonedaObjIsoForget R).symm ℵ₀
+
+/-- The singleton property `{R}` (the free rank-1 module) is a strong generator
+of `ModuleCat R`: maps `R → M` detect morphism equality (separating) and
+suffice to upgrade a mono to an iso (strong). -/
+lemma isStrongGenerator_singleton_self :
+    (ObjectProperty.singleton (ModuleCat.of R R)).IsStrongGenerator := by
+  rw [ObjectProperty.isStrongGenerator_iff]
+  refine ⟨?_, ?_⟩
+  · -- Separating: maps R → M detect morphism equality
+    rw [Preadditive.isSeparating_iff]
+    intro X Y f hf; ext x; change f.hom x = 0
+    have h := hf (ModuleCat.of R R) (by simp) (elementMap R X x)
+    have h1 :
+        (elementMap R X x ≫ f).hom (1 : R) = f.hom x := by
+      simp [elementMap, LinearMap.ringLmapEquivSelf_symm_apply, one_smul]
+    rw [h] at h1; simpa using h1.symm
+  · -- Strong: mono + all R-maps lift => iso
+    intro X Y i _ hsurj
+    have : Epi i := by
+      rw [ModuleCat.epi_iff_surjective]; intro y
+      obtain ⟨g, hg⟩ := hsurj (ModuleCat.of R R) (by simp) (elementMap R Y y)
+      exact ⟨(ConcreteCategory.hom g) 1, by
+        have := congr_arg
+          (fun f => (ConcreteCategory.hom f) (1 : R)) hg
+        simp only [ConcreteCategory.comp_apply] at this
+        rw [this]; simp [elementMap,
+          LinearMap.ringLmapEquivSelf_symm_apply, one_smul]⟩
+    exact isIso_of_mono_of_epi i
 
 /-- **`ModuleCat R` is locally finitely presentable**
 (Gabriel-Ulmer, Adamek-Rosicky 1.11).
 
 The free rank-1 module `R` is a small, strong generator of
 `ℵ₀`-presentable objects. -/
-noncomputable instance isLocallyFinitelyPresentable :
+instance isLocallyFinitelyPresentable :
     IsLocallyFinitelyPresentable.{u} (ModuleCat.{u} R) := by
   change IsCardinalLocallyPresentable (ModuleCat.{u} R) ℵ₀
   rw [IsCardinalLocallyPresentable.iff_exists_isStrongGenerator]
-  refine ⟨fun M => M = ModuleCat.of R R, ?_, ?_, ?_⟩
-  -- (1) Small: {R} is a singleton
-  · exact Small.mk' ⟨fun _ => PUnit.unit,
-      fun _ => ⟨ModuleCat.of R R, rfl⟩,
-      fun ⟨_, h⟩ => by subst h; rfl, fun _ => rfl⟩
-  -- (2) Strong generator
-  · rw [ObjectProperty.isStrongGenerator_iff]
-    constructor
-    · -- Separating: maps R → M detect morphism equality
-      rw [Preadditive.isSeparating_iff]
-      intro X Y f hf; ext x; change f.hom x = 0
-      have h := hf (ModuleCat.of R R) rfl (elementMap R X x)
-      have h1 :
-          (elementMap R X x ≫ f).hom (1 : R) = f.hom x := by
-        simp [elementMap,
-          LinearMap.ringLmapEquivSelf_symm_apply, one_smul]
-      rw [h] at h1; simpa using h1.symm
-    · -- Strong: mono + all R-maps lift => iso
-      intro X Y i _ hsurj
-      have : Epi i := by
-        rw [ModuleCat.epi_iff_surjective]; intro y
-        obtain ⟨g, hg⟩ :=
-          hsurj (ModuleCat.of R R) rfl (elementMap R Y y)
-        exact ⟨(ConcreteCategory.hom g) 1, by
-          have := congr_arg
-            (fun f => (ConcreteCategory.hom f) (1 : R)) hg
-          simp only [ConcreteCategory.comp_apply] at this
-          rw [this]; simp [elementMap,
-            LinearMap.ringLmapEquivSelf_symm_apply,
-            one_smul]⟩
-      exact isIso_of_mono_of_epi i
-  -- (3) R is ℵ₀-presentable
-  · intro M hM; subst hM; exact isCardinalPresentable_self R
+  refine ⟨ObjectProperty.singleton (ModuleCat.of R R), inferInstance,
+    isStrongGenerator_singleton_self R, ?_⟩
+  exact ObjectProperty.singleton_le_iff.mpr (isCardinalPresentable_self R)
 
 end ModuleCat
