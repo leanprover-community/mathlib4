@@ -43,12 +43,12 @@ private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   return (C, instC)
 
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHomAux (e : Expr) (uLev vLev : Level) : MetaM Expr := do
+def mapExprHom (e : Expr) (uLev vLev : Level) : MetaM Expr := do
   let eqTy := (← inferType e).cleanupAnnotations
   let (C, instC) ← extractCatInstanceFromEq eqTy
-  let Dsort := mkSort (Level.succ uLev)
+  let Dsort := .sort (Level.succ uLev)
   withLocalDecl `D .implicit Dsort fun dFVar => do
-    let catD := mkApp (.const ``CategoryTheory.Category [vLev, uLev]) dFVar
+    let catD := .app (.const ``CategoryTheory.Category [vLev, uLev]) dFVar
     withLocalDecl `instD .instImplicit catD fun instDFVar => do
       let Fty ← mkAppOptM ``CategoryTheory.Functor #[C, instC, dFVar, instDFVar]
       withLocalDecl `F .default Fty fun fFVar => do
@@ -56,14 +56,6 @@ def mapExprHomAux (e : Expr) (uLev vLev : Level) : MetaM Expr := do
         let ty ← instantiateMVars (← inferType pf₀)
         let (_, pf') ← simpEq (fun e' => mapCompSimp e') ty pf₀
         mkLambdaFVars #[dFVar, instDFVar, fFVar] pf'
-
-/--
-For `e : f = g`, build `∀ ⦃D⦄ [Category D] (F : C ⥤ D), …` with
-`simp only [Functor.map_comp, Functor.map_id]` on each side of `F.map f = F.map g`, using fresh
-level names `uD` (objects) and `vD` (morphisms) for the target category (for `@[map]` declarations).
--/
-def mapExprHom (e : Expr) (uD vD : Name) : MetaM Expr :=
-  mapExprHomAux e (Level.param uD) (Level.param vD)
 
 /--
 Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
@@ -77,13 +69,9 @@ def mapExpr (pf : Expr) : MetaM (Expr × Array Name) := do
   let vD ← mkFreshUserName `v
   forallTelescopeReducing (← inferType pf) fun xs _ => do
     let pfApp := mkAppN pf xs
-    let inner ← mapExprHom pfApp uD vD
+    let inner ← mapExprHom pfApp (.param uD) (.param vD)
     let full ← mkLambdaFVars xs inner
     return (full, #[uD, vD])
-
-/-- Version of `mapExpr` for `TermElabM`. -/
-def mapExpr' (pf : Expr) : TermElabM (Expr × Array Name) := do
-  mapExpr pf
 
 /--
 Like `mapExpr`, but uses fresh level metavariables for the target category so that `map_of% t` can
@@ -94,12 +82,8 @@ def mapExprMVars (pf : Expr) : MetaM Expr := do
   let vLev ← mkFreshLevelMVar
   forallTelescopeReducing (← inferType pf) fun xs _ => do
     let pfApp := mkAppN pf xs
-    let inner ← mapExprHomAux pfApp uLev vLev
+    let inner ← mapExprHom pfApp uLev vLev
     mkLambdaFVars xs inner
-
-/-- `mapExprMVars` lifted to `TermElabM`. -/
-def mapExprElab (pf : Expr) : TermElabM Expr :=
-  liftMetaM <| mapExprMVars pf
 
 /--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
@@ -126,7 +110,7 @@ initialize registerBuiltinAttribute {
       Term.TermElabM.run' <| Term.withSynthesize do
         let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
         let value := value.instantiateLevelParams levels levelMVars
-        let (pf, tgtLevelNames) ← mapExpr' value
+        let (pf, tgtLevelNames) ← mapExpr value
         let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
         let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
         pure (r.expr, outLevels)
@@ -139,6 +123,6 @@ produces the corresponding statement with a functor applied and
 -/
 elab "map_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  mapExprElab e
+  mapExprMVars e
 
 end Mathlib.Tactic.CategoryTheory.Map
