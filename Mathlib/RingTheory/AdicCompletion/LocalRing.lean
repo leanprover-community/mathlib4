@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
+public import Mathlib.RingTheory.AdicCompletion.Completeness
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
@@ -28,138 +29,14 @@ variable {R : Type*} [CommRing R]
 open Ideal Quotient
 
 theorem isLocalRing_of_isAdicComplete_maximal (m : Ideal R) [m.IsMaximal] [IsAdicComplete m R] :
-    IsLocalRing R := by
-  refine IsLocalRing.of_unique_max_ideal ⟨m, ‹_›, fun m' hm' ↦ ?_⟩
-  symm
-  apply Ideal.IsMaximal.eq_of_le ‹_› IsPrime.ne_top'
-  exact (IsAdicComplete.le_jacobson_bot m).trans (by
-    simpa [Ideal.jacobson_bot] using Ring.jacobson_le_of_isMaximal m')
+    IsLocalRing R :=
+  IsLocalRing.of_unique_max_ideal ⟨m, ‹m.IsMaximal›, fun _ hJ ↦
+    (‹m.IsMaximal›.eq_of_le hJ.ne_top <|
+      (IsAdicComplete.le_jacobson_bot m).trans <| sInf_le ⟨bot_le, hJ⟩).symm⟩
 
 open IsLocalRing
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma AdicCompletion.ker_eval_eq_range (n : ℕ) : (AdicCompletion.eval I M n).ker =
-    (AdicCompletion.map I ((I ^ n) • (⊤ : Submodule R M)).subtype).range.restrictScalars R := by
-  let InM := (I ^ n) • (⊤ : Submodule R M)
-  have comap_eq (m : ℕ) : (I ^ (m + n) • (⊤ : Submodule R M)).comap InM.subtype =
-    (I ^ m) • (⊤ : Submodule R InM) := by
-    ext x
-    simp [Submodule.mem_smul_top_iff, InM, smul_smul, pow_add]
-  let shift (m : ℕ) : InM ⧸ ((I ^ m) • (⊤ : Submodule R InM)) →ₗ[R]
-    M ⧸ ((I ^ (m + n) • (⊤ : Submodule R M))) :=
-    Submodule.mapQ _ _ InM.subtype (le_of_eq (comap_eq m).symm)
-  have shift_inj (m : ℕ) : Function.Injective (shift m) := by
-    rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-    intro x hx
-    induction x using Submodule.Quotient.induction_on
-    simp only [Submodule.mapQ_apply, Submodule.Quotient.mk_eq_zero,
-      shift, ← Submodule.mem_comap, comap_eq] at hx
-    exact (Submodule.Quotient.mk_eq_zero _).mpr hx
-  have shift_comm {m l : ℕ} (hle : m ≤ l) :
-    (transitionMap I M (add_le_add_left hle n)).comp (shift l) =
-    (shift m).comp (transitionMap I InM hle) := by
-    ext x
-    simp [shift]
-  have shift_range (m : ℕ) : (shift m).range = (transitionMap I M (Nat.le_add_left n m)).ker := by
-    ext x
-    refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun h ↦ ?_⟩
-    · rcases Submodule.Quotient.mk_surjective _ y with ⟨z, hz⟩
-      simp [← hy, ← hz, LinearMap.mem_ker, shift]
-    · rcases Submodule.Quotient.mk_surjective _ x with ⟨y, hy⟩
-      simp only [← hy, LinearMap.mem_ker, Submodule.mapQ_apply, LinearMap.id_coe, id_eq,
-        Submodule.Quotient.mk_eq_zero] at h
-      use Submodule.Quotient.mk ⟨y, h⟩
-      simp [shift, hy]
-  change _ = ((AdicCompletion.map I InM.subtype).restrictScalars R).range
-  refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
-  · have mem (m : ℕ) : x.1 (m + n) ∈ (shift m).range := by
-      simpa [shift_range] using hx
-    let y_aux (m : ℕ) : InM ⧸ (I ^ m • (⊤ : Submodule R InM)) := Classical.choose (mem m)
-    have y_aux_spec (m : ℕ) : (shift m) (y_aux m) = x.1 (m + n) :=
-      Classical.choose_spec (mem m)
-    refine ⟨⟨y_aux, fun {m n} hle ↦ ?_⟩, ?_⟩
-    · apply shift_inj m
-      rw [← LinearMap.comp_apply, ← shift_comm hle]
-      simp [y_aux_spec]
-    · ext m
-      simp only [LinearMap.coe_restrictScalars, map_val_apply]
-      rw [← x.2 (Nat.le_add_right m n), ← y_aux_spec m]
-      rcases Submodule.Quotient.mk_surjective _ (y_aux m) with ⟨z, hz⟩
-      simp [← hz, shift]
-  · rcases hx with ⟨y, hy⟩
-    rcases Submodule.Quotient.mk_surjective _ (y.1 n) with ⟨z, hz⟩
-    simp [← hy, ← hz]
-
-lemma LinearMap.lsum_smul_id_range {ι : Type*} [Fintype ι] [DecidableEq ι] (f : ι → R) (I : Ideal R)
-    (eq : Ideal.span (Set.range f) = I) :
-    ((LinearMap.lsum R _ R) (fun (i : ι) ↦ (f i) • LinearMap.id)).range =
-    I • (⊤ : Submodule R M) := by
-  refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
-  · rcases hx with ⟨y, hy⟩
-    simp only [← hy, lsum_apply, coe_sum, coe_comp, coe_proj, Finset.sum_apply, Function.comp_apply,
-      Function.eval, smul_apply, id_coe, id_eq]
-    apply Submodule.sum_mem
-    intro i hi
-    apply Submodule.smul_mem_smul _ Submodule.mem_top
-    simpa [← eq] using mem_span_range_self
-  · refine Submodule.smul_induction_on hx (fun r memr m _ ↦ ?_) (fun x y hx hy ↦ add_mem hx hy)
-    rw [← eq] at memr
-    refine Submodule.span_induction (fun r hr ↦ ?_) (by simp)
-      (fun x y memx memy hx hy ↦ by simpa [add_smul] using add_mem hx hy)
-      (fun r s mems mem ↦ by simpa [← smul_smul] using Submodule.smul_mem _ r mem) memr
-    rcases hr with ⟨i, hi⟩
-    use Pi.single i m
-    simp [Pi.single_apply, hi]
-
-lemma AdicCompletion.le_ker_eval (n : ℕ) :
-    (I ^ n) • (⊤ : Submodule R _) ≤ (AdicCompletion.eval I M n).ker := by
-  intro x hx
-  refine Submodule.smul_induction_on hx (fun r memr m _ ↦ ?_) (fun x y hx hy ↦ add_mem hx hy)
-  simpa using Module.isTorsionBySet_quotient_ideal_smul M (I ^ n) (a := ⟨r, memr⟩)
-
-set_option backward.isDefEq.respectTransparency false in
-lemma AdicCompletion.ker_eval (fg : I.FG) (n : ℕ) :
-    (AdicCompletion.eval I M n).ker = (I ^ n) • (⊤ : Submodule R _) := by
-  have fg' : (I ^ n).FG := fg.pow
-  classical
-  let _ : Fintype (I ^ n).generators := (Submodule.FG.finite_generators fg').fintype
-  let g : ((I ^ n).generators → M) →ₗ[R] M :=
-    (LinearMap.lsum R _ R) (fun (r : (I ^ n).generators) ↦ r.1 • LinearMap.id)
-  have rg : g.range = (I ^ n) • (⊤ : Submodule R M) := by
-    apply LinearMap.lsum_smul_id_range
-    simpa using (I ^ n).span_generators
-  let gr := g.codRestrict ((I ^ n) • (⊤ : Submodule R M)) (by simp [← rg])
-  have surjgr : Function.Surjective gr := by
-    intro x
-    rcases (Submodule.ext_iff.mp rg x.1).mpr x.2 with ⟨y, hy⟩
-    exact ⟨y, SetCoe.ext hy⟩
-  have req : (AdicCompletion.map I ((I ^ n) • (⊤ : Submodule R M)).subtype).range =
-    ((AdicCompletion.map I g).comp (piEquivOfFintype I _).symm.toLinearMap).range := by
-    have : ((I ^ n) • (⊤ : Submodule R M)).subtype.comp gr = g := g.subtype_comp_codRestrict _ _
-    rw [LinearEquiv.range_comp, ← this, ← map_comp, LinearMap.range_comp, LinearMap.range_eq_map,
-      LinearMap.range_eq_top_of_surjective _ (AdicCompletion.map_surjective I surjgr)]
-  have compeq : ((AdicCompletion.map I g).comp
-    (piEquivOfFintype I _).symm.toLinearMap).restrictScalars R =
-    (LinearMap.lsum R _ R) (fun (r : (I ^ n).generators) ↦ r.1 • LinearMap.id) := by
-    ext r x n
-    have : (r.1 • (mk I M) x).1 n = r.1 • ((mk I M) x).1 n:= rfl
-    simp [piEquivOfFintype, Pi.single_apply, g, this]
-  rw [AdicCompletion.ker_eval_eq_range, req, ← LinearMap.range_restrictScalars, compeq]
-  apply LinearMap.lsum_smul_id_range
-  simpa using (I ^ n).span_generators
-
-lemma AdicCompletion.isAdicComplete (fg : I.FG) : IsAdicComplete I (AdicCompletion I M) where
-  haus' x hx := by
-    ext n
-    simpa using (AdicCompletion.le_ker_eval I M n) ((Submodule.Quotient.mk_eq_zero _).mp (hx n))
-  prec' f hf := by
-    refine ⟨⟨fun n ↦ (f n).1 n, fun {m l} hle ↦ ?_⟩, fun n ↦ ?_⟩
-    · have := (AdicCompletion.le_ker_eval I M m) (SModEq.sub_mem.mp (hf hle))
-      simp only [LinearMap.mem_ker, coe_eval, val_sub, Pi.sub_apply, sub_eq_zero] at this
-      simp [this]
-    · simp [SModEq.sub_mem, ← AdicCompletion.ker_eval I M fg]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
@@ -167,7 +44,7 @@ lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
   haus' x hx := by
     ext n
     have mem : x ∈ (eval I R n).ker := by
-      apply AdicCompletion.le_ker_eval I R n
+      rw [← pow_smul_top_eq_ker_eval fg]
       rw [Ideal.smul_top_eq_map, Ideal.map_pow, Submodule.restrictScalars_mem]
       simpa using (Submodule.Quotient.mk_eq_zero _).mp (hx n)
     simpa using mem
@@ -176,13 +53,11 @@ lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
     · have eq := (SModEq.sub_mem.mp (hf hle))
       simp only [← Ideal.map_pow, smul_eq_mul, mul_top] at eq
       rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map] at eq
-      have := AdicCompletion.le_ker_eval I R m eq
-      simp only [smul_eq_mul, eval, LinearMap.mem_ker, LinearMap.coe_mk, AddHom.coe_mk, val_sub,
-        Pi.sub_apply, sub_eq_zero] at this
-      simpa [this] using (f l).2 hle
+      apply ((f l).2 hle).trans (Eq.symm _)
+      simpa [pow_smul_top_eq_ker_eval fg, eval, sub_eq_zero] using eq
     · simp only [smul_eq_mul, mul_top, SModEq.sub_mem, ← Ideal.map_pow]
-      rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
-      simp [← AdicCompletion.ker_eval I R fg, eval]
+      rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map, pow_smul_top_eq_ker_eval fg]
+      simp [eval]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
@@ -201,7 +76,7 @@ lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (f
       have : (factor (le_of_eq eq.symm)) ((factor (le_of_eq eq)) ((eval I R 1) x)) = 0 := by
         simp [hx]
       simpa using this
-    simp only [smul_eq_mul, AdicCompletion.ker_eval I R fg 1, pow_one, smul_top_eq_map,
+    simp only [smul_eq_mul, ← pow_smul_top_eq_ker_eval fg, pow_one, smul_top_eq_map,
       Submodule.restrictScalars_mem] at this
     exact Ideal.map_mono le this
   have : m.map (algebraMap R (AdicCompletion I R)) = (m.map (Ideal.Quotient.mk I)).comap
@@ -244,7 +119,7 @@ lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] 
     x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.1 1 = 0 := by
   have : (AdicCompletion.eval (maximalIdeal R) R 1).ker =
     (maximalIdeal R) • (⊤ : Submodule R (AdicCompletion (maximalIdeal R) R)) := by
-    simp [AdicCompletion.ker_eval _ _ (maximalIdeal R).fg_of_isNoetherianRing]
+    simp [← pow_smul_top_eq_ker_eval (maximalIdeal R).fg_of_isNoetherianRing]
   rw [maximalIdeal_eq_map, ← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
   simp [← this, eval]
 
@@ -285,7 +160,7 @@ lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (max
   have : (algebraMap R (AdicCompletion (maximalIdeal R) R)) z - y ∈
     (maximalIdeal R) ^ 1 • (⊤ : Submodule R (AdicCompletion (maximalIdeal R) R)) := by
     change (of (maximalIdeal R) R z) - y ∈ _
-    rw [← AdicCompletion.ker_eval _ R fg 1]
+    rw [pow_smul_top_eq_ker_eval fg]
     simpa [eval, sub_eq_zero] using hz
   simpa using this
 
@@ -312,7 +187,7 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
     simp only [← hm', mapCotangent_toCotangent, Algebra.ofId_apply, toCotangent_eq_zero,
       maximalIdeal_eq_map, ← Ideal.map_pow, f] at hm
     rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map,
-      ← AdicCompletion.ker_eval _ _ fg] at hm
+      pow_smul_top_eq_ker_eval fg] at hm
     have : (algebraMap R (AdicCompletion (maximalIdeal R) R)) m'.1 = of _ R m'.1 := rfl
     simp only [smul_eq_mul, eval, this, LinearMap.mem_ker, LinearMap.coe_mk, AddHom.coe_mk,
       of_apply, Submodule.mkQ_apply, mk_eq_mk, Ideal.Quotient.eq_zero_iff_mem] at hm
@@ -331,8 +206,8 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
     change (of (maximalIdeal R) R l) - m' ∈ _
     simp only [maximalIdeal_eq_map, ← Ideal.map_pow]
     rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
-    simpa [← AdicCompletion.ker_eval _ _ (maximalIdeal R).fg_of_isNoetherianRing, eval,
-      sub_eq_zero] using hl
+    simpa [pow_smul_top_eq_ker_eval (maximalIdeal R).fg_of_isNoetherianRing, eval, sub_eq_zero]
+      using hl
   have rkeq := rank_eq_of_equiv_equiv _
     (LinearEquiv.ofBijective f ⟨inj, surj⟩).toAddEquiv
     (residueField_map_bijective R) (fun r m ↦ by
