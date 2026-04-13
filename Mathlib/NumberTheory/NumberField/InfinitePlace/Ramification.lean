@@ -722,10 +722,10 @@ private noncomputable def embeddingConjugateIte : L →+* ℂ :=
 variable {v w}
 
 private theorem embeddingConjugateIte_pos (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
-    embeddingConjugateIte v w = w.embedding := by simp_all [embeddingConjugateIte]
+    embeddingConjugateIte v w = w.embedding := by simp [embeddingConjugateIte, h]
 
 private theorem embeddingConjugateIte_neg (h : ¬ComplexEmbedding.LiesOver w.embedding v.embedding) :
-    embeddingConjugateIte v w = conjugate w.embedding := by simp_all [embeddingConjugateIte]
+    embeddingConjugateIte v w = conjugate w.embedding := by simp [embeddingConjugateIte, h]
 
 variable (L v)
 
@@ -744,9 +744,8 @@ private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
   refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
-  · have := h.2.isReal_iff_isReal
-    aesop (add simp [embeddingConjugateIte, hψ, liesOver_apply, RingHom.ext_iff,
-      unmixedEmbeddingsOver, ComplexEmbedding.isReal_iff])
+  · simpa [embeddingConjugateIte, hψ] using fun ⟨_⟩ ↦
+      h.2.isReal_iff_isReal.1 <| by have := h.1.over; aesop
 
 open scoped Classical in
 private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embeddingConjugateIte v)
@@ -771,7 +770,7 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
   rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
     ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
     union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
-  apply (card_nbij AlgHom.toRingHom (by aesop)
+  apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simpa using ⟨by aesop⟩)
     AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩

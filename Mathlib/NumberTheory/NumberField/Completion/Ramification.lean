@@ -52,7 +52,7 @@ theorem finrank_eq_two_of_isRamified [w.1.LiesOver v.1] (h : w.IsRamified K) :
   rw [NumberField.InfinitePlace.LiesOver.comap_eq w v] at H
   have := LiesOver.extensionEmbedding_liesOver_of_isReal w H.2
   rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal H.2)
-      (ringEquivComplexOfIsComplex H.1) (by aesop),
+      (ringEquivComplexOfIsComplex H.1) (by ext; simp [this.over_apply]),
     Complex.finrank_real_complex]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -69,14 +69,15 @@ theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K)
       have : ComplexEmbedding.LiesOver w.embedding v.embedding := ⟨hl⟩
       have := liesOver_extensionEmbedding w v
       rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
-          (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv)) (by aesop),
+          (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv))
+          (by ext; simp [this.over_apply]),
         Module.finrank_self]
     | inr hr =>
       have : ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding := ⟨hr⟩
       have := liesOver_conjugate_extensionEmbedding w v
       rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
         ((ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv)).trans
-          (starRingAut (R := ℂ))) (by aesop),
+          (starRingAut (R := ℂ))) (by ext; simp [← conjugate_coe_eq, this.over_apply]),
         Module.finrank_self]
 
 end Completion
