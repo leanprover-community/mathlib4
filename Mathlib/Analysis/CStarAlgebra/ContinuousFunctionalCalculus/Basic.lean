@@ -149,7 +149,6 @@ section Unital
 
 variable [CStarAlgebra A]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsStarNormal.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℂ A IsStarNormal where
   predicate_zero := .zero
