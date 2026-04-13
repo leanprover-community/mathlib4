@@ -75,7 +75,8 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
   cont := e.continuous_toFun
 
-instance coe : Coe (A ≃A[R] B) (A →A[R] B) := ⟨toContinuousAlgHom⟩
+instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
+instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
