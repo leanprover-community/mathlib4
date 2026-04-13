@@ -33,7 +33,7 @@ We also produce the following instances:
 
 ## TODO
 
-* to_additive?
+* `to_additive`?
 
 -/
 

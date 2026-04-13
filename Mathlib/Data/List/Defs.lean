@@ -147,11 +147,14 @@ section Permutations
 `(ys ++ ts, (insert_left ys t ts).map f ++ r)`, where `insert_left ys t ts` (not explicitly
 defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤ n < length ys`.
 
+```
     permutations_aux2 10 [4, 5, 6] [] [1, 2, 3] id =
       ([1, 2, 3, 4, 5, 6],
        [[10, 1, 2, 3, 4, 5, 6],
         [1, 10, 2, 3, 4, 5, 6],
-        [1, 2, 10, 3, 4, 5, 6]]) -/
+        [1, 2, 10, 3, 4, 5, 6]])
+```
+-/
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
@@ -177,9 +180,12 @@ def permutationsAux : List α → List α → List (List α) :=
 
 /-- List of all permutations of `l`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [3, 2, 1],
-        [2, 3, 1], [3, 1, 2], [1, 3, 2]] -/
+        [2, 3, 1], [3, 1, 2], [1, 3, 2]]
+```
+-/
 def permutations (l : List α) : List (List α) :=
   l :: permutationsAux l []
 
@@ -190,10 +196,13 @@ which plays roughly the same role in `permutations`.
 Note that `(permutationsAux2 t [] [] ts id).2` is similar to this function, but skips the last
 position:
 
+```
     permutations'Aux 10 [1, 2, 3] =
       [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3], [1, 2, 3, 10]]
     (permutationsAux2 10 [] [] [1, 2, 3] id).2 =
-      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]] -/
+      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]]
+```
+-/
 @[simp]
 def permutations'Aux (t : α) : List α → List (List α)
   | [] => [[t]]
@@ -203,9 +212,12 @@ def permutations'Aux (t : α) : List α → List (List α)
 simpler definitional equations. The permutations are in a different order,
 but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
-        [1, 3, 2], [3, 1, 2], [3, 2, 1]] -/
+        [1, 3, 2], [3, 1, 2], [3, 2, 1]]
+```
+-/
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]

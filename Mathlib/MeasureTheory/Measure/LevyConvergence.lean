@@ -121,7 +121,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by simp at hx; grind
+    _ ≤ 2 * r⁻¹ := by grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ

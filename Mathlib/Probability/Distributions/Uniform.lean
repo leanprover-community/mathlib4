@@ -322,7 +322,6 @@ end UniformOfFintype
 
 section OfMultiset
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
