@@ -13,8 +13,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 -/
 
-universe u₁ u₂ u₃ u₄ u₅
-
 @[expose] public section
 
 variable {R : Type*} [CommSemiring R]
@@ -323,30 +321,6 @@ theorem tensorTensorTensorAssoc_tmul (m : M) (n : N) (p : P) (q : Q) :
 @[simp]
 theorem tensorTensorTensorAssoc_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorAssoc R M N P Q).symm (m ⊗ₜ (n ⊗ₜ p) ⊗ₜ q) = m ⊗ₜ n ⊗ₜ (p ⊗ₜ q) :=
-  rfl
-
-end
-
-section
-
-variable (R M N : Type*) [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-  [Module R M] [Module R N]
-
-/-- `ULift` commutes with tensor products. -/
-def uliftEquiv : ULift.{u₁} (M ⊗[R] N) ≃ₗ[R] ULift.{u₂} M ⊗[ULift.{u₃} R] ULift.{u₄} N :=
-  ULift.moduleEquiv ≪≫ₗ
-    congr ULift.moduleEquiv.symm ULift.moduleEquiv.symm ≪≫ₗ
-    (equivOfCompatibleSMul (ULift.{u₃} R) R R _ _).restrictScalars R
-
-variable {M N}
-
-@[simp]
-lemma down_uliftEquiv_symm_tmul (m : ULift M) (n : ULift N) :
-    ((uliftEquiv R M N).symm (m ⊗ₜ n)).down = m.down ⊗ₜ n.down :=
-  rfl
-
-@[simp]
-lemma uliftEquiv_tmul (m : M) (n : N) : uliftEquiv R M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
   rfl
 
 end

@@ -52,7 +52,7 @@ namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe uR uS uA uB uM uN uP uQ uP' uQ'
+universe u₁ u₂ u₃ u₄ uR uS uA uB uM uN uP uQ uP' uQ'
 variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
@@ -588,6 +588,28 @@ theorem tensorTensorTensorComm_eq :
     tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := rfl
 
 end tensorTensorTensorComm
+
+section
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products. -/
+def uliftEquiv : ULift.{u₁} (M ⊗[R] N) ≃ₗ[A] ULift.{u₂} M ⊗[ULift.{u₃} R] ULift.{u₄} N :=
+  ULift.moduleEquiv ≪≫ₗ
+    AlgebraTensorModule.congr ULift.moduleEquiv.symm ULift.moduleEquiv.symm ≪≫ₗ
+    (equivOfCompatibleSMul _ _ _ _ _)
+
+variable {M N}
+
+@[simp]
+lemma down_uliftEquiv_symm_tmul (m : ULift M) (n : ULift N) :
+    ((uliftEquiv R A M N).symm (m ⊗ₜ n)).down = m.down ⊗ₜ n.down :=
+  rfl
+
+@[simp]
+lemma uliftEquiv_tmul (m : M) (n : N) : uliftEquiv R A M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
+  rfl
+
+end
 
 end CommSemiring
 
