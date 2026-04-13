@@ -63,7 +63,7 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   rw [IsSMulRegular, h2]
   simp [h, LinearEquiv.injective]
 
-instance _root_.Module.IsTorsionFree.ofFlat [Flat R M] : IsTorsionFree R M :=
+instance isTorsionFree [Flat R M] : IsTorsionFree R M :=
   ⟨fun _ hr ↦ isSMulRegular_of_isRegular hr⟩
 
 end Semiring
