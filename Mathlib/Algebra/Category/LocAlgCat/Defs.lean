@@ -131,7 +131,7 @@ instance : Category (LocAlgCat.{w} Λ k) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id Λ A, by simp, by simp⟩
   comp {A B C} f g := ⟨g.toAlgHom.comp f.toAlgHom, by
-    rw [← Ideal.comap_comapₐ, g.comap_maximalIdeal_eq, f.comap_maximalIdeal_eq] , by
+    rw [← Ideal.comap_comapₐ, g.comap_maximalIdeal_eq, f.comap_maximalIdeal_eq], by
     rw [← AlgHom.comp_assoc, g.residue_comp, f.residue_comp]⟩
 
 lemma Hom.isLocalHom_toAlgHom (f : A ⟶ B) : IsLocalHom f.toAlgHom := by
