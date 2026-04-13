@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.ContinuousMap.Polynomial
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.RingTheory.Polynomial.Bernstein
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.Polynomial
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -48,6 +50,8 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter
@@ -76,7 +80,7 @@ open Lean Meta Qq Function
 
 /-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
 @[positivity DFunLike.coe (bernstein _ _) _]
-def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
   pure (.nonnegative p)
@@ -176,7 +180,7 @@ and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
   where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,
@@ -197,7 +201,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)
-  /- Use uniform continuity of `f` to hcoose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
+  /- Use uniform continuity of `f` to choose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
   whenever `dist x y < δ`. -/
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0, ∀ x y : I, dist x y < δ → gauge U (f x - f y) < 1 / 2 := by
     have := CompactSpace.uniformContinuous_of_continuous (map_continuous f)

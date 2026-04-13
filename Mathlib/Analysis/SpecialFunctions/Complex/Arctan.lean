@@ -3,7 +3,10 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Complex arctangent
@@ -14,6 +17,8 @@ and shows that it extends `Real.arctan` to the complex plane. Its Taylor series 
 $$\arctan z = \frac{(-1)^n}{2n + 1} z^{2n + 1},\ |z|<1$$
 is proved in `Complex.hasSum_arctan`.
 -/
+
+@[expose] public section
 
 
 namespace Complex
@@ -58,9 +63,10 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
     norm_cast at h₁ h₂
     change -1 < _ at h₁
-    rwa [show 2 * k + 1 = 1 by cutsat, Int.cast_one, one_mul] at nr
+    rwa [show 2 * k + 1 = 1 by lia, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :
     arctan (tan z) = z := by
   have h := cos_ne_zero_of_arctan_bounds h₀ h₁ h₂
@@ -72,7 +78,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
     rw [sub_eq_add_neg, ← neg_mul, ← sin_neg, ← cos_neg]
   rw [← exp_mul_I, ← exp_mul_I, ← exp_sub, show z * I - -z * I = 2 * (I * z) by ring, log_exp,
     show -I / 2 * (2 * (I * z)) = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
-  all_goals norm_num
+  all_goals simp
   · rwa [← div_lt_iff₀' two_pos, neg_div]
   · rwa [← le_div_iff₀' two_pos]
 

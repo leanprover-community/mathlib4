@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Basis from a split exact sequence
@@ -18,6 +20,8 @@ the images of `vᵢ` for `i : κ` form a basis of `P`.
 We treat linear independence and the span condition separately. For convenience this
 is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
 -/
+
+@[expose] public section
 
 variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
 variable [Module R M] [Module R K] [Module R P]
@@ -94,6 +98,14 @@ noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Ba
     Basis κ R P :=
   .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
+
+@[simp]
+lemma Module.Basis.ofSplitExact_apply (hg : Function.Surjective g) (v : Basis ι R M)
+    (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
+    (hlib : LinearIndependent R (s ∘ v ∘ b))
+    (hab : Codisjoint (Set.range a) (Set.range b)) (k : κ) :
+    ofSplitExact hs hfg hg v hainj hsa hlib hab k = g (v (a k)) := by
+  simp [ofSplitExact]
 
 end
 

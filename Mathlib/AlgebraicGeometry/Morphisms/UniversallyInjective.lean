@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.Topology.LocalAtTarget
+module
+
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Universally injective morphism
@@ -22,6 +24,8 @@ compositions and base changes.
   (injective + purely inseparable residue field extensions)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -58,7 +62,7 @@ theorem universallyInjective_eq_diagonal :
     refine ⟨fun x ↦ ⟨pullback.fst f f x, hf.1 _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
     rw [← Scheme.Hom.comp_apply, pullback.diagonal_fst]
     rfl
-  · rw [← universally_eq_iff.mpr (inferInstanceAs (IsStableUnderBaseChange (diagonal @Surjective))),
+  · rw [← universally_eq_iff.mpr (inferInstance : IsStableUnderBaseChange (diagonal @Surjective)),
       universallyInjective_eq]
     apply universally_mono
     intro X Y f hf x₁ x₂ e

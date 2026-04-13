@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Measurability criterion for ennreal-valued functions
@@ -19,6 +21,8 @@ Note that it should be enough to assume that the space is a conditionally comple
 but the proof would be more painful. Since our only use for now is for `ℝ≥0∞`, we keep it as simple
 as possible.
 -/
+
+public section
 
 
 open MeasureTheory Set TopologicalSpace

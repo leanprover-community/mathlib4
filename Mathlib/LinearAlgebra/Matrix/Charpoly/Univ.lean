@@ -3,9 +3,11 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # The universal characteristic polynomial
@@ -28,6 +30,8 @@ of a matrix are homogeneous polynomials in the matrix entries.
 * `Matrix.charpoly.univ_coeff_isHomogeneous`:
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
+
+@[expose] public section
 
 namespace Matrix.charpoly
 
@@ -57,7 +61,7 @@ lemma univ_map_eval₂Hom (M : n × n → S) :
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
-  rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl
+  rw [MvPolynomial.map_eq_eval₂Hom_C_comp, univ_map_eval₂Hom]; rfl
 
 @[simp]
 lemma univ_coeff_eval₂Hom (M : n × n → S) (i : ℕ) :

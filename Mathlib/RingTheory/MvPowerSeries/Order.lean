@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
@@ -15,48 +16,50 @@ We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
 ## Weighted Order
 
 - `MvPowerSeries.weightedOrder`: the weighted order of a multivariate power series,
-with respect to `w`, as an element of `ℕ∞`.
+  with respect to `w`, as an element of `ℕ∞`.
 
 - `MvPowerSeries.weightedOrder_zero`: the weighted order of `0` is `0`.
 
 - `MvPowerSeries.ne_zero_iff_weightedOrder_finite`: a multivariate power series is nonzero if
-and only if its weighted order is finite.
+  and only if its weighted order is finite.
 
 - `MvPowerSeries.exists_coeff_ne_zero_of_weightedOrder`: if the weighted order is finite,
-then there exists a nonzero coefficient of weight the weighted order.
+  then there exists a nonzero coefficient of weight the weighted order.
 
 - `MvPowerSeries.weightedOrder_le` : if a coefficient is nonzero, then the weighted order is at
-most the weight of that exponent.
+  most the weight of that exponent.
 
 - `MvPowerSeries.coeff_eq_zero_of_lt_weightedOrder`: all coefficients of weights strictly less
-than the weighted order vanish.
+  than the weighted order vanish.
 
 - `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only if `f = 0`.
 
 - `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
-weighted order is at least `n`.
+  weighted order is at least `n`.
 
 - `MvPowerSeries.weightedOrder_eq_nat_iff`: the weighted order is some integer `n` iff there
-exists a nonzero coefficient of weight `n`, and all coefficients of strictly smaller weight vanish.
+  exists a nonzero coefficient of weight `n`, and all coefficients of strictly smaller weight
+  vanish.
 
 - `MvPowerSeries.weightedOrder_monomial`, `MvPowerSeries.weightedOrder_monomial_of_ne_zero`:
-the weighted order of a monomial, of a monomial with nonzero coefficient.
+  the weighted order of a monomial, of a monomial with nonzero coefficient.
 
 - `MvPowerSeries.min_weightedOrder_le_add`: the order of the sum of two multivariate power series
-is at least the minimum of their orders.
+  is at least the minimum of their orders.
 
-- `MvPowerSeries.weightedOrder_add_of_weightedOrder_ne`: the weighted_order of the sum of two
-formal power series is the minimum of their orders if their orders differ.
+- `MvPowerSeries.weightedOrder_add_of_weightedOrder_ne`: the `weightedOrder` of the sum of two
+  formal power series is the minimum of their orders if their orders differ.
 
-- `MvPowerSeries.le_weightedOrder_mul`: the weighted_order of the product of two formal power
-series is at least the sum of their orders.
+- `MvPowerSeries.le_weightedOrder_mul`: the `weightedOrder` of the product of two formal power
+  series is at least the sum of their orders.
 
 - `MvPowerSeries.coeff_mul_left_one_sub_of_lt_weightedOrder`,
-`MvPowerSeries.coeff_mul_right_one_sub_of_lt_weightedOrder`: the coefficients of `f * (1 - g)`
-and `(1 - g) * f` in weights strictly less than the weighted order of `g`.
+  `MvPowerSeries.coeff_mul_right_one_sub_of_lt_weightedOrder`: the coefficients of `f * (1 - g)`
+  and `(1 - g) * f` in weights strictly less than the weighted order of `g`.
 
 - `MvPowerSeries.coeff_mul_prod_one_sub_of_lt_weightedOrder`: the coefficients of
-`f * Π i in s, (1 - g i)`, in weights strictly less than the weighted orders of `g i`, for `i ∈ s`.
+  `f * Π i in s, (1 - g i)`, in weights strictly less than the weighted orders of `g i`, for
+  `i ∈ s`.
 
 ## Order
 
@@ -67,40 +70,40 @@ and `(1 - g) * f` in weights strictly less than the weighted order of `g`.
 - `MvPowerSeries.order_eq_top_iff`: the order of `f` is infinite iff `f = 0`.
 
 - `MvPowerSeries.exists_coeff_ne_zero_of_order`: if the order is finite, then there exists a
-nonzero coefficient of degree equal to the order.
+  nonzero coefficient of degree equal to the order.
 
 - `MvPowerSeries.order_le` : if a coefficient of some degree is nonzero, then the order
-is at least that degree.
+  is at least that degree.
 
 - `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer
-vanish, then the order is at least that integer.
+  vanish, then the order is at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n` iff there exists
-a nonzero coefficient in that degree, and all coefficients below that degree vanish.
+  a nonzero coefficient in that degree, and all coefficients below that degree vanish.
 
 - `MvPowerSeries.order_monomial`, `MvPowerSeries.order_monomial_of_ne_zero`: the order of a
-monomial, with a nonzero coefficient
+  monomial, with a nonzero coefficient
 
 - `MvPowerSeries.min_order_le_add`: the order of a sum of two power series is at least the minimum
-of their orders.
+  of their orders.
 
 - `MvPowerSeries.order_add_of_order_ne`: the order of a sum of two power series of distinct orders
-is the minimum of their orders.
+  is the minimum of their orders.
 
 - `MvPowerSeries.order_mul_ge`: the order of a product of two power series is at least the sum of
-their orders.
+  their orders.
 
 - `MvPowerSeries.coeff_mul_left_one_sub_of_lt_order`,
-`MvPowerSeries.coeff_mul_right_one_sub_of_lt_order`: the coefficients of `f * (1 - g)` and
-`(1 - g) * f` below the order of `g` coincide with that of `f`.
+  `MvPowerSeries.coeff_mul_right_one_sub_of_lt_order`: the coefficients of `f * (1 - g)` and
+  `(1 - g) * f` below the order of `g` coincide with that of `f`.
 
 - `MvPowerSeries.coeff_mul_prod_one_sub_of_lt_order`: the coefficients of `f * Π i in s, (1 - g i)`
-coincide with that of `f` below the minimum of the orders of the `g i`, for `i ∈ s`.
+  coincide with that of `f` below the minimum of the orders of the `g i`, for `i ∈ s`.
 
 ## Homogeneous components
 
 - `MvPowerSeries.weightedHomogeneousComponent`, `MvPowerSeries.homogeneousComponent`: the power
-series which is the sum of all monomials of given weighted degree, resp. degree.
+  series which is the sum of all monomials of given weighted degree, resp. degree.
 
 NOTE:
 Under `Finite σ`, one can use `Finsupp.finite_of_degree_le` and `Finsupp.finite_of_weight_le` to
@@ -113,6 +116,8 @@ series, all of which coefficients are `1`, is the sum of all indeterminates.)
 TODO: Define a coercion to MvPolynomial.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -128,9 +133,7 @@ variable (w : σ → ℕ) {f g : MvPowerSeries σ R}
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
-  refine not_iff_not.mp ?_
-  simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact MvPowerSeries.ext_iff
+  simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
@@ -211,12 +214,13 @@ theorem weightedOrder_eq_nat {n : ℕ} :
   · rintro ⟨⟨d, hd', hd⟩, h⟩
     exact le_antisymm (hd.symm ▸ f.weightedOrder_le w hd') (nat_le_weightedOrder w h)
 
-/-- The weighted_order of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise. -/
+/-- The `weightedOrder` of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise.
+-/
 theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
-  · rw [h, weightedOrder_eq_top_iff, LinearMap.map_zero]
+  · rw [h, weightedOrder_eq_top_iff, map_zero]
   · rw [weightedOrder_eq_nat]
     constructor
     · use d
@@ -262,7 +266,7 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux
     rw [← hn, Nat.cast_lt]
     exact hb
 
-/-- The weighted_order of the sum of two formal power series
+/-- The `weightedOrder` of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/
 theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weightedOrder w) :
     weightedOrder w (f + g) = weightedOrder w f ⊓ weightedOrder w g := by
@@ -273,7 +277,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   simp only [le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₁]
   exact ⟨le_rfl, le_of_lt H₁⟩
 
-/-- The weighted_order of the product of two formal power series
+/-- The `weightedOrder` of the product of two formal power series
 is at least the sum of their orders. -/
 theorem le_weightedOrder_mul :
     f.weightedOrder w + g.weightedOrder w ≤ weightedOrder w (f * g) := by
@@ -294,9 +298,7 @@ theorem le_weightedOrder_mul :
 theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simpa [add_smul] using
-      le_trans (add_le_add_right hn (f.weightedOrder w)) (le_weightedOrder_mul w)
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
@@ -306,6 +308,20 @@ theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ 
   | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
+
+theorem le_weightedOrder_smul {a : R} :
+    f.weightedOrder w ≤ (a • f).weightedOrder w :=
+  le_weightedOrder _ fun i hi => by simp [coeff_eq_zero_of_lt_weightedOrder _ hi]
+
+section
+
+variable {S : Type*} [Semiring S]
+
+theorem le_weightedOrder_map (φ : R →+* S) :
+    f.weightedOrder w ≤ (f.map φ).weightedOrder w :=
+  le_weightedOrder w fun i hi => by simp [coeff_eq_zero_of_lt_weightedOrder _ hi]
+
+end
 
 section Ring
 
@@ -343,6 +359,15 @@ theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.we
   have : f = 0 := by simpa using (weightedOrder_add_of_weightedOrder_ne w h).symm
   simp [this] at h
 
+@[simp]
+theorem weightedOrder_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T) :
+    (p.toSubring T hp).weightedOrder w = p.weightedOrder w := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine le_weightedOrder w fun d hd => by
+      simp [coeff_eq_zero_of_lt_weightedOrder w hd, ← p.coeff_toSubring T hp]
+  · refine le_weightedOrder w fun d hd => by
+      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_eq_zero_of_lt_weightedOrder w hd)
+
 end Ring
 
 end WeightedOrder
@@ -351,16 +376,15 @@ section Order
 
 variable {f g : MvPowerSeries σ R}
 
-theorem eq_zero_iff_forall_coeff_eq_zero_and :
-    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff d f = 0) :=
-  MvPowerSeries.ext_iff
+@[deprecated (since := "2026-01-06")]
+alias eq_zero_iff_forall_coeff_eq_zero_and := eq_zero_iff_forall_coeff_zero
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ degree d = n) := by
   simp_rw [degree_eq_weight_one]
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
-/-- The order of a mv_power_series -/
+/-- The order of an `MvPowerSeries`. -/
 def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 
 @[simp]
@@ -454,16 +478,36 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
 
-theorem order_ne_zero_iff_constCoeff_eq_zero :
-    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+theorem one_le_order_iff_constCoeff_eq_zero :
+    1 ≤ f.order ↔ f.constantCoeff = 0 := by
   constructor
   · intro h
     apply coeff_of_lt_order
-    simpa using pos_of_ne_zero h
+    simpa using Order.one_le_iff_pos.mp h
   · intro h
-    refine ENat.one_le_iff_ne_zero.mp <| MvPowerSeries.le_order fun d hd ↦ ?_
+    refine MvPowerSeries.le_order fun d hd ↦ ?_
     rw [Nat.cast_lt_one] at hd
     simp [(degree_eq_zero_iff d).mp hd, h]
+
+theorem order_ne_zero_iff_constCoeff_eq_zero :
+    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+
+theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : f.constantCoeff = 0) :
+    n ≤ (f ^ n).order := by
+  refine .trans ?_ (le_order_pow n)
+  simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
+
+theorem le_order_smul {a : R} : f.order ≤ (a • f).order := le_weightedOrder_smul _
+
+section
+
+variable {S : Type*} [Semiring S]
+
+theorem le_order_map (f : R →+* S) {φ : MvPowerSeries σ R} : φ.order ≤ (φ.map f).order :=
+  le_weightedOrder_map _ _
+
+end
 
 section Ring
 
@@ -487,6 +531,13 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ �
 
 @[simp]
 theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrder_neg _ f
+
+@[simp]
+theorem order_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T) :
+    (p.toSubring T hp).order = p.order := by
+  refine eq_of_le_of_ge ?_ ?_
+  · exact le_order fun d hd => by simp [coeff_of_lt_order hd, ← p.coeff_toSubring T hp]
+  · exact le_order fun d hd => by exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order hd)
 
 end Ring
 

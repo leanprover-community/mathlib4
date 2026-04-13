@@ -3,12 +3,16 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Group.AddTorsor
-import Mathlib.Topology.Algebra.ProperAction.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.ProperAction.Basic
 
 /-!
 # The action underlying a topological additive torsor is proper.
 -/
+
+@[expose] public section
 
 variable {V P : Type*} [AddGroup V] [AddTorsor V P]
 variable [TopologicalSpace V] [TopologicalSpace P] [IsTopologicalAddTorsor P]

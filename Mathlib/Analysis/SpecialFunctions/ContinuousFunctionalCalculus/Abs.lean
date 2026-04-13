@@ -3,10 +3,13 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 
 /-!
@@ -20,6 +23,8 @@ and provides basic API.
 + `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
@@ -219,9 +224,12 @@ lemma abs_eq_cfc_norm (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     abs a = cfc (‖·‖) a := by
   rw [abs_eq_cfcₙ_norm _, cfcₙ_eq_cfc]
 
-@[simp]
-lemma abs_one : abs (1 : A) = 1 := by
-  simp [abs]
+theorem abs_coe_unitary (U : unitary A) : abs (U : A) = 1 := by simp [abs]
+
+@[simp] theorem abs_of_mem_unitary {U : A} (hU : U ∈ unitary A) : abs U = 1 :=
+  abs_coe_unitary ⟨U, hU⟩
+
+lemma abs_one : abs (1 : A) = 1 := by simp
 
 variable [StarModule ℝ A]
 
@@ -276,6 +284,18 @@ lemma spectrum_abs (a : A) (ha : p a := by cfc_tac) :
 end RCLike
 
 end Unital
+
+section Isometric
+
+variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
+  [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [CompleteSpace A]
+
+protected lemma continuous_abs : Continuous (CFC.abs : A → A) :=
+  continuousOn_sqrt.comp_continuous (by fun_prop) (by cfc_tac)
+
+end Isometric
 
 section CStar
 

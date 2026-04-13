@@ -3,14 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 
 # The meta properties of integral ring homomorphisms.
 
 -/
+
+public section
 
 
 namespace RingHom
@@ -55,7 +59,7 @@ theorem isIntegral_ofLocalizationSpan :
     IsLocalization.map_eq_zero_iff (.powers (f t))] at hp'
   obtain ⟨⟨x, m, (rfl : algebraMap R S t ^ m = x)⟩, e⟩ := hp'
   by_cases hp' : 1 ≤ p.natDegree; swap
-  · obtain rfl : p = 1 := eq_one_of_monic_natDegree_zero hp (by cutsat)
+  · obtain rfl : p = 1 := eq_one_of_monic_natDegree_zero hp (by lia)
     exact ⟨m, by simp [Algebra.smul_def, show algebraMap R S t ^ m = 0 by simpa using e]⟩
   refine ⟨m + n, p.scaleRoots (t ^ m), (monic_scaleRoots_iff _).mpr hp, ?_⟩
   have := p.scaleRoots_eval₂_mul (algebraMap R S) (t ^ n • r) (t ^ m)

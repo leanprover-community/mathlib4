@@ -3,14 +3,16 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-import Mathlib.Analysis.Complex.Isometry
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.Complex.Module
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+public import Mathlib.Analysis.Complex.Isometry
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -52,6 +54,8 @@ this file.
   throughout or antiholomorphic throughout.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -64,6 +68,7 @@ section ConformalIntoComplexNormed
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by
@@ -79,6 +84,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
   · ext1
     simp [minor₁]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap ((map.restrictScalars ℝ).comp (conjCLE : ℂ →L[ℝ] ℂ)) :=
   (isConformalMap_complex_linear nonzero).comp isConformalMap_conj
@@ -91,6 +97,7 @@ open ContinuousLinearMap
 
 variable {g : ℂ →L[ℝ] ℂ}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
       ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCLE := by
@@ -135,6 +142,7 @@ end ConformalIntoComplexPlane
 section Conformality
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A real differentiable function of the complex plane into some complex normed space `E` is
 conformal at a point `z` if it is holomorphic at that point with a nonvanishing differential.
 This is a version of the Cauchy-Riemann equations. -/
@@ -144,6 +152,7 @@ theorem DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv
   apply isConformalMap_complex_linear
   simpa only [Ne, ContinuousLinearMap.ext_ring_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A complex function is conformal if and only if the function is holomorphic or antiholomorphic
 with a nonvanishing differential. -/
 theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ → ℂ} {z : ℂ} :
@@ -176,6 +185,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {f : ℂ → E} {x : ℂ} {s : Set ℂ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A real linear map `ℓ : ℂ →ₗ[ℝ] E` respects complex scalar multiplication if it maps `I` to
 `I • ℓ 1`.
@@ -189,7 +199,7 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
     simp [mul_mul_mul_comm _ I]
   simp only [add_smul, smul_add, ℓ.map_add, t₀, t₁]
   repeat rw [Complex.coe_smul, ℓ.map_smul]
-  have t₂ {r : ℝ}  : ℓ (r : ℂ) = r • ℓ (1 : ℂ) := by simp [← ℓ.map_smul]
+  have t₂ {r : ℝ} : ℓ (r : ℂ) = r • ℓ (1 : ℂ) := by simp [← ℓ.map_smul]
   simp only [t₂, h]
   match_scalars
   simp [mul_mul_mul_comm _ I]
@@ -217,6 +227,7 @@ def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I •
 lemma ContinuousLinearMap.coe_complexOfReal {ℓ : ℂ →L[ℝ] E} (h) : ℓ.complexOfReal h = (ℓ : ℂ → E) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
 at `x` within `s` iff the derivative `fderivWithin ℝ f s x` maps `I` to
@@ -234,6 +245,7 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     use (fderivWithin ℝ f s x).complexOfReal h₂
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
 complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
@@ -243,6 +255,7 @@ protected theorem HasFDerivWithinAt.complexOfReal {f' : ℂ →L[ℝ] E} (h₁ :
     HasFDerivWithinAt f (f'.complexOfReal h₂) s x :=
   .of_restrictScalars ℝ h₁ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
 complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
@@ -261,7 +274,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
-  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
+  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, toSpanSingleton_apply_map_one]
   exact h₁.hasFDerivWithinAt.complexOfReal h₂
 
 /--
@@ -273,6 +286,7 @@ theorem complexOfReal_derivWithin (h₁ : DifferentiableWithinAt ℝ f s x)
     derivWithin f s x = fderivWithin ℝ f s x 1 :=
   HasDerivWithinAt.derivWithin (complexOfReal_hasDerivWithinAt h₁ h₂) hs
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
 at `x` if and only if the derivative `fderiv ℝ f x` maps `I` to `I • (fderiv ℝ f x) 1`.
@@ -284,6 +298,7 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
     fun ⟨h₁, h₂⟩ ↦ (differentiableAt_iff_restrictScalars ℝ h₁).2
     ⟨(fderiv ℝ f x).complexOfReal h₂, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
 complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
@@ -293,6 +308,7 @@ protected theorem HasFDerivAt.complexOfReal_hasFDerivAt {f' : ℂ →L[ℝ] E}
     HasFDerivAt f (f'.complexOfReal h₂) x :=
   hasFDerivAt_of_restrictScalars ℝ h₁ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
 complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
@@ -300,7 +316,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
     HasDerivAt f ((fderiv ℝ f x).complexOfReal h₂ 1) x := by
-  rw [hasDerivAt_iff_hasFDerivAt, smulRight_one_one]
+  rw [hasDerivAt_iff_hasFDerivAt, toSpanSingleton_apply_map_one]
   exact hasFDerivAt_of_restrictScalars ℝ h₁.hasFDerivAt rfl
 
 /--

@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Order.WithTop
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.Order.WithTop
 
 /-!
 # Borel measurable space on `WithTop`
@@ -22,6 +24,8 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 * `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
 
 -/
+
+@[expose] public section
 
 
 namespace WithTop

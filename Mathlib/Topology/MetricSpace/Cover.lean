@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Rel.Cover
-import Mathlib.Topology.MetricSpace.MetricSeparated
-import Mathlib.Topology.MetricSpace.Thickening
+module
+
+public import Mathlib.Data.Rel.Cover
+public import Mathlib.Topology.MetricSpace.MetricSeparated
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Covers in a metric space
@@ -23,14 +25,16 @@ In a proper metric space, sets admitting a finite cover are precisely the relati
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
 
+@[expose] public section
+
 open Set
 open scoped NNReal
 
 namespace Metric
-variable {X : Type*}
+variable {X Y : Type*}
 
 section PseudoEMetricSpace
-variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
 instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
@@ -45,8 +49,13 @@ def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := SetRel.IsCover {(x, y) | edis
 
 @[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
 
+@[simp] lemma isCover_empty_right : IsCover ε s ∅ ↔ s = ∅ := SetRel.isCover_empty_right
+
 protected nonrec lemma IsCover.nonempty (hsN : IsCover ε s N) (hs : s.Nonempty) : N.Nonempty :=
   hsN.nonempty hs
+
+@[simp] lemma IsCover.refl (ε : ℝ≥0) (s : Set X) : IsCover ε s s := .rfl
+lemma IsCover.rfl {ε : ℝ≥0} {s : Set X} : IsCover ε s s := refl ε s
 
 nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ := h₁.mono hN
 
@@ -55,9 +64,36 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
-lemma isCover_iff_subset_iUnion_emetricClosedBall :
-    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
+lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨x₀, hx₀, hcover⟩ := hs hx
+  dsimp at *
+  exact ⟨f x₀, ⟨x₀, hx₀, by grind⟩, by grw [hf x x₀, hcover]⟩
+
+lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : f.Surjective) :
+    IsCover (K₂ * ε) s (f '' N) := by
+  have : IsCover (K₂ * ε) (f '' s.preimage f) (f '' N) := IsCover.image_lipschitz hs hf
+  simp_all only [image_preimage_eq]
+
+lemma _root_.Isometry.isCover_image_iff {f : X → Y} (hf : Isometry f) (C : Set X) :
+    IsCover ε (f '' s) (f '' C) ↔ IsCover ε s C := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitz⟩
+  obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
+  obtain ⟨c', hc', rfl⟩ := hc_mem
+  exact ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
+
+lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
+    IsCover ε s ({x} : Set X) :=
+  fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
+
+lemma isCover_iff_subset_iUnion_closedEBall :
+    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
+
+alias isCover_iff_subset_iUnion_emetricClosedBall :=
+  isCover_iff_subset_iUnion_closedEBall
 
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
@@ -65,6 +101,28 @@ lemma isCover_iff_subset_iUnion_emetricClosedBall :
 nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
     IsCover ε s N :=
   .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
+
+/-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
+lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBounded s) :
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
+  rw [EMetric.totallyBounded_iff'] at hs
+  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
+  simp only [isCover_iff_subset_iUnion_closedEBall]
+  refine ⟨N, by simpa, by simpa, ?_⟩
+  · refine hN.trans fun x hx ↦ ?_
+    simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
+    obtain ⟨y, hyN, hy⟩ := hx
+    exact ⟨y, hyN, hy.le⟩
+
+/-- A relatively compact set admits a finite cover. -/
+lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
+  exists_finite_isCover_of_totallyBounded hε (hs.totallyBounded.subset subset_closure)
+
+/-- A compact set admits a finite cover. -/
+lemma exists_finite_isCover_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
+  exists_finite_isCover_of_totallyBounded hε hs.totallyBounded
 
 end PseudoEMetricSpace
 
@@ -76,23 +134,6 @@ lemma isCover_iff_subset_iUnion_closedBall : IsCover ε s N ↔ s ⊆ ⋃ y ∈ 
 
 alias ⟨IsCover.subset_iUnion_closedBall, IsCover.of_subset_iUnion_closedBall⟩ :=
   isCover_iff_subset_iUnion_closedBall
-
-/-- A relatively compact set admits a finite cover. -/
-lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
-    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
-  obtain ⟨N, hNs, hN, hsN⟩ :=
-    exists_finite_cover_balls_of_isCompact_closure hs (ε := ε) (by positivity)
-  refine ⟨N, hNs, hN, .of_subset_iUnion_closedBall <| hsN.trans ?_⟩
-  gcongr
-  exact ball_subset_closedBall
-
-/-- A compact set admits a finite cover. -/
-lemma exists_finite_isCover_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
-    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
-  obtain ⟨N, hNs, hN, hsN⟩ := hs.finite_cover_balls (e := ε) (by positivity)
-  refine ⟨N, hNs, hN, .of_subset_iUnion_closedBall <| hsN.trans ?_⟩
-  gcongr
-  exact ball_subset_closedBall
 
 lemma IsCover.of_subset_cthickening_of_lt {δ : ℝ≥0} (hsN : s ⊆ cthickening ε N) (hεδ : ε < δ) :
     IsCover δ s N :=
@@ -117,7 +158,7 @@ section EMetricSpace
 variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
-  simp [isCover_iff_subset_iUnion_emetricClosedBall]
+  simp [isCover_iff_subset_iUnion_closedEBall]
 
 end EMetricSpace
 

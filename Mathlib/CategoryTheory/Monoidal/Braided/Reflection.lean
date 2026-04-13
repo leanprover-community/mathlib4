@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.Tactic.TFAE
 /-!
 
 # Day's reflection theorem
@@ -26,17 +28,20 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 - The original paper is [day1972] *A reflection theorem for closed categories*, by Day, 1972.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
@@ -51,6 +56,7 @@ private noncomputable def adjRetraction (c : C) (d : D)
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
@@ -68,6 +74,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Day's reflection theorem.
 
@@ -165,8 +172,8 @@ theorem isIso_tfae : List.TFAE
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
     -- bring the quantifiers out of the `↔`:
-    rw [forall_swap]; apply forall_congr'; intro d
-    rw [forall_swap]; apply forall₂_congr; intro d' c
+    rw [forall_comm]; apply forall_congr'; intro d
+    rw [forall_comm]; apply forall₂_congr; intro d' c
     -- `w₁, w₂,` are the two stacked commutative squares in the proof on nLab:
     have w₁ : ((coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c) =
         (adj.homEquiv _ _).symm ∘
@@ -204,11 +211,13 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3:)]
+  rw [((isIso_tfae adj).out 0 3 :)]
   intro d d'
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
+@[implicit_reducible]
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L
   adj := by
@@ -228,6 +237,7 @@ noncomputable def closed (c : C) : Closed c where
 Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
 monoidal closed, then `C` is monoidal closed.
 -/
+@[implicit_reducible]
 noncomputable def monoidalClosed : MonoidalClosed C where
   closed c := closed adj c
 

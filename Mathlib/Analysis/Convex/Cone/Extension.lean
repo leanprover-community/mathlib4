@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Geometry.Convex.Cone.Basic
-import Mathlib.LinearAlgebra.LinearPMap
+module
+
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Extension theorems
@@ -24,6 +26,8 @@ We prove two extension theorems:
   for all `x`
 
 -/
+
+public section
 
 open Set LinearMap
 
@@ -97,6 +101,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
+      rw [RingHom.id_apply, zero_smul]
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

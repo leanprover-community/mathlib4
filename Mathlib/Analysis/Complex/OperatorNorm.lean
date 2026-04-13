@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.LinearAlgebra.Complex.Determinant
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.LinearAlgebra.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 
@@ -14,6 +16,8 @@ The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imagina
 `Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
+
+public section
 
 open ContinuousLinearMap
 

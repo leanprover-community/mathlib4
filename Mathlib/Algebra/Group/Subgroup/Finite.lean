@@ -3,11 +3,13 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Group.Submonoid.Finite
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Submonoid.Finite
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -17,6 +19,8 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -207,7 +211,7 @@ end Pi
 section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
-    x ∈ Subgroup.setNormalizer S := by
+    x ∈ Subgroup.normalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>

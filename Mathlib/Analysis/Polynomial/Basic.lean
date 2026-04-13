@@ -3,9 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Limits related to polynomial and rational functions
@@ -20,6 +22,8 @@ functions, depending on the degrees and leading coefficients of the considered
 polynomials.
 -/
 
+public section
+
 
 open Filter Finset Asymptotics
 
@@ -29,8 +33,13 @@ namespace Polynomial
 
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
-theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
+theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
+
+@[deprecated (since := "2026-02-05")] alias eventually_no_roots := eventually_atTop_not_isRoot
+
+theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
+  atBot_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 
@@ -79,7 +88,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
   · exact tendsto_abs_atTop_atTop.comp (P.tendsto_atTop_of_leadingCoeff_nonneg hdeg hP)
   · exact tendsto_abs_atBot_atTop.comp (P.tendsto_atBot_of_leadingCoeff_nonpos hdeg hP)
 
-theorem abs_isBoundedUnder_iff :
+theorem isBoundedUnder_abs_atTop_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
@@ -87,9 +96,11 @@ theorem abs_isBoundedUnder_iff :
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
+@[deprecated (since := "2026-02-05")] alias abs_isBoundedUnder_iff := isBoundedUnder_abs_atTop_iff
+
 theorem abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
-  ⟨fun h => not_le.mp (mt (abs_isBoundedUnder_iff P).mpr (not_isBoundedUnder_of_tendsto_atTop h)),
-    abs_tendsto_atTop P⟩
+  ⟨fun h ↦ not_le.mp (mt (isBoundedUnder_abs_atTop_iff P).mpr
+    (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atTop P⟩
 
 theorem tendsto_nhds_iff {c : 𝕜} :
     Tendsto (fun x => eval x P) atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
@@ -107,6 +118,32 @@ theorem tendsto_nhds_iff {c : 𝕜} :
 
 end PolynomialAtTop
 
+section PolynomialAtBot
+
+theorem isEquivalent_atBot_lead : P.eval ~[atBot] (P.leadingCoeff * · ^ P.natDegree) := by
+  convert (P.comp (-X)).isEquivalent_atTop_lead.comp_tendsto tendsto_neg_atBot_atTop using 2
+  · simp
+  · rw [Function.comp_apply, comp_neg_X_leadingCoeff_eq, ← mul_rotate]
+    simp [natDegree_comp, ← mul_pow, mul_comm]
+
+theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot atTop := by
+  convert ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
+  simp
+
+theorem isBoundedUnder_abs_atBot_iff :
+    (IsBoundedUnder (· ≤ ·) atBot (|P.eval ·|)) ↔ P.degree ≤ 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
+    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr_arg abs <| _root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+  contrapose! h
+  exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
+
+theorem abs_tendsto_atBot_iff : Tendsto (|P.eval ·|) atBot atTop ↔ 0 < P.degree :=
+  ⟨fun h ↦ not_le.mp (mt (isBoundedUnder_abs_atBot_iff P).mpr
+    (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atBot P⟩
+
+end PolynomialAtBot
+
 section PolynomialDivAtTop
 
 theorem isEquivalent_atTop_div :
@@ -121,7 +158,7 @@ theorem isEquivalent_atTop_div :
       (EventuallyEq.isEquivalent ((eventually_gt_atTop 0).mono fun x hx => ?_))
   simp [← div_mul_div_comm, zpow_sub₀ hx.ne.symm]
 
-theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
+theorem div_tendsto_atTop_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) := by
   by_cases hP : P = 0
   · simp [hP]
@@ -129,11 +166,14 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [← mul_zero]
   refine (tendsto_zpow_atTop_zero ?_).const_mul _
-  cutsat
+  lia
 
-theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
+@[deprecated (since := "2026-02-05")]
+alias div_tendsto_zero_of_degree_lt := div_tendsto_atTop_zero_of_degree_lt
+
+theorem div_tendsto_atTop_zero_iff_degree_lt (hQ : Q ≠ 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
-  refine ⟨fun h => ?_, div_tendsto_zero_of_degree_lt P Q⟩
+  refine ⟨fun h => ?_, div_tendsto_atTop_zero_of_degree_lt P Q⟩
   by_cases hPQ : P.leadingCoeff / Q.leadingCoeff = 0
   · simp only [div_eq_mul_inv, inv_eq_zero, mul_eq_zero] at hPQ
     rcases hPQ with hP0 | hQ0
@@ -147,11 +187,17 @@ theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
     · rw [sub_lt_iff_lt_add, zero_add, Int.ofNat_lt] at h
       exact degree_lt_degree h.1
 
-theorem div_tendsto_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
+@[deprecated (since := "2026-02-05")]
+alias div_tendsto_zero_iff_degree_lt := div_tendsto_atTop_zero_iff_degree_lt
+
+theorem div_tendsto_atTop_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 <| P.leadingCoeff / Q.leadingCoeff) := by
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [show (P.natDegree : ℤ) = Q.natDegree by simp [hdeg, natDegree]]
   simp
+
+@[deprecated (since := "2026-02-05")]
+alias div_tendsto_leadingCoeff_div_of_degree_eq := div_tendsto_atTop_leadingCoeff_div_of_degree_eq
 
 theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
@@ -163,7 +209,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atTop ?_
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  cutsat
+  lia
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
@@ -184,7 +230,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atBot ?_
   apply Tendsto.const_mul_atTop_of_neg hneg
   apply tendsto_zpow_atTop_atTop
-  cutsat
+  lia
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :
@@ -195,23 +241,156 @@ theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
         hQ <| leadingCoeff_eq_zero.mp h)
   div_tendsto_atBot_of_degree_gt' P Q hdeg ratio_neg
 
-theorem abs_div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
+theorem abs_div_tendsto_atTop_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
     Tendsto (fun x => |eval x P / eval x Q|) atTop atTop := by
   by_cases! h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
   · exact tendsto_abs_atTop_atTop.comp (P.div_tendsto_atTop_of_degree_gt Q hdeg hQ h)
   · exact tendsto_abs_atBot_atTop.comp (P.div_tendsto_atBot_of_degree_gt Q hdeg hQ h.le)
 
+@[deprecated (since := "2026-02-05")]
+alias abs_div_tendsto_atTop_of_degree_gt := abs_div_tendsto_atTop_atTop_of_degree_gt
+
 end PolynomialDivAtTop
 
-theorem isBigO_of_degree_le (h : P.degree ≤ Q.degree) :
-    (fun x => eval x P) =O[atTop] fun x => eval x Q := by
+section PolynomialDivAtBot
+
+theorem isEquivalent_atBot_div :
+    (fun x ↦ P.eval x / Q.eval x) ~[atBot] fun x ↦
+      P.leadingCoeff / Q.leadingCoeff * x ^ (P.natDegree - Q.natDegree : ℤ) := by
+  by_cases hP : P = 0
+  · simp [hP, IsEquivalent.refl]
+  by_cases hQ : Q = 0
+  · simp [hQ, IsEquivalent.refl]
+  refine
+    (P.isEquivalent_atBot_lead.symm.div Q.isEquivalent_atBot_lead.symm).symm.trans
+      (EventuallyEq.isEquivalent ((eventually_lt_atBot 0).mono fun x hx => ?_))
+  simp [← div_mul_div_comm, zpow_sub₀ hx.ne]
+
+theorem div_tendsto_atBot_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
+    Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 0) := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
+  convert (div_tendsto_atTop_zero_of_degree_lt _ _ hdeg).comp tendsto_neg_atBot_atTop using 2
+  simp
+
+theorem div_tendsto_atBot_zero_iff_degree_lt (hQ : Q ≠ 0) :
+    Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 0) ↔ P.degree < Q.degree := by
+  refine ⟨fun h ↦ ?_, div_tendsto_atBot_zero_of_degree_lt P Q⟩
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X]
+  replace hQ : Q.comp (-X) ≠ 0 := by
+    rw [Ne, comp_eq_zero_iff]
+    simp [hQ]
+  rw [← div_tendsto_atTop_zero_iff_degree_lt _ _ hQ]
+  convert h.comp tendsto_neg_atTop_atBot using 2
+  simp
+
+theorem div_tendsto_atBot_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
+    Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 (P.leadingCoeff / Q.leadingCoeff)) := by
+  refine (isEquivalent_atBot_div P Q).symm.tendsto_nhds ?_
+  simp [natDegree_eq_natDegree hdeg]
+
+theorem abs_div_tendsto_atBot_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
+    Tendsto (fun x ↦ |eval x P / eval x Q|) atBot atTop := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
+  replace hQ : Q.comp (-X) ≠ 0 := by
+    rw [Ne, comp_eq_zero_iff]
+    simp [hQ]
+  convert (abs_div_tendsto_atTop_atTop_of_degree_gt _ _ hdeg hQ).comp
+    tendsto_neg_atBot_atTop using 2
+  simp
+
+end PolynomialDivAtBot
+
+theorem isLittleO_atTop_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atTop] Q.eval := by
   by_cases hp : P = 0
-  · simpa [hp] using isBigO_zero (fun x => eval x Q) atTop
+  · simp [hp]
+  · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h.le hp
+    have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
+      mem_of_superset (eventually_atTop_not_isRoot Q hq) fun x h h' ↦ absurd h' h
+    exact isLittleO_of_tendsto' hPQ (div_tendsto_atTop_zero_of_degree_lt P Q h)
+
+theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot] Q.eval := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
+  convert (isLittleO_atTop_of_degree_lt _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  all_goals simp
+
+theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop] Q.eval := by
+  by_cases hp : P = 0
+  · simpa [hp] using isBigO_zero Q.eval atTop
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
-    have hPQ : ∀ᶠ x : 𝕜 in atTop, eval x Q = 0 → eval x P = 0 :=
-      Filter.mem_of_superset (Polynomial.eventually_no_roots Q hq) fun x h h' => absurd h' h
+    have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
+      mem_of_superset (eventually_atTop_not_isRoot Q hq) fun x h h' ↦ absurd h' h
     rcases le_iff_lt_or_eq.mp h with h | h
-    · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_zero_of_degree_lt P Q h)
-    · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_leadingCoeff_div_of_degree_eq P Q h)
+    · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_atTop_zero_of_degree_lt P Q h)
+    · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_atTop_leadingCoeff_div_of_degree_eq P Q h)
+
+theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot] Q.eval := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
+  convert (isBigO_atTop_of_degree_le _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  all_goals simp
+
+@[deprecated (since := "2026-02-05")] alias isBigO_of_degree_le := isBigO_atTop_of_degree_le
+
+section Cobounded
+
+lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
+    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
+  (finite_setOf_isRoot hP).compl_mem_cofinite
+
+open Bornology
+
+variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
+
+lemma isEquivalent_cobounded_leading_monomial :
+    P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
+  by_cases h : P = 0
+  · simp [h, IsEquivalent.refl]
+  · simp only [eval_eq_sum_range, sum_range_succ]
+    exact (IsLittleO.sum fun i hi ↦
+      ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
+        (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
+
+theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
+    P.eval =o[cobounded R] Q.eval := by
+  by_cases hP : P = 0
+  · simp [hP]
+  · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
+      ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    · exact leadingCoeff_ne_zero.mpr (ne_zero_of_degree_gt h)
+    · exact isLittleO_pow_pow_cobounded_of_lt (natDegree_lt_natDegree hP h)
+
+theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
+    P.eval =O[cobounded R] Q.eval := by
+  by_cases hQ : Q.leadingCoeff = 0
+  · aesop
+  · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
+      ((IsBigO.const_mul_right hQ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
+
+end Cobounded
+
+/-- If `deg Q < deg P`, there are only finitely many integers `x` where `|P(x)| ≤ |Q(x)|`. -/
+lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
+    {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
+  have o := isLittleO_cobounded_of_degree_lt h
+  rw [Int.cobounded_eq, ← Int.cofinite_eq] at o
+  have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
+  have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
+  simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
+  norm_cast at key
+
+/-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
+theorem dvd_of_infinite_eval_dvd_eval
+    {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
+  have eqR := modByMonic_add_div P Q
+  have degR := degree_modByMonic_lt P mQ
+  rw [← modByMonic_eq_zero_iff_dvd mQ]
+  set R := P %ₘ Q
+  apply eq_zero_of_infinite_isRoot
+  refine (h.diff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
+  simp only [Set.mem_diff, Set.mem_setOf_eq, not_le] at mx
+  rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
+  exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
 
 end Polynomial

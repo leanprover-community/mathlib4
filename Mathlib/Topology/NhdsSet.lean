@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Neighborhoods of a set
@@ -20,10 +22,12 @@ There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
 
 Furthermore, we have the following results:
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
-* In T₁-spaces, `𝓝ˢ`is strictly monotone and hence injective:
+* In T₁-spaces, `𝓝ˢ` is strictly monotone and hence injective:
   `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in
   `Mathlib/Topology/Separation/Basic.lean`.
 -/
+
+public section
 
 open Set Filter Topology
 
@@ -118,6 +122,18 @@ theorem mem_nhdsSet_interior : s ∈ 𝓝ˢ (interior s) :=
 theorem nhdsSet_empty : 𝓝ˢ (∅ : Set X) = ⊥ := by rw [isOpen_empty.nhdsSet_eq, principal_empty]
 
 theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set X) := by simp
+
+@[simp]
+lemma nhdsSet_eq_bot_iff {α : Type*} [TopologicalSpace α] {s : Set α} :
+    𝓝ˢ s = ⊥ ↔ s = ∅ where
+  mp := by simp [← empty_mem_iff_bot, mem_nhdsSet_iff_forall, eq_empty_iff_forall_notMem]
+  mpr := by simp +contextual
+
+lemma nhdsSet_neBot_iff {α : Type*} [TopologicalSpace α] {s : Set α} :
+    (𝓝ˢ s).NeBot ↔ s.Nonempty :=
+  not_iff_not.mp <| by simp [not_nonempty_iff_eq_empty]
+
+alias ⟨Set.Nonempty.nhdsSet_neBot, _⟩ := nhdsSet_neBot_iff
 
 @[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]

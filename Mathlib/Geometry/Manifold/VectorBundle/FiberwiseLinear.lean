@@ -3,13 +3,17 @@ Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # The groupoid of `C^n`, fiberwise-linear maps
 
 This file contains preliminaries for the definition of a `C^n` vector bundle: an associated
 `StructureGroupoid`, the groupoid of `contMDiffFiberwiseLinear` functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -52,9 +56,6 @@ def openPartialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
       h2φ.prodMap continuousOn_id
     continuousOn_fst.prodMk (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 
-@[deprecated (since := "2025-08-29")] alias
-  PartialHomeomorph := openPartialHomeomorph
-
 /-- Compute the composition of two open partial homeomorphisms induced by fiberwise linear
 equivalences. -/
 theorem trans_openPartialHomeomorph_apply (hU : IsOpen U)
@@ -68,9 +69,6 @@ theorem trans_openPartialHomeomorph_apply (hU : IsOpen U)
       ⟨b, φ' b (φ b v)⟩ :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  trans_PartialHomeomorph_apply := trans_openPartialHomeomorph_apply
-
 /-- Compute the source of the composition of two open partial homeomorphisms induced by fiberwise
 linear equivalences. -/
 theorem source_trans_openPartialHomeomorph (hU : IsOpen U)
@@ -83,10 +81,6 @@ theorem source_trans_openPartialHomeomorph (hU : IsOpen U)
       (U ∩ U') ×ˢ univ := by
   dsimp only [FiberwiseLinear.openPartialHomeomorph]; mfld_set_tac
 
-@[deprecated (since := "2025-08-29")] alias
-  source_trans_PartialHomeomorph := source_trans_openPartialHomeomorph
-
-
 /-- Compute the target of the composition of two open partial homeomorphisms induced by fiberwise
 linear equivalences. -/
 theorem target_trans_openPartialHomeomorph (hU : IsOpen U)
@@ -98,9 +92,6 @@ theorem target_trans_openPartialHomeomorph (hU : IsOpen U)
           FiberwiseLinear.openPartialHomeomorph φ' hU' hφ' h2φ').target =
       (U ∩ U') ×ˢ univ := by
   dsimp only [FiberwiseLinear.openPartialHomeomorph]; mfld_set_tac
-
-@[deprecated (since := "2025-08-29")] alias
-  target_trans_PartialHomeomorph := target_trans_openPartialHomeomorph
 
 end FiberwiseLinear
 

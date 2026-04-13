@@ -3,11 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits
@@ -55,6 +57,8 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -100,7 +104,10 @@ class HasLimitsOfShape : Prop where
 /-- `C` has all limits of size `v₁ u₁` (`HasLimitsOfSize.{v₁ u₁} C`)
 if it has limits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes `v₁, u₁` would default
+-- to universe output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class HasLimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All functors `F : J ⥤ C` from all small `J` have limits -/
   has_limits_of_shape : ∀ (J : Type u₁) [Category.{v₁} J], HasLimitsOfShape J C := by
@@ -221,6 +228,7 @@ theorem limit.existsUnique {F : J ⥤ C} [HasLimit F] (t : Cone F) :
 def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.pt :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.isoLimitCone_hom_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).hom ≫ t.cone.π.app j = limit.π F j := by
@@ -238,9 +246,14 @@ theorem limit.hom_ext {F : J ⥤ C} [HasLimit F] {X : C} {f f' : X ⟶ limit F}
     (w : ∀ j, f ≫ limit.π F j = f' ≫ limit.π F j) : f = f' :=
   (limit.isLimit F).hom_ext w
 
+instance isIso_limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [IsIso α] :
+    IsIso (limMap α) :=
+  ⟨limMap (inv α), by cat_disch , by cat_disch⟩
+
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
-    limit.lift F c ≫ limMap α = limit.lift G ((Cones.postcompose α).obj c) := by
+    limit.lift F c ≫ limMap α = limit.lift G ((Cone.postcompose α).obj c) := by
   ext
   rw [assoc, limMap_π, limit.lift_π_assoc, limit.lift_π]
   rfl
@@ -271,6 +284,7 @@ def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j' : J} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   (limit.isLimit F).homIso' W
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.pt) :
     limit.lift F (c.extend f) = f ≫ limit.lift F c := by cat_disch
 
@@ -278,7 +292,7 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
 -/
 theorem hasLimit_of_iso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
   HasLimit.mk
-    { cone := (Cones.postcompose α.hom).obj (limit.cone F)
+    { cone := (Cone.postcompose α.hom).obj (limit.cone F)
       isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 
 theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasLimit G :=
@@ -312,14 +326,14 @@ theorem HasLimit.isoOfNatIso_inv_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w
 theorem HasLimit.lift_isoOfNatIso_hom {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone F)
     (w : F ≅ G) :
     limit.lift F t ≫ (HasLimit.isoOfNatIso w).hom =
-      limit.lift G ((Cones.postcompose w.hom).obj _) :=
+      limit.lift G ((Cone.postcompose w.hom).obj _) :=
   IsLimit.lift_comp_conePointsIsoOfNatIso_hom _ _ _
 
 @[reassoc (attr := simp)]
 theorem HasLimit.lift_isoOfNatIso_inv {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone G)
     (w : F ≅ G) :
     limit.lift G t ≫ (HasLimit.isoOfNatIso w).inv =
-      limit.lift F ((Cones.postcompose w.inv).obj _) :=
+      limit.lift F ((Cone.postcompose w.inv).obj _) :=
   IsLimit.lift_comp_conePointsIsoOfNatIso_inv _ _ _
 
 /-- The limits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
@@ -329,6 +343,7 @@ def HasLimit.isoOfEquivalence {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit
     (w : e.functor ⋙ G ≅ F) : limit F ≅ limit G :=
   IsLimit.conePointsIsoOfEquivalence (limit.isLimit F) (limit.isLimit G) e w
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
@@ -337,6 +352,7 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
@@ -355,11 +371,12 @@ variable [HasLimit F] (E : K ⥤ J) [HasLimit (E ⋙ F)]
 def limit.pre : limit F ⟶ limit (E ⋙ F) :=
   limit.lift (E ⋙ F) ((limit.cone F).whisker E)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.pre_π (k : K) : limit.pre F E ≫ limit.π (E ⋙ F) k = limit.π F (E.obj k) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.pre]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem limit.lift_pre (c : Cone F) :
     limit.lift F c ≫ limit.pre F E = limit.lift (E ⋙ F) (c.whisker E) := by ext; simp
@@ -375,6 +392,7 @@ theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ 
 
 variable {E F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- -
 If we have particular limit cones available for `E ⋙ F` and for `F`,
 we obtain a formula for `limit.pre F E`.
@@ -395,11 +413,12 @@ variable (F : J ⥤ C) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
   limit.lift (F ⋙ G) (G.mapCone (limit.cone F))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.post_π (j : J) : limit.post F G ≫ limit.π (F ⋙ G) j = G.map (limit.π F j) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.post]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem limit.lift_post (c : Cone F) :
     G.map (limit.lift F c) ≫ limit.post F G = limit.lift (F ⋙ G) (G.mapCone c) := by
@@ -418,6 +437,7 @@ theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : Has
 
 end Post
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
     [h : HasLimit ((E ⋙ F) ⋙ G)] : -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
@@ -441,8 +461,14 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
+lemma hasLimit_equivalence_comp_iff (e : K ≌ J) : HasLimit (e.functor ⋙ F) ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_inverse_equivalence_comp_iff (e : J ≌ K) : HasLimit (e.inverse ⋙ F) ↔ HasLimit F :=
+  hasLimit_equivalence_comp_iff e.symm
+
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
--- are proved in `CategoryTheory/Adjunction/Limits.lean`.
+-- are proved in `Mathlib/CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
 
 variable [HasLimitsOfShape J C]
@@ -467,18 +493,22 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 
 theorem limMap_eq : limMap α = lim.map α := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
      H (limit F) ⟶ limit (F ⋙ H) ⟶ limit (G ⋙ H) -/
@@ -495,6 +525,7 @@ def limYoneda :
     lim ⋙ yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ≅ CategoryTheory.cones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constant functor and limit functor are adjoint to each other -/
 def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
   homEquiv := fun c g ↦
@@ -536,6 +567,7 @@ noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
   pt := L.obj F
   π := adj.counit.app F
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 @[simps]
 def isLimitConeOfAdj (F : J ⥤ C) :
@@ -559,6 +591,21 @@ theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e
   apply hasLimit_of_equivalence_comp e
 
 variable (C)
+
+lemma HasLimitsOfShape.of_small
+    [HasLimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [Small.{u₁} J] [LocallySmall.{v₁} J] :
+    HasLimitsOfShape J C := by
+  have := HasLimitsOfSize.has_limits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
+  exact hasLimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
+
+lemma HasLimitsOfShape.of_essentiallySmall
+    [HasLimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [EssentiallySmall.{u₁} J] [LocallySmall.{v₁} J] :
+    HasLimitsOfShape J C := by
+  have := HasLimitsOfShape.of_small.{v₁, u₁} C (SmallModel.{u₁} J)
+  exact hasLimitsOfShape_of_equivalence (equivSmallModel.{u₁} J).symm
 
 /-- A category that has larger limits also has smaller limits. -/
 theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
@@ -609,7 +656,10 @@ class HasColimitsOfShape : Prop where
 /-- `C` has all colimits of size `v₁ u₁` (`HasColimitsOfSize.{v₁ u₁} C`)
 if it has colimits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes `v₁, u₁` would default
+-- to universe output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All `F : J ⥤ C` have colimits for all small `J` -/
   has_colimits_of_shape : ∀ (J : Type u₁) [Category.{v₁} J], HasColimitsOfShape J C := by
@@ -689,7 +739,7 @@ However, since `Category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
-(see `Tactic/reassoc_axiom.lean`)
+(see `Mathlib/Tactic/CategoryTheory/Reassoc.lean`)
 -/
 @[reassoc (attr := simp)]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
@@ -751,6 +801,7 @@ theorem colimit.isoColimitCocone_ι_hom {F : J ⥤ C} [HasColimit F] (t : Colimi
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     t.cocone.ι.app j ≫ (colimit.isoColimitCocone t).inv = colimit.ι F j := by
@@ -761,6 +812,10 @@ theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : Colimi
 theorem colimit.hom_ext {F : J ⥤ C} [HasColimit F] {X : C} {f f' : colimit F ⟶ X}
     (w : ∀ j, colimit.ι F j ≫ f = colimit.ι F j ≫ f') : f = f' :=
   (colimit.isColimit F).hom_ext w
+
+instance isIso_colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) [IsIso α] :
+    IsIso (colimMap α) :=
+  ⟨colimMap (inv α), by cat_disch , by cat_disch⟩
 
 @[simp]
 theorem colimit.desc_cocone {F : J ⥤ C} [HasColimit F] :
@@ -789,6 +844,7 @@ def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j'} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   (colimit.isColimit F).homIso' W
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
     colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext; simp
 
@@ -798,7 +854,7 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
 -/
 theorem hasColimit_of_iso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
   HasColimit.mk
-    { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
+    { cocone := (Cocone.precompose α.hom).obj (colimit.cocone F)
       isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
 
 theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ HasColimit G :=
@@ -831,14 +887,14 @@ theorem HasColimit.isoOfNatIso_ι_inv {F G : J ⥤ C} [HasColimit F] [HasColimit
 theorem HasColimit.isoOfNatIso_hom_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone G)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).hom ≫ colimit.desc G t =
-      colimit.desc F ((Cocones.precompose w.hom).obj _) :=
+      colimit.desc F ((Cocone.precompose w.hom).obj _) :=
   IsColimit.coconePointsIsoOfNatIso_hom_desc _ _ _
 
 @[reassoc (attr := simp)]
 theorem HasColimit.isoOfNatIso_inv_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone F)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).inv ≫ colimit.desc F t =
-      colimit.desc G ((Cocones.precompose w.inv).obj _) :=
+      colimit.desc G ((Cocone.precompose w.inv).obj _) :=
   IsColimit.coconePointsIsoOfNatIso_inv_desc _ _ _
 
 /-- The colimits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
@@ -848,6 +904,7 @@ def HasColimit.isoOfEquivalence {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasC
     (w : e.functor ⋙ G ≅ F) : colimit F ≅ colimit G :=
   IsColimit.coconePointsIsoOfEquivalence (colimit.isColimit F) (colimit.isColimit G) e w
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
@@ -855,6 +912,7 @@ theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K �
       F.map (e.unit.app j) ≫ w.inv.app _ ≫ colimit.ι G _ := by
   simp [HasColimit.isoOfEquivalence]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem HasColimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
@@ -872,16 +930,18 @@ variable [HasColimit F] (E : K ⥤ J) [HasColimit (E ⋙ F)]
 def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
   colimit.desc (E ⋙ F) ((colimit.cocone F).whisker E)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.pre]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
     colimit.ι F (E.obj k) ≫ inv (colimit.pre F E) = colimit.ι (E ⋙ F) k := by
   simp [IsIso.comp_inv_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.pre_desc (c : Cocone F) :
     colimit.pre F E ≫ colimit.desc F c = colimit.desc (E ⋙ F) (c.whisker E) := by
@@ -891,6 +951,7 @@ theorem colimit.pre_desc (c : Cocone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
     haveI : HasColimit ((D ⋙ E) ⋙ F) := h
@@ -902,6 +963,7 @@ theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
 
 variable {E F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- -
 If we have particular colimit cocones available for `E ⋙ F` and for `F`,
 we obtain a formula for `colimit.pre F E`.
@@ -926,12 +988,13 @@ to `G` applied to the colimit of `F`.
 def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
   colimit.desc (F ⋙ G) (G.mapCocone (colimit.cocone F))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.post]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.post_desc (c : Cocone F) :
     colimit.post F G ≫ G.map (colimit.desc F c) = colimit.desc (F ⋙ G) (G.mapCocone c) := by
@@ -939,6 +1002,7 @@ theorem colimit.post_desc (c : Cocone F) :
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_desc, colimit.ι_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
     -- H G (colimit F) ⟶ H (colimit (F ⋙ G)) ⟶ colimit ((F ⋙ G) ⋙ H) equals
@@ -952,6 +1016,7 @@ theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
 
 end Post
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasColimit F] [HasColimit (E ⋙ F)] [HasColimit (F ⋙ G)] [h : HasColimit ((E ⋙ F) ⋙ G)] :
     -- G (colimit F) ⟶ G (colimit (E ⋙ F)) ⟶ colimit ((E ⋙ F) ⋙ G) vs
@@ -977,6 +1042,13 @@ theorem hasColimit_of_equivalence_comp (e : K ≌ J) [HasColimit (e.functor ⋙ 
   haveI : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimit_equivalence_comp e.symm
   apply hasColimit_of_iso (e.invFunIdAssoc F).symm
 
+lemma hasColimit_equivalence_comp_iff (e : K ≌ J) : HasColimit (e.functor ⋙ F) ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_equivalence_comp e, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_inverse_equivalence_comp_iff (e : J ≌ K) :
+    HasColimit (e.inverse ⋙ F) ↔ HasColimit F :=
+  hasColimit_equivalence_comp_iff e.symm
+
 section ColimFunctor
 
 variable [HasColimitsOfShape J C]
@@ -995,29 +1067,35 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 
 theorem colimMap_eq : colimMap α = colim.map α := rfl
 
+set_option backward.isDefEq.respectTransparency false in -- This seems to be needed in downstream files.
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.map_desc (c : Cocone G) :
-    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
+    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocone.precompose α).obj c) := by
   ext j
   simp [colimit.ι_desc, colimit.ι_desc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
     colimit.pre F E ≫ colim.map α = colim.map (whiskerLeft E α) ≫ colimit.pre G E := by
   ext
   rw [← assoc, colimit.ι_pre, colimit.ι_map, ← assoc, colimit.ι_map, assoc, colimit.ι_pre]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
   ext1
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
     (H : C ⥤ D) :
     /- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
@@ -1038,6 +1116,7 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
     ≅ CategoryTheory.cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => colimit.homIso (unop F) W
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The colimit functor and constant functor are adjoint to each other
 -/
 def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
@@ -1073,6 +1152,21 @@ theorem hasColimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] 
   apply hasColimit_of_equivalence_comp e
 
 variable (C)
+
+lemma HasColimitsOfShape.of_small
+    [HasColimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [Small.{u₁} J] [LocallySmall.{v₁} J] :
+    HasColimitsOfShape J C := by
+  have := HasColimitsOfSize.has_colimits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
+  exact hasColimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
+
+lemma HasColimitsOfShape.of_essentiallySmall
+    [HasColimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [EssentiallySmall.{u₁} J] [LocallySmall.{v₁} J] :
+    HasColimitsOfShape J C := by
+  have := HasColimitsOfShape.of_small.{v₁, u₁} C (SmallModel.{u₁} J)
+  exact hasColimitsOfShape_of_equivalence (equivSmallModel.{u₁} J).symm
 
 /-- A category that has larger colimits also has smaller colimits. -/
 theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]

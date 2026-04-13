@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Ring automorphisms
@@ -21,6 +23,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but 
 
 ring aut
 -/
+
+@[expose] public section
 
 variable (R : Type*) [Mul R] [Add R]
 

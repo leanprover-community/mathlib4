@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
@@ -21,6 +23,8 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -65,23 +69,30 @@ lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl�
 instance : TopologicalSpace (Aut F) :=
   TopologicalSpace.induced (autEmbedding F) inferInstance
 
-/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
-automorphisms. -/
-lemma autEmbedding_range :
+/-lemma autEmbedding_range :
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
-    rfl
+    rfl-/
+
+/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
+automorphisms. -/
+lemma autEmbedding_range :
+    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
+      (a f.left).hom ≫ F.map f.hom } := by
+  ext a
+  simp +instances only [Set.mem_range, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
+  refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
+  exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
+    ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   rw [autEmbedding_range]
-  refine isClosed_iInter (fun f ↦ isClosed_eq (X := F.obj f.left → F.obj f.right) ?_ ?_)
-  · fun_prop
-  · fun_prop
+  exact isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
@@ -142,6 +153,7 @@ noncomputable def autEquivAutWhiskerRight {G : FintypeCat.{w} ⥤ FintypeCat.{v}
 
 variable [GaloisCategory C] [FiberFunctor F]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
 set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity

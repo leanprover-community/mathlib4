@@ -95,9 +95,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     Claim that the sum equals `1` -/
     refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
-    · rw [Nat.cast_one, Finset.sum_range_one]
-      norm_num
-      rw [div_self]
+    · rw [Nat.cast_one, Finset.sum_range_one, zero_add, div_self]
       exact (mul_pos (a_pos 0 (Nat.zero_le _)) (a_pos 1 (Nat.zero_lt_succ _))).ne'
     -- Check the divisibility condition
     · rw [mul_one, tsub_self]
@@ -122,8 +120,8 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   -- Check that this indeed equals the sum
   · calc
       (((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) : ℕ) : α) =
-          ((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) ) := by
-        have :((a (n + 1)) : α) ≠ 0 := ne_of_gt <| a_pos (n + 1) <| Nat.le_succ (n + 1)
+          ((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1)) := by
+        have : ((a (n + 1)) : α) ≠ 0 := ne_of_gt <| a_pos (n + 1) <| Nat.le_succ (n + 1)
         simp only [← Nat.cast_add, ← Nat.cast_div ha this, ← Nat.cast_mul, ← Nat.cast_sub ha₀,
             ← Nat.cast_div han this]
         rw [Nat.cast_sub (Nat.div_le_of_le_mul _)]

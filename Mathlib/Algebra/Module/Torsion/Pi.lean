@@ -3,14 +3,18 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Torsion.Free
-import Mathlib.Algebra.Module.Pi
+module
+
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Module.Pi
 
 /-!
 # Product of torsion-free modules
 
 This file shows that the product of torsion-free modules is torsion-free.
 -/
+
+@[expose] public section
 
 open Module
 

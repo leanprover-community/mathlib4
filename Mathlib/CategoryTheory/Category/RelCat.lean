@@ -3,11 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Uni Marx
 -/
-import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.CategoryTheory.EssentialImage
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations
@@ -21,6 +23,8 @@ By flipping the arguments to a relation, we construct an equivalence `opEquivale
 `RelCat` and its opposite.
 -/
 
+@[expose] public section
+
 open SetRel
 
 namespace CategoryTheory
@@ -31,11 +35,10 @@ universe u
 morphisms are binary relations. -/
 def RelCat :=
   Type u
+deriving Inhabited
 
 namespace RelCat
 variable {X Y Z : RelCat.{u}}
-
-instance inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 
 /-- The morphisms in the relation category are relations. -/
 structure Hom (X Y : RelCat.{u}) : Type u where
@@ -73,16 +76,13 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := .ofRel f.graph
 
-@[deprecated rel_graphFunctor_map (since := "2025-06-08")]
-theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
-    x ~[(graphFunctor.map f).rel] y ↔ f x = y := .rfl
-
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := Function.graph_injective congr(($h).rel)
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
@@ -128,6 +128,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
 relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]

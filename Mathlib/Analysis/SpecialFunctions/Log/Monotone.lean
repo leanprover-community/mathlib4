@@ -3,7 +3,9 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Logarithm Tonality
@@ -15,6 +17,8 @@ form `x ^ a`.
 
 logarithm, tonality
 -/
+
+public section
 
 
 open Set Filter Function

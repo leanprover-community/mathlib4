@@ -3,26 +3,30 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
-import Lean.HeadIndex
-import Lean.Meta.ExprLens
-import Lean.Meta.Check
+module
+
+public import Mathlib.Init
+public import Lean.HeadIndex
+public import Lean.Meta.ExprLens
+public import Lean.Meta.Check
 
 /-!
 
 # Find the positions of a pattern in an expression
 
-This file defines some tools for dealing with sub expressions and occurrence numbers.
+This file defines some tools for dealing with subexpressions and occurrence numbers.
 This is used for creating a `rw` tactic call that rewrites a selected expression.
 
 `viewKAbstractSubExpr` takes an expression and a position in the expression, and returns
-the sub-expression together with an optional occurrence number that would be required to find
-the sub-expression using `kabstract` (which is what `rw` uses to find the position of the rewrite)
+the subexpression together with an optional occurrence number that would be required to find
+the subexpression using `kabstract` (which is what `rw` uses to find the position of the rewrite)
 
 `rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
 whether this is the case.
 
 -/
+
+@[expose] public section
 
 namespace Lean.Meta
 

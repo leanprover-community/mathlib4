@@ -21,7 +21,7 @@ for all real numbers `x`,`y`, `z`, each different from 1, and satisfying `xyz = 
 (b) Prove that equality holds above for infinitely many triples of rational numbers `x`, `y`, `z`,
 each different from 1, and satisfying `xyz = 1`.
 
-# Solution
+## Solution
 (a) Since `xyz = 1`, we can apply the substitution `x = a/b`, `y = b/c`, `z = c/a`.
 Then we define `m = c-b`, `n = b-a` and rewrite the inequality as `LHS - 1 ≥ 0`
 using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proof.
@@ -67,7 +67,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     simp only [Set.mem_setOf_eq] at hs_in_W ⊢
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
-    have key_gt_zero : t ^ 2 + t + 1 > 0 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
+    have key_gt_zero : 0 < t ^ 2 + t + 1 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
     have h₂ : x ≠ 1 := by rw [hx_t]; simp [field]; linarith [key_gt_zero]
     have h₃ : y ≠ 1 := by rw [hy_t]; simp [field]; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]

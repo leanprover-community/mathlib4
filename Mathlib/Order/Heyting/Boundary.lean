@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Co-Heyting boundary
@@ -21,6 +23,8 @@ boundary.
 
 `∂ a` is notation for `Coheyting.boundary a` in scope `Heyting`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -110,11 +114,18 @@ theorem boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ 
       boundary_le_boundary_sup_sup_boundary_inf_right
 
 @[simp]
-theorem boundary_idem (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
+theorem boundary_boundary (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
+
+alias boundary_idem := boundary_boundary
 
 theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   rw [boundary, sup_inf_left, hnot_sup_self, inf_top_eq, sup_eq_right]
   exact hnot_hnot_le
+
+theorem sdiff_boundary_self : a \ ∂ a = ￢￢a := by
+  rw (occs := [1]) [← hnot_hnot_sup_boundary a]
+  rw [sup_sdiff_distrib, sdiff_self, sup_bot_eq, hnot_sdiff_comm,
+    hnot_boundary, top_sdiff']
 
 theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
   ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by

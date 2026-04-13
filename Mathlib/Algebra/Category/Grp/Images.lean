@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of commutative additive groups has images.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Images
 Note that we don't need to register any of the constructions here as instances, because we get them
 from the fact that `AddCommGrpCat` is an abelian category.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -63,13 +67,13 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
       haveI := F'.m_mono
       apply injective_of_mono F'.m
       change (F'.e ≫ F'.m) _ = _
-      rw [F'.fac, AddMonoidHom.map_zero]
+      rw [F'.fac, map_zero]
       exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
     map_add' := by
       intro x y
       haveI := F'.m_mono
       apply injective_of_mono F'.m
-      rw [AddMonoidHom.map_add]
+      rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
       rw [F'.fac]
       rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]

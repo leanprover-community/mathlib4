@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Convex join
@@ -12,6 +14,8 @@ This file defines the convex join of two sets. The convex join of `s` and `t` is
 segments with one end in `s` and the other in `t`. This is notably a useful gadget to deal with
 convex hulls of finite sets.
 -/
+
+@[expose] public section
 
 
 open Set

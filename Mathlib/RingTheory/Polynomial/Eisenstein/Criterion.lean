@@ -3,14 +3,15 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 
-`Polynomial.generalizedEisenstein` :
+- `Polynomial.generalizedEisenstein` :
   Let `R` be an integral domain
   and let `K` an `R`-algebra which is a field
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
@@ -19,6 +20,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
   * the image of `f` in `K[X]` is a power of `q`.
   * the leading coefficient of `f` is not zero in `K`
   * the polynomial `f` is primitive.
+
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.
@@ -29,7 +31,7 @@ of application of this criterion.
 * `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.
   It is the particular case where `q := X`.
 
-# TODO
+## TODO
 
 The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying
@@ -51,6 +53,8 @@ There are two obstructions, though :
   that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
+
+public section
 
 namespace Polynomial
 
@@ -77,7 +81,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
     exact hf_lC.1
   have map_dvd_pow_q :
-      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+      g.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
     rw [← IsUnit.dvd_mul_left _, ← hfmodP]
     · exact Polynomial.map_dvd _ hg_div
     · simp_all
@@ -153,7 +157,7 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
         apply mul_mem_mul
         · rw [mem_ker, ← coeff_map, hr, coeff_zero]
         · rw [mem_ker, ← coeff_map, hs, coeff_zero]
-      simp [- Polynomial.map_mul, coeff_mul, h]
+      simp [-Polynomial.map_mul, coeff_mul, h]
     -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
     rw [h_eq, hg, hh]
     simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]

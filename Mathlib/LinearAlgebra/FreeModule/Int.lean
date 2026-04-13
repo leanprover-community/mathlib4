@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 
@@ -14,6 +16,8 @@ This file provides lemmas about when a submodule of a free ℤ-module is a subgr
 index.
 
 -/
+
+public section
 
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
@@ -32,7 +36,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
   classical
   rcases snf with ⟨bM, bN, f, a, snf⟩
   dsimp only
-  set N' : Submodule R (ι → R) := N.map bM.equivFun with hN'
+  set N' : Submodule R (ι → R) := N.map bM.equivFun.toLinearMap with hN'
   let bN' : Basis (Fin n) R N' := bN.map (bM.equivFun.submoduleMap N)
   have snf' : ∀ i, (bN' i : ι → R) = Pi.single (f i) (a i) := by
     intro i
@@ -193,6 +197,7 @@ lemma addSubgroup_index_ne_zero_iff {H : AddSubgroup (ι → ℤ)} :
   convert submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
   exact ⟨fun ⟨e⟩ ↦ ⟨e.toIntLinearEquiv⟩, fun ⟨e⟩ ↦ ⟨e.toAddEquiv⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma subgroup_index_ne_zero_iff {H : Subgroup (ι → Multiplicative ℤ)} :
     H.index ≠ 0 ↔ Nonempty (H ≃* (ι → Multiplicative ℤ)) := by
   let em : Multiplicative (ι → ℤ) ≃* (ι → Multiplicative ℤ) :=

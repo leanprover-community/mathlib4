@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 
@@ -19,6 +21,8 @@ ideal `I`, we may furthermore obtain a matrix representation whose entries fall 
 
 This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbitrary rings.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} [Fintype ι]

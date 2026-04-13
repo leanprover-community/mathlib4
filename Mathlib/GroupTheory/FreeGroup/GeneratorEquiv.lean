@@ -3,14 +3,18 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Isomorphisms between free groups imply equivalences of their generators
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -1,10 +1,13 @@
 /-
 Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Chu Zheng
 -/
-import Mathlib.Analysis.Normed.Affine.Simplex
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
+
+public import Mathlib.Analysis.Normed.Affine.Simplex
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 
 /-!
 # Simplices in Euclidean spaces.
@@ -16,6 +19,8 @@ This file defines properties of simplices in a Euclidean space.
 * `Affine.Simplex.AcuteAngled`
 
 -/
+
+@[expose] public section
 
 
 namespace Affine
@@ -62,6 +67,21 @@ lemma Equilateral.acuteAngled {s : Simplex ℝ P n} (he : s.Equilateral) : s.Acu
   rw [he.angle_eq_pi_div_three h₁₂ h₁₃ h₂₃]
   linarith [Real.pi_pos]
 
+/-- The distance from a vertex to the `centroid` equals `n` times the distance from the `centroid`
+ to the corresponding `faceOppositeCentroid`. -/
+theorem dist_point_centroid [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
+    dist (s.points i) s.centroid = n * dist s.centroid (s.faceOppositeCentroid i) := by
+  simp_rw [dist_eq_norm_vsub, s.point_vsub_centroid_eq_smul_vsub i, norm_smul, Real.norm_natCast]
+
+/-- The distance from a vertex to its `faceOppositeCentroid` equals `(n + 1)` times the distance
+ from the `centroid` to that `faceOppositeCentroid`. -/
+theorem dist_point_faceOppositeCentroid [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
+    dist (s.points i) (s.faceOppositeCentroid i) =
+    (n + 1) * dist s.centroid (s.faceOppositeCentroid i) := by
+  simp_rw [dist_eq_norm_vsub, s.point_vsub_faceOppositeCentroid_eq_smul_vsub i,
+    norm_smul]
+  norm_cast
+
 end Simplex
 
 namespace Triangle
@@ -79,6 +99,21 @@ lemma acuteAngled_iff_angle_lt {t : Triangle ℝ P} : t.AcuteAngled ↔
   have h102 := angle_comm (t.points 2) _ _ ▸ h201
   intro i₁ i₂ i₃ h₁₂ h₁₃ h₂₃
   fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp [*] at *
+
+/-- In a triangle, the distance from a vertex to the `centroid` equals twice the distance from the
+`centroid` to the `faceOppositeCentroid`. -/
+theorem dist_point_centroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
+    dist (t.points i) t.centroid = 2 * dist t.centroid (t.faceOppositeCentroid i) := by
+  rw [Affine.Simplex.dist_point_centroid]
+  norm_cast
+
+/-- In a triangle, the distance from a vertex to the `faceOppositeCentroid` equals three times the
+distance from the `centroid` to the `faceOppositeCentroid`. -/
+theorem dist_point_faceOppositeCentroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
+    dist (t.points i) (t.faceOppositeCentroid i) = 3 * dist t.centroid (t.faceOppositeCentroid i) :=
+    by
+  rw [Affine.Simplex.dist_point_faceOppositeCentroid]
+  norm_cast
 
 end Triangle
 

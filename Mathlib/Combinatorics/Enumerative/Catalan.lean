@@ -3,12 +3,15 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Nat.Choose.Central
+
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Tactic.Field
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
 
 /-!
 # Catalan numbers
@@ -41,6 +44,8 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
   Fuss-Catalan, etc.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -95,8 +100,8 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
-    Nat.cast_zero, tsub_zero]
+  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, mul_one, Nat.cast_add,
+    Nat.sub_zero, one_mul, Nat.cast_zero, mul_zero, zero_sub, neg_add_rev]
   field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
@@ -111,7 +116,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -146,8 +151,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (antidiagonal n).attach.biUnion fun ijh =>
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; cutsat
-    · simp_wf; have := snd_le ijh.2; cutsat
+    · simp_wf; have := fst_le ijh.2; lia
+    · simp_wf; have := snd_le ijh.2; lia
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]

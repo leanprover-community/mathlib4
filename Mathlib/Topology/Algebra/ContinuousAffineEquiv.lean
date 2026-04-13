@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -28,9 +30,11 @@ which are continuous with continuous inverse.
 
 ## TODO
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-with multiplication corresponding to composition in `AffineEquiv.group`.
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -81,8 +85,6 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-@[deprecated (since := "2025-08-15")] alias coe_injective := toAffineEquiv_injective
-
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective' _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
@@ -119,6 +121,10 @@ protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
   __ := e
   cont := e.continuous_toFun
+
+/-- Coerce continuous linear equivs to continuous linear maps. -/
+instance ContinuousAffineMap.coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ →ᴬ[k] P₂) :=
+  ⟨toContinuousAffineMap⟩
 
 @[simp]
 lemma coe_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toContinuousAffineMap = e :=
@@ -176,18 +182,11 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
 theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
-@[deprecated "use instead `toAffineEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
-  rfl
-
 @[simp]
 theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
-
-@[deprecated "use instead `symm_toEquiv`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
 
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl

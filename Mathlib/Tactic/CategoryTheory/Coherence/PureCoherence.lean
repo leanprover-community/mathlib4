@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.Tactic.Apply
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+module
+
+public meta import Lean.Meta.Tactic.Apply
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Coherence tactic
@@ -24,6 +27,8 @@ The actual tactics that users will use are given in
 - `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -151,7 +156,7 @@ partial def naturality (nm : Name) (p : NormalizedHom) (η : Mor₂Iso) : Cohere
     let ⟨_, η_g⟩ ← normalize p g
     let ih_η ← naturality nm p η
     mkNaturalityInv p pf f g η η_f η_g ih_η
-  withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
+  withTraceNode nm (fun _ => return m!"{← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
   return result
 
@@ -171,8 +176,8 @@ def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
     (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
     withTraceNode nm (fun ex => match ex with
-      | .ok _ => return m!"{checkEmoji} coherence equality: {← mvarId.getType}"
-      | .error err => return m!"{crossEmoji} {err.toMessageData}") do
+      | .ok _ => return m!"coherence equality: {← mvarId.getType}"
+      | .error err => return err.toMessageData) do
       let e ← instantiateMVars <| ← mvarId.getType
       let some (_, η, θ) := (← whnfR e).eq?
         | throwError "coherence requires an equality goal"
@@ -188,9 +193,9 @@ def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
         let nil ← normalizedHom.nilM a
         let ⟨_, η_f⟩ ← normalize nil f
         let ⟨_, η_g⟩ ← normalize nil g
-        let Hη ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} LHS") do
+        let Hη ← withTraceNode nm (fun _ => do return m!"LHS") do
           naturality nm nil ηIso.e
-        let Hθ ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} RHS") do
+        let Hθ ← withTraceNode nm (fun _ => do return m!"RHS") do
           naturality nm nil θIso.e
         let H ← mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ
         mvarId.apply H

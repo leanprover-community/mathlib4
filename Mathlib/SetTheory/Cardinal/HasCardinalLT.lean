@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # The property of being of cardinality less than a cardinal
@@ -13,6 +15,8 @@ Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
 
 -/
+
+@[expose] public section
 
 universe w v u u'
 
@@ -132,7 +136,7 @@ lemma hasCardinalLT_union
     HasCardinalLT (S₁ ∪ S₂ : Set _) κ :=
   hasCardinalLT_subtype_max hκ h₁ h₂
 
-/-- The particular case of `hasCardinatLT_sigma` when all the inputs are in the
+/-- The particular case of `hasCardinalLT_sigma` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
 lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
@@ -171,7 +175,7 @@ lemma hasCardinalLT_iUnion
   convert show HasCardinalLT (setOf ((⨆ i, S i))) κ from hasCardinalLT_subtype_iSup S hι hS
   aesop
 
-/-- The particular case of `hasCardinatLT_prod` when all the inputs are in the
+/-- The particular case of `hasCardinalLT_prod` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/
 lemma hasCardinalLT_prod' {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
     (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :

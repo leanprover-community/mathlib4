@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -17,6 +19,8 @@ We define the following properties for sets in a topological space:
 For both of these definitions, we also have a class stating that the whole space
 satisfies that property: `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 -/
+
+@[expose] public section
 
 open Function Set Topology
 
@@ -48,6 +52,11 @@ theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
     (h : IsPreconnected s) : s.Subsingleton :=
   TotallyDisconnectedSpace.isTotallyDisconnected_univ s (subset_univ s) h
 
+-- note: making this an instance breaks downstream files
+theorem subsingleton_of_preconnected_totallyDisconnected
+    [PreconnectedSpace α] [TotallyDisconnectedSpace α] : Subsingleton α :=
+  Set.subsingleton_of_univ_subsingleton isPreconnected_univ.subsingleton
+
 instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
@@ -73,7 +82,7 @@ instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnecte
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)] :
-    TotallyDisconnectedSpace (Σi, X i) := by
+    TotallyDisconnectedSpace (Σ i, X i) := by
   refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
@@ -130,7 +139,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
-  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  invFun y := ⟨fun _ ↦ y, by fun_prop⟩
   left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
   right_inv _ := rfl
 
@@ -164,6 +173,12 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
 
 end TotallyDisconnected
 
@@ -278,9 +293,35 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
     (h : Continuous f) : ConnectedComponents α → ConnectedComponents β :=
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 
+@[simp]
+lemma Continuous.connectedComponentsMap_mk {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (x : α) :
+    hf.connectedComponentsMap (.mk x) = .mk (f x) :=
+  rfl
+
 theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
     (h : Continuous f) : Continuous h.connectedComponentsMap :=
   Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
+
+lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : IsCoinducing f) :
+    IsCoinducing hf.continuous.connectedComponentsMap := by
+  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
+
+@[simp]
+lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (h : Surjective f) :
+    Surjective hf.connectedComponentsMap :=
+  Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
+
+lemma Topology.IsCoinducing.connectedComponentsMap_bijective {β : Type*} [TopologicalSpace β]
+    {f : α → β} (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    hf.continuous.connectedComponentsMap.Bijective := by
+  refine ⟨fun x y h ↦ ?_, Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  simp_all [← hf.preimage_connectedComponent hf']
 
 /-- A preconnected set `s` has the property that every map to a
 discrete space that is continuous on `s` is constant on `s` -/
@@ -297,17 +338,18 @@ theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTop
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
 theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
+  rw [isDiscrete_iff_discreteTopology] at hT
   exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
 theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
-  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hc hTm hx' hx⟩
+  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩

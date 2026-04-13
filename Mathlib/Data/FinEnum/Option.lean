@@ -3,8 +3,10 @@ Copyright (c) 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tom Kranz
 -/
-import Mathlib.Data.FinEnum
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Data.FinEnum
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # FinEnum instance for Option
@@ -16,10 +18,13 @@ non-truncated data.
 * recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
 
+@[expose] public section
+
 namespace FinEnum
 universe u v
 
 /-- Inserting an `Option.none` anywhere in an enumeration yields another enumeration. -/
+@[implicit_reducible]
 def insertNone (α : Type u) [FinEnum α] (i : Fin (card α + 1)) : FinEnum (Option α) where
   card := card α + 1
   equiv := equiv.optionCongr.trans <| finSuccEquiv' i |>.symm

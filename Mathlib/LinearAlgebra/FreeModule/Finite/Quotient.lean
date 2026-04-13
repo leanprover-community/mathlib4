@@ -3,11 +3,13 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Xavier Roblot
 -/
-import Mathlib.Data.ZMod.QuotientRing
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Quotient.Pi
+module
+
+public import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Quotient.Pi
 
 /-! # Quotient of submodules of full rank in free finite modules over PIDs
 
@@ -17,6 +19,8 @@ import Mathlib.LinearAlgebra.Quotient.Pi
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped DirectSum
@@ -46,7 +50,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     simp_rw [ab.mem_submodule_iff', ab, ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
-      simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
+      simp only [← SemigroupAction.mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
       exact ⟨c i, this c i⟩

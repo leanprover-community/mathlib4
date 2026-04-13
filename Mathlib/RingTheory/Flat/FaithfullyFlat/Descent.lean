@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.RingTheory.RingHom.Injective
-import Mathlib.RingTheory.RingHom.Surjective
+module
+
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.RingTheory.RingHom.Injective
+public import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 # Properties satisfying faithfully flat descent for rings
@@ -16,6 +18,8 @@ We show the following properties of ring homomorphisms descend under faithfully 
 - surjective
 - bijective
 -/
+
+public section
 
 open TensorProduct
 

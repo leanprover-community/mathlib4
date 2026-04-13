@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # The category of commutative rings has all colimits.
@@ -14,6 +16,8 @@ This file uses a "pre-automated" approach, just as for
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -94,11 +98,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -228,11 +230,11 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
     | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -264,6 +266,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
@@ -388,11 +391,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -527,11 +528,11 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
     | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -564,6 +565,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s

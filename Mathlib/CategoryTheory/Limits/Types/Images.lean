@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # Images in the category of types
@@ -13,6 +15,8 @@ In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -73,8 +77,7 @@ instance : HasImageMaps (Type u) where
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
-        simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
-        rw [p, Classical.choose_spec x.2]⟩⟩) rfl
+        simp [dsimp% p, Classical.choose_spec x.2]⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -102,6 +105,7 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       types_comp_apply, (hF p _).choose_spec]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/

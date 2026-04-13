@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Some exiled lemmas about casting
@@ -16,6 +18,8 @@ to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
+
+public section
 
 namespace Rat
 

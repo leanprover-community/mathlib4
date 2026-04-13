@@ -3,11 +3,11 @@ Copyright (c) 2024 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Data.ENat.Basic
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # CW complexes
@@ -69,6 +69,8 @@ together.
 ## References
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -162,7 +164,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   union' := by simpa only [empty_union] using CWComplex.union'
 
 /-- A relative CW complex with an empty base is an absolute CW complex. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
     CWComplex C where
   cell := cell C
@@ -277,7 +279,7 @@ private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : �
       (subset_iUnion_of_subset n (subset_iUnion_of_subset ⟨i, hi⟩ (subset_refl (openCell n i)))) D
   have h' : Disjoint (openCell n i) (D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j) := by
     simp_rw [disjoint_union_right, disjoint_iUnion_right]
-    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by aesop)⟩
+    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by lia)⟩
   rw [disjoint_of_subset_iff_left_eq_empty h] at h'
   exact notMem_empty _ (h' ▸ map_zero_mem_openCell n i)
 
@@ -568,6 +570,8 @@ instance : SetLike (Subcomplex C) X where
     apply eq_of_eq_union_iUnion
     rw [hE, hF]
     simpa using h
+
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 

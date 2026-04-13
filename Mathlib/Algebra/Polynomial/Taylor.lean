@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.HasseDeriv
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
 # Taylor expansions of polynomials
@@ -20,6 +22,8 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -69,7 +73,7 @@ theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r 
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
       (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
-    push_neg at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
+    push Not at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 
 @[simp]
 theorem taylor_coeff_zero : (taylor r f).coeff 0 = f.eval r := by
@@ -112,6 +116,10 @@ theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
   rw [← taylor_eq_zero r]
   ext k
   rw [taylor_coeff, h, coeff_zero]
+
+@[simp] lemma map_taylor {R S : Type*} [Semiring R] [Semiring S] (p : R[X]) (r : R) (f : R →+* S) :
+    (p.taylor r).map f = (p.map f).taylor (f r) := by
+  simp [taylor_apply, Polynomial.map_comp]
 
 end Semiring
 
@@ -159,12 +167,18 @@ theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
     Finset.sum_range_succ', Finset.sum_range_succ']
   simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
 
+theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
+    (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
+    p.aeval (x + y) = p.aeval x + p.derivative.aeval x * y := by
+  simp only [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero _ _ _ hy, derivative_map]
+
 end CommSemiring
 
 section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)

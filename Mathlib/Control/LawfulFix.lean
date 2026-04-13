@@ -3,10 +3,11 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Control.Fix
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Control.Fix
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Lawful fixed point operators
@@ -19,6 +20,8 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 * class `LawfulFix`
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -157,13 +160,10 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i
-    intro x
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i.succ
-
-variable {f}
 
 end Part
 

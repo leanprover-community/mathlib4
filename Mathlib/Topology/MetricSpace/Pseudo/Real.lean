@@ -3,12 +3,16 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-!
 # Lemmas about distances between points in intervals in `ℝ`.
 -/
+
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology

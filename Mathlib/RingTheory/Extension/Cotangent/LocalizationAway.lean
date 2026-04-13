@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.RingTheory.Kaehler.JacobiZariski
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Kaehler.JacobiZariski
 
 /-!
 # Cotangent and localization away
@@ -29,6 +31,8 @@ and the splitting from the Jacobi Zariski sequence.
   `T ⊗[S] (I/I²) → J/J²` is injective if `T` is the localization of `S` away from an element.
 - `Algebra.Generators.cotangentCompLocalizationAwayEquiv`: `J/J² ≃ₗ[T] T ⊗[S] (I/I²) × K/K²`.
 -/
+
+@[expose] public section
 
 open TensorProduct MvPolynomial
 
@@ -64,6 +68,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway T g).comp P).Ring
       (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
       (fun i : ι ↦ algebraMap P.Ring _ (X i)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     compLocalizationAwayAlgHom T g P (((localizationAway T g).toComp P).toAlgHom x) =
@@ -112,6 +117,7 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
       intro x hx y hy
       simp [hsple hx]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
 element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the

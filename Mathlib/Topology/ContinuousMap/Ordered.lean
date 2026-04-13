@@ -3,14 +3,18 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam
 -/
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -22,7 +26,7 @@ We now set up the partial order and lattice structure (given by pointwise min an
 on continuous functions.
 -/
 
-instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
+instance partialOrder [PartialOrder β] : PartialOrder C(α, β) := fast_instance%
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
@@ -40,8 +44,8 @@ instance sup : Max C(α, β) where max f g := { toFun := fun a ↦ f a ⊔ g a }
 
 @[simp] lemma sup_apply (f g : C(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 
-instance semilatticeSup : SemilatticeSup C(α, β) :=
-  DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
+instance semilatticeSup : SemilatticeSup C(α, β) := fast_instance%
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
@@ -62,8 +66,8 @@ instance inf : Min C(α, β) where min f g := { toFun := fun a ↦ f a ⊓ g a }
 
 @[simp] lemma inf_apply (f g : C(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
 
-instance semilatticeInf : SemilatticeInf C(α, β) :=
-  DFunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
+instance semilatticeInf : SemilatticeInf C(α, β) := fast_instance%
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
@@ -75,8 +79,7 @@ lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, �
 
 end SemilatticeInf
 
-instance [Lattice β] [TopologicalLattice β] : Lattice C(α, β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance [Lattice β] [TopologicalLattice β] : Lattice C(α, β) where
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`
 

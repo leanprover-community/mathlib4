@@ -3,14 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.ColimitLimit
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Products.Bifunctor
-import Mathlib.Data.Countable.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.ColimitLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Products.Bifunctor
+public import Mathlib.Data.Countable.Small
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -25,6 +27,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
+
+@[expose] public section
 
 -- Various pieces of algebra that have previously been spuriously imported here:
 assert_not_exists map_ne_zero MonoidWithZero
@@ -48,7 +52,7 @@ is just a variant of `limit_ext'`. -/
 
 variable (F : J × K ⥤ Type v)
 
-open CategoryTheory.Prod
+open Prod
 
 variable [IsFiltered K]
 
@@ -61,7 +65,7 @@ only that there are finitely many objects.
 
 variable [Finite J]
 
-/-- This follows this proof from
+/-- This follows the proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
 theorem colimitLimitToLimitColimit_injective :
@@ -110,7 +114,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only [true_and, Finset.mem_univ,
               Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only ))
+            simp only))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
@@ -148,7 +152,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
+/-- This follows the proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :
@@ -187,7 +191,8 @@ theorem colimitLimitToLimitColimit_surjective :
         colimit.ι ((curry.obj F).obj j') k' (F.map (𝟙 j' ×ₘ g j') (y j')) =
           colimit.ι ((curry.obj F).obj j') k' (F.map (f ×ₘ g j) (y j)) := by
       intro j j' f
-      simp only [Colimit.w_apply, ← Bifunctor.diagonal', ← curry_obj_obj_map, ← curry_obj_map_app]
+      nth_rw 2 [← Bifunctor.diagonal']
+      simp only [Colimit.w_apply, ← curry_obj_obj_map]
       rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
       simp [Types.Colimit.ι_map_apply]
     -- Because `K` is filtered, we can restate this as saying that
@@ -272,7 +277,7 @@ theorem colimitLimitToLimitColimit_surjective :
       -- then show that are coherent with respect to morphisms in the `j` direction.
       apply Limit.mk
       swap
-      ·-- We construct the elements as the images of the `y j`.
+      · -- We construct the elements as the images of the `y j`.
         exact fun j => F.map (𝟙 j ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
@@ -309,6 +314,7 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
   (isIso_iff_bijective _).mpr
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).hom := by
@@ -316,7 +322,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
         lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
       apply IsIso.comp_isIso
     infer_instance
-  apply Cones.cone_iso_of_hom_iso
+  apply Cone.cone_iso_of_hom_iso
 
 noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
@@ -328,7 +334,8 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
 
 section
 
@@ -368,20 +375,12 @@ noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ li
   (isLimitOfPreserves colim (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _) ≪≫
     HasLimit.isoOfNatIso (colimitFlipIsoCompColim _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     colimit.ι (limit F) a ≫ (colimitLimitIso F).hom ≫ limit.π (colimit F.flip) b =
       (limit.π F b).app a ≫ (colimit.ι F.flip a).app b := by
-  dsimp [colimitLimitIso]
-  simp only [Functor.mapCone_π_app, Iso.symm_hom,
-    Limits.limit.conePointUniqueUpToIso_hom_comp_assoc, Limits.limit.cone_π,
-    Limits.colimit.ι_map_assoc, Limits.colimitFlipIsoCompColim_inv_app, assoc,
-    Limits.HasLimit.isoOfNatIso_hom_π]
-  congr 1
-  simp only [← Category.assoc, Iso.comp_inv_eq,
-    Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
-    Limits.HasColimit.isoOfNatIso_ι_hom]
-  simp
+  simp [colimitLimitIso]
 
 end
 

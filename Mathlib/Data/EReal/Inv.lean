@@ -3,10 +3,12 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign.Basic
-import Mathlib.Data.Nat.Cast.Order.Field
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
@@ -16,6 +18,8 @@ This file defines an absolute value and sign function on `EReal` and uses them t
 Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which leads to a
 `DivInvMonoid` instance and division.
 -/
+
+@[expose] public section
 
 open ENNReal Set SignType
 
@@ -140,7 +144,7 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
 instance : CommMonoidWithZero EReal :=
-  { inferInstanceAs (MulZeroOneClass EReal) with
+  { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
@@ -149,8 +153,8 @@ instance : CommMonoidWithZero EReal :=
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
   rintro ⟨x, x0⟩ a b h
   simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
-  exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
-    Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_left' · _)
+  exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_right · _)) <|
+    Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_right · _)
 
 instance : MulPosMono EReal := posMulMono_iff_mulPosMono.1 inferInstance
 
@@ -247,7 +251,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
-    · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
+    · simp
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
       simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
@@ -303,7 +307,7 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
 
 lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
   intro a a_0 b b_0 a_b
-  simp only [mem_Ioi] at *
+  push _ ∈ _ at *
   lift a to ℝ using ⟨ne_top_of_lt a_b, ne_bot_of_gt a_0⟩
   match b with
   | ⊤ => exact inv_top ▸ inv_pos_of_pos_ne_top a_0 (coe_ne_top a)
@@ -547,7 +551,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     assertInstancesCommute
@@ -558,7 +562,7 @@ def evalERealInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
     assertInstancesCommute

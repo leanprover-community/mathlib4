@@ -11,28 +11,24 @@ import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
-# Construction of an algebraic number that is not solvable by radicals.
+# Construction of an algebraic number that is not solvable by radicals
 
 The main ingredients are:
-* `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
-  an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
+
+* `isSolvable_gal_of_irreducible` in `Mathlib/FieldTheory/AbelRuffini.lean`:
+  an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group.
 * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
-  an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
+  an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group.
 * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
-  solvable
+  solvable.
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
 `galActionHom_bijective_of_prime_degree'`, which is done in this file.
-
 -/
-
 
 namespace AbelRuffini
 
-
 open Function Polynomial Polynomial.Gal Ideal
-
-open scoped Polynomial
 
 attribute [local instance] splits_ℚ_ℂ
 
@@ -143,7 +139,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
     Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=
-  (card_rootSet_eq_natDegree h (IsAlgClosed.splits_codomain _)).trans (natDegree_Phi a b)
+  (card_rootSet_eq_natDegree h (IsAlgClosed.splits _)).trans (natDegree_Phi a b)
 
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
@@ -155,21 +151,21 @@ theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     exact real_roots_Phi_ge a b hab
 
 theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) (hab : b < a)
-    (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : ¬IsSolvableByRad ℚ x := by
+    (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : x ∉ solvableByRad ℚ ℂ := by
   have h_irred := irreducible_Phi a b p hp hpa hpb hp2b
-  apply mt (solvableByRad.isSolvable' h_irred hx)
+  apply mt (isSolvable_gal_of_irreducible · h_irred hx)
   intro h
   refine Equiv.Perm.not_solvable _ (le_of_eq ?_)
     (solvable_of_surjective (gal_Phi a b hab h_irred).2)
   rw_mod_cast [Cardinal.mk_fintype, complex_roots_Phi a b h_irred.separable]
 
-theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSolvableByRad ℚ x := by
+theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : x ∉ solvableByRad ℚ ℂ := by
   apply not_solvable_by_rad 4 2 2 x hx <;> decide
 
 /-- **Abel-Ruffini Theorem** -/
-theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
-  obtain ⟨x, hx⟩ := exists_root_of_splits (algebraMap ℚ ℂ) (IsAlgClosed.splits_codomain (Φ ℚ 4 2))
-    (ne_of_eq_of_ne (degree_Phi 4 2) (mt WithBot.coe_eq_coe.mp (show 5 ≠ 0 by simp)))
+theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ x ∉ solvableByRad ℚ ℂ := by
+  obtain ⟨x, hx⟩ := (IsAlgClosed.splits (Φ ℂ 4 2)).exists_eval_eq_zero (by simp [degree_Phi])
+  rw [← map_Phi 4 2 (algebraMap ℚ ℂ), eval_map] at hx
   exact ⟨x, ⟨Φ ℚ 4 2, (monic_Phi 4 2).ne_zero, hx⟩, not_solvable_by_rad' x hx⟩
 
 end AbelRuffini

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -18,6 +20,8 @@ The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
 * `Pi.evalAlgHom`
 * `Pi.constAlgHom`
 -/
+
+@[expose] public section
 
 namespace Pi
 
@@ -244,3 +248,10 @@ lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
 end
 
 end AlgEquiv
+
+/-- Apply an algebra map component-wise along a vector. -/
+def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (ι → R) →ₗ[R] (ι → A) where
+  toFun v := _root_.algebraMap R A ∘ v
+  map_add' v w := by simp
+  map_smul' t v := by ext; simp [Algebra.smul_def]

@@ -3,8 +3,15 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
+public import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Hilbert C⋆-modules
@@ -54,6 +61,8 @@ then an `InnerProductSpace` over `ℂ`.
 + Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
   December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder RightActions
 
@@ -159,6 +168,7 @@ local notation "⟪" x ", " y "⟫" => inner A x y
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
+@[implicit_reducible]
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
   norm x := √‖⟪x, x⟫_A‖
 
@@ -190,7 +200,7 @@ variable [StarOrderedRing A]
 open scoped InnerProductSpace in
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
-  rcases eq_or_ne x 0 with h|h
+  rcases eq_or_ne x 0 with h | h
   · simp [h, CStarModule.norm_zero A (E := E)]
   · have h₁ : ∀ (a : A),
         (0 : A) ≤ ‖x‖ ^ 2 • (a * star a) - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
@@ -222,7 +232,7 @@ variable (E) in
 lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_self_mul_star, pow_two]
-    _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
+    _ ≤ ‖‖x‖ ^ 2 • ⟪y, y⟫‖ := by
                 refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
                 rw [← star_inner x]
                 exact mul_star_self_nonneg ⟪x, y⟫_A
@@ -262,7 +272,7 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
+noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in

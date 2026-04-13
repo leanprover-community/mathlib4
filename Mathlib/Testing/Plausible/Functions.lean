@@ -3,11 +3,21 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Int.Range
-import Mathlib.Data.List.Sigma
-import Plausible.Functions
+module
+
+public meta import Mathlib.Data.Finsupp.ToDFinsupp
+public meta import Mathlib.Data.Int.Range
+public meta import Mathlib.Data.List.Sigma
+public meta import Plausible.Functions
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Int.Range
+public import Mathlib.Data.List.Sigma
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Tactic.Bound.Init
 
 /-!
 ## `Plausible`: generators for functions
@@ -39,6 +49,8 @@ Some care must be taken for shrinking such functions to make sure
 their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
+
+@[expose] public meta section
 
 universe u v
 
@@ -74,7 +86,7 @@ private theorem apply_eq_dlookup (m : List (Σ _ : α, β)) (y : β) (x : α) :
 
 variable [Zero β] [DecidableEq β]
 
-/-- Map a total_function to one whose default value is zero so that it represents a finsupp. -/
+/-- Map a `TotalFunction` to one whose default value is zero so that it represents a `Finsupp`. -/
 @[simp]
 def zeroDefault : TotalFunction α β → TotalFunction α β
   | .withDefault A _ => .withDefault A 0
@@ -258,7 +270,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.getElem?_inj _ (h₁.nodup_iff.1 h₀)
+    apply (List.getElem?_inj _ (h₁.nodup_iff.1 h₀)).mp
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
@@ -371,7 +383,7 @@ instance : Arbitrary (InjectiveFunction ℤ) where
 instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
   proxy := InjectiveFunction ℤ
   interp f := ⟨apply f, f.injective⟩
-  shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
+  shrink := { shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction
 

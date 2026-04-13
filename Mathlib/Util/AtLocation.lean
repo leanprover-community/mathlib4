@@ -3,9 +3,12 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Location
-import Lean.Meta.Tactic.Simp.Main
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.Simp.Main
+public import Lean.Elab.Tactic.Location
 
 /-!
 # Rewriting at specified locations
@@ -17,6 +20,8 @@ This file provides convenience functions to turn such a metaprogram into a varie
 using the metaprogram to modify the goal, a specified hypothesis, or (via `Tactic.Location`) a
 combination of these.
 -/
+
+public meta section
 
 /-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
 `loc`.
@@ -51,7 +56,7 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
+  if failIfUnchanged && unchanged then throwError "{proc} made no progress on the goal"
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none
@@ -71,7 +76,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "cannot run {proc} at {ldecl.userName}, it is an implementation detail"
+    throwError "Cannot run {proc} at {ldecl.userName}, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)

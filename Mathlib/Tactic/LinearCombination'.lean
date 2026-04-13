@@ -3,10 +3,12 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.Ring
 
 /-!
-# linear_combination' Tactic
+# `linear_combination'` Tactic
 
 In this file, the `linear_combination'` tactic is created.  This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
@@ -34,6 +36,8 @@ implementation, but this version is provided for backward-compatibility.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.LinearCombination'
 open Lean
@@ -254,7 +258,7 @@ elab_rules : tactic
   | `(tactic| linear_combination'%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination' tk tac n e
 
-@[inherit_doc linearCombination']
+@[tactic_alt linearCombination']
 syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>

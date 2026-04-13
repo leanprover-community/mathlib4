@@ -3,7 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Isometric continuous functional calculus
 
@@ -13,9 +15,11 @@ the algebra for reasons discussed in the module documentation for that file.
 
 Of course, with a metric on the algebra and an isometric continuous functional calculus, the
 algebra must *be* a C⋆-algebra already. As such, it may seem like this class is not useful. However,
-the main purpose is to allow for the continuous functional calculus to be a isometric for the other
+the main purpose is to allow for the continuous functional calculus to be an isometry for the other
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
+
+@[expose] public section
 
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
@@ -34,12 +38,16 @@ section MetricSpace
 
 open scoped ContinuousFunctionalCalculus
 
-lemma isometry_cfcHom {R A : Type*} {p : outParam (A → Prop)} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
-    (a : A) (ha : p a := by cfc_tac) :
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+  [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+  [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
+
+lemma isometry_cfcHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcHom (show p a from ha) (R := R)) :=
   IsometricContinuousFunctionalCalculus.isometric a ha
+
+instance [CompleteSpace R] : ClosedEmbeddingContinuousFunctionalCalculus R A p where
+  isClosedEmbedding a ha := (isometry_cfcHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -176,11 +184,11 @@ open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
     IsometricContinuousFunctionalCalculus R A p where
-  toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
+  toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
-    rw [cfcHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
+    have := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
+    rw [cfcHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
     simp only [starAlgHom_apply, isometry_cfcHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
@@ -225,6 +233,9 @@ variable [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 lemma isometry_cfcₙHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcₙHom (show p a from ha) (R := R)) :=
   NonUnitalIsometricContinuousFunctionalCalculus.isometric a ha
+
+instance [CompleteSpace R] : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
+  isClosedEmbedding a ha := (isometry_cfcₙHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -364,11 +375,11 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
     NonUnitalIsometricContinuousFunctionalCalculus R A p where
   toNonUnitalContinuousFunctionalCalculus := QuasispectrumRestricts.cfc f
-    halg.isUniformEmbedding h0 h
+    halg.isClosedEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have := QuasispectrumRestricts.cfc f halg.isUniformEmbedding h0 h
-    rw [cfcₙHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
+    have := QuasispectrumRestricts.cfc f halg.isClosedEmbedding h0 h
+    rw [cfcₙHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
     simp only [nonUnitalStarAlgHom_apply, isometry_cfcₙHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
@@ -405,7 +416,7 @@ open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   SpectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+    NNReal.isometry_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end Unital
 
@@ -420,7 +431,7 @@ open NNReal in
 instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   QuasispectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+    NNReal.isometry_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end NonUnital
 

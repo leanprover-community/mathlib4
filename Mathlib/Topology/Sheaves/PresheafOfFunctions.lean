@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Presheaf
+module
+
+public import Mathlib.Topology.Sheaves.Presheaf
 /-!
 # Presheaves of functions
 
@@ -20,6 +22,8 @@ We construct some simple examples of presheaves of functions on a topological sp
   `presheafToTopCommRing X (TopCommRingCat.of ℂ)`
   is the presheaf of rings of continuous complex-valued functions on `X`.
 -/
+
+@[expose] public section
 
 open CategoryTheory TopologicalSpace Opposite
 

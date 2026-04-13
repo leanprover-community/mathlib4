@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preservation of biproducts
@@ -19,6 +21,8 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   in case that the biproduct is preserved.
 
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -47,6 +51,7 @@ section Bicone
 
 variable {J : Type w₁}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a bicone under a functor. -/
 @[simps]
 def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f) where
@@ -171,13 +176,13 @@ lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isLimit) <|
-          Cones.ext (Iso.refl _) fun j => by
+          Cone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp
       isColimit :=
         IsColimit.ofIsoColimit
             ((IsColimit.precomposeInvEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isColimit) <|
-          Cocones.ext (Iso.refl _) fun j => by
+          Cocone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp }⟩
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
@@ -223,6 +228,7 @@ theorem ι_biproductComparison' (j : J) :
 
 variable [PreservesZeroMorphisms F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
 the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
 @[reassoc (attr := simp)]
@@ -380,6 +386,7 @@ theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by
   rw [← biproduct.mapBiproduct_inv_map_desc, Iso.hom_inv_id_assoc]

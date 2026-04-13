@@ -3,15 +3,19 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.Topology.ContinuousMap.StarOrdered
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Real.StarOrdered
+public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-! # Instances of `ContinuousSqrt`
 
 This provides the instances of `ContinuousSqrt` for `ℝ`, `ℝ≥0`, and `ℂ`, thereby yielding instances
 of `StarOrderedRing C(α, R)` and `StarOrderedRing C(α, R)₀` for any topological space `α` and `R`
 among `ℝ≥0`, `ℝ`, and `ℂ`. -/
+
+@[expose] public section
 
 open scoped NNReal
 
@@ -24,7 +28,7 @@ instance (priority := 100) instContinuousSqrtRCLike {𝕜 : Type*} [RCLike 𝕜]
   continuousOn_sqrt := by fun_prop
   sqrt_nonneg _ _ := by simp
   sqrt_mul_sqrt x hx := by
-    simp only [Function.comp_apply,]
+    simp only [Function.comp_apply]
     rw [← sub_nonneg] at hx
     obtain hx' := nonneg_iff.mp hx |>.right
     rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'

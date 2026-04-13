@@ -9,17 +9,31 @@ jobs:
   update-dependencies:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      pull-requests: read
+      id-token: write
     env:
       BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-update-dependencies-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
         with:
           auto-config: false
           use-github-cache: false
@@ -29,13 +43,13 @@ jobs:
         id: get-branch-sha
         run: |
           # Check if the branch exists remotely
-          if git fetch origin "$BRANCH_NAME"; then
-            SHA=$(git rev-parse "origin/$BRANCH_NAME")
+          SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
+          if [ -n "$SHA" ]; then
             echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
             echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
           else
             echo "Branch '$BRANCH_NAME' does not exist"
-            echo "sha=" >>" ${GITHUB_OUTPUT}"
+            echo "sha=" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Get PR and labels
@@ -56,6 +70,27 @@ jobs:
         env:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
+
+      - name: Get latest mathlib-ci SHA
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: mathlib-ci-sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=$(gh api repos/leanprover-community/mathlib-ci/commits/HEAD --jq '.sha')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Update mathlib-ci ref in get-mathlib-ci action
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: update-mathlib-ci-ref
+        run: |
+          sed -i "s|^\( *default: \)[0-9a-f]\{40\}|\1${{ steps.mathlib-ci-sha.outputs.sha }}|" \
+            .github/actions/get-mathlib-ci/action.yml
+          if git diff --quiet .github/actions/get-mathlib-ci/action.yml; then
+            echo "modified=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "modified=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
@@ -102,6 +137,10 @@ jobs:
             create_pr=true
             echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
           fi
+          if [ "${{ steps.update-mathlib-ci-ref.outputs.modified }}" == "true" ]; then
+            create_pr=true
+            echo "mathlib-ci ref was updated, need to run create-pull-request"
+          fi
           # Otherwise, there's no reason to run create-pull-request
           echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
 
@@ -114,10 +153,11 @@ jobs:
 
       - name: Create Pull Request
         if: ${{ steps.pr-title.outcome == 'success' }}
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
-          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
-          author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+          # this needs to be set, otherwise the last person who edited the `cron` line may get tagged
+          author: "mathlib-update-dependencies[bot] <258990618+mathlib-update-dependencies[bot]@users.noreply.github.com>"
+          token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml
           branch: ${{ env.BRANCH_NAME }}
@@ -130,3 +170,16 @@ jobs:
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
+
+      - name: Send Zulip message (failure)
+        if: ${{ failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ["Update dependencies" workflow run failed!](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

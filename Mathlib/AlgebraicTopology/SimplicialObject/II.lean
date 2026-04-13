@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
 # A construction by Gabriel and Zisman
@@ -26,6 +28,8 @@ by Gabriel and Zisman.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Simplicial Opposite
 
@@ -110,7 +114,7 @@ lemma map'_zero (f : Fin (n + 1) →o Fin (m + 1)) :
 lemma map'_id (x : Fin (n + 2)) : map' OrderHom.id x = x := by
   obtain ⟨x, rfl⟩ | rfl := Fin.eq_castSucc_or_eq_last x
   · rw [map'_eq_castSucc_iff]
-    aesop
+    simp
   · simp
 
 lemma map'_map' {p : ℕ} (f : Fin (n + 1) →o Fin (m + 1))

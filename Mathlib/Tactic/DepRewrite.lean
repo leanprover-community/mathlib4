@@ -3,12 +3,17 @@ Copyright (c) 2025 Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Wojciech Nawrocki
 -/
-import Lean.Elab.Tactic.Simp
-import Lean.Elab.Tactic.Conv.Basic
-import Lean.Elab.Tactic.Rewrite
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.Tactic.Conv.Basic
+public meta import Lean.Elab.Tactic.Rewrite
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Config
 
 /-! ## Dependent rewrite tactic -/
+
+public meta section
 
 namespace Mathlib.Tactic.DepRewrite
 open Lean Meta
@@ -34,11 +39,13 @@ theorem heqR.{u} {α β : Sort u} {a : α} {b : β} (h : HEq a b) :
 private def traceCls : Name := `Tactic.depRewrite
 private def traceClsVisit : Name := `Tactic.depRewrite.visit
 private def traceClsCast : Name := `Tactic.depRewrite.cast
+private def traceClsClean : Name := `Tactic.depRewrite.cleanupCasts
 
 initialize
   registerTraceClass traceCls
   registerTraceClass traceClsVisit
   registerTraceClass traceClsCast
+  registerTraceClass traceClsClean
 
 /-- See `Config.castMode`. -/
 inductive CastMode where
@@ -76,7 +83,7 @@ structure Config where
   transparency : TransparencyMode := .reducible
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
-  /-- The cast mode specifies when `rw!` is permitted to insert casts
+  /-- The cast mode specifies when `rewrite!` is permitted to insert casts
   in order to correct subterms that become type-incorrect
   as a result of rewriting.
 
@@ -85,6 +92,8 @@ structure Config where
   where `h` does not typecheck at `P n₁`.
   The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
   castMode : CastMode := .proofs
+  /-- Which transparency level to use when cleaning up casts to decide if a cast is a refl-cast. -/
+  castTransparency : TransparencyMode := .default
 
 /-- `ReaderT` context for `M`. -/
 structure Context where
@@ -169,6 +178,10 @@ def zetaDelta (e : Expr) (fvars : Std.HashSet FVarId) : MetaM Expr :=
     return .visit val
   transform e (pre := pre)
 
+/-- A piece of metadata associated with `depRewrite`. -/
+def castMData : MData :=
+  .mk [(`depRewrite, .ofBool true)]
+
 /-- If `e : te` is a term whose type mentions `x`, `h` (the generalization variables)
 or entries in `Δ`/`δ`,
 return `h.symm ▸ e : te[p/x, rfl/h, …]`.
@@ -178,7 +191,7 @@ def castBack? (e te x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
       Δ.any (·.1 == f) || δ.contains f) then
     return none
-  let e' ← mkEqRec (← motive) e (← mkEqSymm h)
+  let e' := .mdata castMData (← mkEqRec (← motive) e (← mkEqSymm h))
   trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
   return some e'
 where
@@ -202,7 +215,7 @@ where
       let mut es := #[x', ← mkEqTrans h h']
       for (f, M) in Δ do
         fs := fs.push (.fvar f)
-        es := es.push (← mkEqRec M (.fvar f) h')
+        es := es.push (.mdata castMData (← mkEqRec M (.fvar f) h'))
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
 
@@ -220,10 +233,10 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
       let mut es := #[x', h']
       for (f, M) in Δ do
         fs := fs.push (.fvar f)
-        es := es.push (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h'))
+        es := es.push (.mdata castMData (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h')))
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
-  let e' ← mkEqRec motive e h
+  let e' := .mdata castMData (← mkEqRec motive e h)
   trace[Tactic.depRewrite.cast] "casting (p ↦ x):{indentExpr e'}"
   return e'
 
@@ -279,7 +292,7 @@ The expected types of certain subterms are computed from `et?`. -/
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
-    | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
+    | .error _ => pure m!"{e} => ??") <| Meta.withIncRecDepth do
   let ctx ← read
   if let some (eup, cacheOcc, dCacheOcc) ← MonadCache.findCached? { val := e : ExprStructEq } then
     if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
@@ -388,7 +401,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   withTraceNode traceCls (fun
     -- Message shows unified pattern (without mvars) b/c it is constructed after the body runs
     | .ok motive => pure m!"{e} =[x/{p}]=> {motive}"
-    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
+    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> {indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
     let e' ← visit e none |>.run { cfg, p, x, h, Δ := ∅, δ := ∅ } |>.run.run' 1
@@ -418,6 +431,17 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
           let .lam _ _ (.lam _ _ eBody _) _ := eAbst |
             throwTacticEx `depRewrite mvarId
               m!"internal error: output{indentExpr eAbst}\nof dabstract is not a lambda"
+          /-
+          This error message may not show up in cases that it could reasonably be expected
+          to show up in while using `rw!`.
+          In the case that the `depRewrite` step finds an
+          instance of the pattern to rewrite with, and it does the rewrite, but then the
+          `cleanupCasts` step happens and the result of the `cleanupCasts` step is
+          syntactically equal to the original expression.
+          Then the error message would be skipped, because `depRewrite` found instances
+          of the pattern to rewrite, even though the final result of the `rw!` call
+          is the same as the original expression.
+          -/
           if !eBody.hasLooseBVars then
             throwTacticEx `depRewrite mvarId
               m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
@@ -480,16 +504,39 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
       | none =>
         cont heq heqType
 
-/--
-The configuration used by `rw!` to call `dsimp`.
-This configuration uses only iota reduction (recursor application) to simplify terms.
--/
-private def depRwContext : MetaM Simp.Context :=
-  Simp.mkContext
-    {Lean.Meta.Simp.neutralConfig with
-     etaStruct := .none
-     iota := true
-     failIfUnchanged := false}
+/-- Cleanup casts introduced by `rewrite!` in `e`.
+The result is expected to be defeq to the original expression. -/
+def cleanupCasts (e : Expr) : MetaM Expr :=
+  transform (input := e) (skipConstInApp := true) (pre := fun e =>
+    -- since the `pre` method returns a result instead of calling itself recursively,
+    -- the tracing creates many parallel nodes instead of nesting them
+    -- unfortunately, there does not seem to be a way to nest the trace nodes
+    -- within the bounds of the `Lean.Meta.transform` API
+    withTraceNode traceClsClean (fun
+      | .ok (.visit e') => pure m!"{e} => visit {e'}"
+      | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
+      | .ok (.done e') => pure m!"{e} => done {e'}"
+      | .error _ => pure m!"{e} => ??") <| do
+    let .mdata mdata e := e | return .continue
+    if mdata != castMData then return .continue
+    trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"
+    unless e.isAppOfArity ``Eq.rec 6 do
+      trace[Tactic.depRewrite.cleanupCasts]
+        "cast candidate{indentExpr e}\nis not {.ofConstName ``Eq.rec} application"
+      return .visit e
+    e.withApp fun _ args => do
+      let lhs := args[1]!
+      let rhs := args[4]!
+      let refl := args[3]!
+      unless ← withNewMCtxDepth <| isDefEq lhs rhs do
+        trace[Tactic.depRewrite.cleanupCasts]
+          "lhs{indentExpr lhs}\nis not definitionally equal to rhs{indentExpr rhs}"
+        return .continue
+      unless ← withNewMCtxDepth <| isDefEq e refl do
+        trace[Tactic.depRewrite.cleanupCasts]
+          "refl-cast expression{indentExpr e} is not definitionally equal to{indentExpr refl}"
+        return .continue
+      return .visit refl)
 
 open Parser Elab Tactic
 
@@ -509,7 +556,7 @@ at the expense of creating potentially complicated terms.
 syntax (name := depRewriteSeq) "rewrite!" optConfig rwRuleSeq (location)? : tactic
 
 /--
-`rw!` is like `rewrite!`, but also calls `dsimp` to simplify the result after every substitution.
+`rw!` is like `rewrite!`, but also cleans up introduced refl-casts after every substitution.
 It is available as an ordinary tactic and a `conv` tactic.
 -/
 syntax (name := depRwSeq) "rw!" optConfig rwRuleSeq (location)? : tactic
@@ -523,6 +570,17 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config :=
     let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
     replaceMainGoal (mvarId' :: r.mvarIds)
 
+/-- Apply `rw!` to the goal. -/
+def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
+    TacticM Unit := do
+  Term.withSynthesize <| withMainContext do
+    let e ← elabTerm stx none true
+    let r ← (← getMainGoal).depRewrite (← getMainTarget) e symm (config := config)
+    let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
+    let mvarId'' ← mvarId'.change (← withTransparency config.castTransparency
+      (mvarId'.withContext <| cleanupCasts (← mvarId'.getType)))
+    replaceMainGoal (mvarId'' :: r.mvarIds)
+
 /-- Apply `rewrite!` to a local declaration. -/
 def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
@@ -534,6 +592,20 @@ def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (← getMainGoal).depRewrite localDecl.type e symm (config := config)
   let replaceResult ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   replaceMainGoal (replaceResult.mvarId :: rwResult.mvarIds)
+
+/-- Apply `rw!` to a local declaration. -/
+def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
+    (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
+  -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
+  let rwResult ← Term.withSynthesize <| withMainContext do
+    let e ← elabTerm stx none true
+    let localDecl ← fvarId.getDecl
+    (← getMainGoal).depRewrite localDecl.type e symm (config := config)
+  let r ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
+  let mvarId' ← r.mvarId.changeLocalDecl r.fvarId (← withTransparency config.castTransparency
+    (r.mvarId.withContext do cleanupCasts (← r.fvarId.getType)))
+  replaceMainGoal (mvarId' :: rwResult.mvarIds)
 
 /-- Elaborate `DepRewrite.Config`. -/
 declare_config_elab elabDepRewriteConfig Config
@@ -554,20 +626,18 @@ def evalDepRwSeq : Tactic := fun stx => do
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
     withLocation loc
-      (depRewriteLocalDecl term symm · cfg)
-      (depRewriteTarget term symm cfg)
+      (depRwLocalDecl term symm · cfg)
+      (depRwTarget term symm cfg)
       (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
-    -- copied from Lean.Elab.Tactic.evalDSimp
-    dsimpLocation (← depRwContext) #[] loc
 
 namespace Conv
 open Conv
 
 @[inherit_doc depRewriteSeq]
-syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq : conv
 
 @[inherit_doc depRwSeq]
-syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRw) "rw!" optConfig rwRuleSeq : conv
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -584,45 +654,19 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
     let e ← elabTerm stx none true
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
     updateLhs r.eNew r.eqProof
-    -- copied from Lean.Elab.Conv.Simp
-    changeLhs (← dsimp (← getLhs) (← depRwContext)).1
+    changeLhs (← withTransparency config.castTransparency
+      (withMainContext <| cleanupCasts (← getLhs)))
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
-
-/-- Apply `rw!` to a local declaration. -/
-def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
-    (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
-  -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
-  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
-  let rwResult ← Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    let localDecl ← fvarId.getDecl
-    (← getMainGoal).depRewrite localDecl.type e symm (config := config)
-  let replaceResult ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
-  let dsimpResult := (← dsimp rwResult.eNew (← depRwContext)).1
-  let replaceResult ← replaceResult.mvarId.changeLocalDecl replaceResult.fvarId dsimpResult
-  replaceMainGoal (replaceResult :: rwResult.mvarIds)
 
 @[tactic depRewrite, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (DepRewrite.depRewriteLocalDecl term symm · cfg)
-      (depRewriteTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRewriteTarget term symm cfg
 
 @[tactic depRw, inherit_doc depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (depRwLocalDecl term symm · cfg)
-      (depRwTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
-    -- Note: in this version of the tactic, `dsimp` is done inside `withLocation`.
-    -- This is done so that `dsimp` will not close the goal automatically.
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRwTarget term symm cfg
 
 end Conv
 end Mathlib.Tactic.DepRewrite

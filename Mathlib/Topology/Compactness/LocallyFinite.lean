@@ -3,13 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
 
-import Mathlib.Topology.LocallyFinite
-import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.LocallyFinite
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets and compact spaces and locally finite functions
 -/
+
+@[expose] public section
 
 open Set
 
@@ -42,6 +45,7 @@ theorem finite_of_compact [CompactSpace X] {f : ι → Set X}
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Fintype` version. -/
+@[implicit_reducible]
 noncomputable def fintypeOfCompact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Fintype ι :=
   fintypeOfFiniteUniv (hf.finite_of_compact hne)

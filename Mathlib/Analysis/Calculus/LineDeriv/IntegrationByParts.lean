@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integration by parts for line derivatives
@@ -44,6 +46,8 @@ TODO: prove similar theorems assuming that the functions tend to zero at infinit
 integrable derivatives.
 -/
 
+public section
+
 open MeasureTheory Measure Module Topology
 
 variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
@@ -55,7 +59,8 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
     (hf'g : Integrable (fun x ↦ B (f' x) (g x)) (μ.prod volume))
     (hfg' : Integrable (fun x ↦ B (f x) (g' x)) (μ.prod volume))
     (hfg : Integrable (fun x ↦ B (f x) (g x)) (μ.prod volume))
-    (hf : ∀ x, HasLineDerivAt ℝ f (f' x) x (0, 1)) (hg : ∀ x, HasLineDerivAt ℝ g (g' x) x (0, 1)) :
+    (hf : ∀ x ∈ tsupport g, HasLineDerivAt ℝ f (f' x) x (0, 1))
+    (hg : ∀ x ∈ tsupport f, HasLineDerivAt ℝ g (g' x) x (0, 1)) :
     ∫ x, B (f x) (g' x) ∂(μ.prod volume) = - ∫ x, B (f' x) (g x) ∂(μ.prod volume) := calc
   ∫ x, B (f x) (g' x) ∂(μ.prod volume)
     = ∫ x, (∫ t, B (f (x, t)) (g' (x, t))) ∂μ := integral_prod _ hfg'
@@ -64,12 +69,16 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
     filter_upwards [hf'g.prod_right_ae, hfg'.prod_right_ae, hfg.prod_right_ae]
       with x hf'gx hfg'x hfgx
     apply integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable ?_ ?_ hfg'x hf'gx hfgx
-    · intro t
-      convert (hf (x, t)).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp)
-        <;> simp
-    · intro t
-      convert (hg (x, t)).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp)
-        <;> simp
+    · intro t ht
+      have : (x, t) ∈ tsupport g :=
+        tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) g (by fun_prop) ht
+      convert (hf (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+        (by simp) <;> simp
+    · intro t ht
+      have : (x, t) ∈ tsupport f :=
+        tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) f (by fun_prop) ht
+      convert (hg (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+        (by simp) <;> simp
   _ = - ∫ x, B (f' x) (g x) ∂(μ.prod volume) := by rw [integral_neg, integral_prod _ hf'g]
 
 variable [BorelSpace E]
@@ -80,7 +89,8 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2
     (hf'g : Integrable (fun x ↦ B (f' x) (g x)) μ)
     (hfg' : Integrable (fun x ↦ B (f x) (g' x)) μ)
     (hfg : Integrable (fun x ↦ B (f x) (g x)) μ)
-    (hf : ∀ x, HasLineDerivAt ℝ f (f' x) x (0, 1)) (hg : ∀ x, HasLineDerivAt ℝ g (g' x) x (0, 1)) :
+    (hf : ∀ x ∈ tsupport g, HasLineDerivAt ℝ f (f' x) x (0, 1))
+    (hg : ∀ x ∈ tsupport f, HasLineDerivAt ℝ g (g' x) x (0, 1)) :
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   let ν : Measure E := addHaar
   have A : ν.prod volume = (addHaarScalarFactor (ν.prod volume) μ) • μ :=
@@ -104,15 +114,20 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     {f f' : E → F} {g g' : E → G} {v : E} {B : F →L[ℝ] G →L[ℝ] W}
     (hf'g : Integrable (fun x ↦ B (f' x) (g x)) μ) (hfg' : Integrable (fun x ↦ B (f x) (g' x)) μ)
     (hfg : Integrable (fun x ↦ B (f x) (g x)) μ)
-    (hf : ∀ x, HasLineDerivAt ℝ f (f' x) x v) (hg : ∀ x, HasLineDerivAt ℝ g (g' x) x v) :
+    (hf : ∀ x ∈ tsupport g, HasLineDerivAt ℝ f (f' x) x v)
+    (hg : ∀ x ∈ tsupport f, HasLineDerivAt ℝ g (g' x) x v) :
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
   · simp [integral, hW]
   rcases eq_or_ne v 0 with rfl | hv
-  · have Hf' x : f' x = 0 := by
-      simpa [(hasLineDerivAt_zero (f := f) (x := x)).lineDeriv] using (hf x).lineDeriv.symm
-    have Hg' x : g' x = 0 := by
-      simpa [(hasLineDerivAt_zero (f := g) (x := x)).lineDeriv] using (hg x).lineDeriv.symm
+  · have Hf' x : B (f' x) (g x) = 0 := by
+      by_cases hx : x ∈ tsupport g
+      · simp [(hasLineDerivAt_zero (f := f) (x := x)).lineDeriv, (hf x hx).lineDeriv.symm]
+      · simp [image_eq_zero_of_notMem_tsupport hx]
+    have Hg' x : B (f x) (g' x) = 0 := by
+      by_cases hx : x ∈ tsupport f
+      · simp [(hasLineDerivAt_zero (f := g) (x := x)).lineDeriv, (hg x hx).lineDeriv.symm]
+      · simp [image_eq_zero_of_notMem_tsupport hx]
     simp [Hf', Hg']
   have : Nontrivial E := nontrivial_iff.2 ⟨v, 0, hv⟩
   let n := finrank ℝ E
@@ -137,16 +152,20 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
   · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hf'g
   · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg'
   · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg
-  · intro x
+  · intro x hx
     have : f = (f ∘ L.symm) ∘ (L : E →ₗ[ℝ] (E' × ℝ)) := by ext y; simp
-    specialize hf (L.symm x)
+    have h2x : L.symm x ∈ tsupport g :=
+      (Set.ext_iff.mp (tsupport_comp_eq_preimage g L.symm.toHomeomorph) x).mp hx
+    specialize hf (L.symm x) h2x
     rw [this] at hf
     convert hf.of_comp using 1
     · simp
     · simp [← hL]
-  · intro x
+  · intro x hx
     have : g = (g ∘ L.symm) ∘ (L : E →ₗ[ℝ] (E' × ℝ)) := by ext y; simp
-    specialize hg (L.symm x)
+    have h2x : L.symm x ∈ tsupport f :=
+      (Set.ext_iff.mp (tsupport_comp_eq_preimage f L.symm.toHomeomorph) x).mp hx
+    specialize hg (L.symm x) h2x
     rw [this] at hg
     convert hg.of_comp using 1
     · simp
@@ -162,10 +181,11 @@ theorem integral_bilinear_hasFDerivAt_right_eq_neg_left_of_integrable
     (hf'g : Integrable (fun x ↦ B (f' x v) (g x)) μ)
     (hfg' : Integrable (fun x ↦ B (f x) (g' x v)) μ)
     (hfg : Integrable (fun x ↦ B (f x) (g x)) μ)
-    (hf : ∀ x, HasFDerivAt f (f' x) x) (hg : ∀ x, HasFDerivAt g (g' x) x) :
+    (hf : ∀ x ∈ tsupport g, HasFDerivAt f (f' x) x)
+    (hg : ∀ x ∈ tsupport f, HasFDerivAt g (g' x) x) :
     ∫ x, B (f x) (g' x v) ∂μ = - ∫ x, B (f' x v) (g x) ∂μ :=
   integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable hf'g hfg' hfg
-    (fun x ↦ (hf x).hasLineDerivAt v) (fun x ↦ (hg x).hasLineDerivAt v)
+    (hf · · |>.hasLineDerivAt v) (hg · · |>.hasLineDerivAt v)
 
 /-- **Integration by parts for Fréchet derivatives**
 Version with a general bilinear form `B`.
@@ -176,10 +196,11 @@ theorem integral_bilinear_fderiv_right_eq_neg_left_of_integrable
     (hf'g : Integrable (fun x ↦ B (fderiv ℝ f x v) (g x)) μ)
     (hfg' : Integrable (fun x ↦ B (f x) (fderiv ℝ g x v)) μ)
     (hfg : Integrable (fun x ↦ B (f x) (g x)) μ)
-    (hf : Differentiable ℝ f) (hg : Differentiable ℝ g) :
+    (hf : ∀ x ∈ tsupport g, DifferentiableAt ℝ f x)
+    (hg : ∀ x ∈ tsupport f, DifferentiableAt ℝ g x) :
     ∫ x, B (f x) (fderiv ℝ g x v) ∂μ = - ∫ x, B (fderiv ℝ f x v) (g x) ∂μ :=
   integral_bilinear_hasFDerivAt_right_eq_neg_left_of_integrable hf'g hfg' hfg
-    (fun x ↦ (hf x).hasFDerivAt) (fun x ↦ (hg x).hasFDerivAt)
+    (hf · · |>.hasFDerivAt) (hg · · |>.hasFDerivAt)
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedAlgebra ℝ 𝕜]
     [NormedSpace 𝕜 G] [IsScalarTower ℝ 𝕜 G]
@@ -192,7 +213,8 @@ theorem integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable
     (hf'g : Integrable (fun x ↦ fderiv ℝ f x v • g x) μ)
     (hfg' : Integrable (fun x ↦ f x • fderiv ℝ g x v) μ)
     (hfg : Integrable (fun x ↦ f x • g x) μ)
-    (hf : Differentiable ℝ f) (hg : Differentiable ℝ g) :
+    (hf : ∀ x ∈ tsupport g, DifferentiableAt ℝ f x)
+    (hg : ∀ x ∈ tsupport f, DifferentiableAt ℝ g x) :
     ∫ x, f x • fderiv ℝ g x v ∂μ = - ∫ x, fderiv ℝ f x v • g x ∂μ :=
   integral_bilinear_fderiv_right_eq_neg_left_of_integrable
     (B := ContinuousLinearMap.lsmul ℝ 𝕜) hf'g hfg' hfg hf hg
@@ -205,7 +227,8 @@ theorem integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable
     (hf'g : Integrable (fun x ↦ fderiv ℝ f x v * g x) μ)
     (hfg' : Integrable (fun x ↦ f x * fderiv ℝ g x v) μ)
     (hfg : Integrable (fun x ↦ f x * g x) μ)
-    (hf : Differentiable ℝ f) (hg : Differentiable ℝ g) :
+    (hf : ∀ x ∈ tsupport g, DifferentiableAt ℝ f x)
+    (hg : ∀ x ∈ tsupport f, DifferentiableAt ℝ g x) :
     ∫ x, f x * fderiv ℝ g x v ∂μ = - ∫ x, fderiv ℝ f x v * g x ∂μ :=
   integral_bilinear_fderiv_right_eq_neg_left_of_integrable
     (B := ContinuousLinearMap.mul ℝ 𝕜) hf'g hfg' hfg hf hg

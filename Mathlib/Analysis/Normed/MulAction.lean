@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Data.ENNReal.Action
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
 # Lemmas for `IsBoundedSMul` over normed additive groups
@@ -17,6 +19,8 @@ Notably we prove that `NonUnitalSeminormedRing`s have bounded actions by left- a
 multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -39,7 +43,7 @@ lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
-  simpa only [dist_eq_norm, sub_zero] using dist_smul_pair s x y
+  simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
 
 theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s‖₊ * nndist x y :=
   dist_smul_le s x y
@@ -127,8 +131,8 @@ instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
-    [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
-    [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
+    [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
+    NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 

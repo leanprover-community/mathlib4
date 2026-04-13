@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Separation.SeparatedNhds
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Bases
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Separation.SeparatedNhds
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Bases
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -57,6 +59,8 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -138,6 +142,7 @@ theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
   (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
 
 /-- Specialization forms a partial order on a t0 topological space. -/
+@[instance_reducible]
 def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 
@@ -225,9 +230,6 @@ theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
-@[deprecated (since := "2025-05-23")]
-alias t0Space_iff_or_not_mem_closure := t0Space_iff_or_notMem_closure
-
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
@@ -312,6 +314,7 @@ variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
+@[implicit_reducible]
 def Bornology.relativelyCompact : Bornology X where
   cobounded := Filter.coclosedCompact X
   le_cofinite := Filter.coclosedCompact_le_cofinite
@@ -400,7 +403,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 2 ↔ 3 := by
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
-    refine forall_swap.trans ?_
+    refine forall_comm.trans ?_
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
@@ -409,7 +412,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9 := forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 8 ↔ 9 := forall_comm.trans (by simp only [disjoint_comm, ne_comm])
   tfae_have 1 → 4 := by
     simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
@@ -685,6 +688,22 @@ theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b)
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
+theorem eventually_nhdsWithin_eventually_nhds_iff_of_isOpen {s : Set X} {a : X} {p : X → Prop}
+    (hs : IsOpen s) : (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
+  nth_rw 2 [← eventually_eventually_nhdsWithin]
+  constructor
+  · intro h
+    filter_upwards [h] with _ hy
+    exact eventually_nhdsWithin_of_eventually_nhds hy
+  · intro h
+    filter_upwards [h, eventually_nhdsWithin_of_forall fun _ a ↦ a] with _ _ _
+    simp_all [IsOpen.nhdsWithin_eq]
+
+@[simp]
+theorem eventually_nhdsNE_eventually_nhds_iff [T1Space X] {a : X} {p : X → Prop} :
+    (∀ᶠ y in 𝓝[≠] a, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝[≠] a, p x :=
+  eventually_nhdsWithin_eventually_nhds_iff_of_isOpen isOpen_ne
+
 theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
     {x y : X} {s : Set X} {f : X → Y} :
     ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
@@ -713,9 +732,6 @@ theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
-
-@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
-  ContinuousWithinAt.eq_const_of_mem_closure
 
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
@@ -750,8 +766,13 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
+instance (priority := low) [DiscreteTopology X] : T1Space X where t1 _ := isClosed_discrete _
+
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
-  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+  discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
+
+lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete s :=
+  ⟨@Finite.instDiscreteTopology _ _ _ hs.to_subtype⟩
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
@@ -780,50 +801,48 @@ lemma isClosed_inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩
 lemma isClosed_singleton_inter [T1Space X] {A : Set X} {a : X} : IsClosed ({a} ∩ A) :=
   Subsingleton.singleton_inter.isClosed
 
-theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
+  rw [isDiscrete_iff_discreteTopology] at hs
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
   simpa only [nhdsWithin_eq_map_subtype_coe hx, image_singleton] using
     @image_mem_map _ _ _ ((↑) : s → X) _ this
 
 /-- The neighbourhoods filter of `x` within `s`, under the discrete topology, is equal to
 the pure `x` filter (which is the principal filter at the singleton `{x}`.) -/
-theorem nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
+theorem nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X} (hx : x ∈ s) :
     𝓝[s] x = pure x :=
-  le_antisymm (le_pure_iff.2 <| singleton_mem_nhdsWithin_of_mem_discrete hx) (pure_le_nhdsWithin hx)
+  (le_pure_iff.2 <| singleton_mem_nhdsWithin_of_mem_discrete hs hx).antisymm (pure_le_nhdsWithin hx)
 
 theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type*} {p : ι → Prop}
-    {t : ι → Set X} {s : Set X} [DiscreteTopology s] {x : X} (hb : (𝓝 x).HasBasis p t)
+    {t : ι → Set X} {s : Set X} (hs : IsDiscrete s) {x : X} (hb : (𝓝 x).HasBasis p t)
     (hx : x ∈ s) : ∃ i, p i ∧ t i ∩ s = {x} := by
-  rcases (nhdsWithin_hasBasis hb s).mem_iff.1 (singleton_mem_nhdsWithin_of_mem_discrete hx) with
+  rcases (nhdsWithin_hasBasis hb s).mem_iff.1 (singleton_mem_nhdsWithin_of_mem_discrete hs hx) with
     ⟨i, hi, hix⟩
   exact ⟨i, hi, hix.antisymm <| singleton_subset_iff.2 ⟨mem_of_mem_nhds <| hb.mem_of_mem hi, hx⟩⟩
 
 /-- A point `x` in a discrete subset `s` of a topological space admits a neighbourhood
 that only meets `s` at `x`. -/
-theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
-  simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
+  simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 /-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
 set that only meets `s` at `x`. -/
-theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
-  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
-  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
-  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
-  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
-    exact ⟨ht_x, hx⟩
+  grind
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
 1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
-theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
+theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X} (hx : x ∈ s) :
     ∃ U ∈ 𝓝[≠] x, Disjoint U s :=
-  let ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  let ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   ⟨{x}ᶜ ∩ V, inter_mem_nhdsWithin _ h,
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 
@@ -1028,6 +1047,7 @@ protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
   .sInf <| forall_mem_range.2 ht
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]

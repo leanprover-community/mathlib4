@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Logic.Denumerable
+module
+
+public import Mathlib.Logic.Denumerable
 
 /-!
 # Equivalences involving `List`-like types
@@ -11,6 +13,8 @@ import Mathlib.Logic.Denumerable
 This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Multiset.sort
 
@@ -102,6 +106,7 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
 
 /-- A listable type with decidable equality is encodable. -/
+@[implicit_reducible]
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
   ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
@@ -114,6 +119,7 @@ def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : T
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.
 This can be locally made into an instance with `attribute [local instance] Fintype.toEncodable`. -/
+@[implicit_reducible]
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 
@@ -153,8 +159,7 @@ theorem list_ofNat_succ (v : ℕ) :
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
       rcases e : unpair v with ⟨v₁, v₂⟩
-      simp [decodeList, e]
-      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
+      simp [decodeList, e, show decodeList v₂ = decode (α := List α) v₂ from rfl]
 
 end List
 

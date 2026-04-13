@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Basic
+public import Batteries.Tactic.Trans
+public import Mathlib.Data.List.Perm.Basic
 
 /-!
 # List Sub-permutations
@@ -15,6 +19,8 @@ This file develops theory about the `List.Subperm` relation.
 
 The notation `<+~` is used for sub-permutations.
 -/
+
+public section
 
 open Nat
 
@@ -51,6 +57,27 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
+
+theorem Subperm.append {l₁ l₂ r₁ r₂ : List α} :
+    l₁ <+~ l₂ → r₁ <+~ r₂ → (l₁ ++ r₁) <+~ (l₂ ++ r₂)
+  | ⟨l, hl_perm, hl_sub⟩, ⟨r, hr_perm, hr_sub⟩ =>
+    ⟨l ++ r, hl_perm.append hr_perm, hl_sub.append hr_sub⟩
+
+theorem map_subperm_map_iff {α β} {l₁ l₂ : List α} {f : α → β} (hf : Function.Injective f) :
+    (l₁.map f) <+~ (l₂.map f) ↔ l₁ <+~ l₂ where
+  mpr a := by
+    obtain ⟨l, hl_perm, hl_sub⟩ := a
+    exact ⟨l.map f, hl_perm.map f, hl_sub.map f⟩
+  mp a := by
+    obtain ⟨w, ⟨perm, sublist⟩⟩ := a
+    obtain ⟨x, ⟨sublistₓ, mapₓ⟩⟩ := sublist_map_iff.mp sublist
+    use x
+    constructor
+    · rw [mapₓ] at perm
+      exact (map_perm_map_iff hf).mp perm
+    · exact sublistₓ
+
+alias ⟨_, Subperm.map⟩ := map_subperm_map_iff
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
   subperm_of_subset d H

@@ -3,8 +3,10 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.Module.Torsion.Basic
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
 # Characteristic of the ring of linear Maps
@@ -14,14 +16,14 @@ The characteristic of the ring of linear maps is determined by its base ring.
 
 ## Main Results
 
-- `Module.charP_end` : For a commutative semiring `R` and a `R`-module `M`,
+- `Module.charP_end` : For a commutative semiring `R` and an `R`-module `M`,
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
 ## Notation
 
 - `R` is a commutative semiring
-- `M` is a `R`-module
+- `M` is an `R`-module
 
 ## Implementation Notes
 
@@ -31,11 +33,13 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
+@[expose] public section
+
 namespace Module
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- For a commutative semiring `R` and a `R`-module `M`, if `M` contains an
+/-- For a commutative semiring `R` and an `R`-module `M`, if `M` contains an
   element `x` that is not torsion, then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`. -/
 theorem charP_end {p : ℕ} [hchar : CharP R p]

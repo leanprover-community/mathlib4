@@ -3,9 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Notation for algebraic operators on pi types
@@ -14,6 +15,8 @@ This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, 
 See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
+
+@[expose] public section
 
 assert_not_exists Set.range Monoid Preorder
 
@@ -121,12 +124,9 @@ end Div
 
 section Pow
 
-@[to_additive]
-instance instSMul [∀ i, SMul α (M i)] : SMul α (∀ i, M i) where smul a f i := a • f i
-
 variable [∀ i, Pow (M i) α]
 
-@[to_additive existing instSMul]
+@[to_additive (attr := to_additive) instSMul]
 instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]

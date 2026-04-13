@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
-import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+public import Mathlib.CategoryTheory.Sites.CoversTop
 
 /-!
 # Generating sections of sheaves of modules
@@ -25,6 +26,8 @@ define sheaves of modules of finite type.
 * https://stacks.math.columbia.edu/tag/01B4
 
 -/
+
+@[expose] public section
 
 universe u v' u'
 
@@ -71,6 +74,11 @@ lemma opEpi_id (σ : M.GeneratingSections) :
 
 lemma opEpi_comp (σ : M.GeneratingSections) (p : M ⟶ N) (q : N ⟶ P) [Epi p] [Epi q] :
     σ.ofEpi (p ≫ q) = (σ.ofEpi p).ofEpi q := rfl
+
+@[simp]
+lemma ofEpi_π (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] :
+    (σ.ofEpi p).π = σ.π ≫ p := by
+  simp [ofEpi, freeHomEquiv_symm_comp]
 
 /-- Two isomorphic sheaves of modules have equivalent families of generating sections. -/
 def equivOfIso (e : M ≅ N) :

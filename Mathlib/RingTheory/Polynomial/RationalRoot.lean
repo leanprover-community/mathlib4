@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Rational root theorem and integral root theorem
@@ -24,6 +26,8 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 * https://en.wikipedia.org/wiki/Rational_root_theorem
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial
@@ -64,7 +68,7 @@ if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the numerator of `r` divides the constant coefficient -/
 theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
   suffices num A r ∣ (scaleRoots p (den A r)).coeff 0 by
-    simp only [coeff_scaleRoots, tsub_zero] at this
+    simp only [coeff_scaleRoots] at this
     haveI inst := Classical.propDecidable
     by_cases hr : num A r = 0
     · simp_all [nonZeroDivisors.coe_ne_zero]

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 
 /-!
 # Quadratic reciprocity.
@@ -32,6 +34,8 @@ properties of quadratic Gauss sums as provided by `NumberTheory.LegendreSymbol.G
 
 quadratic residue, quadratic nonresidue, Legendre symbol, quadratic reciprocity
 -/
+
+public section
 
 
 open Nat
@@ -70,13 +74,13 @@ namespace ZMod
 theorem exists_sq_eq_two_iff (hp : p ≠ 2) : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
   have h₁ := (Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp
-  cutsat
+  lia
 
 /-- `-2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `3` mod `8`. -/
 theorem exists_sq_eq_neg_two_iff (hp : p ≠ 2) : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
   have h₁ := (Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp
-  cutsat
+  lia
 
 end ZMod
 
@@ -118,9 +122,8 @@ theorem quadratic_reciprocity (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
 `(q / p) = (-1)^((p-1)(q-1)/4) * (p / q)`. -/
 theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     legendreSym q p = (-1) ^ (p / 2 * (q / 2)) * legendreSym p q := by
-  rcases eq_or_ne p q with h | h
-  · subst p
-    rw [(eq_zero_iff q q).mpr (mod_cast natCast_self q), mul_zero]
+  rcases eq_or_ne p q with rfl | h
+  · rw [(eq_zero_iff p p).mpr (mod_cast natCast_self p), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
     have : ((q : ℤ) : ZMod p) ≠ 0 := mod_cast prime_ne_zero p q h
     simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr
@@ -151,8 +154,8 @@ open legendreSym
 `p` is a square mod `q`. -/
 theorem exists_sq_eq_prime_iff_of_mod_four_eq_one (hp1 : p % 4 = 1) (hq1 : q ≠ 2) :
     IsSquare (q : ZMod p) ↔ IsSquare (p : ZMod q) := by
-  rcases eq_or_ne p q with h | h
-  · subst p; rfl
+  rcases eq_or_ne p q with rfl | h
+  · rfl
   · rw [← eq_one_iff' p (prime_ne_zero p q h), ← eq_one_iff' q (prime_ne_zero q p h.symm),
       quadratic_reciprocity_one_mod_four hp1 hq1]
 

@@ -3,8 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Properties of C⋆-algebra homomorphisms
 
@@ -16,6 +17,9 @@ Here we collect properties of C⋆-algebra homomorphisms.
   is isometric.
 -/
 
+public section
+
+set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra in
 lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
     [FunLike F A B] [AlgHomClass F ℂ A B] [StarHomClass F A B]

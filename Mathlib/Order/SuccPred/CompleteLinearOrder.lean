@@ -3,14 +3,18 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.SuccPred.Limit
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
 
 -/
+
+@[expose] public section
 
 open Order Set
 
@@ -58,6 +62,7 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
 open Classical in
 /-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
 the successor of an element to be the infimum of all larger elements. -/
+@[implicit_reducible]
 noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
     SuccOrder α where
   succ a := if IsMax a then a else sInf {b | a < b}

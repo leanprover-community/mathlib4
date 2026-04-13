@@ -3,8 +3,10 @@ Copyright (c) 2023 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Pullbacks of `C^n` vector bundles
 
@@ -16,6 +18,8 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a `C^n` vector bundle.
 
 -/
+
+@[expose] public section
 
 open Bundle Set
 open scoped Manifold

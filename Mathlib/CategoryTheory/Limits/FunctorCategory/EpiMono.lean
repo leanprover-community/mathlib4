@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Monomorphisms and epimorphisms in functor categories
@@ -15,6 +17,8 @@ at least when `C` has pullbacks (resp. pushouts),
 see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
+
+@[expose] public section
 
 universe v v' v'' u u' u''
 
@@ -38,6 +42,10 @@ instance [Mono f] (H : C ⥤ D) [H.PreservesMonomorphisms] :
     Mono (whiskerRight f H) := by
   have : ∀ X, Mono ((whiskerRight f H).app X) := by intros; dsimp; infer_instance
   apply NatTrans.mono_of_mono_app
+
+instance (F : C ⥤ D) [F.PreservesMonomorphisms] :
+    ((Functor.whiskeringRight K C D).obj F).PreservesMonomorphisms where
+  preserves f _ := by dsimp; infer_instance
 
 end
 

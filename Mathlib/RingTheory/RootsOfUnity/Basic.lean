@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.RingTheory.IntegralDomain
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -34,6 +36,8 @@ Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^
 satisfied for all units).
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Polynomial
@@ -57,6 +61,13 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
 @[simp]
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
+
+theorem rootsOfUnity_eq_ker : rootsOfUnity k M = (powMonoidHom k).ker := by
+  rfl
+
+theorem ker_zpowGroupHom_eq_rootsOfUnity {k : ℤ} :
+    (zpowGroupHom k).ker = rootsOfUnity k.natAbs M := by
+  ext; simp
 
 /-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
@@ -94,17 +105,14 @@ theorem rootsOfUnity_le_of_dvd (h : k ∣ l) : rootsOfUnity k M ≤ rootsOfUnity
 
 theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f ≤ rootsOfUnity k N := by
   rintro _ ⟨ζ, h, rfl⟩
-  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
+  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, map_one]
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
 lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
     (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
-  refine le_antisymm ?_ ?_
-  · intro
-    simp +contextual [pow_gcd_eq_one]
-  · rw [le_inf_iff]
-    exact ⟨rootsOfUnity_le_of_dvd (m.gcd_dvd_left n), rootsOfUnity_le_of_dvd (m.gcd_dvd_right n)⟩
+  ext
+  simp
 
 lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
     Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
@@ -173,16 +181,25 @@ theorem Units.val_set_image_rootsOfUnity [NeZero k] :
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
 theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
-  ext x
   simp
 
 end CommMonoid
 
+section CommRing
+
+variable [CommRing R]
+
 open Set in
-theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   simp
+
+theorem mem_rootsOfUnity_iff_isRoot (k : ℕ) (ζ : Rˣ) :
+    ζ ∈ rootsOfUnity k R ↔ (X ^ k - 1 : R[X]).IsRoot ζ := by
+  simp [-mem_rootsOfUnity, mem_rootsOfUnity', sub_eq_zero]
+
+end CommRing
 
 section IsDomain
 
@@ -229,7 +246,7 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
   exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
-  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
+  isCyclic_of_injective_ringHom ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
 theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
   classical
@@ -250,6 +267,15 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
+
+instance {L : Type*} [LeftCancelMonoid L] [Finite L] :
+    Finite (L →* Rˣ) := by
+  let S := rootsOfUnity (Monoid.exponent L) R
+  have : Finite (L →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective (fun f : L →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩
 
 end IsDomain
 
