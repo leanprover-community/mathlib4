@@ -470,7 +470,7 @@ theorem edgeSet_completeBipartiteGraph :
 
 theorem edgeSet_completeBipartiteGraph_encard :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
-  rw [completeBipartiteGraph_edgeSet, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
+  rw [edgeSet_completeBipartiteGraph, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
   exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
 
 /-- An embedding of the edges of a bipartite graph into the edges of the complete bipartite graph -/
@@ -496,7 +496,7 @@ theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
   classical
   grw [hG.edgeSetEmbeddingCompleteBipartiteGraph.encard_le]
-  simp [completeBipartiteGraph_edgeSet_encard]
+  simp [edgeSet_completeBipartiteGraph_encard]
 
 /-- Four times the cardinality of the edge set of a bipartite graph is upper bounded by
 the square of cardinality of the vertex set. -/
@@ -508,7 +508,6 @@ theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
   have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
   rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
   norm_cast at this ⊢
-  rw [ENat.coe_le_coe] at this ⊢
   grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
 
 end
