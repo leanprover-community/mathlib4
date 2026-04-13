@@ -64,8 +64,7 @@ open Classical in
 the successor of an element to be the infimum of all larger elements. -/
 @[implicit_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
 noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
-    SuccOrder α :=
-  SuccOrder.ofLinearWellFoundedLT _
+    SuccOrder α := .ofLinearWellFoundedLT _
 
 end ConditionallyCompleteLinearOrder
 
