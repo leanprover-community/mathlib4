@@ -613,10 +613,10 @@ end IsSMulRegular
 instance Module.IsTorsionFree.ofFlat {R M : Type*} [CommSemiring R] [AddCommMonoid M]
     [Module R M] [Flat R M] : IsTorsionFree R M where
   isSMulRegular x hx y z hyz := by
-    have hf : Function.Injective (LinearMap.lTensor M (LinearMap.mulLeft R x)) :=
-      Flat.lTensor_preserves_injective_linearMap _ (hx.smul_right_injective R)
-    rw [← ((TensorProduct.rid R M).injective.comp <|
-      hf.comp (TensorProduct.rid R M).symm.injective).eq_iff]
+    apply (TensorProduct.rid R M).symm.injective
+    apply Flat.lTensor_preserves_injective_linearMap (LinearMap.mulLeft R x)
+      (hx.smul_right_injective R)
+    apply (TensorProduct.rid R M).injective
     simpa
 
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
