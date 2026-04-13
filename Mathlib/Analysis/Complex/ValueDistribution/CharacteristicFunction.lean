@@ -134,8 +134,7 @@ summands).
 theorem characteristic_add_top_le {f₁ f₂ : ℂ → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
     (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
     characteristic (f₁ + f₂) ⊤ r ≤ characteristic f₁ ⊤ r + characteristic f₂ ⊤ r + log 2 := by
-  simpa using characteristic_sum_top_le (s := Finset.univ) (f := ![f₁, f₂])
-    (by simpa using ⟨h₁f₁, h₁f₂⟩) hr
+  simpa using characteristic_sum_top_le Finset.univ ![f₁, f₂] (by simpa using ⟨h₁f₁, h₁f₂⟩) hr
 
 /--
 Asymptotically, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of

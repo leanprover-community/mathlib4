@@ -136,9 +136,8 @@ lemma range_cfc_nnreal
   rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfc _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   rintro _ ⟨f, hf, rfl⟩
-  exact cfc_cases (p := IsSelfAdjoint) _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
-    ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa [Set.mem_preimage, Set.mem_setOf_eq] using hf),
-      by simp [cfc_apply f a ha' hf']⟩
+  exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
+    ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
 
 end Unital
 

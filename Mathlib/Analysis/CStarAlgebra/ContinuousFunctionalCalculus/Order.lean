@@ -292,11 +292,12 @@ lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by c
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
     (h : IsStrictlyPositive a := by cfc_tac) : IsUnit b := by
-  nontriviality A; rw [← spectrum.zero_notMem_iff ℝ]; intro h0
+  nontriviality A
+  rw [← spectrum.zero_notMem_iff ℝ]
   obtain ⟨r, hr, hr_le⟩ : ∃ r > 0, (algebraMap ℝ A) r ≤ a :=
     (exists_pos_algebraMap_le_iff h.isSelfAdjoint).2 fun x hx ↦ h.spectrum_pos hx
-  exact not_le_of_gt hr <| (algebraMap_le_iff_le_spectrum <| .of_nonneg <| h.nonneg.trans hab).1
-    (hr_le.trans hab) 0 h0
+  exact fun h0 ↦ not_le_of_gt hr <| (algebraMap_le_iff_le_spectrum <| .of_nonneg <|
+    h.nonneg.trans hab).1 (hr_le.trans hab) 0 h0
 
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
