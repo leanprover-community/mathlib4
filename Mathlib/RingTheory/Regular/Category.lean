@@ -33,7 +33,7 @@ lemma LinearMap.exact_lsmul_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R
 namespace ModuleCat
 
 /-- The short (exact) complex `M → M → M⧸xM` obtain from the scalar multiple of `x : R` on `M`. -/
-@[simps]
+@[simps!]
 def smulShortComplex (r : R) : ShortComplex (ModuleCat R) :=
   ModuleCat.shortComplexOfCompEqZero (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ
     (LinearMap.exact_lsmul_smul_top_mkQ M r).linearMap_comp_eq_zero
