@@ -68,28 +68,28 @@ structure SpectralSequenceDataCore where
   /-- The cohomological degree of objects in the pages -/
   deg : κ → ℤ
   /-- The zeroth index -/
-  i₀ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : ι
+  i₀ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) : ι
   /-- The first index -/
   i₁ (pq : κ) : ι
   /-- The second index -/
   i₂ (pq : κ) : ι
   /-- The third index -/
-  i₃ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : ι
-  le₀₁ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : i₀ r pq ≤ i₁ pq
+  i₃ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) : ι
+  le₀₁ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) : i₀ r pq ≤ i₁ pq
   le₁₂ (pq : κ) : i₁ pq ≤ i₂ pq
-  le₂₃ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : i₂ pq ≤ i₃ r pq
-  hc (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by lia) : deg pq + 1 = deg pq'
-  hc₀₂ (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by lia) : i₀ r pq = i₂ pq'
-  hc₁₃ (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by lia) : i₁ pq = i₃ r pq'
-  antitone_i₀ (r r' : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) (hrr' : r ≤ r' := by lia) :
+  le₂₃ (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) : i₂ pq ≤ i₃ r pq
+  hc (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by grind) : deg pq + 1 = deg pq'
+  hc₀₂ (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by grind) : i₀ r pq = i₂ pq'
+  hc₁₃ (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by grind) : i₁ pq = i₃ r pq'
+  antitone_i₀ (r r' : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) (hrr' : r ≤ r' := by grind) :
       i₀ r' pq ≤ i₀ r pq
-  monotone_i₃ (r r' : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) (hrr' : r ≤ r' := by lia) :
+  monotone_i₃ (r r' : ℤ) (pq : κ) (hr : r₀ ≤ r := by grind) (hrr' : r ≤ r' := by grind) :
       i₃ r pq ≤ i₃ r' pq
-  i₀_prev (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by lia)
-      (hr : r₀ ≤ r := by lia) :
+  i₀_prev (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by grind)
+      (hr : r₀ ≤ r := by grind) :
       i₀ r' pq = i₁ pq'
-  i₃_next (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by lia)
-      (hr : r₀ ≤ r := by lia) :
+  i₃_next (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by grind)
+      (hr : r₀ ≤ r := by grind) :
       i₃ r' pq' = i₂ pq
 
 namespace SpectralSequenceDataCore
@@ -134,6 +134,22 @@ lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     (hi₃' : i₃' = data.i₃ r' pq') :
     i₃ ≤ i₃' := by
   simpa only [hi₃, hi₃'] using data.monotone_i₃ r r' pq'
+
+lemma antitone_i₀' {r r' : ℤ} (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq' : κ)
+    {i₀ i₀' : ι}
+    (hi₀' : i₀ = data.i₀ r pq')
+    (hi₀ : i₀' = data.i₀ r' pq') :
+    i₀' ≤ i₀ := by
+  rw [hi₀, hi₀']
+  exact data.antitone_i₀ ..
+
+lemma monotone_i₃' {r r' : ℤ} (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq' : κ)
+    {i₃ i₃' : ι}
+    (hi₃ : i₃ = data.i₃ r pq')
+    (hi₃' : i₃' = data.i₃ r' pq') :
+    i₃ ≤ i₃' := by
+  rw [hi₃, hi₃']
+  exact data.monotone_i₃ ..
 
 end SpectralSequenceDataCore
 
