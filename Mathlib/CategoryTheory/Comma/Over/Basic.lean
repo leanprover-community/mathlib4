@@ -410,6 +410,10 @@ lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
+  rfl
+
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
 def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
@@ -894,6 +898,10 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
 
 lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
+  rfl
+
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
   rfl
 
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
