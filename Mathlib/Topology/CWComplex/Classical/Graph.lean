@@ -36,12 +36,12 @@ def CWComplex.OneSkeletonGraph (C : Set X) [CWComplex C] : Graph (cell C 0) (cel
   eq_or_eq_of_isLink_of_isLink e x y z w h1 h2 := by
     simp_rw [closedCell_zero_eq_singleton] at h1 h2
     rw [h1] at h2
-    simp only [(RelCWComplex.map_zero_injective C).eq_iff, union_singleton, pair_eq_pair_iff] at h2
+    simp only [(RelCWComplex.injective_map_zero C).eq_iff, union_singleton, pair_eq_pair_iff] at h2
     tauto
   left_mem_of_isLink _ _ _ _ := mem_univ _
   edge_mem_iff_exists_isLink e := by
     simp only [mem_univ, true_iff]
-    exact cellFrontier_one_exists e
+    exact exists_cellFrontier_one_eq e
 
 namespace CWComplex.OneSkeletonGraph
 
@@ -62,9 +62,9 @@ lemma exists_isLoopAt_iff_subsingleton (e : cell C 1) :
     (∃ x : cell C 0, (OneSkeletonGraph C).IsLoopAt e x) ↔ (cellFrontier 1 e).Subsingleton := by
   rw [exists_isLoopAt_iff]
   refine ⟨fun ⟨x, hx⟩ => by simp [closedCell_zero_eq_singleton, hx], fun h => ?_⟩
-  obtain ⟨x, y, hxy⟩ := cellFrontier_one_exists e
+  obtain ⟨x, y, hxy⟩ := exists_cellFrontier_one_eq e
   simp only [closedCell_zero_eq_singleton, union_singleton] at hxy
-  obtain rfl : x = y := RelCWComplex.map_zero_injective C <| (hxy ▸ h) (by simp) (by simp)
+  obtain rfl : x = y := RelCWComplex.injective_map_zero C <| (hxy ▸ h) (by simp) (by simp)
   exact ⟨x, by simp [hxy, closedCell_zero_eq_singleton]⟩
 
 lemma not_exists_isLoopAt_iff_nontrivial (e : cell C 1) :
