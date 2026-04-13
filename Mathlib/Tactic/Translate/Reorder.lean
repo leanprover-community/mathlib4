@@ -241,7 +241,7 @@ where
         map := map.set! j none
         if j' = i then break
         j := j'
-        cycle := ⟨cycle.1 ++ [↑j], by grind⟩
+        cycle := ⟨cycle.1 ++ [j.val], by grind⟩
       perm := cycle :: perm
     return perm
   /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
