@@ -119,7 +119,7 @@ lemma ord_eq_iff_associated (x y : R) :
 /--
 For `x y : R` where `R` is a discrete valuation ring, we have that
 `min (ord R x) (ord R y) ≤ ord R (x + y)`. It should be noted that the order
-we're using here is the order on `ℕ∞`, where `⊤` is greater than everhing else.
+we're using here is the order on `ℕ∞`, where `⊤` is greater than everything else.
 This is relevant since when we're working with `ordFrac` we work with `ℤᵐ⁰`, where the
 order instance has the `0` element less than everything else.
 -/
