@@ -48,6 +48,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
 /-- Use the procedure `m` to rewrite the provided goal. -/
+-- Assumes `proc` is not surrounded by backticks itself.
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (failIfUnchanged : Bool) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -56,7 +57,7 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress on the goal"
+  if failIfUnchanged && unchanged then throwError "`{proc}` made no progress on the goal"
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none
@@ -71,12 +72,13 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
 The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
 `h : x = y` is not transformed (by rewriting `h`) to `True`. -/
+-- Assumes `proc` is not surrounded by backticks itself.
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "Cannot run {proc} at {ldecl.userName}, it is an implementation detail"
+    throwError "Cannot run `{proc}` at `{ldecl.userName}`, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
@@ -84,10 +86,11 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
   if failIfUnchanged && tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
-    throwError "{proc} made no progress at {ldecl.userName}"
+    throwError "`{proc}` made no progress at `{ldecl.userName}`"
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal). -/
+-- Assumes `proc` is not surrounded by backticks itself.
 def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (loc : Location) (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false)
     -- streamline the most common use case, in which the procedure `m`'s implementation is not
@@ -97,11 +100,12 @@ def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (p
   withLocation loc
     (liftMetaTactic1 ∘ (transformAtLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp · · ctx))
     (liftMetaTactic1 (transformAtTarget m proc failIfUnchanged · ctx))
-    fun _ ↦ throwError "{proc} made no progress anywhere"
+    fun _ ↦ throwError "`{proc}` made no progress anywhere"
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
 In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
+-- Assumes `proc` is not surrounded by backticks itself.
 def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
     (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
     (mayCloseGoalFromHyp : Bool := false)
@@ -112,6 +116,6 @@ def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.
   withNondepPropLocation loc
     (liftMetaTactic1 ∘ (transformAtLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp · · ctx))
     (liftMetaTactic1 (transformAtTarget m proc failIfUnchanged · ctx))
-    fun _ ↦ throwError "{proc} made no progress anywhere"
+    fun _ ↦ throwError "`{proc}` made no progress anywhere"
 
 end Mathlib.Tactic
