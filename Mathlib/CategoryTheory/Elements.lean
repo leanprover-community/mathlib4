@@ -147,8 +147,12 @@ def π : F.Elements ⥤ C where
 instance : (π F).Faithful where
 
 instance : (π F).ReflectsIsomorphisms where
-  reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
-    by rw [← map_snd f, ← comp_apply, ← Functor.map_comp]; simp⟩, by cat_disch⟩⟩
+  reflects f h := by
+    refine ⟨⟨(inv ((π F).map f) :), ?_⟩, ?_, ?_⟩
+    · simp only [← map_snd f, ← Functor.map_comp_apply,
+        π_obj, π_map, IsIso.hom_inv_id, Functor.map_id_apply]
+    · cat_disch
+    · cat_disch
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
@@ -181,7 +185,7 @@ theorem to_comma_map_right {X Y} (f : X ⟶ Y) : ((toStructuredArrow F).map f).r
 /-- The reverse direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def fromStructuredArrow : StructuredArrow PUnit F ⥤ F.Elements where
   obj X := Functor.elementsMk _ X.right (X.hom .unit)
-  map f := ⟨f.right, ConcreteCategory.congr_hom f.w.symm .unit⟩
+  map f := ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm .unit]; rfl⟩
 
 @[simp]
 theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
@@ -189,7 +193,8 @@ theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right
 
 @[simp]
 theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
-    (fromStructuredArrow F).map f = ⟨f.right, ConcreteCategory.congr_hom f.w.symm PUnit.unit⟩ :=
+    (fromStructuredArrow F).map f =
+      ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm PUnit.unit]; rfl⟩ :=
   rfl
 
 /-- The equivalence between the category of elements `F.Elements`
@@ -222,12 +227,7 @@ given by `CategoryTheory.yonedaEquiv`.
 def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
     (CostructuredArrow yoneda F)ᵒᵖ ⥤ F.Elements where
   obj X := ⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
-  map {X Y} f :=
-    ⟨f.unop.1.op, by
-      convert ((unop X).hom.naturality_apply f.unop.left.op (𝟙 (unop X).left)).symm
-      have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
-        convert f.unop.3
-      simp [yonedaEquiv_apply, ← this, -CommaMorphism.w]⟩
+  map {X Y} f := ⟨f.unop.1.op, by simp [yonedaEquiv_naturality]⟩
 
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
@@ -242,7 +242,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   inverse := (fromCostructuredArrow F).rightOp
   unitIso :=
     NatIso.ofComponents
-      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp))) (by
+      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp; rfl))) (by
         rintro ⟨x⟩ ⟨y⟩ ⟨f : y ⟶ x⟩
         exact Quiver.Hom.unop_inj (by ext; simp))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by
@@ -275,6 +275,7 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
@@ -292,7 +293,7 @@ def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type (max w v)) :
         rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op }
   unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by
     dsimp
-    simpa only [FunctorToTypes.map_id_apply] using
+    simpa only [Functor.map_id_apply] using
       uliftYonedaEquiv.apply_symm_apply (unop x).snd)))
     (fun f ↦ Quiver.Hom.unop_inj (by aesop))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
