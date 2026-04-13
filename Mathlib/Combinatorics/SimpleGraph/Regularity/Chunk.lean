@@ -141,7 +141,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
           _ ≤ ↑4 ^ #P.parts * ε ^ 5 := hPε
           _ ≤ ↑4 ^ #P.parts * ε ^ 4 := by
             gcongr _ * ?_
-            exact pow_le_pow_of_le_one (by sz_positivity) hε₁ (by decide)
+            exact pow_le_pow_right_of_le_one₀ (by sz_positivity) hε₁ (by decide)
           _ = (↑2 ^ 2) ^ #P.parts * ε ^ (2 * 2) := by norm_num
       _ = ↑2 ^ #P.parts * (ε * (ε / 10)) := by rw [mul_div_assoc, sq, mul_div_assoc]
   calc
@@ -446,7 +446,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by
-    simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
+    simpa using pow_le_pow_right_of_le_one₀ (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
   grind
 
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.

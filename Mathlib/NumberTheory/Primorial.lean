@@ -50,7 +50,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
 
 theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
-  prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
+  prod_le_prod_of_subset_of_one_le (by gcongr) (by grind)
 
 theorem primorial_monotone : Monotone primorial := fun _ _ ↦ primorial_mono
 
@@ -97,7 +97,7 @@ lemma Squarefree.dvd_primorial {n : ℕ} (hn : Squarefree n) : n ∣ n# := by
   rwa [Nat.prod_primeFactors_of_squarefree hn] at this
 
 lemma lt_primorial_self {n : ℕ} (hn : 2 < n) : n < n# := by
-  have : 3 ≤ n# := single_le_prod' (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
+  have : 3 ≤ n# := single_le_prod (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
   let q := (n# - 1).minFac
   have : n < q := by
     by_contra! h1

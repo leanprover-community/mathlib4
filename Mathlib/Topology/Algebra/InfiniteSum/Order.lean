@@ -53,7 +53,7 @@ variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
 @[to_additive]
 theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) [L.NeBot] :
     a₁ ≤ a₂ :=
-  le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod' fun i _ ↦ h i
+  le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod fun i _ ↦ h i
 
 @[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) (h : f ≤ g) [L.NeBot] : a₁ ≤ a₂ :=
@@ -93,13 +93,13 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
 theorem prod_le_hasProd [L.NeBot] [L.LeAtTop] (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i)
     (hf : HasProd f a L) : ∏ i ∈ s, f i ≤ a := by
   refine ge_of_tendsto hf <| .filter_mono L.le_atTop <| eventually_atTop.2 ?_
-  exact ⟨s, fun _t hst ↦ prod_le_prod_of_subset_of_one_le' hst fun i _ hbs ↦ hs i hbs⟩
+  exact ⟨s, fun _t hst ↦ prod_le_prod_of_subset_of_one_le hst fun i _ hbs ↦ hs i hbs⟩
 
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
     IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
   classical
-  exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
+  exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le h) hf
 
 @[to_additive]
 theorem le_hasProd [L.NeBot] [L.LeAtTop] (hf : HasProd f a L) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) :
@@ -287,7 +287,7 @@ theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMo
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h : ∀ i, 1 ≤ f i)
     (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
-  tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
+  tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le h) hf
 
 @[to_additive]
 theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]

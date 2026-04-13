@@ -344,7 +344,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← Int.natCast_emultiplicity]
-    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.natCast_add,
+    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left hyx _), Int.natCast_add,
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
@@ -352,7 +352,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
-      Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), emultiplicity_zero,
+      Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left hyx n), emultiplicity_zero,
       top_add, add_top]
 
 namespace padicValNat

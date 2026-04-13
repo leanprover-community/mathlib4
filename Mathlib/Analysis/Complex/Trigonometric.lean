@@ -905,11 +905,11 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                 gcongr
                 · calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
-                      pow_le_pow_of_le_one (abs_nonneg _)
+                      pow_le_pow_right_of_le_one₀ (abs_nonneg _)
                         (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
                     _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
                 · calc
-                    x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
+                    x ^ 3 ≤ x ^ 1 := pow_le_pow_right_of_le_one₀ (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
             _ < x := by linarith)
     _ ≤ sin x :=

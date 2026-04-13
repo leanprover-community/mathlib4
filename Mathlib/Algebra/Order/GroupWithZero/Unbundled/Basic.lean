@@ -378,11 +378,11 @@ lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : 
     rw [← mul_one (a ^ n), pow_succ]
     exact mul_le_mul_of_nonneg_left ha₁ (pow_nonneg ha₀ n)
 
-lemma pow_le_pow_of_le_one [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
+lemma pow_le_pow_right_of_le_one₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
     (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_anti₀ ha₀ ha₁ hmn
 
 lemma pow_le_of_le_one [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) (hn : n ≠ 0) : a ^ n ≤ a :=
-  (pow_one a).subst (pow_le_pow_of_le_one h₀ h₁ (Nat.pos_of_ne_zero hn))
+  (pow_one a).subst (pow_le_pow_right_of_le_one₀ h₀ h₁ (Nat.pos_of_ne_zero hn))
 
 lemma sq_le [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
@@ -439,7 +439,7 @@ lemma Bound.pow_le_pow_right_of_le_one_or_one_le [ZeroLEOneClass M₀] [PosMulMo
     a ^ n ≤ a ^ m := by
   obtain ⟨a1, nm⟩ | ⟨a0, a1, mn⟩ := h
   · exact pow_right_mono₀ a1 nm
-  · exact pow_le_pow_of_le_one a0 a1 mn
+  · exact pow_le_pow_right_of_le_one₀ a0 a1 mn
 
 @[gcongr]
 lemma pow_le_pow_right₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hmn : m ≤ n) :
@@ -465,6 +465,24 @@ theorem pow_le_pow_left₀ [PosMulMono M₀] [MulPosMono M₀]
 lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
+
+lemma pow_le_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
+    (ha : 0 ≤ a) (hab : a ≤ b) (hb : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) :
+    a ^ m ≤ b ^ n :=
+  (pow_le_pow_left₀ ha hab _).trans (pow_le_pow_right₀ hb hmn)
+
+lemma pow_le_pow_mul_of_sq_le_mul₀ [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a ^ 2 ≤ b * a) :
+    ∀ {n}, n ≠ 0 → a ^ n ≤ b ^ (n - 1) * a
+  | 1, _ => by simp
+  | n + 2, _ => by
+    calc
+      a ^ (n + 2) = a ^ (n + 1) * a := by rw [pow_succ]
+      _ ≤ b ^ n * a * a := mul_le_mul_of_nonneg_right
+          (pow_le_pow_mul_of_sq_le_mul₀ ha hb hab (by lia)) ha
+      _ = b ^ n * a ^ 2 := by rw [mul_assoc, sq]
+      _ ≤ b ^ n * (b * a) := mul_le_mul_of_nonneg_left hab (pow_nonneg hb _)
+      _ = b ^ (n + 1) * a := by rw [← mul_assoc, ← pow_succ]
 
 variable [Preorder α] {f g : α → M₀}
 

@@ -968,7 +968,7 @@ lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : 
     obtain ⟨a, ha⟩ := isEmpty_pi.mp h
     exact ⟨a, by simp⟩
   refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod₀ (by simp [hf₀])
       fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
   · rw [Classical.nonempty_pi] at h
     have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite

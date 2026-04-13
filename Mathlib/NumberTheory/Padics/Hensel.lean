@@ -296,7 +296,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
         (max_le_max (newton_seq_succ_dist _ _) (newton_seq_dist_aux _ _))
       _ = ‖F.derivative.aeval a‖ * T ^ 2 ^ n :=
         max_eq_right <|
-          mul_le_mul_of_nonneg_left (pow_le_pow_of_le_one (norm_nonneg _)
+          mul_le_mul_of_nonneg_left (pow_le_pow_right_of_le_one₀ (norm_nonneg _)
             (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _)
 
 private theorem newton_seq_dist {n k : ℕ} (hnk : n ≤ k) :
@@ -368,7 +368,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ ≤ ‖F.derivative.aeval a‖ * T ^ 2 ^ (n + 1) :=
       newton_seq_succ_dist hnorm _
     _ ≤ ‖F.derivative.aeval a‖ * T ^ 2 :=
-      (mul_le_mul_of_nonneg_left (pow_le_pow_of_le_one (norm_nonneg _)
+      (mul_le_mul_of_nonneg_left (pow_le_pow_right_of_le_one₀ (norm_nonneg _)
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.aeval a‖ * T ^ 1 :=
       (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)

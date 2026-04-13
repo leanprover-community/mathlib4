@@ -191,7 +191,7 @@ variable [Monoid α] [Preorder α]
 @[to_additive]
 instance NonemptyInterval.instPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
 

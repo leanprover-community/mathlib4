@@ -704,7 +704,7 @@ end Mul
 section Pow
 
 theorem pow_antitone_exp {a : ℝ≥0} (m n : ℕ) (mn : m ≤ n) (a1 : a ≤ 1) : a ^ n ≤ a ^ m :=
-  pow_le_pow_of_le_one (zero_le a) a1 mn
+  pow_le_pow_right_of_le_one₀ (zero_le a) a1 mn
 
 nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
     ∃ n : ℕ, b ^ n < a := by

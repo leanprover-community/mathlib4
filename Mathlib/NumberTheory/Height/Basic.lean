@@ -380,7 +380,7 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
   · exact Multiset.prod_map_nonneg fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _
   · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _)
       fun v _ ↦ H v
-  · exact finprod_le_finprod (hasFiniteMulSupport_iSup_nonarchAbsVal h₀)
+  · exact finprod_le_finprod₀ (hasFiniteMulSupport_iSup_nonarchAbsVal h₀)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _)
       (hasFiniteMulSupport_iSup_nonarchAbsVal hx) fun v ↦ H v.val
 
@@ -830,7 +830,7 @@ lemma max_abv_sum_one_le [CharZero S] (v : AbsoluteValue R S) {ι : Type*} {s : 
   · nth_rewrite 1 [← mul_one 1]
     gcongr
     · simp [hs]
-    · exact s.one_le_prod fun _ _ ↦ le_max_right ..
+    · exact s.one_le_prod'₀ fun _ ↦ le_max_right ..
 
 /-- The "local" version of the height bound for arbitrary sums for nonarchimedean
 absolute values. -/
@@ -839,7 +839,7 @@ lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNon
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  refine sup_le ?_ <| s.one_le_prod fun _ _ ↦ le_max_right ..
+  refine sup_le ?_ <| s.one_le_prod'₀ fun _ ↦ le_max_right ..
   grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
   exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
@@ -865,7 +865,7 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
   · exact finprod_nonneg fun _ ↦ by positivity
   · exact prod_map_nonneg fun _ h ↦ by positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
-  · exact finprod_le_finprod (by fun_prop) (fun _ ↦ by grind) (by fun_prop) <|
+  · exact finprod_le_finprod₀ (by fun_prop) (fun _ ↦ by positivity) (by fun_prop) <|
       fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
 
 open Finset in

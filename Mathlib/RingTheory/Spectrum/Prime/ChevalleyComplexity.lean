@@ -506,9 +506,9 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
                   (Set.subset_union_right.trans Submodule.subset_span)
           rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, InductionObj.degBound]
           refine Fintype.sum_pos (Pi.lt_def.mpr ⟨by positivity, i, by simp [hi']⟩)
-        refine (pow_le_pow_left' hij _).trans ?_
+        refine (pow_le_pow_left hij _).trans ?_
         rw [← pow_mul]
-        apply pow_le_pow_right' c.one_le_coeffSubmodule
+        apply pow_le_pow_right c.one_le_coeffSubmodule
         have deg_bound₂ : c'.degBound < c.degBound := by
           dsimp [InductionObj.degBound, c']
           apply Finset.sum_lt_sum ?_ ⟨j, Finset.mem_univ _, ?_⟩
@@ -742,10 +742,10 @@ lemma chevalley_mvPolynomialC
         (degreesLE R (Fin n) (N • B)).restrictScalars ℤ := by
     refine SetLike.le_def.mp ?_ ((hT₂ C hCT).2 a)
     refine pow_inf_le.trans (inf_le_inf ?_ ?_)
-    · refine (pow_le_pow_right' ?_ (Nat.pow_self_mono hS')).trans le_coeffsIn_pow
+    · refine (pow_le_pow_right ?_ (Nat.pow_self_mono hS')).trans le_coeffsIn_pow
       simpa [MvPolynomial.coeff_one, apply_ite] using hM
     · rw [degreesLE_nsmul, Submodule.restrictScalars_pow Nat.pow_self_pos.ne']
-      refine pow_le_pow_right' ?_ (Nat.pow_self_mono hS')
+      refine pow_le_pow_right ?_ (Nat.pow_self_mono hS')
       simp
   have h1M : 1 ≤ M := Submodule.one_le.mpr hM
   obtain ⟨U, hU₁, hU₂⟩ := IH (M := M ^ N)
@@ -765,7 +765,7 @@ lemma chevalley_mvPolynomialC
       rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
       simp [B]
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
-    fun i ↦ pow_le_pow_right' h1M ?_ <| (hU₂ C hCU).2 i⟩⟩
+    fun i ↦ pow_le_pow_right h1M ?_ <| (hU₂ C hCU).2 i⟩⟩
   · unfold S' at hT₁
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]

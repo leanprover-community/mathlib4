@@ -60,7 +60,7 @@ lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :
     rw [Set.mem_Ioi, Nat.cast_add_one, add_sub_cancel_right] at ha hb
     simp_rw [deriv_descPochhammer_eval_eq_sum_prod_range_erase]
     apply Finset.sum_le_sum; intro i hi
-    apply Finset.prod_le_prod
+    apply Finset.prod_le_prod₀
     · intro j hj
       rw [Finset.mem_erase, Finset.mem_range] at hj
       apply sub_nonneg_of_le

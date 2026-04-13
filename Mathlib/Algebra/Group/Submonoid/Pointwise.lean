@@ -291,6 +291,6 @@ theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO)
     IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on ?_
-  exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
+  exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod fun x hx => hpos x <| hl2 x hx
 
 end Set.IsPWO

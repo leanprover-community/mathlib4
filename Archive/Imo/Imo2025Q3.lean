@@ -193,7 +193,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
       calc
         _ ≤ 2 ^ padicValNat 2 (3 ^ n - 1) := by
           rwa [hk, Nat.pow_le_pow_iff_right le.refl, ← padicValNat_dvd_iff_le
-            (by grind [one_lt_pow])]
+            (by grind [_root_.one_lt_pow])]
         _ = 4 * 2 ^ padicValNat 2 n := by
           have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using

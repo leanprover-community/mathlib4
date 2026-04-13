@@ -115,7 +115,7 @@ theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧
     calc z ^ (n + 2)
       _ ≤ z ^ (2 * (n + 1)) := pow_right_monotone hz.le (by lia)
       _ = (z ^ 2) ^ (n + 1) := by rw [pow_mul]
-      _ ≤ y ^ (n + 1) := pow_le_pow_left' hzy (n + 1)
+      _ ≤ y ^ (n + 1) := pow_le_pow_left hzy (n + 1)
 
 end Monoid
 

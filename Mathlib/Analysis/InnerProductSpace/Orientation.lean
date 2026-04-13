@@ -249,7 +249,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis this v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det this v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
-  apply Finset.prod_le_prod
+  apply Finset.prod_le_prod₀
   · intro i _
     positivity
   intro i _

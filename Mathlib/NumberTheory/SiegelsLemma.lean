@@ -146,7 +146,7 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
   calc
   ∏ x : α, (∑ x_1 : β, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β, ↑B * -↑(A x x_1)⁻ + 1)
     ≤ ∏ x : α, (n * max 1 ‖A‖ * B + 1) := by
-      refine Finset.prod_le_prod (fun i _ ↦ ?_) (fun i _ ↦ ?_)
+      refine Finset.prod_le_prod₀ (fun i _ ↦ ?_) (fun i _ ↦ ?_)
       · have h := N_le_P_add_one A i
         rify at h
         linarith only [h]

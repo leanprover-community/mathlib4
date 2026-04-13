@@ -221,13 +221,13 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ = 2 * δ := (two_mul δ).symm
       calc
         ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
-          prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
+          prod_le_prod₀ (fun _ _ => abs_nonneg _) fun j _ => this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
         (Hmaps _ Hl hy)) volume).trans ?_
       refine (mul_le_mul_of_nonneg_right ?_ (half_pos ε0).le).trans_eq (one_mul _)
       rw [Box.coe_eq_pi, measureReal_def, Real.volume_pi_Ioc_toReal (Box.lower_le_upper _)]
-      refine prod_le_one (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
+      refine prod_le_one₀ (fun _ _ => sub_nonneg.2 <| Box.lower_le_upper _ _) fun j _ => ?_
       calc
         J.upper (i.succAbove j) - J.lower (i.succAbove j) ≤
             dist (J.upper (i.succAbove j)) (J.lower (i.succAbove j)) :=

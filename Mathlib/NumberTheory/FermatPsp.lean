@@ -315,7 +315,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
   · have h := Nat.exists_infinite_primes (b * (b ^ 2 - 1) + 1 + m)
     obtain ⟨p, ⟨hp₁, hp₂⟩⟩ := h
     have h₁ : 0 < b := pos_of_gt (Nat.succ_le_iff.mp b_ge_two)
-    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
+    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left b_ge_two 2
     have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (lt_of_lt_of_le (by simp) h₂)
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
     have h₅ : b * (b ^ 2 - 1) < p := by lia

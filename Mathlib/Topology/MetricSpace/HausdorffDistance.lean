@@ -225,7 +225,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   show Monotone F
   intro m n hmn x hx
   simp only [F, mem_Ici, mem_preimage] at hx ⊢
-  apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
+  apply le_trans (pow_le_pow_right_of_le_one a_lt_one.le hmn) hx
 
 theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEDist x s = edist x y := by

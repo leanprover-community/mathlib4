@@ -208,7 +208,7 @@ theorem differentiable_set_subset_D :
   simp only [mem_iUnion, mem_iInter, B, mem_inter_iff]
   refine ⟨n, fun p hp q hq => ⟨fderiv 𝕜 f x, hx.2, ⟨?_, ?_⟩⟩⟩ <;>
     · refine hR _ ⟨by positivity, lt_of_le_of_lt ?_ hn⟩
-      exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
+      exact pow_le_pow_right_of_le_one₀ (by norm_num) (by norm_num) (by assumption)
 
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
@@ -243,7 +243,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     intro e p q e' p' q' hp hq hp' hq' he'
     let r := max (n e) (n e')
     have I : ((1 : ℝ) / 2) ^ e' ≤ (1 / 2) ^ e :=
-      pow_le_pow_of_le_one (by norm_num) (by norm_num) he'
+      pow_le_pow_right_of_le_one₀ (by norm_num) (by norm_num) he'
     have J1 : ‖L e p q - L e p r‖ ≤ 4 * ‖c‖ * (1 / 2) ^ e := by
       have I1 : x ∈ A f (L e p q) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p q hp hq).2.1
       have I2 : x ∈ A f (L e p r) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p r hp (le_max_left _ _)).2.1
@@ -539,7 +539,7 @@ theorem differentiable_set_subset_D :
   simp only [mem_iUnion, mem_iInter, B, mem_inter_iff]
   refine ⟨n, fun p hp q hq => ⟨derivWithin f (Ici x) x, hx.2, ⟨?_, ?_⟩⟩⟩ <;>
     · refine hR _ ⟨pow_pos (by norm_num) _, lt_of_le_of_lt ?_ hn⟩
-      exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
+      exact pow_le_pow_right_of_le_one₀ (by norm_num) (by norm_num) (by assumption)
 
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
@@ -572,7 +572,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     intro e p q e' p' q' hp hq hp' hq' he'
     let r := max (n e) (n e')
     have I : ((1 : ℝ) / 2) ^ e' ≤ (1 / 2) ^ e :=
-      pow_le_pow_of_le_one (by norm_num) (by norm_num) he'
+      pow_le_pow_right_of_le_one₀ (by norm_num) (by norm_num) he'
     have J1 : ‖L e p q - L e p r‖ ≤ 4 * (1 / 2) ^ e := by
       have I1 : x ∈ A f (L e p q) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p q hp hq).2.1
       have I2 : x ∈ A f (L e p r) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p r hp (le_max_left _ _)).2.1

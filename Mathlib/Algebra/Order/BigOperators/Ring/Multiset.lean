@@ -61,6 +61,6 @@ lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] {f : α → β} (h1 : �
     _ ≤ f a * (s'.map f).prod := by
       gcongr
       · exact le_trans (zero_le_one' β) (h1 a)
-      · simp_all [one_le_prod]
+      · simp_all [one_le_prod₀]
 
 end OrderedCommSemiring

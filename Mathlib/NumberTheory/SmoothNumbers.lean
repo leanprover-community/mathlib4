@@ -479,7 +479,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
     gcongr
-    exact Finset.one_le_prod' fun p hp ↦
+    exact Finset.one_le_prod fun p hp ↦
       (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/

@@ -573,7 +573,7 @@ lemma pow_antitone {a : A} (ha₀ : 0 ≤ a := by cfc_tac) (ha₁ : a ≤ 1) :
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.le_one_iff (R := ℝ) a] at ha₁
   peel ha₁ with x hx _
-  exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
+  exact pow_le_pow_right_of_le_one₀ (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
 
 end CStarAlgebra
 

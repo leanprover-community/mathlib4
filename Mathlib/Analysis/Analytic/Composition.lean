@@ -463,12 +463,12 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     rintro ⟨n, c⟩
     have A := calc
       ‖q c.length‖₊ * rq ^ n ≤ ‖q c.length‖₊ * rq ^ c.length :=
-        mul_le_mul' le_rfl (pow_le_pow_of_le_one rq.2 hrq.1.le c.length_le)
+        mul_le_mul' le_rfl (pow_le_pow_right_of_le_one₀ rq.2 hrq.1.le c.length_le)
       _ ≤ Cq := hCq _
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
         simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
-      _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod' fun i _ => hCp _
+      _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod fun i _ => hCp _
       _ = Cp ^ c.length := by simp
       _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
     calc
