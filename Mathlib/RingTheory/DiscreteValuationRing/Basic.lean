@@ -503,8 +503,7 @@ lemma addVal_eq_iff_associated (x y : R) :
     simp only [addVal_uniformizer hϖ, mul_one, ENat.coe_inj] at h
     rw [h]
     exact Associates.mk_eq_mk_iff_associated.mp rfl
-  · intro h
-    obtain ⟨u, rfl⟩ := h
+  · rintro ⟨u, rfl⟩
     simp_all
 
 end
