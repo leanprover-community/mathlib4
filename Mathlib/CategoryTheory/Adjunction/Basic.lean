@@ -276,8 +276,8 @@ theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 
 
 @[reassoc (attr := simp)]
 theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
-    dsimp% F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f := by
-  exact adj.counit.naturality f
+    dsimp% F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
+  adj.counit.naturality f
 
 @[reassoc (attr := simp)]
 theorem unit_naturality {X Y : C} (f : X ⟶ Y) :

@@ -86,10 +86,9 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
     refine ⟨((h X).desc' s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (h X).W)]
       rw [← adj₁.counit_naturality_assoc (h X).left]
-      dsimp only [Functor.comp_obj]
-      rw [← s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
+      dsimp
+      rw [← dsimp% s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc (h X).right]
-      simp
     · apply ((h X).desc' s.π _).2
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
