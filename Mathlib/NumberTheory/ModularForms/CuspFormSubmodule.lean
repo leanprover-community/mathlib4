@@ -85,6 +85,15 @@ lemma isCuspForm_iff [Γ.HasDetOne] (f : ModularForm Γ k) :
   refine ⟨fun ⟨g, hg⟩ c hc ↦ hg ▸ g.zero_at_cusps' hc, fun h ↦
     ⟨⟨f.toSlashInvariantForm, f.holo', h⟩, rfl⟩⟩
 
+instance [Γ.HasDetOne] : FunLike (cuspFormSubmodule Γ k) ℍ ℂ where
+  coe f := (f : ModularForm Γ k)
+  coe_injective' _ _ h := Subtype.ext (DFunLike.ext _ _ (congr_fun h))
+
+instance [Γ.HasDetOne] : CuspFormClass (cuspFormSubmodule Γ k) Γ k where
+  slash_action_eq f := (f : ModularForm Γ k).slash_action_eq'
+  holo f := (f : ModularForm Γ k).holo'
+  zero_at_cusps f := (isCuspForm_iff f.1).mp f.2
+
 section SL2Z
 
 open EisensteinSeries
