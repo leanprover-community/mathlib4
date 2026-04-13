@@ -135,9 +135,7 @@ lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
   refine ⟨fun h ↦ ?_, by aesop⟩
   rw [← Finset.compl_subset_compl, compl_compl,
     Finset.subset_singleton_iff, Finset.compl_eq_empty_iff] at h
-  obtain h | h := h
-  · exact Or.inl h
-  · exact Or.inr (by simp [← h])
+  grind [eq_compl_comm]
 
 lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
