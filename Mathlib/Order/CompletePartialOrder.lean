@@ -53,7 +53,7 @@ such that for every directed set `d`, `sSup d` is the least upper bound of `d`.
 The bottom element is defined as `sSup ∅`.
 -/
 @[reducible]
-def completePartialOrderOfLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
+def CompletePartialOrder.ofLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (lub_of_directed : ∀ d : Set α, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
     CompletePartialOrder α where
   __ := H1; __ := H2
