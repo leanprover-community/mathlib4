@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adomas Baliuka
 -/
 import Batteries
+import Mathlib.Data.String.Defs
 
 /-!
 This script extracts all unique non-ascii characters from what is given via stdin
@@ -20,7 +21,6 @@ When using this script, **please manually check** any newly added characters con
 see `Mathlib.Linter.TextBased.UnicodeLinter.withVSCodeAbbrev` and
 `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`.
 
-
 Note: this script will be used very rarely (if at all).
 Therefore we probably shouldn't register it in `lakefile.lean` to avoid clutter.
 
@@ -31,16 +31,14 @@ curl $URL | lake env lean --run scripts/extract-unique-nonascii.lean
 ```
 -/
 
-def Char.isAscii (c : Char) : Bool := c.toNat < 128
-
 /-- We deliberately exclude some characters, based on the reasons noted. -/
 def Char.manuallyExcluded (c : Char) : Bool :=
-   c ∈ [
+  c ∈ [
     '\u2001', -- \quad (U+2001) (due to being non-standard whitespace)
     '\uFDFC', -- RIAL sign (U+FDFC) (due to triggering right-aligned text).
     '\u060B', -- AFGHANI sign (U+060B) (due to triggering right-aligned text)
     '\u0332' -- COMBINING LOW LINE (U+0332) (due to modifying characters around it)
-   ]
+  ]
 
 /-- We deliberately exclude some characters. -/
 def Char.allowedNonAscii (c : Char) : Bool :=
