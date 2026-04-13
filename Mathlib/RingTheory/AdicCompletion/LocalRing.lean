@@ -40,24 +40,8 @@ variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
-    IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) where
-  haus' x hx := by
-    ext n
-    have mem : x ∈ (eval I R n).ker := by
-      rw [← pow_smul_top_eq_ker_eval fg]
-      rw [Ideal.smul_top_eq_map, Ideal.map_pow, Submodule.restrictScalars_mem]
-      simpa using (Submodule.Quotient.mk_eq_zero _).mp (hx n)
-    simpa using mem
-  prec' f hf := by
-    refine ⟨⟨fun n ↦ (f n).1 n, fun {m l} hle ↦ ?_⟩, fun n ↦ ?_⟩
-    · have eq := (SModEq.sub_mem.mp (hf hle))
-      simp only [← Ideal.map_pow, smul_eq_mul, mul_top] at eq
-      rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map] at eq
-      apply ((f l).2 hle).trans (Eq.symm _)
-      simpa [pow_smul_top_eq_ker_eval fg, eval, sub_eq_zero] using eq
-    · simp only [smul_eq_mul, mul_top, SModEq.sub_mem, ← Ideal.map_pow]
-      rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map, pow_smul_top_eq_ker_eval fg]
-      simp [eval]
+    IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) :=
+  (IsAdicComplete.map_algebraMap_iff _ _).mpr (AdicCompletion.isAdicComplete fg)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.isMaximal_map (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
