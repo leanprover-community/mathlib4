@@ -107,7 +107,7 @@ lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
 
 end MeasureTheory
 
-variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+variable {β : Type*} [MeasurableSpace β]
 
 namespace ProbabilityTheory.Kernel
 
