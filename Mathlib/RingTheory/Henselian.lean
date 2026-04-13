@@ -62,6 +62,7 @@ noncomputable section
 universe u v
 
 open Polynomial IsLocalRing Function List
+open scoped Ring
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
@@ -176,8 +177,8 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       -- we define a sequence `c n` by starting at `a₀` and then continually
       -- applying the function sending `b` to `b - f(b)/f'(b)` (Newton's method).
       -- Note that `f'.eval b` is a unit, because `b` has the same residue as `a₀` modulo `I`.
-      let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
-      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
+      let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * (f'.eval b)⁻¹ʳ
+      have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * (f'.eval (c n))⁻¹ʳ := by
         intro n
         simp only [c]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
@@ -259,3 +260,18 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
+
+open Polynomial in
+@[stacks 06RR]
+theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R] [IsLocalRing R]
+    {f : Polynomial R} {a b : R} (ha : f.eval a = 0) (hb : f.eval b = 0) (h : ¬ IsUnit (a - b))
+    (h' : IsUnit (f.derivative.eval a)) : a = b := by
+  obtain ⟨c, _⟩ := exists_mul_sq_add_linear_part_eq_eval_add f a (b - a)
+  have hc : (c * (b - a) + eval a (derivative f)) * (b - a) = 0 := by grind
+  suffices (c * (b - a) + eval a (derivative f)) ∉ maximalIdeal R by
+    rw [notMem_maximalIdeal, isUnit_iff_exists] at this
+    grind
+  by_contra!
+  replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
+  ring_nf at this
+  contradiction

@@ -306,7 +306,7 @@ theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
 definitionally equal to the bottom and top respectively.
 -/
 instance : CompleteLattice (GrothendieckTopology C) :=
-  CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
+  fast_instance% CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
       · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
@@ -346,6 +346,28 @@ theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
+
+lemma eq_top_iff (J : GrothendieckTopology C) : J = ⊤ ↔ ∀ X, ⊥ ∈ J X := by
+  refine ⟨fun h ↦ h ▸ by simp, fun h ↦ ?_⟩
+  rw [_root_.eq_top_iff]
+  intro X S _
+  exact J.superset_covering bot_le (h X)
+
+lemma eq_top_of_isEmpty [IsEmpty C] (J : GrothendieckTopology C) : J = ⊤ := by
+  rw [eq_top_iff]
+  intro X
+  exact IsEmpty.elim ‹IsEmpty C› X
+
+@[simp]
+lemma bot_eq_top_iff_isEmpty : (⊥ : GrothendieckTopology C) = ⊤ ↔ IsEmpty C := by
+  refine ⟨fun h ↦ ⟨fun X ↦ ?_⟩, fun h ↦ eq_top_of_isEmpty _⟩
+  apply bot_ne_top (α := Sieve X)
+  simp only [← GrothendieckTopology.bot_covering, h, top_covering]
+
+@[simp]
+lemma bot_lt_top_iff_nonempty : (⊥ : GrothendieckTopology C) < ⊤ ↔ Nonempty C := by
+  contrapose!
+  simp
 
 /-- The dense Grothendieck topology.
 

@@ -78,17 +78,17 @@ noncomputable def limitCone : Cone F :=
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₂MapConeLimitCone : IsLimit (π₂.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₃MapConeLimitCone : IsLimit (π₃.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` is limit. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
@@ -216,19 +216,19 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :
     IsColimit (π₁.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₂MapCoconeColimitCocone :
     IsColimit (π₂.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₃MapCoconeColimitCocone :
     IsColimit (π₃.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` is colimit. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=

@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
-public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tensor product of graded algebra
@@ -96,3 +96,64 @@ instance : CommRing ((𝒜 0).baseChange S) :=
 end CommRing
 
 end GradedAlgebra
+
+namespace GradedAlgHom
+
+section liftEquiv
+
+variable {ι R S A B : Type*}
+variable [DecidableEq ι] [AddMonoid ι]
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule S B)
+variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
+
+open TensorProduct
+
+/-- A map from the base change of a graded algebra is the same as a map to the scalar restriction.
+
+In category-theoretical terms, this is an adjunction between:
+1. `𝒜 ↦ (𝒜 · |>.baseChange S)`, a functor from Graded `R`-Algebra to Graded `S`-Algebra; and:
+2. `ℬ ↦ (ℬ · |>.restrictScalars R)`, a functor from Graded `S`-Algebra to Graded `R`-Algebra.
+-/
+def liftEquiv : (𝒜 →ₐᵍ[R] (ℬ · |>.restrictScalars R)) ≃ ((𝒜 · |>.baseChange S) →ₐᵍ[S] ℬ) where
+  toFun f :=
+    { AlgHom.liftEquiv R S A B f with
+      map_mem hx := by
+        obtain ⟨x, rfl⟩ := toBaseChange_surjective' _ _ hx
+        induction x with
+        | zero => simp
+        | add => simp_all [add_mem]
+        | tmul r x => simpa using smul_mem _ _ <| by exact f.map_mem x.2 }
+  invFun f :=
+    { AlgHom.liftEquiv R S A B |>.symm f with
+      map_mem hx := f.map_mem <| tmul_mem_baseChange_of_mem _ hx }
+  left_inv f := coe_algHom_injective <| by simp
+  right_inv f := coe_algHom_injective <| by simp
+
+variable {𝒜 ℬ}
+
+@[simp] lemma liftEquiv_tmul (f : 𝒜 →ₐᵍ[R] (ℬ · |>.restrictScalars R)) (r : S) (x : A) :
+    liftEquiv 𝒜 ℬ f (r ⊗ₜ[R] x) = r • f x := rfl
+
+@[simp] lemma liftEquiv_symm_apply (f : (𝒜 · |>.baseChange S) →ₐᵍ[S] ℬ) (x : A) :
+    (liftEquiv 𝒜 ℬ).symm f x = f (1 ⊗ₜ[R] x) := rfl
+
+variable (S 𝒜)
+
+/-- Graded version of  `Algebra.TensorProduct.includeRight`, i.e. the inclusion from a graded
+`R`-algebra `𝒜` to its base change to `S` and then restricted back to `R`. (The restriction does
+not change the actual sets).
+
+In categorical terms, this is the unit of the adjunction `GradedAlgHom.liftEquiv`. -/
+def includeRight : 𝒜 →ₐᵍ[R] (𝒜 · |>.baseChange S |>.restrictScalars R) where
+  __ := Algebra.TensorProduct.includeRight
+  map_mem hx := tmul_mem_baseChange_of_mem _ hx
+
+variable {𝒜}
+
+@[simp] lemma includeRight_apply (x : A) : includeRight S 𝒜 x = 1 ⊗ₜ[R] x := rfl
+
+end liftEquiv
+
+end GradedAlgHom

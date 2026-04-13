@@ -17,7 +17,7 @@ In this file, we construct the functor `Γ₀ : ChainComplex C ℕ ⥤ Simplicia
 which shall be the inverse functor of the Dold-Kan equivalence in the case of abelian categories,
 and more generally pseudoabelian categories.
 
-By definition, when `K` is a chain_complex, `Γ₀.obj K` is a simplicial object which
+By definition, when `K` is a `ChainComplex`, `Γ₀.obj K` is a simplicial object which
 sends `Δ : SimplexCategoryᵒᵖ` to a certain coproduct indexed by the set
 `Splitting.IndexSet Δ` whose elements consists of epimorphisms `e : Δ.unop ⟶ Δ'.unop`
 (with `Δ' : SimplexCategoryᵒᵖ`); the summand attached to such an `e` is `K.X Δ'.unop.len`.
@@ -180,8 +180,7 @@ theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexS
     Sigma.ι (summand K Δ) A ≫ map K θ =
       Termwise.mapMono K i ≫ Sigma.ι (summand K Δ') (Splitting.IndexSet.mk e) := by
   simp only [map, colimit.ι_desc, Cofan.mk_ι_app]
-  have h := SimplexCategory.image_eq fac
-  subst h
+  obtain rfl := SimplexCategory.image_eq fac
   congr
   · exact SimplexCategory.image_ι_eq fac
   · dsimp only [SimplicialObject.Splitting.IndexSet.pull]

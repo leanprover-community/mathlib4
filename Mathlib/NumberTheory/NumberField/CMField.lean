@@ -279,7 +279,7 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
-    AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
+    RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
@@ -517,7 +517,6 @@ theorem ofCMExtension :
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
@@ -541,6 +540,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
     rw [IsGaloisGroup.finrank_fixedPoints_eq_card_subgroup, hσ']⟩
   exact IsCMField.ofCMExtension L K
 
+open scoped IsMulCommutative in
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
@@ -565,7 +565,6 @@ namespace IsCyclotomicExtension.Rat
 
 variable (K : Type*) [Field K] [CharZero K]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A nontrivial abelian extension of `ℚ` is CM.

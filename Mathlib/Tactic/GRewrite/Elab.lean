@@ -5,7 +5,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.GRewrite.Core
+public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
 
 /-!

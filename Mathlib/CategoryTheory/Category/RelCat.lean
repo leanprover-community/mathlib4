@@ -35,11 +35,10 @@ universe u
 morphisms are binary relations. -/
 def RelCat :=
   Type u
+deriving Inhabited
 
 namespace RelCat
 variable {X Y Z : RelCat.{u}}
-
-instance inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 
 /-- The morphisms in the relation category are relations. -/
 structure Hom (X Y : RelCat.{u}) : Type u where
@@ -129,6 +128,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
 relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]

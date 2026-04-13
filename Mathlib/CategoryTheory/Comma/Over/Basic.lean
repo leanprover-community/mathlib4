@@ -388,7 +388,7 @@ set_option backward.isDefEq.respectTransparency false in
 mediated by the underlying functor of the iterated slice equivalence.
 Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
 2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
-`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isomorphism is then given by
 `iteratedSliceEquivOverMapIso`.
 -/
 @[simps! hom_app_left_left inv_app_left_left]
@@ -408,6 +408,10 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
 
 lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
+  rfl
+
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -471,7 +475,6 @@ instance isRightAdjoint_post {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
     (post (X := Y) G).IsRightAdjoint :=
   let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
@@ -507,7 +510,6 @@ protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (F
   obj j := mk (s.app j)
   map f := homMk (D.map f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced cone on `Over X` on the lifted functor. -/
 @[simps]
 def liftCone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
@@ -533,7 +535,6 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
 
 end Over
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
 `Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
@@ -771,6 +772,7 @@ demonstrate, for instance, that under categories assemble into a
 functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping by the identity morphism is just the identity functor. -/
 theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
   fapply Functor.ext
@@ -899,6 +901,10 @@ lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
+  rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
@@ -960,7 +966,6 @@ def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
 instance isLeftAdjoint_post [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
@@ -987,7 +992,6 @@ protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor
   obj j := .mk (s.app j)
   map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced cocone on `Under X` from on the lifted functor. -/
 @[simps]
 def liftCocone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
@@ -1013,7 +1017,6 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
 
 end Under
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
 `Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).

@@ -256,8 +256,7 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
     (whiskerLeft : (X : F C) → {Y Z : F C} → (f : Y ⟶ Z) → motive f → motive (X ◁ f))
     (whiskerRight : {X Y : F C} → (f : X ⟶ Y) → (Z : F C) → motive f → motive (f ▷ Z)) :
     motive t := by
-  apply Quotient.inductionOn
-  intro f
+  induction t using Quotient.inductionOn with | _ f
   induction f with
   | id X => exact id X
   | α_hom X Y Z => exact α_hom X Y Z
@@ -266,15 +265,15 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | l_inv X => exact l_inv X
   | ρ_hom X => exact ρ_hom X
   | ρ_inv X => exact ρ_inv X
-  | comp f g hf hg => exact comp _ _ (hf ⟦f⟧) (hg ⟦g⟧)
-  | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
-  | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
+  | comp f g hf hg => exact comp _ _ hf hg
+  | whiskerLeft X f hf => exact whiskerLeft X _ hf
+  | whiskerRight f X hf => exact whiskerRight _ X hf
   | @tensor W X Y Z f g hf hg =>
       have : homMk f ⊗ₘ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
         Quotient.sound (HomEquiv.tensorHom_def f g)
       change motive (homMk f ⊗ₘ homMk g)
       rw [this]
-      exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
+      exact comp _ _ (whiskerRight _ _ hf) (whiskerLeft _ _ hg)
 
 section Functor
 
