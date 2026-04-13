@@ -200,14 +200,14 @@ in such a way that `real_smul {x : ℝ} {z : ℂ} : x • z = x * z` holds defin
 This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.module` definitionally.
 -/
 @[no_expose]
-def mulAux {R : Type*} [SMul R ℝ] (s : R) (r : ℝ) (z : ℂ) : ℂ :=
-  ⟨s • z.re - r * z.im, s • z.im + r * z.re⟩
+def mulAux {R : Type*} [SMul R ℝ] (re : R) (im : ℝ) (z : ℂ) : ℂ :=
+  ⟨re • z.re - im * z.im, re • z.im + im * z.re⟩
 
 instance : Mul ℂ :=
   ⟨fun z w => mulAux z.re z.im w⟩
 
 theorem mk_mul_mk (x₁ x₂ y₁ y₂ : ℝ) :
-  (⟨x₁, y₁⟩ : ℂ) * ⟨x₂, y₂⟩ = ⟨x₁ * x₂ - y₁ * y₂, x₁ * y₂ + y₁ * x₂⟩ := (rfl)
+    (⟨x₁, y₁⟩ : ℂ) * ⟨x₂, y₂⟩ = ⟨x₁ * x₂ - y₁ * y₂, x₁ * y₂ + y₁ * x₂⟩ := (rfl)
 
 @[simp]
 theorem mul_re (z w : ℂ) : (z * w).re = z.re * w.re - z.im * w.im :=
