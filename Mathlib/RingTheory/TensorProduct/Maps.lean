@@ -854,122 +854,20 @@ variable {C : Subalgebra R A}
 lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
   ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
 
-lemma CompatibleSMul.of_algebraMap_surjective {R S : Type*} (M N : Type*) [CommSemiring R]
-    [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
-    [Module S M] [Module S N] [Algebra R S] [IsScalarTower R S M] [IsScalarTower R S N]
-    (h : Function.Surjective (algebraMap R S)) :
-    CompatibleSMul R S M N where
-  smul_tmul s m n := by
-    obtain ⟨r, rfl⟩ := h s
-    simp [smul_tmul, tmul_smul]
-
-def TensorProduct.congrRing
-    {R S : Type*} (M N : Type*) [CommSemiring R] [CommSemiring S] [AddCommMonoid M]
-    [AddCommMonoid N] [Module R M] [Module R N] [Module S M] [Module S N]
-    [Algebra R S] [IsScalarTower R S M] [IsScalarTower R S N]
-    (h : Function.Surjective (algebraMap R S)) :
-    M ⊗[R] N ≃ₗ[S] M ⊗[S] N :=
-  letI f : M ⊗[R] N →ₗ[S] M ⊗[S] N :=
-    { __ := lift ((TensorProduct.mk S M N).restrictScalars₁₂ R R)
-      map_smul' s x := by obtain ⟨r, rfl⟩ := h s; simp }
-  letI b : M →ₗ[S] N →ₗ[S] M ⊗[R] N := --TensorProduct.mk R M N
-    { toFun m :=
-        { __ := TensorProduct.mk R M N m
-          map_smul' s x := by obtain ⟨r, rfl⟩ := h s; simp }
-      map_add' _ _ := by ext; simp
-      map_smul' s x := by ext; obtain ⟨r, rfl⟩ := h s; simp }
-  .ofLinear f (lift b) (by ext; rfl) (by ext; rfl)
-
-@[simp]
-lemma TensorProduct.congrRing_tmul
-    {R S M N : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] [Module S M] [Module S N]
-    [Algebra R S] [IsScalarTower R S M] [IsScalarTower R S N]
-    (h : Function.Surjective (algebraMap R S)) (m : M) (n : N) :
-    TensorProduct.congrRing M N h (m ⊗ₜ[R] n) = m ⊗ₜ[S] n :=
-  rfl
-
-@[simp]
-lemma TensorProduct.congrRing_symm_tmul
-    {R S M N : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] [Module S M] [Module S N]
-    [Algebra R S] [IsScalarTower R S M] [IsScalarTower R S N]
-    (h : Function.Surjective (algebraMap R S)) (m : M) (n : N) :
-    (TensorProduct.congrRing M N h).symm (m ⊗ₜ[S] n) = m ⊗ₜ[R] n :=
-  rfl
-
-def TensorProduct.uliftEquiv
-    (R M N : Type*) [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] :
-    ULift.{u₁} (M ⊗[R] N) ≃ₗ[R] ULift.{u₂} M ⊗[ULift.{u₃} R] ULift.{u₄} N :=
-  ULift.moduleEquiv ≪≫ₗ
-    TensorProduct.congr ULift.moduleEquiv.symm ULift.moduleEquiv.symm ≪≫ₗ
-    ((TensorProduct.congrRing (R := R) _ _ (by exact ULift.up_surjective)).restrictScalars R)
-
-@[simp]
-lemma TensorProduct.down_uliftEquiv_symm_tmul
-    {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] (m : ULift M) (n : ULift N) :
-    ((TensorProduct.uliftEquiv R M N).symm (m ⊗ₜ n)).down = m.down ⊗ₜ n.down :=
-  rfl
-
-@[simp]
-lemma TensorProduct.uliftEquiv_tmul
-    {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] (m : M) (n : N) :
-    TensorProduct.uliftEquiv R M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
-  rfl
-
 section
-
-variable {R S : Type*} (T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T]
-  [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-  [Algebra R S] [IsScalarTower R S A] [IsScalarTower R S B] [Algebra T A]
-
-/-- If `R →+* S` is surjective, `A ⊗[R] B` is isomorphic to `A ⊗[S] B`. -/
-def Algebra.TensorProduct.congrRing
-    {R S : Type*} (T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T]
-    [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-    [Algebra R S] [IsScalarTower R S A] [IsScalarTower R S B] [Algebra T A]
-    (h : Function.Surjective (algebraMap R S)) :
-    A ⊗[R] B ≃ₐ[T] A ⊗[S] B where
-  __ := _root_.TensorProduct.congrRing A B h
-  map_mul' := LinearMap.map_mul_of_map_mul_tmul (by simp)
-  commutes' _ := rfl
-
-@[simp]
-lemma Algebra.TensorProduct.congrRing_tmul
-    {R S : Type*} (T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T]
-    [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-    [Algebra R S] [IsScalarTower R S A] [IsScalarTower R S B] [Algebra T A]
-    (h : Function.Surjective (algebraMap R S)) (a : A) (b : B) :
-    Algebra.TensorProduct.congrRing T A B h (a ⊗ₜ b) = a ⊗ₜ b :=
-  rfl
-
-@[simp]
-lemma Algebra.TensorProduct.congrRing_symm_tmul
-    {R S : Type*} (T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T]
-    [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-    [Algebra R S] [IsScalarTower R S A] [IsScalarTower R S B] [Algebra T A]
-    (h : Function.Surjective (algebraMap R S)) (a : A) (b : B) :
-    (Algebra.TensorProduct.congrRing T A B h).symm (a ⊗ₜ b) = a ⊗ₜ b :=
-  rfl
-
-attribute [local instance] ULift.algebra' in
-/-- `ULift` commutes with tensor products of algebras. -/
-def Algebra.TensorProduct.uliftEquiv (R S A B : Type*) [CommSemiring R] [CommSemiring S]
-    [Algebra R S] [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    [Semiring B] [Algebra R B] :
-    ULift.{u₁} (A ⊗[R] B) ≃ₐ[ULift S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
-  AlgEquiv.trans ULift.algEquiv
-    (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
-      (congrRing _ _ _ (by exact ULift.up_surjective)))
 
 variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
   [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products of algebras. -/
+def Algebra.TensorProduct.uliftEquiv :
+    ULift.{u₁} (A ⊗[R] B) ≃ₐ[ULift S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
+  AlgEquiv.trans ULift.algEquiv
+    (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
+      (Algebra.TensorProduct.equivOfCompatibleSMul _ _ S _ _).restrictScalars _)
+
+variable {A B}
 
 @[simp]
 lemma Algebra.TensorProduct.uliftEquiv_tmul (a : A) (b : B) :
@@ -986,5 +884,13 @@ attribute [local instance] ULift.algebra' in
 lemma Algebra.TensorProduct.uliftEquiv_symm_tmul (a : ULift A) (b : ULift B) :
     (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
   rfl
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] ULift.algebra' in
+lemma Algebra.TensorProduct.lmul'_ulift :
+    TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
+      (TensorProduct.lmul' (S := S) R).ulift.comp
+        (uliftEquiv R R S S).symm.toAlgHom := by
+  ext <;> simp
 
 end
