@@ -44,9 +44,6 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
 -- see Note [lower instance priority]
-attribute [instance 100] NormedDivisionRing.toDivisionRing
-
--- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
 instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionRing α] :
     NormedRing α :=
@@ -156,9 +153,6 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
-
--- see Note [lower instance priority]
-attribute [instance 100] NormedField.toField
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
