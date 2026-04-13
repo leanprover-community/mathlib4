@@ -214,4 +214,9 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
   simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
+lemma NoetherianSpace.noetherian_inter (W V : Set α) [ntW : NoetherianSpace W] :
+    NoetherianSpace <| (W ∩ V : Set α) := by
+  convert @NoetherianSpace.set _ _ ntW (Subtype.val (p := W) ⁻¹' V)
+  exact TopologicalSpace.noetherianSpace_iff_of_homeomorph <| Homeomorph.interValPreimage W V
+
 end TopologicalSpace
