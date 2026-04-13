@@ -30,7 +30,7 @@ lemma LinearMap.exact_lsmul_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
-@[deprecated (since := "2025-12-06")]
+@[deprecated (since := "2026-04-13")]
 alias LinearMap.exact_smul_id_smul_top_mkQ := LinearMap.exact_lsmul_smul_top_mkQ
 
 namespace ModuleCat
