@@ -32,16 +32,16 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
-* OrderedCommMonoid.toIsOrderedSMul
-* OrderedAddCommMonoid.toIsOrderedVAdd
-* IsOrderedSMul.toCovariantClassLeft
-* IsOrderedVAdd.toCovariantClassLeft
-* IsOrderedCancelSMul.toCancelSMul
-* IsOrderedCancelVAdd.toCancelVAdd
-* OrderedCancelCommMonoid.toIsOrderedCancelSMul
-* OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
-* IsOrderedCancelSMul.toContravariantClassLeft
-* IsOrderedCancelVAdd.toContravariantClassLeft
+* `IsOrderedMonoid.toIsOrderedSMul`
+* `Is OrderedAddMonoid.toIsOrderedVAdd`
+* `IsOrderedSMul.toCovariantClassLeft`
+* `IsOrderedVAdd.toCovariantClassLeft`
+* `IsOrderedCancelSMul.toCancelSMul`
+* `IsOrderedCancelVAdd.toCancelVAdd`
+* `IsOrderedCancelMonoid.toIsOrderedCancelSMul`
+* `IsOrderedCancelAddMonoid.toIsOrderedCancelVAdd`
+* `IsOrderedCancelSMul.toContravariantClassLeft`
+* `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
 * (lex) prod instances

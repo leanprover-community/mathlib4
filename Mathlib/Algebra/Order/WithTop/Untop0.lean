@@ -80,17 +80,9 @@ lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.un
   | ⊤ => by simp
   | (a : α) => rfl
 
-/-!
-## Simplifying Lemmas in cases where α is a MulZeroClass
--/
-
 @[simp]
 lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
-
-/-!
-## Simplifying Lemmas in cases where α is an OrderedAddCommGroup
--/
 
 section OrderedAddCommGroup
 
@@ -125,10 +117,6 @@ theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
   simp
 
 end OrderedAddCommGroup
-
-/-!
-## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
--/
 
 section LinearOrderedAddCommGroup
 

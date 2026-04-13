@@ -7,9 +7,9 @@ import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
-# Do not combine OrderedCancelAddCommMonoid with BoundedOrder
+# Do not combine `IsOrderedCancelAddMonoid` with `BoundedOrder`
 
-This file shows that combining `OrderedCancelAddCommMonoid` with `BoundedOrder` is not a good idea,
+This file shows that combining `IsOrderedCancelAddMonoid` with `BoundedOrder` is not a good idea,
 as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
 The same applies to any superclasses, e.g. combining `IsStrictOrderedRing` with `CompleteLattice`.
 -/
