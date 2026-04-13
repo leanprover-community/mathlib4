@@ -68,6 +68,13 @@ namespace WithPiTopology
 
 open scoped Topology
 
+/-!
+The instances defined in this file are copies of instances on `MvPowerSeries`.
+Those instances are scoped in `MvPowerSeries.WithPiTopology`,
+while these are scoped in `PowerSeries.WithPiTopology`.
+It would probably be better to remove these instances, and use one shared scope.
+-/
+
 /-- The pointwise topology on `PowerSeries` -/
 scoped instance : TopologicalSpace (PowerSeries R) :=
   inferInstance
