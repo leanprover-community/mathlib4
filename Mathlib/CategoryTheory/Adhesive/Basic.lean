@@ -419,6 +419,42 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
           ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
           ← sq_g_v.w_assoc]
 
+def Adhesive.isPullback_of_mono_desc_mono [Adhesive C] {X₁ X₂ X₃ X₄ : C}
+    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
+    [Mono a] [h : Mono (pushout.desc c d w)] : IsPullback a b c d := {
+  w := w
+  isLimit' := ⟨by
+    refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
+    · intro s
+      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).lift
+        (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)
+      · apply h.right_cancellation
+        simp [s.condition]
+    · simp
+    · simp
+    · intro _ _ h₁ h₂
+      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).hom_ext
+      · simp [← h₁]
+      · simp [← h₂]⟩}
+
+attribute [local instance] hasPushout_symmetry in
+def Adhesive.isPullback_of_mono_desc_mono' [Adhesive C] {X₁ X₂ X₃ X₄ : C}
+    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
+    [Mono b] (h : Mono (pushout.desc c d w)) : IsPullback a b c d :=
+  let : Mono (pushout.desc d c w.symm) := by
+    convert show Mono ((pushoutSymmetry a b).inv ≫ (pushout.desc c d w)) by infer_instance
+    ext <;> simp
+  IsPullback.flip (isPullback_of_mono_desc_mono w.symm)
+
+-- `HasPushout a b` follows from `Mono a` follows from `h` and `Mono c`
+instance Adhesive.desc_mono_of_isPullback_mono [Adhesive C] {X₁ X₂ X₃ X₄ : C}
+    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
+    (h : IsPullback a b c d) [HasPushout a b] [Mono c] [Mono d] : Mono (pushout.desc c d w) := by
+  let : pushout (pullback.fst c d) (pullback.snd c d) ≅ pushout a b := HasColimit.isoOfNatIso <|
+    spanExt h.isoPullback.symm (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+  convert show Mono (this.inv ≫ (pushout.desc c d pullback.condition)) from mono_comp ..
+  ext <;> simp [this]
+
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
