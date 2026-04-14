@@ -128,8 +128,12 @@ variable [∀ i, Monoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
   one_mul := one_mul
   mul_one := mul_one
   npow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_pow _ x n
-  npow_zero := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, pow_zero, one_def i]
-  npow_succ n := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, pow_succ, mul_def]
+  npow_zero := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp_rw [map_def, pow_zero, one_def i]
+  npow_succ n := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp_rw [map_def, pow_succ, mul_def]
 
 @[to_additive] theorem npow_def (i x) (n : ℕ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
@@ -149,11 +153,12 @@ variable [∀ i, Group (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
   zpow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_zpow _ x n
   div_eq_mul_inv := DirectLimit.induction₂ _ fun i _ _ ↦ show map₂ .. = _ * map .. by
     simp_rw [map₂_def, map_def, div_eq_mul_inv, mul_def]
-  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, zpow_zero, one_def i]
+  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow, map_def, zpow_zero, one_def i]
   zpow_succ' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
+    simp_rw [HPow.hPow, Pow.pow, map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
   zpow_neg' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw +instances [map_def]; congr; apply DivInvMonoid.zpow_neg'
+    simp_rw [HPow.hPow, Pow.pow, map_def]; congr; apply DivInvMonoid.zpow_neg'
   inv_mul_cancel := DirectLimit.induction _ fun i _ ↦ by
     simp_rw [map_def, mul_def, inv_mul_cancel, one_def i]
 
@@ -216,11 +221,12 @@ instance : GroupWithZero (DirectLimit G f) where
   zpow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_zpow₀ _ x n
   div_eq_mul_inv := DirectLimit.induction₂ _ fun i _ _ ↦ show map₂ .. = _ * map .. by
     simp_rw [map₂_def, map_def, div_eq_mul_inv, mul_def]
-  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, zpow_zero, one_def i]
+  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow, map_def, zpow_zero, one_def i]
   zpow_succ' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
+    simp_rw [HPow.hPow, Pow.pow, map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
   zpow_neg' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def]; congr; apply DivInvMonoid.zpow_neg'
+    simp_rw [HPow.hPow, Pow.pow, map_def]; congr; apply DivInvMonoid.zpow_neg'
   inv_zero := show ⟦_⟧ = ⟦_⟧ by simp_rw [inv_zero]
   mul_inv_cancel := DirectLimit.induction _ fun i x ne ↦ by
     have : x ≠ 0 := by rintro rfl; exact ne (zero_def i).symm

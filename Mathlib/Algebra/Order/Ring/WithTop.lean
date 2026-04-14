@@ -173,8 +173,8 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
     | (a : α), n => ↑(a ^ n)
     | ⊤, 0 => 1
     | ⊤, _n + 1 => ⊤
-  npow_zero a := by cases a <;> simp
-  npow_succ n a := by cases n <;> cases a <;> simp [pow_succ]
+  npow_zero a := by simp_rw [HPow.hPow, Pow.pow]; cases a <;> simp
+  npow_succ n a := by simp_rw [HPow.hPow, Pow.pow]; cases n <;> cases a <;> simp [pow_succ]
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 

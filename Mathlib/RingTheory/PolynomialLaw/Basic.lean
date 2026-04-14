@@ -165,8 +165,10 @@ instance : AddCommMonoid (M →ₚₗ[R] N) where
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
   nsmul n f := (n : R) • f
-  nsmul_zero f := by simp only [Nat.cast_zero, zero_smul f]
-  nsmul_succ n f := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Nat.cast_zero, zero_smul f]
+  nsmul_succ n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
   add_comm f g := by ext; simp only [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
