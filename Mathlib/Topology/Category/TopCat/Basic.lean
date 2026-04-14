@@ -5,6 +5,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 
