@@ -47,8 +47,9 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
-/-- Use the procedure `m` to rewrite the provided goal. -/
--- Assumes `proc` is not surrounded by backticks itself.
+/-- Use the procedure `m` to rewrite the provided goal.
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (failIfUnchanged : Bool) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -71,8 +72,9 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
 
 The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
-`h : x = y` is not transformed (by rewriting `h`) to `True`. -/
--- Assumes `proc` is not surrounded by backticks itself.
+`h : x = y` is not transformed (by rewriting `h`) to `True`. 
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -89,8 +91,9 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     throwError "`{proc}` made no progress at `{ldecl.userName}`"
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
-/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal). -/
--- Assumes `proc` is not surrounded by backticks itself.
+/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (loc : Location) (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false)
     -- streamline the most common use case, in which the procedure `m`'s implementation is not
@@ -104,8 +107,9 @@ def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (p
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
-In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
--- Assumes `proc` is not surrounded by backticks itself.
+In the wildcard case (`*`), filter out all dependent and/or non-`Prop` hypotheses.
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
     (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
     (mayCloseGoalFromHyp : Bool := false)
