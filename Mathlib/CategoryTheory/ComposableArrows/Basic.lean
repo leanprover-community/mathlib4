@@ -474,6 +474,28 @@ def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
+@[simps]
+def _root_.Fin.streakFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
+  obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
+  map {_ _} hij := homOfLE (by rw [Fin.le_iff_val_le_val]; simpa using (leOfHom hij))
+
+@[simp]
+lemma _root_.Fin.streakFunctor_obj {n k l : ℕ} (i : Fin (l + 1)) (h : k + l ≤ n) :
+    (Fin.streakFunctor h).obj i = ⟨k + i, by lia⟩ := rfl
+
+@[simps!]
+def streakFunctor {n k l : ℕ} (h : k + l ≤ n) :
+    ComposableArrows C n ⥤ ComposableArrows C l :=
+  whiskerLeftFunctor (Fin.streakFunctor h)
+
+lemma streakFunctor_obj' {n k l i : ℕ} (h : k + l ≤ n) (R : ComposableArrows C n)
+    (_ : i ≤ l := by lia) :
+    ((streakFunctor h).obj R).obj' i = R.obj' (k + i) := rfl
+
+lemma streakFunctor_app' {n k l i : ℕ} (h : k + l ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (φ : R₁ ⟶ R₂) (_ : i ≤ l := by lia) :
+    app' ((streakFunctor h).map φ) i = app' φ (k + i) := rfl
+
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/
 @[simps!]
