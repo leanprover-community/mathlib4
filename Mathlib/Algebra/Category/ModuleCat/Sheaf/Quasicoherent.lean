@@ -56,6 +56,10 @@ class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Pr
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
   Presentation.IsFinite.isFiniteType_relations
 
+@[deprecated Presentation.IsFinite.isFiniteType_relations (since := "2026-04-14")]
+lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
+    [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
+
 end
 
 noncomputable section
