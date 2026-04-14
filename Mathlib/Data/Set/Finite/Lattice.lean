@@ -9,6 +9,8 @@ public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Lattice.Image
 
+import Mathlib.Data.Fintype.Option
+
 /-!
 # Finiteness of unions and intersections
 
@@ -368,57 +370,44 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
-theorem Finite.biInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α] {s : Set ι}
-    (hs : s.Finite) {f : ∀ a, κ a → α} :
-    ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
+theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.Frame α] [Finite ι]
+    {f : Π a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) := by
+  suffices ∀ {ι : Type v} {κ : ι → Type w} [Finite ι] (f : Π a, κ a → α),
+      ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) by
+    simpa [← Equiv.plift.symm.iInf_comp, ← Equiv.plift.symm.iSup_comp,
+        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using
+      this (κ := fun a => PLift (κ a.down)) fun (a : PLift ι) b => f a.down b.down
+  intro ι κ _ f
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
+  | h_empty => simp [iInf_of_empty, iSup_const]
+  | h_option h =>
+    simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
+      Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]
+
+theorem _root_.iSup_iInf_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.Coframe α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
+  iInf_iSup_eq_of_finite (α := αᵒᵈ)
+
+theorem Finite.biInf_iSup_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (Π a, κ a)] [Order.Frame α]
+    {s : Set ι} (hs : s.Finite) {f : Π a, κ a → α} :
+    ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a ∈ s, f a (g a) := by
   classical
-  induction s, hs using Finite.induction_on with
-  | empty => simp [iSup_const]
-  | @insert a s ha _ ih =>
-    simp_rw [iInf_insert, ih, iSup_inf_eq, inf_iSup_eq]
-    refine le_antisymm (iSup_le fun b => iSup_le fun g => ?_) (iSup_le fun g => ?_)
-    · refine le_iSup_of_le (Function.update g a b) (inf_le_inf ?_ (iInf₂_mono fun a' ha' => ?_))
-      · simp
-      · rw [update_of_ne]
-        rintro rfl
-        exact ha ha'
-    · exact le_iSup_of_le (g a) (le_iSup_of_le g le_rfl)
+  suffices h : ∀ {κ : ι → Type w} [Nonempty (Π a, κ a)] (f : Π a, κ a → α),
+      ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a ∈ s, f a (g a) by
+    haveI : Nonempty (Π a, PLift (κ a)) := (Equiv.piCongrRight fun _ => Equiv.plift).nonempty
+    simpa [← Equiv.plift.symm.iSup_comp, ← (Equiv.piCongrRight fun _ => Equiv.plift).symm.iSup_comp]
+      using h (κ := fun a => PLift (κ a)) fun a b => f a b.down
+  intro κ _ f
+  haveI := hs.to_subtype
+  haveI : Nonempty (Π a : { a // a ∉ s }, κ ↑a) := ‹Nonempty (Π a, κ a)›.map fun f a ↦ f a
+  simp [← iInf_subtype'', iInf_iSup_eq_of_finite (ι := s),
+    ← Equiv.piEquivPiSubtypeProd (· ∈ s) _ |>.symm.iSup_comp, iSup_prod, iSup_const]
 
-theorem Finite.biSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α] {s : Set ι}
-    (hs : s.Finite) {f : ∀ a, κ a → α} :
-    ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
-  classical
-  induction s, hs using Finite.induction_on with
-  | empty => simp [iInf_const]
-  | @insert a s ha _ ih =>
-    simp_rw [iSup_insert, ih, iInf_sup_eq, sup_iInf_eq]
-    refine le_antisymm (le_iInf fun g => ?_) (le_iInf fun b => le_iInf fun g => ?_)
-    · exact iInf_le_of_le (g a) (iInf_le_of_le g le_rfl)
-    · refine iInf_le_of_le (Function.update g a b) (sup_le_sup ?_ (iSup₂_mono fun a' ha' => ?_))
-      · simp
-      · rw [update_of_ne]
-        rintro rfl
-        exact ha ha'
-
-theorem _root_.iInf_iSup_eq_of_finite {κ : ι → Sort*} [Order.Frame α] [Finite ι]
-    {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
-  by_cases h : ∀ a, Nonempty (κ a)
-  · simpa [← Equiv.plift.symm.iInf_comp, ← (Equiv.plift.piCongrLeft' _).symm.iSup_comp]
-      using Finite.biInf_iSup_eq (f := (f <| PLift.down ·)) finite_univ
-  · simp only [not_forall, not_nonempty_iff] at h
-    haveI : IsEmpty (∀ a, κ a) := by simpa
-    rcases h with ⟨a, h⟩
-    grw [iSup_of_empty, eq_bot_iff, iInf_le _ a, iSup_of_empty]
-
-theorem _root_.iSup_iInf_eq_of_finite {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
-    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
-  by_cases h : ∀ a, Nonempty (κ a)
-  · simpa [← Equiv.plift.symm.iSup_comp, ← (Equiv.plift.piCongrLeft' _).symm.iInf_comp]
-      using Finite.biSup_iInf_eq (f := (f <| PLift.down ·)) finite_univ
-  · simp only [not_forall, not_nonempty_iff] at h
-    haveI : IsEmpty (∀ a, κ a) := by simpa
-    rcases h with ⟨a, h⟩
-    grw [iInf_of_empty, eq_top_iff, ← le_iSup _ a, iInf_of_empty]
+theorem Finite.biSup_iInf_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (∀ a, κ a)] [Order.Coframe α]
+    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+    ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) :=
+  hs.biInf_iSup_eq (α := αᵒᵈ)
 
 section
 
