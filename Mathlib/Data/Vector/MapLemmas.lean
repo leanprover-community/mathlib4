@@ -27,6 +27,7 @@ section Fold
 section Unary
 variable (xs : Vector α n) (f₁ : β → σ₁ → σ₁ × γ) (f₂ : α → σ₂ → σ₂ × β)
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr_mapAccumr :
     mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁
@@ -43,6 +44,7 @@ theorem mapAccumr_map {s : σ₁} (f₂ : α → β) :
     (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem map_mapAccumr {s : σ₂} (f₁ : β → γ) :
     (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s =>
@@ -69,6 +71,7 @@ end Unary
 section Binary
 variable (xs : Vector α n) (ys : Vector β n)
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr f₂ xs s₂).snd ys s₁)
@@ -85,6 +88,7 @@ theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
     map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
@@ -101,6 +105,7 @@ theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
     map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr f₁ (mapAccumr₂ f₂ xs ys s₂).snd s₁)
@@ -117,6 +122,7 @@ theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
     map f₁ (map₂ f₂ xs ys) = map₂ (fun x y => f₁ <| f₂ x y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd xs s₁)
@@ -129,6 +135,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_left_right
     (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
@@ -142,6 +149,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
@@ -154,6 +162,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ�
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
@@ -312,6 +321,7 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
   mapAccumr₂_eq_map₂ .univ (Set.mem_univ _) (fun _ _ _ _ => Set.mem_univ _)
     (fun a b s s' _ _ => by rw [h, h])
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
 pair, then we can simplify to just a single element of state.
 -/
@@ -325,6 +335,7 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
     use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
     simp_all
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
 pair, then we can simplify to just a single element of state.
 -/

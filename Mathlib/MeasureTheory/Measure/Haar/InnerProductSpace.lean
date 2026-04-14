@@ -187,6 +187,7 @@ variable [FiniteDimensional ℝ U]
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
 variable [FiniteDimensional ℝ V]
 
+set_option linter.style.whitespace false in -- linter false positive around multi-line parens with a comment
 /-- Decompose `WithLp 2 (U × V) ≃ᵐ U × V` into a series of known measure-preserving equivalences -/
 private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
     WithLp 2 (U × V) ≃ᵐ U × V :=

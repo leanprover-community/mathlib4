@@ -383,6 +383,7 @@ lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P 
         min_eq_right_of_lt (Nat.lt_succ_of_lt h')]
       abel
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Assuming that the `finrank` of the range of `P n` is `n` then the `finrank` of the range of
     `succSub P n` is `1`. -/
 lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}

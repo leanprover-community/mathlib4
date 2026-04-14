@@ -58,7 +58,7 @@ def isInitialOfNotNonempty (hX : ¬ X.Nonempty) : IsInitial X := by
     Function.isEmpty (X.map (⦋0⦌.const n.unop 0).op)
   exact IsInitial.ofUniqueHom (fun _ ↦
     { app _ x := isEmptyElim x
-      naturality _ _ _  := by ext x; exact isEmptyElim x })
+      naturality _ _ _ := by ext x; exact isEmptyElim x })
     (fun _ _ ↦ by ext _ x; exact isEmptyElim x)
 
 end SSet

@@ -37,6 +37,7 @@ open Nat
 
 universe u
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
   /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/

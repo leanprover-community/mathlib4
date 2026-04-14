@@ -16,10 +16,12 @@ monoids.
 
 public section
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 class abbrev IsAffineAddMonoid (M : Type*) [AddCommMonoid M] : Prop :=
   IsCancelAdd M, AddMonoid.FG M, IsAddTorsionFree M
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 @[to_additive]
 class abbrev IsAffineMonoid (M : Type*) [CommMonoid M] : Prop :=

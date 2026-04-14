@@ -439,6 +439,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
 This final section proves the Akra-Bazzi theorem.
 -/
 
+set_option linter.style.whitespace false in -- manual styling of the filter_upwards call
 /-- The main proof of the upper-bound part of the Akra-Bazzi theorem. The factor `1 - ε n` does not
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
@@ -545,6 +546,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
         _ ≤ C * c₁ * (1 - ε n) := by gcongr
     _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+set_option linter.style.whitespace false in -- manual styling of the filter_upwards call
 /-- The main proof of the lower-bound part of the Akra-Bazzi theorem. The factor `1 + ε n` does not
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :

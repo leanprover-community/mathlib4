@@ -1108,6 +1108,7 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
     le_sInf <| forall_mem_image.2 fun _ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
+set_option linter.style.whitespace false in -- linter false positive
 instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
   isGLB_sInf _ := private ⟨fun _ ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩

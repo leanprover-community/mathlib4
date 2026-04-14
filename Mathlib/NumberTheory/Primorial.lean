@@ -40,10 +40,13 @@ def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
 
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_zero : 0 # = 1 := by decide
 
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_one : 1 # = 1 := by decide
 
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_two : 2 # = 2 := by decide
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=

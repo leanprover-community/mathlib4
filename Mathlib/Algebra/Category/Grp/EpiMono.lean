@@ -190,6 +190,7 @@ def g : B →* SX' where
     ext
     simp [mul_smul]
 
+set_option linter.style.whitespace false in -- linter false positive
 local notation "g" => g f
 
 /-- Define `h : B ⟶ S(X')` to be `τ g τ⁻¹`
@@ -203,6 +204,7 @@ def h : B →* SX' where
     ext
     simp
 
+set_option linter.style.whitespace false in -- linter false positive
 local notation "h" => h f
 
 /-!

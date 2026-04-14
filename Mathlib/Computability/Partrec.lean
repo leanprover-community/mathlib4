@@ -205,6 +205,7 @@ theorem none : Nat.Partrec fun _ => none :=
   (of_primrec (Nat.Primrec.const 1)).rfind.of_eq fun _ =>
     eq_none_iff.2 fun _ ⟨h, _⟩ => by simp at h
 
+set_option linter.style.whitespace false in -- suggestion is not clearly better; ignore for now
 theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partrec h) :
     Nat.Partrec fun a => (f a).bind fun n => n.rec (g a)
       fun y IH => do {let i ← IH; h (Nat.pair a (Nat.pair y i))} :=
