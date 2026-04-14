@@ -227,7 +227,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
 noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient (DirectLimit.setoid G f))
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
