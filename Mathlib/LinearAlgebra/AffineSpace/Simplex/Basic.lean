@@ -630,6 +630,10 @@ proof_wanted closedInterior_face_ssubset_closedInterior [ZeroLEOneClass k] {n : 
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
     (s.face h).closedInterior ⊂ s.closedInterior
 
+proof_wanted disjoint_interior_closedInterior_face [ZeroLEOneClass k] {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
+    Disjoint s.interior (s.face h).closedInterior
+
 theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     (s.faceOpposite i).closedInterior ⊆ s.closedInterior :=
@@ -638,6 +642,10 @@ theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n 
 proof_wanted closedInterior_faceOpposite_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ}
     [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     (s.faceOpposite i).closedInterior ⊂ s.closedInterior
+
+proof_wanted disjoint_interior_closedInterior_faceOpposite [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    Disjoint s.interior (s.faceOpposite i).closedInterior
 
 end PartialOrder
 
@@ -669,6 +677,10 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
     exact ⟨fun k _ ↦ hp k, by simpa using hj⟩
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
+
+proof_wanted closedInterior_diff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) :
+    s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior
 
 end LinearOrder
 
