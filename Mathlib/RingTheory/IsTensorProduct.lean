@@ -426,29 +426,25 @@ theorem IsBaseChange.linearMap : IsBaseChange S (Algebra.linearMap R S) :=
   of_equiv (AlgebraTensorModule.rid R S S) fun x ↦ by
     simpa using (Algebra.algebraMap_eq_smul_one x).symm
 
-variable {M' N' : Type*} [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
-    [Module S N'] [IsScalarTower R S N'] {f' : M' →ₗ[R] N'}
+variable [Module R Q] [IsScalarTower R S Q] {f' : P →ₗ[R] Q}
 
-lemma IsBaseChange.of_equiv_left (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
-    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f)
-    (isb : IsBaseChange S f) : IsBaseChange S f' := by
-  simp only [IsBaseChange] at isb ⊢
-  convert (isb.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
-  ext s m'
-  obtain ⟨m, rfl⟩ := eM.surjective m'
-  have : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
-  simp [this]
+lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
+    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f) :
+    IsBaseChange S f ↔ IsBaseChange S f' := by
+  simp only [IsBaseChange]
+  have (m : M) : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
+  refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
+  · convert (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
+    ext s m'
+    obtain ⟨m, rfl⟩ := eM.surjective m'
+    simp [this]
+  · convert (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
+    ext s m
+    simp [this]
 
-lemma IsBaseChange.of_equiv_right (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
-    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f)
-    (isb : IsBaseChange S f') : IsBaseChange S f := by
-  refine IsBaseChange.of_equiv_left eM.symm eN.symm (LinearMap.ext fun y ↦ ?_) isb
-  obtain ⟨y, rfl⟩ := eM.surjective y
-  exact eN.injective (by simpa using congr($comm y).symm)
-
-lemma IsBaseChange.comp_equiv (e : M ≃ₗ[R] M') (f : M' →ₗ[R] N) (isb : IsBaseChange S f) :
+lemma IsBaseChange.comp_equiv (e : M ≃ₗ[R] P) (f : P →ₗ[R] N) (isb : IsBaseChange S f) :
     IsBaseChange S (f.comp e.toLinearMap) :=
-  IsBaseChange.of_equiv_right e (LinearEquiv.refl S N) (LinearMap.ext fun y ↦ by simp) isb
+  (IsBaseChange.iff_of_equiv_comm e (LinearEquiv.refl S N) (LinearMap.ext fun y ↦ by simp)).mpr isb
 
 section
 
