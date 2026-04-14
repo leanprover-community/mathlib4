@@ -308,7 +308,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [AddCommGroup E] [Module R E]
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 section PartialOrder
 
