@@ -17,7 +17,7 @@ public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
 
-import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Simple Modules
@@ -97,6 +97,12 @@ variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
 theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} [RingHomSurjective σ]
     (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N := by
   simp_rw [isSimpleModule_iff, (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff]
+
+lemma isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective
+    {R : Type*} [CommRing R] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : IsSimpleModule R M ↔ IsSimpleModule S M := by
+  rw [isSimpleModule_iff, isSimpleModule_iff,
+    (Submodule.orderIsoOfAlgebraMapSurjective h).isSimpleOrder_iff]
 
 variable [Module R N]
 
@@ -434,6 +440,7 @@ instance IsSemisimpleModule.isCoatomic_submodule [IsSemisimpleModule R M] :
     IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 /-- A finite product of semisimple rings is semisimple. -/
 instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
@@ -445,6 +452,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisi
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
   letI : Module (R × S) R := Module.compHom _ (.fst R S)

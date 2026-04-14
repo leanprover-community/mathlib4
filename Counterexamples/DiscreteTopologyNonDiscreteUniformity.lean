@@ -42,9 +42,9 @@ They basically coincide, and the difference of the examples lies in their flavou
 ### The metric
 
 We begin  by defining a metric on `ℕ` (see `dist_def`) that
-1. Induces the discrete topology, as proven in `TopIsDiscrete`;
-2. Is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
-in `idIsCauchy`
+1. induces the discrete topology, as proven in `TopIsDiscrete`;
+2. is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
+   in `idIsCauchy`.
 
 The definition is simply `dist m n = |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|`, and I am grateful to
 Anatole Dedecker for his suggestion.

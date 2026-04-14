@@ -184,6 +184,15 @@ theorem liftProp_iff {P : (H → H') → Set H → H → Prop} {f : M → M'} :
       Continuous f ∧ ∀ x, P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) univ (chartAt H x x) := by
   simp_rw [LiftProp, liftPropAt_iff, forall_and, continuous_iff_continuousAt]
 
+@[simp]
+lemma liftPropWithinAt_subtypeVal_comp_iff {P : (H → H') → Set H → H → Prop}
+    {U : Opens M'} (f : M → U) (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
+
 end ChartedSpace
 
 open ChartedSpace
@@ -659,8 +668,9 @@ theorem HasGroupoid.comp
       intro x hx
       simp only [mfld_simps] at hx
       have hxs : x ∈ f.symm ⁻¹' (e.symm ≫ₕ e').source := by simp only [hx, mfld_simps]
-      have hxs' : x ∈ f.target ∩ f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) :=
-        by simp only [hx, mfld_simps]
+      have hxs' : x ∈ f.target ∩
+          f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) := by
+        simp only [hx, mfld_simps]
       obtain ⟨φ, hφG₁, hφ, hφ_dom⟩ := LocalInvariantProp.liftPropOn_indep_chart
         (isLocalStructomorphWithinAt_localInvariantProp G₁) (G₁.subset_maximalAtlas hf)
         (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs

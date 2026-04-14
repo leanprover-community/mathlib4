@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Topology.LocallyFinsupp
 
@@ -67,6 +68,10 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def]
 
+lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) (hz : z ∈ U) :
+    divisor f U z = ((analyticOrderAt f z).map (↑)).untop₀ := by
+  rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
+
 /-!
 ## Congruence Lemmas
 -/
@@ -76,41 +81,59 @@ If `f₁` is meromorphic on `U`, if `f₂` agrees with `f₁` on a codiscrete su
 `U`, then `f₁` and `f₂` induce the same divisors on `U`.
 -/
 theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
-    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
+    (h₁ : f₁ =ᶠ[codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
     divisor f₁ U = divisor f₂ U := by
   ext x
   by_cases hx : x ∈ U
   · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin_of_eqOn_compl h₁ h₂]
     congr 1
     apply meromorphicOrderAt_congr
-    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
-      disjoint_principal_right] at h₁
+    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin, disjoint_principal_right] at h₁
     filter_upwards [h₁ x hx] with a ha
     simp at ha
     tauto
   · simp [hx]
 
-/--
-If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
-then `f₁` and `f₂` induce the same divisors on `U`.
+/-
+If two meromorphic functions agree outside a set codiscrete within a perfect set, then they define
+the same divisors there.
 -/
-theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
-    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
+theorem divisor_of_eventuallyEq_codiscreteWithin_preperfect {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicOn f₁ U) (hf₂ : MeromorphicOn f₂ U) (hU : Preperfect U)
+    (h : f₁ =ᶠ[codiscreteWithin U] f₂) :
     divisor f₁ U = divisor f₂ U := by
-  ext x
-  by_cases hx : x ∈ U
-  · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin h₁ h₂]
-    congr 1
-    apply meromorphicOrderAt_congr
-    simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
-      disjoint_principal_right] at h₁
-    have : U ∈ 𝓝[≠] x := by
-      apply mem_nhdsWithin.mpr
-      use U, h₂, hx, Set.inter_subset_left
-    filter_upwards [this, h₁ x hx] with a h₁a h₂a
-    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
-    tauto
-  · simp [hx]
+  ext z
+  by_cases hz : z ∉ U
+  · simp_all
+  rw [not_not] at hz
+  rw [divisor_apply hf₁ hz, divisor_apply hf₂ hz]
+  congr 1
+  apply meromorphicOrderAt_congr
+  apply (hf₁ z hz).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
+    (hf₂ z hz) hz hU h
+
+/--
+If two functions differ only on a discrete set of an open, then they induce the same divisors.
+-/
+theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (h₁ : f₁ =ᶠ[codiscreteWithin U] f₂)
+    (h₂ : IsOpen U) :
+    divisor f₁ U = divisor f₂ U := by
+  by_cases hf₁ : MeromorphicOn f₁ U
+  · ext x
+    by_cases hx : x ∈ U
+    · simp only [hf₁, hx, divisor_apply, hf₁.congr_codiscreteWithin h₁ h₂]
+      congr 1
+      apply meromorphicOrderAt_congr
+      simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+        disjoint_principal_right] at h₁
+      have : U ∈ 𝓝[≠] x := by
+        apply mem_nhdsWithin.mpr
+        use U, h₂, hx, Set.inter_subset_left
+      filter_upwards [this, h₁ x hx] with a h₁a h₂a
+      simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
+      tauto
+    · simp [hx]
+  · simp [divisor, hf₁, (meromorphicOn_congr_codiscreteWithin h₁ h₂).not.1 hf₁]
 
 /-!
 ## Divisors of Analytic Functions
@@ -264,6 +287,39 @@ theorem divisor_fun_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f�
     (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
     divisor (fun z ↦ f₁ z * f₂ z) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+open Finset in
+/--
+If orders are finite, the divisor of a product of meromorphic functions is the sum of the divisors.
+-/
+theorem divisor_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
+    (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
+    divisor (∏ i ∈ s, f i) U = ∑ i ∈ s, divisor (f i) U := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    rw [prod_empty, sum_empty]
+    exact divisor_ofNat 1
+  | insert a s ha hs =>
+    have (z) (hz : z ∈ U) : meromorphicOrderAt (∏ i ∈ s, f i) z ≠ ⊤ := by
+      simpa [meromorphicOrderAt_prod (fun i hi ↦ h₁f i (mem_insert_of_mem hi) z hz)]
+        using fun i hi ↦ h₂f i (mem_insert_of_mem hi) z hz
+    rw [prod_insert ha, sum_insert ha, divisor_mul (by aesop)
+        (prod (fun i hi ↦ h₁f i (mem_insert_of_mem hi)))
+        (h₂f a (mem_insert_self a s)) this,
+      hs (fun i hi ↦ h₁f i (mem_insert_of_mem hi))
+        (fun i hi ↦ h₂f i (mem_insert_of_mem hi))]
+
+/--
+If orders are finite, the divisor of a product of meromorphic functions is the sum of the divisors.
+-/
+theorem divisor_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
+    (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
+    divisor (fun x ↦ ∏ i ∈ s, f i x) U = ∑ i ∈ s, divisor (f i) U := by
+  convert divisor_prod h₁f h₂f
+  exact (Finset.prod_apply _ s f).symm
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]

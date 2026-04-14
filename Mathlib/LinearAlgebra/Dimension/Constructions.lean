@@ -433,7 +433,7 @@ theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) 
   simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
-  (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
+  (rank_span_finset_le s).trans_lt natCast_lt_aleph0
 
 open Submodule Module
 
@@ -493,6 +493,15 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
   classical
   rw [← finrank_top, ← hv]
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+
+@[simp]
+lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+    Module.finrank R (Pi.spanSubset R s) = s.ncard := by
+  classical
+  have := Fintype.ofFinite ι
+  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
+    Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
+  exact Set.ncard_image_of_injective s <| (Pi.basisFun R ι).injective
 
 end Span
 

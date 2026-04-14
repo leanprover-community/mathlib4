@@ -65,12 +65,12 @@ lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := 
 
 lemma e_ne_zero (t : IsSl2Triple h e f) : e ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 variable {R}
@@ -113,7 +113,7 @@ def toLieSubalgebra (t : IsSl2Triple h e f) :
       | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
       | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
       | mem v hv =>
-        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        push _ ∈ _ at hu hv
         rcases hu with rfl | rfl | rfl <;>
         rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
         · rw [t.lie_e_f]
@@ -225,5 +225,23 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M]
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith
+
+variable {m : M} {μ : R}
+local notation "φ " n => ((toEnd R L M e) ^ n) m
+
+lemma lie_e_pow_toEnd_e (n : ℕ) :
+    ⁅e, φ n⁆ = φ (n + 1) := by
+  simp [pow_succ']
+
+lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
+    (hm : ⁅h, m⁆ = μ • m) (n : ℕ) :
+    ⁅h, φ n⁆ = (μ + 2 * n) • φ n := by
+  induction n with
+  | zero => simpa using hm
+  | succ n ih =>
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+      leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
+    congr 1
+    ring
 
 end IsSl2Triple

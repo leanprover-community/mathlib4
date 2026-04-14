@@ -71,7 +71,7 @@ protected theorem antisymm (h : IsAntichain r univ) : Std.Antisymm r :=
 
 @[deprecated (since := "2026-01-06")] protected alias isAntisymm := antisymm
 
-protected theorem subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.Subsingleton := by
+protected theorem subsingleton [Std.Trichotomous r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
   obtain hab | hab | hab := trichotomous_of r a b
   · exact h.eq ha hb hab
@@ -191,9 +191,6 @@ theorem isAntichain_union :
     IsAntichain r (s ∪ t) ↔
       IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
   rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
-
-@[deprecated (since := "2025-09-20")]
-alias isAntichain_singleton := IsAntichain.singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _

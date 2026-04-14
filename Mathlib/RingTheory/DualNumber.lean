@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Algebraic properties of dual numbers
@@ -117,7 +116,7 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
     have : ε * r = (fst r) • ε := by ext <;> simp
     rw [this] at hxI hx0 ⊢
     have hr : fst r ≠ 0 := by
-      contrapose! hx0
+      contrapose hx0
       simp [hx0]
     refine ⟨r⁻¹, ?_⟩
     simp [TrivSqZeroExt.ext_iff, inv_mul_cancel₀ hr]

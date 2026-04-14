@@ -84,7 +84,7 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
   all_goals
     apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi
-    apply_rules [mul_nonneg, rpow_nonneg, hw i hi, hz i hi]
+    positivity [hw i hi, hz i hi]
 
 end Real
 
@@ -123,7 +123,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [one_div, inv_mul_cancel_left₀, Ne, two_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow, rpow_sub' A, div_eq_inv_mul, rpow_one, mul_one]
+    simp only [mul_rpow, rpow_sub' A, rpow_one]
     ring
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
@@ -157,9 +157,8 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p +
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) :
     (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
-  rw [one_div]
-  rw [← @NNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [lt_of_lt_of_le zero_lt_one hp1])]
-  rw [inv_inv]
+  rw [one_div,
+    ← @NNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [lt_of_lt_of_le zero_lt_one hp1]), inv_inv]
   exact add_rpow_le_rpow_add _ _ hp1
 
 theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p ≤ q) :

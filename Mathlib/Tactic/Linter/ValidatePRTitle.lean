@@ -19,8 +19,8 @@ verify whether the title or body are written in present imperative tense.
 
 open Std.Internal.Parsec String
 
-/-- Basic parser for PR titles: given a title `feat(scope): main title` or `feat: title`,
-extracts the `feat` and `scope` components. In the future, this will be extended to also parse
+/-- Basic parser for PR titles: given a title `kind(scope): main title` or `kind: title`,
+extracts the `kind` and `scope` components. In the future, this will be extended to also parse
 the main PR title. -/
 -- TODO: also parse and return the main PR title
 def prTitle : Parser (String × Option String) :=
@@ -75,20 +75,20 @@ public def validateTitle (title : String) : Array String := Id.run do
   -- but give some custom errors in some easily detectable cases.
   if !title.contains ':' then
     return #["error: the PR title does not contain a colon"]
+  let mut errors : Array String := #[]
+  if title.startsWith " " then
+    errors := #["error: the PR title starts with a space"]
 
-  match Parser.run prTitle title with
+  let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
+  match Parser.run prTitle title.trimAsciiStart.copy with
   | Except.error _ =>
-    return #[s!"error: the PR title should be of the form\n  abbrev: main title\nor\n  \
-      abbrev(scope): main title"]
-  | Except.ok (kind, _scope?) =>
+    return errors.push s!"error: the PR title should be of the form\n  kind: main title\n\
+      or\n  kind(scope): main title\nAllowed values for `kind` are {knownKinds}"
+  | Except.ok (_kind, _scope?) =>
     -- Future: also check scope (and the main PR title)
-    let mut errors := #[]
-    let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
-    let mut isFine := false
-    for k in knownKinds do
-      isFine := isFine || kind.startsWith k
-    if isFine == false then
-      errors := errors.push s!"error: the PR title should be of the form \
-        \"kind: main title\" or \"kind(scope): main title\"\n
-        Known PR title kinds are {knownKinds}"
+    if title.contains "  " then
+      errors := errors.push
+        "error: the PR title contains multiple consecutive spaces; please add just one"
+    if title.endsWith "." then
+      errors := errors.push "error: the PR title should not end with a full stop"
     return errors

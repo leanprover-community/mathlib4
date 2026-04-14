@@ -5,11 +5,10 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Mathlib.Util.AssertExists
 public import Mathlib.Data.List.Defs
 
 /-!
-# Lemmas about List.*Idx functions.
+# Lemmas about `List.*Idx` functions.
 
 Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
 

@@ -99,10 +99,10 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     simp only [ENNReal.toReal_mul]
     rw [← ENNReal.toReal_rpow, Real.mul_rpow (by positivity) (by positivity),
       ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_enorm]
-    rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top, ENNReal.toReal_rpow]
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top, ENNReal.toReal_rpow]
     simp
   rw [StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp,
-    eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
+    eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top]
   simp only [one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
@@ -111,7 +111,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     rwa [ENNReal.ofReal_toReal]
     refine ENNReal.mul_ne_top (by simp) ?_
     have h := h_Lp.eLpNorm_ne_top
-    rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top] at h
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top] at h
     simpa [h0] using h
   calc ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ
   _ ≤ ∫⁻ x, ‖L‖ₑ ^ p.toReal * ‖x‖ₑ ^ p.toReal ∂μ := by
@@ -174,6 +174,7 @@ def uncenteredCovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] 
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin :=
   uncenteredCovarianceBilinDual
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredCovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
   simp only [uncenteredCovarianceBilinDual, ContinuousLinearMap.bilinearComp_apply,
@@ -269,7 +270,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
   have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
     apply Integrable.norm
-    contrapose! hx
+    contrapose hx
     exact integral_undef hx
   have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
   apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
@@ -280,8 +281,9 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   rcases le_total ‖y‖ (‖c‖ / 2)
   · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
     calc ‖c‖ ^ (p : ℝ)
-    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) :=
-      Real.rpow_le_rpow (by positivity) (by linarith) (by positivity)
+    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) := by
+      gcongr
+      linarith
     _ = 0 + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       rw [Real.mul_rpow (by simp) (by positivity)]
       ring
@@ -306,7 +308,7 @@ lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y �
 lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
-  contrapose! h
+  contrapose h
   exact memLp_id_of_self_sub_integral h
 
 @[simp]
@@ -358,9 +360,6 @@ lemma covarianceBilinDual_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : StrongD
 lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual ℝ E) :
     covarianceBilinDual μ L L = Var[L; μ] := by
   rw [covarianceBilinDual_eq_covariance h, covariance_self (by fun_prop)]
-
-@[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
-  covarianceBilinDual_self_eq_variance
 
 end Covariance
 

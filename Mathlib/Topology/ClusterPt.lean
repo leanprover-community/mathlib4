@@ -27,6 +27,9 @@ universe u v w
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
 
+@[simp]
+protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
+
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
   simp only [ClusterPt, inf_sup_left, sup_neBot]
 
@@ -170,6 +173,17 @@ theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapCl
 theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
+
+theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Filter α}
+    (hs : IsClosed s) (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s :=
+  (hf.frequently' h).mem_of_closed hs
+
+/-- A point `a` is a cluster point of the sequence `x` if and only if `a` belongs to the closure
+of every tail `x '' {n | i ≤ n}`. -/
+theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+    [Nonempty ι] {x : ι → X} {a : X} :
+    MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
+  simp [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure]
 
 end MapClusterPt
 
@@ -323,6 +337,9 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
+
+theorem isClosed_iff_accPt : IsClosed s ↔ ∀ a, AccPt a (𝓟 s) → a ∈ s := by
+  simp [isClosed_iff_clusterPt, clusterPt_principal, or_imp]
 
 theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by

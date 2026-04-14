@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Seminorm
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
@@ -107,7 +106,7 @@ theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBound
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
-  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
 
 theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
@@ -226,7 +225,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
     rw [absorbs_iff_norm] at hVS
-    push_neg at hVS
+    push Not at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩

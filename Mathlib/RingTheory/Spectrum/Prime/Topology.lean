@@ -272,14 +272,20 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
+lemma irreducibleSpace_iff_isPrime_nilradical :
+    IrreducibleSpace (PrimeSpectrum R) ↔ (nilradical R).IsPrime := by
+  simp [irreducibleSpace_def, isIrreducible_iff_vanishingIdeal_isPrime]
+
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
-  rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.isPrime_bot
+  simpa [irreducibleSpace_iff_isPrime_nilradical] using Ideal.isPrime_bot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
+
+instance (I : Set R) : QuasiSober (zeroLocus I) :=
+  (isClosed_zeroLocus I).isClosedEmbedding_subtypeVal.quasiSober
 
 /-- The prime spectrum of a commutative (semi)ring is a compact topological space. -/
 instance compactSpace : CompactSpace (PrimeSpectrum R) := by
@@ -557,6 +563,9 @@ theorem basicOpen_mul_le_right (f g : R) : basicOpen (f * g) ≤ basicOpen g := 
 @[simp]
 theorem basicOpen_pow (f : R) (n : ℕ) (hn : 0 < n) : basicOpen (f ^ n) = basicOpen f :=
   TopologicalSpace.Opens.ext <| by simpa using zeroLocus_singleton_pow f n hn
+
+lemma le_basicOpen_pow (r : R) (n : ℕ) : basicOpen r ≤ basicOpen (r ^ n) := by
+  cases n <;> simp
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
@@ -889,6 +898,16 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
+/--
+Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
+irreducible set is a zero locus of some prime ideal.
+-/
+protected def zeroLocusEquivIrreducibleCloseds (I : Set R) :
+    zeroLocus I ≃o (TopologicalSpace.IrreducibleCloseds (zeroLocus I))ᵒᵈ where
+  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+  map_rel_iff' {p q} := (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans
+    ((subtype_specializes_iff p q).trans (le_iff_specializes p.1 q.1).symm)
+
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
   simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
@@ -1003,7 +1022,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
-  rw [isClopen_iff_mul_add, exists_swap]
+  rw [isClopen_iff_mul_add, exists_comm]
   refine exists₂_congr fun e f ↦ ?_
   rw [mul_comm, add_comm, ← and_assoc, ← and_assoc, and_congr_right]
   intro ⟨mul, add⟩
@@ -1118,18 +1137,38 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']
 
-lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
-    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
-  algebraize [f]
+variable (R S) in
+lemma _root_.Algebra.IsIntegral.comap_surjective [Algebra R S] [Algebra.IsIntegral R S]
+    [FaithfulSMul R S] :
+    Function.Surjective (comap (algebraMap R S)) := by
   intro ⟨p, hp⟩
+  have hinj : Function.Injective (algebraMap R S) := FaithfulSMul.algebraMap_injective _ _
   obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
     (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
   exact ⟨⟨Q, hQ⟩, rfl⟩
+
+lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
+    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
+  algebraize [f]
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hinj
+  exact Algebra.IsIntegral.comap_surjective _ _
 
 @[deprecated (since := "2025-12-10")]
 alias _root_.RingHom.IsIntegral.specComap_surjective := _root_.RingHom.IsIntegral.comap_surjective
 
 end IsIntegral
+
+/-- Zero loci of minimal prime ideals over `I` are irreducible components in `zeroLocus I` and any
+irreducible component is a zero locus of some minimal prime ideal. -/
+@[stacks 00ES]
+protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
+    I.minimalPrimes ≃o (irreducibleComponents <| (zeroLocus (I : Set R)))ᵒᵈ := by
+  let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
+    ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.1, x.1.2, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+  rw [irreducibleComponents_eq_maximals_closed]
+  exact OrderIso.setOfMinimalIsoSetOfMaximal
+    (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual))
 
 variable (R)
 
@@ -1191,6 +1230,8 @@ instance : OrderTop (PrimeSpectrum R) where
   top := closedPoint R
   le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
 
+instance [IsDomain R] : BoundedOrder (PrimeSpectrum R) where
+
 @[simp]
 theorem PrimeSpectrum.asIdeal_top : (⊤ : PrimeSpectrum R).asIdeal = IsLocalRing.maximalIdeal R :=
   rfl
@@ -1235,6 +1276,10 @@ variable (R) in
 lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
   infer_instance
+
+theorem Ring.KrullDimLE.eq_bot_or_eq_top [IsDomain R] [Ring.KrullDimLE 1 R]
+    (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ :=
+  Order.krullDim_le_one_iff_of_boundedOrder.mp Order.KrullDimLE.krullDim_le _
 
 end IsLocalRing
 

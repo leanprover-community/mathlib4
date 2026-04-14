@@ -37,7 +37,9 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
-  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+  finite_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+
+alias Scheme.Hom.finite_app := IsFinite.finite_app
 
 namespace IsFinite
 
@@ -106,14 +108,14 @@ instance (priority := 900) [IsFinite f] : IsIntegralHom f :=
 instance (priority := 900) [IsFinite f] : LocallyOfFiniteType f :=
   ((IsFinite.iff_isIntegralHom_and_locallyOfFiniteType f).mp ‹_›).2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
-  · change _ ↔ _ ∧ monomorphisms _ f
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+  · rw [← monomorphisms.iff, IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
-    simp_rw [this, forall_and, monomorphisms]
+    simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     RingHom.surjective_iff_epi_and_finite, @and_comm (Epi _), ← and_assoc]

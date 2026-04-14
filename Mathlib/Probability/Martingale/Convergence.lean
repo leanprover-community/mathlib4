@@ -118,7 +118,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
   refine Classical.not_not.2 hω ?_
-  push_neg
+  push Not
   intro k
   induction k with
   | zero => simp only [zero_le, exists_const]
@@ -329,14 +329,14 @@ theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submart
 almost everywhere equal to `𝔼[g | ℱ n]`. -/
 theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Martingale f ℱ μ)
     (hg : Integrable g μ) (hgtends : Tendsto (fun n => eLpNorm (f n - g) 1 μ) atTop (𝓝 0)) (n : ℕ) :
-    f n =ᵐ[μ] μ[g|ℱ n] := by
+    f n =ᵐ[μ] μ[g | ℱ n] := by
   rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff (((hf.stronglyMeasurable n).mono (ℱ.le _)).sub
     (stronglyMeasurable_condExp.mono (ℱ.le _))).aestronglyMeasurable one_ne_zero]
-  have ht : Tendsto (fun m => eLpNorm (μ[f m - g|ℱ n]) 1 μ) atTop (𝓝 0) :=
+  have ht : Tendsto (fun m => eLpNorm (μ[f m - g | ℱ n]) 1 μ) atTop (𝓝 0) :=
     haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le _)
       fun m => eLpNorm_one_condExp_le_eLpNorm _
-  have hev : ∀ m ≥ n, eLpNorm (μ[f m - g|ℱ n]) 1 μ = eLpNorm (f n - μ[g|ℱ n]) 1 μ := by
+  have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by
     refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
@@ -346,7 +346,7 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
 strongly adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the
 conditional expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
-    (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ|ℱ n] :=
+    (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ | ℱ n] :=
   let ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condExp_of_tendsto_eLpNorm ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
@@ -359,19 +359,19 @@ This martingale also converges to `g` in L¹ and this result is provided by
 `MeasureTheory.Integrable.tendsto_eLpNorm_condExp` -/
 theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
-    ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 (g x)) := by
+    ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g | ℱ n]) x) atTop (𝓝 (g x)) := by
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
-  have hunif : UniformIntegrable (fun n => μ[g|ℱ n]) 1 μ :=
+  have hunif : UniformIntegrable (fun n => μ[g | ℱ n]) 1 μ :=
     hg.uniformIntegrable_condExp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2
-  have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g|ℱ n]) μ) μ :=
+  have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ :=
     (memLp_limitProcess_of_eLpNorm_bdd hunif.1 hR).integrable le_rfl
-  suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ by
+  suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ by
     filter_upwards [this, (martingale_condExp g ℱ μ).submartingale.ae_tendsto_limitProcess hR] with
       x heq ht
     rwa [heq]
   have : ∀ n s, MeasurableSet[ℱ n] s →
-      ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ x ∂μ := by
+      ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ x ∂μ := by
     intro n s hs
     rw [← setIntegral_condExp (ℱ.le n) hg hs, ← setIntegral_condExp (ℱ.le n) hlimint hs]
     refine setIntegral_congr_ae (ℱ.le _ _ hs) ?_
@@ -413,7 +413,7 @@ This martingale also converges to `g` almost everywhere and this result is provi
 `MeasureTheory.Integrable.tendsto_ae_condExp` -/
 theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
-    Tendsto (fun n => eLpNorm (μ[g|ℱ n] - g) 1 μ) atTop (𝓝 0) :=
+    Tendsto (fun n => eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) :=
   tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
     (memLp_one_iff_integrable.2 hg) hg.uniformIntegrable_condExp_filtration.2.1
@@ -424,10 +424,11 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_ae_condExp (g : Ω → ℝ) :
-    ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 ((μ[g|⨆ n, ℱ n]) x)) := by
-  have ht : ∀ᵐ x ∂μ, Tendsto (fun n => (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x) atTop (𝓝 ((μ[g|⨆ n, ℱ n]) x)) :=
+    ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g | ℱ n]) x) atTop (𝓝 ((μ[g | ⨆ n, ℱ n]) x)) := by
+  have ht : ∀ᵐ x ∂μ, Tendsto (fun n => (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x)
+      atTop (𝓝 ((μ[g | ⨆ n, ℱ n]) x)) :=
     integrable_condExp.tendsto_ae_condExp stronglyMeasurable_condExp
-  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x = (μ[g|ℱ n]) x := fun n =>
+  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
     condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
   rw [← ae_all_iff] at heq
   filter_upwards [heq, ht] with x hxeq hxt
@@ -436,10 +437,11 @@ theorem tendsto_ae_condExp (g : Ω → ℝ) :
 /-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
 sequence defined by `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
-    Tendsto (fun n => eLpNorm (μ[g|ℱ n] - μ[g|⨆ n, ℱ n]) 1 μ) atTop (𝓝 0) := by
-  have ht : Tendsto (fun n => eLpNorm (μ[μ[g|⨆ n, ℱ n]|ℱ n] - μ[g|⨆ n, ℱ n]) 1 μ) atTop (𝓝 0) :=
+    Tendsto (fun n => eLpNorm (μ[g | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ) atTop (𝓝 0) := by
+  have ht : Tendsto (fun n => eLpNorm (μ[μ[g | ⨆ n, ℱ n] | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ)
+      atTop (𝓝 0) :=
     integrable_condExp.tendsto_eLpNorm_condExp stronglyMeasurable_condExp
-  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x = (μ[g|ℱ n]) x := fun n =>
+  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
     condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
   refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq

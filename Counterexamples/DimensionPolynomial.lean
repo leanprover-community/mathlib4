@@ -31,7 +31,8 @@ open PowerSeries Polynomial
 variable (k : Type*) [Field k]
 
 /-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
-abbrev A : Subring (RatFunc k)⟦X⟧ := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
+noncomputable abbrev A : Subring (RatFunc k)⟦X⟧ :=
+  (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   have h_unit : ∀ (x : (RatFunc k)⟦X⟧) (hx : x ∈ A k), IsUnit x → IsUnit (⟨x, hx⟩ : A k) := by
@@ -75,7 +76,8 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
         (PowerSeries.constantCoeff.comp (A k).subtype).rangeRestrict
     exact fun _ ⟨⟨_, ⟨u, _⟩⟩, _⟩ ↦ ⟨u, ⟨by simp, by simp_all⟩⟩
   have h_phi : RatFunc.C.comp φ = PowerSeries.constantCoeff.comp (A k).subtype := RingHom.ext
-    fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply (hf := RatFunc.C_injective)]
+    fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply
+      (S := RatFunc k) (hf := RatFunc.C_injective)]
   let f : (A k)[X] →+* (RatFunc k)⟦X⟧ := eval₂RingHom (A k).subtype (PowerSeries.C RatFunc.X)
   let Q : PrimeSpectrum (A k)[X] := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
   let g : (A k)[X] →+* k[X] := mapRingHom φ

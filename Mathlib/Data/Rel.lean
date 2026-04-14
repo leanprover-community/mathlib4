@@ -291,7 +291,7 @@ variable (t) in
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
   aesop
 
-lemma image_eq_cod_of_dom_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
+lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by aesop
 lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
 
 variable (R s) in
@@ -465,6 +465,9 @@ instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSy
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
     R.inv_eq_self]
+
+lemma preimage_eq_image [R.IsSymm] : R.preimage s = R.image s := by
+  rw [← preimage_inv, inv_eq_self]
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/

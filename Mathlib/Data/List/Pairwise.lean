@@ -8,7 +8,7 @@ module
 public import Batteries.Data.List.Pairwise
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Pairwise relations on a list
@@ -54,28 +54,24 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 
-theorem pairwise_of_reflexive_of_forall_ne (hr : Reflexive R)
-    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) : l.Pairwise R := by
+theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) :
+    l.Pairwise R := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
-    cases heq; apply hr
+    cases heq; apply refl
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
 theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
     R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
-  cases l with
-  | nil => simp at ha
-  | cons b l => exact (pairwise_cons.1 h₁).1 a ha
+  grind +splitIndPred
 
 theorem Pairwise.rel_head_of_rel_head_head (h₁ : l.Pairwise R) (ha : a ∈ l)
     (hhead : R (l.head <| ne_nil_of_mem ha) (l.head <| ne_nil_of_mem ha)) :
     R (l.head <| ne_nil_of_mem ha) a := by
-  cases l with
-  | nil => simp at ha
-  | cons b l => exact (mem_cons.mp ha).elim (· ▸ hhead) ((pairwise_cons.1 h₁).1 _)
+  grind +splitIndPred
 
 theorem Pairwise.rel_head [Std.Refl R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
     R (l.head <| ne_nil_of_mem ha) a :=

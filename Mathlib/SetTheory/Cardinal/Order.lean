@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
@@ -120,7 +119,7 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
+  mk_subtype_le (· ∈ s)
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
@@ -261,7 +260,8 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
+  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -426,7 +426,7 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  isSuccLimit_iff
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
@@ -525,10 +525,22 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
 variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**):
+every type has a linear order which satisfies `WellFoundedGT` -/
+lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
+  classical
+  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
+    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+
+variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
-theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+@[to_dual existing]
+theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
   exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
+
+@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
 
 namespace Cardinal
 
@@ -540,7 +552,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
   suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
-  contrapose! hω with hf
+  contrapose hω with hf
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
 

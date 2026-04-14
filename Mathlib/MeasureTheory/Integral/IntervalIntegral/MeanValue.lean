@@ -54,7 +54,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_ae_nonneg
   wlog hab : a < b generalizing a b
   · simp only [not_lt] at hab
     obtain ⟨c, c_in_uIcc, that⟩ :=
-      this (by rwa [uIcc_comm]) hg.symm (by rwa [uIoc_comm]) (by aesop) (lt_of_le_of_ne' hab h)
+      this (by rwa [uIcc_comm]) hg.symm (by rwa [uIoc_comm]) (by lia) (lt_of_le_of_ne' hab h)
     exact ⟨c, by rwa [uIcc_comm], by simpa [integral_symm b a]⟩
   let s := Ι a b
   have hs : s = Ioc a b := uIoc_of_le hab.le

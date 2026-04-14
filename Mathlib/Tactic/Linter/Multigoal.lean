@@ -85,6 +85,16 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.tacticSeq,
     `focus,
     ``Lean.Parser.Tactic.focus,
+    -- grind interactive mode
+    ``Lean.Parser.Tactic.Grind.grindSeq1Indented,
+    ``Lean.Parser.Tactic.Grind.grindSeq,
+    ``Lean.Parser.Tactic.Grind.«grind·_»,
+    ``Lean.Parser.Tactic.Grind.grindSeqBracketed,
+    ``Lean.Parser.Tactic.Grind.«grind_<;>_»,
+    ``Lean.Parser.Tactic.Grind.skip,
+    ``Lean.Parser.Tactic.Grind.focus,
+    ``Lean.Parser.Tactic.Grind.next,
+    ``Lean.Parser.Tactic.Grind.cases,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
@@ -124,11 +134,17 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     `Mathlib.Tactic.Conv.convLHS,
     `Mathlib.Tactic.Conv.convRHS,
     ``Lean.Parser.Tactic.first,
+    ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.repeat',
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
     ``Lean.Parser.Tactic.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.anyGoals,
+    ``Lean.Parser.Tactic.Grind.allGoals,
+    ``Lean.Parser.Tactic.Grind.first,
+    ``Lean.Parser.Tactic.Grind.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.grindRepeat_,
     `Mathlib.Tactic.successIfFailWithMsg
   ]
 

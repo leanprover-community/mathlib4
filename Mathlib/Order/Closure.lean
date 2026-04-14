@@ -199,15 +199,14 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
-    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
+  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <| by simpa [h] using c₂.closure_isGLB x
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
 theorem eq_ofPred_closed (c : ClosureOperator α) :
     c = ofPred c c.IsClosed c.le_closure c.isClosed_closure fun _ _ ↦ closure_min := by
   ext
-  rfl
+  simp
 
 end PartialOrder
 
@@ -404,7 +403,7 @@ def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
 @[simp]
-theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed y) : u (l x) ≤ y ↔ x ≤ y :=
+theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 
 end PartialOrder
@@ -451,7 +450,11 @@ end CompleteLattice
 -- Lemmas for `LowerAdjoint ((↑) : α → Set β)`, where `SetLike α β`
 section CoeToSet
 
-variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
+variable [SetLike α β]
+
+section Preorder
+
+variable [Preorder α] (l : LowerAdjoint ((↑) : α → Set β))
 
 theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s
@@ -465,9 +468,6 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
   exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
-
-theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
-  ((l.le_iff_subset _ _).2 h₁).antisymm h₂
 
 theorem closure_union_closure_subset (x y : α) : (l x : Set β) ∪ l y ⊆ l (x ∪ y) :=
   l.closure_sup_closure_le x y
@@ -491,6 +491,17 @@ theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, 
 theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=
   SetLike.coe_injective <| l.closure_iSup₂_closure _
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] (l : LowerAdjoint ((↑) : α → Set β))
+
+theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
+  ((l.le_iff_subset _ _).2 h₁).antisymm h₂
+
+end PartialOrder
 
 end CoeToSet
 

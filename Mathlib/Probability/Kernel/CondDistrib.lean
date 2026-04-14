@@ -319,7 +319,7 @@ theorem setLIntegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMe
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
 theorem condDistrib_ae_eq_condExp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
-    (fun a => (condDistrib Y X μ (X a)).real s) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
+    (fun a => (condDistrib Y X μ (X a)).real s) =ᵐ[μ] μ⟦Y ⁻¹' s | mβ.comap X⟧ := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hX.comap_le ?_ ?_ ?_ ?_
   · exact (integrable_const _).indicator (hY hs)
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
@@ -337,7 +337,7 @@ to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condExp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSpace F]
     (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
-    μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ]
+    μ[fun a => f (X a, Y a) | mβ.comap X] =ᵐ[μ]
       fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) := by
   have hf_int' : Integrable (fun a => f (X a, Y a)) μ :=
     (integrable_map_measure hf_int.1 (hX.aemeasurable.prodMk hY)).mp hf_int
@@ -363,7 +363,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib₀ [NormedSpace ℝ F] [Complete
     (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a)))
     (hf_int : Integrable (fun a => f (X a, Y a)) μ) :
-    μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
+    μ[fun a => f (X a, Y a) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
   have hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
     rwa [integrable_map_measure hf (hX.aemeasurable.prodMk hY)]
   condExp_prod_ae_eq_integral_condDistrib' hX hY hf_int'
@@ -373,7 +373,7 @@ to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condExp_prod_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
     (hX : Measurable X) (hY : AEMeasurable Y μ) (hf : StronglyMeasurable f)
     (hf_int : Integrable (fun a => f (X a, Y a)) μ) :
-    μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
+    μ[fun a => f (X a, Y a) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
   have hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
     rwa [integrable_map_measure hf.aestronglyMeasurable (hX.aemeasurable.prodMk hY)]
   condExp_prod_ae_eq_integral_condDistrib' hX hY hf_int'
@@ -381,7 +381,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpa
 theorem condExp_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F] (hX : Measurable X)
     (hY : AEMeasurable Y μ) {f : Ω → F} (hf : StronglyMeasurable f)
     (hf_int : Integrable (fun a => f (Y a)) μ) :
-    μ[fun a => f (Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f y ∂condDistrib Y X μ (X a) :=
+    μ[fun a => f (Y a) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f y ∂condDistrib Y X μ (X a) :=
   condExp_prod_ae_eq_integral_condDistrib hX hY (hf.comp_measurable measurable_snd) hf_int
 
 /-- The conditional expectation of `Y` given `X` is almost everywhere equal to the integral
@@ -389,7 +389,7 @@ theorem condExp_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
 theorem condExp_ae_eq_integral_condDistrib' {Ω : Type*} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
     [CompleteSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω] [SecondCountableTopology Ω] {Y : α → Ω}
     (hX : Measurable X) (hY_int : Integrable Y μ) :
-    μ[Y|mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=
+    μ[Y | mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=
   condExp_ae_eq_integral_condDistrib hX hY_int.1.aemeasurable stronglyMeasurable_id hY_int
 
 open MeasureTheory
@@ -410,7 +410,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     · exact measurable_snd hs
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
@@ -422,7 +422,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     exact hf_int.2
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
     [TopologicalSpace F] {X : Ω → β} {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} :
@@ -437,7 +437,7 @@ theorem integrable_comp_snd_map_prodMk_iff {Ω} {_ : MeasurableSpace Ω} {X : Ω
 
 theorem condExp_ae_eq_integral_condDistrib_id [NormedSpace ℝ F] [CompleteSpace F] {X : Ω → β}
     {μ : Measure Ω} [IsFiniteMeasure μ] (hX : Measurable X) {f : Ω → F} (hf_int : Integrable f μ) :
-    μ[f|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f y ∂condDistrib id X μ (X a) :=
+    μ[f | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f y ∂condDistrib id X μ (X a) :=
   condExp_prod_ae_eq_integral_condDistrib' hX aemeasurable_id (hf_int.comp_snd_map_prodMk X)
 
 end ProbabilityTheory
