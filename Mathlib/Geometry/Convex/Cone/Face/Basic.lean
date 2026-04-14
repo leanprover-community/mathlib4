@@ -33,7 +33,7 @@ in `F` are also in `F`.
 
 open Submodule
 
-@[expose] public section
+public section
 
 namespace PointedCone
 
@@ -126,7 +126,7 @@ theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceO
   simp [hs]
 
 /-- If the positive combination of points of a cone is in a face, then all the points are
-  in the face. -/
+in the face. -/
 theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι → R}
     (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)
     (i : ι) (hci : 0 < c i) : f i ∈ F := by classical
@@ -177,7 +177,7 @@ end IsFaceOf
 
 variable [AddCommGroup N] [Module R N] in
 /-- The image of a cone `F` under an injective linear map is a face of the
-  image of another cone `C` if and only if `F` is a face of `C`. -/
+image of another cone `C` if and only if `F` is a face of `C`. -/
 theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
     (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C := by
   refine ⟨?_, IsFaceOf.map _ hf⟩
@@ -192,7 +192,7 @@ theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
 
 variable [AddCommGroup N] [Module R N] in
 /-- The comap of a cone `F` under a surjective linear map is a face of the
-  comap of another cone `F` if and only if `F` is a face of `C`. -/
+comap of another cone `F` if and only if `F` is a face of `C`. -/
 theorem isFaceOf_comap_iff {f : N →ₗ[R] M} (hf : Function.Surjective f) :
     (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C := by
   refine ⟨IsFaceOf.of_comap_surjective hf, IsFaceOf.comap _⟩
@@ -226,7 +226,7 @@ lemma lineal_le (hF : F.IsFaceOf C) : C.lineal ≤ F :=
   fun _ hx ↦ hF.mem_of_add_mem hx.1 hx.2 (by simp)
 
 /-- The lineality space of a face of a cone agrees with the lineality space of the cone. -/
-lemma lineal_eq_lineal (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
+lemma lineal_congr (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
   ext
   constructor <;> intro ⟨hx, hx'⟩
   · exact ⟨hF.le hx, hF.le hx'⟩
@@ -248,7 +248,7 @@ theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
   exact ⟨hF₁.mem_of_smul_add_mem xc₁ yc₁ a0 hab₁, hF₂.mem_of_smul_add_mem xc₂ yc₂ a0 hab₂⟩
 
 /-- The projection of a face of a product cone onto the first component is a face of the
-  projection of the product cone onto the first component. -/
+projection of the product cone onto the first component. -/
 theorem fst {C₁ : PointedCone R M} {C₂ : PointedCone R N}
     {F : PointedCone R (M × N)}
     (hF : F.IsFaceOf (C₁.prod C₂)) : (F.map (.fst R M N)).IsFaceOf C₁ := by
@@ -264,7 +264,7 @@ theorem fst {C₁ : PointedCone R M} {C₂ : PointedCone R N}
     · exact mem_prod.mp ⟨hy, (hF.le h).2⟩
 
 /-- The projection of a face of a product cone onto the second component is a face of the
-  projection of the product cone onto the second component. -/
+projection of the product cone onto the second component. -/
 theorem snd {C₁ : PointedCone R M} {C₂ : PointedCone R N} {F : PointedCone R (M × N)}
     (hF : F.IsFaceOf (C₁.prod C₂)) : (F.map (.snd R M N)).IsFaceOf C₂ := by
   have := map _ (LinearEquiv.prodComm R M N).injective hF

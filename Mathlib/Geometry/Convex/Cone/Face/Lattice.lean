@@ -23,7 +23,7 @@ of a pointed cone `C`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace PointedCone
 
@@ -71,9 +71,7 @@ theorem toPointedCone_lt_toPointedCone {F₁ F₂ : Face C} :
 @[simp]
 theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
 
-/-!
-### Infimum, supremum and lattice
--/
+/-! ### Infimum, supremum and lattice -/
 
 /-- The infimum of two faces `F₁`, `F₂` of `C` is the intersection of the cones `F₁` and `F₂`. -/
 instance : Min (Face C) where
@@ -133,9 +131,7 @@ theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by
   apply le_antisymm _ (⊥ : Face C).isFaceOf.lineal_le
   exact fun x hx ↦ bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
 
-/-!
-### Product
--/
+/-! ### Product -/
 section Prod
 
 open Submodule
@@ -151,12 +147,12 @@ def fst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
 def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 
 @[simp]
-theorem prod_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
+theorem fst_prod (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
   simpa [fst, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
-theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
+theorem snd_prod (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
   simpa [snd, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₁.toSubmodule.zero_mem⟩
 
