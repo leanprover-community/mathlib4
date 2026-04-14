@@ -803,7 +803,7 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
   aesop
 
 @[simp]
-theorem leadingTerm_mul [NoZeroDivisors R] {p q : MvPolynomial σ R} :
+theorem leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
     m.leadingTerm (p * q) = m.leadingTerm p * m.leadingTerm q := by
   by_cases! h0 : p * q = 0
   · simp [h0, zero_eq_mul.mp]
