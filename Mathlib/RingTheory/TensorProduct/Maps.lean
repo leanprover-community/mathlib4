@@ -209,6 +209,19 @@ def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg
   left_inv fg := by ext <;> simp
   right_inv f' := by ext <;> simp
 
+variable (R S B) in
+/--
+Algebra maps `S ⊗[R] B →ₐ[S] C` are the same as algebra maps `B →ₐ[R] C`.
+Variant of `Algebra.TensorProduct.liftEquiv` where the left map is fixed.
+-/
+@[simps]
+def liftEquivRight (C : Type*) [CommRing C] [Algebra R C] [Algebra S C] [IsScalarTower R S C] :
+    (B →ₐ[R] C) ≃ (S ⊗[R] B →ₐ[S] C) where
+  toFun f := Algebra.TensorProduct.lift (Algebra.ofId _ _) f fun _ _ ↦ .all _ _
+  invFun f := AlgHom.comp (f.restrictScalars R) Algebra.TensorProduct.includeRight
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 end lift
 
 end
