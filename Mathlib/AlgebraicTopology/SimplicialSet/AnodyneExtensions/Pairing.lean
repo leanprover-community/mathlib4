@@ -134,6 +134,46 @@ lemma ne (x : P.I) (y : P.II) :
   have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
   simp [P.inter] at this
 
+-- to be moved
+@[simps]
+def _root_.Equiv.restrict {α β : Type*} (e : α ≃ β) (S : Set β) :
+    e ⁻¹' S ≃ S where
+  toFun x := ⟨e x, x.property⟩
+  invFun y := ⟨e.symm y, by simp⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B)
+
+@[simps I II]
+def ofIso : B.Pairing where
+  I := Subcomplex.N.equivOfIso e hA ⁻¹' P.I
+  II := Subcomplex.N.equivOfIso e hA ⁻¹' P.II
+  inter := by simp [← Set.preimage_inter, P.inter]
+  union := by simp [← Set.preimage_union, P.union]
+  p := ((Subcomplex.N.equivOfIso e hA).restrict _).trans (P.p.trans
+      ((Subcomplex.N.equivOfIso e hA).restrict _).symm)
+
+@[simp]
+lemma ofIso_p (x : P.II) :
+    dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.equivOfIso e hA).symm x, by simp⟩ =
+    ⟨(Subcomplex.N.equivOfIso e hA).symm (P.p x), by simp⟩ := by
+  let e' := Subcomplex.N.equivOfIso e hA
+  ext
+  change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
+  simp
+
+instance [P.IsProper] : (P.ofIso e hA).IsProper where
+  isUniquelyCodimOneFace := by
+    rintro ⟨x, hx⟩
+    obtain ⟨x, rfl⟩ := (N.equivOfIso e hA).symm.surjective x
+    simp only [ofIso_II, Set.mem_preimage, Equiv.apply_symm_apply] at hx
+    simp only [ofIso_II, ofIso_I, dsimp% P.ofIso_p e hA ⟨x, hx⟩]
+    exact (P.isUniquelyCodimOneFace ⟨x, hx⟩).of_iso e.symm
+
+instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
+  wf := sorry
+
 end Pairing
 
 end SSet.Subcomplex
