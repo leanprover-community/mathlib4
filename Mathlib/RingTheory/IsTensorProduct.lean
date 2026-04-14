@@ -285,25 +285,25 @@ end
 
 section
 
-lemma linearEquiv_compr₂ (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
+lemma compr₂_linearEquiv (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
     IsTensorProduct (f.compr₂ e.toLinearMap) := by
   simp only [IsTensorProduct] at ist ⊢
   rw [TensorProduct.lift_compr₂]
   exact e.bijective.comp ist
 
-lemma linearEquiv_comp_compl₂ (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
+lemma comp_compl₂_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
     IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
   simp only [IsTensorProduct] at ist ⊢
   rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
   exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)
 
-lemma linearEquiv_comp (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) :
+lemma comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) :
     IsTensorProduct (f.comp e₁.toLinearMap) :=
-  ist.linearEquiv_comp_compl₂ e₁ (LinearEquiv.refl R M₂)
+  ist.comp_compl₂_linearEquiv e₁ (LinearEquiv.refl R M₂)
 
-lemma linearEquiv_compl₂ (ist : IsTensorProduct f) (e₂ : N₂ ≃ₗ[R] M₂) :
+lemma compl₂_linearEquiv (ist : IsTensorProduct f) (e₂ : N₂ ≃ₗ[R] M₂) :
     IsTensorProduct (f.compl₂ e₂.toLinearMap) :=
-  ist.linearEquiv_comp_compl₂ (LinearEquiv.refl R M₁) e₂
+  ist.comp_compl₂_linearEquiv (LinearEquiv.refl R M₁) e₂
 
 end
 
@@ -433,7 +433,7 @@ lemma IsBaseChange.of_equiv_left (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
     (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f)
     (isb : IsBaseChange S f) : IsBaseChange S f' := by
   simp only [IsBaseChange] at isb ⊢
-  convert (isb.linearEquiv_compl₂ eM.symm).linearEquiv_compr₂ (eN.restrictScalars R)
+  convert (isb.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
   ext s m'
   obtain ⟨m, rfl⟩ := eM.surjective m'
   have : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
