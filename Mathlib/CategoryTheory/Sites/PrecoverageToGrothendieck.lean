@@ -72,7 +72,6 @@ lemma generate_mem_toGrothendieck {X : C} {R : Presieve X} (hR : R ∈ J X) :
     Sieve.generate R ∈ J.toGrothendieck X :=
   .of _ _ hR
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
 it is the infimum of all Grothendieck topologies containing `Sieve.generate S` for all presieves
@@ -312,12 +311,10 @@ lemma galoisConnection_toGrothendieck_toPrecoverage :
 
 end Precoverage
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma Precoverage.toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
   (galoisConnection_toGrothendieck_toPrecoverage C).l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma GrothendieckTopology.toPrecoverage_top : toPrecoverage (⊤ : GrothendieckTopology C) = ⊤ :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).u_top
