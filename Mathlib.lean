@@ -6271,6 +6271,7 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
+public import Mathlib.RingTheory.Depth.Basic
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
 public import Mathlib.RingTheory.Derivation.Lie
@@ -6681,7 +6682,6 @@ public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
 public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
-public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.RegularSequence
