@@ -90,8 +90,8 @@ lemma width_trivialTreeDecomp [Nonempty V] [Fintype V] :
 noncomputable def botTreeDecomp [Nonempty V] : (⊥ : SimpleGraph V).TreeDecomp where
   W := V
   𝓧 := fun x => {x}
-  T := star (Classical.arbitrary V)
-  isTree := star_isTree _
+  T := starGraph (Classical.arbitrary V)
+  isTree := starGraph_isTree _
   edgeCover _ _ h := h.elim
   connectedBags := connectedBags_of_exists_mem fun v =>
     ⟨⟨v, Finset.mem_singleton.mpr rfl⟩, by
