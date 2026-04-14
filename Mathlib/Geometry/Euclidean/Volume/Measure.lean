@@ -73,7 +73,7 @@ scoped[MeasureTheory] notation "μHE[" d "]" => MeasureTheory.Measure.euclideanH
 $\pi^{d/2} / (2^d \Gamma (d/2+1))$. -/
 proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : ℕ) :
     addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] =
-    volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d -> ℝ) 1)
+    volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d → ℝ) 1)
 
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     (μHE[d] : Measure X) =
@@ -302,7 +302,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]
-  have hxp: (x +ᵥ p).val ∈ mk' (x +ᵥ p).val s.directionᗮ := by simp
+  have hxp : (x +ᵥ p).val ∈ mk' (x +ᵥ p).val s.directionᗮ := by simp
   have hrank : finrank ℝ s.directionᗮ = finrank ℝ (mk' (x +ᵥ p).val s.directionᗮ).direction := by
     rw [direction_mk']
   rw [IsometryEquiv.vaddConst_apply, hinter, euclideanHausdorffMeasure_coe_image, hrank,
