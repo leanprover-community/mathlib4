@@ -199,11 +199,11 @@ Note: if `true`, a character might still not be allowed depending on context
 public def isAllowedCharacter (c : Char) : Bool :=
   ASCII.allowed c
   || withVSCodeAbbrev.contains c
+  || othersInMathlib.contains c
   || emojis.contains c
   || nonEmojis.contains c
   || c == UnicodeVariant.emoji
   || c == UnicodeVariant.text
-  || othersInMathlib.contains c
 
 /-- Provide default replacement (`String`) for a disallowed character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
