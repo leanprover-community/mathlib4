@@ -90,7 +90,6 @@ private lemma ofValEqZeroAux_prop {x : AdicCompletion I M} (h : c = b + a)
 
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
 `ofValEqZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
-@[no_expose]
 def ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     AdicCompletion I ↥(I ^ n • (⊤ : Submodule R M)) where
   val i := ofValEqZeroAux I (Eq.refl (i + n)) hxn
