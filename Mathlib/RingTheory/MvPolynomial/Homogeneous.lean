@@ -591,7 +591,7 @@ lemma HomogeneousSubmodule.gradedMonoid :
 /-- The decomposition of `MvPolynomial σ R` into homogeneous submodules. -/
 abbrev decomposition :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
-  weightedDecomposition R (1 : σ → ℕ)
+  fast_instance% weightedDecomposition R (1 : σ → ℕ)
 
 /-- `MvPolynomial σ R` as a graded algebra, graded by the degree.
 We do not make this a global instance because one may want to consider a different
@@ -600,7 +600,7 @@ To make it a local instance, you may use
 `attribute [local instance] MvPolynomial.gradedAlgebra`.
 -/
 abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
-  weightedGradedAlgebra R (1 : σ → ℕ)
+  fast_instance% weightedGradedAlgebra R (1 : σ → ℕ)
 
 theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
     (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
