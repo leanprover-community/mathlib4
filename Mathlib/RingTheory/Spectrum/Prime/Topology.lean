@@ -727,6 +727,7 @@ noncomputable def sigmaHomeoPi {ι : Type*} (R : ι → Type*) [∀ i, CommRing 
     (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
   (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
 
+@[simp]
 lemma sigmaHomeoPi_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
     sigmaHomeoPi R p = sigmaToPi R p :=
   rfl
