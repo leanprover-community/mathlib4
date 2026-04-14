@@ -5,16 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
+public import Mathlib.RingTheory.Depth.Ischebeck
 public import Mathlib.RingTheory.GlobalDimension
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Regular.RegularSequence
-public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
-public import Mathlib.RingTheory.Regular.Ischebeck
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 
 /-!
