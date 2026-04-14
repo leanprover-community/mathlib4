@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Semirings and rings
@@ -144,6 +145,16 @@ class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, 
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+attribute [-instance] Ring.toAddGroupWithOne
+
+instance Ring.toAddGroupWithOne' (R : Type u) [Ring R] : AddGroupWithOne R :=
+  @AddGroupWithOne.mk R Ring.toIntCast inferInstance inferInstance
+    inferInstance Ring.sub_eq_add_neg Ring.zsmul Ring.zsmul_zero' Ring.zsmul_succ'
+    Ring.zsmul_neg' Ring.neg_add_cancel intCast_ofNat intCast_negSucc
+
+instance Ring.toAddCommGroup' (R : Type u) [self : Ring R] : AddCommGroup R :=
+  @AddCommGroup.mk R inferInstance add_comm'
 
 /-!
 ### Semirings
@@ -369,12 +380,12 @@ variable [Ring α]
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
-  { ‹Ring α› with }
+  fast_instance% { ‹Ring α› with }
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
+  fast_instance% { ‹Ring α› with }
 
 end Ring
 
@@ -385,6 +396,11 @@ class NonUnitalNonAssocCommRing (α : Type u)
 
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
+
+instance NonUnitalCommRing.toNonUnitalNonAssocCommRing' (α : Type u)
+    [self : NonUnitalCommRing α] : NonUnitalNonAssocCommRing α :=
+  @NonUnitalNonAssocCommRing.mk α
+    self.toNonUnitalRing.toNonUnitalNonAssocRing NonUnitalCommRing.mul_comm
 
 /-- A non-associative commutative ring is a `NonAssocRing` with commutative multiplication. -/
 class NonAssocCommRing (α : Type u)
@@ -409,12 +425,12 @@ instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemir
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
-  { s with }
+  fast_instance% { s with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
-  { s with }
+  fast_instance% { s with }
 
 /-- A domain is a nontrivial semiring such that multiplication by a nonzero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying

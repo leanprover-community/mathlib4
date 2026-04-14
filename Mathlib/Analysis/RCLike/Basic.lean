@@ -787,7 +787,6 @@ lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈
   Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
 
 end NormedField
-
 section Order
 
 open scoped ComplexOrder
