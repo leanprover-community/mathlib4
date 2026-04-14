@@ -198,7 +198,7 @@ unit `x`.
 -/
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
-simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
+  simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
     MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
