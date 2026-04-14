@@ -159,7 +159,7 @@ lemma integral_sum_dirac [FiniteDimensional ℝ E] (hc : ∀ i, c i ≠ ∞) :
 lemma hasSum_integral_sum_dirac [CompleteSpace E] (hc : ∀ i, c i ≠ ∞)
     (hf : Summable (fun i ↦ (c i).toReal * ‖f (x i)‖)) :
     HasSum (fun i ↦ (c i).toReal • f (x i))
-      (∫ x, f x ∂Measure.sum (fun i ↦ (c i) • .dirac (x i)))  := by
+      (∫ x, f x ∂Measure.sum (fun i ↦ (c i) • .dirac (x i))) := by
   simpa using hasSum_integral_measure (integrable_sum_dirac hc hf)
 
 /-- If the sequence `fun i ↦ (c i).toReal * ‖f (x i)‖` is summable, then
