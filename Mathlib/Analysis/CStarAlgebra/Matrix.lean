@@ -243,7 +243,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
     calc _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
           rw [toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))]
           simp
-      _ ≤ _ := by grw [T.le_opNorm]; simp
+      _ ≤ _ := by grw [T.le_opNorm]; simp [-CStarRing.norm_of_mem_unitary]
 
 @[simp]
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
