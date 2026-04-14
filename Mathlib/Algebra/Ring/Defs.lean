@@ -143,7 +143,7 @@ addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends Semiring R, NonAssocRing R, NonUnitalRing R
 
 /-!
 ### Semirings
@@ -361,22 +361,6 @@ theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
 
 end NonAssocRing
-
-section Ring
-
-variable [Ring α]
-
--- A (unital, associative) ring is a not-necessarily-unital ring
--- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
-  { ‹Ring α› with }
-
--- A (unital, associative) ring is a not-necessarily-associative ring
--- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
-
-end Ring
 
 /-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
 multiplication. -/
