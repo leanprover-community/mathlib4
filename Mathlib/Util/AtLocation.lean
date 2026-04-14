@@ -59,7 +59,10 @@ inductive BehaviorIfUnchanged where
   | error
 deriving BEq, Inhabited, Repr
 
-/-- Use the procedure `m` to rewrite the provided goal. -/
+
+/-- Use the procedure `m` to rewrite the provided goal.
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (ifUnchanged : BehaviorIfUnchanged) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -70,8 +73,8 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
   if unchanged then
     match ifUnchanged with
-    | .warning => logWarning m!"{proc} made no progress on the goal"
-    | .error => throwError "{proc} made no progress on the goal"
+    | .warning => logWarning m!"`{proc}` made no progress on the goal"
+    | .error => throwError "`{proc}` made no progress on the goal"
     | .silent => pure ()
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
@@ -86,13 +89,15 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
 
 The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
-`h : x = y` is not transformed (by rewriting `h`) to `True`. -/
+`h : x = y` is not transformed (by rewriting `h`) to `True`.
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (ifUnchanged : BehaviorIfUnchanged) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "Cannot run {proc} at {ldecl.userName}, it is an implementation detail"
+    throwError "Cannot run `{proc}` at `{ldecl.userName}`, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
@@ -101,12 +106,14 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
   -- `applySimpResultToLocalDeclCore`
   if tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
     match ifUnchanged with
-    | .warning => logWarning m!"{proc} made no progress at {ldecl.userName}"
-    | .error => throwError "{proc} made no progress at {ldecl.userName}"
+    | .warning => logWarning m!"`{proc}` made no progress at {ldecl.userName}"
+    | .error => throwError "`{proc}` made no progress at `{ldecl.userName}`"
     | .silent => pure ()
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
-/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal). -/
+/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (loc : Location) (ifUnchanged : BehaviorIfUnchanged := .error)
     (mayCloseGoalFromHyp : Bool := false)
@@ -117,11 +124,13 @@ def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (p
   withLocation loc
     (liftMetaTactic1 ∘ (transformAtLocalDecl m proc ifUnchanged mayCloseGoalFromHyp · · ctx))
     (liftMetaTactic1 (transformAtTarget m proc ifUnchanged · ctx))
-    fun _ ↦ throwError "{proc} made no progress anywhere"
+    fun _ ↦ throwError "`{proc}` made no progress anywhere"
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
-In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
+In the wildcard case (`*`), filter out all dependent and/or non-`Prop` hypotheses.
+
+Assumes `proc` is not surrounded by backticks. -/
 def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
     (proc : String) (loc : Location) (ifUnchanged : BehaviorIfUnchanged := .error)
     (mayCloseGoalFromHyp : Bool := false)
@@ -132,6 +141,6 @@ def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.
   withNondepPropLocation loc
     (liftMetaTactic1 ∘ (transformAtLocalDecl m proc ifUnchanged mayCloseGoalFromHyp · · ctx))
     (liftMetaTactic1 (transformAtTarget m proc ifUnchanged · ctx))
-    fun _ ↦ throwError "{proc} made no progress anywhere"
+    fun _ ↦ throwError "`{proc}` made no progress anywhere"
 
 end Mathlib.Tactic
