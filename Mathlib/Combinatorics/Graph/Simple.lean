@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Jun Kwon. All rights reserved.
+Copyright (c) 2026 Jun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jun Kwon, Peter Nelson
 -/
@@ -61,7 +61,7 @@ lemma Loopless.mono (hG : G.Loopless) (hle : H ≤ G) : H.Loopless := by
 lemma Inc.isNonloopAt [G.Loopless] (h : G.Inc e u) : G.IsNonloopAt e u :=
   h.isLoopAt_or_isNonloopAt.resolve_left (Loopless.not_isLoopAt _ _)
 
-lemma setOf_isLoopAt_empty [G.Loopless] : {e | G.IsLoopAt e u} = ∅ := by ext e; simp
+lemma setOf_isLoopAt_eq_empty [G.Loopless] : {e | G.IsLoopAt e u} = ∅ := by ext e; simp
 
 end Loopless
 
@@ -75,13 +75,13 @@ class Simple (G : Graph α β) : Prop extends G.Loopless where
 
 variable [G.Simple]
 
-lemma IsLink.unique_edge (h : G.IsLink e u v) (h' : G.IsLink f u v) : e = f :=
+lemma IsLink.eq (h : G.IsLink e u v) (h' : G.IsLink f u v) : e = f :=
   Simple.eq_of_isLink h h'
 
 omit [G.Simple] in
 lemma Simple.mono (hG : G.Simple) (hle : H ≤ G) : H.Simple where
   not_isLoopAt e x := by simp [hG.toLoopless.mono hle]
-  eq_of_isLink e f x y he hf := (he.mono hle).unique_edge (hf.mono hle)
+  eq_of_isLink e f x y he hf := (he.mono hle).eq (hf.mono hle)
 
 instance (V : Set α) : (Graph.noEdge V β).Simple where
   not_isLoopAt := by simp [IsLoopAt]
