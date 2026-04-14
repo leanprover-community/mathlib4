@@ -291,7 +291,7 @@ lemma compr₂_linearEquiv (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
   rw [TensorProduct.lift_compr₂]
   exact e.bijective.comp ist
 
-lemma comp_compl₂_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
+lemma compl₂_comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
     IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
   simp only [IsTensorProduct] at ist ⊢
   rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
@@ -299,11 +299,11 @@ lemma comp_compl₂_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R]
 
 lemma comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) :
     IsTensorProduct (f.comp e₁.toLinearMap) :=
-  ist.comp_compl₂_linearEquiv e₁ (LinearEquiv.refl R M₂)
+  ist.compl₂_comp_linearEquiv e₁ (LinearEquiv.refl R M₂)
 
 lemma compl₂_linearEquiv (ist : IsTensorProduct f) (e₂ : N₂ ≃ₗ[R] M₂) :
     IsTensorProduct (f.compl₂ e₂.toLinearMap) :=
-  ist.comp_compl₂_linearEquiv (LinearEquiv.refl R M₁) e₂
+  ist.compl₂_comp_linearEquiv (LinearEquiv.refl R M₁) e₂
 
 end
 
