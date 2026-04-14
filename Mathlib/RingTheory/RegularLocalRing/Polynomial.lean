@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.Polynomial
-public import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
+public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 
