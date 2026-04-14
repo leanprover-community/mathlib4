@@ -81,10 +81,9 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
       have eq : projectiveDimension M + depth M = ringKrullDim R := by
         rw [← depth_eq, AuslanderBuchsbaum M finM]
       simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
-  · let _ : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
+  · have : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
     let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
-    let _ : Module.Finite R k :=
-      Module.Finite.equiv (Shrink.linearEquiv R (ResidueField R)).symm
+    have : Module.Finite R k := inferInstance
     have fink := projectiveDimension_ne_top_of_isRegularLocalRing k
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]
