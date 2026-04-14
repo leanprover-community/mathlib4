@@ -157,6 +157,7 @@ theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
+@[grind inj]
 theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   Finsupp.single_injective _
@@ -549,9 +550,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
+-- TODO: Remove once its use in the Witt vector API has been removed.
 @[simp]
-theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
+lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (φ.map g) = g (coeff m φ) := rfl
+
+@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -730,7 +734,7 @@ theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := 
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
   rw [Ne, eq_zero_iff]
-  push_neg
+  push Not
   rfl
 
 @[simp]

@@ -308,8 +308,27 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
-         {C : PointedCone R M}
+variable [Ring R] [AddCommGroup E] [Module R E]
+
+section PartialOrder
+
+section AddCommGroup
+
+variable [PartialOrder R] [IsOrderedRing R] {C : PointedCone R M}
+
+lemma sup_inf_assoc_of_le_submodule (D : PointedCone R M)
+    {S : Submodule R M} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
+  sup_inf_assoc_of_le_of_neg_le _ hCS (fun _ hx => by simpa using hCS hx)
+
+lemma inf_sup_assoc_of_le_of_submodule_le (D : PointedCone R M)
+    {S : Submodule R M} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
+  inf_sup_assoc_of_le_of_neg_le _ hSC (fun _ hx => by apply hSC; simpa [hSC] using hx)
+
+end AddCommGroup
+
+end PartialOrder
+
+variable [LinearOrder R] [IsOrderedRing R] {C : PointedCone R M}
 
 section Lineal
 
