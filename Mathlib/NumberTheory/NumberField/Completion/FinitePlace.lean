@@ -274,6 +274,8 @@ end AbsoluteValue
 
 open HeightOneSpectrum
 
+set_option synthInstance.maxHeartbeats 100000 in
+-- broken
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
 def FinitePlace (K : Type*) [Field K] [NumberField K] :=
@@ -283,6 +285,8 @@ def FinitePlace (K : Type*) [Field K] [NumberField K] :=
 noncomputable def FinitePlace.mk [NumberField K] (v : HeightOneSpectrum (𝓞 K)) : FinitePlace K :=
   ⟨place (embedding v), ⟨v, rfl⟩⟩
 
+set_option synthInstance.maxHeartbeats 100000 in
+-- broken
 /-- A predicate singling out finite places among the absolute values on a number field `K`. -/
 def IsFinitePlace [NumberField K] (w : AbsoluteValue K ℝ) : Prop :=
   ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w
