@@ -6,6 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.TacticAnalysis.Declarations
+import Mathlib.Tactic.FunProp.Elab
 
 /-!
 # Continuity
@@ -47,3 +49,23 @@ macro "continuity?" : tactic =>
 -- Todo: implement `continuity!` and `continuity!?` and add configuration, original
 -- syntax was (same for the missing `continuity` variants):
 -- syntax (name := continuity) "continuity" optConfig : tactic
+
+/-- Suggest replacing the `continuity` tactic (and its `continuity?` variant)
+with `fun_prop` if that also solves the goal. -/
+public register_option linter.tacticAnalysis.continuityToFunProp : Bool := {
+  defValue := true
+}
+
+open Mathlib.TacticAnalysis
+
+-- Combining these linters into one is a bit annoying, as making `terminalReplacement`
+-- take a list of syntaxes would require passing a corresponding list of names.
+@[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
+  inherit_doc linter.tacticAnalysis.continuityToFunProp]
+def continuityToFunprop :=
+  terminalReplacement "continuity" "fun_prop" `tacticContinuity (fun _ _ _ ↦ `(tactic| fun_prop))
+
+@[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
+  inherit_doc linter.tacticAnalysis.continuityToFunProp]
+def continuityToFunprop' :=
+  terminalReplacement "continuity?" "fun_prop" `tacticContinuity? (fun _ _ _ ↦ `(tactic| fun_prop))

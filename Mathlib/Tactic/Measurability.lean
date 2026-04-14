@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-!
 # Measurability
@@ -80,3 +81,26 @@ macro (name := Mathlib.Tactic.measurability?) "measurability?" : tactic =>
 syntax (name := measurability!) "measurability!" : tactic
 @[tactic_alt Mathlib.Tactic.measurability?]
 syntax (name := measurability!?) "measurability!?" : tactic
+
+/-- Suggest replacing the `measurability` tactic (and its variant `measurability?`, as well as the
+currently unimplemented stubs `measurability!` and `measurability!?`) with `fun_prop`
+if that also solves the goal.
+`fun_prop` does not solve `MeasurableSet` goals, and not all measurability goals --- but when it
+works, it is usually faster (and sometimes a lot faster). -/
+register_option linter.tacticAnalysis.measurabilityToFunProp : Bool := {
+  defValue := true
+}
+
+open Mathlib.TacticAnalysis
+
+@[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
+  inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
+def measurabilityToFunprop :=
+  terminalReplacement "measurability" "fun_prop" `tacticMeasurability
+    (fun _ _ _ ↦ `(tactic| measurability))
+
+@[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
+  inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
+def measurabilityToFunprop2 :=
+  terminalReplacement "measurability?" "fun_prop" `tacticMeasurability?
+    (fun _ _ _ ↦ `(tactic| measurability))
