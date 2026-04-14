@@ -504,21 +504,6 @@ lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
-lemma IsPreirreducible.closure_image_preimage (f : β → α) (h : IsOpenMap f) (s : Set α)
-    (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
-    closure (f '' (f ⁻¹' s)) = s := by
-  refine subset_antisymm (closure_minimal (by simp) hs') ?_
-  refine subset_trans (subset_closure_inter_of_isPreirreducible_of_isOpen hs h.isOpen_range ?_) ?_
-  · exact Set.nonempty_of_nonempty_preimage (f := f) (by simpa)
-  · gcongr
-    grind
-
-lemma IsOpenMap.preimage_closure_image (f : β → α) (h₁ : IsOpenMap f)
-    (h₂ : Function.Injective f) (h₃ : Continuous f) (s : Set β)
-    (hs' : IsClosed s) :
-    f ⁻¹' closure (f '' s) = s := by
-  rw [h₁.preimage_closure_eq_closure_preimage h₃, Set.preimage_image_eq _ h₂, hs'.closure_eq]
-
 /--
 Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` are order isomorphic
 to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
@@ -533,10 +518,10 @@ def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
       isClosed' := V.1.3.preimage h.continuous }
   left_inv V := by
     ext
-    simp [IsOpenMap.preimage_closure_image f h.isOpenMap h.injective h.continuous _ V.isClosed]
+    simp [IsOpenMap.preimage_closure_image h.isOpenMap h.injective h.continuous _ V.isClosed]
   right_inv V := by
     ext
-    simp [IsPreirreducible.closure_image_preimage f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+    simp [closure_image_preimage_of_preIrreducible f h.isOpenMap V V.2 V.1.2.2 V.1.3]
   map_rel_iff' {a b} := by
     refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
     simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,

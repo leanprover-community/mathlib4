@@ -78,9 +78,8 @@ variable {α : Type*} [TopologicalSpace α]
 
 open TopologicalSpace Topology Order Set IrreducibleCloseds
 
-lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
-    [TopologicalSpace X] {f : U → X} (hf : IsOpenEmbedding f)
-    (Z : TopologicalSpace.IrreducibleCloseds U) :
+lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
+    (Z : TopologicalSpace.IrreducibleCloseds X) :
     Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
   rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
   refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
@@ -88,10 +87,6 @@ lemma Topology.IsOpenEmbedding.coheight_map {U X : Type*} [TopologicalSpace U]
   exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
 
 attribute [local instance] specializationOrder
-
-@[simp]
-lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
-    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
 
 lemma Topology.IsOpenEmbedding.coheight_eq {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
     [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]

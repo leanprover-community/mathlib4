@@ -174,6 +174,10 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp
     rfl
 
+@[simp]
+lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
+    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
+
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
