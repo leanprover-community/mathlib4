@@ -353,7 +353,8 @@ lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
   rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
   congr
-  exact primeSpectrum_preorder_eq_orderDual_spec_preorder R
+  ext a b
+  exact le_primeSpectrum_preorder_iff_le_orderDual_spec_preorder R a b
 
 open Order in
 @[stacks 02IZ]

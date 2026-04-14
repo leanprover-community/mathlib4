@@ -553,7 +553,8 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
-lemma primeSpectrum_preorder_eq_orderDual_spec_preorder (R : CommRingCat) (a b : PrimeSpectrum R) :
+lemma le_primeSpectrum_preorder_iff_le_orderDual_spec_preorder (R : CommRingCat)
+    (a b : PrimeSpectrum R) :
     @LE.le _ PrimeSpectrum.instPartialOrder.toLE a b ↔
     @LE.le _ (OrderDual.instPreorder ↥(Spec R)).toLE a b := by
   simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes]
