@@ -26,7 +26,6 @@ open scoped nonZeroDivisors TensorProduct
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`. -/
 noncomputable
 def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
