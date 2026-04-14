@@ -75,7 +75,7 @@ lemma pairwise_primeFactors_isRelPrime :
   intro x hx y hy hxy
   simp only [Finset.mem_coe, mem_primeFactors, mem_normalizedFactors_iff' ha₀] at hx hy
   rw [hx.1.isRelPrime_iff_not_dvd]
-  contrapose! hxy
+  contrapose hxy
   have : Associated x y := hx.1.associated_of_dvd hy.1 hxy
   exact this.eq_of_normalized hx.2.1 hy.2.1
 

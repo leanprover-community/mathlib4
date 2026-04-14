@@ -329,7 +329,6 @@ theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
     rw [toJordanDecomposition_neg, JordanDecomposition.neg_negPart]
   rw [singularPart, singularPart, neg_sub, h₁, h₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
@@ -340,7 +339,6 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
     · congr
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   cases le_or_gt 0 r with
