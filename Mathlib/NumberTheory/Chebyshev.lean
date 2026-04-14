@@ -223,7 +223,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
   apply le_trans <| abs_sum_le_sum_abs ..
   simp_rw [abs_of_nonneg <| theta_nonneg _]
   trans ∑ i ∈ Icc 2 ⌊log x / log 2⌋₊, log 4 * x.sqrt
-  · apply sum_le_sum fun i hi ↦ ?_
+  · gcongr with i hi
     apply le_trans (theta_le_log4_mul_x (rpow_nonneg (by linarith) _))
     rw [sqrt_eq_rpow]
     gcongr <;> simp_all

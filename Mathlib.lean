@@ -1524,6 +1524,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -1556,7 +1558,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvarianceTopCat
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -4356,6 +4357,7 @@ public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.IntermediateField.ExtendRight
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
@@ -5626,6 +5628,8 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.ClassNumber
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.NumberField.Completion.Ramification
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
@@ -6584,7 +6588,8 @@ public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.NormTrace
 public import Mathlib.RingTheory.NormalClosure
 public import Mathlib.RingTheory.Nullstellensatz
-public import Mathlib.RingTheory.OrderOfVanishing
+public import Mathlib.RingTheory.OrderOfVanishing.Basic
+public import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 public import Mathlib.RingTheory.OreLocalization.Basic
 public import Mathlib.RingTheory.OreLocalization.Cardinality
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
