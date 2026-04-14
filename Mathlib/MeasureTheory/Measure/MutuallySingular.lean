@@ -208,7 +208,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
     conv =>
       -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
       enter [1, 1]
-      equals ((1:ℝ≥0) / (2:ℝ≥0)) => rfl
+      equals ((1 : ℝ≥0) / (2 : ℝ≥0)) => rfl
     norm_cast
     ring
   choose s hs₂ hs₃ using h'

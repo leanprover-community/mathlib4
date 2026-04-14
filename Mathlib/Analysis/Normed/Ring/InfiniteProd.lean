@@ -36,7 +36,7 @@ public theorem tendsto_tprod_one_add_of_dominated_convergence {𝓕 : Filter α}
     Tendsto (fun n ↦ ∏' k, (1 + f n k)) 𝓕 (𝓝 (∏' k, (1 + g k))) := by
   rcases eq_or_neBot 𝓕 with rfl | _
   · simp
-  have h_bound_g (k) :  ‖g k‖ ≤ bound k :=
+  have h_bound_g (k) : ‖g k‖ ≤ bound k :=
     le_of_tendsto ((hab k).norm) (h_bound.mono fun n hn ↦ hn k)
   have hsum_g : Summable (‖g ·‖) := h_sum.of_nonneg_of_le (fun _ ↦ norm_nonneg _) h_bound_g
   rw [show ∏' k, (1 + g k) = ∑' s, ∏ i ∈ s, g i from
