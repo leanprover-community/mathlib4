@@ -17,9 +17,6 @@ Lemmas about finiteness of ideal operations.
 
 public section
 
-open Function (Surjective)
-open Finsupp
-
 namespace Ideal
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -46,6 +43,19 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
   let g₁ := (IsScalarTower.toAlgHom R S A).toLinearMap
   exact Submodule.fg_ker_comp f₁ g₁ hf
     (Submodule.FG.restrictScalars_of_surjective hg hsur) hsur
+
+/-- Let `f : R →+* S` be a surjective ring homomorphism, and let `I` be an ideal of `R`. If `f(I)`
+and `I ∩ ker(f)` are finitely generated ideals, then `I` is also finitely generated. -/
+theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [CommRing R] [CommRing S]
+    {f : R →+* S} {I : Ideal R} (hmap : (I.map f).FG) (hk : (I ⊓ (RingHom.ker f)).FG)
+    (hf : Function.Surjective f) : I.FG := by
+  algebraize [f]
+  have h : Submodule.map (Module.compHom.toLinearMap f) I = (I.map f).restrictScalars R := by
+    ext
+    have : RingHomSurjective f := ⟨hf⟩
+    simp [map_eq_submodule_map]
+  refine Submodule.fg_of_fg_map_of_fg_inf_ker (Module.compHom.toLinearMap f) ?_ hk
+  simpa [h] using Submodule.FG.restrictScalars_of_surjective hmap hf
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
