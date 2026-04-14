@@ -222,9 +222,8 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
       ∧ ⨆ i, re ∘ (l i) + const E (c i) = φ := by
   obtain ⟨l, c, hle, hsup⟩ := hφcv.sSup_of_nat_affine_eq (𝕜 := 𝕜) (s := univ) isClosed_univ
     (lowerSemicontinuousOn_univ_iff.2 hφc)
-  refine ⟨l, c, ?_, ?_⟩
-  · intro i x
-    simpa using hle i ⟨x, trivial⟩
+  refine ⟨l, c, fun i x ↦ ?_, ?_⟩
+  · exact hle i ⟨x, trivial⟩
   · ext x
     simpa using congrFun hsup ⟨x, trivial⟩
 
