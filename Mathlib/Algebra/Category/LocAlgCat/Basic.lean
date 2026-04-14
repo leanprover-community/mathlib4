@@ -13,18 +13,19 @@ public import Mathlib.Algebra.Category.LocAlgCat.Defs
 
 ## Main Results
 
-* `LocAlgCat.ofQuot` : The object in `LocAlgCat` obtained from quotienting by a proper ideal.
+* `LocAlgCat.ofQuot` : The object in `LocAlgCat` obtained from the quotient by a proper ideal.
 
-* `LocAlgCat.toOfQuot` : The canonical quotient morphism `A ⟶ A.ofQuot I`.
+* `LocAlgCat.toOfQuot` : Upgrades the canonical quotient map from `A → A ⧸ I` to a morphism
+  `A ⟶ A.ofQuot I`.
 
-* `LocAlgCat.mapOfQuot` : The categorical morphism between quotient objects induced
+* `LocAlgCat.mapOfQuot` : The canonical morphism `A.ofQuot I ⟶ B.ofQuot J` induced
   by a morphism `f : A ⟶ B`. This is the categorical counterpart to `Ideal.quotientMapₐ`.
 
-* `LocAlgCat.infinitesimalNeighborhood` : The quotient of a local algebra by the
-  `n`-th power of its maximal ideal.
+* `LocAlgCat.infinitesimalNeighborhood` : The object in `LocAlgCat` obtained from the quotient by the
+  `n`-th power of the maximal ideal.
 
-* `LocAlgCat.specialFiber` : The special fiber of `A` over a local base ring `Λ`,
-  defined as the quotient of `A` by the extended maximal ideal of `Λ`.
+* `LocAlgCat.specialFiber` : The special fiber of an object over a local base ring, defined as
+  the object in `LocAlgCat` obtained from quotient by the extended maximal ideal of the base ring.
 
 -/
 
