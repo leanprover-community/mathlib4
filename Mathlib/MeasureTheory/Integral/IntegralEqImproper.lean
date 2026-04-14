@@ -631,7 +631,7 @@ theorem tendsto_integral_Iic_zero (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
   by_cases! h : ∀ b, ¬ IntegrableOn f (Iic b) μ
   · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
-  obtain ⟨b, hb⟩ :=  h
+  obtain ⟨b, hb⟩ := h
   have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
     rw [sub_eq_iff_comm,
