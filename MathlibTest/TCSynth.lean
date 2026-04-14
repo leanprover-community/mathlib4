@@ -42,7 +42,9 @@ section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12227
 
-/-- info: Ring.toNonAssocRing.toNonUnitalNonAssocSemiring -/
+/--
+info: (SubringClass.toNormedRing (StarAlgebra.elemental ℂ x)).toNonAssocRing.toNonUnitalNonAssocSemiring
+-/
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] (x : A) in
