@@ -86,12 +86,12 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 @[simp]
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
-instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ :=
+instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
   .lift _ DFunLike.coe_injective'
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
-protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
+protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_instance%
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
@@ -388,7 +388,8 @@ section UniformSpace
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [Zero R] [UniformSpace R]
 
-protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
+protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
+  fast_instance% .comap toContinuousMap inferInstance
 
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
