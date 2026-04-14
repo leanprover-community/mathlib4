@@ -35,41 +35,26 @@ theorem encard_neighborSet : (G.neighborSet v).encard = G.edegree v := by
   rfl
 
 variable {G v} in
-theorem edegree_eq_zero_iff_neighborSet_eq_empty : G.edegree v = 0 ↔ G.neighborSet v = ∅ :=
-  Set.encard_eq_zero
-
-variable {G v} in
-theorem edegree_ne_zero_iff_nonempty_neighborSet : G.edegree v ≠ 0 ↔ (G.neighborSet v).Nonempty :=
-  Set.encard_ne_zero
-
-variable {G v} in
-theorem edegree_ne_zero_iff_exists_adj : G.edegree v ≠ 0 ↔ ∃ u, G.Adj v u :=
-  edegree_ne_zero_iff_nonempty_neighborSet
+@[simp]
+theorem edegree_eq_zero_iff_isIsolated : G.edegree v = 0 ↔ G.IsIsolated v := by
+  simp [← encard_neighborSet]
 
 variable {G u v} in
 theorem Adj.edegree_ne_zero_left (h : G.Adj u v) : G.edegree u ≠ 0 :=
-  edegree_ne_zero_iff_nonempty_neighborSet.mpr ⟨_, h⟩
+  edegree_eq_zero_iff_isIsolated.not.mpr <| exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
 
 variable {G u v} in
 theorem Adj.edegree_ne_zero_right (h : G.Adj u v) : G.edegree v ≠ 0 :=
   h.symm.edegree_ne_zero_left
 
 variable {G v} in
-theorem edegree_ne_zero_iff_mem_support : G.edegree v ≠ 0 ↔ v ∈ G.support := by
-  rw [edegree_ne_zero_iff_exists_adj, mem_support]
-
-variable {G v} in
-theorem edegree_eq_zero_iff_notMem_support : G.edegree v = 0 ↔ v ∉ G.support := by
-  rw [← edegree_ne_zero_iff_mem_support, not_ne_iff]
-
-variable {G v} in
 theorem nontrivial_of_edegree_ne_zero (h : G.edegree v ≠ 0) : Nontrivial V :=
-  G.nontrivial_of_nonempty_neighborSet <| edegree_ne_zero_iff_nonempty_neighborSet.mp h
+  nontrivial_of_not_isIsolated <| edegree_eq_zero_iff_isIsolated.not.mp h
 
 @[simp]
 theorem edegree_eq_zero_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
     G.edegree v = 0 :=
-  edegree_eq_zero_iff_neighborSet_eq_empty.mpr <| G.neighborSet_eq_empty_of_subsingleton v
+  edegree_eq_zero_iff_isIsolated.mpr <| .of_subsingleton G v
 
 variable {G v} in
 theorem edegree_eq_one_iff_existsUnique_adj : G.edegree v = 1 ↔ ∃! u, G.Adj v u := by
@@ -137,7 +122,7 @@ theorem edegree_bot : edegree ⊥ v = 0 := by
   simp [← encard_neighborSet]
 
 theorem eq_bot_iff_edegree : G = ⊥ ↔ ∀ v, G.edegree v = 0 := by
-  simp [eq_bot_iff_neighborSet, edegree_eq_zero_iff_neighborSet_eq_empty]
+  simp [eq_bot_iff_neighborSet, edegree_eq_zero_iff_isIsolated]
 
 variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :
@@ -165,7 +150,7 @@ theorem maxEDegree_eq_zero_iff_eq_bot : G.maxEDegree = 0 ↔ G = ⊥ := by
 
 variable {G} in
 theorem minEDegree_eq_zero_iff_support_ne : G.minEDegree = 0 ↔ G.support ≠ .univ := by
-  simp [minEDegree_eq_iInf, Set.ne_univ_iff_exists_notMem, edegree_eq_zero_iff_notMem_support]
+  simp [minEDegree_eq_iInf, Set.ne_univ_iff_exists_notMem, notMem_support_iff_isIsolated]
 
 variable {G} in
 theorem minEDegree_eq_top_iff : G.minEDegree = ⊤ ↔ ∀ v, G.edegree v = ⊤ :=

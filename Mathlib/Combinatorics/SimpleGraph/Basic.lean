@@ -808,14 +808,6 @@ theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
     G.neighborSet v ⊆ G'.neighborSet v :=
   fun _ hadj ↦ hle hadj
 
-variable {G} in
-theorem mem_support_iff_nonempty_neighborSet : v ∈ G.support ↔ (G.neighborSet v).Nonempty :=
-  .rfl
-
-variable {G} in
-theorem notMem_support_iff_neighborSet_eq_empty : v ∉ G.support ↔ G.neighborSet v = ∅ := by
-  rw [mem_support_iff_nonempty_neighborSet, Set.not_nonempty_iff_eq_empty]
-
 @[simp]
 theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
@@ -830,16 +822,6 @@ theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
   ⟨u, v, hadj.ne⟩
-
-variable {G} in
-theorem nontrivial_of_nonempty_neighborSet (h : (G.neighborSet v).Nonempty) : Nontrivial V :=
-  h.elim fun _ ↦ Adj.nontrivial
-
-@[simp]
-theorem neighborSet_eq_empty_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
-    G.neighborSet v = ∅ := by
-  by_contra!
-  exact not_nontrivial V <| nontrivial_of_nonempty_neighborSet this
 
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
@@ -968,5 +950,21 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
+
+theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
+  simp [mem_support_iff_not_isIsolated]
+
+variable {G} in
+theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
+  simp [IsIsolated]
+
+@[simp]
+theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.IsIsolated v :=
+  fun _ hadj ↦ not_nontrivial V <| hadj.nontrivial
+
+variable {G} in
+theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
+  exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
 
 end SimpleGraph
