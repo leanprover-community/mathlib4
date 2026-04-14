@@ -332,7 +332,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     exact ⟨⟨q.of_isIso e.hom⟩⟩
 
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
-    [h : σ.IsFinitePresentation] : (σ.of_isIso f).IsFinitePresentation where
+    [σ.IsFinitePresentation] : (σ.of_isIso f).IsFinitePresentation where
   isFinite_presentation i := by
     dsimp
     exact inferInstanceAs ((σ.presentation i).of_isIso _).IsFinite
