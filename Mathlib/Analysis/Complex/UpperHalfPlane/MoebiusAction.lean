@@ -6,7 +6,6 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -229,7 +228,7 @@ theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (den
   set d := g 1 1
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by simp [denom, Complex.normSq]; ring
 
 @[simp]
 theorem neg_smul : -g • z = g • z := by
