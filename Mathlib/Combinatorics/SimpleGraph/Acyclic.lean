@@ -685,7 +685,7 @@ lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r �
 lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
   starGraph_adj.mpr ⟨h, Or.inl rfl⟩
 
-lemma starGraph_isConnected (r : V) : (starGraph r).Connected := by
+lemma connected_starGraph (r : V) : (starGraph r).Connected := by
   have : ∀ v, (starGraph r).Reachable r v := by
     intro v
     by_cases! h : r = v
@@ -693,7 +693,7 @@ lemma starGraph_isConnected (r : V) : (starGraph r).Connected := by
     · exact (starGraph_center_adj h).reachable
   exact connected_iff _ |>.mpr ⟨fun u v => (this u).symm.trans (this v), ⟨r⟩⟩
 
-lemma starGraph_isAcyclic (r : V) : (starGraph r).IsAcyclic := by
+lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ isBridge_iff.mpr ⟨hadj, ?_⟩
   rw [starGraph_adj] at hadj
   wlog! h : v = r
@@ -706,8 +706,8 @@ lemma starGraph_isAcyclic (r : V) : (starGraph r).IsAcyclic := by
     ext x; aesop
 
 /-- A star graph is a tree. -/
-lemma starGraph_isTree (r : V) : (starGraph r).IsTree := by
-  refine ⟨starGraph_isConnected r, starGraph_isAcyclic r⟩
+lemma isTree_starGraph (r : V) : (starGraph r).IsTree := by
+  refine ⟨connected_starGraph r, isAcyclic_starGraph r⟩
 
 /-- Every non-center vertex of a starGraph has degree one. -/
 lemma starGraph_not_center_imp_degree_one [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
