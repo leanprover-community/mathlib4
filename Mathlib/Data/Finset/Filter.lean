@@ -225,6 +225,11 @@ lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔
 lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
   simp [Finset.ext_iff]
 
+@[simp]
+lemma filter_mem_eq_of_subset [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    t.filter (· ∈ s) = s := by
+  grind
+
 end Filter
 
 end Finset
