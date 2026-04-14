@@ -263,15 +263,15 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+    nsmul := h.npow
+    nsmul_zero := h.npow_zero
+    nsmul_succ := h.npow_succ }
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+    npow := h.nsmul
+    npow_zero := h.nsmul_zero
+    npow_succ := h.nsmul_succ }
 
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=

@@ -79,7 +79,7 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
+  { npow := fun z a => ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
     npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
     npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,

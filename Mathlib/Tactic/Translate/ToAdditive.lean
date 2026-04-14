@@ -190,8 +190,8 @@ mismatch error.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
-    (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
-    argument order, since it matches `AddMonoid.nsmul n x`.
+    (e.g. `NPow.npow n x` corresponds to `x ^ n`, but it is convenient that `NPow.npow` has this
+    argument order, since it matches `NSMul.nsmul n x`.
   * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
 
 If neither of these solutions work, and `to_additive` is unable to automatically generate the

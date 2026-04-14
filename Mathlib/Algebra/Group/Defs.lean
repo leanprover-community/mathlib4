@@ -634,11 +634,15 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
   rfl
 
-/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+/-- `NSMul` is an implementation detail of `AddMonoid`. It is necessary because it is not
+possible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
+class NSMul (M : Type u) where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
+
+/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M, NSMul M where
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -647,25 +651,34 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZero.toAdd
 
+/-- `NPow` is an implementation detail of `AddMonoid`. It is necessary because it is not
+possible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
+@[to_additive]
+class NPow (M : Type u) where
+  /-- Raising to the power of a natural number. -/
+  protected npow : ℕ → M → M
+
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRecAuto
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M, NPow M where
+  npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
-@[default_instance high, to_additive]
+@[default_instance high, to_additive toSMul]
 instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
+  ⟨fun x n ↦ NPow.npow n x⟩
+
+@[to_additive]
+instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ x ^ n⟩
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
+theorem npow_eq_pow (n : ℕ) (x : M) : NPow.npow n x = x ^ n :=
   rfl
 
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
