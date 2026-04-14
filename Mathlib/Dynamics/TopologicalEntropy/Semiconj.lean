@@ -43,11 +43,11 @@ We use only the definition of the topological entropy using covers; the simplest
 
 ## Main results
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
-the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
+  the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
-the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
+  the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
 - `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
-`coverEntropy S F`.
+  `coverEntropy S F`.
 
 ## Tags
 entropy, semiconjugacy

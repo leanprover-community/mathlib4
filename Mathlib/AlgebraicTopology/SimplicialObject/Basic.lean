@@ -211,10 +211,25 @@ theorem σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : 
 
 variable (C)
 
+section
+
+variable {D : Type*} [Category* D]
+
+variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
-def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
+
+@[simp]
+lemma whiskering_obj_obj_δ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% (((whiskering C D).obj F).obj X).δ i = F.map (X.δ i) := rfl
+
+@[simp]
+lemma whiskering_obj_obj_σ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% (((whiskering C D).obj F).obj X).σ i = F.map (X.σ i) := rfl
+
+end
 
 /-- Truncated simplicial objects. -/
 abbrev Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -238,8 +253,9 @@ scoped syntax:max (name := mkNotation)
 open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
+    -- try `decide` before `get_elem_tactic` because it is faster for goals with literals.
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | decide | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -379,9 +395,8 @@ def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -422,9 +437,9 @@ def toArrow : Augmented C ⥤ Arrow C where
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
-    (Augmented.drop.map f).app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
-      X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f := by
-  convert congr_app f.w (op ⦋0⦌)
+    dsimp% (Augmented.drop.map f).app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
+      X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f :=
+  congr_app f.w (op ⦋0⦌)
 
 variable (C)
 
@@ -676,10 +691,7 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C �
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+deriving Category
 
 variable {C}
 
@@ -756,9 +768,8 @@ def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 

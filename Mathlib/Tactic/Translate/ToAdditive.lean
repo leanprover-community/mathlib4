@@ -317,6 +317,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("grp", ["Add", "Grp"]),
   ("commute", ["Add", "Commute"]),
   ("semiconj", ["Add", "Semiconj"]),
+  ("conjugates", ["Add", "Conjugates"]),
+  ("conj", ["Add", "Conj"]),
+  ("commutator", ["Add", "Commutator"]),
   ("rootable", ["Divisible"]),
   ("zpowers", ["ZMultiples"]),
   ("powers", ["Multiples"]),
@@ -375,7 +378,11 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact")]
+  ("addExact", "exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("mapMon", "MapAddMon"),
+  ("monObj", "AddMonObj"),
+  ("yonedaMon", "yonedaAddMon")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
