@@ -248,12 +248,12 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! hj
+    contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! h
+    contrapose h
     use j
 
 @[simp]
@@ -264,11 +264,9 @@ theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]
-  intro d
-  by_cases hd : d = 0
-  · simp [hd, hf]
-  · simp [ha, zero_pow hd]
+  have := MvPowerSeries.constantCoeff_subst_eq_zero
+    (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
+  simpa [hasSubst_iff]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
@@ -279,16 +277,9 @@ theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
   exact congr_fun map_id f
 
-theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
-    (p : PowerSeries R) =
-      ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
-  suffices (Polynomial.coeToPowerSeries.algHom R) p =
-    (MvPolynomial.coeToMvPowerSeries.algHom R)
-      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R) p) by simpa
-  rw [← AlgHom.comp_apply]
-  apply AlgHom.congr_fun
-  apply Polynomial.algHom_ext
-  simp [X]
+theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) : (p : PowerSeries R) =
+    ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) :=
+  Polynomial.pUnitAlgEquiv_symm_toPowerSeries
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
@@ -307,7 +298,7 @@ theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
 @[simp]
-theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r:= MvPowerSeries.subst_C _
+theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r := MvPowerSeries.subst_C _
 
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
@@ -315,13 +306,8 @@ theorem subst_X (ha : HasSubst a) :
 
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
-    (f.subst a).map h = (f.map h).subst (a.map h) := by
-  ext n
-  have {r : R} : h r = h.toAddMonoidHom r := rfl
-  rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
-    AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
-  intro d
-  simp [← map_pow]
+    (f.subst a).map h = (f.map h).subst (a.map h) :=
+  MvPowerSeries.map_subst (HasSubst.const ha) f
 
 section
 
@@ -437,8 +423,8 @@ this is the construction of a power series `Q` such that `P(Q(X)) = X`. -/
 noncomputable
 def substInvFun : ℕ → R
   | 0 => 0
-  | 1 => ⅟ (P.coeff 1)
-  | n + 1 => - ⅟ (P.coeff 1) *
+  | 1 => ⅟(P.coeff 1)
+  | n + 1 => - ⅟(P.coeff 1) *
       (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.1) * X ^ i.1)))
 
 /-- Given a power series `P = u • X + O(X²)` with `u` invertible,
@@ -449,14 +435,14 @@ def substInv : PowerSeries R := .mk (substInvFun P)
 include hP in
 lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
-  obtain (_|_|n) := n
+  obtain (_ | _ | n) := n
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
     · simp [substInvFun, HasSubst]
   · rw [map_sub, coeff_subst']
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
-      · rintro (_|_|_) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
+      · rintro (_ | _ | _) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
     · simp [HasSubst, X, substInvFun]
   · rw [Fin.sum_univ_castSucc]
     simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
@@ -466,17 +452,17 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
       one_ne_zero, and_false, ↓reduceIte, sub_zero]
     rw [coeff_subst']
     · simp only [smul_eq_mul, ← map_mul]
-      generalize hk : ⅟ (P.coeff 1) * coeff (n + 1 + 1) (subst B P) = k
+      generalize hk : ⅟(P.coeff 1) * coeff (n + 1 + 1) (subst B P) = k
       trans ∑ᶠ d, P.coeff d * (coeff (n + 1 + 1) (B ^ d) - if d = 1 then k else 0)
       · refine finsum_congr fun i ↦ ?_
         · congr 1
-          obtain (_|_|i) := i
+          obtain (_ | _ | i) := i
           · simp
           · simp [← sub_eq_add_neg]
           · simp only [add_assoc, Nat.reduceAdd]
             rw [add_comm B, add_pow, map_sum, Finset.sum_eq_single (a := 0)]
             · simp
-            · rintro (_|_|j) hj hj'
+            · rintro (_ | _ | j) hj hj'
               · simp at hj'
               · simp [mul_comm (C k), hB', mul_assoc, coeff_X_pow_mul']
               · rw [← neg_mul, mul_pow, ← pow_mul, mul_comm (_ ^ _)]
@@ -523,7 +509,7 @@ lemma constantCoeff_substInv : P.substInv.constantCoeff = 0 := by
 lemma hasSubst_substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
 
 @[simp]
-lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟ (P.coeff 1) := by
+lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
   simp [substInv, substInvFun]
 
 include hP in
@@ -537,7 +523,7 @@ lemma subst_substInv_left : P.substInv.subst P = X := by
     · have (n : ℕ) : (P ^ (n + 1 + 1)).coeff 1 = 0 := by
         obtain ⟨P, rfl⟩ := X_dvd_iff.mpr hP
         simp [mul_pow, coeff_X_pow_mul']
-      rintro (_|_|n) hn <;> simp_all
+      rintro (_ | _ | n) hn <;> simp_all
   have hQ : Q.constantCoeff = 0 := by
     trans coeff 0 (P.substInv.subst P)
     · simp [Q]

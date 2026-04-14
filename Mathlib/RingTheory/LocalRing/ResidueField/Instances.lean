@@ -70,7 +70,7 @@ namespace IsLocalRing
 variable {R k : Type*} [CommRing R] [IsLocalRing R] [Field k] [Algebra R k]
 
 instance ResidueField.algebraOfIsIntegral [Algebra.IsIntegral R k] : Algebra (ResidueField R) k :=
-  (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)
+  fast_instance% (Ideal.Quotient.lift (maximalIdeal R) (algebraMap R k)
     (by simp [← eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral R k)])).toAlgebra
 
 instance ResidueField.isScalarTowerOfIsIntegral [Algebra.IsIntegral R k] :
