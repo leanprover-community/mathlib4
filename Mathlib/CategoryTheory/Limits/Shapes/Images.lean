@@ -768,7 +768,7 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
 @[deprecated (since := "2026-04-08")]
-alias ImageMap.mk.injEq' :=  ImageMap.mk.injEq
+alias ImageMap.mk.injEq' := ImageMap.mk.injEq
 
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
