@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.RingTheory.CohenMacaulay.Maximal
-public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
 
 /-!
 
