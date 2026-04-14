@@ -6694,6 +6694,7 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
