@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
-public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.FtInfty`
+public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
 
 /-!
 # Function fields
@@ -176,20 +176,23 @@ alias inftyValuation.X_inv := RatFunc.inftyValuation.X_inv
 @[deprecated RatFunc.inftyValuation.polynomial (since := "2026-04-14")]
 alias inftyValuation.polynomial := RatFunc.inftyValuation.polynomial
 
-@[deprecated RatFunc.inftyValuedFt (since := "2026-04-14")]
-alias inftyValuedFt := RatFunc.inftyValuedFt
+@[deprecated RatFunc.inftyValued (since := "2026-04-14")]
+alias inftyValuedFt := RatFunc.inftyValued
 
-@[deprecated RatFunc.inftyValuedFt.def (since := "2026-04-14")]
-alias inftyValuedFt.def := RatFunc.inftyValuedFt.def
+@[deprecated RatFunc.inftyValued.def (since := "2026-04-14")]
+alias inftyValuedFt.def := RatFunc.inftyValued.def
 
-@[deprecated RatFunc.FtInfty (since := "2026-04-14")]
-alias FtInfty := RatFunc.FtInfty
+@[deprecated RatFunc.CompletionAtInfty (since := "2026-04-14")]
+alias FtInfty := RatFunc.CompletionAtInfty
 
-@[deprecated RatFunc.valuedFtInfty (since := "2026-04-14")]
-alias valuedFtInfty := RatFunc.valuedFtInfty
+@[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
+(since := "2026-04-14")]
+instance valuedFtInfty [DecidableEq (RatFunc F)] :
+    Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
+  inferInstance
 
-@[deprecated RatFunc.valuedFtInfty.def (since := "2026-04-14")]
-alias valuedFtInfty.def := RatFunc.valuedFtInfty.def
+@[deprecated RatFunc.valuedCompletionAtInfty.def (since := "2026-04-14")]
+alias valuedFtInfty.def := RatFunc.valuedCompletionAtInfty.def
 
 end deprecated
 
