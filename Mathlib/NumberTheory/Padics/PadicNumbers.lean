@@ -1021,8 +1021,6 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
 
 open Filter Set
 
-instance : CompleteSpace ℚ_[p] := completeSpace_of_cauSeq_isComplete
-
 /-! ### Valuation on `ℚ_[p]` -/
 
 
