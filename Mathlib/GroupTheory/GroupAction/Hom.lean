@@ -799,14 +799,14 @@ instance [AddMonoid A] [DistribMulAction M A] [AddMonoid B] [DistribMulAction N 
 def _root_.DistribMulActionHom.comp [AddMonoid A] [DistribMulAction M A]
   [AddMonoid B] [DistribMulAction N B] [AddMonoid C] [DistribMulAction P C]
   (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B)
-    [κ : MonoidHom.CompTriple φ ψ χ] :  A →ₑ+[χ] C :=
+    [κ : MonoidHom.CompTriple φ ψ χ] : A →ₑ+[χ] C :=
   { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 
 /-- Composition of two equivariant monoid homomorphisms. -/
 @[to_additive existing (dont_translate := M N P)]
 def comp (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B)
-    [κ : MonoidHom.CompTriple φ ψ χ] :  A →ₑ*[χ] C :=
+    [κ : MonoidHom.CompTriple φ ψ χ] : A →ₑ*[χ] C :=
   { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
     MonoidHom.comp (g : B →* C) (f : A →* B) with }
 

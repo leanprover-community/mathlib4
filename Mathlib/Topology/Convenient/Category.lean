@@ -17,7 +17,7 @@ the category `GeneratedByTopCat X` of `X`-generated spaces: this is
 defined as a full subcategory of `TopCat`.
 
 We also introduce an equivalent category `ContinuousGeneratedByCat X` whose
-objects are topological spaces, but morphisms from `Y` to `Z` identify
+objects are all topological spaces, but morphisms from `Y` to `Z` identify
 to the type `ContinuousMapGeneratedBy X Y Z` of `X`-continuous maps from
 `Y` to `Z`. While `GeneratedByTopCat X` is defined as a full subcategory
 of `TopCat`, `ContinuousGeneratedByCat X` should be thought of as
@@ -81,13 +81,12 @@ end GeneratedByTopCat
 in a category ` ContinuousGeneratedByCat X` where:
 * objects are topological spaces;
 * morphisms are `X`-continuous maps. -/
-structure ContinuousGeneratedByCat
-    (X : ι → Type u) [∀ i, TopologicalSpace (X i)] where
-    /-- Constructor for objects in `ContinuousGeneratedByCat X`. -/
-    of ::
-    /-- The underlying type of an object in `ContinuousGeneratedByCat X`. -/
-    carrier : Type v
-    [str : TopologicalSpace carrier]
+structure ContinuousGeneratedByCat (X : ι → Type u) [∀ i, TopologicalSpace (X i)] where
+  /-- Constructor for objects in `ContinuousGeneratedByCat X`. -/
+  of ::
+  /-- The underlying type of an object in `ContinuousGeneratedByCat X`. -/
+  carrier : Type v
+  [str : TopologicalSpace carrier]
 
 namespace ContinuousGeneratedByCat
 
@@ -100,8 +99,7 @@ attribute [coe] carrier
 
 attribute [instance] str
 
-lemma coe_of (Y : Type v) [TopologicalSpace Y] : (of (X := X) Y : Type v) = Y :=
-  rfl
+lemma coe_of (Y : Type v) [TopologicalSpace Y] : (of (X := X) Y : Type v) = Y := rfl
 
 lemma of_carrier (Y : ContinuousGeneratedByCat.{v} X) : of (X := X) Y = Y := rfl
 
@@ -128,6 +126,10 @@ def TopCat.toContinuousGeneratedByCat :
     { toFun := f
       prop := f.hom.continuous.continuousGeneratedBy }
 
+@[simp]
+lemma TopCat.toContinuousGeneratedByCat_map_apply {Y Z : TopCat.{v}} (f : Y ⟶ Z) (y : Y) :
+    dsimp% (TopCat.toContinuousGeneratedByCat X).map f y = f y := rfl
+
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
   map_injective {_ _ _ _ h} := by
     ext x
@@ -142,6 +144,14 @@ the topological space `WithGeneratedByTopology X Y`. -/
 def toTopCat : ContinuousGeneratedByCat.{v} X ⥤ TopCat where
   obj Y := TopCat.of (WithGeneratedByTopology X Y)
   map f := TopCat.ofHom (f.prop.continuousMap)
+
+variable {X} in
+lemma toTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X}
+    (f : Y ⟶ Z) (y : WithGeneratedByTopology X ↑Y) :
+    dsimp% (toTopCat X).map f y =
+      (WithGeneratedByTopology.equiv (X := X)).symm
+        (f (WithGeneratedByTopology.equiv y)) :=
+  rfl
 
 /-- The functor `ContinuousGeneratedByCat.toTopCat : ContinuousGeneratedByCat X ⥤ TopCat`
 is fully faithful. -/
@@ -178,13 +188,20 @@ instance : (toTopCat.{v} X).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).IsRightAdjoint := adj.isRightAdjoint
 
+instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
+
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
 a `X`-generated topological space `Y` to the topological space `Y`, considered as
 an object of `ContinuousGeneratedByCat X`. -/
+@[simps obj]
 def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat.{v} X where
   obj Y := .of Y.obj
   map f := ⟨f, f.hom.hom.continuous.continuousGeneratedBy⟩
+
+@[simp]
+lemma fromGeneratedByTopCat_map_apply {Y Z : GeneratedByTopCat.{v} X} (f : Y ⟶ Z) (y : Y) :
+    fromGeneratedByTopCat.map f y = f y := rfl
 
 /-- The isomorphism between
 `fromGeneratedByTopCat ⋙ toTopCat X ≅ GeneratedByTopCat.toTopCat`. -/
@@ -195,10 +212,17 @@ def equivalenceFunctorIso :
 
 /-- The functor `ContinuousGeneratedByCat X ⥤ GeneratedByTopCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
+@[simps! obj]
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
     exact IsGeneratedBy.instWithGeneratedByTopology (Y := Y))
+
+lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
+    (y : WithGeneratedByTopology X Y) :
+    dsimp% toGeneratedByTopCat.map f y =
+      (WithGeneratedByTopology.equiv (X := X)).symm
+        (f (WithGeneratedByTopology.equiv y)) := rfl
 
 /-- The unit isomorphism of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def equivalenceUnitIso :
@@ -250,15 +274,12 @@ def adjCounit : TopCat.toGeneratedByTopCat.{v} (X := X) ⋙ toTopCat ⟶ 𝟭 To
 The left adjoint is the inclusion functor, and the right adjoint sends
 a topological space `Y` to the underlying type of `Y` endowed with
 the `X`-generated topology. -/
+@[simps]
 def adj : toTopCat.{v} (X := X) ⊣ TopCat.toGeneratedByTopCat where
   unit := adjUnitIso.hom
   counit := adjCounit
 
-@[reassoc]
-lemma adj_homEquiv_naturality {Y : GeneratedByTopCat.{v} X} {Z Z' : TopCat.{v}}
-    (f : toTopCat.obj Y ⟶ Z) (g : Z ⟶ Z') :
-    adj.homEquiv _ _ (f ≫ g) = adj.homEquiv _ _ f ≫ TopCat.toGeneratedByTopCat.map g :=
-  Adjunction.homEquiv_naturality_right _ _ _
+instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
 

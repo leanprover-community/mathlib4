@@ -270,6 +270,14 @@ theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 
 @[to_dual]
+theorem sup_rotate (a b c : α) : a ⊔ b ⊔ c = b ⊔ c ⊔ a := by
+  rw [sup_assoc, sup_comm]
+
+@[to_dual]
+theorem sup_rotate' (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (c ⊔ a) := by
+  rw [sup_comm, sup_assoc]
+
+@[to_dual]
 theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 

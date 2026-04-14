@@ -679,6 +679,7 @@ theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_e
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
+@[grind inj]
 theorem C_injective : Injective (C : R → R[X]) :=
   monomial_injective 0
 

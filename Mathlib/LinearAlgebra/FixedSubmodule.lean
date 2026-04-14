@@ -57,7 +57,7 @@ theorem fixedSubmodule_inf_fixedSubmodule_le_comp (f g : V →ₗ[R] V) :
   intro; simp_all
 
 theorem fixedSubmodule_comp_inf_fixedSubmodule_le (f g : V →ₗ[R] V) :
-    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by  intro; aesop
+    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by intro; aesop
 
 end LinearMap
 
