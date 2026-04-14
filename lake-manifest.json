@@ -1,4 +1,4 @@
-{"version": "1.2.0",
+{"version": "1.1.0",
  "packagesDir": ".lake/packages",
  "packages":
  [{"url": "https://github.com/leanprover-community/plausible",
@@ -82,5 +82,4 @@
    "inherited": true,
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
- "lakeDir": ".lake",
- "fixedToolchain": false}
+ "lakeDir": ".lake"}
