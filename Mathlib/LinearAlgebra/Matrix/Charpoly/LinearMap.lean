@@ -211,7 +211,7 @@ theorem LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_z
                 (∀ k, p.coeff k ∈ I ^ (p.natDegree - k)) ∧ Polynomial.aeval f p = 0 := by
   classical
     cases subsingleton_or_nontrivial R
-    · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
+    · exact ⟨0, by simp [nontriviality]⟩
     obtain ⟨s, hs_card, hs_span⟩ :=
       Submodule.FG.exists_span_finset_card_eq_spanFinrank (R := R) (M := M) Module.Finite.fg_top
     have : Submodule.span R (Set.range ((↑) : s → M)) = ⊤ := by simp [hs_span]
