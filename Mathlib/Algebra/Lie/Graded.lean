@@ -75,7 +75,7 @@ lemma decompose_bracket (x y : L) : decompose ℒ ⁅x, y⁆ = ⁅decompose ℒ 
 
 @[simp]
 lemma decompose_symm_bracket (x y : ⨁ i, ℒ i) :
-    (decompose ℒ).symm ⁅x, y⁆  = ⁅(decompose ℒ).symm x, (decompose ℒ).symm y⁆ := by
+    (decompose ℒ).symm ⁅x, y⁆ = ⁅(decompose ℒ).symm x, (decompose ℒ).symm y⁆ := by
   simp only [← decomposeLinearEquiv_symm_apply]
   simp
 

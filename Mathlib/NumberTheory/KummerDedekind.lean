@@ -87,7 +87,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
   apply (quotMapEquivQuotQuotMap hx hx').injective
-  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+  rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr

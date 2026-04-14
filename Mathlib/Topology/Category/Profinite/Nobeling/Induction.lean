@@ -153,5 +153,5 @@ open Profinite NobelingProof
 `S : Profinite`. -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) := by
-  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  obtain ⟨_, _⟩ := exists_wellFoundedLT {C : Set S // IsClopen C}
   exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
