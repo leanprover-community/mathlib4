@@ -342,7 +342,7 @@ theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c :
   induction a using WellFoundedLT.induction with | ind a IH
   rw [preBeth]
   apply lift_iSup_lt_of_lt_cof_ord _ _
-  · rwa [mk_Iio_ordinal, lift_lift, ← lift_ord, ← lift_cof, lift_lt, hc.isRegular.cof_ord, ← lt_ord]
+  · rwa [mk_Iio_ordinal, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
   · rintro ⟨b, hb⟩
     exact hc.isStrongLimit.two_power_lt <| IH _ hb (hb.trans ha)
 
