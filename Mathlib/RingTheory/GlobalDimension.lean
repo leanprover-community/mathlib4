@@ -32,9 +32,6 @@ In this file, we define the global dimension of ring and proved some of its basi
 * `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
   projective dimension over finitely generated modules.
 
-# TODO
-Prove that global dimension is invariant of universe if assuming `Small.{v} R`. (@Thmoas-Guan)
-
 -/
 
 @[expose] public section
@@ -124,14 +121,14 @@ lemma globalDimension_eq_of_small [Small.{v} R] :
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let := Module.Finite.small.{u} R M
+    have := Module.Finite.small.{u} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
     rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let := Module.Finite.small.{v} R M
+    have := Module.Finite.small.{v} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{v} M) := (Shrink.linearEquiv R M).symm
     rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
@@ -144,8 +141,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let : Small.{u'} R := Small.mk' e.toEquiv
-    let := Module.Finite.small.{u'} R M
+    have : Small.{u'} R := Small.mk' e.toEquiv
+    have := Module.Finite.small.{u'} R M
     let : Module R' (Shrink.{u'} M) := Module.compHom _ e.symm.toRingHom
     let e' : (ModuleCat.of R' (Shrink.{u'} M)) ≃ₛₗ[RingHomClass.toRingHom e.symm] M  := {
       __ := (Shrink.linearEquiv R M)
@@ -155,8 +152,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let : Small.{u} R' := Small.mk' e.symm.toEquiv
-    let := Module.Finite.small.{u} R' M
+    have : Small.{u} R' := Small.mk' e.symm.toEquiv
+    have := Module.Finite.small.{u} R' M
     let : Module R (Shrink.{u} M) := Module.compHom _ e.toRingHom
     let e' : (ModuleCat.of R (Shrink.{u} M)) ≃ₛₗ[RingHomClass.toRingHom e] M  := {
       __ := (Shrink.linearEquiv R' M)
@@ -169,11 +166,11 @@ lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
     globalDimension.{v} (Localization S) ≤ globalDimension.{v} R := by
   simp only [iSup_le_iff, globalDimension]
   intro M
-  let _ : Module R M := Module.compHom M (algebraMap R (Localization S))
+  let : Module R M := Module.compHom M (algebraMap R (Localization S))
   have : IsScalarTower R (Localization S) M := IsScalarTower.of_compHom _ _ _
   apply (le_of_eq_of_le _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
     S (ModuleCat.of R M))).trans (le_iSup _ (ModuleCat.of R M))
-  let _ := isLocalizedModule_id S M (Localization S)
+  have := isLocalizedModule_id S M (Localization S)
   exact (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization S (Localization S)
     (IsLocalizedModule.linearEquiv S ((ModuleCat.of R M).localizedModuleMkLinearMap S)
     LinearMap.id)).symm.toModuleIso)
@@ -188,8 +185,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing 
     intro p
     exact (le_iSup _ (M.localizedModule p.1.primeCompl)).trans
       (le_iSup (fun (p : PrimeSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) p)
-  · refine iSup_le_iff.mpr (fun p ↦ ?_)
-    exact globalDimension_localization_le p.1.primeCompl
+  · exact iSup_le_iff.mpr (fun p ↦ globalDimension_localization_le p.1.primeCompl)
 
 lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
@@ -200,7 +196,6 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_maximal, iSup_le_iff]
     exact fun m ↦ (le_iSup _ (M.localizedModule m.1.primeCompl)).trans
       (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) m)
-  · refine iSup_le_iff.mpr (fun m ↦ ?_)
-    exact globalDimension_localization_le m.1.primeCompl
+  · exact iSup_le_iff.mpr (fun m ↦ globalDimension_localization_le m.1.primeCompl)
 
 end GlobalDimension
