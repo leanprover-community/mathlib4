@@ -63,12 +63,14 @@ theorem subsingleton_iff_singleton {x} (hx : x ∈ s) : s.Subsingleton ↔ s = {
 theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ ∃ x, s = {x} :=
   s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
 
-theorem Subsingleton.subsingleton_iff_eq_empty_or_singleton  : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} :=by
+theorem Subsingleton.subsingleton_iff_eq_empty_or_singleton  : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} := by
   constructor
-  intro h ; exact Set.Subsingleton.eq_empty_or_singleton h
+  intro h 
+  exact Set.Subsingleton.eq_empty_or_singleton h
   intro h
   rcases h with h|h
-  rw [h] ; simp
+  rw [h]
+  simp
   obtain ⟨a,ha⟩ := h
   subst ha
   simp
