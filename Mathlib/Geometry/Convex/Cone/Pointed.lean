@@ -289,7 +289,22 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
 
 end PositiveCone
 
+section AddCommGroup
+
+variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
+  sup_inf_assoc_of_le_of_neg_le _ hCS (fun _ hx => by simpa using hCS hx)
+
+lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
+  inf_sup_assoc_of_le_of_neg_le _ hSC (fun _ hx => by apply hSC; simpa [hSC] using hx)
+
+end AddCommGroup
+
 section OrderedAddCommGroup
+
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
   [IsOrderedAddMonoid E] [Module R E]
 
