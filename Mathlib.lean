@@ -6696,6 +6696,7 @@ public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 public import Mathlib.RingTheory.RegularLocalRing.Polynomial
+public import Mathlib.RingTheory.RegularLocalRing.Syzygy
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
