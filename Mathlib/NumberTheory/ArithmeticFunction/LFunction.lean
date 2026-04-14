@@ -153,6 +153,8 @@ section CommRing
 
 variable [CommRing R]
 
+/-- In `ArithmeticFunction.ofPowerSeries`, replacing the base `q` with a power `q ^ k` corresponds
+to substituting `X` with `X ^ k` in the original power series. -/
 theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
   classical
@@ -175,7 +177,9 @@ theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R)
       exact ⟨k * i, pow_mul q k i⟩
   · simp [ofPowerSeries, hq, hk]
 
-theorem isMultiplicative_ofPowerSeries
+-- todo: generalize to `CommSemiring`
+/-- `ArithmeticFunction.ofPowerSeries` produces multiplicative power series. -/
+theorem isMultiplicative_ofPowerSeries_of_isPrimePow
     (q : ℕ) (hq : IsPrimePow q) (f : PowerSeries R) (hf : f.constantCoeff = 1) :
     IsMultiplicative (ofPowerSeries q f) := by
   refine ⟨(ofPowerSeries_apply_one q f).trans hf, fun {m n} hmn ↦ ?_⟩
