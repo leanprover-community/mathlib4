@@ -17,16 +17,16 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 # Bijections Between Ext
 
-In this file, we prove for fully faithful exact functor `F : C ⥤ D`, either
+In this file, we show that the maps between `Ext` induced
+by a fully faithful exact functor `F : C ⥤ D` are bijective when either
 1. `F` preserves projective objects and `C` has enough projectives, or
-2. `F` preserves injective objects and `C` has enough injectives,
-the map between `Ext` induced by `F` is bijective.
+2. `F` preserves injective objects and `C` has enough injectives.
 
 -/
 
 @[expose] public section
 
-universe w w' u u' v v'
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
@@ -40,11 +40,11 @@ variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteCo
 attribute [local simp] Ext.mapExactFunctor_comp Ext.mapExactFunctor_mk₀ Ext.mapExactFunctor_extClass
 
 attribute [local instance] Ext.subsingleton_of_projective in
-lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+lemma Functor.mapExt_bijective_of_preservesProjectiveObjects [F.Full] [F.Faithful] [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing X with
-  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | zero => simpa [Ext.mapExactFunctor₀] using ⟨Faithful.map_injective, Full.map_surjective⟩
   | succ n hn =>
     let P : ProjectivePresentation X := Classical.arbitrary _
     let S := ShortComplex.mk _ _ (kernel.condition P.f)
@@ -62,11 +62,11 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
       (fun y₃ ↦ Ext.contravariant_sequence_exact₃ (hS.map F) _ y₃ (by subsingleton) (add_comm 1 n))
 
 attribute [local instance] Ext.subsingleton_of_injective in
-lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+lemma Functor.mapExt_bijective_of_preservesInjectiveObjects [F.Full] [F.Faithful] [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing Y with
-  | zero => simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
+  | zero => simpa [Ext.mapExactFunctor₀] using ⟨Faithful.map_injective, Full.map_surjective⟩
   | succ n hn =>
     let I : InjectivePresentation Y := Classical.arbitrary _
     let S := ShortComplex.mk _ _ (cokernel.condition I.f)
