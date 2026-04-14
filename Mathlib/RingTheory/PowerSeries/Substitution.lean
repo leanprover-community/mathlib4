@@ -248,12 +248,12 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! hj
+    contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! h
+    contrapose h
     use j
 
 @[simp]

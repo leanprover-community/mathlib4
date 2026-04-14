@@ -561,7 +561,7 @@ instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePre
   IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
-  contrapose! hd
+  contrapose hd
   have h' := Sym2.other_spec h
   rw [hd] at h'
   rw [← h']
