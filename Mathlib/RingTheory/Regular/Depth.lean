@@ -67,31 +67,26 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       · rw [biUnion_associatedPrimes_eq_compl_regular R M]
         exact fun r hr ↦ h r hr
       · exact fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin
-    let _ := pass.isPrime
+    have := pass.isPrime
     let p' : PrimeSpectrum R := ⟨p, pass.isPrime⟩
     have loc_ne_zero : p' ∈ Module.support R N := Module.mem_support_iff_of_finite.mpr hp
     rw [Module.mem_support_iff] at loc_ne_zero
     let Rₚ := Localization.AtPrime p
     let Nₚ := LocalizedModule.AtPrime p'.asIdeal N
     let Mₚ := LocalizedModule.AtPrime p'.asIdeal M
-    let Nₚ' := Nₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
-    have ntr : Nontrivial Nₚ' :=
-      Submodule.Quotient.nontrivial_iff.mpr <| .symm <|
-        Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator <|
-          IsLocalRing.maximalIdeal_le_jacobson _
+    let Nₚ' := Nₚ ⧸ (maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
+    have ntr : Nontrivial Nₚ' := Submodule.Quotient.nontrivial_iff.mpr <|
+      (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator (maximalIdeal_le_jacobson _)).symm
     let Mₚ' := Mₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Mₚ)
-    let _ : Module p.ResidueField Nₚ' :=
+    let : Module p.ResidueField Nₚ' :=
       Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
     have := isAssociatedPrime_iff.mp <| AssociatedPrimes.mem_iff.mp
       (associatedPrimes.mem_associatedPrimes_atPrime_of_mem_associatedPrimes pass)
     rcases this.2 with ⟨x, hx⟩
-    have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
     rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
     let to_res' : Nₚ' →ₗ[Rₚ] p.ResidueField := {
       __ := g
-      map_smul' r x := by
-        simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-        convert g.map_smul (Ideal.Quotient.mk _ r) x }
+      map_smul' r x := g.map_smul (Ideal.Quotient.mk _ r) x }
     let to_res : Nₚ →ₗ[Rₚ] p.ResidueField :=
       to_res'.comp ((maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)).mkQ
     replace hx : maximalIdeal (Localization.AtPrime p) = (toSpanSingleton _ _ x).ker :=
@@ -104,13 +99,10 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     have f_ne0 : f ≠ 0 := by
       intro eq0
       absurd hg
-      apply LinearMap.ext
-      intro np'
+      apply LinearMap.ext (fun np' ↦ ?_)
       induction np' using Submodule.Quotient.induction_on with | _ np
-      change to_res np = 0
-      apply inj1
-      change f np = _
-      simp [eq0]
+      have : f np = i 0 := by simp [eq0]
+      exact inj1 this
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N
     contrapose! f_ne0
@@ -144,13 +136,11 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
     -- use `Ext N M 0` vanish to obtain an `M`-regular element `x` in `Ann(N)`
-    let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
+    have : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
     have : Subsingleton (N →ₗ[R] M) := ModuleCat.homAddEquiv.symm.subsingleton
     rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
     -- take a power of it to make `xᵏ` fall into `I`
-    have := Ideal.le_radical mem_ann
-    rw [h_supp', Ideal.mem_radical_iff] at this
-    rcases this with ⟨k, hk⟩
+    rcases le_of_le_of_eq Ideal.le_radical h_supp' mem_ann with ⟨k, hk⟩
     -- prepare to apply induction hypotesis to `M ⧸ xᵏM`
     have ne : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) ≠ ⊤ := by
       by_contra eq
@@ -188,9 +178,8 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono (a : R) (k : ℕ) (i : ℕ) {M
     simp only [IsSMulRegular, AddCommGrpCat.mono_iff_injective]
     congr!
     ext
-    simp only [smulShortComplex_f_eq_smul_id, AddCommGrpCat.hom_ofHom, Ext.mk₀_smul,
-      AddMonoidHom.flip_apply, bilinearComp_apply_apply, comp_smul]
-    exact congrArg _ (Ext.comp_mk₀_id _)
+    rw [smulShortComplex_f_eq_smul_id]
+    simp [smulShortComplex, Ext.mk₀_smul]
   rw [this] at f_mono ⊢
   exact f_mono.pow k
 
@@ -236,8 +225,8 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
             (Nat.succ_pred_eq_of_ne_zero eq0)).mono_g (IsZero.eq_zero_of_src _ _)
           exact @AddCommGrpCat.isZero_of_subsingleton _
             (ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' len mem.2 reg.2 (i - 1) (by omega))
-        let gk := (AddCommGrpCat.ofHom
-          ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
+        let gk := AddCommGrpCat.ofHom
+          ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N (add_zero i))
         have mono_gk := Ext.pow_mono_of_mono a k i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
         have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk i
