@@ -229,6 +229,8 @@ lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖�
 lemma l2_opNorm_toEuclideanCLM (A : Matrix n n 𝕜) :
     ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ = ‖A‖ := rfl
 
+set_option synthInstance.maxHeartbeats 100000 in
+/- Becomes slow when changing Ring definition-/
 @[simp]
 lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
   set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
