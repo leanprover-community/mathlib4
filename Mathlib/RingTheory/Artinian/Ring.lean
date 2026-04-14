@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
@@ -63,6 +64,76 @@ lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   rw [nilradical, ← jacobson_eq_radical]
   exact isNilpotent_jacobson_bot
+
+variable (R) in
+/-- A version of `IsArtinianRing.equivPiLocalization` with worse definitional equality. -/
+noncomputable def equivPiLocalizationAux :
+    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 :=
+  haveI : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
+  letI n : ℕ := Classical.choose (isNilpotent_nilradical (R := R))
+  letI hn : nilradical R ^ n = ⊥ := Classical.choose_spec isNilpotent_nilradical
+  haveI hn : nilradical R ^ (n + 1) = ⊥ := by rw [pow_succ, hn, bot_mul]
+  haveI (I : MaximalSpectrum R) : IsLocalization I.1.primeCompl (R ⧸ I.asIdeal ^ (n + 1)) := by
+    classical
+    rw [isLocalization_iff]
+    refine ⟨fun x ↦ ?_, fun x ↦ ?_, fun h ↦ ?_⟩
+    · exact (Ideal.Quotient.isUnit_mk_pow_iff_notMem I.1 n.succ_ne_zero).mpr x.2
+    · obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
+      exact ⟨⟨y, 1⟩, by simp⟩
+    · have key : IsCoprime ((∏ J ≠ I, J.1) ^ (n + 1)) (I.1 ^ (n + 1)) := by
+        rw [IsCoprime.pow_iff n.succ_pos n.succ_pos, IsCoprime.prod_left_iff]
+        intro J hJ
+        rw [Ideal.isCoprime_iff_sup_eq]
+        exact J.2.coprime_of_ne I.2 <| mt MaximalSpectrum.ext <| Finset.ne_of_mem_erase hJ
+      obtain ⟨a, ha, b, hb, hab⟩ := key.exists
+      refine ⟨⟨a, ?_⟩, ?_⟩
+      · simpa [← hab, I.1.add_mem_iff_left, I.1.pow_le_self _ hb] using I.1.one_notMem
+      · rw [← sub_eq_zero, ← mul_sub, ← Ideal.mem_bot, ← hn, nilradical_pow_eq_iInf,
+          iInf_split_single _ I, mul_comm]
+        refine Ideal.mul_le_inf (Ideal.mul_mem_mul (Ideal.Quotient.eq.mp h) ?_)
+        simp only [mem_iInf]
+        refine fun J h ↦ Ideal.pow_right_mono ?_ (n + 1) ha
+        refine Ideal.prod_le_inf.trans (Finset.inf_le ?_)
+        exact Finset.mem_erase_of_ne_of_mem h (Finset.mem_univ J)
+  .symm <| .trans (AlgEquiv.piCongrRight fun I ↦ IsLocalization.algEquiv I.1.primeCompl _ _) <|
+    .trans (quotNilradicalPowEquivPi R (n + 1)).symm <|
+      .trans (Ideal.quotientEquivAlgOfEq R hn) (.quotientBot R R)
+
+variable (R) in
+/-- An Artinian local ring is isomorphic to the product of its localizations. -/
+noncomputable def equivPiLocalizationMaximal :
+    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 :=
+  letI ψ := equivPiLocalizationAux R
+  AlgEquiv.ofBijective (Algebra.ofId _ _)
+    ⟨Localization.injective_algebraMap_pi_localization_maximalSpectrum R,
+      fun x ↦ ⟨ψ.symm x, (ψ.commutes (ψ.symm x)).symm.trans (ψ.apply_symm_apply x)⟩⟩
+
+@[simp]
+theorem equivPiLocalizationMaximal_apply (x : R) :
+    equivPiLocalizationMaximal R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem equivPiLocalizationMaximal_apply_apply (x : R) (I : MaximalSpectrum R) :
+    equivPiLocalizationMaximal R x I = algebraMap R _ x :=
+  rfl
+
+variable (R) in
+/-- An Artinian local ring is isomorphic to the product of its localizations. -/
+noncomputable def equivPiLocalizationPrime :
+    R ≃ₐ[R] ∀ I : PrimeSpectrum R, Localization.AtPrime I.1 :=
+  (equivPiLocalizationMaximal R).trans (AlgEquiv.piCongrLeft R (fun I ↦ Localization.AtPrime I.1)
+    primeSpectrumEquivMaximalSpectrum.symm)
+
+@[simp]
+theorem equivPiLocalizationPrime_apply (x : R) :
+    equivPiLocalizationPrime R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem equivPiLocalizationPrime_apply_apply (x : R) (I : PrimeSpectrum R) :
+    equivPiLocalizationPrime R x I = algebraMap R _ x :=
+  rfl
 
 variable (R) in
 /-- Commutative Artinian reduced local ring is a field. -/

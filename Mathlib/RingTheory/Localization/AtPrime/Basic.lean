@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
@@ -120,6 +121,18 @@ theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZ
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
+
+/-- The map to the product of the localizations at the maximal ideals is injective. -/
+theorem injective_algebraMap_pi_localization_maximalSpectrum (R : Type*) [CommRing R] :
+    Function.Injective (algebraMap R (Π I : MaximalSpectrum R, Localization.AtPrime I.1)) := by
+  rw [injective_iff_map_eq_zero]
+  intro x hx
+  rw [← Submodule.mem_bot R, ← SetLike.mem_coe, ← Set.singleton_subset_iff,
+    ← Submodule.colon_eq_top_iff_subset, ← not_ne_iff, Ideal.ne_top_iff_exists_maximal]
+  contrapose! hx
+  obtain ⟨I, hI, hx⟩ := hx
+  refine Function.ne_iff.mpr ⟨⟨I, hI⟩, ?_⟩
+  simpa [IsLocalization.map_eq_zero_iff I.primeCompl, not_imp_not, SetLike.le_def] using hx
 
 end Localization
 
