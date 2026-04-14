@@ -263,56 +263,56 @@ end InftyValuation
 
 section AdjoinTranscendental
 
-variable {Fq F : Type*} [Field Fq] [Field F] [Algebra (RatFunc Fq) F] [FunctionField Fq F]
-
 open IntermediateField RatFunc
 
-instance FiniteDimensional.adjoin_X : FiniteDimensional Fq⟮(X : Fq⟮X⟯)⟯ F :=
-  have : Module.Finite (⊤ : IntermediateField Fq Fq⟮X⟯) Fq⟮X⟯ :=
-    .top_left Fq⟮X⟯ Fq⟮X⟯
-  RatFunc.adjoin_X (K := Fq) ▸ Module.Finite.trans Fq⟮X⟯ _
+variable {F K : Type*} [Field F] [Field K] [Algebra F⟮X⟯ K] [FunctionField F K]
 
-variable [Algebra Fq F] [IsScalarTower Fq Fq⟮X⟯ F]
+instance FiniteDimensional.adjoin_X : FiniteDimensional F⟮(X : F⟮X⟯)⟯ K :=
+  have : Module.Finite (⊤ : IntermediateField F F⟮X⟯) F⟮X⟯ :=
+    .top_left F⟮X⟯ F⟮X⟯
+  RatFunc.adjoin_X (K := F) ▸ Module.Finite.trans F⟮X⟯ _
+
+variable [Algebra F K] [IsScalarTower F F⟮X⟯ K]
 
 theorem FiniteDimensional.adjoin_algebraMap_X :
-    FiniteDimensional Fq⟮algebraMap _ F (X : Fq⟮X⟯)⟯ F :=
-  .of_restrictScalars_finite Fq⟮(X : Fq⟮X⟯)⟯ _ _
+    FiniteDimensional F⟮algebraMap _ K (X : F⟮X⟯)⟯ K :=
+  .of_restrictScalars_finite F⟮(X : F⟮X⟯)⟯ _ _
 
 theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
-    Algebra.IsAlgebraic Fq⟮algebraMap _ F (X : Fq⟮X⟯)⟯ F := by
-  exact .tower_top (K := Fq⟮(X : Fq⟮X⟯)⟯) _
+    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := by
+  exact .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
 
-variable {y : F}
+variable {y : K}
 
-theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental Fq y) :
-    IsAlgebraic Fq⟮y⟯ (algebraMap _ F (X : Fq⟮X⟯)) :=
+theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental F y) :
+    IsAlgebraic F⟮y⟯ (algebraMap _ K (X : F⟮X⟯)) :=
   isAlgebraic_adjoin_iff.mpr (.adjoin_singleton transcendental_X hy
     (isAlgebraic_adjoin_iff.mp (Algebra.IsAlgebraic.isAlgebraic y)))
 
-lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental Fq y) :
-    FiniteDimensional Fq⟮y⟯ F :=
+lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
+    FiniteDimensional F⟮y⟯ K :=
   -- Local Definitions for convenience
-  let x := algebraMap _ F (X : Fq⟮X⟯)
-  let Fqyx := restrictScalars Fq Fq⟮y⟯⟮x⟯
-  let Fqxy := restrictScalars Fq Fq⟮x⟯⟮y⟯
+  let x := algebraMap _ K (X : F⟮X⟯)
+  let Fyx := restrictScalars F F⟮y⟯⟮x⟯
+  let Fxy := restrictScalars F F⟮x⟯⟮y⟯
   -- Recalling instance to speed up search
-  let : Algebra Fq⟮y⟯ Fqyx := Fq⟮y⟯⟮x⟯.algebra
-  let : Module Fq⟮y⟯ Fqyx := Algebra.toModule
-  let : SMul Fq⟮y⟯ Fqyx := Algebra.toSMul
-  let : Algebra Fq⟮x⟯ Fqxy := Fq⟮x⟯⟮y⟯.algebra
-  let : Module Fq⟮x⟯ Fqxy := Algebra.toModule
-  let : SMul Fq⟮x⟯ Fqxy := Algebra.toSMul
-  let : FiniteDimensional Fq⟮y⟯ Fqyx :=
+  let : Algebra F⟮y⟯ Fyx := F⟮y⟯⟮x⟯.algebra
+  let : Module F⟮y⟯ Fyx := Algebra.toModule
+  let : SMul F⟮y⟯ Fyx := Algebra.toSMul
+  let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
+  let : Module F⟮x⟯ Fxy := Algebra.toModule
+  let : SMul F⟮x⟯ Fxy := Algebra.toSMul
+  let : FiniteDimensional F⟮y⟯ Fyx :=
     adjoin.finiteDimensional
       (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
-  let : FiniteDimensional Fqyx F := by
-    let := FiniteDimensional.adjoin_algebraMap_X (Fq := Fq) (F := F)
-    unfold Fqyx
+  let : FiniteDimensional Fyx K := by
+    let := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
+    unfold Fyx
     rw [adjoin_simple_comm]
-    let : IsScalarTower Fq⟮x⟯ Fqxy F := isScalarTower_mid' Fq⟮x⟯⟮y⟯
-    exact .right Fq⟮x⟯ Fqxy F
-  let : IsScalarTower Fq⟮y⟯ Fqyx F := isScalarTower_mid' Fq⟮y⟯⟮x⟯
-  .trans Fq⟮y⟯ Fqyx F
+    let : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
+    exact .right F⟮x⟯ Fxy K
+  let : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
+  .trans F⟮y⟯ Fyx K
 
 end AdjoinTranscendental
 
