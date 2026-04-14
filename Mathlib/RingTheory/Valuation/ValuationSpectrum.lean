@@ -156,9 +156,17 @@ lemma supp_ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   change v x ≤ v 0 ↔ _
   simp
 
+/-- The canonical valuation associated to a point `v ∈ Spv A`. -/
+noncomputable def valuation (v : Spv A) :
+    Valuation A (@ValuativeRel.ValueGroupWithZero A _ v.toValuativeRel) :=
+  @ValuativeRel.valuation A _ v.toValuativeRel
+
+/-- The support of `v : Spv A` equals the support of its canonical valuation. -/
+lemma supp_eq_valuation_supp (v : Spv A) : v.supp = v.valuation.supp :=
+  @ValuativeRel.supp_eq_valuation_supp A _ v.toValuativeRel
+
 /-- The canonical valuation gives back the same point of `Spv`. -/
-lemma ofValuation_valuation (v : Spv A) :
-    ofValuation (@ValuativeRel.valuation A _ v.toValuativeRel) = v := by
+lemma ofValuation_valuation (v : Spv A) : ofValuation v.valuation = v := by
   letI := v.toValuativeRel
   apply ValuationSpectrum.ext; funext x y
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
@@ -174,8 +182,7 @@ lemma ideal_le_supp_comap_mk (w : Spv (A ⧸ 𝔞)) :
 
 /-- Lift a point `v ∈ Spv A` with `𝔞 ≤ supp v` to `Spv (A ⧸ 𝔞)`. -/
 noncomputable def quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) : Spv (A ⧸ 𝔞) :=
-  ofValuation ((@ValuativeRel.valuation A _ v.toValuativeRel).onQuot
-    (@ValuativeRel.supp_eq_valuation_supp A _ v.toValuativeRel ▸ h))
+  ofValuation (v.valuation.onQuot (v.supp_eq_valuation_supp ▸ h))
 
 /-- `comap (mk 𝔞) (quotientLift 𝔞 v h) = v`. -/
 lemma comap_quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) :
@@ -226,24 +233,20 @@ variable (S : Submonoid A) (B : Type*) [CommRing B] [Algebra A B] [IsLocalizatio
 /-- Lift `v ∈ Spv A` with `S ≤ (supp v).primeCompl` to `Spv B` (localization at `S`). -/
 noncomputable def localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) :
     Spv B :=
-  letI := v.toValuativeRel
-  have hS' : S ≤ (ValuativeRel.valuation A).supp.primeCompl := by
+  have hS' : S ≤ v.valuation.supp.primeCompl := by
     intro s hs; change s ∉ _
-    rw [← ValuativeRel.supp_eq_valuation_supp]; exact hS hs
-  ofValuation ((ValuativeRel.valuation A).extendToLocalization hS' B)
+    rw [← v.supp_eq_valuation_supp]; exact hS hs
+  ofValuation (v.valuation.extendToLocalization hS' B)
 
 /-- `comap (algebraMap A B) (localizationLift S B v hS) = v`. -/
 lemma comap_localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) :
     comap (algebraMap A B) (localizationLift S B v hS) = v := by
-  letI := v.toValuativeRel
-  have hS' : S ≤ (ValuativeRel.valuation A).supp.primeCompl := by
+  have hS' : S ≤ v.valuation.supp.primeCompl := by
     intro s hs; change s ∉ _
-    rw [← ValuativeRel.supp_eq_valuation_supp]; exact hS hs
-  change comap (algebraMap A B)
-    (ofValuation ((ValuativeRel.valuation A).extendToLocalization hS' B)) = v
+    rw [← v.supp_eq_valuation_supp]; exact hS hs
+  change comap (algebraMap A B) (ofValuation (v.valuation.extendToLocalization hS' B)) = v
   rw [comap_ofValuation,
-    show ((ValuativeRel.valuation A).extendToLocalization hS' B).comap (algebraMap A B) =
-         ValuativeRel.valuation A from
+    show (v.valuation.extendToLocalization hS' B).comap (algebraMap A B) = v.valuation from
       Valuation.ext fun a ↦ Valuation.extendToLocalization_apply_map_apply _ hS' B a]
   exact ofValuation_valuation v
 
