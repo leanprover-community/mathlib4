@@ -33,7 +33,7 @@ open scoped Topology Interval ENNReal
 variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
+  [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε'']
   [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
 
 namespace MeasureTheory
