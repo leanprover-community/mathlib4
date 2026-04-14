@@ -266,11 +266,13 @@ variable {R}
 
 /-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
 `A` and `B` factors via `R ⧸ I`. -/
-@[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
   toRingEquiv := f
   commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+
+@[simp] lemma coe_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : ⇑(extendScalarsOfSurjective h f) = f := rfl
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))

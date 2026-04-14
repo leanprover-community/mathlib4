@@ -40,18 +40,18 @@ variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
-  DFinsupp.module
+  inferInstanceAs <| Module R (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
-  DFinsupp.smulCommClass
+  inferInstanceAs <| SMulCommClass R S (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
-  DFinsupp.isScalarTower
+  inferInstanceAs <| IsScalarTower R S (Π₀ i, M i)
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
-  DFinsupp.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (Π₀ i, M i)
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _

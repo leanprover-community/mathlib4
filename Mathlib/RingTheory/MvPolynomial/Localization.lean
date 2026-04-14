@@ -37,7 +37,6 @@ variable [IsLocalization M S]
 
 attribute [local instance] algebraMvPolynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.

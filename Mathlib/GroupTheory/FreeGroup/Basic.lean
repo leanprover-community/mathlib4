@@ -321,10 +321,10 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 @[to_additive
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
-  @reflTransGen_of_transitive_reflexive
+  @reflTransGen_of_isTrans_reflexive
     _ (fun a b => b <+ a) _ _ _
     (fun l => List.Sublist.refl l)
-    (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
+    ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩
     (fun _ _ => Red.Step.sublist)
 
 @[to_additive]
@@ -514,7 +514,7 @@ instance : Inhabited (FreeGroup α) :=
   ⟨1⟩
 
 @[to_additive]
-instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
+instance [IsEmpty α] : Unique (FreeGroup α) := inferInstanceAs <| Unique (Quot _)
 
 @[to_additive]
 instance : Mul (FreeGroup α) :=
@@ -796,6 +796,24 @@ then the induced map on their additive free groups is also surjective. -/]
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
   rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
+/-- If `α` and `β` are arbitrary types and there is an injection between them,
+then the induced map on their free groups is also injective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is an injection between them,
+then the induced map on their additive free groups is also injective. -/]
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := by
+  by_cases! h : IsEmpty α
+  · exact Function.injective_of_subsingleton _
+  · rw [Function.injective_iff_hasLeftInverse]
+    use map (Function.invFun f)
+    simp [Function.LeftInverse, map.comp, Function.invFun_comp hf]
+
+/-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their free groups is also bijective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their additive free groups is also bijective. -/]
+theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) := by
+  exact ⟨map_injective hf.injective, map_surjective hf.surjective⟩
+
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
 The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`, as
@@ -944,7 +962,7 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   invFun := equivIntOfUnique.symm ∘ Multiplicative.toAdd
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _  := by simp [equivIntOfUnique]
+  map_mul' _ _ := by simp [equivIntOfUnique]
 
 /-- A free group over one generator is an instance of a cyclic group. -/
 instance [Unique α] : IsCyclic (FreeGroup α) :=

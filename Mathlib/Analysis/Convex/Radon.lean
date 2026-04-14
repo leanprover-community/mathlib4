@@ -46,7 +46,7 @@ are affinely dependent (see `finrank_vectorSpan_le_iff_not_affineIndependent`). 
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩ := h
   let I : Finset ι := {i ∈ s | 0 ≤ w i}
   let J : Finset ι := {i ∈ s | w i < 0}
@@ -210,7 +210,6 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   · intro I
     simpa using h_fin ({i0} ∪ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for families of compact convex sets in its classical form.
 
 If `F` is a (possibly infinite) family of more than `d + 1` compact convex sets in a vector space of
@@ -256,7 +255,6 @@ theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Se
   · apply le_trans card_image_le
     assumption
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for sets of compact convex sets in its classical version.
 
 If `F` is a (possibly infinite) set of more than `d + 1` compact convex sets in a vector space of

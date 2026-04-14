@@ -43,20 +43,13 @@ variable {R} in
 of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
+deriving AddCommGroup, Module R
 
 instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩
 
-instance (x : FGModuleRepr R) : AddCommGroup x := by
-  unfold repr; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance (x : FGModuleRepr R) : Module R x := by
-  unfold repr; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance (x : FGModuleRepr R) : Module.Finite R x := by
-  unfold repr; infer_instance
+instance (x : FGModuleRepr R) : Module.Finite R x :=
+  inferInstanceAs <| Module.Finite R (_ ⧸ x.S)
 
 /-- A non-canonical representation of a finite module (as a quotient of `Rⁿ`). -/
 @[instance_reducible]
