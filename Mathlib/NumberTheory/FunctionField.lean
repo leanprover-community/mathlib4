@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
-public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.FqtInfty`
+public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.FtInfty`
 
 /-!
 # Function fields
@@ -23,10 +23,6 @@ This file defines a function field and the ring of integers corresponding to it.
   i.e. it is a finite extension of the field of rational functions in one variable over `F`.
 - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
   as the integral closure of `F[X]` in the function field.
-- `FunctionField.inftyValuation` : The place at infinity on `F(t)` is the nonarchimedean
-  valuation on `F(t)` with uniformizer `1/t`.
-- `FunctionField.FqtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
-  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -180,20 +176,20 @@ alias inftyValuation.X_inv := RatFunc.inftyValuation.X_inv
 @[deprecated RatFunc.inftyValuation.polynomial (since := "2026-04-14")]
 alias inftyValuation.polynomial := RatFunc.inftyValuation.polynomial
 
-@[deprecated RatFunc.inftyValuedFqt (since := "2026-04-14")]
-alias inftyValuedFqt := RatFunc.inftyValuedFqt
+@[deprecated RatFunc.inftyValuedFt (since := "2026-04-14")]
+alias inftyValuedFt := RatFunc.inftyValuedFt
 
-@[deprecated RatFunc.inftyValuedFqt.def (since := "2026-04-14")]
-alias inftyValuedFqt.def := RatFunc.inftyValuedFqt.def
+@[deprecated RatFunc.inftyValuedFt.def (since := "2026-04-14")]
+alias inftyValuedFt.def := RatFunc.inftyValuedFt.def
 
-@[deprecated RatFunc.FqtInfty (since := "2026-04-14")]
-alias FqtInfty := RatFunc.FqtInfty
+@[deprecated RatFunc.FtInfty (since := "2026-04-14")]
+alias FtInfty := RatFunc.FtInfty
 
-@[deprecated RatFunc.valuedFqtInfty (since := "2026-04-14")]
-alias valuedFqtInfty := RatFunc.valuedFqtInfty
+@[deprecated RatFunc.valuedFtInfty (since := "2026-04-14")]
+alias valuedFtInfty := RatFunc.valuedFtInfty
 
-@[deprecated RatFunc.valuedFqtInfty.def (since := "2026-04-14")]
-alias valuedFqtInfty.def := RatFunc.valuedFqtInfty.def
+@[deprecated RatFunc.valuedFtInfty.def (since := "2026-04-14")]
+alias valuedFtInfty.def := RatFunc.valuedFtInfty.def
 
 end deprecated
 

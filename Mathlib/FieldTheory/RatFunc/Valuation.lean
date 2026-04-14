@@ -16,7 +16,7 @@ This file defines the valuation at infinity on the field of rational functions `
 
 - `RatFunc.inftyValuation` : The place at infinity on `F(t)` is the nonarchimedean
   valuation on `F(t)` with uniformizer `1/t`.
-- `RatFunc.FqtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
+- `RatFunc.FtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
   valuation at infinity.
 
 ## References
@@ -125,35 +125,35 @@ instance : Valuation.IsTrivialOn F (inftyValuation F) :=
 
 /-- The valued field `F(t)` with the valuation at infinity. -/
 @[implicit_reducible]
-def inftyValuedFqt : Valued (RatFunc F) ℤᵐ⁰ :=
+def inftyValuedFt : Valued (RatFunc F) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation F
 
-theorem inftyValuedFqt.def {x : RatFunc F} :
-    (inftyValuedFqt F).v x = inftyValuationDef F x :=
+theorem inftyValuedFt.def {x : RatFunc F} :
+    (inftyValuedFt F).v x = inftyValuationDef F x :=
   rfl
 
-namespace FqtInfty
+namespace FtInfty
 
 /- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
 with the uniform space structure coming from the valuation at infinity. -/
 attribute [-instance] RatFunc.valuedRatFunc
 
 /- Locally add the uniform space structure coming from the valuation at infinity. This instance
-is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+is scoped in the `FtInfty` namescape in case it is needed in the future. -/
 /-- The uniform space structure on `RatFunc F` coming from the valuation at infinity. -/
-scoped instance : UniformSpace (RatFunc F) := (inftyValuedFqt F).toUniformSpace
+scoped instance : UniformSpace (RatFunc F) := (inftyValuedFt F).toUniformSpace
 
 /-- The completion `F((t⁻¹))` of `F(t)` with respect to the valuation at infinity. -/
-def _root_.RatFunc.FqtInfty := UniformSpace.Completion (RatFunc F)
+def _root_.RatFunc.FtInfty := UniformSpace.Completion (RatFunc F)
 deriving Field, Algebra (RatFunc F), Coe (RatFunc F), Inhabited
 
-end FqtInfty
+end FtInfty
 
-/-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty F) ℤᵐ⁰ := (inftyValuedFqt F).valuedCompletion
+/-- The valuation at infinity on `k(t)` extends to a valuation on `FtInfty`. -/
+instance valuedFtInfty : Valued (FtInfty F) ℤᵐ⁰ := (inftyValuedFt F).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty F} :
-  Valued.v x = (inftyValuedFqt F).extensionValuation x := rfl
+theorem valuedFtInfty.def {x : FtInfty F} :
+  Valued.v x = (inftyValuedFt F).extensionValuation x := rfl
 
 end InftyValuation
 
