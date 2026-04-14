@@ -113,11 +113,15 @@ lemma comap_continuous (φ : A →+* B) : Continuous (comap φ) :=
 
 /-- `comap` of the identity is the identity. -/
 @[simp]
-lemma comap_id : comap (RingHom.id A) = id := by ext; rfl
+lemma comap_id : comap (RingHom.id A) = id := by
+  funext v
+  exact ValuationSpectrum.ext <| congr_arg (·.vle) (ValuativeRel.comap_id v.toValuativeRel)
 
 /-- `comap` is contravariantly functorial: `comap (ψ ∘ φ) = comap φ ∘ comap ψ`. -/
 lemma comap_comp (φ : A →+* B) (ψ : B →+* C) :
-    comap (ψ.comp φ) = comap φ ∘ comap ψ := by ext; rfl
+    comap (ψ.comp φ) = comap φ ∘ comap ψ := by
+  funext v
+  exact ValuationSpectrum.ext <| congr_arg (·.vle) (ValuativeRel.comap_comp φ ψ v.toValuativeRel)
 
 /-- `comap φ` is injective when `φ` is surjective. -/
 lemma comap_injective {φ : A →+* B} (hφ : Function.Surjective φ) :

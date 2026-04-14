@@ -46,6 +46,14 @@ def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
 theorem comap_vle (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vle a₁ a₂ ↔ v.vle (φ a₁) (φ a₂) := Iff.rfl
 
+@[simp]
+theorem comap_id (v : ValuativeRel A) : comap (RingHom.id A) v = v := by
+  ext a₁ a₂; rfl
+
+theorem comap_comp {C : Type*} [CommRing C] (φ : A →+* B) (ψ : B →+* C) (v : ValuativeRel C) :
+    comap (ψ.comp φ) v = comap φ (comap ψ v) := by
+  ext a₁ a₂; rfl
+
 end ValuativeRel
 
 /-- If `f` is a unit, then `¬ f ≤ᵥ 0`. -/
