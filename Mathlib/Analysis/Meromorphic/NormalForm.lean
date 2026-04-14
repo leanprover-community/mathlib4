@@ -281,7 +281,7 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
   obtain ⟨τ, h₁τ, h₂τ⟩ := h₄f
   have {μ : ι} (hμ : μ ∈ s.erase τ) : f μ x ≠ 0 := by
     by_contra
-    have : τ = μ :=  h₂f (by aesop) (by aesop)
+    have : τ = μ := h₂f (by aesop) (by aesop)
     aesop
   rw [← Finset.mul_prod_erase _ _ h₁τ, meromorphicNFAt_mul_iff_left]
   · apply h₁f τ h₁τ
