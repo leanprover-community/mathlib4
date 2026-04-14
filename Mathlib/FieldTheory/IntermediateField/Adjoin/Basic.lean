@@ -550,7 +550,7 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
   apply minpoly.degree_dvd
   rw [← minpoly.ne_zero_iff]
-  contrapose! hi
+  contrapose hi
   rwa [hi, mul_zero] at key
 
 -- TODO: generalize to `Sort`
