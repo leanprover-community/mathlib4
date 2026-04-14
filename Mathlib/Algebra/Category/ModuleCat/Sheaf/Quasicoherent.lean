@@ -323,8 +323,7 @@ noncomputable def QuasicoherentData.of_isIso {M N : SheafOfModules.{u} R} (f : M
   I := σ.I
   X := σ.X
   coversTop := σ.coversTop
-  presentation i :=
-    Presentation.of_isIso ((pushforward (F := Over.forget (σ.X i)) (𝟙 _)).map f) (σ.presentation i)
+  presentation i := Presentation.of_isIso (f.over (σ.X i)) (σ.presentation i)
 
 instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
   of_iso e := by
