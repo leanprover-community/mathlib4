@@ -713,8 +713,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   let E : Type v := id K⟮x⟯
   let : Field E := show Field K⟮x⟯ by infer_instance
   let : Module K E := show Module K K⟮x⟯ by infer_instance
-  let id1 : ↥K⟮x⟯ →ₗ[K] E := LinearMap.id
-  let id2 : E →ₗ[K] ↥K⟮x⟯ := LinearMap.id
+  let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
+  let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
   set hs_norm : RingNorm E :=
     { toFun y := spectralNorm K L (id2 y : L)
       map_zero' := by simp [map_zero, spectralNorm_zero, ZeroMemClass.coe_zero]
