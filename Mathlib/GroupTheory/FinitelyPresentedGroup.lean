@@ -47,7 +47,7 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
     {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
-  rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
+  rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 end Subgroup.IsNormalClosureFG
 
