@@ -47,8 +47,7 @@ namespace ValuationSpectrum
 variable {A : Type*} [CommRing A]
 
 /-- Construct a point of `Spv A` from a valuation `v : Valuation A Γ₀`. -/
-def ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    (v : Valuation A Γ₀) : Spv A :=
+def ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation A Γ₀) : Spv A :=
   ⟨ValuativeRel.ofValuation v⟩
 
 /-- Two equivalent valuations define the same point of `Spv A`. -/
@@ -59,12 +58,10 @@ lemma ofValuation_eq_of_isEquiv {Γ₀ : Type*} [LinearOrderedCommGroupWithZero 
   ValuationSpectrum.ext (funext₂ fun x y ↦ propext (h x y))
 
 /-- The basic open subset `Spv(A)(f/s) = { v ∈ Spv A | v(f) ≤ v(s) ∧ v(s) ≠ 0 }`. -/
-def basicOpen (f s : A) : Set (Spv A) :=
-  { v | v.vle f s ∧ ¬ v.vle s 0 }
+def basicOpen (f s : A) : Set (Spv A) := { v | v.vle f s ∧ ¬ v.vle s 0 }
 
 /-- `Spv(A)(tf/ts) ⊆ Spv(A)(f/s)`. -/
-lemma basicOpen_mul_subset (t f s : A) :
-    basicOpen (t * f) (t * s) ⊆ basicOpen f s := by
+lemma basicOpen_mul_subset (t f s : A) : basicOpen (t * f) (t * s) ⊆ basicOpen f s := by
   intro v ⟨h1, h2⟩
   have ht : ¬ v.vle t 0 := by
     intro ht
@@ -134,17 +131,17 @@ end Functoriality
 
 /-- The support prime ideal `{ a ∈ A | v(a) = 0 }` of a point `v ∈ Spv A`. -/
 def supp (v : Spv A) : Ideal A :=
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   ValuativeRel.supp A
 
 @[simp]
 lemma mem_supp_iff (v : Spv A) (x : A) : x ∈ v.supp ↔ v.vle x 0 :=
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   ValuativeRel.supp_def x
 
 /-- The support of a point `v ∈ Spv A` is a prime ideal. -/
 instance instIsPrimeSupp (v : Spv A) : v.supp.IsPrime := by
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   change (ValuativeRel.supp A).IsPrime
   infer_instance
 
@@ -167,7 +164,7 @@ lemma supp_eq_valuation_supp (v : Spv A) : v.supp = v.valuation.supp :=
 
 /-- The canonical valuation gives back the same point of `Spv`. -/
 lemma ofValuation_valuation (v : Spv A) : ofValuation v.valuation = v := by
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   apply ValuationSpectrum.ext; funext x y
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
 
@@ -195,7 +192,7 @@ lemma quotientLift_comap (w : Spv (A ⧸ 𝔞)) :
   apply ValuationSpectrum.ext; funext x y
   obtain ⟨a₁, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨a₂, rfl⟩ := Ideal.Quotient.mk_surjective y
-  letI : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
+  let : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
 
 /-- The range of `comap (mk 𝔞)` is `{ v ∈ Spv A | 𝔞 ≤ supp v }`. -/
@@ -231,8 +228,7 @@ section Localization
 variable (S : Submonoid A) (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
 
 /-- Lift `v ∈ Spv A` with `S ≤ (supp v).primeCompl` to `Spv B` (localization at `S`). -/
-noncomputable def localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) :
-    Spv B :=
+noncomputable def localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) : Spv B :=
   have hS' : S ≤ v.valuation.supp.primeCompl := by
     intro s hs; change s ∉ _
     rw [← v.supp_eq_valuation_supp]; exact hS hs
