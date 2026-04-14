@@ -10,8 +10,9 @@ public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
 # Sheaf cohomology
@@ -105,6 +106,73 @@ the degree-`n` sheaf cohomology of `X` with values in `F`. -/
 abbrev H' (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) (X : C) :
     AddCommGrpCat.{w'} :=
   (F.cohomologyPresheaf n).obj (Opposite.op X)
+
+end
+
+section
+
+variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
+
+instance (F : Sheaf J AddCommGrpCat.{w}) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+  subsingleton_of_forall_eq 0 fun x ↦ (Ext.eq_zero_of_injective x)
+
+variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
+
+open AddCommGrpCat Opposite
+
+/-- The additive equivalence between `H F 0` and the evaluation of `F` at the terminal object -/
+noncomputable def H.equiv₀ : H F 0 ≃+ F.obj.obj (op T) :=
+    AddEquiv.trans Ext.addEquiv₀ <|
+      AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
+        (uliftZMultiplesAddEquiv _)
+
+variable {F G : Sheaf J AddCommGrpCat.{w}} (f : F ⟶ G)
+
+/-- Given a morphism of sheaves `f : F ⟶ G`, `H.map f n` is the induced additive map on cohomology
+    groups `H F n →+ H G n` -/
+noncomputable def H.map (n : ℕ) : H F n →+ H G n :=
+  ((Ext.mk₀ f).postcomp ((constantSheaf J AddCommGrpCat).obj (of (ULift ℤ))) (add_zero n))
+
+lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEquiv₀ x ≫ f := by
+  delta Ext.addEquiv₀ H.map
+  apply (Ext.mk₀_bijective _ G).injective
+  simp only [AddEquiv.coe_mk, Ext.mk₀_homEquiv₀_apply, Ext.mk₀_homEquiv₀_apply, ← Ext.mk₀_comp_mk₀]
+  rfl
+
+/-- `H.equiv₀` is natural -/
+theorem H.equiv₀_naturality (x : H F 0) :
+    f.hom.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
+  simp only [equiv₀, AddEquiv.trans_apply]
+  erw[addEquiv₀_comp f x]
+  rfl
+
+theorem H.equiv₀_symm_naturality (x : F.obj.obj (op T)) :
+    H.map f 0 ((H.equiv₀ F hT).symm x) = (H.equiv₀ G hT).symm (f.hom.app (op T) x) := by
+  apply (H.equiv₀ G hT).injective
+  simp [← H.equiv₀_naturality]
+
+lemma H.map_apply {n : ℕ} (x : H F n) :
+    H.map f n x = x.comp (Ext.mk₀ f) (add_zero n) := rfl
+
+@[simp]
+lemma H.map_id_apply {n : ℕ} (x : H F n) : H.map (𝟙 F) n x = x := by
+  simp [H.map_apply]
+
+lemma H.map_comp_apply {n : ℕ} {G' : Sheaf J AddCommGrpCat.{w}} (g : G ⟶ G') (x : H F n) :
+    H.map (f ≫ g) n x = H.map g n (H.map f n x) := by
+  simp [H.map_apply]
+
+attribute [local simp] H.map_comp_apply in
+variable (J) in
+/-- `H` as a functor. -/
+@[simps]
+noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
+  obj F := .of (H F n)
+  map f := AddCommGrpCat.ofHom (H.map f n)
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : ℕ) : (functorH J n).Additive where
+  map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add]
 
 end
 

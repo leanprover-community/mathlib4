@@ -357,6 +357,9 @@ instance : IsIso (restrictAdjunction f).counit :=
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full
 instance : (pushforward f).Faithful := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.faithful
+instance : (restrictFunctor f).Additive := by
+  haveI := Limits.preservesBinaryBiproducts_of_preservesBinaryCoproducts (restrictFunctor f)
+  exact (restrictFunctor f).additive_of_preservesBinaryBiproducts
 
 @[simp]
 lemma restrictAdjunction_unit_app_app (M : Y.Modules) (U : Y.Opens) :

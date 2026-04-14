@@ -241,6 +241,13 @@ class IsQuasicoherent (M : SheafOfModules.{u} R) : Prop where
 lemma QuasicoherentData.isQuasicoherent {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
     M.IsQuasicoherent := ⟨⟨q.shrink⟩⟩
 
+theorem IsQuasicoherent.of_iso [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+    (M N : SheafOfModules.{u} R) (e : M ≅ N) [hM : M.IsQuasicoherent] :
+    N.IsQuasicoherent := by
+  obtain ⟨q⟩ := hM.nonempty_quasicoherentData
+  exact (SheafOfModules.QuasicoherentData.mk q.I q.X q.coversTop
+    (fun i => (q.presentation i).of_isIso ((pushforward (𝟙 _)).mapIso e).hom)).isQuasicoherent
+
 variable (R) in
 @[inherit_doc IsQuasicoherent]
 abbrev isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=

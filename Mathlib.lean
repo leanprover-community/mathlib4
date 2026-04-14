@@ -3293,6 +3293,7 @@ public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.MayerVietoris
 public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
@@ -7814,6 +7815,7 @@ public import Mathlib.Topology.Sheaves.PUnit
 public import Mathlib.Topology.Sheaves.Points
 public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+public import Mathlib.Topology.Sheaves.Restrict
 public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
@@ -7824,6 +7826,7 @@ public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Sheafify
 public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.ZeroOutside
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
 public import Mathlib.Topology.Sober

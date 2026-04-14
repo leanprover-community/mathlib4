@@ -699,6 +699,29 @@ instance localizedModuleIsLocalizedModule :
         ← Submonoid.smul_def, LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
 
+lemma IsLocalizedModule.restrictScalars (S : Submonoid R) [Module A M]
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (f : M →ₗ[A] N) [h : IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f] :
+    IsLocalizedModule S (f.restrictScalars R) where
+  map_units s := by
+    simpa [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] using
+      h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
+  surj y := by
+    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
+    exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
+    exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
+
+lemma IsLocalizedModule.restrictScalars_powers [Module A M]
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (r : R) (f : M →ₗ[A] N) [h : IsLocalizedModule (.powers (algebraMap R A r)) f] :
+    IsLocalizedModule (.powers r) (f.restrictScalars R) := by
+  rw [← Algebra.algebraMapSubmonoid_powers] at h
+  exact IsLocalizedModule.restrictScalars _ f
+
 lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
     [IsScalarTower R A M] [IsScalarTower R A N]
@@ -932,6 +955,12 @@ lemma linearEquiv_apply [IsLocalizedModule S g] (x : M) :
 lemma linearEquiv_symm_apply [IsLocalizedModule S g] (x : M) :
     (linearEquiv S f g).symm (g x) = f x := by
   simp [linearEquiv]
+
+lemma linearEquiv_of_isLocalizedModule_comp (g : M' →ₗ[R] M'') [IsLocalizedModule S (g ∘ₗ f)] :
+    linearEquiv S f (g ∘ₗ f) = g  := by
+  refine ext S f (IsLocalizedModule.map_units (g ∘ₗ f)) ?_
+  ext
+  simp
 
 variable {S}
 
