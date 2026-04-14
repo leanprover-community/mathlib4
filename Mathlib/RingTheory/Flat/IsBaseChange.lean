@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Jingting Wang. All rights reserved.
+Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang
+Authors: Jingting Wang, Nailin Guan
 -/
 module
 
@@ -12,7 +12,8 @@ public import Mathlib.RingTheory.Flat.Basic
 
 # Lemmas about `IsBaseChange` under exact sequences
 
-In this file, we show that if `S` is flat, taking kernels commutes with base change.
+In this file, we show that if `S` is a flat `R`-algebra, taking kernels commutes with base change
+of modules from `R` to `S`.
 
 # Main Results
 
