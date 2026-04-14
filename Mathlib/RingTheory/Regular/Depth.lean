@@ -6,13 +6,15 @@ Authors: Nailin Guan, Yi Song
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.Regular.Category
+public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -116,6 +118,19 @@ universe v u
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
+
+namespace CategoryTheory.Abelian
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Ext.smul_id_postcomp_eq_zero_of_mem_ann {M N : ModuleCat.{v} R}
+    {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
+    AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
+  ext h
+  have : r • (𝟙 N) = 0 := ModuleCat.hom_ext (LinearMap.ext (Module.mem_annihilator.mp mem_ann ·))
+  have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
+  simp [Ext.mk₀_smul, this, smul_eq]
+
+end CategoryTheory.Abelian
 
 open Pointwise ModuleCat IsSMulRegular
 
