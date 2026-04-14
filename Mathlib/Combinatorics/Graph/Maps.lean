@@ -99,7 +99,7 @@ lemma IsSubgraph.map (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
 
 @[gcongr]
 lemma IsSpanningSubgraph.map (f : α → α') (hsle : G ≤s H) : G.map f ≤s H.map f where
-  toIsSubgraph := hsle.le.map f
+  le := hsle.le.map f
   vertexSet_eq := by simp [hsle.vertexSet_eq]
 
 @[gcongr]
