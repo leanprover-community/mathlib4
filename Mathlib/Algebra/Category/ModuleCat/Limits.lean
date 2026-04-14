@@ -187,6 +187,10 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
 instance forget_preservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forget_preservesLimitsOfSize.{w, w}
 
+instance [UnivLE.{v, w}] : ReflectsLimitsOfSize.{t, v} (forget (ModuleCat.{w} R)) :=
+  let := hasLimitsOfSize (R := R)
+  reflectsLimits_of_reflectsIsomorphisms
+
 end
 
 instance forget₂AddCommGroup_reflectsLimit :
