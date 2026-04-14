@@ -365,15 +365,6 @@ theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber 
   have key := (IsArtinianRing.equivPiLocalizationPrime (p.Fiber S)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- _ -/
-noncomputable def equiv [Algebra.QuasiFinite R S] : PrimeSpectrum (p.Fiber S) ≃ p.primesOver S :=
-  (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.symm
-
-theorem equiv_apply [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
-    (equiv p) q = q.1.comap Algebra.TensorProduct.includeRight := by
-  rfl
-
 /-- _ -/
 noncomputable def foo9 :
     letI Rp := Localization p.primeCompl
@@ -492,7 +483,7 @@ theorem sum_ramification_inertia
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
       ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
-  rw [foo1, ← (equiv p).sum_comp]
+  rw [foo1, ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
   apply Finset.sum_congr rfl
   intros
   apply foo2
