@@ -186,7 +186,13 @@ public def emojis : Array Char := #[
 /-- Unicode symbols in mathlib that should always be followed by the text variant selector. -/
 public def nonEmojis : Array Char := #[]
 
-/-- Blocklist: If `false`, the character is not allowed in Mathlib.
+/-- If `false`, the character is not allowed in Mathlib.
+
+Implemented using an allowlist consisting of:
+- certain ASCII characters
+- characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
+- "the rest" (`othersInMathlib`)
+
 Note: if `true`, a character might still not be allowed depending on context
 (e.g. misplaced variant selectors).
 -/
@@ -199,7 +205,7 @@ public def isAllowedCharacter (c : Char) : Bool :=
   || c == UnicodeVariant.text
   || othersInMathlib.contains c
 
-/-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
+/-- Provide default replacement (`String`) for a disallowed character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
 | '\u0009' => "  "    -- "TAB" => "2 spaces"
 | '\u000B' => "\n"    -- "LINE TABULATION" => "Line Feed"
