@@ -474,6 +474,7 @@ def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
+/-- The functor `Fin (l + 1) ⥤ Fin (n + 1)` which sends `i` to `k + i` -/
 @[simps]
 def _root_.Fin.streakFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
   obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
@@ -483,6 +484,8 @@ def _root_.Fin.streakFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ F
 lemma _root_.Fin.streakFunctor_obj {n k l : ℕ} (i : Fin (l + 1)) (h : k + l ≤ n) :
     (Fin.streakFunctor h).obj i = ⟨k + i, by lia⟩ := rfl
 
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows C l` obtained by precomposition with
+a functor `Fin.streakFunctor`. -/
 @[simps!]
 def streakFunctor {n k l : ℕ} (h : k + l ≤ n) :
     ComposableArrows C n ⥤ ComposableArrows C l :=
