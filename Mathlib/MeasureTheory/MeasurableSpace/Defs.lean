@@ -289,6 +289,7 @@ namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
 definitional equalities. -/
+@[implicit_reducible]
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
@@ -325,6 +326,7 @@ inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
       GenerateMeasurable s (⋃ i, f i)
 
 /-- Construct the smallest measure space containing a collection of basic sets -/
+@[implicit_reducible]
 def generateFrom (s : Set (Set α)) : MeasurableSpace α where
   MeasurableSet' := GenerateMeasurable s
   measurableSet_empty := .empty
@@ -356,8 +358,8 @@ theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
 
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :
-    generateFrom { s : Set α | MeasurableSet s } = ‹_› :=
-  le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
+    generateFrom {s : Set α | MeasurableSet s} = ‹_› :=
+  le_antisymm (generateFrom_le fun _ => id) fun _ h => measurableSet_generateFrom h
 
 theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
@@ -371,6 +373,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
+@[implicit_reducible]
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :
     MeasurableSpace α :=
   (generateFrom g).copy (· ∈ g) <| Set.ext_iff.1 hg.symm
@@ -383,7 +386,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
   on one side and the collection of measurable sets on the other side. -/
 def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
-  le_l_u _ _ := measurableSet_generateFrom
+  le_l_u _ _ h := measurableSet_generateFrom h
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
   choice_eq _ _ := mkOfClosure_sets
 
@@ -455,7 +458,8 @@ theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
   rw [iInf, measurableSet_sInf, forall_mem_range]
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
-    MeasurableSet[m₁ ⊔ m₂] s ↔ GenerateMeasurable (MeasurableSet[m₁] ∪ MeasurableSet[m₂]) s :=
+    MeasurableSet[m₁ ⊔ m₂] s ↔
+      GenerateMeasurable {s | MeasurableSet[m₁] s ∨ MeasurableSet[m₂] s} s :=
   Iff.rfl
 
 theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
@@ -464,9 +468,10 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
-  simp only [iSup, measurableSet_sSup, exists_range_iff]
+  simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
     ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
@@ -526,6 +531,7 @@ attribute [fun_prop] Measurable.fun_comp
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
+@[fun_prop]
 theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 

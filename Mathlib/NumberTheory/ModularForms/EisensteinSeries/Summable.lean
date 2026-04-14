@@ -23,7 +23,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane Topology Nat
 
 variable (z : ℍ)
 
@@ -94,7 +94,7 @@ lemma r_pos : 0 < r z := by
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z := by
   apply min_le_min hz.2
-  rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
+  gcongr
   simp only [r1_eq, div_pow, one_div]
   rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right, ← even_two.pow_abs]
   gcongr
@@ -237,7 +237,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using by lia
   grind [(linear_inv_isBigO_right c z).abs_right.pow k,
-    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow]
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
@@ -275,7 +275,6 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
     summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
   simp [abs_of_pos (r_pos _)]
-  aesop
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology
     {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]

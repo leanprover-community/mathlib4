@@ -85,11 +85,12 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) wher
   mul_comm _ _ := Option.map₂_comm mul_comm
 
 section MulOneClass
-variable [MulOneClass α]
 
 instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
+
+variable [MulOneClass α]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Coercion as a monoid hom. -/
@@ -362,6 +363,8 @@ section AddMonoid
 def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
+
+lemma exp_eq_coe_ofAdd (a : M) : exp a = coe (Multiplicative.ofAdd a) := rfl
 
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective

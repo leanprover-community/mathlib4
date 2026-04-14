@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Compact operators
@@ -67,6 +67,22 @@ def IsCompactOperator {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁] [T
 theorem isCompactOperator_zero {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁]
     [TopologicalSpace M₂] [Zero M₂] : IsCompactOperator (0 : M₁ → M₂) :=
   ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ => rfl⟩
+
+theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
+    [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] :
+    IsCompactOperator (id : E → E) ↔ LocallyCompactSpace E :=
+  ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
+    fun _ ↦ exists_compact_mem_nhds 0⟩
+
+alias ⟨LocallyCompactSpace.of_isCompactOperator_id, _⟩ :=
+  isCompactOperator_id_iff_locallyCompactSpace
+
+@[deprecated (since := "2026-03-04")] alias IsCompactOperator.locallyCompactSpace :=
+  LocallyCompactSpace.of_isCompactOperator_id
+
+lemma isCompactOperator_id {E : Type*} [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [LocallyCompactSpace E] : IsCompactOperator (id : E → E) :=
+  isCompactOperator_id_iff_locallyCompactSpace.2 ‹_›
 
 section Characterizations
 
@@ -194,6 +210,27 @@ theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
   ⟨c • K, hK.image <| continuous_id.const_smul c,
     mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
 
+theorem IsCompactOperator.smul_unit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : Sˣ} :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  ⟨fun h ↦ by simpa using h.smul c⁻¹, fun h ↦ h.smul c⟩
+
+theorem IsCompactOperator.smul_isUnit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : IsUnit c) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f := by
+  obtain ⟨c, rfl⟩ := hc
+  exact smul_unit_iff
+
+theorem IsCompactOperator.smul_iff {S : Type*} [Group S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} (c : S) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff (Group.isUnit c)
+
+theorem IsCompactOperator.smul_iff₀ {S : Type*} [GroupWithZero S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : c ≠ 0) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff hc.isUnit
+
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
   let ⟨A, hA, hAf⟩ := hf
@@ -246,6 +283,16 @@ theorem IsCompactOperator.clm_comp [AddCommMonoid M₂] [Module R₂ M₂] [AddC
     [Module R₃ M₃] {f : M₁ → M₂} (hf : IsCompactOperator f) (g : M₂ →SL[σ₂₃] M₃) :
     IsCompactOperator (g ∘ f) :=
   hf.continuous_comp g.continuous
+
+/-- Any continuous linear map to a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace_dom [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] (T : M₁ →SL[σ₁₂] M₂) :
+    IsCompactOperator T := (isCompactOperator_id.comp_clm T :)
+
+/-- Any continuous linear map from a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace_rng [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] [AddCommMonoid M₃] [Module R₃ M₃]
+    (T : M₂ →SL[σ₂₃] M₃) : IsCompactOperator T := isCompactOperator_id.clm_comp T
 
 end Comp
 
@@ -326,7 +373,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   -- We have `f ⁻¹' ((σ₁₂ c⁻¹) • K) = c⁻¹ • f ⁻¹' K ∈ 𝓝 0`. Thus, showing that
   -- `(σ₁₂ c⁻¹) • K ⊆ U` is enough to deduce that `f ⁻¹' U ∈ 𝓝 0`.
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
-    refine mem_of_superset ?_ this
+    grw [← this]
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
     rwa [mem_map, this.preimage_smul_setₛₗ σ₁₂, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.

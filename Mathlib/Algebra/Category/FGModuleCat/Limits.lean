@@ -48,13 +48,14 @@ variable [IsNoetherianRing k]
 because we can realise them as subobjects of a finite product. -/
 instance (F : J ⥤ FGModuleCat k) :
     Module.Finite k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
-  haveI : ∀ j, Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
-    intro j; change Module.Finite k (F.obj j); infer_instance
+  haveI : ∀ j, Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) :=
+    inferInstanceAs <| ∀ j, Module.Finite k (F.obj j)
   Module.Finite.of_injective
     (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
+@[implicit_reducible]
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso

@@ -6,7 +6,8 @@ Authors: Rémy Degenne, Eric Wieser
 module
 
 public import Mathlib.Data.ENNReal.Holder
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
@@ -149,7 +150,7 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
   have : (toMeasurable μ s).indicator f = f := by
     apply Set.indicator_eq_self.2
     apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
-    contrapose! hx
+    contrapose hx
     exact subset_toMeasurable μ s hx
   rw [← this, memLp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
   have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
@@ -182,8 +183,8 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
     simp_rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
     exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp₁.ne' hp₂.ne, eLpNorm_exponent_top, eLpNormEssSup,
-    one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne, eLpNorm_exponent_top,
+    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
   rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]

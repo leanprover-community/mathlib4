@@ -191,7 +191,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
           ‖min 1 (c / ‖hf.approx n x‖)‖ * ‖hf.approx n x‖ :=
         norm_smul _ _
       _ ≤ ‖(1 : ℝ)‖ * ‖hf.approx n x‖ := by
-        refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+        gcongr
         rw [norm_one, Real.norm_of_nonneg]
         · exact min_le_left _ _
         · exact le_min zero_le_one (div_nonneg ((norm_nonneg _).trans hfx) (norm_nonneg _))
@@ -416,10 +416,31 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : StronglyMeasurable f) :
     StronglyMeasurable f⁻¹ :=
   ⟨fun n => (hf.approx n)⁻¹, fun x => (hf.tendsto_approx x).inv⟩
 
-@[to_additive (attr := fun_prop)]
-protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
+@[to_additive (attr := fun_prop) sub]
+protected theorem div' [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f / g) :=
   ⟨fun n => hf.approx n / hg.approx n, fun x => (hf.tendsto_approx x).div' (hg.tendsto_approx x)⟩
+
+@[fun_prop]
+theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] (hf : StronglyMeasurable f)
+    (hg : StronglyMeasurable g) (h₀ : ∀ (x : α), g x ≠ 0) : StronglyMeasurable (f / g) :=
+  ⟨fun n => hf.approx n / hg.approx n,
+    fun x => (hf.tendsto_approx x).div (hg.tendsto_approx x) (h₀ x)⟩
+
+@[fun_prop]
+theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β] (hf : StronglyMeasurable f)
+    (hg : StronglyMeasurable g) :
+    StronglyMeasurable (f / g) := by
+  refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
+  have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
+  by_cases h : g x = 0
+  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_setOf_eq,
+      not_true_eq_false, not_false_eq_true, indicator_of_notMem, _root_.div_zero]
+    exact tendsto_const_nhds
+  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict,
+      Pi.div_apply, mem_setOf_eq, not_false_eq_true, indicator_of_mem]
+    exact (hf.tendsto_approx x).div (hg.tendsto_approx x) h
 
 @[to_additive]
 theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasurable f) :

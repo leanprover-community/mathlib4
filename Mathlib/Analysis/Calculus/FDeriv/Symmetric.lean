@@ -230,7 +230,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
-  rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
+  rw [hasFDerivWithinAt_iff_isLittleO, isLittleO_iff] at hx
   rcases Metric.mem_nhdsWithin_iff.1 (hx εpos) with ⟨δ, δpos, sδ⟩
   have E1 : ∀ᶠ h in 𝓝[>] (0 : ℝ), h * (‖v‖ + ‖w‖) < δ := by
     have : Filter.Tendsto (fun h => h * (‖v‖ + ‖w‖)) (𝓝[>] (0 : ℝ)) (𝓝 (0 * (‖v‖ + ‖w‖))) :=
@@ -469,19 +469,9 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
+  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
-  let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
-  { toFun := fun x ↦
-      { toFun := fun y ↦ f'' x y
-        map_add' := by simp
-        map_smul' := by simp }
-    map_add' := by intros; ext; simp
-    map_smul' := by intros; ext; simp }
-  let f''R : E →L[ℝ] E →L[ℝ] F := by
-    refine LinearMap.mkContinuous₂ f''Rl (‖f''‖) (fun x y ↦ ?_)
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, f''Rl]
-    exact ContinuousLinearMap.le_opNorm₂ f'' x y
   have : HasFDerivAt f'R f''R x := by
     simp only [hasFDerivAt_iff_tendsto] at hx ⊢
     exact hx
@@ -536,7 +526,7 @@ lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSm
   split_ifs with h
   · simp only [h, ↓reduceIte] at hm
     exact ⟨m, le_rfl, hm, by simp⟩
-  · simp only [h, ↓reduceIte, top_le_iff] at hm
+  · simp only [h, ↓reduceIte] at hm
     refine ⟨ω, le_rfl, by simp [hm], by simp⟩
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field

@@ -159,6 +159,7 @@ section smulℝ
 
 variable {α : Type*} [SMul α ℂ] [SMul α ℝ] [IsScalarTower α ℝ ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `ℝ`, valid without restrictions on the determinant. -/
 instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
   smul c f :=
@@ -249,6 +250,7 @@ theorem one_coe_eq_one [Γ.HasDetPlusMinusOne] : ((1 : SlashInvariantForm Γ 0) 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invariant forms
 of weights `k₁` and `k₂`. -/
 def mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
@@ -262,6 +264,7 @@ theorem coe_mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantFor
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps -fullyApplied]
@@ -308,6 +311,4 @@ lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ
     translate f g = ⇑f ∣[k] g :=
   rfl
 
-@[deprecated (since := "2025-08-15")] alias translateGL := translate
-@[deprecated (since := "2025-08-15")] alias coe_translateGL := coe_translate
 end SlashInvariantForm

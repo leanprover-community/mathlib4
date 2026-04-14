@@ -20,10 +20,10 @@ This file defines subrepresentations of a monoid representation.
 open Pointwise
 open scoped MonoidAlgebra
 
-variable {A G W M : Type*} [CommRing A] [Monoid G] [AddCommMonoid W] [Module A W]
-  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
+variable {A G W M : Type*}
 
-variable (ρ) in
+variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
+  (ρ : Representation A G W) [AddCommMonoid M] [Module A[G] M] in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
@@ -34,6 +34,11 @@ structure Subrepresentation where
 
 namespace Subrepresentation
 
+section non_comm
+
+variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W] {ρ : Representation A G W}
+  [AddCommMonoid M] [Module A[G] M]
+
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
   rintro ⟨_, _⟩
@@ -42,6 +47,8 @@ lemma toSubmodule_injective :
 instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective' := SetLike.coe_injective.comp toSubmodule_injective
+
+instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
 
 /-- A subrepresentation is a representation. -/
 def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSubmodule where
@@ -79,14 +86,20 @@ lemma toSubmodule_inf (ρ₁ ρ₂ : Subrepresentation ρ) :
   (ρ₁ ⊓ ρ₂).toSubmodule = ρ₁.toSubmodule ⊓ ρ₂.toSubmodule := rfl
 
 instance : Lattice (Subrepresentation ρ) :=
-  toSubmodule_injective.lattice _ toSubmodule_sup toSubmodule_inf
+  toSubmodule_injective.lattice _ .rfl .rfl toSubmodule_sup toSubmodule_inf
 
 instance : BoundedOrder (Subrepresentation ρ) where
   top := ⟨⊤, by simp⟩
-  le_top _ _ := by simp
+  le_top _ := le_top (α := Submodule A W)
   bot := ⟨⊥, by simp⟩
-  bot_le _ _ := by simp +contextual
+  bot_le _ := bot_le (α := Submodule A W)
 
+end non_comm
+
+variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
+  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.
 -/
 def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
@@ -133,6 +146,7 @@ def ofSubmodule (N : Submodule A[G] M) :
 @[simp]
 lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
 -/
 def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where

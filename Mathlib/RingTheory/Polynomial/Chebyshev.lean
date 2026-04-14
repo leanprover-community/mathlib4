@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Chebyshev polynomials
@@ -162,6 +164,7 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -253,6 +256,11 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
 theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
   (T R n).degree_ne_bot.mp (by simp [degree_T R n])
 
+/-- ChebyshevT as a polynomial sequence. -/
+noncomputable def chebyshevTsequence [IsDomain R] [NeZero (2 : R)] : Polynomial.Sequence R where
+  elems' n := T R n
+  degree_eq' n := by simp [degree_T]
+
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]
   | 0 => 1
@@ -330,6 +338,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -489,6 +498,24 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
+  linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
+
+theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
+  linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
+
+theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 n) := by
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one =>
+    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
+    exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
+  | more n h₀ _ =>
+    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
+    refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
+    · exact Submodule.smul_of_tower_mem _ 2
+        (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
+
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
 noncomputable def C : ℤ → R[X]
@@ -568,6 +595,7 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -677,6 +705,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -840,6 +869,31 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
     linear_combination (norm := (push_cast; ring_nf))
       -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
+
+theorem T_derivative_mem_span_T (n : ℕ) :
+    derivative (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Ico 0 n) := by
+  by_cases! hn : n = 0
+  · simp [hn]
+  rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
+  refine Submodule.smul_of_tower_mem _ n ?_
+  convert U_mem_span_T R (n - 1) using 2 <;> grind
+
+theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
+    derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by
+  induction k
+  case zero =>
+    rw [Function.iterate_zero_apply]
+    exact Submodule.mem_span_of_mem ⟨n, by simp⟩
+  case succ k ih =>
+    rw [Function.iterate_succ_apply']
+    suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
+      Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
+      apply this
+      convert Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
+      simp [Set.image]
+    refine Submodule.span_le.mpr (fun x hx => ?_)
+    obtain ⟨m, hm, rfl⟩ := hx
+    refine (Submodule.span_mono (by grind)) (T_derivative_mem_span_T (R := R) m)
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by

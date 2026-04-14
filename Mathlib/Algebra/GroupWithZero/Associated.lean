@@ -63,6 +63,7 @@ instance [Monoid M] : IsTrans M Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
+@[instance_reducible]
 protected def setoid (M : Type*) [Monoid M] :
     Setoid M where
   r := Associated
@@ -225,11 +226,11 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
     let ⟨u, hu⟩ := h
-    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
-      hu ▸ by
-        simp only [Units.isUnit, IsUnit.mul_right_dvd]
-        intro a b
-        exact hp.dvd_or_dvd⟩⟩
+    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
+      rw [← hu]
+      simp only [Units.isUnit, IsUnit.mul_right_dvd]
+      intro a b
+      exact hp.dvd_or_dvd⟩⟩
 
 theorem prime_mul_iff [CommMonoidWithZero M] [IsCancelMulZero M] {x y : M} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
@@ -337,7 +338,7 @@ theorem Associated.of_pow_associated_of_prime' [CommMonoidWithZero M] [IsCancelM
 lemma Irreducible.isRelPrime_iff_not_dvd [Monoid M] {p n : M} (hp : Irreducible p) :
     IsRelPrime p n ↔ ¬ p ∣ n := by
   refine ⟨fun h contra ↦ hp.not_isUnit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
-  contrapose! hpn
+  contrapose hpn
   suffices Associated p d from this.dvd.trans hdn
   exact (hp.dvd_iff.mp hdp).resolve_left hpn
 
@@ -496,9 +497,8 @@ theorem dvd_eq_le : ((· ∣ ·) : Associates M → Associates M → Prop) = (·
 instance uniqueUnits : Unique (Associates M)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
-    revert hab hba
-    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
-      associated_one_of_associated_mul_one <| Quotient.exact hab
+    induction a, b using Quotient.inductionOn₂ with | _ a b
+    exact Units.ext <| Quotient.sound <| associated_one_of_associated_mul_one <| Quotient.exact hab
 
 @[simp]
 theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
@@ -669,7 +669,7 @@ theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := 
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
   refine ⟨x, ?_, rfl⟩
-  contrapose! ndvd
+  contrapose ndvd
   rcases ndvd with ⟨u, rfl⟩
   simp
 

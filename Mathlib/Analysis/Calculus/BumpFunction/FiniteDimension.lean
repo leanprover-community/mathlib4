@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Calculus.ContDiff.Convolution
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.Data.Set.Pointwise.Support
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
@@ -118,6 +118,11 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `obtain` on the next line. It is not yet clear whether this is due to defeq
+    abuse in Mathlib or a problem in the new canonicalizer; a minimization would help. -/
+    obtain ⟨n, hn⟩ := hg ▸ iT
     grind
   have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
@@ -164,7 +169,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, smul_eq_mul, mem_support, Ne] at hx
-      contrapose! hx
+      contrapose hx
       have : ∀ n, g n x = 0 := by
         intro n
         contrapose! hx

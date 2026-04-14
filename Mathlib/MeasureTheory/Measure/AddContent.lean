@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Additive Contents
@@ -104,26 +105,45 @@ lemma addContent_sUnion (h_ss : ↑I ⊆ C)
     m (⋃₀ I) = ∑ u ∈ I, m u :=
   m.sUnion' I h_ss h_dis h_mem
 
+lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : ∀ i ∈ a, f i ∈ C)
+    (h_dis : PairwiseDisjoint ↑a f) (h_mem : ⋃ i ∈ a, f i ∈ C) :
+    m (⋃ i ∈ a, f i) = ∑ i ∈ a, m (f i) := by
+  classical
+  have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
+  rw [A, addContent_sUnion]; rotate_left
+  · grind
+  · simpa using h_dis.image
+  · rwa [← A]
+  rw [sum_image_of_pairwise_eq_zero]
+  refine h_dis.imp ?_
+  grind [Set.bot_eq_empty (α := α), addContent_empty]
+
+lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
+    (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
+    m (⋃ i, f i) = ∑ i, m (f i) := by
+  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  · simp
+  · simpa
+  · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
+  · simpa
+
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
-  by_cases hs_empty : s = ∅
-  · simp only [hs_empty, Set.empty_union, addContent_empty, zero_add]
-  classical
-  have h := addContent_sUnion (m := m) (I := {s, t}) ?_ ?_ ?_
-  rotate_left
-  · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
-  · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
-      mem_singleton_iff, Ne, id, forall_eq, true_and]
-    exact fun _ => h_dis
-  · simp only [coe_pair, sUnion_insert, sUnion_singleton]
-    exact hst
-  convert h
-  · simp only [coe_pair, sUnion_insert, sUnion_singleton]
-  · rw [sum_insert, sum_singleton]
-    simp only [Finset.mem_singleton]
-    refine fun hs_eq_t => hs_empty ?_
-    rw [← hs_eq_t] at h_dis
-    exact Disjoint.eq_bot_of_self h_dis
+  have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
+  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  · simp [Fin.univ_castSuccEmb, add_comm]
+  · fin_cases i <;> simpa
+  · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed all four
+    cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+    the new canonicalizer; a minimization would help. The original proof was:
+    `fin_cases i <;> fin_cases j <;> grind` -/
+    fin_cases i <;> fin_cases j
+    · grind
+    · assumption
+    · exact h_dis.symm
+    · grind
+  · rwa [← A]
 
 /-- An additive content with values in `ℝ≥0∞` is said to be sigma-sub-additive if for any sequence
 of sets `f` in `C` such that `⋃ i, f i ∈ C`, we have `m (⋃ i, f i) ≤ ∑' i, m (f i)`. -/
@@ -163,6 +183,122 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
     exact hC.pairwiseDisjoint_insert_disjointOfDiff ht hs
   · rw [coe_insert]
     rwa [hC.sUnion_insert_disjointOfDiff ht hs hst]
+
+/-- If a set can be written in two different ways as a disjoint union of elements of a semi-ring
+of sets `C`, then the sums of the values of `m : addContent C` along the two decompositions give
+the same result.
+In other words, `m` can be canonically extended to finite unions of elements of `C`. -/
+theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Set α))
+    (hJ : ↑J ⊆ C) (hJdisj : PairwiseDisjoint (J : Set (Set α)) id)
+    (hJ' : ↑J' ⊆ C) (hJ'disj : PairwiseDisjoint (J' : Set (Set α)) id)
+    (h : ⋃₀ (J : Set (Set α)) = ⋃₀ J') :
+    ∑ s ∈ J, m s = ∑ t ∈ J', m t := by
+  calc ∑ s ∈ J, m s
+  _ = ∑ s ∈ J, (∑ t ∈ J', m (s ∩ t)) := by
+    apply Finset.sum_congr rfl (fun s hs ↦ ?_)
+    have : s = ⋃ t ∈ J', s ∩ t := by
+      simp_rw [← Finset.set_biUnion_coe, ← inter_iUnion, left_eq_inter, ← sUnion_eq_biUnion, ← h]
+      exact subset_sUnion_of_mem hs
+    nth_rewrite 1 [this]
+    apply addContent_biUnion
+    · exact fun t ht ↦ hC.inter_mem _ (hJ hs) _ (hJ' ht)
+    · exact hJ'disj.mono fun _ ↦ by simp
+    · rw [← this]
+      exact hJ hs
+  _ = ∑ t ∈ J', (∑ s ∈ J, m (s ∩ t)) := sum_comm
+  _ = ∑ t ∈ J', m t := by
+    apply Finset.sum_congr rfl (fun t ht ↦ ?_)
+    have : t = ⋃ s ∈ J, s ∩ t := by
+      simp_rw [← Finset.set_biUnion_coe, ← iUnion_inter, right_eq_inter, ← sUnion_eq_biUnion, h]
+      exact subset_sUnion_of_mem ht
+    nth_rewrite 2 [this]
+    apply (addContent_biUnion _ _ _).symm
+    · exact fun s hs ↦ hC.inter_mem _ (hJ hs) _ (hJ' ht)
+    · exact hJdisj.mono fun _ ↦ by simp
+    · rw [← this]
+      exact hJ' ht
+
+open scoped Classical in
+/-- Extend a content over `C` to the finite unions of elements of `C` by additivity.
+Use instead `AddContent.supClosure` which is the same function bundled as an `AddContent`. -/
+private noncomputable def AddContent.supClosureFun (m : AddContent G C) (s : Set α) : G :=
+  if h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J
+    then ∑ s ∈ h.choose, m s
+  else 0
+
+private lemma AddContent.supClosureFun_apply (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
+    (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
+    m.supClosureFun s = ∑ s ∈ J, m s := by
+  have h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J :=
+    ⟨J, hJ, h'J, hs⟩
+  simp only [supClosureFun, h, ↓reduceDIte]
+  apply sum_addContent_eq_of_sUnion_eq hC _ _ h.choose_spec.1 h.choose_spec.2.1 hJ h'J
+  rw [← hs]
+  exact h.choose_spec.2.2.symm
+
+private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
+    m.supClosureFun s = m s := by
+  have : m.supClosureFun s = ∑ t ∈ {s}, m t :=
+    m.supClosureFun_apply hC (by simp [hs]) (by simp) (by simp)
+  simp [this]
+
+/-- Extend a content over `C` to the finite unions of elements of `C` by additivity. -/
+@[no_expose] noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring C) :
+    AddContent G (supClosure C) where
+  toFun := m.supClosureFun
+  empty' := by rw [m.supClosureFun_apply_of_mem hC hC.empty_mem, addContent_empty]
+  sUnion' I hI h'I hh'I := by
+    classical
+    have A (s) (hs : s ∈ I) : ∃ (J : Finset (Set α)),
+        ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J := by
+      obtain ⟨P, PC⟩ : ∃ (P : Finpartition s), ↑P.parts ⊆ C := by
+        have := hI hs
+        rwa [hC.mem_supClosure_iff] at this
+      refine ⟨P.parts, PC, P.disjoint, ?_⟩
+      convert P.sup_parts.symm
+      simp [sUnion_eq_biUnion]
+    choose! J hJC hJdisj hJs using A
+    have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
+      rw [hJs i hi]
+      exact subset_sUnion_of_mem ha
+    let K : Finset (Set α) := Finset.biUnion I J
+    have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by grind
+    rw [this, m.supClosureFun_apply hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
+    · simp only [K, coe_biUnion]
+      refine (h'I.mono_on ?_).biUnion hJdisj
+      simp
+      grind
+    simp only [K]
+    rw [sum_biUnion_of_pairwise_eq_zero]; swap
+    · intro i hi j hj hij k hk
+      simp only [Finset.mem_inter] at hk
+      have : Disjoint k k := by
+        have : Disjoint i j := h'I hi hj hij
+        exact this.mono (H hi hk.1) (H hj hk.2)
+      simp only [disjoint_self, Set.bot_eq_empty] at this
+      simp [this]
+    apply Finset.sum_congr rfl (fun i hi ↦ Eq.symm ?_)
+    exact m.supClosureFun_apply hC (hJC i hi) (hJdisj i hi) (hJs i hi)
+
+lemma AddContent.supClosure_apply (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
+    (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
+    m.supClosure hC s = ∑ s ∈ J, m s :=
+  m.supClosureFun_apply hC hJ h'J hs
+
+lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} {J : Finpartition s} (hJ : ↑J.parts ⊆ C) :
+    m.supClosure hC s = ∑ s ∈ J.parts, m s := by
+  rw [m.supClosure_apply _ hJ J.disjoint]
+  nth_rewrite 1 [← J.sup_parts, Finset.sup_set_eq_biUnion, sUnion_eq_biUnion]
+  simp
+
+lemma AddContent.supClosure_apply_of_mem (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
+    m.supClosure hC s = m s :=
+  m.supClosureFun_apply_of_mem hC hs
 
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 
@@ -560,6 +696,22 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
   refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
   rw [partialSups_eq_biUnion_range]
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
+
+/-- If an additive content is continuous from below on monotone sequences of sets,
+then it is countably additive on pairwise disjoint sequences. -/
+theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
+    (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
+    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    m (⋃ i, s i) = ∑' i, m (s i) :=
+  calc
+    m (⋃ i, s i) = m (⋃ i, accumulate s i) := by simp
+    _ = ⨆ i, m (accumulate s i) :=
+      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
+    _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
+      iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
+    _ = ∑' i, m (s i) :=
+      (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
 
 end IsSetRing
 
