@@ -65,7 +65,7 @@ theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ �
 
 theorem Subsingleton.subsingleton_iff_eq_empty_or_singleton  : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} := by
   constructor
-  intro h 
+  intro h
   exact Set.Subsingleton.eq_empty_or_singleton h
   intro h
   rcases h with h|h
