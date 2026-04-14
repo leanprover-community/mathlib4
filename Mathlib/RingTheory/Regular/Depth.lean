@@ -115,11 +115,9 @@ universe v u
 
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommRing R] [Small.{v} R]
 
 open Pointwise ModuleCat IsSMulRegular
-
-variable [Small.{v} R]
 
 lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
@@ -196,9 +194,7 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
     match rs with
-    | [] =>
-      absurd len
-      simp
+    | [] => simp at len
     | a :: rs' =>
       -- find a positive power of `a` lying in `Ann(N)`
       rcases le_rad (mem a List.mem_cons_self) with ⟨k, hk⟩
@@ -212,24 +208,24 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
         simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
           Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr mem.1),
           ← Submodule.ideal_span_singleton_smul] using smul_lt.ne
-      by_cases eq0 : i = 0
-      · -- vanishing of `Ext N M 0` follows from `aᵏ ∈ Ann(N)`
-        rw [eq0]
+      match i with
+      | 0 => -- vanishing of `Ext N M 0` follows from `aᵏ ∈ Ann(N)`
         have : Subsingleton (N →ₗ[R] M) := subsingleton_linearMap_iff.mpr ⟨a ^ k, hk, reg.1.pow k⟩
         exact (Ext.addEquiv₀.trans ModuleCat.homAddEquiv).subsingleton
-      · let g := (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N (add_zero i)))
+      | i + 1 =>
+        let g := (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N
+          (add_zero (i + 1))))
         -- from the (covariant) long exact sequence given by `M.smulShortComplex a`
         -- we obtain scalar multiple by `a` on `Ext N M i` is injective
         have mono_g : Mono g := by
-          apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact (i - 1) i
-            (Nat.succ_pred_eq_of_ne_zero eq0)).mono_g (IsZero.eq_zero_of_src _ _)
-          exact @AddCommGrpCat.isZero_of_subsingleton _
-            (ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' len mem.2 reg.2 (i - 1) (by omega))
-        let gk := AddCommGrpCat.ofHom
-          ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N (add_zero i))
-        have mono_gk := Ext.pow_mono_of_mono a k i mono_g
+          apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact i (i + 1)
+            rfl).mono_g ((@AddCommGrpCat.isZero_of_subsingleton _ ?_).eq_zero_of_src _)
+          exact ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' len mem.2 reg.2 i (by omega)
+        let gk := AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N
+          (add_zero (i + 1)))
+        have mono_gk := Ext.pow_mono_of_mono a k (i + 1) mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
-        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk i
+        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk (i + 1)
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
