@@ -686,8 +686,7 @@ lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
   starGraph_adj.mpr ⟨h, Or.inl rfl⟩
 
 lemma connected_starGraph (r : V) : (starGraph r).Connected := by
-  have : ∀ v, (starGraph r).Reachable r v := by
-    intro v
+  have (v : V) : (starGraph r).Reachable r v := by
     by_cases! h : r = v
     · exact h ▸ Reachable.rfl
     · exact (starGraph_center_adj h).reachable
