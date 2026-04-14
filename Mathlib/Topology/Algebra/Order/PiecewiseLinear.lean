@@ -19,8 +19,8 @@ grid cell.
 
 ## Main definitions
 
-* `piecewiseLinear y c hh a t`: the piecewise linear interpolation, equal to
-  `y n + (t - (a + n • h)) • c n` on cell `n = toIcoDiv hh a t`.
+* `piecewiseLinear (y c : ℤ → E) (hh : 0 < h) (a t : ℝ)`: the piecewise linear interpolation,
+  equal to `y n + (t - (a + n • h)) • c n` on cell `n = toIcoDiv hh a t`.
 
 ## Main results
 
