@@ -110,8 +110,6 @@ lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbbd : BddAbove s)
   · rwa [h]
   · exact (h ▸ ha'.bot_lt'.trans_le <| le_csSup hbbd ha).false.elim
 
-/-- See `exists_eq_ciSup_of_not_isSuccPrelimit` for the
-`ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccLimit [Nonempty ι] (hbbd : BddAbove (range f))
     (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccLimit (Set.range_nonempty _) hbbd hf
