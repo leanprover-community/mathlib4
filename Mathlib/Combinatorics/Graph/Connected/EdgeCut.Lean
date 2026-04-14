@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Jun Kwon. All rights reserved.
+Copyright (c) 2026 Jun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jun Kwon
 -/
@@ -15,8 +15,8 @@ This file defines the edge cuts and bridges of a graph.
 ## Main definitions
 
 * `IsEdgeCut`: a set of edges between a set of vertices and its complement.
-* `IsBridge`: a graph `H` is a component of `G` if it is a minimal nonempty closed subgraph of `G`.
-* `IsBond`: a bond of a graph is a minimal nonempty edge-cut.
+* `IsBridge`: an edge that forms a singleton edge cut (an isthmus / bridge edge).
+* `IsBond`: a bond of a graph is a minimal nonempty edge cut.
 
 -/
 
@@ -116,6 +116,7 @@ lemma IsEdgeCut.of_isClosedSubgraph (hGH : G ≤c H) (hF : G.IsEdgeCut F) : H.Is
     exact he <| hGH.closed hxy.inc_left (hSG hu)
   obtain ⟨x, y, hxy⟩ := exists_isLink_of_mem_edgeSet he
   rw [hxy.mem_edgeCut_iff, (hGH.le.isLink_mono hxy).mem_edgeCut_iff]
+alias IsClosedSubgraph.isEdgeCut := IsEdgeCut.of_isClosedSubgraph
 
 end IsEdgeCut
 
@@ -123,7 +124,7 @@ end IsEdgeCut
 
 section IsBridge
 
-/-- A bridge is a singleton edge separation -/
+/-- A bridge (isthmus) is an edge that constitutes a singleton edge cut. -/
 @[expose] def IsBridge (G : Graph α β) (e : β) : Prop := G.IsEdgeCut {e}
 
 lemma IsBridge.isEdgeCut (he : G.IsBridge e) : G.IsEdgeCut {e} := he
@@ -183,6 +184,7 @@ lemma IsBond.of_isClosedSubgraph (hGH : G ≤c H) (hB : G.IsBond B) : H.IsBond B
   refine ⟨⟨hB.isEdgeCut.of_isClosedSubgraph hGH, hB.nonempty⟩, fun C ⟨hC, e, heC⟩ hCB ↦ ?_⟩
   exact hB.2 ⟨hC.anti hGH.le, e, hB.subset (hCB heC), heC⟩ (inter_subset_right
   |>.trans hCB) |>.trans inter_subset_right
+alias IsClosedSubgraph.isBond := IsBond.of_isClosedSubgraph
 
 end IsBond
 
