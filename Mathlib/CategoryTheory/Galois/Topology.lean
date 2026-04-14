@@ -84,7 +84,7 @@ lemma autEmbedding_range :
     Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp +instances only [Set.mem_range, id_obj, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
+  simp +instances only [Set.mem_range, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
     ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩

@@ -97,7 +97,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       refine h_lipsch.mono fun a ha ↦ (ha x x_in).trans ?_
       rw [mul_comm ε]
       rw [mem_ball, dist_eq_norm] at x_in
-      exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
+      gcongr
     exact integrable_of_norm_sub_le (hF_meas x (hε x_in)) hF_int
       (bound_integrable.norm.const_mul ε) this
   have hF'_int : Integrable F' μ :=
