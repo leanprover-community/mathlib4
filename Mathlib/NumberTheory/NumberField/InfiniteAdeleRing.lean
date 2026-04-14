@@ -50,23 +50,14 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 
 /-- The infinite adele ring of a number field. -/
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
+deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace InfiniteAdeleRing
 
 variable (K : Type*) [Field K]
 
-instance : CommRing (InfiniteAdeleRing K) := fast_instance% Pi.commRing
-
-instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
-
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
-  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
-
-instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
-
-instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
-
-instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra (InfinitePlace K) InfinitePlace.Completion
+  (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
 @[simp]
 theorem algebraMap_apply (x : K) (v : InfinitePlace K) :

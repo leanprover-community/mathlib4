@@ -49,8 +49,6 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
@@ -123,7 +121,6 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
   simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a

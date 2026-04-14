@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Abel
 
 set_option linter.unusedVariables false
@@ -54,10 +55,10 @@ example [AddCommGroup α] (a b c : α) :
   right; trivial
 
 /-- `MyTrue` should be opaque to `abel`. -/
-private def MyTrue := True
+def MyTrue := True
 
 /--
-error: `abel_nf` made no progress on goal
+error: `abel_nf` made no progress on the goal
 -/
 #guard_msgs in
 example : MyTrue := by
@@ -86,14 +87,14 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
 
 -- inspired by automated testing
-/-- error: `abel_nf` made no progress on goal -/
+/-- error: `abel_nf` made no progress on the goal -/
 #guard_msgs in
 example : True := by
   have := 0
   abel_nf
 
 /--
-error: `abel_nf` made no progress on goal
+error: `abel_nf` made no progress on the goal
 -/
 #guard_msgs in
 example : False := by abel_nf
@@ -148,7 +149,7 @@ example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
   abel_nf at w ⊢
 
 /--
-error: `abel_nf` made no progress on goal
+error: `abel_nf` made no progress on the goal
 -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by

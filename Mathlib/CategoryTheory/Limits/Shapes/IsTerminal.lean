@@ -347,7 +347,6 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `coneOfDiagramInitial` is a limit. -/
 def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
@@ -374,7 +373,6 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coneOfDiagramTerminal` is a limit. -/
 def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
@@ -392,7 +390,6 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
 `coconeOfDiagramTerminal` is a colimit. -/
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
@@ -422,7 +419,6 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coconeOfDiagramInitial` is a colimit. -/
 def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
@@ -471,4 +467,30 @@ def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
   IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
     (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
 
-end CategoryTheory.Limits
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
+def isTerminalConst {X : D} (hX : IsTerminal X) :
+    IsTerminal ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.from (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+/-- The constant functor returning a specific initial object is indeed initial. -/
+def isInitialConst {X : D} (hX : IsInitial X) :
+    IsInitial ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.to (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialConst_to_app {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialConst C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory

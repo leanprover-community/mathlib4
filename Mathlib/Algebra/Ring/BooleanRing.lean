@@ -205,6 +205,7 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
@@ -232,7 +233,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self, add_self]
+      simp [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra

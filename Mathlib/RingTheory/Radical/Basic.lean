@@ -168,6 +168,11 @@ theorem radical_mul_of_isUnit_right (h : IsUnit u) : radical (a * u) = radical a
 theorem radical_pow (a : M) {n : ℕ} (hn : n ≠ 0) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
 
+theorem radical_pow_dvd {n : ℕ} : radical (a ^ n) ∣ radical a := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · rw [radical_pow _ hn]
+
 theorem radical_dvd_self : radical a ∣ a := by
   classical
   by_cases ha : a = 0

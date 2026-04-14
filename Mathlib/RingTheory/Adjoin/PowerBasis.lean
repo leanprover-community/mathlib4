@@ -10,9 +10,9 @@ public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
-# Power basis for `Algebra.adjoin R {x}`
+# Power basis for `R[x]`
 
-This file defines the canonical power basis on `Algebra.adjoin R {x}`,
+This file defines the canonical power basis on `R[x]`,
 where `x` is an integral element over `R`.
 -/
 
@@ -24,19 +24,18 @@ variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
-    Basis (Fin (minpoly K x).natDegree) K (adjoin K ({x} : Set S)) := by
-  have hST : Function.Injective (algebraMap (adjoin K ({x} : Set S)) S) := Subtype.coe_injective
+    Basis (Fin (minpoly K x).natDegree) K (K[(x : S)]) := by
+  have hST : Function.Injective (algebraMap (K[(x : S)]) S) := Subtype.coe_injective
   have hx' :
-    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : adjoin K ({x} : Set S)) := by
+    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
   apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
-      (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
+      (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
     rwa [← minpoly.algebraMap_eq hST] at this
   · rintro ⟨y, hy⟩ _
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)
@@ -46,36 +45,34 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
     use f
     ext
-    exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
+    exact aeval_algebraMap_apply S (⟨x, _⟩ : K[x]) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. See `Algebra.adjoin.powerBasis'` for
 a version over a more general base ring. -/
 @[simps gen dim]
 noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
-    PowerBasis K (adjoin K ({x} : Set S)) where
+    PowerBasis K K[(x : S)] where
   gen := ⟨x, subset_adjoin (Set.mem_singleton x)⟩
   dim := (minpoly K x).natDegree
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `x` generates `S` over `K` and is integral over `K`, then it defines a power basis.
 See `PowerBasis.ofAdjoinEqTop'` for a version over a more general base ring.
 -/
 noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
-    (hx' : adjoin K {x} = ⊤) : PowerBasis K S :=
+    (hx' : K[x] = ⊤) : PowerBasis K S :=
   (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
-    (hx' : adjoin K {x} = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
+    (hx' : K[x] = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
 
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
-    (hx' : adjoin K {x} = ⊤) :
+    (hx' : K[x] = ⊤) :
     (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
 
 @[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \

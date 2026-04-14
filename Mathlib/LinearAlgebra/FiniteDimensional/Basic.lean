@@ -240,8 +240,6 @@ end Submodule
 
 namespace Subalgebra
 
-set_option backward.isDefEq.respectTransparency false
-
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
   [hfin : FiniteDimensional K E]
 
@@ -313,6 +311,13 @@ instance (priority := low) : IsStablyFiniteRing K := by
     (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
+
+/-- A domain finitely generated as a module over a field is a field. -/
+theorem _root_.IsField.of_isDomain_of_finite (K L : Type*) [Field K] [CommRing L] [IsDomain L]
+    [Algebra K L] [Module.Finite K L] : IsField L where
+  exists_pair_ne := Nontrivial.exists_pair_ne
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := (mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
 
 section Semiring
 
@@ -602,7 +607,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -611,7 +615,6 @@ theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
 alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgebra_toSubmodule⟩ :=
   Subalgebra.finiteDimensional_toSubmodule
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
