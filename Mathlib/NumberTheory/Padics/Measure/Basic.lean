@@ -96,6 +96,7 @@ This is a type synonym for `C(X, R) →L[R] E`, but we do not want it to inherit
 -/
 def AbstractMeasure := C(X, R) →L[R] E
 
+@[inherit_doc]
 scoped [AbstractMeasure] notation "D(" X ", " R ")" => AbstractMeasure X R R
 
 end Defs
@@ -130,8 +131,8 @@ lemma smul_apply (r : R) (μ : AbstractMeasure X R E) (f : C(X, R)) : (r • μ)
   rfl
 
 omit [ContinuousSMul R E] in
-@[simp]
-lemma add_apply (μ ν : AbstractMeasure X R E) (f : C(X, R)) : (μ + ν) f = μ f + ν f :=
+@[simp] lemma add_apply (μ ν : AbstractMeasure X R E) (f : C(X, R)) :
+    (μ + ν) f = μ f + ν f :=
   rfl
 
 /-- Measures can be pushed forward (R-linearly) along continuous maps. -/
@@ -144,7 +145,9 @@ def map (f : C(X, Y)) : AbstractMeasure X R E →ₗ[R] AbstractMeasure Y R E wh
     map f μ g = μ (g.comp f) :=
   rfl
 
-lemma map_dirac (f : C(X, Y)) (x : X) : map f (dirac R x) = dirac R (f x) := rfl
+@[simp] lemma map_dirac (f : C(X, Y)) (x : X) :
+    map f (dirac R x) = dirac R (f x) :=
+  rfl
 
 section Prod
 
@@ -154,16 +157,12 @@ section Prod
 
 -- note we define `contractSnd` first, because `f.curry` only works one way round
 
-/-- Integrate a measure on `Y` against a function on `X × Y`, giving a function on `X`. -/
+/-- Send a measure `ν` on `Y` and a function `f` on `X × Y` to the function on `X` given by
+`ν (f (x, ·))`, or more suggestively, `x ↦ ∫ f(x, y) dμ(y)`. -/
 def contractSnd : D(Y, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(X, R) :=
   LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry)
-    (fun ν ν' f ↦ by
-      ext x
-      simp only [comp_apply, ContinuousMap.coe_coe, add_apply, ContinuousMap.add_apply])
-    (fun r ν f ↦ by
-      ext x
-      simp only [comp_apply, ContinuousMap.coe_coe, smul_apply, smul_eq_mul, coe_smul, coe_comp,
-        Pi.smul_apply, Function.comp_apply])
+    (fun ν ν' f ↦ by ext; simp)
+    (fun r ν f ↦ by ext; simp)
     (fun ν f f' ↦ by
       ext x
       simp only [comp_apply, ContinuousMap.coe_coe, ContinuousMap.add_apply, ← map_add]
