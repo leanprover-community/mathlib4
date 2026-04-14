@@ -523,7 +523,8 @@ lemma leadingCoeff_mul_le [NoZeroDivisors R] (I J : Ideal R[X]) :
 
 lemma leadingCoeff_finset_prod_le [NoZeroDivisors R] {ι : Type*} (s : Finset ι)
     (f : ι → Ideal R[X]) : (s.prod fun i ↦ (f i).leadingCoeff) ≤ (s.prod f).leadingCoeff := by
-  classical refine Finset.induction_on s (by simp) ?_
+  classical
+  refine Finset.induction_on s (by simp) ?_
   intro i s hi hs
   simpa [hi] using (mul_mono_right hs).trans (leadingCoeff_mul_le (f i) (s.prod f))
 
@@ -646,8 +647,7 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
 lemma map_C_comap_of_comap_eq_leadingCoeff (I : Ideal R[X]) (hI : comap C I = I.leadingCoeff) :
     map C (comap C I) = I := by
   refine le_antisymm map_comap_le (fun f hfI ↦ ?_)
-  generalize hn : f.natDegree = n
-  induction n using Nat.strong_induction_on generalizing f with | _ _ ih
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ _ ih
   have h : C f.leadingCoeff * X ^ f.natDegree ∈ map C (comap C I) :=
     (map C (comap C I)).mul_mem_right (X ^ f.natDegree) <| mem_map_of_mem C <| by
       simpa [hI] using (I.mem_leadingCoeff f.leadingCoeff).2 ⟨f, hfI, rfl⟩
