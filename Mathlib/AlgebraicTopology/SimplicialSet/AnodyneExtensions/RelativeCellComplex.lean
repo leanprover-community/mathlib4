@@ -71,8 +71,7 @@ noncomputable def index : Fin (c.dim + 2) :=
 /-- The horn in the standard simplex corresponding to a cell
 of a rank function for a proper pairing of a subcomplex of
 a simplicial set. -/
-protected noncomputable abbrev horn :
-    (Δ[c.dim + 1] : SSet.{u}).Subcomplex :=
+protected noncomputable abbrev horn : (Δ[c.dim + 1] : SSet.{u}).Subcomplex :=
   SSet.horn _ c.index
 
 /-- The morphism `Δ[c.dim + 1] ⟶ X` corresponding to a cell of rank
@@ -92,8 +91,7 @@ lemma map_app_objEquiv_symm_δ_index :
       c.s.val.simplex :=
   (P.isUniquelyCodimOneFace c.s).δ_index rfl
 
-lemma subcomplex_not_le_image_horn :
-    ¬ c.s.val.subcomplex ≤ c.horn.image c.map := by
+lemma subcomplex_not_le_image_horn : ¬ c.s.val.subcomplex ≤ c.horn.image c.map := by
   intro h
   simp only [Subfunctor.ofSection_le_iff, image_obj, Set.mem_image] at h
   obtain ⟨x, h₁, h₂⟩ := h
@@ -104,8 +102,7 @@ lemma subcomplex_not_le_image_horn :
   rw [← ofSimplex_le_iff, subcomplex_le_horn_iff, ← stdSimplex.face_singleton_compl] at h₁
   tauto
 
-lemma image_horn_lt_subcomplex :
-    c.horn.image c.map < (P.p c.s).val.subcomplex := by
+lemma image_horn_lt_subcomplex : c.horn.image c.map < (P.p c.s).val.subcomplex := by
   rw [lt_iff_le_and_ne]
   exact ⟨by simpa using image_le_range c.horn c.map,
     fun h ↦ c.subcomplex_not_le_image_horn (by simpa only [h] using P.le c.s)⟩
@@ -122,8 +119,8 @@ end Cell
 variable [P.IsProper] in
 /-- The horn inclusion corresponding to a cell of a rank function
 for a proper pairing of a subcomplex of a simplicial set. -/
-noncomputable abbrev basicCell (i : ι) (c : f.Cell i) :
-    (c.horn : SSet) ⟶ Δ[c.dim + 1] := c.horn.ι
+noncomputable abbrev basicCell (i : ι) (c : f.Cell i) : (c.horn : SSet) ⟶ Δ[c.dim + 1] :=
+  c.horn.ι
 
 /-- The filtration of a simplicial set given by a rank function
 for a proper pairing of a subcomplex. -/
@@ -166,8 +163,7 @@ lemma filtration_succ [SuccOrder ι] (i : ι) (hi : ¬ IsMax i) :
     exact ⟨f.filtration_monotone (Order.le_succ i),
       fun c ↦ f.subcomplex_le_filtration _ (Order.lt_succ_of_not_isMax hi)⟩
 
-lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
-    (i : ι) (hi : Order.IsSuccLimit i) :
+lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι] (i : ι) (hi : Order.IsSuccLimit i) :
     f.filtration i = ⨆ (j : ι) (_ : j < i), f.filtration j := by
   apply le_antisymm
   · rw [filtration]
@@ -242,7 +238,7 @@ lemma Cell.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cell j) :
 section
 
 /-- Given a rank function for a proper pairing of a subcomplex of a
-simplicial set, this is coproduct of the horns corresponding to
+simplicial set, this is the coproduct of the horns corresponding to
 all cells of rank `j`. -/
 noncomputable abbrev sigmaHorn (j : ι) : SSet.{u} :=
   ∐ fun (c : f.Cell j) ↦ c.horn
@@ -294,24 +290,21 @@ lemma ιSigmaStdSimplex_eq_iff {j : ι} {d : ℕ}
 
 instance {j : ι} (c : f.Cell j) : Mono c.ιSigmaStdSimplex := by
   rw [NatTrans.mono_iff_mono_app]
-  rintro ⟨d⟩
-  induction d using SimplexCategory.rec with | _ d
+  rintro ⟨⟨d⟩⟩
   rw [mono_iff_injective]
   intro x y h
   simpa [f.ιSigmaStdSimplex_eq_iff] using h.symm
 
 /-- The coproduct of the horn inclusions corresponding to all the cells
 of rank `j` for a rank function for a proper pairing of a subcomplex
-of a simplicila set. -/
+of a simplicial set. -/
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
 
 instance (j : ι) : Mono (f.m j) :=
   MorphismProperty.colimitsOfShape_le (W := .monomorphisms _) _
-    (MorphismProperty.colimitsOfShape_colimMap _ (fun ⟨c⟩ ↦ by
-      dsimp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app]
-      simp only [MorphismProperty.monomorphisms.iff]
-      infer_instance))
+    (MorphismProperty.colimitsOfShape_colimMap _
+      (fun ⟨c⟩ ↦ by dsimp; infer_instance))
 
 @[reassoc (attr := simp)]
 lemma Cell.ι_m {j : ι} (c : f.Cell j) :
@@ -350,8 +343,7 @@ lemma Cell.preimage_filtration_map {j : ι} (c : f.Cell j) :
 /-- Given a cell `c` of rank `j` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is the induced
 morphism `c.horn ⟶ f.filtration j`. -/
-noncomputable def Cell.mapHorn {j : ι} (c : f.Cell j) :
-    (c.horn : SSet) ⟶ f.filtration j :=
+noncomputable def Cell.mapHorn {j : ι} (c : f.Cell j) : (c.horn : SSet) ⟶ f.filtration j :=
   Subcomplex.lift (c.horn.ι ≫ c.map) (by
     simp [← image_top, image_le_iff, preimage_comp, c.preimage_filtration_map])
 
@@ -366,8 +358,7 @@ noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
   Sigma.desc (fun c ↦ c.mapHorn)
 
 @[reassoc (attr := simp)]
-lemma Cell.ι_t {j : ι} (c : f.Cell j) :
-    c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
+lemma Cell.ι_t {j : ι} (c : f.Cell j) : c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
   simp [t, Sigma.ι_desc]
 
 /-- Given a rank `j` cell `c` for a rank function `f` for a proper
@@ -376,8 +367,7 @@ the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to `c.ιSigmaStdSimplex`. -/
 @[simps]
-noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) :
-    (Subcomplex.range (f.m j)).N where
+noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
   nonDegenerate := by
     rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
@@ -397,8 +387,7 @@ the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to the `c.index`th-face of `c.type₁`. -/
 @[simps]
-noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) :
-    (Subcomplex.range (f.m j)).N where
+noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _
     (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index))
   nonDegenerate := by
@@ -413,8 +402,7 @@ noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) :
     obtain ⟨rfl, rfl⟩ := hy
     simpa using (objEquiv_symm_δ_mem_horn_iff _ _).mp hy'
 
-lemma exists_or_of_range_m_N {j : ι}
-    (s : (Subcomplex.range (f.m j)).N) :
+lemma exists_or_of_range_m_N {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     ∃ (c : f.Cell j), s = c.type₁ ∨ s = c.type₂ := by
   obtain ⟨d, s, hs, hs', rfl⟩ := s.mk_surjective
   obtain ⟨x, s, rfl⟩ := f.ιSigmaStdSimplex_jointly_surjective s
@@ -438,13 +426,12 @@ variable [SuccOrder ι] [NoMaxOrder ι]
 /-- Given a rank function `f : P.RankFunction ι` for a proper pairing `P`
 of a subcomplex of a simplicial set, this is the induced morphism
 `f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j)` for any `j : ι`. -/
-noncomputable def b (j : ι) :
-    f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
+noncomputable def b (j : ι) : f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
   Sigma.desc (fun c ↦ c.mapToSucc)
 
 @[reassoc (attr := simp)]
-lemma Cell.ι_b {j : ι} (c : f.Cell j) :
-    c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by simp [b, Sigma.ι_desc]
+lemma Cell.ι_b {j : ι} (c : f.Cell j) : c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by
+  simp [b, Sigma.ι_desc]
 
 @[reassoc]
 lemma w (j : ι) :
@@ -452,8 +439,8 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
-lemma isPullback (j : ι) : IsPullback (f.t j) (f.m j)
-      (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
+lemma isPullback (j : ι) :
+    IsPullback (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
   isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨⟨d⟩⟩ ↦ by
     refine (isLimitMapConePullbackConeEquiv _ _).symm
@@ -499,8 +486,7 @@ noncomputable def mapN {j : ι} (x : (Subcomplex.range (f.m j)).N) : X.S :=
   S.mk ((f.b j).app _ x.simplex).val
 
 @[simp]
-lemma mapN_type₁ {j : ι} (c : f.Cell j) :
-    f.mapN c.type₁ = S.mk (P.p c.s).val.simplex := by
+lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).val.simplex := by
   dsimp only [Cell.type₁, mapN]
   rw [← S.cast_eq_self _ (P.dim_p c.s)]
   dsimp
@@ -508,14 +494,12 @@ lemma mapN_type₁ {j : ι} (c : f.Cell j) :
   apply yonedaEquiv_symm_app_id
 
 @[simp]
-lemma mapN_type₂ {j : ι} (c : f.Cell j) :
-    f.mapN c.type₂ = S.mk c.s.val.simplex := by
+lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]
   rw [S.ext_iff, ← FunctorToTypes.comp, c.ι_b, Cell.mapToSucc,
     lift_app_coe, Cell.map_app_objEquiv_symm_δ_index]
 
-lemma isPushout_aux₁ {j : ι}
-    (s : (Subcomplex.range (f.m j)).N) :
+lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by
   obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s
   · rw [f.mapN_type₁]
@@ -523,8 +507,7 @@ lemma isPushout_aux₁ {j : ι}
   · rw [f.mapN_type₂]
     exact c.s.val.nonDegenerate
 
-lemma isPushout_aux₂ {j : ι} :
-    Function.Injective (f.mapN (j := j)) := by
+lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) := by
   intro s t h
   obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s <;>
     obtain ⟨c', rfl | rfl⟩ := f.exists_or_of_range_m_N t <;>
@@ -544,8 +527,7 @@ lemma isPushout_aux₃ {j : ι} :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) :
-    IsPushout (f.t j) (f.m j)
-      (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
+    IsPushout (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨d⟩⟩ ↦ by
     refine (isColimitMapCoconePushoutCoconeEquiv _ _).symm
