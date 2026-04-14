@@ -140,6 +140,8 @@ lemma transpose_def :
     Bμ.transpose =
     Bμ.vectorMeasure.mapRange Bμ.pairing.flip.toAddMonoidHom Bμ.pairing.flip.continuous := by rfl
 
+/-- `f : X → E` is said to be integrable with respect to `Bμ` if it is integrable with respect to
+`Bμ.transpose.variation`. -/
 abbrev Integrable (f : X → E) : Prop := MeasureTheory.Integrable f Bμ.transpose.variation
 
 open Classical in
