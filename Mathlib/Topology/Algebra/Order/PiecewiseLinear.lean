@@ -26,8 +26,8 @@ grid cell.
 
 * `piecewiseLinear_eq_on_Ico`: evaluation on the `n`-th cell.
 * `piecewiseLinear_apply_grid`: evaluation at grid points.
-* `piecewiseLinear_continuous`: continuity (given the step condition).
-* `piecewiseLinear_hasDerivWithinAt`: the right derivative is `c (toIcoDiv hh a t)`.
+* `continuous_piecewiseLinear`: continuity (given the step condition).
+* `hasDerivWithinAt_piecewiseLinear`: the right derivative is `c (toIcoDiv hh a t)`.
 
 -/
 
