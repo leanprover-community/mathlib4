@@ -1032,11 +1032,11 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  protected zsmul_zero' (a : G) : (0 : ℤ) • a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul n.succ a = zsmul n a + a := by
+      (n.succ : ℤ) • a = (n : ℤ) • a + a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+  protected zsmul_neg' (n : ℕ) (a : G) : (Int.negSucc n) • a = -((n.succ : ℤ) • a) := by
     intros; rfl
 
 attribute [to_additive SubNegMonoid] DivInvMonoid

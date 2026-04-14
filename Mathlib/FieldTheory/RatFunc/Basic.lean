@@ -288,10 +288,8 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_zero := by frac_tac
   neg_add_cancel := by frac_tac
   sub_eq_add_neg := by frac_tac
-  nsmul := (· • ·)
   nsmul_zero := by smul_tac
   nsmul_succ _ := by smul_tac
-  zsmul := (· • ·)
   zsmul_zero' := by smul_tac
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac

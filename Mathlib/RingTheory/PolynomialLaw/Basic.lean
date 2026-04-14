@@ -196,7 +196,6 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
     (-f).toFun' S = (-1 : R) • f.toFun' S := rfl
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
-  zsmul n f := (n : R) • f
   zsmul_zero' f := by simp only [Int.cast_zero, zero_smul]
   zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
     Int.cast_one, add_smul, _root_.one_smul]

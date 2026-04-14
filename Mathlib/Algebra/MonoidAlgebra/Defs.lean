@@ -156,9 +156,11 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| DecidableEq <| M →₀ R
 
 -- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
+instance {A : Type*} [SMulZeroClass A R] : SMul A R[M] where
+  smul a x := x.mapRange (a • ·) (smul_zero _)
+
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
-    nsmul n x := x.mapRange (n • ·) (smul_zero _) }
+  inferInstanceAs <| AddCommMonoid <| M →₀ R
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
@@ -260,11 +262,9 @@ Further results on scalar multiplication can be found in
 
 variable {A : Type*} [SMulZeroClass A R]
 
--- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive (dont_translate := A) smulZeroClass]
 instance smulZeroClass : SMulZeroClass A R[M] :=
-  fast_instance% { (inferInstance : SMulZeroClass A (M →₀ R)) with
-    smul a x := x.mapRange (a • ·) (smul_zero _) }
+  inferInstanceAs <| SMulZeroClass A (M →₀ R)
 
 section
 -- Ensure that the different smul instances do not create a diamond.
