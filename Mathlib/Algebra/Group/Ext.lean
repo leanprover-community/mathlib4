@@ -138,7 +138,7 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     exact (@div_eq_mul_inv _ m₁ a b).trans
       (((congr_fun (congr_fun h_mul a) _).trans
         (congr_arg _ (congr_fun h_inv b))).trans (@div_eq_mul_inv _ m₂ a b).symm)
-  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩, ⟨_⟩⟩
   congr
 
 @[to_additive]

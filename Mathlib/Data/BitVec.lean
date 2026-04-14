@@ -71,6 +71,7 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
     open scoped Fin.CommRing in
     simp only [zsmul_eq_mul, toFin_intCast]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp

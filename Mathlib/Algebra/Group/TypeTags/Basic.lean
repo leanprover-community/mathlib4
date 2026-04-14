@@ -261,17 +261,15 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
-  { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := h.npow
-    nsmul_zero := h.npow_zero
-    nsmul_succ := h.npow_succ }
+instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) where
+  nsmul := h.npow
+  nsmul_zero := h.npow_zero
+  nsmul_succ := h.npow_succ
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
-  { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := h.nsmul
-    npow_zero := h.nsmul_zero
-    npow_succ := h.nsmul_succ }
+instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) where
+  npow := h.nsmul
+  npow_zero := h.nsmul_zero
+  npow_succ := h.nsmul_succ
 
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
@@ -415,21 +413,19 @@ instance Additive.involutiveNeg [InvolutiveInv α] : InvolutiveNeg (Additive α)
 instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multiplicative α) :=
   { Multiplicative.inv with inv_inv := @neg_neg α _ }
 
-instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
-  { Additive.neg, Additive.sub, Additive.addMonoid with
-    sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
-    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
-    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
+instance Additive.subNegMonoid [h : DivInvMonoid α] : SubNegMonoid (Additive α) where
+  sub_eq_add_neg := h.div_eq_mul_inv
+  zsmul := h.zpow
+  zsmul_zero' := h.zpow_zero'
+  zsmul_succ' := h.zpow_succ'
+  zsmul_neg' := h.zpow_neg'
 
-instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
-  { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
-    div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
-    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
-    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
-    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+instance Multiplicative.divInvMonoid [h : SubNegMonoid α] : DivInvMonoid (Multiplicative α) where
+  div_eq_mul_inv := h.sub_eq_add_neg
+  zpow := h.zsmul
+  zpow_zero' := h.zsmul_zero'
+  zpow_succ' := h.zsmul_succ'
+  zpow_neg' := h.zsmul_neg'
 
 @[simp]
 theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
