@@ -138,6 +138,17 @@ lemma baseCotangentMap_tmul [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ
         change _ ≤ Ideal.comap (algebraMap Λ A) _
         rw [comap_algebraMap_maximalIdeal]) a) := rfl
 
+@[simp]
+lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)]
+    (f : A ⟶ B) (z : k ⊗[ResidueField Λ] CotangentSpace Λ) :
+    mapCotangent f (A.baseCotangentMap z) = B.baseCotangentMap z := by
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul r a =>
+    rcases (maximalIdeal Λ).toCotangent_surjective a with ⟨a, rfl⟩
+    simp
+  | add x y hx hy => simp [hx, hy]
+
 open Submodule in
 theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)] :
     A.baseCotangentMap.range = (mapCotangent A.toSpecialFiber).ker := ext fun x ↦ by
