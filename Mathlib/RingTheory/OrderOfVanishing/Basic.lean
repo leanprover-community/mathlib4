@@ -305,6 +305,7 @@ variable {R} in
 lemma ord_lt_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a < ⊤ := (ord_ne_top ha).lt_top
 
 variable [Nontrivial R]
+
 /--
 Order of vanishing function for elements of the fraction field defined as the extension of
 `CommRing.ordMonoidWithZeroHom` to the field of fractions.

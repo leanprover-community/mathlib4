@@ -143,7 +143,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
     [IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0
-  · simp[j]
+  · simp [j]
   suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq,
     algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
@@ -198,7 +198,7 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
     MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
-  rw [ordFrac_eq_inverse_comp_valuation, ←MonoidWithZeroHom.comap_mker,
+  rw [ordFrac_eq_inverse_comp_valuation, ← MonoidWithZeroHom.comap_mker,
       MonoidWithZeroHom.mker_inverse]
   exact IsDiscreteValuationRing.mker_valuation_eq_isUnitSubmonoid
 
