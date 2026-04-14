@@ -229,11 +229,11 @@ lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 := Submodule.spanRank_eq_zero_
 @[simp]
 lemma spanFinrank_bot : (⊥ : Submodule R M).spanFinrank = 0 := by simp [spanFinrank]
 
-@[simp, nontriviality]
+@[nontriviality]
 lemma spanRank_subsingleton [Subsingleton R] (p : Submodule R M) : p.spanRank = 0 := by
   simp [nontriviality]
 
-@[simp, nontriviality]
+@[nontriviality]
 lemma spanFinrank_subsingleton [Subsingleton R] (p : Submodule R M) : p.spanFinrank = 0 := by
   have := Module.subsingleton R M
   simp [Submodule.eq_bot_of_subsingleton]
