@@ -67,3 +67,10 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
 end Group.IsFinitelyPresented
+
+open Group
+
+/- Direct products of finitely presented groups are finitely presented -/
+instance [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
+    IsFinitelyPresented (G × H) := by
+  sorry
