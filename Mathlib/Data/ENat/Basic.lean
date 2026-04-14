@@ -397,7 +397,7 @@ protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
   · simp
   · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_coe_add_one_iff.mp <| lt_tsub_iff_right.mp h
 
-lemma ENat.lt_add_left {n k : ℕ∞} (h : n ≠ ⊤) (h' : 0 < k) : n < k + n := calc
+lemma lt_add_left {n k : ℕ∞} (h : n ≠ ⊤) (h' : 0 < k) : n < k + n := calc
     _ = 0 + n := (zero_add n).symm
     _ < k + n := (add_lt_add_iff_right h).mpr h'
 
