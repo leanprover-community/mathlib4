@@ -28,12 +28,12 @@ open CategoryTheory MonObj
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [MonObj A] : Monoid A where
+instance (priority := 500) monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
-  one_mul x := by convert congr_fun (one_mul A) (PUnit.unit, x)
-  mul_one x := by convert congr_fun (mul_one A) (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_fun (mul_assoc A) ((x, y), z)
+  one_mul x := congr_fun (one_mul A) (PUnit.unit, x)
+  mul_one x := congr_fun (mul_one A) (x, PUnit.unit)
+  mul_assoc x y z := congr_fun (mul_assoc A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
@@ -95,9 +95,9 @@ noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
-  { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
+instance (priority := 500) commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] :
+    CommMonoid A where
+  mul_comm := fun x y => congr_fun (IsCommMonObj.mul_comm A) (y, x)
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
