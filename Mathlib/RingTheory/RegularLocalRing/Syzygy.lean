@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
-public import Mathlib.RingTheory.RegularLocalRing.RegularRing.Polynomial
+public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
+public import Mathlib.RingTheory.RegularLocalRing.Polynomial
 
 /-!
 
