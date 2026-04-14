@@ -746,10 +746,10 @@ lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt :
     rw [Ideal.localized'_eq_map, Localization.AtPrime.map_eq_maximalIdeal]
   let g : (ModuleCat.of R (R ⧸ p)) →ₗ[R] (ModuleCat.of Rp p.ResidueField) :=
     ((Submodule.quotEquivOfEq _ _ eqm).restrictScalars R).comp f
-  let _ : IsLocalizedModule.AtPrime p g :=
+  have : IsLocalizedModule.AtPrime p g :=
     IsLocalizedModule.of_linearEquiv p.primeCompl f _
   let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rp Rp) := Algebra.linearMap R Rp
-  let isl := Ext.isLocalizedModule' p.primeCompl (Localization.AtPrime p) g
+  have isl := Ext.isLocalizedModule' p.primeCompl (Localization.AtPrime p) g
     (IsLocalizedModule.of_linearEquiv p.primeCompl f _) h inferInstance k
   exact isl.subsingleton_of_subsingleton
 
@@ -775,8 +775,8 @@ lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGro
     (f : M →ₗ[R] M) (inj : Function.Injective f) : Function.Surjective f := by
   rw [← LinearMap.range_eq_top]
   by_contra netop
-  let _ : IsFiniteLength R M := length_ne_top_iff.mp ne
-  let _ : IsArtinian R M := (isFiniteLength_iff_isNoetherian_isArtinian.mp ‹_›).2
+  have : IsFiniteLength R M := length_ne_top_iff.mp ne
+  have : IsArtinian R M := (isFiniteLength_iff_isNoetherian_isArtinian.mp ‹_›).2
   absurd not_le.mpr (Submodule.length_lt netop)
   exact Module.length_le_of_injective f.rangeRestrict ((injective_rangeRestrict_iff f).mpr inj)
 
@@ -789,7 +789,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     ModuleCat.of R (R ⧸ I) := (Shrink.linearEquiv _ _).toModuleIso
   induction n using Nat.case_strong_induction_on generalizing R k with
   | hz =>
-    let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
+    have : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
@@ -826,7 +826,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       let Mq := ModuleCat.of Rq (LocalizedModule.AtPrime q M)
       let g : M →ₗ[R] Mq := LocalizedModule.mkLinearMap q.primeCompl M
       let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rq Rq) := Algebra.linearMap R Rq
-      let isl := Ext.isLocalizedModule' q.primeCompl Rq g inferInstance h inferInstance k
+      have isl := Ext.isLocalizedModule' q.primeCompl Rq g inferInstance h inferInstance k
       have : Subsingleton (Ext Mq (ModuleCat.of Rq Rq) k) := injlt.subsingleton _ k k (le_refl _) Mq
       absurd qmem
       simp only [notMem_support_iff]
