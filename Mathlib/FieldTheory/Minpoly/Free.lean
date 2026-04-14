@@ -34,13 +34,11 @@ theorem natDegree_le_spanFinrank :
   rw [aeval_algHom_apply] at f_aeval
   exact Algebra.lmul_injective (R := A) <| by simpa using f_aeval
 
-variable [Module.Free A B]
-
-theorem natDegree_le : (minpoly A x).natDegree ≤ Module.finrank A B := by
+theorem natDegree_le [Module.Free A B] : (minpoly A x).natDegree ≤ Module.finrank A B := by
   nontriviality A
   simpa [Module.finrank_eq_spanFinrank_of_free] using natDegree_le_spanFinrank A x
 
-theorem degree_le : (minpoly A x).degree ≤ Module.finrank A B :=
+theorem degree_le [Module.Free A B] : (minpoly A x).degree ≤ Module.finrank A B :=
   degree_le_of_natDegree_le <| natDegree_le x
 
 end minpoly
