@@ -143,7 +143,15 @@ addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (R : Type u) extends Semiring R, AddCommGroupWithOne R
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+-- see Note [lower instance priority]
+attribute [instance 0] Ring.toAddGroupWithOne
+
+instance Ring.toAddGroupWithOne' (R : Type u) [Ring R] : AddGroupWithOne R :=
+  @AddGroupWithOne.mk R Ring.toIntCast inferInstance inferInstance
+    inferInstance Ring.sub_eq_add_neg Ring.zsmul Ring.zsmul_zero' Ring.zsmul_succ'
+    Ring.zsmul_neg' Ring.neg_add_cancel intCast_ofNat intCast_negSucc
 
 /-!
 ### Semirings
