@@ -291,7 +291,7 @@ theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental F y) :
 
 lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
     FiniteDimensional F⟮y⟯ K :=
-  -- Local Definitions for convenience
+  -- Local definitions for convenience
   let x := algebraMap _ K (X : F⟮X⟯)
   let Fyx := restrictScalars F F⟮y⟯⟮x⟯
   let Fxy := restrictScalars F F⟮x⟯⟮y⟯
