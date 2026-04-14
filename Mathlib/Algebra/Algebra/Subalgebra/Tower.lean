@@ -121,15 +121,7 @@ instance restrictScalars.SMul {U : Subalgebra S A} : SMul S (U.restrictScalars R
     ⟨s • u, by simp only [mem_restrictScalars] at hu ⊢; apply smul_mem _ hu⟩
 
 instance restrictScalars.origAlgebra {U : Subalgebra S A} : Algebra S (U.restrictScalars R) where
-  algebraMap := {
-    toFun s :=
-      let ⟨u, hu⟩ := algebraMap S U s
-      ⟨u, by rwa [mem_restrictScalars]⟩
-    map_zero' := by ext; simp
-    map_one' := by ext; simp
-    map_add' x y := by ext; simp
-    map_mul' x y := by ext; simp
-  }
+  algebraMap := RingHom.codRestrict (algebraMap S A) (U.restrictScalars R) (by simp)
   commutes' s x := by
     ext
     exact Algebra.commutes s x.val
