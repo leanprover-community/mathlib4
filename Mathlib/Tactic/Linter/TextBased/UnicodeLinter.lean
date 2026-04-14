@@ -16,7 +16,7 @@ The actual linter is defined in `TextBased.lean`.
 
 This file defines the allowlist and other tools used by the linter.
 
-**When changing, make sure to stay in synch with [style guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/lean4/templates/contribute/style.md#unicode-usage)**
+**When changing, make sure to stay in sync with [style guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/lean4/templates/contribute/style.md#unicode-usage)**
 
 -/
 
