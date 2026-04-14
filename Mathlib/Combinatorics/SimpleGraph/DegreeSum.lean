@@ -126,20 +126,12 @@ section card
 
 open scoped Cardinal
 
-private lemma mk_eq_sum_fiber {A B : Type _} (f : A → B) :
-    #A = Cardinal.sum (fun b : B => #{a : A // f a = b}) := by
-  have e : A ≃ Σ b : B, {a : A // f a = b} :=
-  { toFun := fun a => ⟨f a, ⟨a, rfl⟩⟩
-    invFun := fun s => s.2.1
-    left_inv := by intro a; rfl
-    right_inv := by rintro ⟨b, ⟨a, h⟩⟩; cases h; rfl }
-  simpa [Cardinal.mk_sigma] using (Cardinal.mk_congr e)
-
 lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
   let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
-  suffices fib_size : ∀ e, #{d // f d = e} = 2 from by
-    simp[mk_eq_sum_fiber f, fib_size, mul_comm]
+  suffices fib_size : ∀ e, #{d // f d = e} = 2 by
+    simp [←(Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
   rintro ⟨e, he⟩
+  have := e.exists_rep
   obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
   have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
   set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by grind⟩
