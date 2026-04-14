@@ -2,7 +2,7 @@
 Copyright (c) 2025 Hang Lu Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
-  Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
+  Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu, Javier Gómez Zaragoza
 -/
 module
 
@@ -71,5 +71,5 @@ end Group.IsFinitelyPresented
 
 open Group
 
-instance : IsFinitelyPresented Unit :=
-  sorry
+instance : IsFinitelyPresented PUnit where
+  out := ⟨0, 1, Function.surjective_to_subsingleton _, {1}, Set.finite_singleton 1, by trivial⟩
