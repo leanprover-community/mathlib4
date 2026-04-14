@@ -63,7 +63,6 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
 
 attribute [to_dual existing inv] Iso.hom
 attribute [to_dual self] Iso.mk Iso.casesOn
-attribute [to_dual none] Iso.mk.hcongr_8 -- needed in `Iso.ext`
 
 attribute [reassoc +to_dual (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 
@@ -312,12 +311,8 @@ variable {f : X ⟶ Y} {h : Y ⟶ Z}
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
 
-/- The following instance has lower priority for the following reason:
-Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
-Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
-because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 @[to_dual self (reorder := X Z, f h, 8 9)]
-instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
+instance comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
 
 /--
