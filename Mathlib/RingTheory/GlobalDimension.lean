@@ -32,9 +32,6 @@ In this file, we define the global dimension of ring and proved some of its basi
 * `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
   projective dimension over finitely generated modules.
 
-# TODO
-Prove that global dimension is invariant of universe if assuming `Small.{v} R`. (@Thmoas-Guan)
-
 -/
 
 @[expose] public section
