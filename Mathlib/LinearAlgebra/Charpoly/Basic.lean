@@ -146,13 +146,11 @@ theorem Algebra.aeval_self_charpoly_lmul (α : M) :
 
 theorem minpoly.natDegree_le (α : M) :
     (minpoly R α).natDegree ≤ Module.finrank R M := by
-  by_cases h : Nontrivial R
-  · let f := Algebra.lmul R _ α
-    have : (minpoly R α).natDegree ≤ f.charpoly.natDegree := natDegree_le_natDegree <|
-      minpoly.min _ _ f.charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
-    simpa [← (Algebra.lmul _ _ α).charpoly_natDegree]
-  · haveI := not_nontrivial_iff_subsingleton.mp h
-    simp [natDegree_of_subsingleton]
+  nontriviality R
+  let f := Algebra.lmul R _ α
+  have : (minpoly R α).natDegree ≤ f.charpoly.natDegree := natDegree_le_natDegree <|
+    minpoly.min _ _ f.charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
+  simpa [← (Algebra.lmul _ _ α).charpoly_natDegree]
 
 theorem minpoly.degree_le (α : M) :
     (minpoly R α).degree ≤ Module.finrank R M :=

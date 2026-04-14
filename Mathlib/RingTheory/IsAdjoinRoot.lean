@@ -648,12 +648,12 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
       rw [mul_one]
 
-/-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`.
-
-Takes the hypothesis that `S` is a free and finitely generated R-module,
-unlike `mkOfAdjoinEqTop` which takes that `R` is an integral domain. -/
+/-- If `α` generates `S` as an algebra and `S` is free and finite,
+then `S` is given by adjoining a root of `minpoly R α`.
+Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop` -/
+@[simps]
 def mkOfAdjoinEqTop'
-    [Module.Finite R S] [Module.Free R S] [Nontrivial R]
+    [Module.Finite R S] [Module.Free R S]
     {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) where
   __ : IsAdjoinRoot S (minpoly R α) :=
@@ -667,20 +667,24 @@ def mkOfAdjoinEqTop'
         intro s; obtain ⟨p, hp⟩ := hα s
         exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
       haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
-      letI e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
-        le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le α)
-        (LinearMap.finrank_le_finrank_of_surjective (f:=φ.toLinearMap) hφ)
-      exact OrzechProperty.bijective_of_surjective_of_injective
-        e.toLinearMap φ e.injective hφ
+      by_cases h : Nontrivial R
+      · letI e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
+          le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le α)
+          (LinearMap.finrank_le_finrank_of_surjective (f := φ.toLinearMap) hφ)
+        exact OrzechProperty.bijective_of_surjective_of_injective
+          e.toLinearMap φ e.injective hφ
+      · apply not_nontrivial_iff_subsingleton.mp at h
+        haveI := Module.subsingleton R (AdjoinRoot f)
+        exact ⟨Function.injective_of_subsingleton φ, hφ⟩
   map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 
 @[simp]
 theorem mkOfAdjoinEqTop'_root
-    [Module.Finite R S] [Module.Free R S] [Nontrivial R]
-    {α : S} {hα : Algebra.adjoin R {α} = ⊤} :
+    [Module.Finite R S] [Module.Free R S]
+    {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
       (mkOfAdjoinEqTop' hα).root = α := by
-  simp [mkOfAdjoinEqTop', IsAdjoinRoot.root]
+  simp [IsAdjoinRoot.root]
 
 end IsAdjoinRootMonic
 
