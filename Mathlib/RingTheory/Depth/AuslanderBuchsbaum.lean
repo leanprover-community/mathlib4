@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Products
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.RingTheory.Depth.Basic
 public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.Tactic.ENatToNat
 
 /-!
