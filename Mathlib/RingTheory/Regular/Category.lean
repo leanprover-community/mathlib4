@@ -5,13 +5,8 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Categorical constructions for `IsSMulRegular`
@@ -59,22 +54,3 @@ lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r
     (ModuleCat.smulShortComplex M r).ShortExact where
   exact := ModuleCat.smulShortComplex_exact M r
   mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
-
-namespace CategoryTheory.Abelian
-
-variable [Small.{v} R] {M N : ModuleCat.{v} R}
-
-set_option backward.isDefEq.respectTransparency false in
-lemma Ext.smul_id_postcomp_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N)
-    (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
-  ext h
-  have : r • (𝟙 N) = 0 := ModuleCat.hom_ext (LinearMap.ext (Module.mem_annihilator.mp mem_ann ·))
-  have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
-  simp [Ext.mk₀_smul, this, smul_eq]
-
-lemma Ext.smulShortComplex_f_postcomp_eq_zero_of_mem_ann {r : R}
-    (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
-    AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex r).f).postcomp N (add_zero n)) = 0 := by
-  simpa [M.smulShortComplex_f_eq_smul_id] using Ext.smul_id_postcomp_eq_zero_of_mem_ann mem_ann n
-
-end CategoryTheory.Abelian
