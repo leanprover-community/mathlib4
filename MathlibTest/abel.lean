@@ -99,9 +99,7 @@ error: `abel_nf` made no progress on the goal
 #guard_msgs in
 example : False := by abel_nf
 
-/--
-error: `abel_nf` made no progress at w
--/
+/-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
   abel_nf at w
@@ -141,9 +139,7 @@ example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
   abel_nf at *
 
-/--
-error: `abel_nf` made no progress at w
--/
+/-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
   abel_nf at w ⊢
