@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Jun Kwon. All rights reserved.
+Copyright (c) 2026 Jun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jun Kwon, Peter Nelson
 -/
@@ -13,7 +13,8 @@ public import Mathlib.Combinatorics.Graph.Subgraph
 This file develops the basic theory of vertex maps on graphs `Graph α β`.
 
 ## Main definitions
-- `map`: the map on graphs induced by a function on vertices `f : α → α'`
+
+* `map`: the map on graphs induced by a function on vertices `f : α → α'`
 
 -/
 
@@ -86,7 +87,7 @@ lemma map_map (f : α → α') (f' : α' → α'') : (G.map f).map f' = G.map (f
   ext a b c <;> simp
 
 @[gcongr]
-lemma map_mono (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
+lemma IsSubgraph.map (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
   vertexSet_mono v := by
     simp only [map_vertexSet, mem_image, forall_exists_index, and_imp]
     rintro u hu rfl
@@ -97,12 +98,12 @@ lemma map_mono (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
     use a, b, h.isLink_mono hab
 
 @[gcongr]
-lemma map_isSpanningSubgraph (f : α → α') (hsle : G ≤s H) : G.map f ≤s H.map f where
-  toIsSubgraph := map_mono f hsle.le
+lemma IsSpanningSubgraph.map (f : α → α') (hsle : G ≤s H) : G.map f ≤s H.map f where
+  toIsSubgraph := hsle.le.map f
   vertexSet_eq := by simp [hsle.vertexSet_eq]
 
 @[gcongr]
-lemma map_congr_left_of_eqOn (h : EqOn f g V(G)) : G.map f = G.map g := by
+lemma map_eq_of_eqOn (h : EqOn f g V(G)) : G.map f = G.map g := by
   refine Graph.ext (by grind) fun e x y ↦ ⟨fun ⟨v, w, hvw, _, _⟩ ↦ ?_, fun ⟨v, w, hvw, _, _⟩ ↦ ?_⟩
   <;> subst x y
   · use v, w, hvw, h hvw.left_mem, h hvw.right_mem
