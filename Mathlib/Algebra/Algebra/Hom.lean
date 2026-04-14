@@ -107,6 +107,10 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
+lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring A] [Semiring B]
+    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] (x : A) :
+    Algebra.algHom R A B x = algebraMap A B x := rfl
+
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
     (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
