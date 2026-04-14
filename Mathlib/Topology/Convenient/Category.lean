@@ -201,7 +201,7 @@ def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat
 
 @[simp]
 lemma fromGeneratedByTopCat_map_apply {Y Z : GeneratedByTopCat.{v} X} (f : Y ⟶ Z) (y : Y) :
-    fromGeneratedByTopCat.map f y = f y := rfl
+    dsimp% fromGeneratedByTopCat.map f y = f y := rfl
 
 /-- The isomorphism between
 `fromGeneratedByTopCat ⋙ toTopCat X ≅ GeneratedByTopCat.toTopCat`. -/
