@@ -43,10 +43,10 @@ def Hom (M N : X.Modules) : Type u := SheafOfModules.Hom M N
 
 instance : Category X.Modules where
   Hom := Modules.Hom
-  __ := inferInstanceAs (Category (SheafOfModules.{u} X.ringCatSheaf))
+  __ := (inferInstance : Category (SheafOfModules.{u} X.ringCatSheaf))
 
 noncomputable instance : Abelian X.Modules :=
-  inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
+  inferInstanceAs <| Abelian (SheafOfModules.{u} X.ringCatSheaf)
 instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
 instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
 

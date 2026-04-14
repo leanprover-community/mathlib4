@@ -435,7 +435,6 @@ section PowerBasis
 
 variable {L : Type*} [Field L] [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
@@ -549,6 +548,20 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
+theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := minpoly.Irreducible.eq_minpoly hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose hi
+  rwa [hi, mul_zero] at key
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
@@ -605,7 +618,6 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
-set_option backward.isDefEq.respectTransparency false in
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible

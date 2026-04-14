@@ -85,6 +85,18 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
   rfl
 
+variable {M} in
+theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
+    integerNormalization M p = 0 ↔ p = 0 := by
+  obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  letI := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  letI : Function.Injective <| mapRingHom (algebraMap R S) := by
+    rw [coe_mapRingHom, map_injective_iff]
+    exact IsLocalization.injective S hM
+  rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
+
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
@@ -115,11 +127,8 @@ variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFr
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
-    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← _root_.map_eq_zero_iff (mapRingHom _)
-    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
-  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
+    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
+  IsLocalization.integerNormalization_eq_zero_iff le_rfl p
 
 variable (A K C)
 
@@ -393,7 +402,7 @@ the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
-    (inferInstanceAs (Algebra.IsAlgebraic K L))
+    (inferInstance : Algebra.IsAlgebraic K L)
   isFractionRing_of_algebraic A C
     fun _ hx =>
     IsFractionRing.to_map_eq_zero_iff.mp
@@ -491,7 +500,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
-    obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
+    obtain ⟨a : S, b, ha, rfl⟩ := div_surjective S x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
     refine .mul ?_ (.inv ?_) <;> exact isAlgebraic_iff_isIntegral.mp <|

@@ -395,7 +395,6 @@ theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
   classical
@@ -405,7 +404,6 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
   rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
   exact_mod_cast hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
   classical
@@ -468,6 +466,9 @@ namespace HeightOneSpectrum
 instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
+
+instance : Coe (HeightOneSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
 
 /--
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
@@ -763,7 +764,7 @@ theorem Ideal.count_associates_eq'
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
   apply Ideal.count_associates_eq hx _ hq
-  contrapose! hlt with hdvd
+  contrapose hlt with hdvd
   obtain ⟨q', hq'⟩ := hdvd
   use q'
   rw [hq, hq']
@@ -998,7 +999,6 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emulti
 
 variable [DecidableEq R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
   of `r` preserves `count` of the corresponding multisets. See
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version

@@ -45,10 +45,7 @@ variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
 def PullbackShift (_ : A →+ B) [HasShift C B] := C
-
-instance : Category (PullbackShift C φ) := by
-  dsimp only [PullbackShift]
-  infer_instance
+deriving Category
 
 attribute [local instance] endofunctorMonoidalCategory
 
@@ -58,20 +55,15 @@ the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B
 instance : HasShift (PullbackShift C φ) A where
   shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
-set_option backward.isDefEq.respectTransparency false in
-instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
-  dsimp [PullbackShift]
-  infer_instance
+instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) :=
+  inferInstanceAs <| HasZeroObject C
 
-set_option backward.isDefEq.respectTransparency false in
-instance [Preadditive C] : Preadditive (PullbackShift C φ) := by
-  dsimp [PullbackShift]
-  infer_instance
+instance [Preadditive C] : Preadditive (PullbackShift C φ) :=
+  inferInstanceAs <| Preadditive C
 
 instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
-    (shiftFunctor (PullbackShift C φ) a).Additive := by
-  change (shiftFunctor C (φ a)).Additive
-  infer_instance
+    (shiftFunctor (PullbackShift C φ) a).Additive :=
+  inferInstanceAs (shiftFunctor C (φ a)).Additive
 
 /-- When `b = φ a`, this is the canonical
 isomorphism `shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b`. -/
