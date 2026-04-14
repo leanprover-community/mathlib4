@@ -56,6 +56,7 @@ public section
 namespace PowerSeries
 
 open Filter Function
+open scoped  MvPowerSeries.WithPiTopology
 
 variable (R : Type*)
 
@@ -67,19 +68,26 @@ namespace WithPiTopology
 
 open scoped Topology
 
+/-!
+The instances defined in this file are copies of instances on `MvPowerSeries`.
+Those instances are scoped in `MvPowerSeries.WithPiTopology`,
+while these are scoped in `PowerSeries.WithPiTopology`.
+It would probably be better to remove these instances, and use one shared scope.
+-/
+
 /-- The pointwise topology on `PowerSeries` -/
 scoped instance : TopologicalSpace (PowerSeries R) :=
-  Pi.topologicalSpace
+  inferInstance
 
 /-- Separation of the topology on `PowerSeries` -/
 @[scoped instance]
 theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instT0Space
+  inferInstance
 
 /-- `PowerSeries` on a `T2Space` form a `T2Space` -/
 @[scoped instance]
 theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instT2Space
+  inferInstance
 
 /-- Coefficients are continuous -/
 theorem continuous_coeff [Semiring R] (d : ℕ) : Continuous (PowerSeries.coeff (R := R) d) :=
@@ -119,13 +127,13 @@ theorem denseRange_toPowerSeries [CommSemiring R] :
 @[scoped instance]
 theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instIsTopologicalSemiring Unit R
+  inferInstance
 
 /-- The ring topology on `PowerSeries` of a topological ring -/
 @[scoped instance]
 theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
     IsTopologicalRing (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instIsTopologicalRing Unit R
+  inferInstance
 
 section Sum
 variable [Semiring R] {ι : Type*} {f : ι → R⟦X⟧}
@@ -216,7 +224,6 @@ end Prod
 section ProdOneSubPow
 variable (R : Type*) [CommRing R] [TopologicalSpace R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
   nontriviality R
   simp_rw [sub_eq_add_neg]
@@ -248,7 +255,7 @@ variable [UniformSpace R]
 
 /-- The product uniformity on `PowerSeries` -/
 scoped instance : UniformSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformSpace
+  inferInstance
 
 /-- Coefficients are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
@@ -259,13 +266,13 @@ theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instCompleteSpace
+  inferInstance
 
 /-- The `IsUniformAddGroup` structure on `PowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instIsUniformAddGroup
+  inferInstance
 
 end WithPiTopology
 

@@ -1,11 +1,6 @@
 import Mathlib.Tactic.Check
-/- Override metavariable delaborator for natural metavariables to print `?m` instead
-of including a unique number, for `#guard_msgs`. -/
-open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
-  let kind ← (← SubExpr.getExpr).mvarId!.getKind
-  unless kind.isNatural do failure
-  `(?m)
 
+set_option pp.mvars.anonymous false
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false
 
@@ -19,13 +14,22 @@ example (x y : Nat) : True := by
   #check x + y
   trivial
 
+theorem bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b := by rwa [hc] at h
+
+-- #check does show implicit arguments (and also typeclass arguments) when present
+set_option linter.unusedTactic false in
+/-- info: bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b -/
+#guard_msgs in
+example : True := by
+  #check bar
+  trivial
 
 /-!
 `#check` is ok with metavariables
 and `have := e` is not a substitute for `#check`
 -/
 
-/-- info: x + ?m✝ : Nat -/
+/-- info: x + ?_ : Nat -/
 #guard_msgs in
 example (x : Nat) : True := by
   #check x + _
@@ -94,3 +98,123 @@ example (x : Nat) : True := by
   let y : Nat := ?a
   have := (by refine rfl : ?a = x)
   trace_state
+
+
+/-! The same tests for check' -/
+
+/-- info: x + y : Nat -/
+#guard_msgs in
+example (x y : Nat) : True := by
+  #check' x + y
+  trivial
+
+/-
+# TODO: handle expressions
+
+/-- info: x : ∀ (y : Nat), i = i -/
+#guard_msgs in
+example (x : {i : Nat} → (y : Nat) → i = i) : True := by
+  #check' x
+  trivial
+
+/-- info: foo : ∀ (y : Nat), True -/
+#guard_msgs in
+def foo {i : Nat} (y : Nat) : True := by
+  #check' foo
+  trivial
+
+section prop
+
+-- Removes the `{j : Nat}` appearing after the `String`s.
+
+axiom foo' : {i : Nat} → (y : Nat) → String → String → {j : Nat} → i = y + j
+
+/-- info: foo' (y : Nat) (a a✝ : String) : i = y + j -/
+#guard_msgs in
+#check' foo'
+
+variable (x : {i : Nat} → (y : Nat) → String → String → {j : Nat} → i = y + j)
+
+/-- info: x : ∀ (y : Nat) (a a✝ : String), i = y + j -/
+#guard_msgs in
+#check' x
+
+variable (x' : {i : Nat} → (y : Nat) → ∀ a b : String, i = y)
+
+/-- info: x' : ∀ (y : Nat) (a b : String), i = y -/
+#guard_msgs in
+#check' x'
+
+end prop
+
+section arrow
+
+-- Removes the `{j : Nat}` appearing after the `String`s.
+
+axiom F : Nat → Nat → Nat → Type
+
+axiom foo'' : {i : Nat} → (y : Nat) → String → String → {j : Nat} → F i y j
+
+/-- info: foo'' (y : Nat) : String → String → F i y j -/
+#guard_msgs in
+#check' foo''
+
+variable (x : {i : Nat} → (y : Nat) → String → String → {j : Nat} → F i y j)
+
+/-- info: x : (y : Nat) → String → String → F i y j -/
+#guard_msgs in
+#check' x
+
+end arrow
+
+-/
+
+/-!
+`#check'` is ok with metavariables
+and `have := e` is not a substitute for `#check'`
+-/
+
+/-- info: x + ?_ : Nat -/
+#guard_msgs in
+example (x : Nat) : True := by
+  #check' x + _
+  trivial
+
+/-!
+`#check'` cannot be used to accidentally assign metavariables, since it saves the state.
+This is in contrasted against `have`.
+-/
+
+/--
+info: rfl : x = x
+---
+error: unsolved goals
+x : Nat
+y : Nat := ?a
+⊢ True
+
+case a
+x : Nat
+⊢ Nat
+---
+trace: x : Nat
+y : Nat := ?a
+⊢ True
+
+case a
+x : Nat
+⊢ Nat
+-/
+#guard_msgs in
+example (x : Nat) : True := by
+  let y : Nat := ?a
+  #check' (by refine rfl : ?a = x)
+  trace_state
+
+-- #check' only shows explicit arguments, no implicit or typeclass arguments
+set_option linter.unusedTactic false in
+/-- info: bar (h : a = b + c) (hc : c = 0) : a = b -/
+#guard_msgs in
+example : True := by
+  #check' bar
+  trivial

@@ -881,11 +881,11 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
   · intro G _ _ H _
     exact @Subsingleton.elim _ Unique.instSubsingleton _ _
   · intro G _ _ ih H hH
-    have hch : center G ≤ H := Subgroup.center_le_normalizer.trans (le_of_eq hH)
+    have hch : center G ≤ H := Subgroup.center_le_normalizer H |>.trans (le_of_eq hH)
     have hkh : (mk' (center G)).ker ≤ H := by simpa using hch
     have hsur : Function.Surjective (mk' (center G)) := Quot.mk_surjective
     let H' := H.map (mk' (center G))
-    have hH' : H'.normalizer = H' := by
+    have hH' : normalizer H' = H' := by
       apply comap_injective hsur
       rw [comap_normalizer_eq_of_surjective _ hsur, comap_map_eq_self hkh]
       exact hH

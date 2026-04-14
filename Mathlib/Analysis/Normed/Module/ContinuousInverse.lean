@@ -27,7 +27,7 @@ This concept is used to give an equivalent definition of immersions and submersi
 
 ## Main definitions and results
 
-* `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a left inverse
+* `ContinuousLinearMap.HasLeftInverse`: a continuous linear map admits a left inverse
   which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
@@ -41,21 +41,21 @@ This concept is used to give an equivalent definition of immersions and submersi
   if `f` is injective and has closed range with a closed complement, it admits a continuous left
   inverse
 
-* `ContinuousLinearEquiv.hasRightInverse` and `ContinuousLinearEquiv.hasRightInverse`:
+* `ContinuousLinearEquiv.hasLeftInverse` and `ContinuousLinearEquiv.hasRightInverse`:
   a continuous linear equivalence admits a continuous left (resp. right) inverse
 * `ContinuousLinearMap.HasLeftInverse.comp`, `ContinuousLinearMap.HasRightInverse.comp`:
   if `f : E → F` and `g : F → G` both admit a continuous left (resp. right) inverse,
   so does `g.comp f`.
-* `ContinuousLinearMap.HasLefttInverse.of_comp`, `ContinuousLinearMap.HasRightInverse.of_comp`:
+* `ContinuousLinearMap.HasLeftInverse.of_comp`, `ContinuousLinearMap.HasRightInverse.of_comp`:
   suppose `f : E → F` and `g : F → G` are continuous linear maps.
   If `g.comp f : E → G` admits a continuous left inverse, then so does `f`.
   If `g.comp f : E → G` admits a continuous right inverse, then so does `g`.
 * `ContinuousLinearMap.HasLeftInverse.prodMap`, `ContinuousLinearMap.HasRightInverse.prodMap`:
-  having a continuous right inverse is closed under taking products
+  having a continuous left/right inverse is closed under taking products
 * `ContinuousLinearMap.HasLeftInverse.inl`, `ContinuousLinearMap.HasLeftInverse.inr`:
   `ContinuousLinearMap.inl` and `.inr` have a continuous left inverse
 * `ContinuousLinearMap.HasRightInverse.fst`, `ContinuousLinearMap.HasRightInverse.snd`:
-  `ContinuousLinearMap.fst` and `.snd` hav a continuous right inverse
+  `ContinuousLinearMap.fst` and `.snd` have a continuous right inverse
 * `ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional`:
   if `f : E → F` is injective and `F` is finite-dimensional, `f` has a continuous left inverse.
 * `ContinuousLinearMap.HasRightInverse.of_surjective_of_finiteDimensional`:
