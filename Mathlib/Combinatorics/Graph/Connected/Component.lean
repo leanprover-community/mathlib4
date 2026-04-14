@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Peter Nelson. All rights reserved.
+Copyright (c) 2026 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
@@ -11,14 +11,15 @@ public import Mathlib.Combinatorics.Graph.Subgraph
 /-!
 # Connected components of graphs
 
-This file defines the connected components and connectedness of a graph.
+This file defines predicate for being a connected component of a graph and the notion of a
+connected graph.
 
 ## Main definitions
 
-* `IsConnectedComponentOf`: a graph `H` is a component of `G` if it is a minimal nonempty closed
-  subgraph of `G`.
-* `Connected`: a graph `G` is connected if it is a component of itself. Empty graph is not
-  considered connected.
+* `IsConnectedComponentOf H G`: `H` is a connected component of `G` if `H` is a minimal nonempty
+  closed subgraph of `G`.
+* `Connected G`: `G` is connected if `G` is a connected component of itself. In particular, the
+  empty graph is not connected.
 
 -/
 
@@ -51,30 +52,30 @@ end IsConnectedComponentOf
 
 /-! ### Connectedness -/
 
-/-- A graph is connected if it is a minimal closed subgraph of itself. -/
+/-- A graph is connected if it is a connected component of itself (`G.IsConnectedComponentOf G`). -/
 @[expose] protected def Connected (G : Graph α β) : Prop := G.IsConnectedComponentOf G
 
 lemma Connected.nonempty (hG : G.Connected) : V(G).Nonempty := IsConnectedComponentOf.nonempty hG
 
 @[simp]
-lemma Connected.bot_not_Connected : ¬ (⊥ : Graph α β).Connected := by
+lemma not_connected_bot : ¬ (⊥ : Graph α β).Connected := by
   rintro h
   simpa using h.nonempty
 
-lemma Connected_iff_forall_closed (hG : V(G).Nonempty) :
+lemma connected_iff_forall_closed (hG : V(G).Nonempty) :
     G.Connected ↔ ∀ ⦃H⦄, H ≤c G → V(H).Nonempty → H = G := by
   refine ⟨fun h H hHG hHne ↦ ?_, fun h ↦ ⟨by simpa, fun H ⟨hle, hH⟩ _ ↦ (h hle hH).symm.le⟩⟩
   rw [Graph.Connected] at h
   exact h.eq_of_le ⟨hHG, hHne⟩ hHG.le
 
-lemma Connected_iff_forall_closed_ge (hG : V(G).Nonempty) :
+lemma connected_iff_forall_closed_ge (hG : V(G).Nonempty) :
     G.Connected ↔ ∀ ⦃H⦄, H ≤c G → V(H).Nonempty → G ≤ H := by
-  rw [Connected_iff_forall_closed hG]
+  rw [connected_iff_forall_closed hG]
   exact ⟨fun h H hle hne ↦ (h hle hne).symm.le, fun h H hle hne ↦ (h hle hne).antisymm' hle.le⟩
 
 lemma Connected.ext_of_isClosedSubgraph (hH : H ≤c G) (hne : V(H).Nonempty) (hG : G.Connected) :
     H = G := by
-  rw [Connected_iff_forall_closed (hne.mono hH.le.vertexSet_mono)] at hG
+  rw [connected_iff_forall_closed (hne.mono hH.le.vertexSet_mono)] at hG
   exact hG hH hne
 
 lemma IsConnectedComponentOf.Connected (h : H.IsConnectedComponentOf G) : H.Connected :=
