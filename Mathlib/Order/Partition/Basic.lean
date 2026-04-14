@@ -214,7 +214,7 @@ lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
   obtain ⟨y, hy, hxy⟩ := h hx
   refine ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ => Q.eq_of_not_disjoint hz hy ?_⟩
   have := P.ne_bot_of_mem hx
-  contrapose! this
+  contrapose this
   exact le_bot_iff.mp (this hxz hxy)
 
 /-- The top partition of `s` is the partition with the single part `s`. -/

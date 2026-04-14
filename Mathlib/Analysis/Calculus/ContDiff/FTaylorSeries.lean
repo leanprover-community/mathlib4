@@ -654,10 +654,7 @@ lemma iteratedFDerivWithin_comp_add_left' (n : ℕ) (a : E) :
   | zero => simp [iteratedFDerivWithin]
   | succ n IH =>
     ext v
-    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
-    simp only [Nat.succ_eq_add_one, IH, comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply]
-    congr 2
-    rw [fderivWithin_comp_add_left]
+    simp [iteratedFDerivWithin_succ_eq_comp_left, IH, fderivWithin_comp_add_left]
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
 lemma iteratedFDerivWithin_comp_add_left (n : ℕ) (a : E) (x : E) :
@@ -714,25 +711,9 @@ lemma HasFTaylorSeriesUpTo.fderiv_eq (h : HasFTaylorSeriesUpTo n f p)
 
 theorem hasFTaylorSeriesUpToOn_univ_iff :
     HasFTaylorSeriesUpToOn n f p univ ↔ HasFTaylorSeriesUpTo n f p := by
-  constructor
-  · intro H
-    constructor
-    · exact fun x => H.zero_eq x (mem_univ x)
-    · intro m hm x
-      rw [← hasFDerivWithinAt_univ]
-      exact H.fderivWithin m hm x (mem_univ x)
-    · intro m hm
-      rw [← continuousOn_univ]
-      exact H.cont m hm
-  · intro H
-    constructor
-    · exact fun x _ => H.zero_eq x
-    · intro m hm x _
-      rw [hasFDerivWithinAt_univ]
-      exact H.fderiv m hm x
-    · intro m hm
-      rw [continuousOn_univ]
-      exact H.cont m hm
+  constructor <;> refine fun H ↦ ⟨by simpa using H.zero_eq, ?_, by simpa using H.cont⟩
+  · simpa using H.fderivWithin
+  · simpa using H.fderiv
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
     HasFTaylorSeriesUpToOn n f p s :=
@@ -883,11 +864,7 @@ theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
 
 theorem iteratedFDerivWithin_univ {n : ℕ} :
     iteratedFDerivWithin 𝕜 n f univ = iteratedFDeriv 𝕜 n f := by
-  induction n with
-  | zero => ext x; simp
-  | succ n IH =>
-    ext x m
-    rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
+  simp [iteratedFDerivWithin, iteratedFDeriv]
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
@@ -916,20 +893,9 @@ theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
 derivative. -/
 theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
-  induction n with
-  | zero =>
-    intro x _
-    ext1
-    simp only [iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
-  | succ n IH =>
-    intro x hx
-    rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
-    dsimp
-    congr 1
-    rw [fderivWithin_of_isOpen hs hx]
-    apply Filter.EventuallyEq.fderiv_eq
-    filter_upwards [hs.mem_nhds hx]
-    exact IH
+  intro x hx
+  rw [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_congr_set (Filter.eventuallyEq_univ.mpr <| hs.mem_nhds hx) n
 
 theorem ftaylorSeriesWithin_univ : ftaylorSeriesWithin 𝕜 f univ = ftaylorSeries 𝕜 f := by
   ext1 x; ext1 n

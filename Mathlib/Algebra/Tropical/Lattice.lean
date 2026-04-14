@@ -68,7 +68,7 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
       simp only [sSup, Set.image_empty, trop_inj_iff]
       apply csSup_of_not_bddAbove
-      contrapose! hs
+      contrapose hs
       change BddAbove (tropOrderIso.symm '' s) at hs
       exact tropOrderIso.symm.bddAbove_image.1 hs
     csInf_of_not_bddBelow := by
@@ -76,6 +76,6 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
       simp only [sInf, Set.image_empty, trop_inj_iff]
       apply csInf_of_not_bddBelow
-      contrapose! hs
+      contrapose hs
       change BddBelow (tropOrderIso.symm '' s) at hs
       exact tropOrderIso.symm.bddBelow_image.1 hs }

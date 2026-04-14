@@ -278,7 +278,7 @@ def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} w
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
   have : ⨅ x, genWeightSpaceOf M (χ x) x ≠ ⊥ := χ.genWeightSpace_ne_bot
-  contrapose! this
+  contrapose this
   rw [eq_bot_iff]
   exact le_of_le_of_eq (iInf_le _ _) this
 

@@ -272,7 +272,7 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
-  contrapose! h
+  contrapose h
   simp [h]
 
 variable [Module S M] [SMulCommClass R S M]

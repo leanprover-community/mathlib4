@@ -241,7 +241,7 @@ instance bot_liesOver_bot : (⊥ : Ideal B).LiesOver (⊥ : Ideal A) where
 
 variable {A B} in
 theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver p] : P ≠ ⊥ := by
-  contrapose! hp
+  contrapose hp
   rw [over_def P p, hp, under_bot]
 
 end CommRing

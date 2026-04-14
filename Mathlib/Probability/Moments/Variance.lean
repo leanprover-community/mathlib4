@@ -134,7 +134,7 @@ lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ
 
 lemma memLp_two_of_variance_ne_zero [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
     (h : Var[X; μ] ≠ 0) : MemLp X 2 μ := by
-  contrapose! h
+  contrapose h
   exact variance_of_not_memLp hX h
 
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :

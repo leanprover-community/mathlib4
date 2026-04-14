@@ -207,7 +207,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff n (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_of_lt_order _ <| (hi x hxi).trans_le <| le_trans ?_ (le_order_prod _ _)

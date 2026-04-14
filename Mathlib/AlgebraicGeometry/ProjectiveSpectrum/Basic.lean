@@ -429,7 +429,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
       · intro x hx
         rw [← DirectSum.sum_support_decompose 𝒜 x]
         refine Ideal.sum_mem _ fun c hc ↦ ?_
-        have : c ≠ 0 := by contrapose! hc; simpa [hc] using hx
+        have : c ≠ 0 := by contrapose hc; simpa [hc] using hx
         exact Ideal.subset_span ⟨⟨c, _, this.bot_lt, by simp⟩, rfl⟩
     ext1
     apply compl_injective

@@ -336,7 +336,7 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff d (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_eq_zero_of_lt_weightedOrder w <| (hi x hxi).trans_le <| ?_

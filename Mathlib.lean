@@ -6588,7 +6588,8 @@ public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.NormTrace
 public import Mathlib.RingTheory.NormalClosure
 public import Mathlib.RingTheory.Nullstellensatz
-public import Mathlib.RingTheory.OrderOfVanishing
+public import Mathlib.RingTheory.OrderOfVanishing.Basic
+public import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 public import Mathlib.RingTheory.OreLocalization.Basic
 public import Mathlib.RingTheory.OreLocalization.Cardinality
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors

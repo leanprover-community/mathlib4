@@ -56,7 +56,7 @@ lemma meromorphicOrderAt_of_not_meromorphicAt (hf : ¬ MeromorphicAt f x) :
 
 lemma meromorphicAt_of_meromorphicOrderAt_ne_zero (hf : meromorphicOrderAt f x ≠ 0) :
     MeromorphicAt f x := by
-  contrapose! hf
+  contrapose hf
   simp [hf]
 
 /-- The order of a meromorphic function `f` at a `z₀` is infinity iff `f` vanishes locally around
@@ -66,7 +66,7 @@ lemma meromorphicOrderAt_eq_top_iff :
   by_cases hf : MeromorphicAt f x; swap
   · simp only [hf, not_false_eq_true, meromorphicOrderAt_of_not_meromorphicAt, WithTop.zero_ne_top,
       false_iff]
-    contrapose! hf
+    contrapose hf
     exact (MeromorphicAt.const 0 x).congr (EventuallyEq.symm hf)
   simp only [meromorphicOrderAt, hf, ↓reduceDIte, sub_eq_top_iff, ENat.map_eq_top_iff,
     WithTop.natCast_ne_top, or_false]
@@ -77,7 +77,7 @@ lemma meromorphicOrderAt_eq_top_iff :
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
     simp only [← hm, ENat.coe_ne_top, false_iff]
-    contrapose! h
+    contrapose h
     rw [analyticOrderAt_eq_top]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
@@ -262,7 +262,7 @@ theorem meromorphicOrderAt_congr (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
     meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x := by
   by_cases hf₁ : MeromorphicAt f₁ x; swap
   · have : ¬ MeromorphicAt f₂ x := by
-      contrapose! hf₁
+      contrapose hf₁
       exact hf₁.congr hf₁₂.symm
     simp [hf₁, this]
   by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
@@ -492,7 +492,7 @@ theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f :
     meromorphicOrderAt (f⁻¹) x = -meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x; swap
   · have : ¬ MeromorphicAt (f⁻¹) x := by
-      contrapose! hf
+      contrapose hf
       simpa using hf.inv
     simp [hf, this]
   by_cases h₂f : meromorphicOrderAt f x = ⊤
@@ -581,7 +581,7 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
   by_cases hf₁ : MeromorphicAt f₁ x; swap
   · have : ¬ (MeromorphicAt (f₁ + f₂) x) := by
-      contrapose! hf₁
+      contrapose hf₁
       simpa using hf₁.sub hf₂
     simp [this, hf₁]
   -- Trivial case: f₂ vanishes identically around z₀

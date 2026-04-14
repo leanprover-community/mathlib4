@@ -450,7 +450,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
     exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
   · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
-    contrapose! H
+    contrapose H
     exact bddAbove_coe.1 H
 
 @[simp, norm_cast]

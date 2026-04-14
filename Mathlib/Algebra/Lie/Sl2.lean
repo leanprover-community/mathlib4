@@ -65,12 +65,12 @@ lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := 
 
 lemma e_ne_zero (t : IsSl2Triple h e f) : e ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 variable {R}

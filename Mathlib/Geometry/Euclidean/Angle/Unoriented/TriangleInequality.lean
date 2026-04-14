@@ -94,7 +94,7 @@ lemma angle_le_angle_add_angle_aux :
   simp only [one_pow, smul_eq_mul]
   have H : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
-    constructor <;> contrapose! hxy
+    constructor <;> contrapose hxy
     · rw [inner_eq_one_iff_of_norm_eq_one hx hy] at hxy
       simp [hy, hxy]
     · rw [inner_eq_neg_one_iff_of_norm_eq_one hx hy] at hxy

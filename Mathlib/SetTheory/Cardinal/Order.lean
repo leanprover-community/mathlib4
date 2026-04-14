@@ -552,7 +552,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
   suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
-  contrapose! hω with hf
+  contrapose hω with hf
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
 

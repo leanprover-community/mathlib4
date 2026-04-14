@@ -151,7 +151,7 @@ theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 
     intro h'
     simpa [Stream'.cons]
   · rw [Subtype.coe_ne_coe]
-    contrapose! h
+    contrapose h
     simp [h]
 
 theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :

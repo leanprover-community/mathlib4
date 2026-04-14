@@ -679,7 +679,7 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
     rw [tsupport, tsupport, ← closure_union]
     apply closure_mono
     intro x hx
-    contrapose! hx
+    contrapose hx
     simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, Set.mem_union, Function.mem_support,
       ne_eq, not_or, Decidable.not_not, ContinuousMap.coe_sub, Pi.sub_apply] at hx ⊢
     simp [hx.1, hx.2]

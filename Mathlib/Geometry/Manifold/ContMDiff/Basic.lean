@@ -293,7 +293,7 @@ lemma ContMDiff.piecewise
   · apply (hg x).congr_of_eventuallyEq
     filter_upwards [isClosed_closure.isOpen_compl.mem_nhds h'x] with y hy
     rw [piecewise_eq_of_notMem]
-    contrapose! hy
+    contrapose hy
     simpa using subset_closure hy
 
 /-- Given two `C^n` functions `f` and `g` from `ℝ` to a real manifold which coincide locally

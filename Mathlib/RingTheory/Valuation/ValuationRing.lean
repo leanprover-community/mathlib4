@@ -191,7 +191,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
   mul_lt_mul_of_pos_left := by
     simp_rw [← not_le]
     rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
-    contrapose! hbc
+    contrapose hbc
     obtain ⟨d, hd⟩ := hbc
     simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
     obtain rfl | rfl := hd

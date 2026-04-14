@@ -270,7 +270,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
   have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
     apply Integrable.norm
-    contrapose! hx
+    contrapose hx
     exact integral_undef hx
   have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
   apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
@@ -308,7 +308,7 @@ lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y �
 lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
-  contrapose! h
+  contrapose h
   exact memLp_id_of_self_sub_integral h
 
 @[simp]

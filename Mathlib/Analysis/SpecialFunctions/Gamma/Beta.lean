@@ -434,7 +434,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine Real.Gamma_ne_zero fun n => ?_
     specialize hs n
-    contrapose! hs
+    contrapose hs
     rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
   · have : sin (↑π * s) ≠ 0 := by
       rw [Complex.sin_ne_zero_iff]

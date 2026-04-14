@@ -442,7 +442,7 @@ theorem comap_bot : comap m ⊥ = ⊥ :=
 
 theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
   rw [neBot_iff] at *
-  contrapose! h
+  contrapose h
   rw [h]
   exact comap_bot
 

@@ -159,7 +159,7 @@ theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
 theorem adjoin_image_leastExt (i : ι) : E⟮<i⟯ = adjoin F (b '' Iio (φ i)) := by
   refine le_antisymm (adjoin.mono _ _ _ ?_) (adjoin_le_iff.mpr ?_)
   · rw [image_comp]; apply image_mono; rintro _ ⟨j, hj, rfl⟩; exact strictMono_leastExt hj
-  · rintro _ ⟨j, hj, rfl⟩; contrapose! hj; exact ((isLeast_leastExt i).2 hj).not_gt
+  · rintro _ ⟨j, hj, rfl⟩; contrapose hj; exact ((isLeast_leastExt i).2 hj).not_gt
 
 theorem iSup_adjoin_eq_top : ⨆ i : ι, E⟮<i⟯ = ⊤ := by
   simp_rw [adjoin_image_leastExt, eq_top_iff, ← adjoin_basis_eq_top, adjoin_le_iff]

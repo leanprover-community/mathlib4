@@ -929,12 +929,12 @@ theorem not_dvd_differentIdeal_iff
     · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
       constructor
       · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
-        contrapose! H
+        contrapose H
         exact dvd_differentIdeal_of_not_isSeparable A hp P H
       · rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hPbot Ideal.map_comap_le]
         apply Ideal.ramificationIdx_spec
         · simp [Ideal.map_le_iff_le_comap]
-        · contrapose! H
+        · contrapose H
           rw [← pow_one P, show 1 = 2 - 1 by simp]
           apply pow_sub_one_dvd_differentIdeal _ _ _ hp
           simpa [Ideal.dvd_iff_le] using H
