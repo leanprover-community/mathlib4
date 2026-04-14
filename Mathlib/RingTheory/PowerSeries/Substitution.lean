@@ -264,8 +264,9 @@ theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  simpa [hasSubst_iff] using MvPowerSeries.constantCoeff_subst_eq_zero
+  have := MvPowerSeries.constantCoeff_subst_eq_zero
     (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
+  simpa [hasSubst_iff]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
