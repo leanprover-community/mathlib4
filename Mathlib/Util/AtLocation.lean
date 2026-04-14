@@ -80,7 +80,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "Cannot run `{proc}` at `{ldecl.userName}`, it is an implementation detail"
+    throwError "Cannot run `{proc}` at `{Expr.fvar fvarId}`, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
@@ -88,7 +88,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
   if failIfUnchanged && tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
-    throwError "`{proc}` made no progress at `{ldecl.userName}`"
+    throwError "`{proc}` made no progress at `{Expr.fvar fvarId}`"
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
