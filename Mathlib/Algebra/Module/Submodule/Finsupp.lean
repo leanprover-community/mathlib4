@@ -5,9 +5,7 @@ Authors: Eric Wieser, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.Submodule.Pointwise
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-! # Pointwise instances on `Submodule`s
@@ -51,7 +49,7 @@ open Pointwise
 
 namespace Submodule
 
-variable [Semiring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-!
 ### Sets acting on Submodules
