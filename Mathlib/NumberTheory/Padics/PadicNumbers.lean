@@ -8,9 +8,7 @@ module
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
-public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Tactic.Peel
-public import Mathlib.Topology.MetricSpace.CauSeqFilter
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
