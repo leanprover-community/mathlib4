@@ -40,7 +40,7 @@ namespace Delab.Noncanonical
 /-- Delaborate an expression with arity `arity` into a unary notation `mkStx` iff the argument
 `arg` is a non-canonical instance (is not defeq to what is synthesized for its type, or else
 instance synthesis fails). -/
-def delabUnary (arity arg : Nat) (mkStx : Term → DelabM Term) : Delab :=
+def delabUnary (arity arg : Nat) (mkStx : Term → Delab) : Delab :=
   withOverApp arity <| whenPPOption Lean.getPPNotation do
     let (false, instD) ← withNaryArg arg delabCheckingCanonical | failure
     mkStx instD
