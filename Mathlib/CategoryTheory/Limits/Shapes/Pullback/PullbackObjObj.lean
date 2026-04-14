@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Leibniz Constructions
@@ -54,7 +55,7 @@ pushout-product, pullback-hom, pullback-power, Leibniz
 
 @[expose] public section
 
-universe w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
+universe w w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -523,17 +524,14 @@ lemma leibnizPushout_preservesCobaseChange [HasPushouts C₃] (ι : Arrow C₁)
       ((F.leibnizPushout.obj ι).obj (Arrow.mk f)).hom
       ((F.leibnizPushout.obj ι).map (Arrow.homMk' s t h.w)).right := by
   have P₁ := h.map (F.obj ι.right)
-  have h₁ : pushout.inl _ _ ≫ ((F.leibnizPushout.obj ι).obj g).hom = ((F.obj ι.right).map g) :=
-    (ofHasPushout F ι.hom g).inl_ι
-  have h₂ : pushout.inl _ _ ≫ ((F.leibnizPushout.obj ι).obj f).hom = ((F.obj ι.right).map f) :=
-    (ofHasPushout F ι.hom f).inl_ι
-  rw [← h₁, ← h₂] at P₁
+  have h₁ : (F.obj ι.right).map g = pushout.inl _ _ ≫ _ := (ofHasPushout F ι.hom g).inl_ι.symm
+  have h₂ : (F.obj ι.right).map f = pushout.inl _ _ ≫ _ := (ofHasPushout F ι.hom f).inl_ι.symm
+  rw [h₁, h₂] at P₁
   apply P₁.of_top
-  · ext
-    · simp [ofHasPushout_ι, ofHasPushout_inl, ← Functor.map_comp, h.w]
-    · simp [ofHasPushout_ι, ofHasPushout_inr]
-  · refine IsPushout.of_left ?_ (by cat_disch) ((ofHasPushout F ι.hom g).isPushout)
-    simpa using (h.map (F.obj ι.left)).paste_horiz ((ofHasPushout F ι.hom f).isPushout)
+  · ext <;> simp [ofHasPushout_ι, ofHasPushout_inl, ofHasPushout_inr, ← Functor.map_comp, h.w]
+  · exact IsPushout.of_left
+      (by simpa using (h.map (F.obj ι.left)).paste_horiz (ofHasPushout F ι.hom f).isPushout)
+      (by cat_disch) (ofHasPushout F ι.hom g).isPushout
 
 open MorphismProperty in
 instance [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChange W]
@@ -547,6 +545,90 @@ instance [HasPushouts C₃] (W : MorphismProperty C₃) [IsStableUnderCobaseChan
   exact of_isPushout (leibnizPushout_preservesCobaseChange F ι hP) h
   --let : (F.leibnizPushout.obj ι).PreservesCobaseChange := ⟨leibnizPushout_preservesCobaseChange F ι⟩
   --infer_instance
+
+open MorphismProperty in
+instance [HasPushouts C₃] (W : MorphismProperty C₃) [RespectsIso W]
+    (ι : Arrow C₁) :
+    RespectsIso (W.arrowObj.inverseImage (F.leibnizPushout.obj ι)).arrowMorphism :=
+  RespectsIso.of_respects_arrow_iso _
+    (fun _ _ h₁ h₂ ↦ (W.arrow_mk_iso_iff (PushoutObjObj.ι_iso_of_iso_right _ _ h₁)).1 h₂)
+
+open MorphismProperty PushoutObjObj in
+instance [HasPushouts C₃] (W : MorphismProperty C₃) [RespectsIso W] [IsStableUnderCoproducts.{w} W]
+    (ι : Arrow C₁)
+    [PreservesColimitsOfSize.{w, w} (F.obj ι.right)]
+    [PreservesColimitsOfSize.{w, w} (F.obj ι.left)] :
+    IsStableUnderCoproducts.{w}
+      (W.arrowObj.inverseImage (F.leibnizPushout.obj ι)).arrowMorphism := by
+  constructor
+  intro J
+  constructor
+  intro X₁ X₂ c₁ c₂ h₁ h₂ f hf φ hj
+  let c₁' : Cocone (Discrete.functor fun j ↦ (ofHasPushout F ι.hom (f.app ⟨j⟩)).pt) := {
+    pt := (ofHasPushout F ι.hom φ).pt
+    ι := Discrete.natTrans fun i ↦ (F.leibnizPushout.obj ι ⋙ Arrow.leftFunc).map
+        (Arrow.homMk' (c₁.ι.app i) (c₂.ι.app i) (hj i))}
+  refine IsStableUnderColimitsOfShape.condition _
+    (X₂ ⋙ F.obj ι.right) c₁' ((F.obj ι.right).mapCocone c₂) ?_
+    (isColimitOfPreserves (F.obj ι.right) h₂)
+    (Discrete.natTrans fun i ↦ (ofHasPushout F ι.hom (f.app i)).ι) hf (ofHasPushout F ι.hom φ).ι
+    (by intro; apply pushout.hom_ext <;>
+      simp [c₁', ofHasPushout_ι, ofHasPushout_inl, ofHasPushout_inr, ← Functor.map_comp, hj])
+  · refine ⟨?_, ?_, ?_⟩
+    · intro s
+      refine pushout.desc
+        ((isColimitOfPreserves (F.obj ι.right) h₁).desc
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inl _ _ ≫ s.ι.app i)))
+        ((isColimitOfPreserves (F.obj ι.left) h₂).desc
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inr _ _ ≫ s.ι.app i))) ?_
+      · apply (isColimitOfPreserves (F.obj ι.left) h₁).hom_ext
+        intro j
+        have a := (isColimitOfPreserves (F.obj ι.right) h₁).fac
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inl _ _ ≫ s.ι.app i)) j
+        have b := (isColimitOfPreserves (F.obj ι.left) h₂).fac
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inr _ _ ≫ s.ι.app i)) j
+        dsimp at a b
+        simp [← Functor.map_comp_assoc, hj j, a, b, pushout.condition_assoc]
+    · intros
+      apply pushout.hom_ext
+      · simpa [c₁', ofHasPushout_inl] using (isColimitOfPreserves _ h₁).fac _ _
+      · simpa [c₁', ofHasPushout_inr] using (isColimitOfPreserves _ h₂).fac _ _
+    · intro s m hj
+      dsimp only [c₁'] at hj
+      apply pushout.hom_ext
+      · apply (isColimitOfPreserves (F.obj ι.right) h₁).hom_ext
+        intro j
+        have := (isColimitOfPreserves (F.obj ι.right) h₁).fac
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inl _ _ ≫ s.ι.app i)) j
+        dsimp at this
+        rw [← hj j] at this
+        simp [this, ofHasPushout_inl]
+      · apply (isColimitOfPreserves (F.obj ι.left) h₂).hom_ext
+        intro j
+        have := (isColimitOfPreserves (F.obj ι.left) h₂).fac
+          (Cocone.mk s.pt (Discrete.natTrans fun i ↦ pushout.inr _ _ ≫ s.ι.app i)) j
+        dsimp at this
+        rw [← hj j] at this
+        simp [this, ofHasPushout_inr]
+  /-
+  apply IsStableUnderCoproductsOfShape.mk
+  intro X₁ X₂ hX₁ hX₂ f h
+  simp at h ⊢
+  let X₁' : J → C₃ := fun j ↦ (PushoutObjObj.ofHasPushout F ι.hom (f j)).pt
+  let X₂' : J → C₃ := fun j ↦ (F.obj ι.right).obj (X₂ j)
+  have : HasCoproduct X₁' := by
+    constructor
+    sorry
+  have : HasCoproduct X₂' := by
+    sorry
+  refine (W.arrow_mk_iso_iff ?_).1 (IsStableUnderCoproductsOfShape.mem_sigma W J X₁' X₂'
+    (fun j ↦ (PushoutObjObj.ofHasPushout F ι.hom (f j)).ι) h)
+  refine Arrow.isoMk' _ _ ?_ ?_ ?_
+  · simp [X₁']
+    sorry
+  · exact (PreservesCoproduct.iso (F.obj ι.right) X₂).symm
+  · sorry
+  -/
 
 end Functor
 

@@ -716,6 +716,20 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     rintro ⟨j⟩
     simp [φ, hα]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma IsStableUnderCoproductsOfShape.mem_sigma (J : Type*) [W.RespectsIso]
+    [W.IsStableUnderCoproductsOfShape J] (X₁ X₂ : J → C)
+    [hX₁ : HasCoproduct X₁] [hX₂ : HasCoproduct X₂]
+    (f : ∀ j, X₁ j ⟶ X₂ j) (hj : ∀ (j : J), W (f j)) : W (Limits.Sigma.map f) :=
+  have cX₁ := getColimitCocone (Discrete.functor X₁)
+  have cX₂ := getColimitCocone (Discrete.functor X₂)
+  (W.arrow_mk_iso_iff
+    (Arrow.isoMk' _ _ (colimit.isoColimitCocone cX₁).symm (colimit.isoColimitCocone cX₂).symm
+    (cX₁.isColimit.hom_ext (by simp)))).1
+      (IsStableUnderColimitsOfShape.condition _ _ _ _ cX₁.isColimit cX₂.isColimit
+        (Discrete.natTrans fun j ↦ f j.as) (fun j ↦ hj j.as)
+        (IsColimit.map cX₁.isColimit _ (Discrete.natTrans fun i ↦ f i.as)) (by simp))
+
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J

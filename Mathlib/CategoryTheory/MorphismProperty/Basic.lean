@@ -122,30 +122,6 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).op = P.op.inverseImage F.op := rfl
 
-/-- The inverse image of a `MorphismProperty D` by a functor `Arrow C ⥤ Arrow D`. -/
-def inverseImageArrow (P : MorphismProperty D) (F : Arrow C ⥤ Arrow D) : MorphismProperty C :=
-  fun _ _ f ↦ P (F.obj (Arrow.mk f)).hom
-
-@[simps]
-def test : C ⥤ Arrow C where
-  obj X := 𝟙 X
-  map f := Arrow.homMk' f f (by simp)
-
-example (P : MorphismProperty D) (F : Arrow C ⥤ Arrow D) :
-    P.inverseImageArrow F = P.inverseImage (test ⋙ F ⋙ Arrow.leftFunc) := by
-  apply le_antisymm
-  · rintro X Y f h
-    dsimp [inverseImageArrow] at h
-    simp
-    sorry
-  · sorry
-
-#check Arrow.leftFunc
-
-@[simp]
-lemma inverseImageArrow_iff (P : MorphismProperty D) (F : Arrow C ⥤ Arrow D) {X Y : C} (f : X ⟶ Y) :
-    P.inverseImageArrow F f ↔ P (F.obj (Arrow.mk f)).hom := by rfl
-
 /-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
 inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
   | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
