@@ -125,7 +125,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
     refine hasDerivAt_ofReal_cpow_const' (ne_of_mem_of_not_mem hx hab) ?_
-    contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
+    contrapose hr; rwa [add_eq_zero_iff_eq_neg]
   replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in 0..c, (x : ℂ) ^ r) =
       (c : ℂ) ^ (r + 1) / (r + 1) - (0 : ℂ) ^ (r + 1) / (r + 1) by
@@ -140,7 +140,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     · rcases le_total c 0 with (hc | hc)
       · rw [max_eq_left hc] at hx; exact hx.2.ne
       · rw [min_eq_left hc] at hx; exact hx.1.ne'
-    · contrapose! hr; rw [hr]; ring
+    · contrapose hr; rw [hr]; ring
   · exact intervalIntegrable_cpow' h
 
 set_option backward.isDefEq.respectTransparency false in
@@ -331,7 +331,11 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
   have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  simpa [hz, mul_comm] using d
 
 theorem integral_cos_sq_sub_sin_sq :
     ∫ x in a..b, cos x ^ 2 - sin x ^ 2 = sin b * cos b - sin a * cos a := by
@@ -375,7 +379,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     (∫ x : ℝ in a..b, (x : ℂ) * ((1 : ℂ) + ↑x ^ 2) ^ t) =
       ((1 : ℂ) + (b : ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) -
       ((1 : ℂ) + (a : ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) := by
-  have : t + 1 ≠ 0 := by contrapose! ht; rwa [add_eq_zero_iff_eq_neg] at ht
+  have : t + 1 ≠ 0 := by contrapose ht; rwa [add_eq_zero_iff_eq_neg] at ht
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
     have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x : ℂ) x := by
