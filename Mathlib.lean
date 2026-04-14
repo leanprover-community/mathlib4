@@ -3888,7 +3888,6 @@ public import Mathlib.Data.Int.Sqrt
 public import Mathlib.Data.Int.Star
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Data.Int.WithZero
-public import Mathlib.Data.LawfulXor
 public import Mathlib.Data.LawfulXor.Basic
 public import Mathlib.Data.LawfulXor.Equiv
 public import Mathlib.Data.List.AList
