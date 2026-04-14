@@ -213,4 +213,3 @@ def sub_of_monotone {f : α → ℝ} (hf : MonotoneOn f s) (hc : ContinuousOn f 
     · exact hc.comp (by fun_prop) fun x ⟨hx, _⟩ => (Set.mem_prod.mp hx).1
 
 end ControlOn
-

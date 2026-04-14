@@ -62,7 +62,7 @@ theorem bdd_of_le_control {a b} {C : ℝ≥0} (ha : IsLeast s a) (hb : IsGreates
     intro ⟨n, u, hmon, hmem⟩
     suffices hω : ENNReal.ofNNReal (ω (u 0) (u n)) ≤ ENNReal.ofNNReal (ω a b) by
       exact (Finset.sum_le_sum (s := Finset.range n) fun i _ => hbd (hmem i) (hmem i.succ)
-        (hmon.imp i.le_succ)).trans (by exact_mod_cast ω.sum_seq_le ⟨n, u, hmon, hmem⟩) |>.trans hω 
+        (hmon.imp i.le_succ)).trans (by exact_mod_cast ω.sum_seq_le ⟨n, u, hmon, hmem⟩) |>.trans hω
     exact_mod_cast (ω.mono_right_of_le_le (hmem 0) (hmem n) hb.1
       (hmon.imp (by positivity)) (hb.2 (hmem n))).trans <|
       ω.anti_left_of_le_le ha.1 (hmem 0) hb.1 (ha.2 (hmem 0)) (hb.2 (hmem 0))
@@ -71,9 +71,8 @@ theorem boundedVariationOn_of_le {C : ℝ≥0}
     (hbd : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≤ y → edist (f y) (f x) ≤ C * ω x y) :
     LocallyBoundedVariationOn f s := by
   intro a b ha hb
-  
+
   exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.coe_ne_top (r := C)) ()) ()
 
 
 end eVariationOn
-
