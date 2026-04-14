@@ -86,7 +86,6 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
 lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
   IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
 private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -185,7 +184,6 @@ instance (priority := 100) isAffineHom_of_isAffine [IsAffine X] [IsAffine Y] : I
 lemma isAffine_of_isAffineHom [IsAffineHom f] [IsAffine Y] : IsAffine X :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom) (f := f)).mp inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isAffineHom_of_forall_exists_isAffineOpen
     (H : ∀ x : Y, ∃ U : Y.Opens, x ∈ U ∧ IsAffineOpen U ∧ IsAffineOpen (f ⁻¹ᵁ U)) :
     IsAffineHom f := by

@@ -165,7 +165,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
       smul_mem' := fun c hc p hp =>
         calc
           N (c • p.1) = c * N p.1 := N_hom c hc p.1
-          _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
+          _ ≤ c * p.2 := by gcongr; exact hp
       add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by

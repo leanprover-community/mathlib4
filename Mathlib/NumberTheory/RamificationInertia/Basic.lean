@@ -189,7 +189,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (F : V'' →ₗ[R] V) (hf : Function.Injective F)
     (f' : V'' →ₗ[R] V') {ι : Type*} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
     LinearIndependent K (F ∘ b) := by
-  contrapose! hb' with hb
+  contrapose hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
   -- then we can find a linear dependence with coefficients `I.Quotient.mk g'` in `R/I`,
   -- where `I = ker (algebraMap R S)`.
