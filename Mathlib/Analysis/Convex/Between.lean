@@ -732,13 +732,8 @@ variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
-  simp_rw [lineMap_apply]
-  rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
-  rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
-  refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
-  ring_nf
+  have h' := sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (by simpa using h.vsub_const x))
+  simpa [sub_zero, vsub_sub_vsub_cancel_right] using h'
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
   rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩
@@ -1041,17 +1036,7 @@ theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw
 
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
-  rw [collinear_iff_exists_forall_eq_smul_vadd]
-  refine ⟨x, z -ᵥ x, ?_⟩
-  intro p hp
-  simp_rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  rcases hp with (rfl | rfl | rfl)
-  · refine ⟨0, ?_⟩
-    simp
-  · rcases h with ⟨t, -, rfl⟩
-    exact ⟨t, rfl⟩
-  · refine ⟨1, ?_⟩
-    simp
+  simpa [Set.insert_comm] using collinear_insert_of_mem_affineSpan_pair h.mem_affineSpan
 
 theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} : Set P)) :
     Wbtw R x y z ∨ Wbtw R y z x ∨ Wbtw R z x y := by
@@ -1078,23 +1063,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
       exact Or.inl (wbtw_or_wbtw_smul_vadd_of_nonneg _ _ hy0.le hz0.le)
 
 theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  refine ⟨Wbtw.sameRay_vsub, fun h => ?_⟩
-  rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
-  · refine
-      ⟨r₂ / (r₁ + r₂),
-        ⟨div_nonneg hr₂.le (add_nonneg hr₁.le hr₂.le),
-          div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (add_nonneg hr₁.le hr₂.le)⟩,
-        ?_⟩
-    have h' : z = r₂⁻¹ • r₁ • (y -ᵥ x) +ᵥ y := by simp [h, hr₂.ne']
-    rw [eq_comm]
-    simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
-      smul_add]
-    convert (one_smul R (y -ᵥ x)).symm
-    field
+  simp [← wbtw_vsub_const_iff x, ← mem_segment_iff_wbtw, mem_segment_iff_sameRay]
 
 lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
     Wbtw R x y z ∨ Wbtw R x z y := by
