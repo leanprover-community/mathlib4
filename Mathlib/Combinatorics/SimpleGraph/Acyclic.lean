@@ -655,4 +655,67 @@ lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
   · refine isAcyclic_iff_forall_adj_isBridge.mpr fun _ _ hadj ↦ ?_
     exact isBridge_iff_adj_and_not_isEdgeConnected_two.mpr ⟨hadj, h hadj.ne⟩
 
+section Star
+
+/-- The starGraph graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
+def starGraph (r : V) : SimpleGraph V :=
+  SimpleGraph.fromRel (fun x _ => x = r)
+
+instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj := by
+  unfold starGraph; infer_instance
+
+@[simp]
+lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
+  unfold starGraph
+  simp [SimpleGraph.fromRel]
+
+/-- If v ≠ r, then v is adjacent to r. -/
+lemma starGraph_center_adj {r v : V} (h : v ≠ r) : (starGraph r).Adj r v :=
+  starGraph_adj.mpr ⟨h.symm, Or.inl rfl⟩
+
+private lemma starGraph_isPreconnected (r : V) : (starGraph r).Preconnected := by
+  have h_reach : ∀ v, (starGraph r).Reachable r v := by
+    intro v
+    by_cases! h : v = r
+    · subst h; exact Reachable.rfl
+    · exact (starGraph_center_adj h).reachable
+  exact fun u v => (h_reach u).symm.trans (h_reach v)
+
+private lemma starGraph_isAcyclic (r : V) : (starGraph r).IsAcyclic := by
+  rw [isAcyclic_iff_forall_adj_isBridge]
+  intro v w hadj
+  refine isBridge_iff.mpr ⟨hadj, ?_⟩
+  rw [starGraph_adj] at hadj
+  wlog! h : v = r
+  · have hw : w = r := hadj.2.resolve_left h
+    replace hadj : w ≠ v ∧ (w = r ∨ v = r) := ⟨hadj.1.symm, hadj.2.symm⟩
+    rw [reachable_comm, Sym2.eq_swap]
+    exact this r hadj hw
+  · subst h
+    apply not_reachable_of_neighborSet_right_eq_empty hadj.1
+    ext x; aesop
+
+/-- A starGraph graph is a tree. -/
+lemma starGraph_isTree [Nonempty V] (r : V) : (starGraph r).IsTree := by
+  refine ⟨Connected.mk (starGraph_isPreconnected r), starGraph_isAcyclic r⟩
+
+/-- Every non-center vertex of a starGraph has degree one. -/
+lemma starGraph_not_center_imp_degree_one [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
+    (starGraph r).degree v = 1 := by
+  rw [degree_eq_one_iff_existsUnique_adj]
+  use r
+  simp only [starGraph_adj, ne_eq, or_true, and_true, and_imp]
+  exact ⟨h, fun y _ hx => hx.resolve_left h⟩
+
+/-- The center vertex of a starGraph has degree (card V) - 1. -/
+lemma starGraph_center_degree [Nonempty V] [Fintype V] [DecidableEq V] {r : V} :
+    (starGraph r).degree r = Fintype.card V - 1 := by
+  rw [degree, neighborFinset_eq_filter (starGraph r)]
+  simp only [starGraph_adj, ne_eq, true_or, and_true]
+  have : ({w | ¬r = w} : Finset V) = Finset.univ.erase r := by
+    ext v; simp [eq_comm]
+  rw [this, Finset.card_erase_of_mem (Finset.mem_univ r), Finset.card_univ]
+
+end Star
+
 end SimpleGraph
