@@ -805,7 +805,7 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [AddCommMonoid ε] [ESeminormedAddMonoid ε] in
 theorem enorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
@@ -814,7 +814,7 @@ theorem enorm_multisetSum_le (m : Multiset ε) :
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [CommMonoid ε] [ESeminormedMonoid ε] in
 @[to_additive existing]
 theorem enorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
