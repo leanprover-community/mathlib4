@@ -62,7 +62,7 @@ lemma isGorensteinRing_def : IsGorensteinRing R ↔
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 lemma isGorensteinRing_def' : IsGorensteinRing R ↔
-  ∀ p : PrimeSpectrum R, IsGorensteinLocalRing (Localization.AtPrime p.1) :=
+    ∀ p : PrimeSpectrum R, IsGorensteinLocalRing (Localization.AtPrime p.1) :=
   ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
 
 section
@@ -74,11 +74,11 @@ lemma isGorensteinRing_of_ringEquiv {R' : Type u'} [CommRing R']
   apply (isGorensteinRing_def R').mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
   have := (isGorensteinRing_def R).mp ‹_› p (Ideal.comap_isPrime e p')
-  have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
+  have : p.primeCompl.map e.toMonoidHom = p'.primeCompl := by
     ext x
-    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ by simpa [← eq],
-      fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
-    simpa only [Ideal.primeCompl, p]
+    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
+      fun h ↦ ⟨e.symm x, (RingEquiv.apply_symm_apply e x).symm ▸ h, RingEquiv.apply_symm_apply e x⟩⟩
+    simpa only [p]
   exact IsGorensteinLocalRing.of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
