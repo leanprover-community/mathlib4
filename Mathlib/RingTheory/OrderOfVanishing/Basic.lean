@@ -227,7 +227,7 @@ variable (R)
 
 open Classical in
 /--
-Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
+Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℤᵐ⁰`.
 
 Note that we cannot just use `fun x ↦ ord R x` without further assumptions on `R`.
 This is because if R is finite length, then ord R 0 will be some non-top value,
@@ -254,6 +254,13 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
       all_goals simp
     all_goals simp_all [mul_mem_nonZeroDivisors]
 
+lemma ordMonoidWithZeroHom_eq_zero_iff [Nontrivial R] (y : nonZeroDivisors R) :
+    ordMonoidWithZeroHom R y = 0 ↔ ord R y = ⊤ := by
+  simp only [ordMonoidWithZeroHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, SetLike.coe_mem,
+    ↓reduceIte]
+  generalize ord R y = k
+  cases k
+  all_goals simp
 
 variable {R} in
 /--
@@ -306,6 +313,9 @@ lemma ord_lt_top {a : R} (ha : a ∈ nonZeroDivisors R) : ord R a < ⊤ := (ord_
 
 variable [Nontrivial R]
 
+lemma ordMonoidWithZeroHom_isUnit (y : nonZeroDivisors R) : IsUnit (ordMonoidWithZeroHom R y) := by
+  simp [ordMonoidWithZeroHom_eq_zero_iff, ord_ne_top]
+
 /--
 Order of vanishing function for elements of the fraction field defined as the extension of
 `CommRing.ordMonoidWithZeroHom` to the field of fractions.
@@ -313,20 +323,8 @@ Order of vanishing function for elements of the fraction field defined as the ex
 @[stacks 02MD]
 noncomputable
 def ordFrac : K →*₀ ℤᵐ⁰ :=
-  letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
-  haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
-    intro y
-    simp only [isUnit_iff_ne_zero, ne_eq]
-    simp [ordMonoidWithZeroHom, ord]
-    have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
-    have : ∀ k : ℕ∞,
-      ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd <| Nat.cast (R := ℤ) ·) k =
-          (0 : WithZero _) ↔ k = ⊤ := by
-        intro k
-        cases k
-        all_goals simp
-    simpa [this]
-  f this
+  (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R) <|
+  ordMonoidWithZeroHom_isUnit R
 
 lemma ordFrac_eq_ord {x : R} (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
