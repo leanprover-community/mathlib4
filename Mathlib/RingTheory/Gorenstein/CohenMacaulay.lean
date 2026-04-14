@@ -283,7 +283,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
     Nontrivial (Ext (ModuleCat.of (Localization q.1.primeCompl)
       (Shrink.{v} q.1.ResidueField)) (M.localizedModule q.1.primeCompl) (i + 1)) := by
   by_contra! sub
-  let _ : Module.Finite (Localization q.1.primeCompl) (M.localizedModule q.1.primeCompl) :=
+  have : Module.Finite (Localization q.1.primeCompl) (M.localizedModule q.1.primeCompl) :=
     Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm
   let f := (algebraMap R (Localization q.1.primeCompl))
   let Rq := (Localization q.1.primeCompl)
@@ -326,9 +326,9 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
     let e := IsLocalization.algEquiv p.1.primeCompl Rp (Localization.AtPrime (p.1.map f))
     exact IsLocalization.isLocalization_of_algEquiv (p.1.map f).primeCompl (AlgEquiv.ofLinearEquiv
       (e.toLinearEquiv.extendScalarsOfIsLocalization q.1.primeCompl Rq) (by simp) (by simp)).symm
-  let _ : IsLocalizedModule.AtPrime (p.1.map f) (Algebra.linearMap Rq Rp) :=
+  have : IsLocalizedModule.AtPrime (p.1.map f) (Algebra.linearMap Rq Rp) :=
     (isLocalizedModule_iff_isLocalization' _ _).mpr isl0
-  let _ : IsScalarTower Rq Rp (Shrink.{v, u} p.asIdeal.ResidueField) :=
+  have : IsScalarTower Rq Rp (Shrink.{v, u} p.asIdeal.ResidueField) :=
     Equiv.isScalarTower Rq Rp (equivShrink p.asIdeal.ResidueField).symm
   let f1' := Submodule.toLocalizedQuotient' Rp (p.1.map f).primeCompl (Algebra.linearMap Rq Rp)
     (p.1.map f)
@@ -342,19 +342,19 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
       (ModuleCat.of Rp (Shrink.{v} p.1.ResidueField)) :=
       e.toLinearMap.comp (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap)
   have isl1 : IsLocalizedModule (p.1.map f).primeCompl f1 :=
-    let _ := IsLocalizedModule.of_linearEquiv_right (p.1.map f).primeCompl f1'
+    have := IsLocalizedModule.of_linearEquiv_right (p.1.map f).primeCompl f1'
       (Shrink.linearEquiv.{v} Rq _)
     IsLocalizedModule.of_linearEquiv (p.1.map f).primeCompl
       (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap) e
-  let _ : Module Rq (M.localizedModule p.1.primeCompl) :=
+  let : Module Rq (M.localizedModule p.1.primeCompl) :=
     ModuleCat.Algebra.instModuleCarrier
-  let _ : IsScalarTower Rq Rp (M.localizedModule p.asIdeal.primeCompl) :=
+  have : IsScalarTower Rq Rp (M.localizedModule p.asIdeal.primeCompl) :=
     ModuleCat.Algebra.instIsScalarTowerCarrier
-  let _ : IsLocalizedModule.AtPrime ((p.1.map f).comap f)
+  have : IsLocalizedModule.AtPrime ((p.1.map f).comap f)
     (M.localizedModuleMkLinearMap p.1.primeCompl) := by
     convert M.localizedModule_isLocalizedModule p.1.primeCompl
     exact IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj
-  let _ : IsScalarTower R Rq (M.localizedModule p.1.primeCompl) := {
+  have : IsScalarTower R Rq (M.localizedModule p.1.primeCompl) := {
     smul_assoc r s z := by
       nth_rw 2 [← algebraMap_smul Rp r]
       rw [← algebraMap_smul Rp s, smul_smul, Algebra.smul_def, ← algebraMap_smul Rp, map_mul,
@@ -380,7 +380,7 @@ open associatedPrimes in
 lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Nontrivial M] : supportDim R M ≤ injectiveDimension M := by
   obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := by
-    let _ : Nonempty (support R M) := Set.Nonempty.to_subtype nonempty_support_of_nontrivial
+    have : Nonempty (support R M) := Set.Nonempty.to_subtype nonempty_support_of_nontrivial
     have (n : ℕ) : (n : WithBot ℕ∞) = (n : ℕ∞) := rfl
     simp only [this, supportDim, Order.krullDim_eq_iSup_length, WithBot.coe_inj]
     apply ENat.exists_eq_iSup_of_lt_top
@@ -399,7 +399,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     exact le_iSup_iff.mpr fun b a ↦ a q'
   have tail_eq : (q ⟨q.length, lt_add_one q.length⟩).1.1 = maximalIdeal R := by
     by_contra! ne
-    let _ := (q ⟨q.length, lt_add_one q.length⟩).1.2
+    have := (q ⟨q.length, lt_add_one q.length⟩).1.2
     have lt := ne.lt_of_le (IsLocalRing.le_maximalIdeal_of_isPrime _)
     let q' := q.snoc ⟨IsLocalRing.closedPoint R, closedPoint_mem_support R M⟩ lt
     have : q'.length > q.length := by simp [q']
@@ -443,16 +443,16 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     let qq := q ⟨q.length, Nat.lt_succ_iff.mpr (le_refl q.length)⟩
     have qqeq : qq.1.1 = maximalIdeal R := tail_eq
     have ntr' : Nontrivial (Ext.{v} (ModuleCat.of (Localization qq.1.1.primeCompl)
-      (Shrink.{v, u} qq.1.1.ResidueField)) (M.localizedModule qq.1.1.primeCompl) q.length) :=
+      (Shrink.{v} qq.1.1.ResidueField)) (M.localizedModule qq.1.1.primeCompl) q.length) :=
       lem' q.length (le_refl _)
-    let _ : IsScalarTower R (Localization qq.1.1.primeCompl) (Shrink.{v} qq.1.1.ResidueField) :=
+    have : IsScalarTower R (Localization qq.1.1.primeCompl) (Shrink.{v} qq.1.1.ResidueField) :=
       Equiv.isScalarTower R (Localization qq.1.1.primeCompl) (equivShrink qq.1.1.ResidueField).symm
-    let _ : IsLocalization qq.1.1.primeCompl R :=
+    have : IsLocalization qq.1.1.primeCompl R :=
       IsLocalization.at_units _ (fun x hx ↦ by simpa [qqeq] using hx)
     have surj : Function.Surjective (algebraMap R (Localization qq.1.1.primeCompl)) :=
       (IsLocalization.bijective qq.1.1.primeCompl
         (algebraMap R (Localization qq.1.1.primeCompl)) rfl).2
-    let _ : IsLocalHom (algebraMap R (Localization qq.1.1.primeCompl)) :=
+    have : IsLocalHom (algebraMap R (Localization qq.1.1.primeCompl)) :=
       IsLocalHom.of_surjective _ surj
     let e' : (R ⧸ maximalIdeal R) →ₗ[R] qq.1.1.ResidueField :=
       { __ := ResidueField.map (algebraMap R (Localization qq.1.1.primeCompl))
@@ -473,7 +473,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       ((Shrink.linearEquiv R (R ⧸ maximalIdeal R)).trans e).trans
         (Shrink.linearEquiv R qq.1.1.ResidueField).symm
     have isl1 : IsLocalizedModule qq.1.1.primeCompl f.toLinearMap := by
-      let _ := isLocalizedModule_id qq.1.1.primeCompl (Shrink.{v, u} (R ⧸ maximalIdeal R)) R
+      have := isLocalizedModule_id qq.1.1.primeCompl (Shrink.{v} (R ⧸ maximalIdeal R)) R
       exact IsLocalizedModule.of_linearEquiv qq.1.1.primeCompl LinearMap.id f
     have isl := Ext.isLocalizedModule' qq.1.1.primeCompl
       (Localization qq.1.1.primeCompl) f.toLinearMap isl1
@@ -487,7 +487,6 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits in
 lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
@@ -532,10 +531,9 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M r) := by
       by_contra! sub
       have (i : ℕ) (lt : r < i) :
-        Subsingleton (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
-        let _ := (injectiveDimension_le_iff _ r).mp (le_of_eq hr)
-        exact HasInjectiveDimensionLT.subsingleton M (r + 1) i lt _
-      let _ := (injectiveDimension_le_iff _ r).mp (le_of_eq hr)
+        Subsingleton (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) :=
+        ((injectiveDimension_le_iff _ r).mp (le_of_eq hr)).subsingleton M (r + 1) i lt _
+      have injle := (injectiveDimension_le_iff _ r).mp (le_of_eq hr)
       match r with
       | 0 =>
         have : injectiveDimension M ≤ ⊥ := by
@@ -558,7 +556,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
         rw [hr, Nat.cast_le] at this
         simp at this
     by_contra! lt
-    let _ := projectiveDimension_lt_iff.mp (lt_of_eq_of_lt projdim (Nat.cast_lt.mpr lt))
+    have := projectiveDimension_lt_iff.mp (lt_of_eq_of_lt projdim (Nat.cast_lt.mpr lt))
     have sub := HasProjectiveDimensionLT.subsingleton.{v} (ModuleCat.of R
       ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) r r (le_refl r) M
     absurd not_nontrivial_iff_subsingleton.mpr sub
@@ -578,7 +576,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
       absurd hf
       ext y
       let e := Shrink.algEquiv R (R ⧸ maximalIdeal R)
-      let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
+      let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
       calc
       _ = f (e.symm (e y * (e x)⁻¹ * (e x))) := by
         simp [AddEquivClass.map_ne_zero_iff.mpr ne]
@@ -586,18 +584,17 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
         rcases Ideal.Quotient.mk_surjective (e y * (e x)⁻¹) with ⟨r, hr⟩
         rw [← hr, ← Ideal.Quotient.algebraMap_eq, ← Algebra.smul_def]
         simp [LinearMap.mem_ker.mp hx]
-    let g : ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)) ⟶
-      ModuleCat.of R (Shrink.{v, u} R ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R))) :=
+    let g : ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)) ⟶
+      ModuleCat.of R (Shrink.{v} R ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R))) :=
       ModuleCat.ofHom f
     let S := ShortComplex.mk g (cokernel.π g) (cokernel.condition g)
     have S_exact : S.ShortExact := {
       exact := ShortComplex.exact_cokernel g
-      mono_f := (ModuleCat.mono_iff_injective g).mpr injf
-      epi_g := coequalizer.π_epi }
+      mono_f := (ModuleCat.mono_iff_injective g).mpr injf }
     have exac := Ext.contravariant_sequence_exact₁'.{v} S_exact M r (r + 1) (add_comm 1 r)
     have : IsZero (AddCommGrpCat.of (Ext.{v} S.X₃ M (r + 1))) := by
       apply @AddCommGrpCat.isZero_of_subsingleton _ ?_
-      let _ := (injectiveDimension_le_iff M r).mp (le_of_eq hr)
+      have := (injectiveDimension_le_iff M r).mp (le_of_eq hr)
       exact HasInjectiveDimensionLT.subsingleton M (r + 1) (r + 1) (le_refl _) _
     have surj : Function.Surjective ((Ext.mk₀.{v} S.f).precomp M (zero_add r)) :=
       (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
@@ -605,7 +602,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
   · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
     intro b hb
     by_contra! lt
-    let _ := hb rs.length lt
+    have := hb rs.length lt
     absurd HasInjectiveDimensionLT.subsingleton.{v} M rs.length rs.length (le_refl _)
       (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs)))
     apply not_subsingleton_iff_nontrivial.mpr
@@ -658,10 +655,8 @@ lemma injectiveDimension_quotient_span_regular
     { __ := Submodule.quotEquivOfEq _ (Ideal.span {x}) (by
         simp [← Submodule.ideal_span_singleton_smul])
       map_smul' r y := by
-        rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
-        simp only [← hs, IsTorsionBySet.mk_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          map_smul, LinearEquiv.coe_coe, RingHomCompTriple.comp_apply, smul_eq_mul]
-        rfl }.toModuleIso
+        rcases Ideal.Quotient.mk_surjective r with ⟨s, rfl⟩
+        exact map_smul (Submodule.quotEquivOfEq _ _ _) s y }.toModuleIso
   rw [← injectiveDimension_quotSMulTop_succ_eq_injectiveDimension reg reg mem,
     injectiveDimension_eq_of_iso e]
 
@@ -669,12 +664,10 @@ open Pointwise in
 lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.span {x}) := by
+  have : Nontrivial (R ⧸ Ideal.span {x}) :=
+    Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
-    have : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
-    have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   rw [isGorensteinLocalRing_def, isGorensteinLocalRing_def,
     ← injectiveDimension_quotient_span_regular R x reg mem]
   exact (add_one_eq_top_iff _).not
@@ -697,8 +690,7 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegu
       have mem : a ∈ maximalIdeal R := by
         simp only [mem_maximalIdeal, mem_nonunits_iff]
         by_contra uni
-        have : Ideal.span {a} = ⊤ :=
-          Ideal.eq_top_of_isUnit_mem  _ (Ideal.mem_span_singleton_self a) uni
+        have := Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_span_singleton_self a) uni
         absurd reg.2.symm
         simp [this]
       let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} :=
@@ -706,12 +698,10 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegu
           (by simp [← Submodule.ideal_span_singleton_smul])).extendScalarsOfSurjective
             Ideal.Quotient.mk_surjective
       simp only [isRegular_cons_iff', e.isRegular_congr] at reg
-      let _ : Nontrivial (R ⧸ Ideal.span {a}) :=
+      have : Nontrivial (R ⧸ Ideal.span {a}) :=
         Ideal.Quotient.nontrivial_iff.mpr (by simpa using mem)
-      let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {a})) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      let _ : IsLocalRing (R ⧸ Ideal.span {a}) :=
-        IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {a})) Ideal.Quotient.mk_surjective
+      have : IsLocalRing (R ⧸ Ideal.span {a}) :=
+        IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {a})) Ideal.Quotient.mk_surjective
       rw [quotient_span_regular_isGorenstein_iff_isGorenstein R a reg.1 mem,
         ih (R ⧸ Ideal.span {a}) _ reg.2 (by simp [h]), ← Ideal.map_ofList, Ideal.ofList_cons]
       let e' := DoubleQuot.quotQuotEquivQuotSup (Ideal.span {a}) (Ideal.ofList rs')
