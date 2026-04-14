@@ -235,7 +235,6 @@ theorem normDet_smul (f : U →ₗ[𝕜] V) (c : 𝕜) :
 theorem normDet_neg (f : U →ₗ[𝕜] V) : (-f).normDet = f.normDet := by
   simpa using f.normDet_smul (-1)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The square of `f.normDet` equals to the determinant of `f.adjoint ∘L f`.
 -/
@@ -392,7 +391,6 @@ variable {U V : Type*} [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteD
 theorem normDet_eq_abs_det (f : U →ₗ[ℝ] U) : f.normDet = |f.det| := by
   simpa using f.normDet_eq_norm_det
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Using Hausdorff measure wih the domain dimension, the volume of the image is scaled by
 `LinearMap.normDet`.
