@@ -62,7 +62,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     obtain ⟨y, hyJ, rfl⟩ := (Ideal.mem_mul_span_singleton).1 hxJg
     rw [← span_singleton_mul_span_singleton, span_singleton_mul_left_inj] at this
     · exact ⟨y, this⟩
-    · contrapose! hx0
+    · contrapose hx0
       rw [hx0, mul_zero]
   -- Show `J * (g) ≤ (x)` by proving `x ∣ b * g` for all `b ∈ J`.
   refine le_antisymm
