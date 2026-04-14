@@ -12,27 +12,23 @@ public import Mathlib.Topology.Algebra.OrbitSpace
 /-!
 # Manifold structure on orbit spaces
 
-Let `G` be a group acting properly discontinuously on a manifold `M`.
-In this file we endow the orbit space `orbitRel.Quotient G M`
-with a manifold structure modeled on the same model space as `M`.
+Let `G` be a group acting properly discontinuously on a `C^k` manifold `M`.
+In this file we will endow the orbit space `orbitRel.Quotient G M`
+with a natural `C^k` manifold structure, on the same model space as `M`.
 
 ## Main results
 
 Let `M` be a topological space equipped with a `ChartedSpace H M` structure.
 Assume that a group `G` acts properly discontinuously on `M`.
-
 Then the orbit space `orbitRel.Quotient G M` inherits a `ChartedSpace H` structure.
 
 ## TODO
 
-* show that the quotient is an `IsManifold I n` for a suitable
-  `ModelWithCorners I`.
-* show smoothness of the projection map
+* if `G` acts smoothly, the quotient is an `IsManifold I n` for a suitable `ModelWithCorners I`.
+* if `G` acts smoothly, the projection map is smooth
 
-## Implementation notes
-
-The atlas is obtained by composing a local inverse of the projection map
-(from covering theory) with a chart of `M`
+## tags
+smooth manifold, smooth action, quotient manifold
 -/
 
 public noncomputable section
