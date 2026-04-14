@@ -569,6 +569,7 @@ lemma Arrow.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W �
 lemma Arrow.changeProp_obj_right (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).right = Y.right := rfl
 
+-- `simps` on `Arrow.changeProp` fails to create this lemma
 @[simp]
 lemma Arrow.changeProp_obj_hom (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
     ((changeProp hPP' hQQ' hWW').obj Y).hom = Y.hom := rfl
