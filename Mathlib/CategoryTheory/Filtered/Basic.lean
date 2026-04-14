@@ -259,7 +259,7 @@ theorem sup_exists :
       grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
-      contrapose! h
+      contrapose h
       obtain ⟨rfl, h⟩ := h
       trivial
 
@@ -790,7 +790,7 @@ theorem inf_exists :
       grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
-      contrapose! h
+      contrapose h
       obtain ⟨rfl, h⟩ := h
       trivial
 
