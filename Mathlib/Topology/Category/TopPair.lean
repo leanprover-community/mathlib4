@@ -25,10 +25,9 @@ homotopies between them.
 
 open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
-/-- A pair of topological spaces consists of a morphism f : A ⟶ X in `TopCat`
-such that the topology of A is induced by f. -/
+/-- A pair of topological spaces consists of an embedding `f : A ⟶ X` in `TopCat`. -/
 abbrev TopPair :=
-  MorphismProperty.Arrow (fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsInducing f.hom) ⊤ ⊤
+  MorphismProperty.Arrow (fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) ⊤ ⊤
 
 namespace TopPair
 
@@ -43,15 +42,15 @@ abbrev snd : TopCat := X.left
 /-- The map that induces the topology on A -/
 abbrev map : X.snd ⟶ X.fst := X.hom
 
-lemma isInducing_map (X : TopPair) : Topology.IsInducing X.map := X.prop
+lemma isInducing_map (X : TopPair) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
-abbrev of {A X : TopCat} (f : A ⟶ X) (h : Topology.IsInducing f) : TopPair :=
-  MorphismProperty.Arrow.mk (P := fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsInducing f.hom) f h
+abbrev of {A X : TopCat} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair :=
+  MorphismProperty.Arrow.mk (P := fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
 abbrev ofSubset {X : TopCat} (A : Set X) : TopPair :=
-  @TopPair.of (TopCat.of A) X ⟨{ toFun := Subtype.val }⟩ ⟨TopologicalSpace.ext rfl⟩
+  @TopPair.of (TopCat.of A) X ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
@@ -86,13 +85,13 @@ abbrev proj₂ : TopPair ⥤ TopCat :=
 (X, ∅). -/
 @[simps]
 def incl : TopCat ⥤ TopPair where
-  obj X := TopPair.of (TopCat.isInitialPEmpty.to X) (TopCat.IsInducing.empty _)
+  obj X := TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
 abbrev diag : TopCat ⥤ TopPair where
-  obj X := TopPair.of (𝟙 X) Topology.IsInducing.id
+  obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
