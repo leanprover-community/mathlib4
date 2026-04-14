@@ -185,23 +185,21 @@ namespace FormalGroup
 
 variable (F : FormalGroup R)
 
-/-- An abbreviation for $F(X,0)$ for a formal group $F$. -/
-def X_zero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
+/-- An abbreviation of $F(X,0)$ for a formal group $F$. -/
+abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
 
-@[simp] lemma X_zero_apply : F.X_zero = subst ![PowerSeries.X, 0] F.toPowerSeries := rfl
-
-lemma constantCoeff_X_zero : PowerSeries.constantCoeff F.X_zero = 0 := by
-  simp [PowerSeries.constantCoeff, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
+lemma constantCoeff_Xzero : PowerSeries.constantCoeff F.Xzero = 0 := by
+  simp [PowerSeries.constantCoeff, Xzero, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
     HasSubst.X_zero _ F.zero_constantCoeff]
 
-lemma X_zero_subst_X_zero : F.X_zero.subst F.X_zero = F.X_zero := by
+lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
   calc
     _ = F.toPowerSeries.subst ![F.toPowerSeries.subst ![PowerSeries.X, 0], 0] := by
       have : PowerSeries.HasSubst (subst ![PowerSeries.X (R := R), 0] F.toPowerSeries) := by
         refine PowerSeries.HasSubst.of_constantCoeff_zero' ?_
         rw [PowerSeries.constantCoeff, PowerSeries.X, constantCoeff_subst_eq_zero HasSubst.X_zero
           (by simp) F.zero_constantCoeff]
-      rw [PowerSeries.subst, X_zero_apply, subst_comp_subst_apply _ this.const]
+      rw [PowerSeries.subst, subst_comp_subst_apply _ this.const]
       · congr! 2 with d
         fin_cases d
         · simp [← PowerSeries.subst_def, PowerSeries.subst_X this]
@@ -214,9 +212,9 @@ lemma X_zero_subst_X_zero : F.X_zero.subst F.X_zero = F.X_zero := by
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma X_add_zero_eq_X : F.toPowerSeries.subst ![PowerSeries.X (R := R), 0] = PowerSeries.X := by
-  haveI : Invertible (F.X_zero.coeff 1) := by
+  haveI : Invertible (F.Xzero.coeff 1) := by
     convert invertibleOne
-    rw [PowerSeries.coeff, X_zero_apply,  coeff_subst _, finsum_eq_single _ (single 0 1)]
+    rw [PowerSeries.coeff,  coeff_subst _, finsum_eq_single _ (single 0 1)]
     · simp [F.lin_coeff_X]
     · intro d hd
       by_cases hd₁ : d 1 = 0
@@ -227,31 +225,29 @@ lemma X_add_zero_eq_X : F.toPowerSeries.subst ![PowerSeries.X (R := R), 0] = Pow
       simp [hd₁]
     · exact HasSubst.X_zero
   calc
-    _ = F.X_zero.substInv.subst (F.X_zero.subst F.X_zero) := by
-      have aux₀ : PowerSeries.HasSubst F.X_zero :=
-        PowerSeries.HasSubst.of_constantCoeff_zero' <| constantCoeff_X_zero F
+    _ = F.Xzero.substInv.subst (F.Xzero.subst F.Xzero) := by
+      have aux₀ : PowerSeries.HasSubst F.Xzero :=
+        PowerSeries.HasSubst.of_constantCoeff_zero' <| constantCoeff_Xzero F
       rw [← PowerSeries.subst_comp_subst_apply aux₀ aux₀, PowerSeries.subst_substInv_left _
-        F.constantCoeff_X_zero , PowerSeries.subst_X aux₀, X_zero]
+        F.constantCoeff_Xzero , PowerSeries.subst_X aux₀, Xzero]
     _ = _ := by
-      rw [X_zero_subst_X_zero, F.X_zero.subst_substInv_left F.constantCoeff_X_zero]
+      rw [Xzero_subst_Xzero, F.Xzero.subst_substInv_left F.constantCoeff_Xzero]
 
-/-- An abbreviation for $F(0,X)$ for a formal group $F$. -/
-def zero_X : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
+/-- An abbreviation of $F(0,X)$ for a formal group $F$. -/
+abbrev zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
 
-@[simp] lemma zero_X_apply : F.zero_X = subst ![0, PowerSeries.X] F.toPowerSeries := rfl
-
-lemma constantCoeff_zero_X : PowerSeries.constantCoeff F.zero_X = 0 := by
-  simp [PowerSeries.constantCoeff, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
+lemma constantCoeff_zeroX : PowerSeries.constantCoeff F.zeroX = 0 := by
+  simp [PowerSeries.constantCoeff, zeroX, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
     HasSubst.zero_X _ F.zero_constantCoeff]
 
-lemma zero_X_subst_zero_X : F.zero_X.subst F.zero_X = F.zero_X := by
+lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
   calc
     _ = F.toPowerSeries.subst ![0, F.toPowerSeries.subst ![0, PowerSeries.X]] := by
       have : PowerSeries.HasSubst (subst ![0, PowerSeries.X (R := R)] F.toPowerSeries) := by
         refine PowerSeries.HasSubst.of_constantCoeff_zero' ?_
         rw [PowerSeries.constantCoeff, PowerSeries.X, constantCoeff_subst_eq_zero HasSubst.zero_X
           (by simp) F.zero_constantCoeff]
-      rw [PowerSeries.subst, zero_X_apply, subst_comp_subst_apply _ this.const]
+      rw [PowerSeries.subst, subst_comp_subst_apply _ this.const]
       · congr! 2 with d
         fin_cases d
         · simp [← PowerSeries.subst_def, ← PowerSeries.coe_substAlgHom this]
@@ -263,9 +259,9 @@ lemma zero_X_subst_zero_X : F.zero_X.subst F.zero_X = F.zero_X := by
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma zero_add_X_eq_X : F.toPowerSeries.subst ![0, PowerSeries.X (R := R)] = PowerSeries.X := by
-  haveI : Invertible (F.zero_X.coeff 1) := by
+  haveI : Invertible (F.zeroX.coeff 1) := by
     convert invertibleOne
-    rw [PowerSeries.coeff, zero_X_apply,  coeff_subst _, finsum_eq_single _ (single 1 1)]
+    rw [PowerSeries.coeff,  coeff_subst _, finsum_eq_single _ (single 1 1)]
     · simp [F.lin_coeff_Y]
     · intro d hd
       by_cases hd₁ : d 0 = 0
@@ -276,13 +272,13 @@ lemma zero_add_X_eq_X : F.toPowerSeries.subst ![0, PowerSeries.X (R := R)] = Pow
       simp [hd₁]
     · exact HasSubst.zero_X
   calc
-    _ = F.zero_X.substInv.subst (F.zero_X.subst F.zero_X) := by
-      have aux₀ : PowerSeries.HasSubst F.zero_X :=
-        PowerSeries.HasSubst.of_constantCoeff_zero' <| F.constantCoeff_zero_X
+    _ = F.zeroX.substInv.subst (F.zeroX.subst F.zeroX) := by
+      have aux₀ : PowerSeries.HasSubst F.zeroX :=
+        PowerSeries.HasSubst.of_constantCoeff_zero' <| F.constantCoeff_zeroX
       rw [← PowerSeries.subst_comp_subst_apply aux₀ aux₀, PowerSeries.subst_substInv_left _
-        F.constantCoeff_zero_X, PowerSeries.subst_X aux₀, zero_X]
+        F.constantCoeff_zeroX, PowerSeries.subst_X aux₀, zeroX]
     _ = _ := by
-      rw [zero_X_subst_zero_X, F.zero_X.subst_substInv_left F.constantCoeff_zero_X]
+      rw [zeroX_subst_zeroX, F.zeroX.subst_substInv_left F.constantCoeff_zeroX]
 
 theorem add_zero {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
     F.toPowerSeries.subst ![f, 0] = f := by
