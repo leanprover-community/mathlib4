@@ -106,25 +106,27 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeri
   exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
 
 /-- Additive subgroup structure on `MvPowerSeries σ R`. -/
-instance isAddSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
+instance isAddSubgroup (c : outParam (σ → ℝ)) : AddSubgroup (MvPowerSeries σ R) where
   carrier := IsRestricted c
   zero_mem' := isRestricted_zero c
   add_mem' := isRestricted.add c
   neg_mem' := isRestricted.neg c
 
+variable [IsUltrametricDist R]
+
 /-- Ring structure on `MvPowerSeries σ R`. -/
-instance isSubring [IsUltrametricDist R] (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
+instance isSubring (c : outParam (σ → ℝ)) : Subring (MvPowerSeries σ R) where
   __ := isAddSubgroup c
   one_mem' := isRestricted_one c
   mul_mem' := isRestricted.mul c
 
 variable (R) in
 /-- The type of restricted `MvPowerSeries σ R`. -/
-def Restricted [IsUltrametricDist R] (c : σ → ℝ) : Type _ := isSubring (R := R) c
+def Restricted (c : σ → ℝ) : Type _ := isSubring (R := R) c
 
 /-- Ring structure on `Restricted R c`. -/
 noncomputable
-instance [IsUltrametricDist R] (c : σ → ℝ) : Ring (Restricted R c) :=
+instance (c : outParam (σ → ℝ)) : Ring (Restricted R c) :=
   Subring.toRing (isSubring c)
 
 end MvPowerSeries
