@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Baer
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
@@ -27,15 +27,10 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 * `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
   finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
-  `i ≥ n + 1`, `Ext N M i` vanish.
+  `Ext N M (n + 1)` vanish.
 
 * `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
   projective dimension over finitely generated modules.
-
-# TODO
-
-1. Reduce vanishing of all `Ext N M i`, `i ≥ n + 1` to vanishing of `Ext N M (n + 1)`.
-2. Prove that global dimension is invariant of universe if assuming `Small.{v} R`.
 
 -/
 
@@ -59,9 +54,8 @@ noncomputable def globalDimension : WithBot ℕ∞ :=
 lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{v} R = ⊥ ↔ Subsingleton R := by
   simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
     ModuleCat.isZero_iff_subsingleton]
-  refine ⟨fun h ↦ ?_, fun h M ↦ Module.subsingleton R M⟩
-  let _ := h (ModuleCat.of R (Shrink.{v} R))
-  exact (equivShrink.{v} R).subsingleton
+  exact ⟨fun h ↦ (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R))),
+    fun h M ↦ Module.subsingleton R M⟩
 
 lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
@@ -70,19 +64,20 @@ lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
 lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
     [globalDimension.{v} R ≤ n,
     ∀ M : ModuleCat.{v} R, [Module.Finite R M] → HasProjectiveDimensionLE M n,
-    ∀ m ≥ n + 1, ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M m),
+    ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M (n + 1)),
     ∀ M : ModuleCat.{v} R, HasInjectiveDimensionLE M n].TFAE := by
   tfae_have 1 → 2 := by
     simpa only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
       using fun h M _ ↦ h M
-  tfae_have 2 → 3 := fun h m ge N M ↦ ModuleCat.ext_subsingleton_of_quotients M m
-      (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ ge M)) N
+  tfae_have 2 → 3 := fun h N M ↦ (ModuleCat.hasInjectiveDimensionLT_of_quotients M (n + 1)
+    (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ (le_refl _)
+    M))).subsingleton _ _ _ (le_refl _) N
   tfae_have 3 → 1 := by
     intro h
     simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
-    exact fun M ↦ .mk (fun i hi {N} e ↦ @Subsingleton.eq_zero _ _ (h i hi M N) e)
-  tfae_have 3 → 4 := fun h M ↦ .mk (fun i hi {N} e ↦ @Subsingleton.eq_zero _ _ (h i hi N M) e)
-  tfae_have 4 → 3 := fun h i hi N M ↦ (h M).subsingleton _ _ i hi N
+    exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
+  tfae_have 3 → 4 := fun h M ↦ hasInjectiveDimensionLT_of_enoughProjectives M _ (h · M)
+  tfae_have 4 → 3 := fun h N M ↦ (h M).subsingleton _ _ _ (le_refl _) N
   tfae_finish
 
 lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDimension.{v} R =
@@ -95,9 +90,8 @@ lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDi
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
-    refine ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦ ?_⟩
-    let _ := h (ModuleCat.of R (Shrink.{v} R)) (Module.Finite.equiv (Shrink.linearEquiv R R).symm)
-    exact (equivShrink.{v} R).subsingleton
+    exact ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦
+      (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)) inferInstance)⟩
   | coe N =>
     induction N with
     | top => simp
@@ -113,9 +107,8 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
-    refine ⟨fun h M ↦ Module.subsingleton R M, fun h ↦ ?_⟩
-    let _ := h (ModuleCat.of R (Shrink.{v} R))
-    exact (equivShrink.{v} R).subsingleton
+    exact ⟨fun h M ↦ Module.subsingleton R M,
+      fun h ↦ (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)))⟩
   | coe N =>
     induction N with
     | top => simp
@@ -128,14 +121,14 @@ lemma globalDimension_eq_of_small [Small.{v} R] :
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let := Module.Finite.small.{u} R M
+    have := Module.Finite.small.{u} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
     rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let := Module.Finite.small.{v} R M
+    have := Module.Finite.small.{v} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{v} M) := (Shrink.linearEquiv R M).symm
     rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
@@ -148,8 +141,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let : Small.{u'} R := Small.mk' e.toEquiv
-    let := Module.Finite.small.{u'} R M
+    have : Small.{u'} R := Small.mk' e.toEquiv
+    have := Module.Finite.small.{u'} R M
     let : Module R' (Shrink.{u'} M) := Module.compHom _ e.symm.toRingHom
     let e' : (ModuleCat.of R' (Shrink.{u'} M)) ≃ₛₗ[RingHomClass.toRingHom e.symm] M  := {
       __ := (Shrink.linearEquiv R M)
@@ -159,8 +152,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
   · rw [globalDimension_eq_sup_projectiveDimension_finite]
     simp only [iSup_le_iff]
     intro M hM
-    let : Small.{u} R' := Small.mk' e.symm.toEquiv
-    let := Module.Finite.small.{u} R' M
+    have : Small.{u} R' := Small.mk' e.symm.toEquiv
+    have := Module.Finite.small.{u} R' M
     let : Module R (Shrink.{u} M) := Module.compHom _ e.toRingHom
     let e' : (ModuleCat.of R (Shrink.{u} M)) ≃ₛₗ[RingHomClass.toRingHom e] M  := {
       __ := (Shrink.linearEquiv R' M)
@@ -173,11 +166,11 @@ lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
     globalDimension.{v} (Localization S) ≤ globalDimension.{v} R := by
   simp only [iSup_le_iff, globalDimension]
   intro M
-  let _ : Module R M := Module.compHom M (algebraMap R (Localization S))
+  let : Module R M := Module.compHom M (algebraMap R (Localization S))
   have : IsScalarTower R (Localization S) M := IsScalarTower.of_compHom _ _ _
   apply (le_of_eq_of_le _ (ModuleCat.projectiveDimension_le_projectiveDimension_of_isLocalizedModule
     S (ModuleCat.of R M))).trans (le_iSup _ (ModuleCat.of R M))
-  let _ := isLocalizedModule_id S M (Localization S)
+  have := isLocalizedModule_id S M (Localization S)
   exact (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization S (Localization S)
     (IsLocalizedModule.linearEquiv S ((ModuleCat.of R M).localizedModuleMkLinearMap S)
     LinearMap.id)).symm.toModuleIso)
@@ -192,8 +185,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing 
     intro p
     exact (le_iSup _ (M.localizedModule p.1.primeCompl)).trans
       (le_iSup (fun (p : PrimeSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) p)
-  · refine iSup_le_iff.mpr (fun p ↦ ?_)
-    exact globalDimension_localization_le p.1.primeCompl
+  · exact iSup_le_iff.mpr (fun p ↦ globalDimension_localization_le p.1.primeCompl)
 
 lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
@@ -204,7 +196,6 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_maximal, iSup_le_iff]
     exact fun m ↦ (le_iSup _ (M.localizedModule m.1.primeCompl)).trans
       (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.1)) m)
-  · refine iSup_le_iff.mpr (fun m ↦ ?_)
-    exact globalDimension_localization_le m.1.primeCompl
+  · exact iSup_le_iff.mpr (fun m ↦ globalDimension_localization_le m.1.primeCompl)
 
 end GlobalDimension

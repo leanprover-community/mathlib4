@@ -273,10 +273,12 @@ lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPri
       simp [Submodule.spanFinrank_of_not_fg h]
     obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
     exact ⟨a, ha ▸ (p.span_generators).symm⟩
-  · aesop
+  · contrapose h
+    simp [h]
   · rcases prin with ⟨a, rfl⟩
     apply Submodule.spanFinrank_singleton
-    aesop
+    contrapose ne
+    simp [ne]
 
 end Defs
 
