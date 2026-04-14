@@ -52,7 +52,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
   suffices hJ : ∀ J : Ideal R, J.FG → J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I by
     simpa using hJ I.radical h
   intro J hJ hJK
-  induction J, hJ using Submodule.fg_induction' with
+  induction J, hJ using Submodule.fg_induction with
   | singleton x =>
     obtain ⟨n, hn⟩ := hJK (subset_span (Set.mem_singleton x))
     exact ⟨n, by rwa [← span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
@@ -75,7 +75,7 @@ theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
-  induction I, h using Submodule.fg_induction' with
+  induction I, h using Submodule.fg_induction with
   | singleton x =>
     simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at h'
     obtain ⟨n, hn⟩ := h'
