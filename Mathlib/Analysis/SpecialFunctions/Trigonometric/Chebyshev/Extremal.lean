@@ -78,7 +78,7 @@ lemma strictAntiOn_node (n : ℕ) :
   rw [Finset.mem_coe, Finset.mem_range_succ_iff] at hx
   rw [mul_div_assoc]
   nth_rewrite 2 [← mul_div_cancel₀ π (Nat.cast_ne_zero.mpr hn)]
-  exact mul_le_mul_of_nonneg_right (Nat.cast_le.mpr hx) (by positivity)
+  gcongr
 
 lemma node_lt {n i j : ℕ} (hj : j ≤ n) (hij : i < j) :
     node n j < node n i :=
@@ -124,9 +124,10 @@ theorem sumNodes_le_sumNodes_T {n : ℕ} {c : ℕ → ℝ}
     P.eval (node n i) * (c i) =
       ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * (c i)) :=
       negOnePow_mul_negOnePow_mul_cancel.symm
-    _ ≤ 1 * ((-1) ^ i * (c i)) :=
-      mul_le_mul_of_nonneg_right (negOnePow_mul_le (hPbnd _ node_mem_Icc))
-      (hcnonneg i (Finset.mem_Iic.mp hi))
+    _ ≤ 1 * ((-1) ^ i * (c i)) := by
+      gcongr
+      · exact (hcnonneg i (Finset.mem_Iic.mp hi))
+      · exact (negOnePow_mul_le (hPbnd _ node_mem_Icc))
     _ = (T ℝ n).eval (node n i) * (c i) := by
       rw [eval_T_real_node hi, one_mul]
 
