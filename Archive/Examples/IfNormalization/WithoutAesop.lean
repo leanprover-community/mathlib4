@@ -92,8 +92,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ v
           simp_all? says
             simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
-              Bool.false_eq, Bool.true_eq, AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert,
-              reduceCtorEq, imp_false]
+              AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, reduceCtorEq, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
@@ -105,8 +104,8 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           · subst h; simp_all
           · simp_all? says
               simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
-                Bool.false_eq, Bool.true_eq, AList.lookup_insert_eq_none, ne_eq, not_false_eq_true,
-                AList.lookup_insert_ne, implies_true]
+                AList.lookup_insert_eq_none, ne_eq, not_false_eq_true, AList.lookup_insert_ne,
+                implies_true]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all

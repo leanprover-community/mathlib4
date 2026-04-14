@@ -503,7 +503,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
 theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by
   by_cases hq : q = 0
-  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simp [hq, ← h.natDegree_eq_zero]
+  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simp [hq, ← h.natDegree_eq_zero, iffComm]
     exact ⟨fun h => h.ne', fun h => lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
   · simp [h.natDegree_mul', hq]
 

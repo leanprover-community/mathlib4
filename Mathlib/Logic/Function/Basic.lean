@@ -573,7 +573,7 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
 
-lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp
+lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eqComm]
 
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
 

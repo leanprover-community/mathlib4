@@ -83,7 +83,7 @@ lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
       let φ := NonUnitalStarAlgHom.snd S A B
       exact φ.map_cfcₙ f (a, b) (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_snd hab hb
   case neg =>
-    simp [cfcₙ_apply_of_not_map_zero _ hf₀]
+    simp [cfcₙ_apply_of_not_map_zero _ hf₀, eqComm]
 
 end nonunital_prod
 

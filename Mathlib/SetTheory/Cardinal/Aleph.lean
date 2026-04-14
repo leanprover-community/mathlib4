@@ -759,7 +759,7 @@ theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
 
 @[simp]
 theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simp
+  simp [eqComm]
 
 @[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
 
@@ -785,7 +785,7 @@ theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
 
 @[simp]
 theorem lift_eq_aleph_natCast : lift.{v} c = ℵ_ n ↔ c = ℵ_ n := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem aleph_ofNat_le_lift [n.AtLeastTwo] : ℵ_ ofNat(n) ≤ lift.{v} c ↔ ℵ_ ofNat(n) ≤ c :=
@@ -833,7 +833,7 @@ theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
 
 @[simp]
 theorem lift_eq_beth_natCast : lift.{v} c = ℶ_ n ↔ c = ℶ_ n := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem beth_ofNat_le_lift [n.AtLeastTwo] : ℶ_ ofNat(n) ≤ lift.{v} c ↔ ℶ_ ofNat(n) ≤ c :=
@@ -888,7 +888,7 @@ theorem omega_one_eq_lift : ω₁ = lift.{v} o ↔ ω₁ = o := by
 
 @[simp]
 theorem lift_eq_omega_one : lift.{v} o = ω₁ ↔ o = ω₁ := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem omega_natCast_le_lift : ω_ n ≤ lift.{v} o ↔ ω_ n ≤ o := by
@@ -912,7 +912,7 @@ theorem omega_natCast_eq_lift : ω_ n = lift.{v} o ↔ ω_ n = o := by
 
 @[simp]
 theorem lift_eq_omega_natCast : lift.{v} o = ω_ n ↔ o = ω_ n := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem omega_ofNat_le_lift [n.AtLeastTwo] : ω_ ofNat(n) ≤ lift.{v} o ↔ ω_ ofNat(n) ≤ o :=

@@ -153,7 +153,7 @@ variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm, -eqComm]
+  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
 
 end CanonicallyOrderedAddCommMonoid
 end Finset

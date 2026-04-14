@@ -308,7 +308,7 @@ theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/
 -- This is not marked `@[simp]` since `simp` can derive this from `mul_eq_zero`.
-theorem zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by simp
+theorem zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by simp [eqComm]
 
 /-- If `α` has no zero divisors, then the product of two elements is nonzero iff both of them
 are nonzero. -/

@@ -432,7 +432,7 @@ theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
     · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le]
-      simp [hr.not_gt, ← two_mul, Real.pi_ne_zero]
+      simp [hr.not_gt, ← two_mul, Real.pi_ne_zero, eqComm]
     · simp [hr, Real.pi_ne_zero.symm]
     · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
       simp [hr]

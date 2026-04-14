@@ -289,7 +289,7 @@ lemma exact_zero_iff_surjective {M N : Type*} (P : Type*)
     [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact f (0 : N →ₗ[R] P) ↔ Function.Surjective f := by
-  simp [range_eq_top, exact_iff]
+  simp [range_eq_top, exact_iff, eqComm]
 
 end LinearMap
 

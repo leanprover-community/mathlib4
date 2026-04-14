@@ -303,7 +303,7 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
       convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
       · simp
         grind
-      · simpa using Eq.symm <| Fact.out
+      · simpa using Fact.out
     have hp : orthogonalProjection (line[ℝ, p₁, p₂]) p = p₁ := by
       suffices (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈ affineSpan ℝ {p₁} by
         simpa using this

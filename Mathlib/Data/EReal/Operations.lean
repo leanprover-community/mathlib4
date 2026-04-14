@@ -764,7 +764,7 @@ lemma toENNReal_mul {x y : EReal} (hx : 0 ≤ x) :
     · simp_all [mul_top_of_pos hx]
   · rename_i a
     rcases lt_trichotomy a 0 with (ha | ha | ha)
-    · simp_all [le_of_lt, top_mul_of_neg (EReal.coe_neg'.mpr ha)]
+    · simp_all [le_of_lt, top_mul_of_neg (EReal.coe_neg'.mpr ha), eqComm]
     · simp [ha]
     · simp_all [top_mul_of_pos (EReal.coe_pos.mpr ha)]
 

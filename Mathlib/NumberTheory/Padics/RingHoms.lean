@@ -235,7 +235,7 @@ lemma zmodRepr_natCast_zmodRepr (x : ℤ_[p]) :
 lemma norm_natCast_zmodRepr_eq_iff {x : ℤ_[p]} :
     ‖(x.zmodRepr : ℤ_[p])‖ = ‖x‖ ↔ ‖x‖ = 1 ∨ x = 0 := by
   rcases norm_natCast_zmodRepr_eq x with h | h
-  · simp_all [eq_comm, -eqComm]
+  · simp_all [eq_comm]
   · rw [eq_comm, h]
     simp [← norm_natCast_zmodRepr_eq_one_iff, h]
 

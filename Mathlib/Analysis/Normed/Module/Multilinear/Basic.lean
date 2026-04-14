@@ -221,7 +221,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
         have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
           s.piecewise_insert _ _ _
         have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
-          simp [his]
+          simp [his, eqComm]
         rw [B, A, ← f.map_update_sub]
         apply le_trans (H _)
         gcongr with j

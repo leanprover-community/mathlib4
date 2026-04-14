@@ -607,7 +607,7 @@ theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c :
 
 @[simp]
 theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
-  simp
+  simp [eqComm]
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -638,12 +638,12 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simp
+  simp [eqComm]
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :

@@ -938,7 +938,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
         lia
       · simp at hm
         exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
-      · simp at h
+      · simp [eqComm] at h
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
         have h1N : 1 ≤ N := by lia
         rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm

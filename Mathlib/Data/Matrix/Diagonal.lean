@@ -89,7 +89,7 @@ theorem diagonal_eq_zero [Zero α] {d : n → α} : diagonal d = 0 ↔ d = 0 :=
 @[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
-  by_cases h : i = j <;> simp [h, transpose]
+  by_cases h : i = j <;> simp [h, transpose, eqComm]
 
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
