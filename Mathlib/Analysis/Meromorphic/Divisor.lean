@@ -67,6 +67,10 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def]
 
+lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) (hz : z ∈ U) :
+    divisor f U z = ((analyticOrderAt f z).map (↑)).untop₀ := by
+  rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
+
 /-!
 ## Congruence Lemmas
 -/

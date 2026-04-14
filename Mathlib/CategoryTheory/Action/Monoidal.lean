@@ -125,8 +125,8 @@ instance FunctorCategoryEquivalence.functorMonoidal :
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
 instance functorCategoryEquivalenceFunctorMonoidal :
-    (functorCategoryEquivalence V G).functor.Monoidal := by
-  dsimp only [functorCategoryEquivalence_functor]; infer_instance
+    (functorCategoryEquivalence V G).functor.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.functor.Monoidal
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
@@ -135,8 +135,8 @@ instance FunctorCategoryEquivalence.inverseMonoidal :
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :
-    (functorCategoryEquivalence V G).inverse.Monoidal := by
-  dsimp only [functorCategoryEquivalence_inverse]; infer_instance
+    (functorCategoryEquivalence V G).inverse.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.inverse.Monoidal
 
 @[simp]
 lemma FunctorCategoryEquivalence.functor_ε :

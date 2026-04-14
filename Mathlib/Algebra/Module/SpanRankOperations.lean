@@ -55,7 +55,6 @@ lemma TensorProduct.spanFinrank_top_le_of_fg (fg : N.FG) :
 variable [IsLocalRing R]
 local notation "𝓀" => ResidueField R
 
-set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
     (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).spanFinrank = N.spanFinrank := by
   let : Module.Finite R N := Module.Finite.iff_fg.mpr fg

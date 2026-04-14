@@ -293,7 +293,7 @@ lemma ContMDiff.piecewise
   · apply (hg x).congr_of_eventuallyEq
     filter_upwards [isClosed_closure.isOpen_compl.mem_nhds h'x] with y hy
     rw [piecewise_eq_of_notMem]
-    contrapose! hy
+    contrapose hy
     simpa using subset_closure hy
 
 /-- Given two `C^n` functions `f` and `g` from `ℝ` to a real manifold which coincide locally
@@ -386,6 +386,22 @@ theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
   (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
+
+@[simp]
+lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (s : Set M)
+    (x : M) :
+    ContMDiffWithinAt I I' ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt I I' ∞ f s x :=
+  ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
+
+@[simp]
+lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (x : M) :
+    ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
+  rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
+
+@[simp]
+lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) :
+    ContMDiff I I' ∞ (Subtype.val ∘ f) ↔ ContMDiff I I' ∞ f := by
+  simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
 
 end ChartedSpace
 
