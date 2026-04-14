@@ -152,9 +152,11 @@ theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
   @Set.mem_of_mem_of_subset P x I J
 
+@[simp]
 theorem mem_toIdeal {I : Set P} (h : IsIdeal I) {a : P} : a ∈ h.toIdeal ↔ a ∈ I :=
   Iff.rfl
 
+@[simp]
 theorem coe_toIdeal {I : Set P} (h : IsIdeal I) : (h.toIdeal : Set P) = I :=
   rfl
 
@@ -251,13 +253,16 @@ section OrderTop
 
 variable [OrderTop P] {I : Ideal P}
 
-theorem eq_top_iff_top_mem {I : Ideal P} : I = ⊤ ↔ ⊤ ∈ I :=
-  ⟨fun h => h ▸ mem_univ _, fun h => SetLike.ext fun _ => iff_of_true (I.lower le_top h) ⟨⟩⟩
+theorem top_mem_iff_eq_top : ⊤ ∈ I ↔ I = ⊤ :=
+  ⟨fun h => SetLike.ext fun _ => iff_of_true (I.lower le_top h) ⟨⟩, fun h => h ▸ mem_univ _⟩
 
-theorem isProper_iff_top_notMem {I : Ideal P} : I.IsProper ↔ ⊤ ∉ I := by
-  rw [isProper_iff_ne_top, ne_eq, eq_top_iff_top_mem]
+theorem top_notMem_iff_ne_top : ⊤ ∉ I ↔ I ≠ ⊤ :=
+  top_mem_iff_eq_top.not
 
-alias ⟨_, top_of_top_mem⟩ := eq_top_iff_top_mem
+theorem isProper_iff_top_notMem : I.IsProper ↔ ⊤ ∉ I := by
+  rw [isProper_iff_ne_top, ne_eq, top_mem_iff_eq_top]
+
+alias ⟨top_of_top_mem, _⟩ := top_mem_iff_eq_top
 alias ⟨IsProper.top_notMem, _⟩ := isProper_iff_top_notMem
 
 end OrderTop
@@ -322,6 +327,7 @@ end OrderTop
 
 end Preorder
 
+@[simp]
 theorem isProper_principal_iff [PartialOrder P] [OrderTop P] {a : P} :
     (principal a).IsProper ↔ a ≠ ⊤ := by
   rw [isProper_iff_top_notMem, mem_principal, top_le_iff]
@@ -490,21 +496,25 @@ end BooleanAlgebra
 
 section CompleteLattice
 
-variable [CompleteLattice P] {I : Ideal P} {α : Type*} {f : α → P}
+variable [CompleteLattice P] {I : Ideal P}
 
-theorem biSup_mem_iff {s : Set α} (hs : s.Finite) :
+@[simp]
+theorem biSup_mem_iff {α : Type*} {f : α → P} {s : Set α} (hs : s.Finite) :
     ⨆ i ∈ s, f i ∈ I ↔ ∀ i ∈ s, f i ∈ I := by
-  induction s, hs using Finite.induction_on with
-  | empty => simp
-  | insert _ _ ih =>
-    rw [iSup_insert, sup_mem_iff, ih]
-    simp
+  induction s, hs using Finite.induction_on with simp [↓iSup_insert, sup_mem_iff, *]
 
-theorem iSup_mem_iff [Finite α] : ⨆ i, f i ∈ I ↔ ∀ i, f i ∈ I := by
+@[simp]
+theorem biSup_finset_mem_iff {α : Type*} {f : α → P} {s : Finset α} :
+    ⨆ i ∈ s, f i ∈ I ↔ ∀ i ∈ s, f i ∈ I :=
+  biSup_mem_iff s.finite_toSet
+
+@[simp]
+theorem iSup_mem_iff {α : Sort*} [Finite α] {f : α → P} : ⨆ i, f i ∈ I ↔ ∀ i, f i ∈ I := by
   simpa [← Equiv.plift.symm.iSup_comp, Equiv.plift.forall_congr_left]
     using biSup_mem_iff (f := f ∘ PLift.down) Set.finite_univ
 
 alias ⟨_, biSup_mem⟩ := biSup_mem_iff
+alias ⟨_, biSup_finset_mem⟩ := biSup_finset_mem_iff
 alias ⟨_, iSup_mem⟩ := iSup_mem_iff
 
 end CompleteLattice
@@ -619,11 +629,11 @@ instance [LE P] [OrderTop P] : IsCoatomic (Ideal P) := by
   apply IsCoatomic.of_isChain_bounded
   intro S hS₁ hS₂ hS₃
   refine ⟨IsIdeal.toIdeal <| isIdeal_sUnion_of_isChain (C := SetLike.coe '' S) ?_
-    (hS₁.image _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
+    (hS₁.image_of_map_rel _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
   · simp [Ideal.isIdeal]
   · simp
-  · simp_rw [top_notMem_iff, lt_top_iff_ne_top] at hS₃
-    simpa [mem_toIdeal, eq_top_iff_top_mem, ← fun x => (eq_top_iff_top_mem (I := x)).not]
+  · simp_rw [top_notMem_iff, lt_top_iff_ne_top, ← top_notMem_iff_ne_top] at hS₃
+    simpa [← top_mem_iff_eq_top]
   · intro J hJ
     simpa [le_toIdeal] using Set.subset_biUnion_of_mem hJ
 
