@@ -72,7 +72,7 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
 
 The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
-`h : x = y` is not transformed (by rewriting `h`) to `True`. 
+`h : x = y` is not transformed (by rewriting `h`) to `True`.
 
 Assumes `proc` is not surrounded by backticks. -/
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
