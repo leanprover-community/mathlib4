@@ -631,6 +631,7 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.privateInPublic true in
 private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -684,6 +685,7 @@ private lemma uniformInducing_toMatrixAux :
     lipschitzWith_toMatrixAux.uniformContinuous
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -695,6 +697,7 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
+set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -742,11 +745,72 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
     ContinuousSMul R (CStarMatrix m n A) :=
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
-noncomputable instance instNormedAddCommGroup :
+@[implicit_reducible]
+noncomputable def instNormedAddCommGroup2 :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
 where finally
   exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
+
+#print instNormedAddCommGroup2
+/-
+@NormedAddCommGroup.ofCoreReplaceAll ℂ (CStarMatrix m n A) Complex.instNormedField
+  instAddCommGroup instModule instNorm
+  instUniformSpace instBornology ⋯ ⋯ ⋯ : NormedAddCommGroup (CStarMatrix m n A)
+-/
+
+@[implicit_reducible]
+noncomputable def instNormedAddCommGroup4 :
+    NormedAddCommGroup (CStarMatrix m n A) :=
+  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
+where finally
+  exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
+
+#print instNormedAddCommGroup4
+/-
+{ toNorm := instNorm, toAddCommGroup := instAddCommGroup, dist := fun a a_1 ↦ ‖-a + a_1‖, dist_self := ⋯,
+    dist_comm := ⋯, dist_triangle := ⋯, edist := fun a a_1 ↦ PseudoMetricSpace.edist a a_1, edist_dist := ⋯,
+    toUniformSpace := PseudoMetricSpace.toUniformSpace, uniformity_dist := ⋯, toBornology := instBornology,
+    cobounded_sets := ⋯, eq_of_dist_eq_zero := ⋯, dist_eq := ⋯ }
+-/
+
+
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[implicit_reducible]
+noncomputable def instNormedAddCommGroup1 :
+    NormedAddCommGroup (CStarMatrix m n A) :=
+  .ofCoreReplaceAll CStarMatrix.normedSpaceCore
+    CStarMatrix.uniformity_eq_aux.symm
+      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+
+#print instNormedAddCommGroup1
+/-
+@NormedAddCommGroup.ofCoreReplaceAll ℂ (CStarMatrix m n A) Complex.instNormedField instAddCommGroup instModule instNorm
+  (Pi.uniformSpace fun a ↦ n → A) Pi.instBornology ⋯ ⋯ ⋯ : NormedAddCommGroup (CStarMatrix m n A)
+-/
+
+lemma foo : (instNormedAddCommGroup1 :
+    NormedAddCommGroup (CStarMatrix m n A)) = instNormedAddCommGroup2 := by
+  with_reducible_and_instances rfl
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[implicit_reducible]
+noncomputable def instNormedAddCommGroup3 :
+    NormedAddCommGroup (CStarMatrix m n A) :=
+  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore
+    CStarMatrix.uniformity_eq_aux.symm
+      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+
+lemma foot : (instNormedAddCommGroup2 :
+    NormedAddCommGroup (CStarMatrix m n A)) = instNormedAddCommGroup4 := by
+  with_reducible_and_instances rfl
+
+
+
+#exit
 
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
