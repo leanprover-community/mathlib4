@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 @[expose] public section
 
-universe u u' v v'
+universe u v
 
 variable {R : Type u} [CommRing R]
 
@@ -34,17 +34,12 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
-  let Sf := ((Shrink.linearEquiv.{v} R R).symm.toLinearMap.comp I.subtype).comp
-    (Shrink.linearEquiv.{v} R I).toLinearMap
-  let Sg := (Shrink.linearEquiv.{v} R (R ⧸ I)).symm.comp
-    (I.mkQ.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
-  have exac : Function.Exact Sf Sg := by
-    rw [LinearEquiv.precomp_exact_iff_exact, LinearEquiv.postcomp_exact_iff_exact,
-      LinearEquiv.conj_symm_exact_iff_exact, LinearMap.exact_iff, I.ker_mkQ, I.range_subtype]
-  have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
-  have surj : Function.Surjective Sg := by simpa [Sg] using I.mkQ_surjective
-  let S := ModuleCat.shortComplexOfCompEqZero Sf Sg exac.linearMap_comp_eq_zero
-  have S_exact := ModuleCat.shortComplex_shortExact S exac inj surj
+  have exact : Function.Exact I.subtype I.mkQ := LinearMap.exact_subtype_mkQ I
+  let S := ModuleCat.shortComplexOfConj (Shrink.linearEquiv R I) (Shrink.linearEquiv R R)
+    (Shrink.linearEquiv R (R ⧸ I)) _ _  exact.linearMap_comp_eq_zero
+  have S_exact : S.ShortExact :=
+    ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
+  have : Projective S.X₂ := projective_of_categoryTheory_projective (ModuleCat.of R (Shrink.{v} R))
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
     apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
@@ -53,7 +48,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
       rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
       (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
-  apply this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
+  refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · rcases h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap))) with
       ⟨f', hf'⟩
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
@@ -61,17 +56,15 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     intro x hx
     have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
       ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
-    aesop
+    simpa [- Shrink.linearEquiv_apply, - Shrink.linearEquiv_symm_apply, S, shortComplexOfConj]
+      using this
   · rcases h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap) with ⟨g', hg'⟩
     use Ext.mk₀ (ModuleCat.ofHom (g'.comp (Shrink.linearEquiv R R).toLinearMap))
     rw [Ext.bilinearComp_apply_apply, Ext.mk₀_comp_mk₀, ← Ext.mk₀_addEquiv₀_apply e]
     congr
     ext x
-    have eq : (Shrink.linearEquiv R R) (Sf x) = ((Shrink.linearEquiv R I) x).1 :=
-      (Shrink.linearEquiv R R).apply_symm_apply _
-    simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, S, eq, hg' _ ((Shrink.linearEquiv R I) x).2]
-    exact congrArg _ ((Shrink.linearEquiv R I).symm_apply_apply _)
+    simp [- Shrink.linearEquiv_apply, - Shrink.linearEquiv_symm_apply,
+      LinearMap.comp_apply, S, shortComplexOfConj, hg' _ ((Shrink.linearEquiv R I) x).2]
 
 lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
     (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1)) :
@@ -104,12 +97,12 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     HasInjectiveDimensionLT M n := by
   match n with
   | 0 =>
-    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans (Submodule.quotEquivOfEqBot _ rfl)
-    have := (Ext.homEquiv₀.subsingleton_congr.mp (h ⊥))
-    rw [ModuleCat.homAddEquiv.subsingleton_congr,
-      ((e₀.congrLeft M R).trans (LinearMap.ringLmapEquivSelf R R M)).subsingleton_congr,
-      ← ModuleCat.isZero_iff_subsingleton] at this
-    exact this.hasInjectiveDimensionLT_zero
+    apply Limits.IsZero.hasInjectiveDimensionLT_zero
+    rw [ModuleCat.isZero_iff_subsingleton]
+    refine ((Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ?_).subsingleton_congr.mp (h ⊥)
+    exact ((((Shrink.linearEquiv _ _).trans
+      (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
+        (LinearMap.ringLmapEquivSelf R R M)).toEquiv
   | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n  h
 
 end ModuleCat
