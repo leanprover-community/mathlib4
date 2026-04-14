@@ -1038,7 +1038,7 @@ theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordina
   obtain ⟨a, ha⟩ := h (⨆ i, succ (f i))
   apply ha.not_lt
   rw [Ordinal.lt_iSup_iff]
-  exact ⟨a, Order.lt_succ _⟩
+  exact ⟨a, Order.lt_add_one _⟩
 
 theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
     ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
