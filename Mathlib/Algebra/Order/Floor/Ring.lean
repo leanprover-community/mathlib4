@@ -586,7 +586,7 @@ theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt
 
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by
-  simpa using le_ceil_iff (z := 1)
+  simpa using le_ceil_iff (R := R) (z := 1)
 
 @[bound]
 theorem ceil_le_floor_add_one (a : R) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
