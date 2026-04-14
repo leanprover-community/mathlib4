@@ -124,7 +124,7 @@ theorem exists_set_linearIndependent_of_lt_rank {c : Cardinal.{v}} (h : c < Modu
 
 variable [Nontrivial R]
 
--- TODO : the forward directions of the next few theorems don't need [Nontrivial R]
+-- TODO: the forward directions of the next few theorems don't need [Nontrivial R]
 /-- Note: if the rank of a module is infinite, it may not contain a linear independent subset
 with cardinality equal to the rank, see
 https://mathoverflow.net/questions/263020/maximum-cardinal-of-a-set-of-linearly-independent-vectors-in-a-module. -/
