@@ -41,7 +41,7 @@ lemma denom_neg (g : GL (Fin 2) ℝ) (z : ℂ) : denom (-g) z = -(denom g z) := 
 
 theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
-  contrapose! h
+  contrapose h
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h

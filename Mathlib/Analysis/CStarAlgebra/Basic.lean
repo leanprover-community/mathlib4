@@ -224,11 +224,8 @@ theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U
 
 @[simp]
 theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
-  nontriviality E
-  rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), sq, sq,
-    ← CStarRing.norm_star_mul_self (x := (U : E) * A), ← CStarRing.norm_star_mul_self (x := A)]
-  congr 1
-  grind [star_mul, mul_assoc, Unitary.coe_star_mul_self, one_mul]
+  rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
+  simp [sq, ← CStarRing.norm_star_mul_self, mul_assoc, ← mul_assoc (U : E)⋆]
 
 @[simp]
 theorem norm_unitary_smul (U : unitary E) (A : E) : ‖U • A‖ = ‖A‖ :=

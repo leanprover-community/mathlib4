@@ -358,11 +358,9 @@ instance NNReal.instContinuousMapZero.UniqueHom
   eq_of_continuous_of_map_id s hs h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
-    have hs' : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    have e0 : e ⟨0, Fact.out⟩ = ⟨0, hs'.out⟩ := by
-      rfl
-    have e0' : e.symm 0 = 0 := by
-      simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
+    have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
+    have e0 : e 0 = 0 := rfl
+    have e0' : e.symm 0 = 0 := e.symm_apply_eq.mpr e0
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
           ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;

@@ -60,7 +60,6 @@ theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A
 
 theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     Commute (expUnitary a) (expUnitary b) := by
-  simpa only [Commute, SemiconjBy, Subtype.ext_iff, expUnitary_coe] using
-    ((h.smul_left I).smul_right I).exp
+  rw [Commute, SemiconjBy, ← h.expUnitary_add, ← h.symm.expUnitary_add, add_comm]
 
 end Star
