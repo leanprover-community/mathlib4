@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
 
 
-
 /-!
 # Adic valuations on Dedekind domains
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
@@ -434,18 +433,18 @@ local instance : IsLocalRing (subalgebra.ofField K _ v.asIdeal.primeCompl_le_non
 variable (K) in
 /-- Given a Dedekind domain `R` in `K`, its field of fractions, the localization of `R` at
 a nonzero prime is a valuation subring of `K`. -/
-def IsDedekindDomain.valuationSubringAtPrime : ValuationSubring K :=
+def valuationSubringAtPrime : ValuationSubring K :=
   .ofSubring (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring fun x ↦
     by simpa [IsLocalization.IsInteger] using ValuationRing.isInteger_or_isInteger
         (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) x
 
 open IsDedekindDomain
 
-theorem IsDedekindDomain.valuationSubringAtPrime.toSubring : (valuationSubringAtPrime K v).toSubring
+theorem valuationSubringAtPrime_toSubring : (valuationSubringAtPrime K v).toSubring
     = (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring := rfl
 
 open scoped algebraMap in
-theorem valuationSubringAtPrime_le_valuationValuationSubring :
+theorem valuationSubringAtPrime_le_valuation :
     valuationSubringAtPrime K v ≤ (valuation K v).valuationSubring := by
   rintro x ⟨a, s, hs, rfl⟩
   suffices (valuation K v) (a / (s : K)) ≤ 1 by rwa [division_def (a : K) s] at this
@@ -468,7 +467,7 @@ instance : Ring.KrullDimLE 1 (valuationSubringAtPrime K v) :=
   `R` at `v` as valuation subring. -/
 theorem valuationSubringAtPrime_eq_valuationSubring :
     valuationSubringAtPrime K v = (v.valuation K).valuationSubring :=
-  ValuationSubring.eq_of_le_of_ne_top _ (valuationSubringAtPrime_le_valuationValuationSubring v)
+  ValuationSubring.eq_of_le_of_ne_top _ (valuationSubringAtPrime_le_valuation v)
     (by simp only [ne_eq, Valuation.valuationSubring_eq_top_iff, not_not]; infer_instance)
 
 end Localization
