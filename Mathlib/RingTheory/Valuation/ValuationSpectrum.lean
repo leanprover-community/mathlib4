@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 /-!
 # The Valuation Spectrum of a Ring
 
-We define the valuation spectrum `Spv A` following Definition 4.1 of Wedhorn.
+We define the valuation spectrum `Spv A` following [Wedhorn][wedhorn_adic], Definition 4.1.
 
 ## Main definitions
 
@@ -27,7 +27,7 @@ We define the valuation spectrum `Spv A` following Definition 4.1 of Wedhorn.
 
 ## References
 
-* [T. Wedhorn, *Adic Spaces*][wedhorn2019adic], Definition 4.1, Remark 4.3, Remark 4.4,
+* [T. Wedhorn, *Adic Spaces*][wedhorn_adic], Definition 4.1, Remark 4.3, Remark 4.4,
   Proposition 4.7(2)
 -/
 
@@ -62,12 +62,11 @@ def basicOpen (f s : A) : Set (Spv A) := { v | v.vle f s ∧ ¬ v.vle s 0 }
 
 /-- `Spv(A)(tf/ts) ⊆ Spv(A)(f/s)`. -/
 lemma basicOpen_mul_subset (t f s : A) : basicOpen (t * f) (t * s) ⊆ basicOpen f s := by
-  intro v ⟨h1, h2⟩
-  have ht : ¬ v.vle t 0 := by
-    intro ht
-    exact h2 (by have := v.mul_vle_mul_left ht s; rwa [zero_mul] at this)
-  exact ⟨v.vle_mul_cancel ht (by rwa [mul_comm t f, mul_comm t s] at h1),
-    fun hs ↦ h2 (by have := v.mul_vle_mul_left hs t; rwa [zero_mul, mul_comm s t] at this)⟩
+  rintro v ⟨h1, h2⟩
+  have ht : ¬ v.vle t 0 := fun ht ↦ h2 (by simpa using v.mul_vle_mul_left ht s)
+  refine ⟨v.vle_mul_cancel ht ?_, fun hs ↦ h2 ?_⟩
+  · rwa [mul_comm t f, mul_comm t s] at h1
+  · simpa [mul_comm s t] using v.mul_vle_mul_left hs t
 
 /-- `Spv(A)(1/1) = Spv A`. -/
 lemma basicOpen_one : basicOpen (1 : A) 1 = Set.univ :=
@@ -100,25 +99,25 @@ lemma comap_ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (φ : A →+* B) (v : Valuation B Γ₀) :
     comap φ (ofValuation v) = ofValuation (v.comap φ) := rfl
 
-/-- `Spv(φ)⁻¹(Spv(A)(f/s)) = Spv(B)(φ(f)/φ(s))`. -/
+/-- `comap φ ⁻¹' Spv(A)(f/s) = Spv(B)(φ(f)/φ(s))`. -/
 lemma comap_preimage_basicOpen (φ : A →+* B) (f s : A) :
     comap φ ⁻¹' basicOpen f s = basicOpen (φ f) (φ s) := by
   ext v
   simp only [Set.mem_preimage, basicOpen, Set.mem_setOf_eq, comap_vle, map_zero]
 
-/-- `Spv(φ)` is continuous. -/
+/-- `comap φ` is continuous. -/
 lemma comap_continuous (φ : A →+* B) : Continuous (comap φ) :=
   continuous_generateFrom_iff.mpr fun _ ⟨f, s, hU⟩ ↦
     hU ▸ comap_preimage_basicOpen φ f s ▸
       TopologicalSpace.isOpen_generateFrom_of_mem ⟨φ f, φ s, rfl⟩
 
-/-- `Spv(id) = id`. -/
+/-- `comap` of the identity is the identity. -/
 @[simp]
-lemma comap_id : comap (RingHom.id A) = id := by ext v : 1; ext; rfl
+lemma comap_id : comap (RingHom.id A) = id := by ext; rfl
 
-/-- `Spv(ψ ∘ φ) = Spv(φ) ∘ Spv(ψ)` (contravariant functoriality). -/
+/-- `comap` is contravariantly functorial: `comap (ψ ∘ φ) = comap φ ∘ comap ψ`. -/
 lemma comap_comp (φ : A →+* B) (ψ : B →+* C) :
-    comap (ψ.comp φ) = comap φ ∘ comap ψ := by ext v : 1; ext; rfl
+    comap (ψ.comp φ) = comap φ ∘ comap ψ := by ext; rfl
 
 /-- `comap φ` is injective when `φ` is surjective. -/
 lemma comap_injective {φ : A →+* B} (hφ : Function.Surjective φ) :
@@ -129,31 +128,33 @@ lemma comap_injective {φ : A →+* B} (hφ : Function.Surjective φ) :
 
 end Functoriality
 
-/-- The support prime ideal `{ a ∈ A | v(a) = 0 }` of a point `v ∈ Spv A`. -/
+/-- The support prime ideal `{ a ∈ A | v(a) = 0 }` of a point `v : Spv A`. -/
 def supp (v : Spv A) : Ideal A :=
-  let := v.toValuativeRel
+  letI := v.toValuativeRel
   ValuativeRel.supp A
 
 @[simp]
 lemma mem_supp_iff (v : Spv A) (x : A) : x ∈ v.supp ↔ v.vle x 0 :=
-  let := v.toValuativeRel
+  letI := v.toValuativeRel
   ValuativeRel.supp_def x
 
-/-- The support of a point `v ∈ Spv A` is a prime ideal. -/
-instance instIsPrimeSupp (v : Spv A) : v.supp.IsPrime := by
-  let := v.toValuativeRel
-  change (ValuativeRel.supp A).IsPrime
-  infer_instance
+/-- The support of a point `v : Spv A` is a prime ideal. -/
+instance instIsPrimeSupp (v : Spv A) : v.supp.IsPrime :=
+  letI := v.toValuativeRel
+  inferInstanceAs (ValuativeRel.supp A).IsPrime
+
+/-- `(ofValuation v).vle x y ↔ v x ≤ v y`. -/
+@[simp]
+lemma vle_ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation A Γ₀) (x y : A) : (ofValuation v).vle x y ↔ v x ≤ v y := Iff.rfl
 
 /-- The support of `ofValuation v` equals `v.supp`. -/
 lemma supp_ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (v : Valuation A Γ₀) : (ofValuation v).supp = v.supp := by
   ext x
-  rw [mem_supp_iff, Valuation.mem_supp_iff]
-  change v x ≤ v 0 ↔ _
-  simp
+  simp [mem_supp_iff, Valuation.mem_supp_iff]
 
-/-- The canonical valuation associated to a point `v ∈ Spv A`. -/
+/-- The canonical valuation associated to a point `v : Spv A`. -/
 noncomputable def valuation (v : Spv A) :
     Valuation A (@ValuativeRel.ValueGroupWithZero A _ v.toValuativeRel) :=
   @ValuativeRel.valuation A _ v.toValuativeRel
@@ -164,7 +165,7 @@ lemma supp_eq_valuation_supp (v : Spv A) : v.supp = v.valuation.supp :=
 
 /-- The canonical valuation gives back the same point of `Spv`. -/
 lemma ofValuation_valuation (v : Spv A) : ofValuation v.valuation = v := by
-  let := v.toValuativeRel
+  letI := v.toValuativeRel
   apply ValuationSpectrum.ext; funext x y
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
 
@@ -192,7 +193,7 @@ lemma quotientLift_comap (w : Spv (A ⧸ 𝔞)) :
   apply ValuationSpectrum.ext; funext x y
   obtain ⟨a₁, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨a₂, rfl⟩ := Ideal.Quotient.mk_surjective y
-  let : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
+  letI : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
   exact propext (ValuativeRel.valuation A).vle_iff_le.symm
 
 /-- The range of `comap (mk 𝔞)` is `{ v ∈ Spv A | 𝔞 ≤ supp v }`. -/
@@ -221,7 +222,7 @@ end Quotient
 
 /-- If `f` is a unit, then no valuative relation sends `f` to zero. -/
 lemma not_vle_zero_of_isUnit {f : A} (hu : IsUnit f) (v : Spv A) : ¬ v.vle f 0 :=
-  let : ValuativeRel A := v.toValuativeRel; ValuativeRel.not_vle_zero_of_isUnit hu
+  letI : ValuativeRel A := v.toValuativeRel; hu.not_vle_zero
 
 section Localization
 
