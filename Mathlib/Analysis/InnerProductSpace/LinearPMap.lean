@@ -293,12 +293,12 @@ theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain :
     forall_exists_index, forall_apply_eq_imp_iff]
   constructor
   · rintro ⟨hx, hTx⟩ a ha
-    rw [← hTx, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.1, hx⟩, sub_self]
+    rw [← hTx, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩, sub_self]
   · intro h
     simp_rw [sub_eq_zero] at h
-    refine ⟨?_, adjoint_apply_eq hT _ fun a => by
+    refine ⟨?_, adjoint_apply_eq hT _ fun a ↦ by
       rw [← inner_conj_symm, ← h a.1 a.2, inner_conj_symm]⟩
-    exact mem_adjoint_domain_of_exists _ ⟨x.2, fun a => by
+    exact mem_adjoint_domain_of_exists _ ⟨x.2, fun a ↦ by
       rw [← inner_conj_symm, ← h a.1 a.2, inner_conj_symm]⟩
 
 @[simp]
