@@ -64,16 +64,7 @@ theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ �
   s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
 
 theorem subsingleton_iff_eq_empty_or_singleton : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} := by
-  constructor
-  intro h
-  exact Set.Subsingleton.eq_empty_or_singleton h
-  intro h
-  rcases h with h|h
-  rw [h]
-  simp
-  obtain ⟨a,ha⟩ := h
-  subst ha
-  simp
+  aesop (add simp Subsingleton.eq_empty_or_singleton)
 
 theorem Subsingleton.induction_on {p : Set α → Prop} (hs : s.Subsingleton) (he : p ∅)
     (h₁ : ∀ x, p {x}) : p s := by
