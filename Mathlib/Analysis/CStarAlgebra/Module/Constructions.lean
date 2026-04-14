@@ -194,7 +194,7 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 end Aux
 
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
-  .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
+  fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
 where finally
   exacts [uniformity_prod_eq_aux, isBounded_prod_iff_aux]
 
@@ -321,7 +321,7 @@ private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
 end Aux
 
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
-  .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
+  fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
 where finally
   exacts [uniformity_pi_eq_aux, isBounded_pi_iff_aux]
 
