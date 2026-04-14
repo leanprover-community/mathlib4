@@ -54,12 +54,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
-deriving Group, Fintype, EquivLike, AlgEquivClass
+deriving Group, Fintype, EquivLike, AlgEquivClass, MulSemiringAction _ p.SplittingField
 
 namespace Gal
-
-instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
-  AlgEquiv.applyMulSemiringAction
 
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by

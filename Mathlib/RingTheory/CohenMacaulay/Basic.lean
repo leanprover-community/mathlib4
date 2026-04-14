@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.Regular.Flat
-public import Mathlib.RingTheory.Regular.Ischebeck
+public import Mathlib.RingTheory.Depth.Ischebeck
 
 /-!
 

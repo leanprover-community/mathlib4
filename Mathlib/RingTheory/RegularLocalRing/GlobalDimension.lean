@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.CohenMacaulay.Maximal
 public import Mathlib.RingTheory.GlobalDimension
-public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
 
 /-!
 
@@ -32,34 +32,30 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
     simp only [CharP.cast_eq_zero, add_zero, ge_iff_le]
     intro le
     rcases subsingleton_or_nontrivial M with sub|ntr
-    · have := ModuleCat.isZero_iff_subsingleton.mpr sub
+    · exact ⟨0, inferInstance⟩
+    · have := (isMaximalCohenMacaulay_def M).mpr (le_antisymm (depth_le_ringKrullDim M) le)
+      have := free_of_isMaximalCohenMacaulay_of_isRegularLocalRing M
       exact ⟨0, inferInstance⟩
-    · let _ := (isMaximalCohenMacaulay_def M).mpr (le_antisymm (depth_le_ringKrullDim M) le)
-      let _ := free_of_isMaximalCohenMacaulay_of_isRegularLocalRing M
-      use 0
-      infer_instance
   | succ i ih =>
     rw [Nat.cast_add, Nat.cast_one, ge_iff_le, add_comm _ 1, ← add_assoc]
     intro le
     rcases subsingleton_or_nontrivial M with sub|ntr
-    · have := ModuleCat.isZero_iff_subsingleton.mpr sub
-      exact ⟨0, inferInstance⟩
+    · exact ⟨0, inferInstance⟩
     · rcases Module.exists_finite_presentation R  M with ⟨P, _, _, _, _, f, surjf⟩
       let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
       have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
-      have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
         moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
       have ge' : (depth S.X₁) + i ≥ ringKrullDim R := by
         apply le_trans _ (add_le_add_left (WithBot.coe_le_coe.mpr ge) i)
         have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
-          let _ : Nontrivial S.X₂ := surjf.nontrivial
+          have : Nontrivial S.X₂ := surjf.nontrivial
           exact (free_depth_eq_ring_depth S.X₂ _).trans
             (ring_depth_invariant (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
         simpa [← (isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing,
           this, min_add] using ⟨WithBot.le_self_add (WithBot.natCast_ne_bot i) (ringKrullDim R), le⟩
       rcases ih S.X₁ ge' with ⟨m, hm⟩
-      exact ⟨m + 1, (S_exact.hasProjectiveDimensionLT_X₃_iff m proj).mpr hm⟩
+      exact ⟨m + 1, (S_exact.hasProjectiveDimensionLT_X₃_iff m inferInstance).mpr hm⟩
 
 lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M ≠ ⊤ := by
@@ -85,10 +81,9 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
       have eq : projectiveDimension M + depth M = ringKrullDim R := by
         rw [← depth_eq, AuslanderBuchsbaum M finM]
       simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
-  · let _ : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
+  · have : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
     let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
-    let _ : Module.Finite R k :=
-      Module.Finite.equiv (Shrink.linearEquiv R (ResidueField R)).symm
+    have : Module.Finite R k := inferInstance
     have fink := projectiveDimension_ne_top_of_isRegularLocalRing k
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]

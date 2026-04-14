@@ -82,7 +82,6 @@ lemma ι_app (V) : U.ι.app V = X.presheaf.map
     (homOfLE (x := U.ι ''ᵁ U.ι ⁻¹ᵁ V) (Set.image_preimage_subset _ _)).op :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ι_appTop :
     U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op :=
@@ -112,7 +111,6 @@ lemma range_ι : Set.range U.ι = U :=
 lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
   U.isOpenEmbedding_obj_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ι_image_le (W : U.toScheme.Opens) : U.ι ''ᵁ W ≤ U := by
   simp_rw [← U.ι_image_top]
   exact U.ι.image_mono le_top
@@ -309,7 +307,6 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Scheme.opensRange_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).opensRange = V.ι ⁻¹ᵁ U :=
@@ -645,8 +642,9 @@ def morphismRestrictOpensRange {X Y U : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) 
       (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom_fac])
   symm
   refine Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e ?_
-  rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g, Arrow.mk_hom, Arrow.mk_hom,
-    Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
+  rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g]
+  dsimp
+  rw [Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
     ← pullback.condition, morphismRestrict_ι,
     pullbackRestrictIsoRestrict_hom_ι_assoc, pullback.lift_fst_assoc, Category.comp_id]
 
@@ -749,7 +747,6 @@ lemma resLE_preimage (f : X ⟶ Y) {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻�
     f.resLE U V e ⁻¹ᵁ O = V.ι ⁻¹ᵁ (f ⁻¹ᵁ U.ι ''ᵁ O) := by
   rw [← comp_preimage, ← resLE_comp_ι f e, comp_preimage, preimage_image_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_resLE_preimage_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     (O : U.toScheme.Opens) (W : V.toScheme.Opens) :
     W ≤ (f.resLE U V e) ⁻¹ᵁ O ↔ V.ι ''ᵁ W ≤ f ⁻¹ᵁ U.ι ''ᵁ O := by
@@ -796,11 +793,10 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) :
     Arrow.mk ((f.resLE U V e).appTop) ≅ Arrow.mk (f.appLE U V e) :=
   Arrow.isoMk U.topIso V.topIso <| by
-  simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
+  simp only [Arrow.mk_left, Arrow.mk_right, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
   rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.isPullback_resLE
     {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
     (H : IsPullback g iY iX f)
