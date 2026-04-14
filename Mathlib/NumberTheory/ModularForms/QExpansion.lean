@@ -139,7 +139,9 @@ lemma cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h �
   exact qParam_tendsto_atImInfty hh
 
 variable (h) in
-/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
+/-- The `q`-expansion of a modular form with strict period `h`, bundled as a `PowerSeries`.
+The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`, where
+`q = exp(2πiτ/h)` is the local parameter at the cusp. -/
 def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
@@ -189,6 +191,7 @@ lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma qExpansionFormalMultilinearSeries_radius [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     1 ≤ (qExpansionFormalMultilinearSeries h f).radius := by
@@ -221,6 +224,7 @@ lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k]
   simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
     div_eq_inv_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `h` is a positive strict period of `f`, then the `q`-expansion coefficient can be expressed
 as an integral along a horizontal line in the upper half-plane from `t * I` to `h + t * I`, for
@@ -486,6 +490,7 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured
   grind [eq_cuspFunction f ⟨_, Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1⟩,
     Periodic.qParam_right_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma hasFPowerSeriesOnBall_update (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {c : ℕ → ℂ} {f : F} [ModularFormClass F Γ k]
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :

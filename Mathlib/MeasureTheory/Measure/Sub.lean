@@ -53,11 +53,11 @@ theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
 
 @[simp]
-theorem zero_sub : 0 - μ = 0 :=
+protected theorem zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
 
 @[simp]
-theorem sub_self : μ - μ = 0 :=
+protected theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 
 @[simp]
@@ -89,7 +89,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
     · apply sInf_le
-      simp [le_refl, add_comm, h_measure_sub_add]
+      simp [add_comm, h_measure_sub_add]
     apply le_sInf
     intro d h_d
     rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d

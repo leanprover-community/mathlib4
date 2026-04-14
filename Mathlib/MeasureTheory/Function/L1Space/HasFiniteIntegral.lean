@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 module
 
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
@@ -113,6 +114,14 @@ theorem HasFiniteIntegral.mono_enorm {f : α → ε} {g : α → ε'} (hg : HasF
 theorem HasFiniteIntegral.mono {f : α → β} {g : α → γ} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : HasFiniteIntegral f μ :=
   hg.mono_enorm <| h.mono fun _x hx ↦ enorm_le_iff_norm_le.mpr hx
+
+theorem HasFiniteIntegral.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : HasFiniteIntegral g μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    HasFiniteIntegral f μ := by
+  refine HasFiniteIntegral.mono hg ?_
+  filter_upwards [hnonneg, h] with a hn ha
+  apply norm_le_norm_of_abs_le_abs
+  rwa [abs_of_nonneg hn, abs_of_nonneg (hn.trans ha)]
 
 theorem HasFiniteIntegral.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : HasFiniteIntegral f μ :=

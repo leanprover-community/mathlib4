@@ -45,7 +45,7 @@ namespace IsDenseInducing
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
-    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+    IsDenseInducing ((↑) : s → α) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
 
 variable {i : α → β}
 

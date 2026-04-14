@@ -515,6 +515,7 @@ open SSet
 
 variable (C : Type u) [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
 def strictSegal : StrictSegal (nerve C) :=

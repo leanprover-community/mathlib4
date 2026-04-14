@@ -144,6 +144,7 @@ end Path
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where

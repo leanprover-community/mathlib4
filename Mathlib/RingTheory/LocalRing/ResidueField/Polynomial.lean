@@ -52,7 +52,7 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
     obtain ⟨r, hr⟩ := map_surjective _ Ideal.Quotient.mk_surjective
       (IsLocalization.integerNormalization (R ⧸ I)⁰ x)
     obtain ⟨s, hs, hr⟩ : ∃ s ∉ I, r.map (algebraMap _ _) = s • x := by
-      obtain ⟨⟨b, hb0⟩, hb⟩ := IsLocalization.integerNormalization_map_to_map (R ⧸ I)⁰ x
+      obtain ⟨b, hb0, hb⟩ := IsLocalization.integerNormalization_spec (R ⧸ I)⁰ x
       obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective b
       refine ⟨s, by simpa [Ideal.Quotient.eq_zero_iff_mem] using hb0, ?_⟩
       simpa [← hr, map_map, ← Ideal.Quotient.algebraMap_eq] using hb
@@ -124,8 +124,8 @@ theorem _root_.Ideal.exists_mem_span_singleton_map_residueField_eq
     (P : Ideal R) [P.IsPrime] (I : Ideal R[X]) :
     ∃ p ∈ I, Ideal.span {p.map (algebraMap R P.ResidueField)} =
       I.map (mapRingHom (algebraMap R P.ResidueField)) := by
-  obtain ⟨p, hp : _ = Ideal.span _⟩ := inferInstanceAs
-    (I.map (mapRingHom (algebraMap R P.ResidueField))).IsPrincipal
+  obtain ⟨p, hp : _ = Ideal.span _⟩ := (inferInstance :
+    (I.map (mapRingHom (algebraMap R P.ResidueField))).IsPrincipal)
   letI := (mapRingHom (algebraMap (R ⧸ P) P.ResidueField)).toAlgebra
   have := Polynomial.isLocalization (R ⧸ P)⁰ P.ResidueField
   have : p ∈ (I.map (mapRingHom (algebraMap R (R ⧸ P)))).map (algebraMap _ _) := by

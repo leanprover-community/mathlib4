@@ -25,6 +25,8 @@ chain rule, manifolds, higher derivative
 
 public section
 
+assert_not_exists mfderiv
+
 open Filter Function Set Topology
 open scoped Manifold ContDiff
 
@@ -380,15 +382,26 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Open
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Opens.inclusion h : U → V) := by
-  rintro ⟨x, hx : x ∈ U⟩
-  apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
-  intro y
-  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
-  rw [Set.univ_inter]
-  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
+    ContMDiff I I n (Opens.inclusion h : U → V) := fun _ ↦
+  (contDiffWithinAt_localInvariantProp n).liftProp_inclusion (contDiffWithinAtProp_id ·) _ _
 
 end Inclusion
+
+@[simp]
+lemma ContMDiffWithinAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (s : Set M)
+    (x : M) :
+    ContMDiffWithinAt I I' ∞ (Subtype.val ∘ f) s x ↔ ContMDiffWithinAt I I' ∞ f s x :=
+  ChartedSpace.liftPropWithinAt_subtypeVal_comp_iff ..
+
+@[simp]
+lemma ContMDiffAt.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) (x : M) :
+    ContMDiffAt I I' ∞ (Subtype.val ∘ f) x ↔ ContMDiffAt I I' ∞ f x := by
+  rw [ContMDiffAt, ContMDiffAt, ContMDiffWithinAt.subtypeVal_comp_iff]
+
+@[simp]
+lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U) :
+    ContMDiff I I' ∞ (Subtype.val ∘ f) ↔ ContMDiff I I' ∞ f := by
+  simp_rw [ContMDiff, ContMDiffAt.subtypeVal_comp_iff]
 
 end ChartedSpace
 

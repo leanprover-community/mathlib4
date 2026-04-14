@@ -79,6 +79,7 @@ theorem definable_iff_exists_formula_sum :
   congr 1 with a
   rcases a with (_ | _) | _ <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem empty_definable_iff :
     (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = setOf φ.Realize := by
   rw [Definable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onFormula]
@@ -141,16 +142,10 @@ theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biInter := definable_biInter_finset
-
 theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
-
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biUnion := definable_biUnion_finset
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
@@ -428,6 +423,7 @@ theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L')
   use (φ.addConstants A).onTerm ψ
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem termDefinable_empty_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
   rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]

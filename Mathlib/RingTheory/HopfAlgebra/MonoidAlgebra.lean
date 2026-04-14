@@ -40,6 +40,7 @@ variable (R A G) in
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma antipode_single (g : G) (a : A) :
     antipode R (single g a) = single g⁻¹ (antipode R a) := by

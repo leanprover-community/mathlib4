@@ -33,6 +33,7 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 assert_not_exists Cardinal
 
 suppress_compilation
+noncomputable section -- needed for `deriving`
 
 variable {ι : Type*} [Preorder ι] (G : ι → Type*)
 
@@ -58,22 +59,9 @@ def DirectLimit : Type _ :=
           (∃ i, of (⟨i, 1⟩ : Σ i, G i) - 1 = a) ∨
             (∃ i x y, of (⟨i, x + y⟩ : Σ i, G i) - (of ⟨i, x⟩ + of ⟨i, y⟩) = a) ∨
               ∃ i x y, of (⟨i, x * y⟩ : Σ i, G i) - of ⟨i, x⟩ * of ⟨i, y⟩ = a }
+deriving Zero, One, AddCommMonoid, Ring, CommRing, Inhabited
 
 namespace DirectLimit
-
-instance commRing : CommRing (DirectLimit G f) :=
-  Ideal.Quotient.commRing _
-
-instance ring : Ring (DirectLimit G f) :=
-  CommRing.toRing
-
--- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance zero : Zero (DirectLimit G f) := by
-  unfold DirectLimit
-  exact ⟨0⟩
-
-instance : Inhabited (DirectLimit G f) :=
-  ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
@@ -97,8 +85,8 @@ some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of G f i x = z := by
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective z
-  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_ <;>
-    rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
+  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp; rfl⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_
+    <;> rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
   · exact ⟨k, f i k hik x + f j k hjk y, by rw [map_add, of_f, of_f, hx, hy]; rfl⟩
   · exact ⟨k, f i k hik x * f j k hjk y, by rw [map_mul, of_f, of_f, hx, hy]; rfl⟩
 

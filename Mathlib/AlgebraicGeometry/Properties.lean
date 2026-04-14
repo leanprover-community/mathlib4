@@ -162,6 +162,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
   · rw [e]
   apply h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
@@ -248,12 +249,12 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
 
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
-  replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
+  replace H : ¬IsPreirreducible .univ := fun h =>
     H { toPreirreducibleSpace := ⟨h⟩
         toNonempty := inferInstance }
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
-  rw [Set.not_top_subset] at h₂ h₃
+  rw [Set.not_univ_subset] at h₂ h₃
   haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
   haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
   haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩

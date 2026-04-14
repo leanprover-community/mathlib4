@@ -76,7 +76,7 @@ lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h 
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
       𝓟 {g : C(X, Y) | MapsTo g K U} := by
-  simp_rw [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
+  simp_rw +instances [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
     ← image_prod, iInf_image, biInf_prod, mem_setOf_eq]
 
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
@@ -133,6 +133,12 @@ section Functorial
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 
+/-- If `g : C(Y, Z)` is injective,
+then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is injective too. -/
+theorem postcomp_injective (g : C(Y, Z)) (hg : Function.Injective g) :
+    Function.Injective (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
+  fun _ _ ↦ (cancel_left hg).1
+
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
 theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
@@ -145,7 +151,7 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+  ⟨isInducing_postcomp g hg.1, postcomp_injective g hg.2⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]

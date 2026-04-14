@@ -100,6 +100,7 @@ lemma geometrically_iff_of_isClosedUnderIsomorphisms [P.IsClosedUnderIsomorphism
 lemma fiber_of_geometrically (hf : geometrically P f) (y : Y) : P (f.fiber y) :=
   pullback_of_geometrically hf _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `P` holds geometrically for `f` if and only if all fibers are geometrically `P`. -/
 lemma geometrically_iff_forall_fiberToSpecResidueField :
     geometrically P f ↔ ∀ (y : Y), geometrically P (f.fiberToSpecResidueField y) := by

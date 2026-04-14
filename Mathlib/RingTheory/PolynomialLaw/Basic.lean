@@ -55,7 +55,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
 

@@ -464,6 +464,28 @@ lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ
     (f ^ n).HasEigenvalue (μ ^ n) :=
   h.pow n
 
+theorem genEigenspace_mem_invtSubmodule (f : End R M) (μ : R) (n : ℕ∞) :
+    genEigenspace f μ n ∈ invtSubmodule f := by
+  intro x hx
+  simp only [Submodule.mem_comap, mem_genEigenspace, LinearMap.mem_ker] at hx ⊢
+  obtain ⟨k, hk, hx⟩ := hx
+  refine ⟨k, hk, ?_⟩
+  induction k generalizing x
+  case zero => simp_all
+  case succ k ih =>
+    rw [pow_succ, mul_apply] at hx ⊢
+    simpa using ih (le_trans (by simp) hk) hx
+
+theorem eigenspace_mem_invtSubmodule (f : End R M) (μ : R) :
+    eigenspace f μ ∈ invtSubmodule f :=
+  genEigenspace_mem_invtSubmodule f μ 1
+
+theorem restrict_eigenspace (f : End R M) (μ : R) :
+    f.restrict (f.mem_invtSubmodule_iff_forall_mem_of_mem.mp
+      (eigenspace_mem_invtSubmodule f μ)) = μ • LinearMap.id := by
+  ext x
+  exact mem_eigenspace_iff.mp x.2
+
 /-- A nilpotent endomorphism has nilpotent eigenvalues.
 
 See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
@@ -649,7 +671,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
     (s.sup fun μ ↦ f.genEigenspace μ k) by
-    simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
+    simp_rw [iSupIndep_iff_supIndep,
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s

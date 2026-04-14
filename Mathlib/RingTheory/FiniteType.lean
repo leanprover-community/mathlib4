@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Orzech
@@ -140,10 +140,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
+    apply mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -232,6 +230,7 @@ end Finite
 
 namespace FiniteType
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be marked as normalising?
 set_option linter.flexible false in
 variable (A) in

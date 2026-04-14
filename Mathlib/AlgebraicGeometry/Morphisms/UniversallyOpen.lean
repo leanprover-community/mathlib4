@@ -102,6 +102,7 @@ end UniversallyOpen
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalizing morphism, locally of finite presentation is open. -/
 @[stacks 01U1]
 lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]

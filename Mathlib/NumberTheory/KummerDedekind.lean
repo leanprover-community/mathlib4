@@ -17,6 +17,7 @@ the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
   - An `α : S` that is integral over `R` with minimal polynomial `f`
+
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
@@ -86,7 +87,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
   apply (quotMapEquivQuotQuotMap hx hx').injective
-  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+  rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr
@@ -127,6 +128,7 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
@@ -172,6 +174,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   · rwa [← bot_eq_zero, Ne,
       map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
@@ -201,6 +204,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   rw [Multiset.attach_map_val, Multiset.map_singleton, Subtype.coe_mk]
   exact normalizedFactors_irreducible hf
 
+set_option backward.isDefEq.respectTransparency false in
 open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via

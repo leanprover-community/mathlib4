@@ -24,7 +24,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-
+open scoped Ring
 open Asymptotics ContinuousLinearMap Topology
 
 section
@@ -434,7 +434,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         proj i <• (((List.finRange n).drop (.succ i)).map x).prod) x :=
-  (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
+  hasStrictFDerivAt_list_prod_finRange'.hasFDerivAt
 
 @[fun_prop]
 theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
@@ -673,21 +673,21 @@ variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
-    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
+    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹ʳ) S z :=
   (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
-    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
+    DifferentiableAt 𝕜 (fun x => (h x)⁻¹ʳ) z :=
   (differentiableAt_inverse hz).comp z hf
 
 @[fun_prop]
 theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
-    DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹ʳ) S := fun x h => (hf x h).inverse (hz x h)
 
 @[simp, fun_prop]
 theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
-    Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
+    Differentiable 𝕜 fun x => (h x)⁻¹ʳ := fun x => (hf x).inverse (hz x)
 
 end AlgebraInverse
 

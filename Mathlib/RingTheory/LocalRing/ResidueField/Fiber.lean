@@ -28,6 +28,7 @@ open Algebra TensorProduct nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
+set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
@@ -37,7 +38,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
-      (inferInstanceAs (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+      (inferInstance : (maximalIdeal S).IsMaximal).lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
@@ -71,6 +72,7 @@ lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, 
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/

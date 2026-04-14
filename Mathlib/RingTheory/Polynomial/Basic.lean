@@ -234,7 +234,7 @@ theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
 a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`. -/
 theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
-  push_neg
+  push Not
   intro s hs contra
   rcases span_le_degreeLE_of_finite hs with ⟨n, hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
@@ -742,7 +742,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
-              refine WellFounded.not_lt_min inst.wf _ _ ?_; exact ⟨k, rfl⟩
+              refine WellFounded.not_lt_min inst.wf _ ?_; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>

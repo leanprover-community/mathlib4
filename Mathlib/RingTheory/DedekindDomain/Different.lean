@@ -162,7 +162,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   swap
   · ext
     exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
-  simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
+  simp only [map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
 variable [IsIntegrallyClosed A]
@@ -506,7 +506,7 @@ lemma coeSubmodule_differentIdeal :
         RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+    simp only [RingHom.coe_comp, RingHom.coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
@@ -771,8 +771,8 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
   replace H := mul_le_mul_right H (FractionalIdeal.dual A K 1)
-  simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
-    mul_inv_cancel_left₀] at H
+  have hne : (1 : FractionalIdeal B⁰ L) ≠ 0 := one_ne_zero
+  rw [mul_inv_cancel_left₀ (FractionalIdeal.dual_ne_zero A K hne)] at H
   apply hx
   suffices Algebra.trace K L (algebraMap B L x) ∈ (p : FractionalIdeal A⁰ K) by
     obtain ⟨y, hy, e⟩ := this
@@ -912,8 +912,8 @@ theorem not_dvd_differentIdeal_iff
     let K := FractionRing A
     let L := FractionRing B
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
-      convert (inferInstanceAs
-        (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))
+      convert (inferInstance :
+        IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B)))
       ext; simp [Ideal.primeCompl]
     refine (Algebra.FormallyUnramified.iff_of_equiv (A := L)
       ((IsLocalization.algEquiv B⁰ _ _).restrictScalars A)).mp ?_
