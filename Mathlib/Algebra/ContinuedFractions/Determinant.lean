@@ -32,7 +32,7 @@ namespace GenContFract
 
 variable {g : GenContFract K} {n : ℕ}
 
-theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
+private theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     (g.contsAux n).a * (g.contsAux (n + 1)).b -
       (g.contsAux n).b * (g.contsAux (n + 1)).a =
         ∏ i ∈ Finset.range n, - (g.s.get? i).elim 0 Pair.a := by
@@ -76,7 +76,7 @@ namespace SimpContFract
 
 variable {s : SimpContFract K} {n : ℕ}
 
-theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
+private theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt (n - 1)) :
     ((↑s : GenContFract K).contsAux n).a * ((↑s : GenContFract K).contsAux (n + 1)).b -
       ((↑s : GenContFract K).contsAux n).b * ((↑s : GenContFract K).contsAux (n + 1)).a =
         (-1) ^ n := calc
