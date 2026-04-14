@@ -113,8 +113,7 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [IsDomain R] [Module.IsTorsio
     tauto
 
 theorem torsionOf_eq_annihilator_span_singleton {R M : Type*} [CommSemiring R]
-    [AddCommMonoid M] [Module R M] (x : M) :
-    torsionOf R M x = (Submodule.span R ({x} : Set M)).annihilator := by
+    [AddCommMonoid M] [Module R M] (x : M) : torsionOf R M x = (R ∙ x).annihilator := by
   have := (Submodule.annihilator_span_singleton (R := R) (M := M) x).symm
   simpa [torsionOf]
 
