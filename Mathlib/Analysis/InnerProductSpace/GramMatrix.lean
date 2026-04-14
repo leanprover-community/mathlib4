@@ -98,9 +98,8 @@ theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram �
 
 omit [Finite n] in
 theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
-    (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v := by
-  apply linearIndependent_of_posDef_gram
-  simpa [(Matrix.posSemidef_gram _ _).posDef_iff_isUnit, Matrix.isUnit_iff_isUnit_det] using h
+    (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v :=
+  linearIndependent_of_posDef_gram <| (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero.mpr h
 
 end SemiInnerProductSpace
 
@@ -122,6 +121,11 @@ theorem posDef_gram_of_linearIndependent
 theorem posDef_gram_iff_linearIndependent {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
+
+omit [Finite n] in
+theorem det_gram_ne_zero_iff_linearIndependent [Fintype n] [DecidableEq n] {v : n → E} :
+    (gram 𝕜 v).det ≠ 0 ↔ LinearIndependent 𝕜 v := by
+  rw [← posDef_gram_iff_linearIndependent, (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero]
 
 omit [Finite n] in
 theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) (v : n → E) :
