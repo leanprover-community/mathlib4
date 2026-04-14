@@ -6,8 +6,7 @@ Authors: Jakob Scharmberg
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
-public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Homotopy.TopCat.Basic
 
 /-!
 # Topological Pairs
@@ -24,9 +23,7 @@ homotopies between them.
 
 @[expose] public section
 
-open TopologicalSpace CategoryTheory unitInterval
-
-universe u
+open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
 /-- A pair of topological spaces consists of a morphism f : A ⟶ X in `TopCat`
 such that the topology of A is induced by f. -/
@@ -70,8 +67,10 @@ abbrev Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
 
 @[simp, reassoc, elementwise]
 lemma Hom.w {X Y : TopPair} (f : X ⟶ Y) :
-    f.hom.left ≫ Y.map = X.map ≫ f.hom.right :=
+    Hom.snd f ≫ Y.map = X.map ≫ Hom.fst f :=
   f.hom.w
+
+attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
 projection to the first space. -/
@@ -118,32 +117,36 @@ the second space that fit in a commutative square with the maps of the pairs. -/
 @[ext]
 structure Homotopy (f g : X ⟶ Y) where
   /-- The homotopy on the first space. -/
-  fst : ContinuousMap.Homotopy f.hom.right.hom g.hom.right.hom
+  fst : TopCat.Homotopy (Hom.fst f) (Hom.fst g)
   /-- The homotopy on the second space. -/
-  snd : ContinuousMap.Homotopy f.hom.left.hom g.hom.left.hom
+  snd : TopCat.Homotopy (Hom.snd f) (Hom.snd g)
   /-- The proof that the homotopies fit into a commutative square with the maps of the pairs. -/
-  w : TopCat.ofHom snd.toContinuousMap ≫ Y.map =
-    TopCat.ofHom (ContinuousMap.prodMap (ContinuousMap.id I) X.map.hom) ≫
-      TopCat.ofHom fst.toContinuousMap := by cat_disch
+  w : X.map ▷ _ ≫ fst.h = snd.h ≫ Y.map := by cat_disch
 
 attribute [reassoc, elementwise] Homotopy.w
+attribute [local simp] Homotopy.w Homotopy.w_apply
 
 namespace Homotopy
 
-attribute [local simp] Homotopy.w_apply Hom.w_apply
+@[local simp]
+lemma w_apply' {f g : X ⟶ Y} (H : Homotopy f g) (x : TopPair.snd) (t : unitInterval) :
+    H.fst (t, X.map x) = Y.map (H.snd (t, x)) := by
+  have := w_apply H (x, I.homeomorph.symm t)
+  simp only [Homeomorph.apply_symm_apply] at this
+  exact this
 
 /-- Given a morphism `f` of topological pairs, we can define a `Homotopy f f` by
-`ContinuousMap.Homotopy.refl` on the first and second components.
+`TopCat.Homotopy.refl` on the first and second components.
 -/
 @[simps]
 def refl (f : X ⟶ Y) : Homotopy f f where
-  fst := ContinuousMap.Homotopy.refl f.hom.right.hom
-  snd := ContinuousMap.Homotopy.refl f.hom.left.hom
+  fst := TopCat.Homotopy.refl (Hom.fst f)
+  snd := TopCat.Homotopy.refl (Hom.snd f)
 
 instance : Inhabited (Homotopy (𝟙 X) (𝟙 X)) :=
   ⟨Homotopy.refl _⟩
 
-/-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by `ContinuousMap.Homotopy.symm` on
+/-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by `TopCat.Homotopy.symm` on
 the first and second components.
 -/
 @[simps]
@@ -161,7 +164,7 @@ theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
 
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by
-`ContinuousMap.Homotopy.trans` on the first and second components.
+`TopCat.Homotopy.trans` on the first and second components.
 -/
 @[simps]
 noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
@@ -169,26 +172,24 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
   fst := F.fst.trans G.fst
   snd := F.snd.trans G.snd
   w := by
-    ext
-    dsimp
-    simp only [ContinuousMap.Homotopy.trans_apply, one_div]
-    cat_disch
+    ext ⟨_, _⟩
+    simp only [TopCat.comp_app, whiskerRight_apply, Homotopy.h_hom_apply,
+      ContinuousMap.Homotopy.trans_apply, one_div]
+    split_ifs <;> simp
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
       ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
 
-/-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, then we can compose them and get a
-`Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁)`.
+set_option backward.isDefEq.respectTransparency false in
+/-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, we can define a
+`Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁)` by `TopCat.Homotopy.comp` on the first and second components.
 -/
 @[simps]
 def comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
     Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁) where
   fst := G.fst.comp F.fst
   snd := G.snd.comp F.snd
-  w := by
-    ext
-    simp [F.w_apply]
 
 end Homotopy
 
