@@ -221,8 +221,8 @@ lemma NoetherianSpace.noetherian_inter_left (W V : Set α) [ntW : NoetherianSpac
 
 lemma NoetherianSpace.noetherian_inter_right (W V : Set α) [ntW : NoetherianSpace V] :
     NoetherianSpace <| (W ∩ V : Set α) := by
-  convert @NoetherianSpace.set _ _ ntW (Subtype.val (p := V) ⁻¹' W)
-  exact TopologicalSpace.noetherianSpace_iff_of_homeomorph <|
-    Homeomorph.trans (Homeomorph.setCongr (Set.inter_comm W V)) (Homeomorph.interValPreimage V W)
+  rw [Set.inter_comm]
+  exact NoetherianSpace.noetherian_inter_left V W
+
 
 end TopologicalSpace
