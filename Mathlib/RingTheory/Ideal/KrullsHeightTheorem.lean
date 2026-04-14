@@ -239,7 +239,7 @@ lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
   obtain ⟨J, hJ⟩ := nonempty_minimalPrimes hI
   refine (iInf₂_le J hJ).trans ?_
   convert (I.height_le_spanRank_toENat_of_mem_minimal_primes J hJ)
-  exact Eq.symm (@height_eq_primeHeight _ _ J (Ideal.minimalPrimes_isPrime hJ))
+  exact (@height_eq_primeHeight _ _ J (Ideal.minimalPrimes_isPrime hJ)).symm
 
 lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanFinrank := by
