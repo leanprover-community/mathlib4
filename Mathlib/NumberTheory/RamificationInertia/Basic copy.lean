@@ -352,26 +352,25 @@ noncomputable def Fiber.algEquivQuotient :
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
       commutes' := by simp }
 
-noncomputable instance [Algebra.QuasiFinite R S] : Fintype (MaximalSpectrum (p.Fiber S)) :=
-  Fintype.ofFinite (MaximalSpectrum (p.Fiber S))
+noncomputable instance [Algebra.QuasiFinite R S] : Fintype (PrimeSpectrum (p.Fiber S)) :=
+  Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
 
-instance [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
+instance [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
     Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
   Module.Finite.of_quasiFinite
 
 theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber S) =
-    ∑ q : MaximalSpectrum (p.Fiber S),
+    ∑ q : PrimeSpectrum (p.Fiber S),
       Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
-  have key := (IsArtinianRing.equivPiLocalization (p.Fiber S)).restrictScalars p.ResidueField
+  have key := (IsArtinianRing.equivPiLocalizationPrime (p.Fiber S)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- _ -/
-noncomputable def equiv [Algebra.QuasiFinite R S] : MaximalSpectrum (p.Fiber S) ≃ p.primesOver S :=
-  .symm <| (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.trans
-    IsArtinianRing.primeSpectrumEquivMaximalSpectrum
+noncomputable def equiv [Algebra.QuasiFinite R S] : PrimeSpectrum (p.Fiber S) ≃ p.primesOver S :=
+  (PrimeSpectrum.primesOverOrderIsoFiber R S p).toEquiv.symm
 
-theorem equiv_apply [Algebra.QuasiFinite R S] (q : MaximalSpectrum (p.Fiber S)) :
+theorem equiv_apply [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
     (equiv p) q = q.1.comap Algebra.TensorProduct.includeRight := by
   rfl
 
@@ -472,7 +471,7 @@ theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
   rw [diamond]
   rfl
 
-theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : MaximalSpectrum (p.Fiber S)) :
+theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : PrimeSpectrum (p.Fiber S)) :
     Module.finrank p.ResidueField (Localization.AtPrime q.1) =
       (q.1.comap Algebra.TensorProduct.includeRight).ramificationIdx' R *
           (q.1.comap Algebra.TensorProduct.includeRight).inertiaDeg' R := by
