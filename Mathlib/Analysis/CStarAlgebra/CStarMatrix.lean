@@ -405,7 +405,6 @@ lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
     {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
     reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -422,7 +421,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       unfold reindexₗ
       dsimp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, AddHom.toFun_eq_coe,
         AddHom.coe_mk, Matrix.reindex_apply, Matrix.submatrix_apply]
-      rw [Matrix.star_apply, Matrix.star_apply]
+      rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
 @[simp]
@@ -478,7 +477,7 @@ def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Modul
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
@@ -541,22 +540,23 @@ open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
+lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
+  classical
+  rw [injective_iff_map_eq_zero]
+  intro M h
+  ext i j
+  rw [zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
+    ← toCLM_apply_single_apply]
+  simp [h]
+
+variable [PartialOrder A] [StarOrderedRing A]
+
 open WithCStarModule in
 lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
     {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
   simp [mul_assoc, inner_def]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
-  classical
-  rw [injective_iff_map_eq_zero]
-  intro M h
-  ext i j
-  rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
-    ← toCLM_apply_single_apply]
-  simp [h]
 
 variable [Fintype n]
 
