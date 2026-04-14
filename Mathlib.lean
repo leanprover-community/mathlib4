@@ -1524,6 +1524,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -1556,7 +1558,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvarianceTopCat
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -3087,6 +3088,7 @@ public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
@@ -3352,6 +3354,7 @@ public import Mathlib.CategoryTheory.Topos.Sheaf
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
 public import Mathlib.CategoryTheory.Triangulated.Basic
 public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.Generators
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
@@ -4354,6 +4357,7 @@ public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.IntermediateField.ExtendRight
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
@@ -5624,6 +5628,8 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.ClassNumber
 public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.NumberField.Completion.Ramification
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
@@ -6265,6 +6271,7 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
+public import Mathlib.RingTheory.Depth.Basic
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
 public import Mathlib.RingTheory.Derivation.Lie
@@ -6675,7 +6682,6 @@ public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
 public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
-public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.RegularSequence
