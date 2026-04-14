@@ -183,7 +183,6 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
   simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_forall_exists_morphismRestrict (H : ∀ x, ∃ U : Y.Opens, x ∈ U ∧ P (f ∣_ U)) : P f := by
   choose U hxU hU using H
   refine IsZariskiLocalAtTarget.of_iSup_eq_top U (top_le_iff.mp fun x _ ↦ ?_) hU
@@ -313,7 +312,6 @@ lemma resLE [IsZariskiLocalAtTarget P] {U : Y.Opens} {V : X.Opens}
     (hf : P f) : P (f.resLE U V e) :=
   IsZariskiLocalAtSource.comp (IsZariskiLocalAtTarget.restrict hf U) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is local at the source, local at the target and is stable under post-composition with
 open immersions, then `P` can be checked locally around points. -/
 lemma iff_exists_resLE [IsZariskiLocalAtTarget P]

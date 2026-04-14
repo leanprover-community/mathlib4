@@ -180,7 +180,7 @@ lemma RingHom.Finite.tensorProductMap
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
     RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+  simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr
   ext <;> simp
