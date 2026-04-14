@@ -73,11 +73,12 @@ variable {α β γ γ' : Type*}
 
 /-- Metric space structure on `Stream' α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Stream' α) :=
-  @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  letI := @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  inferInstanceAs <| MetricSpace (ℕ → α)
 
 /-- Metric space structure on `Seq α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Seq α) :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
