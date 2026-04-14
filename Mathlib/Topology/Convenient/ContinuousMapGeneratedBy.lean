@@ -65,6 +65,11 @@ lemma ContinuousGeneratedBy.continuousMap_coe {g : Y → Z}
     ⇑hg.continuousMap = WithGeneratedByTopology.equiv.symm ∘ g ∘ WithGeneratedByTopology.equiv :=
   rfl
 
+@[simp]
+lemma ContinuousGeneratedBy.id :
+    ContinuousGeneratedBy X (id : Y → Y) := by
+  simpa [continuousGeneratedBy_iff] using continuous_id
+
 lemma ContinuousGeneratedBy.comp {g : Y → Z} (hg : ContinuousGeneratedBy X g)
     {T : Type*} [TopologicalSpace T] {f : T → Y} (hf : ContinuousGeneratedBy X f) :
     ContinuousGeneratedBy X (g ∘ f) := by
