@@ -37,7 +37,7 @@ noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{
   letI : Small.{max v v'} R := small_lift R
   LinearEquiv.ofBijective (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
-    (uliftFunctor.{v', v} R) (fullyFaithfulUliftFunctor R) M N n)
+    (uliftFunctor.{v', v} R) M N n)
 
 lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     letI : Small.{max v v'} R := small_lift R
@@ -132,8 +132,7 @@ noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N) n :=
   LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsSemiLinearMap e M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
-    (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e))
-    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
+    (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)) M N n)
 
 /-- Given semi linear equiv `M ≃ M'`, the categorical isomorphism `M ≅ ↑R M'` -/
 noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
