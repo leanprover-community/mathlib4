@@ -249,13 +249,23 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
 open Topology in
-lemma quasiSober_of_quasisober_inter_isClosed {V : Set α} (W : Set α) [QuasiSober W]
+lemma quasiSober_of_quasisober_inter_isClosed_right {V : Set α} (W : Set α) [QuasiSober W]
     (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
   have : W ∩ V ⊆ W := Set.inter_subset_left
   have : IsClosedEmbedding <| Set.inclusion this := by
     refine IsClosedEmbedding.inclusion this ?_
     rw [Subtype.preimage_coe_self_inter W V]
     exact IsClosed.preimage_val hV
+  exact Topology.IsClosedEmbedding.quasiSober this
+
+open Topology in
+lemma quasiSober_of_quasisober_inter_isClosed_left {V : Set α} (W : Set α) [QuasiSober V]
+    (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
+  have : W ∩ V ⊆ V := Set.inter_subset_right
+  have : IsClosedEmbedding <| Set.inclusion this := by
+    refine IsClosedEmbedding.inclusion this ?_
+    rw [inter_comm, Subtype.preimage_coe_self_inter V W]
+    exact IsClosed.preimage_val hW
   exact Topology.IsClosedEmbedding.quasiSober this
 
 end Sober
