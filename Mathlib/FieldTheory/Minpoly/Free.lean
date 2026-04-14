@@ -12,7 +12,8 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 /-!
 # Minimal polynomials on a free algebra
 
-This file proves the bound on the degree of a minimal polynomial on a free algebra.
+This file proves the bound on the degree of a minimal polynomial on an algebra
+that is finite and free as a module.
 
 -/
 
@@ -33,9 +34,10 @@ theorem natDegree_le_spanFinrank :
   rw [aeval_algHom_apply] at f_aeval
   exact Algebra.lmul_injective (R := A) <| by simpa using f_aeval
 
-variable [Nontrivial A] [Module.Free A B]
+variable [Module.Free A B]
 
 theorem natDegree_le : (minpoly A x).natDegree ≤ Module.finrank A B := by
+  nontriviality A
   simpa [Module.finrank_eq_spanFinrank_of_free] using natDegree_le_spanFinrank A x
 
 theorem degree_le : (minpoly A x).degree ≤ Module.finrank A B :=

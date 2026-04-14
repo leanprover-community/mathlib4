@@ -202,8 +202,8 @@ end
 `R`-endomorphism `φ` of an `R`-module `M` such that `φ(M) ≤ I • M` for some ideal `I`, there
 exists some `n` and some `aᵢ ∈ Iⁱ` such that `φⁿ + a₁ φⁿ⁻¹ + ⋯ + aₙ = 0`.
 
-This is the version found in Matsumura 2.1, which is stronger than those in Eisenbud 4.3 and
-Atiyah-Macdonald 2.4.
+This is the version in [Matsumura 2.1][matsumura1987], which is stronger than those in
+[Eisenbud 4.3][Eisenbud1995] and [Atiyah-Macdonald 2.4][atiyah-macdonald].
 -/
 theorem LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero
     [Module.Finite R M] (f : Module.End R M) (I : Ideal R) (hI : LinearMap.range f ≤ I • ⊤) :
