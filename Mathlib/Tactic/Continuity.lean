@@ -63,9 +63,9 @@ open Mathlib.TacticAnalysis
 @[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
   inherit_doc linter.tacticAnalysis.continuityToFunProp]
 def continuityToFunprop :=
-  terminalReplacement "continuity" "fun_prop" `tacticContinuity (fun _ _ _ ↦ `(tactic| fun_prop))
+  terminalReplacement "continuity" "fun_prop" ``tacticContinuity (fun _ _ _ ↦ `(tactic| fun_prop))
 
 @[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
   inherit_doc linter.tacticAnalysis.continuityToFunProp]
 def continuityToFunprop' :=
-  terminalReplacement "continuity?" "fun_prop" `tacticContinuity? (fun _ _ _ ↦ `(tactic| fun_prop))
+  terminalReplacement "continuity?" "fun_prop" ``tacticContinuity? (fun _ _ _ ↦ `(tactic| fun_prop))
