@@ -137,47 +137,29 @@ theorem normDet_eq_zero_iff_rank_range_ne {f : U →ₗ[𝕜] V} :
   simp [normDet_eq_zero_iff_ker_ne_bot, ← f.finrank_range_add_finrank_ker]
 
 /--
-`LinearMap.normDet` can be calculated with any pair of orthonormal basis of equal dimension,
-as long as the range is contained in the span.
--/
-theorem normDet_eq_norm_det_toMatrix_codRestrict {ι : Type*} [Fintype ι] [DecidableEq ι]
-    {f : U →ₗ[𝕜] V} {p : Submodule 𝕜 V} (hp : ∀ (c : U), f c ∈ p)
-    (bu : OrthonormalBasis ι 𝕜 U) (bv : OrthonormalBasis ι 𝕜 p) :
-    f.normDet = ‖((f.codRestrict p hp).toMatrix bu.toBasis bv.toBasis).det‖ := by
-  have hle : f.range ≤ p := by
-    intro c
-    simp
-    grind
-  have : FiniteDimensional 𝕜 p := bv.toBasis.finiteDimensional_of_finite
-  by_cases! hrank : finrank 𝕜 U = finrank 𝕜 f.range
-  · have h : p = f.range := by
-      refine (Submodule.eq_of_le_of_finrank_le hle ?_).symm
-      rw [finrank_eq_card_basis bv.toBasis, ← hrank, finrank_eq_card_basis bu.toBasis]
-    let bv' : OrthonormalBasis ι 𝕜 f.range := bv.map (LinearIsometryEquiv.ofEq _ _ h)
-    rw [f.normDet_eq_norm_det_toMatrix_rangeRestrict bu bv']
-    rfl
-  · symm
-    rw [normDet_eq_zero_iff_rank_range_ne.mpr hrank.symm]
-    contrapose hrank with hdet
-    have h : IsUnit (((codRestrict p f hp).toMatrix bu.toBasis bv.toBasis).det) := by
-      simpa using hdet
-    let f' := LinearEquiv.ofIsUnitDet h
-    have hp : f.range = p := by
-      refine le_antisymm hle (fun x hx ↦ mem_range.mpr ?_)
-      exact ⟨f'.symm ⟨x, hx⟩, (by simp : f' (f'.symm ⟨x, hx⟩) = x)⟩
-    rw [hp]
-    exact f'.finrank_eq
-
-/--
 `LinearMap.normDet` can be calculated with any pair of orthonormal basis if the domain and the
 codomain have equal dimension.
 -/
 theorem normDet_eq_norm_det_toMatrix {ι : Type*} [Fintype ι] [DecidableEq ι] (f : U →ₗ[𝕜] V)
     (bu : OrthonormalBasis ι 𝕜 U) (bv : OrthonormalBasis ι 𝕜 V) :
     f.normDet = ‖(f.toMatrix bu.toBasis bv.toBasis).det‖ := by
-  rw [normDet_eq_norm_det_toMatrix_codRestrict (by simp) bu
-    (bv.map (LinearIsometryEquiv.ofTop V _ rfl).symm)]
-  rfl
+  have : FiniteDimensional 𝕜 V := bv.toBasis.finiteDimensional_of_finite
+  by_cases! hrank : finrank 𝕜 U = finrank 𝕜 f.range
+  · have h : f.range = ⊤ := by
+      apply Submodule.eq_of_le_of_finrank_le le_top
+      simp [finrank_eq_card_basis bv.toBasis, ← hrank, finrank_eq_card_basis bu.toBasis]
+    let bv' : OrthonormalBasis ι 𝕜 f.range := bv.map (LinearIsometryEquiv.ofTop _ _ h).symm
+    rw [f.normDet_eq_norm_det_toMatrix_rangeRestrict bu bv']
+    rfl
+  · symm
+    rw [normDet_eq_zero_iff_rank_range_ne.mpr hrank.symm]
+    contrapose hrank with hdet
+    have h : IsUnit ((f.toMatrix bu.toBasis bv.toBasis).det) := by
+      simpa using hdet
+    let f' := LinearEquiv.ofIsUnitDet h
+    have hf : f.range = ⊤ := f'.range
+    rw [hf]
+    simpa using f'.finrank_eq
 
 /--
 `LinearMap.normDet` equals to the norm of `LinearMap.det` for an endomorphism.
