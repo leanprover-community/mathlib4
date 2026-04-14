@@ -115,7 +115,7 @@ theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i �
   use ⨆ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal
   apply hasSum_of_isLUB_of_nonneg
   · intro b
-    exact Real.rpow_nonneg (norm_nonneg _) _
+    positivity
   apply isLUB_ciSup
   use C
   rintro - ⟨s, rfl⟩
@@ -239,7 +239,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · change ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
-      have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg (norm_nonneg _) p.toReal
+      have : 0 ≤ ‖f i‖ ^ p.toReal := by positivity
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
       exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
@@ -472,8 +472,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]
-    refine Real.rpow_nonneg (tsum_nonneg ?_) _
-    exact fun i => Real.rpow_nonneg (norm_nonneg _) _
+    exact Real.rpow_nonneg (tsum_nonneg fun i ↦ by positivity) _
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -501,7 +500,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   · have hf : HasSum (fun i : α => ‖f i‖ ^ p.toReal) 0 := by
       have := lp.hasSum_norm hp f
       rwa [h, Real.zero_rpow hp.ne'] at this
-    have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
+    have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
     rw [hasSum_zero_iff_of_nonneg this] at hf
     ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
@@ -584,7 +583,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
   · haveI : Nonempty α := ⟨i⟩
     exact (isLUB_norm f).1 ⟨i, rfl⟩
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
-  have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
+  have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
   rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
   convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
@@ -597,7 +596,7 @@ lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
-  have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
+  have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
   refine Summable.sum_le_tsum _ (fun i _ => this i) ?_
   exact (lp.memℓp f).summable hp
 
@@ -627,7 +626,7 @@ lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
     ‖x‖ ≤ ‖y‖ := by
   obtain (rfl | rfl | hp) := p.trichotomy
   · exact hp rfl |>.elim
-  · exact norm_le_of_forall_le (by positivity) fun i ↦(h i).trans <| norm_apply_le_norm hp y i
+  · exact norm_le_of_forall_le (by positivity) fun i ↦ (h i).trans <| norm_apply_le_norm hp y i
   · exact norm_le_of_forall_sum_le hp (norm_nonneg' _) fun s ↦ calc
       ∑ i ∈ s, ‖x i‖ ^ p.toReal
       _ ≤ ∑ i ∈ s, ‖y i‖ ^ p.toReal := by gcongr with i _; exact h i
@@ -737,7 +736,7 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
         exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
-        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable))  }
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
 end Sum
@@ -838,12 +837,12 @@ instance : Mul (lp B ∞) where
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+  { lp.nonUnitalRing, lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
