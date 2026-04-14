@@ -57,6 +57,22 @@ attribute [-instance] AddGroupWithOne.toAddGroup in
     [self : AddGroupWithOne R] : AddGroup R :=
   @AddGroup.mk R self.toSubNegMonoid AddGroupWithOne.neg_add_cancel
 
+-- section synth
+
+-- attribute [-instance] AddGroupWithOne.toAddMonoidWithOne
+-- variable (R : Type u) [self : AddGroupWithOne R]
+-- #synth NatCast R
+-- #synth AddMonoid R
+-- #synth One R
+
+-- end synth
+
+--attribute [-instance] AddGroupWithOne.toAddMonoidWithOne in
+instance AddGroupWithOne.toAddMonoidWithOne' (R : Type u) [self : AddGroupWithOne R] :
+    AddMonoidWithOne R :=
+  @AddMonoidWithOne.mk R _ self.toAddGroup'.toAddMonoid _
+    AddMonoidWithOne.natCast_zero Nat.cast_succ
+
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
   extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
