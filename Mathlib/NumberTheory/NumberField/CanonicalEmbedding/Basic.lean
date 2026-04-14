@@ -60,6 +60,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K 
 
 open scoped ComplexConjugate
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
 that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
@@ -254,6 +255,7 @@ end Measure
 
 section commMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
 `commMap_canonical_eq_mixed`. -/
 noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (mixedSpace K) where
@@ -384,7 +386,7 @@ variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -398,12 +400,13 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_of_isComplex w.prop]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -504,6 +507,7 @@ theorem stdBasis_apply_isComplex_snd (x : mixedSpace K)
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
@@ -628,6 +632,7 @@ open scoped nonZeroDivisors
 protected abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
   LinearMap.range ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).toIntAlgHom.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `ℝ`-basis of the mixed space that is also a `ℤ`-basis of the image of `𝓞 K`. -/
 def latticeBasis :
     Basis (ChooseBasisIndex ℤ (𝓞 K)) ℝ (mixedSpace K) := by

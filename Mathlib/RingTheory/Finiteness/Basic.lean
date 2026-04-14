@@ -127,18 +127,29 @@ protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
-theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    (P : Submodule R M → Prop) (h₁ : ∀ x, P (Submodule.span R {x}))
-    (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
-  classical
-    obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction with
-    | empty =>
-      rw [Finset.coe_empty, span_empty, ← span_zero_singleton]
-      exact h₁ _
-    | insert _ _ _ ih =>
-      rw [Finset.coe_insert, span_insert]
-      exact h₂ _ _ (h₁ _) ih
+theorem fg_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (singleton : ∀ x : M, motive (R ∙ x) (fg_span_singleton _))
+    (sup : ∀ (N₁ N₂ : Submodule R M) (hN₁ : N₁.FG) (hN₂ : N₂.FG),
+      motive N₁ hN₁ → motive N₂ hN₂ → motive (N₁ ⊔ N₂) (hN₁.sup hN₂))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simpa using singleton 0
+  | insert x s hxs ih =>
+    simpa [span_insert, sup_comm] using
+      sup (span R s) (R ∙ x) _ (fg_span_singleton _) ih (singleton x)
+
+theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (bot : motive ⊥ fg_bot)
+    (sup : ∀ (N : Submodule R M) (x : M) (hN : N.FG),
+      motive N hN → motive (N ⊔ (R ∙ x)) (hN.sup <| fg_span_singleton x))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simp [bot]
+  | insert x s hxs ih => simpa [span_insert, sup_comm] using sup (span R s) x (by use s) ih
 
 section RestrictScalars
 
@@ -411,6 +422,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
 variable {S : Submodule A M}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
   rw [← Module.Finite.iff_fg] at *
   exact Module.Finite.trans A S
@@ -491,6 +503,7 @@ variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
+set_option backward.isDefEq.respectTransparency false in
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
   refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
@@ -500,6 +513,7 @@ private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.mpr hx⟩ (x := -1)
       (Submodule.subset_span <| by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
 instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E

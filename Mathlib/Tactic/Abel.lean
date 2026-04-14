@@ -8,6 +8,7 @@ module
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.TryThis
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -429,7 +430,7 @@ def isAtom (e : Expr) : Bool :=
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
-    | throwError "abel1 requires an equality goal"
+    | throwError "`abel1` requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
   closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
@@ -438,7 +439,7 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
     let (e₂', p₂) ← eval e₂
     trace[abel] "found `{p₂}`, a proof that `{e₂} = {e₂'.e}`"
     unless ← isDefEq e₁' e₂' do
-      throwError "abel1 found that the two sides were not equal"
+      throwError "`abel1` found that the two sides were not equal"
     trace[abel] "verified that the simplified forms are identical"
     mkEqTrans p₁ (← mkEqSymm p₂)
 

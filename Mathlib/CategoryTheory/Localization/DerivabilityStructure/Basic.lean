@@ -85,6 +85,7 @@ attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
@@ -144,6 +145,7 @@ class IsLeftDerivabilityStructure : Prop where
 attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
   IsLeftDerivabilityStructure.guitartExact'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_iff_op :
     Φ.IsLeftDerivabilityStructure ↔
       Φ.op.IsRightDerivabilityStructure := by

@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Supported
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
@@ -82,7 +82,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
     i ∉ s ∧ Transcendental R f := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h, hf⟩ ↦ transcendental_supported_polynomial_aeval_X R h hf⟩
   · rw [Transcendental] at h
-    contrapose! h
+    contrapose h
     refine isAlgebraic_algebraMap (⟨Polynomial.aeval (X i) f, ?_⟩ : supported R s)
     exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
       (Polynomial.aeval_mem_adjoin_singleton _ _)

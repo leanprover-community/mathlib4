@@ -28,6 +28,7 @@ open Simplicial SimplicialObject SimplexCategory
 
 namespace SSet.StrictSegal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by
   apply quasicategory_of_filler X
@@ -42,20 +43,21 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by lia
   · rw [← spine_arrow, spine_δ_arrow_lt sx _ hlt]
     dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
+    dsimp
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-      Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
+    rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
     rfl
   · rw [← spine_arrow, spine_δ_arrow_gt sx _ hgt]
-    dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
+    dsimp
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-      Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
+    rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
     rfl
   · obtain _ | n := n
@@ -66,14 +68,14 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
       it suffices to inhabit `Λ[n + 3, i] _⦋2⦌`. -/
       let triangle : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ :=
-        horn.primitiveTriangle i h₀ hₙ k (by lia)
+        horn.primitiveTriangle i h₀ hₙ k (by grind)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by lia) =
+      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by grind) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
         dsimp [spine_arrow, Path.map_interval, Path.map_arrow]
-        rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+        rw [← dsimp% σ₀.naturality_apply]
         apply congr_arg
         apply Subtype.ext
         ext a : 1
@@ -81,14 +83,15 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       rw [← spine_arrow, spine_δ_arrow_eq sx _ heq, hi]
       simp only [spineToDiagonal, diagonal, spineToSimplex_spine_apply]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
+      dsimp
       apply congr_arg
       apply Subtype.ext
       ext z : 1
       dsimp [horn.face]
-      rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+      rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
         Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
-      rw [stdSimplex.yonedaEquiv_map]
+      rw [SSet.yonedaEquiv_map]
       simp only [Equiv.apply_symm_apply, triangle]
       rw [mkOfSucc_δ_eq heq]
       fin_cases z <;> rfl

@@ -360,8 +360,8 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
       Prod.map_snd] at h ⊢
     rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map]
     exact ⟨h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa)
-      (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
-      (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
+      (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_comm α₁] using hsA.2)
+      (by simpa [@forall_comm α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
 @[to_additive prodMap]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
@@ -373,8 +373,8 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
       Prod.map_snd]
     rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map,
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
-      h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
-        (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+      h₂.map_prod_eq_map_prod (by simpa [@forall_comm α₁] using hsA.2)
+        (by simpa [@forall_comm α₁] using htA.2) (by simpa) (by simpa)]
 
 end Prod
 
