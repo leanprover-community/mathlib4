@@ -3,7 +3,7 @@ Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
-
+module
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Push
@@ -151,14 +151,14 @@ example {P : Prop} (h : P) : P := by push Not at *
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: `push` made no progress at h -/
+/-- error: `push` made no progress at `h` -/
 #guard_msgs in
 example {x y : ℕ} : True := by
   have h : x ≤ y := test_sorry
   push Not at h
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562 (previously the tactic succeeded as a no-op)
-/-- error: Cannot run `push` at inductive_proof, it is an implementation detail -/
+/-- error: Cannot run `push` at `inductive_proof`, it is an implementation detail -/
 #guard_msgs in
 def inductive_proof : True := by
   push Not at inductive_proof
