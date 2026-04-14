@@ -55,16 +55,11 @@ instance [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' 
 instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
 
 instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
-    ConditionallyCompleteLattice (Tropical R) :=
-  { instLatticeTropical with
-    le_csSup := fun _s _x hs hx ↦
-      le_csSup (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
-    csSup_le := fun _s _x hs hx ↦
-      csSup_le (hs.image untrop) (untrop_monotone.mem_upperBounds_image hx)
-    le_csInf := fun _s _x hs hx ↦
-      le_csInf (hs.image untrop) (untrop_monotone.mem_lowerBounds_image hx)
-    csInf_le := fun _s _x hs hx ↦
-      csInf_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
+    ConditionallyCompleteLattice (Tropical R) where
+  isLUB_csSup _ hn hb :=
+    .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
+  isGLB_csInf _ hn hb :=
+    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
@@ -73,7 +68,7 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
       simp only [sSup, Set.image_empty, trop_inj_iff]
       apply csSup_of_not_bddAbove
-      contrapose! hs
+      contrapose hs
       change BddAbove (tropOrderIso.symm '' s) at hs
       exact tropOrderIso.symm.bddAbove_image.1 hs
     csInf_of_not_bddBelow := by
@@ -81,6 +76,6 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
       simp only [sInf, Set.image_empty, trop_inj_iff]
       apply csInf_of_not_bddBelow
-      contrapose! hs
+      contrapose hs
       change BddBelow (tropOrderIso.symm '' s) at hs
       exact tropOrderIso.symm.bddBelow_image.1 hs }

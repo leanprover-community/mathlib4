@@ -63,14 +63,14 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 
 noncomputable instance largeCategory : LargeCategory TwoP :=
-  inferInstanceAs (Category (InducedCategory _ toBipointed))
+  inferInstanceAs <| Category (InducedCategory _ toBipointed)
 
 noncomputable instance concreteCategory : ConcreteCategory TwoP
     (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
-  InducedCategory.concreteCategory toBipointed
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBipointed) _
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
-  InducedCategory.hasForget₂ toBipointed
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBipointed) _
 
 @[ext]
 lemma hom_ext {X Y : TwoP} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
@@ -100,7 +100,7 @@ theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
 
 end TwoP
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem TwoP_swap_comp_forget_to_Bipointed :
     TwoP.swap ⋙ forget₂ TwoP Bipointed = forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
   rfl
@@ -131,12 +131,12 @@ theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToT
 theorem pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPFst_comp_forget_to_bipointed :
     pointedToTwoPFst ⋙ forget₂ TwoP Bipointed = pointedToBipointedFst :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPSnd_comp_forget_to_bipointed :
     pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed = pointedToBipointedSnd :=
   rfl

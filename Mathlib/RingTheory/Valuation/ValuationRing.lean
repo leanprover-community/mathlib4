@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Valuation Rings
@@ -128,8 +129,8 @@ variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
 protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
   rcases a with ⟨a⟩; rcases b with ⟨b⟩
-  obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
-  obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
+  obtain ⟨xa, ya, hya, rfl⟩ := IsFractionRing.div_surjective A a
+  obtain ⟨xb, yb, hyb, rfl⟩ := IsFractionRing.div_surjective A b
   have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
   have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
   obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
@@ -190,7 +191,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
   mul_lt_mul_of_pos_left := by
     simp_rw [← not_le]
     rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
-    contrapose! hbc
+    contrapose hbc
     obtain ⟨d, hd⟩ := hbc
     simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
     obtain rfl | rfl := hd
@@ -205,8 +206,8 @@ noncomputable def valuation : Valuation K (ValueGroup A K) where
   map_mul' _ _ := rfl
   map_add_le_max' := by
     intro a b
-    obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
-    obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
+    obtain ⟨xa, ya, hya, rfl⟩ := IsFractionRing.div_surjective A a
+    obtain ⟨xb, yb, hyb, rfl⟩ := IsFractionRing.div_surjective A b
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
@@ -285,9 +286,12 @@ instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
-  have := decidableEqOfDecidableLE (α := Ideal A)
-  have := decidableLTOfDecidableLE (α := Ideal A)
+open Classical in
+/- Todo: get rid of the `DecidableLE` argument.
+Currently, this argument causes this instance to not be called often,
+which hides a loop in simp-lemmas. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conflicting.20simp-normal.20form.3A.20bot.20vs.200/with/566807522 -/
+noncomputable instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   Lattice.toLinearOrder (Ideal A)
 
 end
@@ -343,7 +347,7 @@ theorem iff_isInteger_or_isInteger :
     ValuationRing R ↔ ∀ x : K, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ := by
   constructor
   · intro H x
-    obtain ⟨x : R, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+    obtain ⟨x : R, y, hy, rfl⟩ := IsFractionRing.div_surjective R x
     have := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr (nonZeroDivisors.ne_zero hy)
     obtain ⟨s, rfl | rfl⟩ := ValuationRing.cond x y
     · exact Or.inr

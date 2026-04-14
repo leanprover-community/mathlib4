@@ -5,15 +5,12 @@ Authors: Colin Jones
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finset.NatDivisors
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Factorisation properties of natural numbers
@@ -90,7 +87,7 @@ theorem deficient_one : Deficient 1 := by
 theorem deficient_two : Deficient 2 := by
   decide
 
-theorem deficient_three : Deficient 3 :=  by
+theorem deficient_three : Deficient 3 := by
   decide
 
 theorem not_abundant_zero : ¬ Abundant 0 := by

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Order.LiminfLimsup
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -568,6 +567,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : e
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
 is everywhere finite. -/
+@[implicit_reducible]
 def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 
@@ -785,7 +785,7 @@ variable {ι : Type*} {f : Filter ι} {u v : ι → ℝ≥0∞}
 lemma limsup_sub_const (F : Filter ι) (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', zero_le, tsub_eq_zero_of_le]
+  · simp
   · exact (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
@@ -797,7 +797,7 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
 lemma limsup_const_sub (F : Filter ι) (f : ι → ℝ≥0∞) {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', liminf_bot, le_top, tsub_eq_zero_of_le]
+  · simp
   · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 

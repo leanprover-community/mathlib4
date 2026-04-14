@@ -113,6 +113,7 @@ theorem LinearEquiv.isIsotypicOfType_iff_type (e : N ≃ₗ[R] S) :
 theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIsotypic R N :=
   ⟨(·.of_injective _ e.symm.injective), (·.of_injective _ e.injective)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
     IsIsotypicOfType R N S ↔ ∀ m ≤ N, [IsSimpleModule R m] → Nonempty (m ≃ₗ[R] S) := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -120,6 +121,7 @@ theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
   simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
   exact forall₂_congr fun m _ ↦ ⟨fun ⟨e'⟩ ↦ ⟨(e m).symm.trans e'⟩, fun ⟨e'⟩ ↦ ⟨(e m).trans e'⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypic_submodule_iff {N : Submodule R M} :
     IsIsotypic R N ↔ ∀ m ≤ N, [IsSimpleModule R m] → IsIsotypicOfType R N m := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]

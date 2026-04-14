@@ -121,7 +121,7 @@ instance : NonarchimedeanRing (R × S) where
   subgroup `V` such that `r • V` is contained in `U`. -/
 theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
     ∃ V : OpenAddSubgroup R, r • (V : Set R) ⊆ U :=
-  ⟨U.comap (AddMonoidHom.mulLeft r) (continuous_mul_left r), (U : Set R).image_preimage_subset _⟩
+  ⟨U.comap (AddMonoidHom.mulLeft r) (continuous_const_mul r), (U : Set R).image_preimage_subset _⟩
 
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by

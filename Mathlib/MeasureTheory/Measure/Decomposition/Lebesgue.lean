@@ -672,6 +672,12 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
   simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
   exact h
 
+theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
+    (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
+  filter_upwards [rnDeriv_smul_left ν μ r, rnDeriv_smul_right (r • ν) μ hr] with x hx1 hx2
+  simp [hx1, hx2, hr]
+
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
 lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
@@ -746,7 +752,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
     · rw [le_zero_iff] at hb
       simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
-  rw [MutuallySingular] at h; push_neg at h
+  rw [MutuallySingular] at h; push Not at h
   have := h _ hAmeas hμ
   simp_rw [A, compl_iInter, compl_compl] at this
   -- as `Aᶜ = ⋃ n, f n`, `ν Aᶜ > 0` implies there exists some `n` such that `ν (f n) > 0`
@@ -881,11 +887,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       refine le_intro fun B hB _ ↦ ?_
       rw [withDensity_apply _ hB]
       exact hξle B hB
-    have : IsFiniteMeasure (ν.withDensity ξ) := by
-      refine isFiniteMeasure_withDensity ?_
-      have hle' := hle univ
-      rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
-      exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'
+    have : IsFiniteMeasure (ν.withDensity ξ) := isFiniteMeasure_of_le _ hle
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`
     set μ₁ := μ - ν.withDensity ξ with hμ₁
@@ -1057,6 +1059,27 @@ lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
   simp [hx_add, hx_zero]
 
 end rnDeriv
+
+lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (ν - ξ) = μ + ν - ξ := by
+  let s := h.nullSet
+  have hs : MeasurableSet s := h.measurableSet_nullSet
+  have h_le_s : μ.restrict s + (ν - ξ).restrict s = μ.restrict s + ν.restrict s - ξ.restrict s := by
+    rw [h.restrict_nullSet, restrict_sub_eq_restrict_sub_restrict hs]
+    simp
+  have h_le_s_compl : μ.restrict sᶜ + (ν - ξ).restrict sᶜ =
+      μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ := by
+    rw [restrict_sub_eq_restrict_sub_restrict hs.compl, h.restrict_compl_nullSet]
+    simp
+  calc μ + (ν - ξ)
+  _ = μ.restrict s + μ.restrict sᶜ + (ν - ξ).restrict s + (ν - ξ).restrict sᶜ := by
+    rw [restrict_add_restrict_compl hs, add_assoc, restrict_add_restrict_compl hs]
+  _ = μ.restrict s + (ν - ξ).restrict s + (μ.restrict sᶜ + (ν - ξ).restrict sᶜ) := by abel
+  _ = (μ.restrict s + ν.restrict s - ξ.restrict s) +
+      (μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ) := by rw [h_le_s, h_le_s_compl]
+  _ = (μ + ν - ξ).restrict s + (μ + ν - ξ).restrict sᶜ := by
+      simp [restrict_sub_eq_restrict_sub_restrict hs,
+        restrict_sub_eq_restrict_sub_restrict hs.compl]
+  _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 end Measure
 

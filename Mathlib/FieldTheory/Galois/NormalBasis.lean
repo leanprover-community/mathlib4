@@ -25,6 +25,7 @@ The proof follows [ConradLinearChar] Keith Conrad, *Linear Independence of Chara
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 
+set_option backward.isDefEq.respectTransparency false in
 open Polynomial FiniteField Module Submodule LinearMap in
 -- [ConradLinearChar] Theorem 3.7.
 theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :

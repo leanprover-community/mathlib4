@@ -58,6 +58,7 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
@@ -121,7 +122,7 @@ protected def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢
 variable {f} in
 lemma ModularForm.norm_ne_zero [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k]
     (hf : (f : ℍ → ℂ) ≠ 0) : ModularForm.norm ℋ f ≠ 0 := by
-  contrapose! hf
+  contrapose hf
   rw [← DFunLike.coe_injective.eq_iff, coe_norm, coe_zero, prod_eq_zero_iff] at hf
   · simpa [QuotientGroup.exists_mk] using hf
   · exact Quotient.forall.mpr fun r _ ↦ (translate f r.val⁻¹).holo'

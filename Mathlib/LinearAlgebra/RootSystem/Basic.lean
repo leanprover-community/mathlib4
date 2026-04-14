@@ -110,7 +110,12 @@ protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was: `grind` -/
+    simp_all
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
@@ -161,6 +166,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
   rw [comp_apply, hl, hk, hij]
   exact (hr i).comp <| (hr j).comp (hr i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
 def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]

@@ -12,12 +12,25 @@ jobs:
   monitor-failures:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'failure' }}
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
         with:
           fetch-depth: 2  # Need previous commit for diff
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -27,17 +40,28 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./scripts/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"
           printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-update-dependencies-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Construct message
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         id: construct_message
         with:
-          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;
@@ -79,11 +103,24 @@ jobs:
   monitor-success:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2  # Need previous commit for diff
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -93,17 +130,28 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./scripts/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"
           printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-update-dependencies-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Construct success message
         id: construct_message
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
-          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;
