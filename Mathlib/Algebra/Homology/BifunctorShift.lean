@@ -34,8 +34,6 @@ commutes with shifts by `ℤ`.
 
 assert_not_exists TwoSidedIdeal
 
-set_option backward.isDefEq.respectTransparency false
-
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
@@ -75,6 +73,7 @@ variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms] (x : ℤ)
   [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor K₁ L₂ F] [HasMapBifunctor L₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `mapBifunctorShift₁Iso`. -/
 @[simps! hom_f_f inv_f_f]
 def mapBifunctorHomologicalComplexShift₁Iso :
@@ -98,6 +97,7 @@ noncomputable def mapBifunctorShift₁Iso :
   HomologicalComplex₂.total.mapIso (mapBifunctorHomologicalComplexShift₁Iso K₁ K₂ F x) _ ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₁Iso x
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
     (m₁ m : ℤ) (hm₁ : m₁ = n₁ + x) (hm : m = n + x) :
@@ -111,6 +111,7 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₁XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₁Iso_hom_naturality₁ :
@@ -120,6 +121,7 @@ lemma mapBifunctorShift₁Iso_hom_naturality₁ :
   simp [ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + x) (n + x) rfl rfl,
     ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + x) (n + x) rfl rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K₂ L₂} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₁Iso_hom_naturality₂ :
@@ -164,6 +166,7 @@ noncomputable def mapBifunctorShift₂Iso :
     (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y) (ComplexShape.up ℤ) ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₂Iso y
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
     (m₂ m : ℤ) (hm₂ : m₂ = n₂ + y) (hm : m = n + y) :
@@ -177,6 +180,7 @@ lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₂XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₂Iso_hom_naturality₁ :
@@ -186,6 +190,7 @@ lemma mapBifunctorShift₂Iso_hom_naturality₁ :
   simp [mapBifunctorShift₂Iso, HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
     HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K₂ L₂} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₂Iso_hom_naturality₂ [HasMapBifunctor K₁ L₂ F] :
@@ -204,6 +209,7 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive] (x y : ℤ)
   [HasMapBifunctor K₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
     mapBifunctorShift₁Iso K₁ (K₂⟦y⟧) F x ≪≫
       (CategoryTheory.shiftFunctor _ x).mapIso (mapBifunctorShift₂Iso K₁ K₂ F y) =
@@ -237,6 +243,7 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ),
     CochainComplex.HasMapBifunctor K₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (K₁ : CochainComplex C₁ ℤ) :
     (F.map₂CochainComplex.obj K₁).CommShift ℤ where
   commShiftIso n :=
@@ -270,6 +277,7 @@ lemma commShiftIso_map₂CochainComplex_inv_app (K₁ : CochainComplex C₁ ℤ)
     ((F.map₂CochainComplex.obj K₁).commShiftIso n).inv.app K₂ =
       (CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F n).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
     NatTrans.CommShift (F.map₂CochainComplex.map f) ℤ where
   shift_comm n := by
@@ -280,6 +288,7 @@ instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (K₂ : CochainComplex C₂ ℤ) :
     (F.map₂CochainComplex.flip.obj K₂).CommShift ℤ where
   commShiftIso n :=
@@ -312,6 +321,7 @@ lemma commShiftIso_map₂CochainComplex_flip_inv_app (K₁ : CochainComplex C₁
     ((F.map₂CochainComplex.flip.obj K₂).commShiftIso n).inv.app K₁ =
       (CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F n).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
     NatTrans.CommShift (F.map₂CochainComplex.flip.map g) ℤ where
   shift_comm n := by
@@ -322,6 +332,7 @@ instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     F.map₂CochainComplex.CommShift₂Int where
   comm K₁ K₂ p q := by

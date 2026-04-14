@@ -963,7 +963,7 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
     simpa using NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit (f := g) _
   associativity X Y Z := (adj.homEquiv _ _).symm.injective (by
     simp only [homEquiv_unit, comp_obj, map_comp, comp_whiskerRight, assoc, homEquiv_counit,
-      counit_naturality, id_obj, counit_naturality_assoc, left_triangle_components_assoc,
+      counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
       MonoidalCategory.whiskerLeft_comp]
     rw [← δ_natural_left_assoc, ← δ_natural_left_assoc, ← δ_natural_left_assoc]
     haveI := @NatTrans.whiskerRight_app_tensor_app_assoc _ _ _ _ _ _ _ _ _ adj.counit adj.counit

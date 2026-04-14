@@ -232,7 +232,7 @@ instance [IsIso α] : RF.IsRightDerivedFunctor α W where
         dsimp
         simp only [Localization.liftNatTrans_app, comp_obj]
         dsimp [Localization.Lifting.iso, lifting]
-        simpa using NatTrans.congr_app φ.w.symm X)⟩⟩
+        simpa using NatTrans.congr_app φ.w X)⟩⟩
 
 example (G : D ⥤ H) : G.IsRightDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
 
