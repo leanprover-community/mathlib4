@@ -507,7 +507,7 @@ variable {P Q W}
 
 /-- Construct a morphism in `P.Arrow Q W` from a morphism in `Arrow T`. -/
 @[simps hom]
-def Arrow.Hom.mk {A B : P.Arrow Q W} (f : A.toComma ⟶ B.toComma)
+def Arrow.Hom.mk {A B : P.Arrow Q W} (f : (Arrow.forget _ _ _).obj A ⟶ (Arrow.forget _ _ _).obj B)
     (hfl : Q f.left) (hfr : W f.right) : A ⟶ B where
   __ := f
   prop_hom_left := hfl
@@ -601,7 +601,8 @@ variable {P Q X}
 
 /-- Construct a morphism in `P.Over Q X` from a morphism in `Over X`. -/
 @[simps hom]
-def Over.Hom.mk {A B : P.Over Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.left) : A ⟶ B where
+def Over.Hom.mk {A B : P.Over Q X}
+    (f : (Over.forget _ _ _).obj A ⟶ (Over.forget _ _ _).obj B) (hf : Q f.left) : A ⟶ B where
   __ := f
   prop_hom_left := hf
   prop_hom_right := trivial
@@ -687,7 +688,8 @@ variable {P Q X}
 
 /-- Construct a morphism in `P.Under Q X` from a morphism in `Under X`. -/
 @[simps hom]
-def Under.Hom.mk {A B : P.Under Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.right) : A ⟶ B where
+def Under.Hom.mk {A B : P.Under Q X}
+    (f : (Under.forget _ _ _).obj A ⟶ (Under.forget _ _ _).obj B) (hf : Q f.right) : A ⟶ B where
   __ := f
   prop_hom_left := trivial
   prop_hom_right := hf
