@@ -446,9 +446,8 @@ lemma IsBaseChange.of_equiv_right (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[S] N')
   obtain ⟨y, rfl⟩ := eM.surjective y
   exact eN.injective (by simpa using congr($comm y).symm)
 
-lemma IsBaseChange.comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
-    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
-    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) :=
+lemma IsBaseChange.comp_equiv (e : M ≃ₗ[R] M') (f : M' →ₗ[R] N) (isb : IsBaseChange S f) :
+    IsBaseChange S (f.comp e.toLinearMap) :=
   IsBaseChange.of_equiv_right e (LinearEquiv.refl S N) (LinearMap.ext fun y ↦ by simp) isb
 
 section
