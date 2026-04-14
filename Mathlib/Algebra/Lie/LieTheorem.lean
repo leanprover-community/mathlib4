@@ -206,7 +206,6 @@ variable [Nontrivial V]
 
 open LieAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 -- This lemma is the central inductive argument in the proof of Lie's theorem below.
 -- The statement is identical to `LieModule.exists_forall_lie_eq_smul_of_isSolvable`
 -- except that it additionally assumes a finiteness hypothesis.

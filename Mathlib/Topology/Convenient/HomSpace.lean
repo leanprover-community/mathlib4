@@ -57,8 +57,7 @@ lemma continuous_iff {A : Type*} [TopologicalSpace A] {φ : A → ContinuousMapG
   simp only [continuous_iInf_rng, continuous_induced_rng]
 
 @[continuity]
-lemma continuous_precomp {i : ι} (f : C(X i, Z)) :
-    Continuous (precomp (T := T) f) := by
+lemma continuous_precomp {i : ι} (f : C(X i, Z)) : Continuous (precomp (T := T) f) := by
   rw [continuous_iff_le_induced]
   exact (iInf_le _ i).trans (iInf_le _ _)
 
