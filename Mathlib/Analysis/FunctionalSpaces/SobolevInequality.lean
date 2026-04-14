@@ -512,7 +512,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
     simp only [NNReal.coe_natCast, NNReal.coe_inv]
-  let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
+  let γ : ℝ≥0 := .mk (p * (n - 1) / (n - p)) (by positivity)
   have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
   have h1γ : 1 < (γ : ℝ) := by
     rwa [h0γ, one_lt_div hnp, mul_sub, mul_one, sub_lt_sub_iff_right, lt_mul_iff_one_lt_left]
@@ -645,7 +645,6 @@ irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.

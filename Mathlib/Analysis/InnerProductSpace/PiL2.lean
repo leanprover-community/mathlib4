@@ -223,6 +223,7 @@ def restrict₂ (hIJ : I ⊆ J) :
   toFun x := toLp 2 (Finset.restrict₂ («π» := fun _ ↦ 𝕜) hIJ x.ofLp)
   map_add' x y := by ext; simp
   map_smul' m x := by ext; simp
+  cont := Continuous.comp' (by fun_prop) (continuous_pi (by dsimp; fun_prop))
 
 @[simp]
 lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :

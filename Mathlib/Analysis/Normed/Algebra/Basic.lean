@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 
@@ -62,7 +62,7 @@ instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
     exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ :)
-  exact (isCompact_closedBall 𝕜 0 _).of_isClosed_subset CharacterSpace.isClosed h
+  exact (isCompact_closedBall 0 _).of_isClosed_subset CharacterSpace.isClosed h
 
 end CharacterSpace
 

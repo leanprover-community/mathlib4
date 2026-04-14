@@ -442,9 +442,6 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
     rw [← Scheme.zeroLocus_span, Set.range_comp', ← Ideal.map_span, H, hf]
     simp)
 
-@[deprecated (since := "2025-08-22")] noncomputable alias openCoverOfMapIrreleventEqTop :=
-  openCoverOfMapIrrelevantEqTop
-
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
 irrelevant ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
 def fromOfGlobalSections : X ⟶ Proj 𝒜 := by

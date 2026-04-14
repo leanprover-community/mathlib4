@@ -80,7 +80,7 @@ lemma nonempty_antidiagonal {M : Type*} [AddMonoid M] [Finset.HasAntidiagonal M]
   ⟨(0, a), by simp⟩
 
 -- The goal of this lemma is to allow to rewrite antidiagonal
--- when the decidability instances obsucate Lean
+-- when the decidability instances obfuscate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
     H1.antidiagonal = H2.antidiagonal := by congr!; subsingleton

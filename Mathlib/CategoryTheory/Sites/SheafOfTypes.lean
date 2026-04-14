@@ -92,8 +92,6 @@ variable {J} in
 theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun _ S hS => (h S hS).isSeparatedFor
 
-@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
-
 variable {J} in
 /-- If `P` is separated and every compatible family of elements of `P` for a covering
 sieve has an amalgamation, `P` is a sheaf. -/
