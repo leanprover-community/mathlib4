@@ -56,7 +56,6 @@ section PowerSeries
 
 variable {R : Type*} [CommSemiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
 
@@ -125,7 +124,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
       · obtain ⟨k, rfl⟩ := hn
         simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
       · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_map, one_apply_ne, smul_zero]
-        contrapose! hn
+        contrapose hn
         exact ⟨0, by simp [hn]⟩
     · simp
 
