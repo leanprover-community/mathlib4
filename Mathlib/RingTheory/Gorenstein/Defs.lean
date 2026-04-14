@@ -41,9 +41,8 @@ variable {R} in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type u'} [CommRing R'] (e : R ≃+* R')
     [IsGorensteinLocalRing R] : IsGorensteinLocalRing R' := by
-  let eR : (ModuleCat.of R R) ≃ₛₗ[RingHomClass.toRingHom e] (ModuleCat.of R' R') := {
-    __ := e
-    map_smul' r x := by simp }
+  let eR : (ModuleCat.of R R) ≃ₛₗ[RingHomClass.toRingHom e] (ModuleCat.of R' R') :=
+    e.toSemilinearEquiv
   have : IsLocalRing R' := e.isLocalRing
   have := (isGorensteinLocalRing_def R).mp ‹_›
   rw [injectiveDimension_eq_of_semiLinearEquiv e eR] at this
