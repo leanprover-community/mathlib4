@@ -34,19 +34,19 @@ function.
 
 /--
 For `μ` a measure and `f` a function, return the convolution of `f` with `μ` acting on the right,
-i.e. the function `fun x ↦ ∫ y, f (x + y) dμ` (bundled as a continuous map).
+i.e. the function `fun x ↦ ∫ y, f (x * y) dμ` (bundled as a continuous map).
 -/
 @[expose] noncomputable def convolveFunRight : D(G, R) →ₗ[R] C(G, R) →ₗ[R] C(G, R) :=
-  ((ContinuousMap.comapCLM ⟨_, continuous_mul⟩).toLinearMap.lcomp _ _).comp contractSnd
+  ((ContinuousMap.comapCLM R ⟨_, continuous_mul⟩).toLinearMap.lcomp _ _).comp contractSnd
 
 lemma convolveFunRight_apply (μ : D(G, R)) (f : C(G, R)) (x : G) :
-    μ.convolveFunRight f x = μ ⟨fun y ↦ f (x * y), by continuity⟩ :=
-  rfl
+    μ.convolveFunRight f x = μ ⟨fun y ↦ f (x * y), by continuity⟩ := by
+  simp [convolveFunRight, ContinuousMap.comapCLM_apply]
 
 @[simp]
 lemma convolveFunRight_dirac_apply (x : G) (f : C(G, R)) (y : G) :
     convolveFunRight (dirac R x) f y = f (y * x) := by
-  rfl
+  simp [convolveFunRight_apply]
 
 section LocallyCompact
 
@@ -58,21 +58,16 @@ variable [LocallyCompactSpace G]
 
 noncomputable instance : NonUnitalNonAssocRing D(G, R) where
   mul μ ν := map ⟨fun p : G × G ↦ p.1 * p.2, continuous_mul⟩ (μ.prodMk' ν)
-  zero_mul ν := by
-    change map _ _ = 0
-    simp only [map_zero, LinearMap.zero_apply]
-  mul_zero μ := by
-    change map _ _ = 0
-    simp only [map_zero]
-  right_distrib μ ν ν' := by
-    change map _ _ = map _ _ + map _ _
-    simp only [map_add, LinearMap.add_apply]
-  left_distrib μ ν ν' := by
-    change map _ _ = map _ _ + map _ _
-    simp only [map_add]
+  zero_mul ν := show map _ _ = 0 by simp
+  mul_zero μ := show map _ _ = 0 by simp
+  right_distrib μ ν ν' := show map _ _ = map _ _ + map _ _ by simp
+  left_distrib μ ν ν' := show map _ _ = map _ _ + map _ _ by simp
 
-lemma mul_apply (μ ν : D(G, R)) (f : C(G, R)) :
-    (μ * ν) f = μ (convolveFunRight ν f) := rfl
+lemma mul_apply (μ ν : D(G, R)) (f : C(G, R)) : (μ * ν) f = μ (convolveFunRight ν f) := by
+  change (map _ _) f = _
+  simp only [map_apply, prodMk'_apply]
+  congr 1 with x
+  simp [convolveFunRight_apply]
 
 -- The next two instances are the best approximation to "D(G, R) is an R-algebra" that we can
 -- formulate without requiring associativity.
@@ -96,13 +91,13 @@ variable [Semigroup G] [ContinuousMul G] [LocallyCompactSpace G]
 
 lemma convolveFunRight_mul (μ ν : D(G, R)) (f : C(G, R)) :
     convolveFunRight (μ * ν) f = convolveFunRight μ (convolveFunRight ν f) := by
-  ext g
+  ext
   simp only [convolveFunRight_apply, mul_apply]
   congr 1 with h
-  simp only [convolveFunRight_apply, ContinuousMap.coe_mk, mul_assoc]
+  simp [mul_assoc, convolveFunRight_apply]
 
 noncomputable instance : NonUnitalRing D(G, R) where
-  mul_assoc _ _ _ := by ext; simp only [mul_apply, convolveFunRight_mul]
+  mul_assoc _ _ _ := by ext; simp [mul_apply, convolveFunRight_mul]
 
 end Semigroup
 
@@ -116,7 +111,8 @@ convolution as multiplication).
 -/
 instance : AddMonoidWithOne D(G, R) where one := dirac R 1
 
-@[simp] lemma one_apply (f : C(G, R)) : (1 : D(G, R)) f = f 1 := rfl
+@[simp] lemma one_apply (f : C(G, R)) : (1 : D(G, R)) f = f 1 := by
+  simp [show (1 : D(G, R)) = dirac R 1 by rfl]
 
 end One
 
@@ -124,20 +120,20 @@ section MulOneClass
 
 variable [MulOneClass G] [ContinuousMul G]
 
-lemma convolveFunRight_apply_zero (μ : D(G, R)) (f : C(G, R)) :
+lemma convolveFunRight_apply_one (μ : D(G, R)) (f : C(G, R)) :
     convolveFunRight μ f 1 = μ f := by
   simp only [convolveFunRight_apply, one_mul]
   rfl
 
 @[simp] lemma convolveFunRight_one (f : C(G, R)) : convolveFunRight 1 f = f := by
-  ext x
-  simp only [convolveFunRight_apply, one_apply, ContinuousMap.coe_mk, mul_one]
+  ext
+  simp [convolveFunRight_apply]
 
 variable [LocallyCompactSpace G]
 
 noncomputable instance : NonAssocRing D(G, R) where
-  one_mul _ := by ext; simp only [mul_apply, one_apply, convolveFunRight_apply_zero]
-  mul_one _ := by ext; simp only [mul_apply, convolveFunRight_one]
+  one_mul _ := by ext; simp [mul_apply, convolveFunRight_apply_one]
+  mul_one _ := by ext; simp [mul_apply]
 
 end MulOneClass
 
@@ -159,8 +155,8 @@ noncomputable instance : Algebra R D(G, R) := Algebra.ofModule smul_mul_assoc mu
 noncomputable instance : Module D(G, R) C(G, R) where
   smul μ := μ.convolveFunRight
   one_smul := convolveFunRight_one
-  smul_zero f := map_zero _
-  zero_smul := LinearMap.zero_apply
+  smul_zero μ := map_zero _
+  zero_smul f := show convolveFunRight 0 f = 0 by simp
   smul_add μ := map_add _
   add_smul μ ν f := by
     change convolveFunRight _ _ = convolveFunRight _ _ + convolveFunRight _ _

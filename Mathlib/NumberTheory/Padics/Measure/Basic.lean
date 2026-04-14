@@ -16,14 +16,13 @@ functional on continuous maps `X → R`. This is an important construction in p-
 the Iwasawa algebra is defined as the space of abstract measures on `ℤ_[p]` with values in `ℚ_[p]`).
 -/
 
-@[expose] public section
+public section
 
 open ContinuousMap
 
-variable
-    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {R : Type*} [NormedCommRing R]
-    {E : Type*} [NormedAddCommGroup E] [Module R E] [ContinuousSMul R E]
+variable {X Y R E : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [CommRing R] [TopologicalSpace R] [IsTopologicalRing R] [Module R E] [ContinuousSMul R E]
 
 attribute [local ext] DFunLike.ext -- why is this not set by default?
 
@@ -31,12 +30,16 @@ section Preliminaries
 
 open scoped TensorProduct
 
+variable (R) in
 /-- Pullback via a continuous map, as a continuous linear map on continuous functions. -/
-@[simps apply]
 def ContinuousMap.comapCLM (f : C(X, Y)) : C(Y, E) →L[R] C(X, E) where
   toFun g := g.comp f
   map_add' _ _ := add_comp _ _ f
   map_smul' _ _ := smul_comp _ _ f
+
+omit [IsTopologicalRing R] in
+@[simp] lemma ContinuousMap.comapCLM_apply (f : C(X, Y)) (g : C(Y, E)) :
+    f.comapCLM R g = g.comp f := (rfl)
 
 /-- The natural bilinear map sending `f, g` to the function `(x, y) ↦ f x * g y` on `X × Y`. -/
 def ContinuousMap.prodMul : C(X, R) →ₗ[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
@@ -47,14 +50,14 @@ def ContinuousMap.prodMul : C(X, R) →ₗ[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
     (fun r f g ↦ by ext; simp)
 
 lemma ContinuousMap.prodMul_apply (f : C(X, R)) (g : C(Y, R)) (p : X × Y) :
-    f.prodMul g p  = f p.1 * g p.2 := rfl
+    f.prodMul g p  = f p.1 * g p.2 := (rfl)
 
 /-- Tensor product version of `ContinuousMap.prodMul`. -/
-noncomputable def ContinuousMap.tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R) :=
+@[expose] def ContinuousMap.tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R) :=
   TensorProduct.lift ContinuousMap.prodMul
 
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
-@[simps]
+@[simps, expose]
 def ContinuousLinearMap.lcomp {U V : Type*} (W : Type*)
     [AddCommMonoid U] [Module R U] [TopologicalSpace U]
     [AddCommMonoid V] [Module R V] [TopologicalSpace V]
@@ -66,7 +69,7 @@ def ContinuousLinearMap.lcomp {U V : Type*} (W : Type*)
   map_smul' _ _ := by simp
 
 /-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
-@[simps]
+@[simps, expose]
 def ContinuousLinearMap.llcomp (U V W : Type*)
     [AddCommGroup U] [Module R U] [TopologicalSpace U]
     [AddCommGroup V] [Module R V] [TopologicalSpace V]
@@ -94,7 +97,7 @@ The space of `E`-valued measures on `X`, i.e. continuous linear maps `C(X, R) �
 This is a type synonym for `C(X, R) →L[R] E`, but we do not want it to inherit the default
 (norm) topology.
 -/
-def AbstractMeasure := C(X, R) →L[R] E
+@[expose] def AbstractMeasure := C(X, R) →L[R] E
 
 @[inherit_doc]
 scoped [AbstractMeasure] notation "D(" X ", " R ")" => AbstractMeasure X R R
@@ -124,7 +127,7 @@ variable (R) in
 def dirac (x : X) : D(X, R) :=
   ContinuousMap.evalCLM R x
 
-@[simp] lemma dirac_apply (x : X) (f : C(X, R)) : dirac R x f = f x := rfl
+@[simp] lemma dirac_apply (x : X) (f : C(X, R)) : dirac R x f = f x := (rfl)
 
 @[simp]
 lemma smul_apply (r : R) (μ : AbstractMeasure X R E) (f : C(X, R)) : (r • μ) f = r • μ f :=
@@ -137,17 +140,17 @@ omit [ContinuousSMul R E] in
 
 /-- Measures can be pushed forward (R-linearly) along continuous maps. -/
 def map (f : C(X, Y)) : AbstractMeasure X R E →ₗ[R] AbstractMeasure Y R E where
-  toFun μ := μ ∘L comapCLM f
+  toFun μ := μ ∘L comapCLM R f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp] lemma map_apply (f : C(X, Y)) (μ : AbstractMeasure X R E) (g : C(Y, R)) :
     map f μ g = μ (g.comp f) :=
-  rfl
+  (rfl)
 
 @[simp] lemma map_dirac (f : C(X, Y)) (x : X) :
     map f (dirac R x) = dirac R (f x) :=
-  rfl
+  (rfl)
 
 section Prod
 
@@ -174,34 +177,32 @@ def contractSnd : D(Y, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(X, R) :=
 
 /-- Integrate a measure on `X` against a function on `X × Y`, giving a function on `Y`. -/
 def contractFst : D(X, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(Y, R) :=
-  (prodSwap.comapCLM.toLinearMap.lcomp R _).comp contractSnd
+  ((prodSwap.comapCLM R).toLinearMap.lcomp R _).comp contractSnd
 
 variable (μ : D(X, R)) (ν : D(Y, R))
 
-@[simp]
-lemma contractFst_apply (f : C(X × Y, R)) (y : Y) :
+@[simp] lemma contractFst_apply (f : C(X × Y, R)) (y : Y) :
     contractFst μ f y = μ ⟨fun x ↦ f (x, y), by continuity⟩ :=
-  rfl
+  (rfl)
 
-@[simp]
-lemma contractSnd_apply (f : C(X × Y, R)) (x : X) :
+@[simp] lemma contractSnd_apply (f : C(X × Y, R)) (x : X) :
     contractSnd ν f x = ν ⟨fun y ↦ f (x, y), by continuity⟩ :=
-  rfl
+  (rfl)
 
 lemma contractFst_dirac (x : X) (y : Y) (f : C(X × Y, R)) :
     contractFst (dirac R x) f y = f (x, y) :=
-  rfl
+  (rfl)
 
 lemma contractSnd_dirac (x : X) (y : Y) (f : C(X × Y, R)) :
     contractSnd (dirac R y) f x = f (x, y) :=
-  rfl
+  (rfl)
 
 section LocallyCompact
 
 variable [LocallyCompactSpace X] [LocallyCompactSpace Y]
 
 /-- `AbstractMeasure.contractSnd` bundled with continuity in the function argument. -/
-def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) where
+private def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) where
   toFun ν := ⟨contractSnd ν, by
     refine continuous_of_continuous_uncurry _ (ν.continuous.comp ?_)
     apply continuous_of_continuous_uncurry
@@ -210,23 +211,24 @@ def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) where
   map_add' _ _ := ContinuousLinearMap.coe_injective.eq_iff.mp <| contractSnd.map_add _ _
   map_smul' _ _ := ContinuousLinearMap.coe_injective.eq_iff.mp <| contractSnd.map_smul _ _
 
-lemma contractSndCLM_apply (f : C(X × Y, R)) (x : X) :
+@[simp]
+private lemma contractSndCLM_apply (f : C(X × Y, R)) (x : X) :
     contractSndCLM ν f x = ν ⟨fun y ↦ f (x, y), by continuity⟩ := rfl
 
 /-- `AbstractMeasure.contractFst` bundled with continuity in the function argument. -/
-def contractFstCLM : D(X, R) →ₗ[R] C(X × Y, R) →L[R] C(Y, R) :=
-  (ContinuousMap.prodSwap.comapCLM.lcomp _).comp contractSndCLM
+private def contractFstCLM : D(X, R) →ₗ[R] C(X × Y, R) →L[R] C(Y, R) :=
+  ((ContinuousMap.prodSwap.comapCLM R).lcomp _).comp contractSndCLM
 
-lemma contractFstCLM_apply (f : C(X × Y, R)) (y : Y) :
+private lemma contractFstCLM_apply (f : C(X × Y, R)) (y : Y) :
     contractFstCLM μ f y = μ ⟨fun x ↦ f (x, y), by continuity⟩ := rfl
 
-/-- "Left-handed" version of the natural product map on distributions (acting on functions
+/-- "Left-handed" version of the natural product map on measures (acting on functions
 as first integrating along `X`, and then integrating the result along `Y`). -/
 def prodMk : D(X, R) →ₗ[R] D(Y, R) →ₗ[R] D(X × Y, R) :=
   (ContinuousLinearMap.llcomp _ _ R).comp contractFstCLM
 
 @[simp] lemma prodMk_apply (f : C(X × Y, R)) :
-  prodMk μ ν f = ν (μ.contractFst f) := rfl
+  prodMk μ ν f = ν (μ.contractFst f) := (rfl)
 
 /-- On functions of the form `(x, y) ↦ f x * g y`, the measure `prodMk μ ν` agrees with the
 algebraic tensor product of `μ` and `ν`. -/
@@ -240,15 +242,16 @@ lemma prodMk_prod_apply (f : C(X, R)) (g : C(Y, R)) :
   simp_rw [ContinuousMap.smul_apply, smul_eq_mul, mul_comm (g y) (f x)]
   rfl
 
-/-- "Right-handed" version of the natural product map on distributions (acting on functions
+/-- "Right-handed" version of the natural product map on measures (acting on functions
 as first integrating along `Y`, and then integrating the result along `X`). -/
 def prodMk' : D(X, R) →ₗ[R] D(Y, R) →ₗ[R] D(X × Y, R) :=
   ((ContinuousLinearMap.llcomp _ _ R).comp contractSndCLM).flip
 
-lemma prodMk'_apply (f : C(X × Y, R)) : (μ.prodMk' ν) f = μ (ν.contractSnd f) := rfl
+@[simp]
+lemma prodMk'_apply (f : C(X × Y, R)) : (μ.prodMk' ν) f = μ (ν.contractSnd f) := (rfl)
 
 lemma prodMk'_flip (f : C(X × Y, R)) :
-    (μ.prodMk' ν) f = (ν.prodMk μ) (f.comp ContinuousMap.prodSwap) := rfl
+    (μ.prodMk' ν) f = (ν.prodMk μ) (f.comp ContinuousMap.prodSwap) := (rfl)
 
 lemma prodMk'_prod_apply (f : C(X, R)) (g : C(Y, R)) :
     prodMk' μ ν ((f.comp .fst) * (g.comp .snd)) = μ f * ν g := by
@@ -263,73 +266,39 @@ end LocallyCompact
 section Profinite
 
 variable [CompactSpace X] [CompactSpace Y] [T2Space X] [T2Space Y] [TotallyDisconnectedSpace X]
+  [T0Space R]
 
--- TODO: Does this work if the target is only a uniform group (not a normed one)?
-set_option backward.isDefEq.respectTransparency false in
-/-- For profinite spaces, the two product structures on distributions agree. -/
+/-- For profinite spaces, the two product structures on measures agree. -/
 lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
+  letI : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
+  letI : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
   ext f
-  rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine le_of_forall_gt (fun ε hε ↦ ?_)
-  have hε2 : 0 < ε / 2 := div_pos hε zero_lt_two
-  have := (Metric.continuousAt_iff.mp <| (μ.prodMk ν).continuous.continuousAt (x := f)) _ hε2
-  rcases this with ⟨δ, hδ, hhδ⟩
-  have := (Metric.continuousAt_iff.mp <| (μ.prodMk' ν).continuous.continuousAt (x := f)) _ hε2
-  rcases this with ⟨δ', hδ', hhδ'⟩
-  simp only [dist_eq_norm_sub'] at hhδ hhδ'
-  obtain ⟨n, G, H, hh⟩ := exists_finite_sum_mul_approximation_of_mem_uniformity f
-    (Metric.dist_mem_uniformity <| lt_min hδ hδ')
-  let T : C(X × Y, R) := ∑ i, (G i).comp .fst * (H i).comp snd
-  replace hh : ‖f - T‖ < δ ⊓ δ' := by
-    simpa [ContinuousMap.norm_lt_iff _ <| lt_min hδ hδ', T, dist_eq_norm_sub] using hh
-  calc
-  _ = ‖(prodMk μ ν f - prodMk μ ν T) + (prodMk μ ν T - prodMk' μ ν f)‖ := by abel_nf
-  _ ≤ ‖prodMk μ ν f - prodMk μ ν T‖ + ‖prodMk μ ν T - prodMk' μ ν f‖ := norm_add_le _ _
-  _ = ‖prodMk μ ν f - prodMk μ ν T‖ + ‖prodMk' μ ν f - prodMk μ ν T‖ := by
-    congr 1; rw [norm_sub_rev]
-  _ = ‖prodMk μ ν f - prodMk μ ν T‖ + ‖prodMk' μ ν f - prodMk' μ ν T‖ := by
-    congr 3
-    simp only [T, map_sum]
-    congr 1 with i
-    rw [prodMk_prod_apply, prodMk'_prod_apply]
-  _ < ε := by linarith [hhδ' <| hh.trans_le <| min_le_right δ δ',
-                hhδ <| hh.trans_le <| min_le_left δ δ']
+  refine eq_of_uniformity fun {V} hV ↦ ?_
+  obtain ⟨W, hW, hWsymm, hVW⟩ := comp_symm_mem_uniformity_sets hV
+  suffices ∃ (T : R), (μ.prodMk ν f, T) ∈ W ∧ (T, μ.prodMk' ν f) ∈ W from
+    hVW <| SetRel.mem_comp.mpr this
+  have h1 := (μ.prodMk ν).continuous.continuousAt.preimage_mem_nhds
+    (UniformSpace.ball_mem_nhds (μ.prodMk ν f) hW)
+  have h2 := (μ.prodMk' ν).continuous.continuousAt.preimage_mem_nhds
+    (UniformSpace.ball_mem_nhds (μ.prodMk' ν f) hW)
+  rw [mem_nhds_uniformity_iff_right] at h1 h2
+  obtain ⟨J, hJu, hJ'⟩ := (hasBasis_compactConvergenceUniformity_of_compact).mem_iff.mp
+    (Filter.inter_mem h1 h2)
+  obtain ⟨m, g, g', hgg'⟩ := exists_finite_sum_mul_approximation_of_mem_uniformity f hJu
+  let G : C(X × Y, R) := ∑ i, (g i).comp .fst * (g' i).comp snd
+  have haux := (Set.mem_of_subset_of_mem hJ' (a := (f, G))
+    (fun p ↦ by simpa [G] using hgg' p.1 p.2))
+  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_setOf_eq, forall_const,
+    UniformSpace.ball] at haux
+  suffices μ.prodMk ν G = μ.prodMk' ν G from
+    ⟨μ.prodMk ν G, haux.1, SetRel.symm _ (this ▸ haux.2)⟩
+  simp only [G, map_sum]
+  congr 1 with i
+  rw [prodMk_prod_apply, prodMk'_prod_apply]
 
 end Profinite
 
 end Prod
-
-section Topology
-
-open Topology
-
-section Weak
-
-/--
-The weak topology on `AbstractMeasure G R E` (the weakest topology such that `μ ↦ μ f` is
-continuous for all `f`).
--/
-@[reducible] def WeakTopology : TopologicalSpace (AbstractMeasure X R E) :=
-  .induced (fun μ f ↦ μ f) inferInstance
-
-scoped [AbstractMeasure.WeakTopology] attribute [instance] WeakTopology
-
-end Weak
-
-variable [CompactSpace X]
-
-variable -- redeclare instances depending on `R`, because it needs to be *nontrivially* normed now
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-noncomputable instance : Norm (AbstractMeasure X 𝕜 E) :=
-  inferInstanceAs (Norm (C(X, 𝕜) →L[𝕜] E))
-
-/-- The strong topology on `AbstractMeasure G 𝕜 E` (the topology induced by the norm). -/
-@[reducible] def StrongTopology : TopologicalSpace (AbstractMeasure X 𝕜 E) :=
-  inferInstanceAs (TopologicalSpace (C(X, 𝕜) →L[𝕜] E))
-
-end Topology
 
 end AbstractMeasure
 
