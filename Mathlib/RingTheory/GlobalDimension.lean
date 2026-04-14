@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Baer
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
@@ -24,15 +24,13 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 * `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
   finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
-  `i ≥ n + 1`, `Ext N M i` vanish.
+  `Ext N M (n + 1)` vanish.
 
 * `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
   projective dimension over finitely generated modules.
 
 # TODO
-
-1. Reduce vanishing of all `Ext N M i`, `i ≥ n + 1` to vanishing of `Ext N M (n + 1)`.
-2. Prove that global dimension is invariant of universe if assuming `Small.{v} R`.
+Prove that global dimension is invariant of universe if assuming `Small.{v} R`. (@Thmoas-Guan)
 
 -/
 
