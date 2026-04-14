@@ -478,3 +478,17 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
       Ideal.IsPrime.ne_top'))
 
 end Algebra
+
+/-- In a Noetherian local ring of positive Krull dimension,
+there exists an element in the maximal ideal not in its square. -/
+lemma IsLocalRing.exists_mem_maximalIdeal_not_mem_sq
+    [IsLocalRing R] (h : 0 < ringKrullDim R) :
+    ∃ x ∈ IsLocalRing.maximalIdeal R, x ∉ (IsLocalRing.maximalIdeal R) ^ 2 := by
+  by_contra! h_contra
+  have : IsLocalRing.maximalIdeal R = ⊥ :=
+    Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
+      (IsNoetherian.noetherian _)
+      (by rwa [Ideal.smul_eq_mul, ← sq])
+      (IsLocalRing.maximalIdeal_le_jacobson ⊥)
+  exact h.ne' (by rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this,
+    Ideal.height_bot, WithBot.coe_zero])
