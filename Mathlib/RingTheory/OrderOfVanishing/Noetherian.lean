@@ -24,7 +24,7 @@ In this file we define various properties of the order of vanishing in Noetheria
 
 variable {R : Type*} [CommRing R]
 
-open Ring
+namespace Ring
 
 section NoetherianDimLEOne
 
@@ -192,13 +192,9 @@ lemma ordFrac_irreducible
 
 open IsDedekindDomain HeightOneSpectrum
 
-/--
-The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
-unit `x`.
--/
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
-simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
+  simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
     MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
@@ -224,3 +220,5 @@ theorem associated_of_ordFrac_eq (x y : K)
   exact IsDiscreteValuationRing.associated_of_valuation_eq _ _ h
 
 end IsDiscreteValuationRing
+
+end Ring
