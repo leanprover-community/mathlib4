@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
-
+module
 import Mathlib.Tactic.NormNum
 
 private axiom test_sorry : ∀ {α}, α
@@ -14,19 +14,19 @@ set_option autoImplicit true
 
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
-notation "ℝ" => Real
+local notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 axiom NNReal : Type
-notation "ℝ≥0" => NNReal
+local notation "ℝ≥0" => NNReal
 @[instance] axiom NNReal.semifield : Semifield ℝ≥0
 @[instance] axiom NNReal.linearOrder : LinearOrder ℝ≥0
 @[instance] axiom NNReal.isStrictOrderedRing : IsStrictOrderedRing ℝ≥0
 
 axiom Complex : Type
-notation "ℂ" => Complex
+local notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
 @[instance] axiom Complex.charZero : CharZero ℂ
 
@@ -627,8 +627,6 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 -- attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 
 end norm_num_erase
-
-set_option backward.isDefEq.respectTransparency false
 
 -- auto gen tests
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
