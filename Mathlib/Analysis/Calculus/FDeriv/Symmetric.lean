@@ -573,12 +573,16 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
   have L : ∀ᶠ k in atTop, y k ∈ u := y_lim (u_open.mem_nhds xu)
   have I : ∀ᶠ k in atTop, IsSymmSndFDerivWithinAt 𝕜 f s (y k) := by
     filter_upwards [L] with k hk
-    have hcont : ContDiffAt 𝕜 m f (y k) := by
-      refine hu _ ⟨interior_subset (hy k), hk⟩ |>.contDiffAt ?_
-      refine mem_of_superset (inter_mem (isOpen_interior.mem_nhds (hy k)) (u_open.mem_nhds hk)) ?_
-      grind [interior_subset]
-    exact (ContDiffAt.isSymmSndFDerivAt hcont hm).isSymmSndFDerivWithinAt
-      (hcont.of_le (le_minSmoothness.trans hm)) hs (interior_subset (hy k))
+    have s_mem : s ∈ 𝓝 (y k) := by
+      apply mem_of_superset (isOpen_interior.mem_nhds (hy k))
+      exact interior_subset
+    have : IsSymmSndFDerivAt 𝕜 f (y k) := by
+      apply ContDiffAt.isSymmSndFDerivAt _ (n := m) hm
+      apply (hu (y k) ⟨(interior_subset (hy k)), hk⟩).contDiffAt
+      exact inter_mem s_mem (u_open.mem_nhds hk)
+    intro v w
+    rw [fderivWithin_fderivWithin_eq_of_mem_nhds s_mem]
+    exact this v w
   have A : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s) (s ∩ u) := by
     have : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f (s ∩ u)) (s ∩ u)) (s ∩ u) :=
       ((hu.fderivWithin h'u (m := 1) (le_minSmoothness.trans hm)).fderivWithin h'u
