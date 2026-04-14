@@ -5,15 +5,13 @@ Authors: Kevin Kappelmann
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-public import Mathlib.Algebra.EuclideanDomain.Field
-public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Tactic.Ring
 
 /-!
 # Determinant Formula for Generalised Continued Fraction
-
-## Summary
 
 We derive the so-called *determinant formula* for `GenContFract`:
 `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`.
@@ -54,12 +52,11 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
     obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
       Option.ne_none_iff_exists'.1 not_terminated_at_n
-    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, - (g.s.get? i).elim 0 Pair.a by {
+    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, - (g.s.get? i).elim 0 Pair.a by
       rw [Finset.prod_range_succ, ← this, s_nth_eq, Option.elim_some]
       subst conts
       rw [contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
       ring
-    }
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`. -/
