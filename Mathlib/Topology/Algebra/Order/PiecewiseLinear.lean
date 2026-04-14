@@ -98,7 +98,7 @@ theorem piecewiseLinear_eq_on_Ico (hh : 0 < h) {n : ℤ} {t : ℝ}
 
 /-- A piecewise linear function whose grid values satisfy `y (n + 1) = y n + h • c n`
 is continuous. -/
-theorem piecewiseLinear_continuous (hh : 0 < h)
+theorem continuous_piecewiseLinear (hh : 0 < h)
     (hstep : ∀ n : ℤ, y (n + 1) = y n + h • c n) :
     Continuous (piecewiseLinear y c hh a) :=
   continuous_of_regularGrid hh fun n => by
