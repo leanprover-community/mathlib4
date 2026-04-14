@@ -71,12 +71,4 @@ end Group.IsFinitelyPresented
 open Group
 
 instance : IsFinitelyPresented (Multiplicative ℤ) := by
-  let e : FreeGroup (Fin 1) ≃* Multiplicative ℤ := FreeGroup.mulEquivIntOfUnique
-  refine ⟨1, e.toMonoidHom, e.surjective, ?_⟩
-  refine ⟨∅, Set.finite_empty, ?_⟩
-  rw [Subgroup.normalClosure_empty]
-  exact ((MonoidHom.ker_eq_bot_iff e.toMonoidHom).2 e.injective).symm
-
-/-- ℤ is finitely presented -/
-instance : IsFinitelyPresented (Multiplicative ℤ) :=
   sorry
