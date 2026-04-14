@@ -112,7 +112,7 @@ theorem continuous_piecewiseLinear (hh : 0 < h)
 
 /-- The right derivative of the piecewise linear function is the piecewise constant slope
 `c (toIcoDiv hh a t)`. -/
-theorem piecewiseLinear_hasDerivWithinAt (hh : 0 < h) {t : ℝ} :
+theorem hasDerivWithinAt_piecewiseLinear (hh : 0 < h) {t : ℝ} :
     HasDerivWithinAt (piecewiseLinear y c hh a)
       (c (toIcoDiv hh a t)) (Ici t) t := by
   obtain ⟨h1, h2⟩ := sub_toIcoDiv_zsmul_mem_Ico hh a t
