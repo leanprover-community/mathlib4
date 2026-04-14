@@ -657,7 +657,7 @@ lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
 
 section Star
 
-/-- The starGraph graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
+/-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
   SimpleGraph.fromRel (fun x _ => x = r)
 
@@ -695,7 +695,7 @@ private lemma starGraph_isAcyclic (r : V) : (starGraph r).IsAcyclic := by
     apply not_reachable_of_neighborSet_right_eq_empty hadj.1
     ext x; aesop
 
-/-- A starGraph graph is a tree. -/
+/-- A star graph is a tree. -/
 lemma starGraph_isTree [Nonempty V] (r : V) : (starGraph r).IsTree := by
   refine ⟨Connected.mk (starGraph_isPreconnected r), starGraph_isAcyclic r⟩
 
