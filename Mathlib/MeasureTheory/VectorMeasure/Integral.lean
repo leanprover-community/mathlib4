@@ -15,7 +15,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 We extend the definition of the Bochner integral (of vector-valued function against `ℝ≥0∞`-valued
 measure) to vector measures through a bilinear pairing.
 Let `E`, `F` be normed vector spaces, and `G` be a Banach space (complete normed vector space).
-We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] → G` and an `F`-valued vector measure `μ`
+We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] G` and an `F`-valued vector measure `μ`
 on a measurable space `α`.
 The vector measure `μ` gives the total variation measure `(μ.comp B.flip).variation` on `α`.
 For an integrable function `f : α → E` with respect to this total variation measure,
@@ -41,7 +41,7 @@ The pairing integral is defined through the extension process described in the f
 
 ## Note
 
-Let be `Bμ : VectorMeasureWithPairing`.
+Let `Bμ : VectorMeasureWithPairing`.
 We often consider integrable functions with respect to the total variation of
 `Bμ.transpose` = `Bμ.vectormeasure.comp Bμ.pairing.flip`, which is the reference measure for the
 pairing integral.
