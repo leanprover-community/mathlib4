@@ -136,7 +136,7 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
 
 /-- A prime ideal of finite height is equal to any ideal that contains it with no greater height. -/
 lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
-    (J : Ideal R) (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
+    {J : Ideal R} (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
   eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_is_prime hlt) h_height
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
