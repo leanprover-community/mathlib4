@@ -24,7 +24,7 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
+example : (SubNegMonoid.toSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -40,7 +40,7 @@ example (α β : Type _) [AddMonoid α] [AddMonoid β] :
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
+    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
@@ -48,7 +48,7 @@ example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
-    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.toZSMul := by
+    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.toSMul := by
   with_reducible_and_instances rfl
 
 namespace TensorProduct
