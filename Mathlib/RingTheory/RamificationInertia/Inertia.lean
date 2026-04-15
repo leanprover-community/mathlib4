@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 /-!
@@ -20,6 +21,8 @@ to be the degree of the residue field of `q` over the residue field of its preim
 @[expose] public section
 
 namespace Ideal
+
+section
 
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
@@ -40,16 +43,20 @@ theorem inertiaDeg'_def [q.IsPrime] :
 theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
   dif_neg hq
 
-theorem inertiaDeg'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] [p.IsPrime] :
-    q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
-  rw [inertiaDeg'_def]
-  convert rfl <;> exact LiesOver.over
+end
 
-theorem inertiaDeg'_tower'
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (q : Ideal S) (r : Ideal T) [h : r.LiesOver q] :
+section
+
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+  [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+  (p : Ideal R) (q : Ideal S) (r : Ideal T)
+
+theorem inertiaDeg'_eq [h : q.LiesOver p] [q.IsPrime] :
+    letI := isPrime_of_liesOver q p
+    q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
+  convert inertiaDeg'_def q R <;> exact LiesOver.over
+
+theorem inertiaDeg'_tower [r.LiesOver q] :
     r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
   by_cases hr : r.IsPrime
   · have : q.IsPrime := isPrime_of_liesOver r q
@@ -57,5 +64,24 @@ theorem inertiaDeg'_tower'
     rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
+
+theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+    p.inertiaDeg q = q.inertiaDeg' R := by
+  let : Field (R ⧸ p) := Quotient.field p
+  let : Field (S ⧸ q) := Quotient.field q
+  rw [inertiaDeg'_eq p q, inertiaDeg_algebraMap]
+  let f := (algebraMap (S ⧸ q) q.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ q))
+  let g := (algebraMap p.ResidueField q.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField)
+  have h : f = g := by ext; simp [f, g, ← IsScalarTower.algebraMap_apply]
+  let : Algebra (R ⧸ p) q.ResidueField := f.toAlgebra
+  have : IsScalarTower (R ⧸ p) (S ⧸ q) q.ResidueField := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower (R ⧸ p) p.ResidueField q.ResidueField := IsScalarTower.of_algebraMap_eq' h
+  have hf := Module.finrank_mul_finrank (R ⧸ p) (S ⧸ q) q.ResidueField
+  have hg := Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField
+  rw [Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p)] at hg
+  rw [Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q)] at hf
+  grind
+
+end
 
 end Ideal

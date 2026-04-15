@@ -20,6 +20,8 @@ to be the length of the quotient `Sq/pSq` as an `Sq`-module where `Sq` is the lo
 
 namespace Ideal
 
+section
+
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
 open Classical in
@@ -44,10 +46,19 @@ theorem ramificationIdx'_def [q.IsPrime] :
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
 
-theorem ramificationIdx'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] :
+end
+
+section
+
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+  [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+  (p : Ideal R) (q : Ideal S) (r : Ideal T)
+
+theorem ramificationIdx'_eq [q.LiesOver p] [q.IsPrime] :
     letI Sq := Localization.AtPrime q
     q.ramificationIdx' R = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat := by
-  rw [ramificationIdx'_def, h.over]
+  rw [ramificationIdx'_def, over_def q p]
+
+end
 
 end Ideal
