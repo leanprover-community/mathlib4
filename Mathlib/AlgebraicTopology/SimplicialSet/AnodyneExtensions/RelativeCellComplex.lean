@@ -368,7 +368,7 @@ pairing of a subcomplex of a simplicial set, this is
 the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to `c.ιSigmaStdSimplex`. -/
---@[simps]
+@[simps]
 noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
   nonDegenerate := by
@@ -378,8 +378,7 @@ noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
   notMem := by
     rintro ⟨y, hy⟩
     obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
-    erw [← NatTrans.comp_app_apply] at hy
-    rw [ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
+    rw [← NatTrans.comp_app_apply, ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
     obtain ⟨rfl, rfl⟩ := hy
     exact objEquiv_symm_notMem_horn_of_isIso _ _ hy'
 
@@ -399,8 +398,7 @@ noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
   notMem := by
     rintro ⟨y, hy⟩
     obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
-    erw [← NatTrans.comp_app_apply] at hy
-    rw [ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
+    rw [← NatTrans.comp_app_apply, ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
     obtain ⟨rfl, rfl⟩ := hy
     simpa using (objEquiv_symm_δ_mem_horn_iff _ _).mp hy'
 
@@ -443,6 +441,7 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback (j : ι) :
     IsPullback (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
@@ -466,9 +465,8 @@ lemma isPullback (j : ι) :
     refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, ?_⟩
     · erw [← NatTrans.comp_app_apply] at h ⊢
       simpa only [Subtype.ext_iff, x.ι_t, x.ι_b] using h.symm
-    · erw [← NatTrans.comp_app_apply]
-      simp
-      rfl)⟩
+    · rw [← NatTrans.comp_app_apply]
+      simp)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
