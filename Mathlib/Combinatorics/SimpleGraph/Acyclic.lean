@@ -678,8 +678,7 @@ instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj := by
 
 @[simp]
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
-  unfold starGraph
-  simp [SimpleGraph.fromRel]
+  simp [starGraph, fromRel]
 
 /-- If v ≠ r, then v is adjacent to r. -/
 lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
@@ -709,12 +708,12 @@ lemma isTree_starGraph (r : V) : (starGraph r).IsTree := by
   refine ⟨connected_starGraph r, isAcyclic_starGraph r⟩
 
 /-- Every non-center vertex of a starGraph has degree one. -/
-lemma starGraph_not_center_imp_degree_one [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
+lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
     (starGraph r).degree v = 1 :=
   degree_eq_one_iff_existsUnique_adj.mpr ⟨r, by simp [h], by grind [starGraph_adj]⟩
 
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
-lemma starGraph_center_degree [Fintype V] [DecidableEq V] {r : V} :
+lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   rw [degree, neighborFinset_eq_filter (starGraph r)]
   simp only [starGraph_adj, ne_eq, true_or, and_true]
