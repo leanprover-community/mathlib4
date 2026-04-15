@@ -477,6 +477,14 @@ module over itself. -/
 theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
+theorem finrank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : finrank R S = 1 := by
+  rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) h).toLinearEquiv.finrank_eq, finrank_self]
+
+theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : Module.rank R S = 1 := by
+  rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
+
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 @[implicit_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
