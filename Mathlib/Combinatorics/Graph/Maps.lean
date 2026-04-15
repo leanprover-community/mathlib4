@@ -52,7 +52,7 @@ def map (f : α → α') (G : Graph α β) : Graph α' β where
     rintro e - - ⟨x, y, h, rfl, rfl⟩
     exact Set.mem_image_of_mem _ h.left_mem
 
-lemma IsLink.map (f : α → α') (h : G.IsLink e u v) : (G.map f).IsLink e (f u) (f v) :=
+protected lemma IsLink.map (f : α → α') (h : G.IsLink e u v) : (G.map f).IsLink e (f u) (f v) :=
   ⟨u, v, h, rfl, rfl⟩
 
 @[simp]
@@ -60,7 +60,7 @@ lemma map_inc (f : α → α') : (G.map f).Inc e x ↔ ∃ v, G.Inc e v ∧ x = 
   simp only [Inc, map_isLink]
   tauto
 
-lemma Inc.map (f : α → α') (h : G.Inc e v) : (G.map f).Inc e (f v) := by
+protected lemma Inc.map (f : α → α') (h : G.Inc e v) : (G.map f).Inc e (f v) := by
   obtain ⟨w, hw⟩ := h
   exact ⟨f w, hw.map f⟩
 
@@ -68,7 +68,7 @@ lemma Inc.map (f : α → α') (h : G.Inc e v) : (G.map f).Inc e (f v) := by
 lemma map_isLoopAt (f : α → α') :
     (G.map f).IsLoopAt e x ↔ ∃ u v, G.IsLink e u v ∧ x = f u ∧ x = f v := Iff.rfl
 
-lemma IsLoopAt.map (f : α → α') (h : G.IsLoopAt e v) : (G.map f).IsLoopAt e (f v) :=
+protected lemma IsLoopAt.map (f : α → α') (h : G.IsLoopAt e v) : (G.map f).IsLoopAt e (f v) :=
   IsLink.map f h
 
 @[simp]
@@ -76,7 +76,7 @@ lemma map_adj (f : α → α') : (G.map f).Adj x y ↔ ∃ u v, G.Adj u v ∧ x 
   simp only [Adj, map_isLink]
   tauto
 
-lemma Adj.map (f : α → α') (h : G.Adj u v) : (G.map f).Adj (f u) (f v) := by
+protected lemma Adj.map (f : α → α') (h : G.Adj u v) : (G.map f).Adj (f u) (f v) := by
   obtain ⟨e, h⟩ := h
   exact ⟨e, h.map f⟩
 
@@ -87,9 +87,9 @@ lemma map_map (f : α → α') (f' : α' → α'') : (G.map f).map f' = G.map (f
   ext a b c <;> simp
 
 @[gcongr]
-lemma IsSubgraph.map (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
+protected lemma IsSubgraph.map (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
   vertexSet_mono v := by
-    simp only [map_vertexSet, mem_image, forall_exists_index, and_imp]
+    simp only [vertexSet_map, mem_image, forall_exists_index, and_imp]
     rintro u hu rfl
     use u, h.vertexSet_mono hu
   isLink_mono e x y := by
@@ -98,7 +98,7 @@ lemma IsSubgraph.map (f : α → α') (h : G ≤ H) : G.map f ≤ H.map f where
     use a, b, h.isLink_mono hab
 
 @[gcongr]
-lemma IsSpanningSubgraph.map (f : α → α') (hsle : G ≤s H) : G.map f ≤s H.map f where
+protected lemma IsSpanningSubgraph.map (f : α → α') (hsle : G ≤s H) : G.map f ≤s H.map f where
   le := hsle.le.map f
   vertexSet_eq := by simp [hsle.vertexSet_eq]
 
