@@ -17,14 +17,14 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 ## Main definitions and results
 
-* `MvPowerSeries.gaussNormC` is the supremum of the set of all values of
+* `MvPowerSeries.gaussNorm` is the supremum of the set of all values of
   `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`, where `f` is a multivariate power
   series, `v : R → ℝ` is a function and `c` is a tuple of real numbers.
 
-* `MvPowerSeries.gaussNormC_nonneg`: if `v` is a non-negative function, then the Gauss norm is
+* `MvPowerSeries.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
 
-* `MvPowerSeries.gaussNormC_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
+* `MvPowerSeries.gaussNorm_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
   for all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series
   is zero.
 
@@ -46,7 +46,7 @@ noncomputable def gaussNorm : ℝ :=
    ⨆ t : σ →₀ ℕ, v (coeff t f) * t.prod (c · ^ ·)
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * ∏ i : t.support, c i` is bounded above,
-  that is `gaussNormC f` is finite. -/
+  that is `gaussNorm f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
 
 @[simp]
