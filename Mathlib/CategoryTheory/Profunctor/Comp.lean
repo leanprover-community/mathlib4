@@ -16,13 +16,13 @@ namespace Limits
 
 namespace Types
 
-variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ Type u)
+variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ Type max w u)
 
 inductive coendRel : (W : J) × (F.obj (op W)).obj W → (W : J) × (F.obj (op W)).obj W → Prop where
   | mk {W W' : J} (f : W ⟶ W') (x : (F.obj (op W')).obj W) :
     coendRel ⟨_, (F.map f.op).app _ x⟩ ⟨_, (F.obj _).map f x⟩
 
-def coend : Type u := Quot (coendRel F)
+def coend : Type max w u := Quot (coendRel F)
 
 def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F := TypeCat.ofHom fun x ↦ Quot.mk _ ⟨j, x⟩
 
@@ -47,7 +47,7 @@ class ChosenCoends.{v',u'} (C : Type*) [Category* C] where
   cowedge {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
   isCoend {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
 
-instance : Limits.ChosenCoends.{v, u} (Type u) where
+instance : Limits.ChosenCoends.{v, u} (Type max w u) where
   cowedge := Types.cowedge
   isCoend := Types.cowedgeIsColimit
 
