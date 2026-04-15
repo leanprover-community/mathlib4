@@ -711,6 +711,9 @@ alias pow_two_nonneg := sq_nonneg
 lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
+instance [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] : ZeroLEOneClass R :=
+  ⟨by simpa only [one_mul] using mul_self_nonneg (R := R) 1⟩
+
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
@@ -779,13 +782,23 @@ alias four_mul_le_pow_two_add := four_mul_le_sq_add
 
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
+    [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 ≤ a * b) : 2 * r ≤ a + b := by
+  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
+  calc (2 * r) * (2 * r)
+    _ = 4 * r ^ 2 := by rw [mul_mul_mul_comm, pow_two, two_mul, two_add_two_eq_four]
+    _ ≤ 4 * (a * b) := mul_le_mul_of_nonneg_left ht zero_le_four
+    _ = 4 * a * b := (mul_assoc 4 a b).symm
+    _ ≤ (a + b) ^ 2 := four_mul_le_sq_add a b
+    _ = (a + b) * (a + b) := pow_two (a + b)
+
+/-- Binary and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
-  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  conv_rhs => rw [← pow_two]
-  convert four_mul_le_sq_add a b using 1
-  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=
+  two_mul_le_add_of_sq_le_mul ha hb ht.le
 
 end LinearOrderedCommSemiring
 
