@@ -61,7 +61,6 @@ def AllZero (m : UnitMonomial) : Prop := m.sign = .zero
 
 namespace AllZero
 
-@[simp]
 theorem nil : AllZero [] :=
   rfl
 
