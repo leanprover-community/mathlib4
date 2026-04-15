@@ -60,6 +60,7 @@ Note: This linter can be disabled with `set_option linter.docPrime false`
 @[simp]
 theorem thm_with_attr_no_doc' : True := .intro
 
+set_option linter.nonClassInstance false in
 /--
 warning: `inst_no_doc'` is missing a doc-string, please add one.
 Declarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.
