@@ -13,7 +13,24 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.RingTheory.Flat.Rank
 
 /-!
-# Foo bar
+# Rank of a finite flat morphism of schemes
+
+In this file we define the rank function `AlgebraicGeometry.finrank` of a morphism of schemes
+`f : X ⟶ Y`. It assigns to each point `y : Y` the rank of the fiber of `f` at `y`.
+
+## Main definitions
+
+- `AlgebraicGeometry.finrank`: For a morphism `f : X ⟶ Y` of schemes, the function `Y → ℕ` sending
+  `y` to the rank of the fiber of `f` at `y`.
+
+## Main results
+
+- `AlgebraicGeometry.isLocallyConstant_finrank`: The rank function of a finite flat locally
+  finitely presented morphism is locally constant.
+- `AlgebraicGeometry.one_le_finrank_iff_surjective`: The rank function is at least `1` everywhere
+  if and only if the morphism is surjective.
+- `AlgebraicGeometry.isIso_iff_rank_eq`: A finite flat locally finitely presented morphism is an
+  isomorphism if and only if its rank function is constant equal to `1`.
 -/
 
 public section
@@ -21,6 +38,19 @@ public section
 open CategoryTheory Limits TopologicalSpace TensorProduct
 
 universe u
+
+/-! ## Declarations that should be moved
+
+The declarations in this section are not specific to the rank of flat morphisms and should
+eventually be moved to more appropriate locations.
+-/
+
+/-!
+### Category theory
+
+The following should be moved to
+`Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting`.
+-/
 
 namespace CategoryTheory
 
@@ -53,80 +83,11 @@ lemma Limits.isPullback_map_fst_fst {C : Type*} [Category C] [HasPullbacks C]
 
 end CategoryTheory
 
-noncomputable def RingHom.finrank {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
-    (x : PrimeSpectrum R) : ℕ :=
-  letI : Algebra R S := f.toAlgebra
-  Module.rankAtStalk S x
+/-!
+### Affine pullback lemmas
 
-@[simp]
-lemma finrank_algebraMap {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
-    (algebraMap R S).finrank = Module.rankAtStalk (R := R) S := by
-  ext
-  dsimp only [RingHom.finrank]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
-
-lemma Algebra.rankAtStalk_eq_of_isPushout (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    (R' S' : Type*) [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
-    [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [Algebra.IsPushout R S R' S'] [Module.Flat R S] [Module.Finite R S] (x : PrimeSpectrum R') :
-    Module.rankAtStalk S' x = Module.rankAtStalk S (PrimeSpectrum.comap (algebraMap R R') x) := by
-  have : IsPushout R R' S S' := Algebra.IsPushout.symm inferInstance
-  have := Module.rankAtStalk_eq_of_equiv (Algebra.IsPushout.equiv R R' S S').symm.toLinearEquiv
-  rw [Module.rankAtStalk_eq_of_equiv (Algebra.IsPushout.equiv R R' S S').symm.toLinearEquiv,
-    Module.rankAtStalk_baseChange]
-
-lemma Algebra.IsPushout.of_bijective_left (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (H : Function.Bijective (algebraMap R S)) :
-    Algebra.IsPushout R T S T := by
-  have : IsLocalization (algebraMapSubmonoid T <| IsUnit.submonoid R) T := by
-    apply IsLocalization.at_units _ _
-    rintro x ⟨a, ha, rfl⟩
-    exact ha.map _
-  have : IsLocalization (IsUnit.submonoid R) S := by
-    rw [← IsLocalization.isLocalization_iff_of_algEquiv _ (.ofBijective (Algebra.ofId R S) H)]
-    exact IsLocalization.at_units (IsUnit.submonoid R) le_rfl
-  apply Algebra.isPushout_of_isLocalization (IsUnit.submonoid R)
-
-lemma Algebra.IsPushout.of_bijective_right (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    (H : Function.Bijective (algebraMap S T)) :
-    Algebra.IsPushout R S R T := by
-  have : IsLocalization (algebraMapSubmonoid S (IsUnit.submonoid R)) T := by
-    rw [← IsLocalization.isLocalization_iff_of_algEquiv _ (.ofBijective (Algebra.ofId S T) H)]
-    refine IsLocalization.at_units _ (fun x ↦ ?_)
-    rintro ⟨a, ha, rfl⟩
-    exact ha.map _
-  have : IsLocalization (IsUnit.submonoid R) R :=
-    IsLocalization.at_units _ le_rfl
-  apply Algebra.isPushout_of_isLocalization (IsUnit.submonoid R)
-
-lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    (f : R →+* S) (g : S →+* T) (hf : Function.Bijective g) (h1 : f.Finite) (h2 : f.Flat)
-    (x : PrimeSpectrum R) : (g.comp f).finrank x = f.finrank x := by
-  algebraize [f, g, (g.comp f)]
-  have : Algebra.IsPushout R S R T := .of_bijective_right _ _ _ hf
-  apply Algebra.rankAtStalk_eq_of_isPushout
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-lemma RingHom.finrank_comp_right_of_bijective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    (f : R →+* S) (g : S →+* T) (hg : Function.Bijective f) (h1 : g.Finite) (h2 : g.Flat)
-    (x : PrimeSpectrum S) :
-    (g.comp f).finrank (PrimeSpectrum.comap f x) = g.finrank x := by
-  algebraize [f, g, (g.comp f)]
-  have : Module.Finite R T := h1.comp <| .of_surjective _ hg.2
-  have : Module.Flat R T := (RingHom.Flat.of_bijective hg).comp h2
-  have : Algebra.IsPushout R T S T := .of_bijective_left _ _ _ hg
-  exact (Algebra.rankAtStalk_eq_of_isPushout _ _ _ _ _).symm
-
-lemma CommRingCat.finrank_eq_of_isPushout {R S T P : CommRingCat.{u}} {f : R ⟶ S} {g : R ⟶ T}
-    {inl : S ⟶ P} {inr : T ⟶ P} (h : IsPushout f g inl inr) (hf : f.hom.Flat) (hfin : f.hom.Finite)
-    (x : PrimeSpectrum T) : inr.hom.finrank x = f.hom.finrank (PrimeSpectrum.comap g.hom x) := by
-  algebraize [f.hom, g.hom, inl.hom, inr.hom, inl.hom.comp f.hom]
-  have : IsScalarTower R T P := .of_algebraMap_eq' <| congr($(h.1.1).hom)
-  have : Algebra.IsPushout R S T P := CommRingCat.isPushout_iff_isPushout.mp h
-  exact Algebra.rankAtStalk_eq_of_isPushout R S T P x
+The following should be moved to `Mathlib.AlgebraicGeometry.Morphisms.Affine`.
+-/
 
 namespace AlgebraicGeometry
 
@@ -151,12 +112,28 @@ lemma isPushout_appTop_of_isPullback [IsAffine X] [IsAffine Y] [IsAffine Z]
 
 end
 
+/-!
+### Scheme existence lemma
+
+The following should be moved to `Mathlib.AlgebraicGeometry.AffineScheme`.
+-/
+
+/-- Every point of a scheme is in the image of some affine open immersion. -/
+lemma Scheme.exists_Spec_base_eq {X : Scheme.{u}} (x : X) :
+    ∃ (R : CommRingCat.{u}) (f : Spec R ⟶ X) (_ : IsOpenImmersion f) (y : Spec R),
+    f.base y = x :=
+  ⟨X.affineOpenCover.X _, X.affineOpenCover.f _, inferInstance, X.affineOpenCover.covers x⟩
+
+/-! ## Rank of a morphism of schemes -/
+
 variable {X S : Scheme.{u}} (f : X ⟶ S)
 
-def IsAffine.finrank [IsAffine S] (f : X ⟶ S) (s : S) : ℕ :=
+/-- The rank of a morphism `f : X ⟶ S` of schemes at a point `s : S`, when `S` is affine.
+This is used as an auxiliary definition to define `AlgebraicGeometry.finrank`. -/
+private def IsAffine.finrank [IsAffine S] (f : X ⟶ S) (s : S) : ℕ :=
   (f.appTop).hom.finrank (S.isoSpec.hom.base s)
 
-lemma IsAffine.finrank_of_isPullback {Y T : Scheme.{u}} [IsAffine S] [IsAffine T]
+private lemma IsAffine.finrank_of_isPullback {Y T : Scheme.{u}} [IsAffine S] [IsAffine T]
     (f' : Y ⟶ T) (g' : Y ⟶ X) (g : T ⟶ S) (h : IsPullback g' f' f g) [Flat f] [IsFinite f]
     (s : S) (t : T) (hs : g.base t = s) :
     IsAffine.finrank f' t = IsAffine.finrank f s := by
@@ -170,7 +147,7 @@ lemma IsAffine.finrank_of_isPullback {Y T : Scheme.{u}} [IsAffine S] [IsAffine T
   rw [← Scheme.Hom.comp_apply, ← Scheme.isoSpec_hom_naturality]
   rfl
 
-lemma IsAffine.finrank_snd {T : Scheme.{u}} [IsAffine S] [IsAffine T]
+private lemma IsAffine.finrank_snd {T : Scheme.{u}} [IsAffine S] [IsAffine T]
     (g : T ⟶ S) [Flat f] [IsFinite f] (x : T) :
     IsAffine.finrank (pullback.snd f g) x = IsAffine.finrank f (g.base x) := by
   dsimp [finrank]
@@ -178,20 +155,24 @@ lemma IsAffine.finrank_snd {T : Scheme.{u}} [IsAffine S] [IsAffine T]
   · apply IsPullback.of_hasPullback
   · rfl
 
-lemma IsAffine.finrank_comp_left_of_isIso {X Y Z : Scheme.{u}} [IsAffine Z]
+private lemma IsAffine.finrank_comp_left_of_isIso {X Y Z : Scheme.{u}} [IsAffine Z]
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [IsFinite g] [Flat g] :
     IsAffine.finrank (f ≫ g) = IsAffine.finrank g := by
   ext z
   apply finrank_of_isPullback g (f ≫ g) f (𝟙 _) _ _ _ rfl
   exact IsPullback.of_horiz_isIso (by simp)
 
+/-- The rank of a morphism `f : X ⟶ S` of schemes at a point `s : S`. When `f` is finite,
+flat and locally of finite presentation, this is a locally constant function (see
+`AlgebraicGeometry.isLocallyConstant_finrank`). -/
 def finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
 
 set_option backward.isDefEq.respectTransparency false in
-lemma finrank_eq_finrank_snd_of_isAffine {T : Scheme.{u}} (g : T ⟶ S) [IsAffine T] (t : T) [Flat f]
-    [IsFinite f] : finrank f (g.base t) = IsAffine.finrank (pullback.snd f g) t := by
+private lemma finrank_eq_finrank_snd_of_isAffine {T : Scheme.{u}} (g : T ⟶ S) [IsAffine T] (t : T)
+    [Flat f] [IsFinite f] :
+    finrank f (g.base t) = IsAffine.finrank (pullback.snd f g) t := by
   let i := S.affineOpenCover.f (S.affineOpenCover.idx (g.base t))
   dsimp only [finrank]
   let Y := pullback i g
@@ -224,15 +205,21 @@ lemma finrank_eq_finrank_snd_of_isAffine {T : Scheme.{u}} (g : T ⟶ S) [IsAffin
     congr
     exact (Y.affineOpenCover.covers y).choose_spec.symm
 
-lemma finrank_eq_of_isAffine [IsAffine S] [Flat f] [IsFinite f] (s : S) :
+private lemma finrank_eq_of_isAffine [IsAffine S] [Flat f] [IsFinite f] (s : S) :
     finrank f s = IsAffine.finrank f s := by
   rw [show s = (𝟙 S : S ⟶ S).base s from rfl, finrank_eq_finrank_snd_of_isAffine,
     IsAffine.finrank_snd]
 
 @[simp]
-lemma finrank_SpecMap_eq_finrank {R S : CommRingCat.{u}} (f : R ⟶ S) [IsFinite (Spec.map f)]
-    [Flat (Spec.map f)] :
+lemma finrank_SpecMap_eq_finrank {R S : CommRingCat.{u}} {f : R ⟶ S} (hf₁ : f.hom.Finite)
+    (hf₂ : f.hom.Flat) :
     finrank (Spec.map f) = f.hom.finrank := by
+  have : IsFinite (Spec.map f) := by
+    rwa [HasAffineProperty.SpecMap_iff_of_affineAnd (hQi := RingHom.finite_respectsIso)
+      (P := @IsFinite)]
+    infer_instance
+  have : Flat (Spec.map f) := by
+    rwa [HasRingHomProperty.Spec_iff (P := @Flat)]
   have hf : (Spec.map f).appTop.hom.Finite :=
     ((HasAffineProperty.iff_of_isAffine (P := @IsFinite)).mp ‹_›).2
   have hf2 := HasRingHomProperty.appTop (P := @Flat) _ ‹_›
@@ -262,24 +249,15 @@ lemma rank_SpecMap_algebraMap (R S : Type u) [CommRing R] [CommRing S] [Algebra 
     [Module.Finite R S] [Module.Flat R S] (x : PrimeSpectrum R) :
     finrank (Spec.map (CommRingCat.ofHom <| algebraMap R S)) x =
       Module.rankAtStalk S x := by
-  have : IsFinite (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
-    rw [HasAffineProperty.SpecMap_iff_of_affineAnd (P := @IsFinite) (Q := RingHom.Finite)]
-    · simp only [CommRingCat.hom_ofHom, RingHom.finite_algebraMap]
-      infer_instance
-    · infer_instance
-    · exact RingHom.finite_respectsIso
-  have : Flat (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
-    simpa [HasRingHomProperty.Spec_iff (P := @Flat), RingHom.flat_algebraMap_iff]
-  simp [finrank_SpecMap_eq_finrank]
+  rw [finrank_SpecMap_eq_finrank]
+  · simp
+  · simpa [RingHom.finite_algebraMap]
+  · simpa [RingHom.flat_algebraMap_iff]
+
+/-! ## Properties of the rank function -/
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [IsFinite f]
     [LocallyOfFinitePresentation f]
-
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite f] :
-    IsFinite (pullback.snd f g) := MorphismProperty.pullback_snd _ _ ‹_›
-
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite g] :
-    IsFinite (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
 
 @[simp]
 lemma finrank_comp_left_of_isIso {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [Flat g]
@@ -333,18 +311,20 @@ nonrec lemma one_le_finrank_map [Flat f] [IsFinite f] [LocallyOfFinitePresentati
     exact this _ _ _ ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  rw [finrank_SpecMap_eq_finrank]
+  have h₁ : φ.hom.Flat := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
+  have h₂ : φ.hom.Finite := (HasAffineProperty.SpecMap_iff_of_affineAnd
+      (P := @IsFinite) (Q := RingHom.Finite) inferInstance RingHom.finite_respectsIso _).mp ‹_›
+  rw [finrank_SpecMap_eq_finrank h₂ h₁]
   algebraize [φ.hom]
-  rw [← RingHom.algebraMap_toAlgebra φ.hom, finrank_algebraMap]
+  rw [← RingHom.algebraMap_toAlgebra φ.hom, RingHom.finrank_algebraMap]
   change 0 < _
-  have : Module.Flat R S := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
-  have : Module.Finite R S := (HasAffineProperty.SpecMap_iff_of_affineAnd
-    (P := @IsFinite) (Q := RingHom.Finite) inferInstance RingHom.finite_respectsIso _).mp ‹_›
   rw [PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap]
   use x
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+/-- A finite flat locally finitely presented morphism is surjective if and only if its rank
+function is at least `1` everywhere. -/
 nonrec lemma one_le_finrank_iff_surjective [Flat f] [IsFinite f] [LocallyOfFinitePresentation f] :
     1 ≤ finrank f ↔ Surjective f := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ?_⟩
@@ -367,22 +347,18 @@ nonrec lemma one_le_finrank_iff_surjective [Flat f] [IsFinite f] [LocallyOfFinit
     constructor
     intro x
     specialize h x
-    rw [finrank_SpecMap_eq_finrank] at h
-    algebraize [φ.hom]
-    have : Module.Flat R S := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
-    have : Module.Finite R S := (HasAffineProperty.SpecMap_iff_of_affineAnd
+    have h₁ : φ.hom.Flat := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
+    have h₂ : φ.hom.Finite := (HasAffineProperty.SpecMap_iff_of_affineAnd
       (P := @IsFinite) (Q := RingHom.Finite) inferInstance RingHom.finite_respectsIso _).mp ‹_›
+    rw [finrank_SpecMap_eq_finrank h₂ h₁] at h
+    algebraize [φ.hom]
     exact (PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap _).mp h
   · intro y
     obtain ⟨x, rfl⟩ := f.surjective y
     exact one_le_finrank_map f x
 
-lemma Scheme.exists_Spec_base_eq {X : Scheme.{u}} (x : X) :
-    ∃ (R : CommRingCat.{u}) (f : Spec R ⟶ X) (_ : IsOpenImmersion f) (y : Spec R),
-    f.base y = x :=
-  ⟨X.affineOpenCover.X _, X.affineOpenCover.f _, inferInstance, X.affineOpenCover.covers x⟩
-
 set_option backward.isDefEq.respectTransparency false in
+/-- The rank function of a finite flat locally finitely presented morphism is locally constant. -/
 nonrec lemma isLocallyConstant_finrank : IsLocallyConstant (finrank f) := by
   wlog hY : ∃ R, Y = Spec R
   · rw [IsLocallyConstant.iff_exists_open]
@@ -402,11 +378,11 @@ nonrec lemma isLocallyConstant_finrank : IsLocallyConstant (finrank f) := by
     exact this _ _ ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  rw [finrank_SpecMap_eq_finrank]
-  algebraize [φ.hom]
-  have : Module.Flat R S := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
-  have : Module.Finite R S := (HasAffineProperty.SpecMap_iff_of_affineAnd
+  have h₁ : φ.hom.Flat := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
+  have h₂ : φ.hom.Finite := (HasAffineProperty.SpecMap_iff_of_affineAnd
     (P := @IsFinite) (Q := RingHom.Finite) inferInstance RingHom.finite_respectsIso _).mp ‹_›
+  rw [finrank_SpecMap_eq_finrank h₂ h₁]
+  algebraize [φ.hom]
   have : Algebra.FinitePresentation R S :=
     (HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation)).mp ‹_›
   have := Module.FinitePresentation.of_finite_of_finitePresentation
@@ -416,17 +392,21 @@ lemma continuous_finrank : Continuous (finrank f) :=
   (isLocallyConstant_finrank f).continuous
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The rank of an isomorphism is `1`. -/
 lemma finrank_eq_one_of_isIso [IsIso f] : finrank f = 1 := by
   ext y
   obtain ⟨R, g, _, y, rfl⟩ := Y.exists_Spec_base_eq y
   have : Nontrivial R := y.nontrivial
   rw [← finrank_pullback_snd, ← Category.comp_id (pullback.snd f g), finrank_comp_left_of_isIso,
     ← Spec.map_id, finrank_SpecMap_eq_finrank, CommRingCat.hom_id, Pi.one_apply,
-    ← Algebra.algebraMap_self, finrank_algebraMap]
-  simp
+    ← Algebra.algebraMap_self, RingHom.finrank_algebraMap]
+  · simp
+  · exact RingHom.Finite.id R
+  · exact RingHom.Flat.id ↑R
 
-nonrec lemma isIso_iff_rank_eq [Flat f] [IsFinite f] [LocallyOfFinitePresentation f] :
-    CategoryTheory.IsIso f ↔ finrank f = 1 := by
+/-- A finite flat locally finitely presented morphism is an isomorphism if and only if
+its rank function is constant equal to `1`. -/
+nonrec lemma isIso_iff_rank_eq : IsIso f ↔ finrank f = 1 := by
   refine ⟨fun h ↦ finrank_eq_one_of_isIso f, fun h ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
   · change MorphismProperty.isomorphisms _ _
@@ -447,14 +427,14 @@ nonrec lemma isIso_iff_rank_eq [Flat f] [IsFinite f] [LocallyOfFinitePresentatio
     rw [finrank_comp_left_of_isIso, h]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  algebraize [φ.hom]
-  have : Module.Flat R S := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
-  have : Module.Finite R S := (HasAffineProperty.SpecMap_iff_of_affineAnd
+  have h₁ : φ.hom.Flat := (HasRingHomProperty.Spec_iff (P := @Flat)).mp ‹_›
+  have h₂ : φ.hom.Finite := (HasAffineProperty.SpecMap_iff_of_affineAnd
     (P := @IsFinite) (Q := RingHom.Finite) inferInstance RingHom.finite_respectsIso _).mp ‹_›
+  algebraize [φ.hom]
   have : IsIso φ := by
     apply (ConcreteCategory.isIso_iff_bijective φ).mpr
     apply Module.algebraMap_bijective_of_rankAtStalk
-    rwa [finrank_SpecMap_eq_finrank] at h
+    rwa [finrank_SpecMap_eq_finrank h₂ h₁] at h
   infer_instance
 
 lemma finrank_eq_const_of_preconnectedSpace [PreconnectedSpace Y] (y y' : Y) :

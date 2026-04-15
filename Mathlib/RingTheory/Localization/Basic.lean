@@ -274,7 +274,29 @@ lemma smul_mem_iff {N' : Submodule R' M'} {x : M'} {s : S} :
 
 end smul
 
-section at_units
+section Units
+
+lemma of_le_isUnit_of_bijective {M : Submonoid R}
+    (hM : Algebra.algebraMapSubmonoid S M ≤ IsUnit.submonoid S)
+    (h : Function.Bijective (algebraMap R S)) :
+    IsLocalization M S where
+  map_units y := hM ⟨_, y.prop, rfl⟩
+  surj y := by
+    obtain ⟨x, rfl⟩ := h.surjective y
+    use ⟨x, 1⟩
+    simp
+  exists_of_eq {x y} hxy := ⟨1, by simp [h.injective hxy]⟩
+
+lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
+  of_le_isUnit_of_bijective (by simpa) Function.bijective_id
+
+@[deprecated (since := "2026-04-15")]
+alias at_units := of_le_isUnit
+
+instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
+
+instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
+  IsLocalization.of_le_isUnit Algebra.algebraMapSubmonoid_isUnit_le
 
 variable (R M)
 
@@ -293,7 +315,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 
-end at_units
+end Units
 
 end IsLocalization
 

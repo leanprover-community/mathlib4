@@ -419,7 +419,8 @@ section Algebra.algebraMapSubmonoid
 
 @[simp]
 theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    [Algebra R A] (M : Submonoid R) [Semiring B] [Algebra R B] [Algebra A B]
+    [IsScalarTower R A B] :
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 

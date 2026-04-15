@@ -151,6 +151,11 @@ lemma algebraMapSubmonoid_powers {S : Type*} [Semiring S] [Algebra R S] (r : R) 
     Algebra.algebraMapSubmonoid S (.powers r) = Submonoid.powers (algebraMap R S r) := by
   simp [Algebra.algebraMapSubmonoid]
 
+lemma algebraMapSubmonoid_isUnit_le {S : Type*} [Semiring S] [Algebra R S] :
+    algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
+
 end Semiring
 
 section CommSemiring

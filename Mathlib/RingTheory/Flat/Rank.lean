@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
 
@@ -34,7 +35,11 @@ open TensorProduct
 
 attribute [local instance] Module.free_of_flat_of_isLocalRing
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S] [Module.Finite R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+
+section
+
+variable [Module.Flat R S] [Module.Finite R S]
 
 lemma PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap (p : PrimeSpectrum R) :
     0 < Module.rankAtStalk (R := R) S p ↔ p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
@@ -121,3 +126,59 @@ lemma Module.algebraMap_bijective_iff_rankAtStalk :
   grind
 
 alias ⟨Module.algebraMap_bijective_of_rankAtStalk, _⟩ := Module.algebraMap_bijective_iff_rankAtStalk
+
+end
+
+section
+
+/-- The rank of a ring homomorphism `f : R →+* S` at a prime `x` of `R` is the rank of
+`S` as an `R`-module at the stalk of `x`. -/
+noncomputable def RingHom.finrank {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+    (x : PrimeSpectrum R) : ℕ :=
+  letI : Algebra R S := f.toAlgebra
+  Module.rankAtStalk S x
+
+@[simp]
+lemma RingHom.finrank_algebraMap :
+    (algebraMap R S).finrank = Module.rankAtStalk (R := R) S := by
+  ext
+  rw [RingHom.finrank, toAlgebra_algebraMap]
+
+lemma Algebra.rankAtStalk_eq_of_isPushout (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    (R' S' : Type*) [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    [Algebra.IsPushout R S R' S'] [Module.Flat R S] [Module.Finite R S] (x : PrimeSpectrum R') :
+    Module.rankAtStalk S' x = Module.rankAtStalk S (PrimeSpectrum.comap (algebraMap R R') x) := by
+  have : IsPushout R R' S S' := Algebra.IsPushout.symm inferInstance
+  have := Module.rankAtStalk_eq_of_equiv (Algebra.IsPushout.equiv R R' S S').symm.toLinearEquiv
+  rw [Module.rankAtStalk_eq_of_equiv (Algebra.IsPushout.equiv R R' S S').symm.toLinearEquiv,
+    Module.rankAtStalk_baseChange]
+
+lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    (f : R →+* S) (g : S →+* T) (hf : Function.Bijective g) (h1 : f.Finite) (h2 : f.Flat)
+    (x : PrimeSpectrum R) : (g.comp f).finrank x = f.finrank x := by
+  algebraize [f, g, (g.comp f)]
+  have : Algebra.IsPushout R S R T := .of_bijective_right _ _ hf
+  apply Algebra.rankAtStalk_eq_of_isPushout
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+lemma RingHom.finrank_comp_right_of_bijective {R S T : Type*} [CommRing R] [CommRing S]
+    [CommRing T] (f : R →+* S) (g : S →+* T) (hg : Function.Bijective f) (h1 : g.Finite)
+    (h2 : g.Flat) (x : PrimeSpectrum S) :
+    (g.comp f).finrank (PrimeSpectrum.comap f x) = g.finrank x := by
+  algebraize [f, g, (g.comp f)]
+  have : Module.Finite R T := h1.comp <| .of_surjective _ hg.2
+  have : Module.Flat R T := (RingHom.Flat.of_bijective hg).comp h2
+  have : Algebra.IsPushout R T S T := .of_bijective_left _ _ hg
+  exact (Algebra.rankAtStalk_eq_of_isPushout _ _ _ _ _).symm
+
+lemma CommRingCat.finrank_eq_of_isPushout {R S T P : CommRingCat.{u}} {f : R ⟶ S} {g : R ⟶ T}
+    {inl : S ⟶ P} {inr : T ⟶ P} (h : CategoryTheory.IsPushout f g inl inr) (hf : f.hom.Flat)
+    (hfin : f.hom.Finite) (x : PrimeSpectrum T) :
+    inr.hom.finrank x = f.hom.finrank (PrimeSpectrum.comap g.hom x) := by
+  algebraize [f.hom, g.hom, inl.hom, inr.hom, inl.hom.comp f.hom]
+  have : IsScalarTower R T P := .of_algebraMap_eq' <| congr($(h.1.1).hom)
+  have : Algebra.IsPushout R S T P := CommRingCat.isPushout_iff_isPushout.mp h
+  exact Algebra.rankAtStalk_eq_of_isPushout R S T P x
+
+end
