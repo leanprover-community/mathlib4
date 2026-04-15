@@ -118,7 +118,6 @@ lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
     simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
   simp only [NNReal.nndist_eq, max_eq_right, tsub_zero, zero_tsub, zero_le']
@@ -140,7 +139,7 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
   by_cases! c_pos : 0 < c
-  · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
+  · convert NNReal.ball_zero_eq_Ico' (NNReal.mk c c_pos.le)
     simp [Real.toNNReal, c_pos.le]
   simp [c_pos]
 
@@ -149,7 +148,7 @@ lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
 
 lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
     Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
-  convert NNReal.closedBall_zero_eq_Icc' ⟨c, c_nn⟩
+  convert NNReal.closedBall_zero_eq_Icc' (NNReal.mk c c_nn)
   simp [Real.toNNReal, c_nn]
 
 end NNReal

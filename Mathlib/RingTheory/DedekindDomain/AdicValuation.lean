@@ -683,7 +683,6 @@ lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := 
   rw [← h_mono.map_max]
   exact h_mono <| v.intValuation.map_add x y
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
 def intAdicAbv : AbsoluteValue R ℝ where
@@ -719,7 +718,6 @@ lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb)
   rw [← h_mono.map_max]
   exact h_mono ((v.valuation _).map_add x y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
 def adicAbv : AbsoluteValue K ℝ where

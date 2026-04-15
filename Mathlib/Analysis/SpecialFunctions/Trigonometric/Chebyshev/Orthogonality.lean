@@ -43,10 +43,12 @@ namespace Polynomial.Chebyshev
 
 open Real intervalIntegral MeasureTheory
 
+open scoped NNReal
+
 /-- Lebesgue measure scaled by √(1 - x ^ 2)⁻¹. -/
 noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
-    fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
+    fun x ↦ ENNReal.ofNNReal (.mk (√(1 - x ^ 2)⁻¹) (by positivity))).restrict (Set.Ioc (-1) 1)
 
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by

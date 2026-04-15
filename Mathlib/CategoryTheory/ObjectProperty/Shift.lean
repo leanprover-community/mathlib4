@@ -72,6 +72,9 @@ class IsStableUnderShiftBy (a : A) : Prop where
 lemma le_shift (a : A) [P.IsStableUnderShiftBy a] :
     P ≤ P.shift a := IsStableUnderShiftBy.le_shift
 
+instance (a : A) [P.IsStableUnderShiftBy a] [P.Nonempty] : (P.shift a).Nonempty :=
+  .mono (P.le_shift a)
+
 instance (a : A) : IsStableUnderShiftBy (⊥ : ObjectProperty C) a where
   le_shift _ h := False.elim h
 
@@ -124,6 +127,9 @@ lemma prop_shiftClosure_iff (X : C) :
 lemma le_shiftClosure : P ≤ P.shiftClosure A := by
   intro X hX
   exact ⟨X, 0, (shiftFunctorZero C A).symm.app X, hX⟩
+
+instance [P.Nonempty] : (P.shiftClosure A).Nonempty :=
+  .mono P.le_shiftClosure
 
 variable {P Q} in
 lemma monotone_shiftClosure (h : P ≤ Q) : P.shiftClosure A ≤ Q.shiftClosure A := by

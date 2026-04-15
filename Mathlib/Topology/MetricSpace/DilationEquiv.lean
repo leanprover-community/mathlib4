@@ -94,7 +94,6 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 
 lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Identity map as a `DilationEquiv`. -/
 @[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
@@ -181,7 +180,6 @@ def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
 theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
   rw [← coe_toEquiv, ← toPerm_apply, map_pow, Equiv.Perm.coe_pow]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Once `IsometryEquiv` follows the `*EquivClass` pattern, replace this with an instance
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/

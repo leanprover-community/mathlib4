@@ -1045,6 +1045,37 @@ lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
   simp [Finsupp.prod, Finset.prod_disjSum]
 
+@[simp]
+lemma comapDomain_inl_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inl (f.sumElim g) Sum.inl_injective.injOn = f := by
+  ext; simp
+
+@[simp]
+lemma comapDomain_inr_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inr (f.sumElim g) Sum.inr_injective.injOn = g := by
+  ext; simp
+
+@[simp]
+lemma embDomain_inl (a : α →₀ γ) :
+    embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ γ) := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma embDomain_inr (b : β →₀ γ) :
+    embDomain Function.Embedding.inr b = sumElim (0 : α →₀ γ) b := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
+    (comapDomain Sum.inl c Sum.inl_injective.injOn).sumElim
+      (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
+  ext (_ | _) <;> simp
+
+@[simp]
+lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
+    (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
+  ext (_ | _) <;> simp
+
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/

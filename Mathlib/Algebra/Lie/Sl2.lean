@@ -226,4 +226,22 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M]
 
 end HasPrimitiveVectorWith
 
+variable {m : M} {μ : R}
+local notation "φ " n => ((toEnd R L M e) ^ n) m
+
+lemma lie_e_pow_toEnd_e (n : ℕ) :
+    ⁅e, φ n⁆ = φ (n + 1) := by
+  simp [pow_succ']
+
+lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
+    (hm : ⁅h, m⁆ = μ • m) (n : ℕ) :
+    ⁅h, φ n⁆ = (μ + 2 * n) • φ n := by
+  induction n with
+  | zero => simpa using hm
+  | succ n ih =>
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+      leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
+    congr 1
+    ring
+
 end IsSl2Triple

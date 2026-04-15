@@ -210,7 +210,7 @@ lemma LocPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 lemma Topology.IsQuotientMap.locPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocPathConnectedSpace Y :=
-  h.2 ▸ LocPathConnectedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ LocPathConnectedSpace.coinduced f
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 instance Quot.locPathConnectedSpace {r : X → X → Prop} : LocPathConnectedSpace (Quot r) :=
@@ -221,9 +221,7 @@ instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (
   isQuotientMap_quotient_mk'.locPathConnectedSpace
 
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
-instance Sum.locPathConnectedSpace.{u} {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    [LocPathConnectedSpace X] [LocPathConnectedSpace Y] :
-    LocPathConnectedSpace (X ⊕ Y) := by
+instance Sum.locPathConnectedSpace [LocPathConnectedSpace Y] : LocPathConnectedSpace (X ⊕ Y) := by
   rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
   obtain x | y := x
   · refine ⟨Sum.inl '' (pathComponentIn (Sum.inl ⁻¹' u) x), ?_, ?_, ?_⟩

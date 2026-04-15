@@ -140,7 +140,6 @@ instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMe
   measure_univ_lt_top :=
     (Measure.comap_apply_le _ _ nullMeasurableSet_univ).trans_lt (measure_lt_top _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
   rw [← MeasureTheory.Measure.measure_univ_eq_zero, ← coe_measureUnivNNReal]

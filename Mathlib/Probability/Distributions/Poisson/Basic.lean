@@ -108,19 +108,8 @@ section PoissonPMF
 noncomputable
 def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / (n)!
 
-set_option linter.deprecated false in
-@[deprecated hasSum_one_poissonMeasure (since := "2026-03-08")]
-lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
-  let r := r.toReal
-  unfold poissonPMFReal
-  apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
-  simp only [mul_one]
-  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / i.factorial)) =
-      fun i ↦ r ^ i / i.factorial := by
-    ext n
-    rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
-  rw [this, exp_eq_exp_ℝ]
-  exact NormedSpace.expSeries_div_hasSum_exp r
+@[deprecated (since := "2026-03-08")]
+alias poissonPMFRealSum := hasSum_one_poissonMeasure
 
 set_option linter.deprecated false in
 @[deprecated poissonMeasure_real_singleton_pos (since := "2026-03-08")]

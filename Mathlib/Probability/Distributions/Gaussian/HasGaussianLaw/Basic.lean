@@ -83,6 +83,12 @@ namespace HasGaussianLaw
 
 variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
+lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
+    HasGaussianLaw X P where
+  isGaussian_map := by
+    have : IsProbabilityMeasure (P.map X) := P.isProbabilityMeasure_map (by fun_prop)
+    exact .of_subsingleton
+
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
   rw [hX.isGaussian_map.charFun_eq, integral_map hX.aemeasurable (by fun_prop),

@@ -163,7 +163,7 @@ protected lemma DeltaGeneratedSpace.sup {X : Type*} {t₁ t₂ : TopologicalSpac
 /-- Quotients of delta-generated spaces are delta-generated. -/
 lemma Topology.IsQuotientMap.deltaGeneratedSpace [DeltaGeneratedSpace X]
     {f : X → Y} (h : IsQuotientMap f) : DeltaGeneratedSpace Y :=
-  h.2 ▸ DeltaGeneratedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ DeltaGeneratedSpace.coinduced f
 
 /-- Quotients of delta-generated spaces are delta-generated. -/
 instance Quot.deltaGeneratedSpace [DeltaGeneratedSpace X] {r : X → X → Prop} :

@@ -43,6 +43,12 @@ lemma op_iff (P : ObjectProperty C) (X : Cᵒᵖ) :
 lemma unop_iff (P : ObjectProperty Cᵒᵖ) (X : C) :
     P.unop X ↔ P (op X) := Iff.rfl
 
+instance (P : ObjectProperty C) [P.Nonempty] : P.op.Nonempty :=
+  ⟨op P.arbitrary, P.prop_arbitrary⟩
+
+instance (P : ObjectProperty Cᵒᵖ) [P.Nonempty] : P.unop.Nonempty :=
+  ⟨P.arbitrary.unop, P.prop_arbitrary⟩
+
 @[simp]
 lemma op_unop (P : ObjectProperty Cᵒᵖ) : P.unop.op = P := rfl
 

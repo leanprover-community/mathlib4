@@ -68,7 +68,7 @@ theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
 
 /-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
 instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
+  inferInstanceAs <| Module R p
 
 instance restrictScalars.isScalarTower (p : Submodule R M) :
     IsScalarTower S R (p.restrictScalars S) where

@@ -48,7 +48,6 @@ lemma cauchyBound_C (x : K) : cauchyBound (C x) = 1 := by
 @[simp]
 lemma cauchyBound_one : cauchyBound (1 : K[X]) = 1 := cauchyBound_C 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cauchyBound_X : cauchyBound (X : K[X]) = 1 := by
   simp [cauchyBound]

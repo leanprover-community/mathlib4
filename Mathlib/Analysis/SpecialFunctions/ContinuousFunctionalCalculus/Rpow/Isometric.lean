@@ -43,7 +43,6 @@ lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac
     ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) :=
   congr(NNReal.toReal $(nnnorm_nnrpow a hr ha))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
   exact nnnorm_nnrpow a (by simp) ha
@@ -56,7 +55,6 @@ variable [ContinuousStar A] [CompleteSpace A]
 lemma continuousOn_sqrt : ContinuousOn sqrt {a : A | 0 ≤ a} :=
   continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
 
-set_option backward.isDefEq.respectTransparency false in
 lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a} := by
   obtain (rfl | hr) := eq_zero_or_pos r
   · simpa using continuousOn_const

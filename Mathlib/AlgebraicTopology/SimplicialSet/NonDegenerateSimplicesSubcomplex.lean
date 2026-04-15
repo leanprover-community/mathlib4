@@ -57,11 +57,30 @@ lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
   grind [cases SSet.Subcomplex.N]
 
+variable (A) in
+@[elab_as_elim]
+lemma cases {motive : X.N → Prop}
+    (mem : ∀ (s : X.N), s.subcomplex ≤ A → motive s)
+    (notMem : ∀ (s : A.N), motive s.toN)
+    (s : X.N) :
+    motive s := by
+  by_cases hs : s.subcomplex ≤ A
+  · exact mem s hs
+  · exact notMem (.mk' s (by simpa using hs))
+
+lemma eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
+    x = y ↔ S.mk x.simplex = S.mk y.simplex := by
+  rw [N.ext_iff, SSet.N.ext_iff]
+
 instance : PartialOrder A.N :=
   PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
 
 lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
   Iff.rfl
+
+lemma lt_iff {x y : A.N} : x < y ↔ x.toN < y.toN :=
+  Iff.rfl
+
 section
 
 variable (s : A.N) {d : ℕ} (hd : s.dim = d)
@@ -80,5 +99,12 @@ lemma cast_eq_self : s.cast hd = s := by
 end
 
 end N
+
+lemma existsN {X : SSet.{u}} {n : ℕ} (s : X _⦋n⦌) {A : X.Subcomplex}
+    (hs : s ∉ A.obj _) :
+    ∃ (x : A.N) (f : ⦋n⦌ ⟶ ⦋x.dim⦌), Epi f ∧ X.map f.op x.simplex = s := by
+  refine ⟨⟨(S.mk s).toN, fun h ↦ hs ?_⟩, ⟨(S.mk s).toNπ, inferInstance, by simp⟩⟩
+  simp only [← ofSimplex_le_iff] at h ⊢
+  simpa using h
 
 end SSet.Subcomplex

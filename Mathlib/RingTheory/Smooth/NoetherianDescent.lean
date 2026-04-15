@@ -84,6 +84,11 @@ lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
 set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
     rw [Subalgebra.setRange_algebraMap]
     grind [subalgebra, Algebra.subset_adjoin]
 
@@ -96,6 +101,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.subalgebra R) A) := by
   have : ((D.h i).coeffs : Set _) ⊆ ⋃ i, ((D.h i).coeffs : Set A) :=
     Set.subset_iUnion_of_subset i subset_rfl
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 
@@ -106,6 +116,12 @@ lemma coeffs_p_subset (i) :
   intro p hp
   have : (p.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.p i).coeffs, ↑x.coeffs :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset p hp subset_rfl)
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 
@@ -116,6 +132,12 @@ lemma coeffs_q_subset (i) :
   intro q hq
   have : (q.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.q i).coeffs, ↑(coeffs x) :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset q hq subset_rfl)
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 

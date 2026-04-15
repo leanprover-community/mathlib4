@@ -254,9 +254,7 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
-    IsSimpleGroup α ↔ (Nat.card α).Prime :=
-  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
 @[deprecated (since := "2025-11-19")]

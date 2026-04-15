@@ -374,6 +374,11 @@ theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
   rfl
 
 @[simp]
+theorem toCompacts_sup (s t : NonemptyCompacts α) :
+    (s ⊔ t).toCompacts = s.toCompacts ⊔ t.toCompacts :=
+  rfl
+
+@[simp]
 theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
   rfl
 
@@ -500,6 +505,11 @@ protected abbrev prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
     (K ×ˢ L : NonemptyCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+  rfl
+
+@[simp]
+theorem toCompacts_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
+    (K ×ˢ L).toCompacts = K.toCompacts ×ˢ L.toCompacts :=
   rfl
 
 @[simp]

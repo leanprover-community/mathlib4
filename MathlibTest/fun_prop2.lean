@@ -1,10 +1,11 @@
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.Analysis.Meromorphic.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
@@ -75,6 +76,11 @@ example : AEMeasurable T := by
   unfold T S
   fun_prop
 
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh t) z := by
+  fun_prop
+
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh (2 * t)) z := by
+  fun_prop
 
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 

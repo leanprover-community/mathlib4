@@ -41,9 +41,9 @@ private abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
 /-- Run a `TreeM` computation using `d : RefinedDiscrTree`, without losing the reference to `d`. -/
 @[inline] private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
-    MetaM (Except Exception β × RefinedDiscrTree α) := do
+    MetaM (β × RefinedDiscrTree α) := do
   let { tries, root } := d
-  let (result, tries) ← (try Except.ok <$> m catch ex => pure (.error ex)).run tries
+  let (result, tries) ← m.run tries
   pure (result, { tries, root })
 
 private def setTrie (i : TrieIndex) (v : Trie α) : TreeM α Unit :=
@@ -269,12 +269,9 @@ Find values that match `e` in `d`.
 * If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.
-
-Note: to preserve the reference to `d`, `getMatch` will never throw an error,
-and instead it returns an `Except Exception (MatchResult α)`.
 -/
 def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
-    MetaM (Except Exception (MatchResult α) × RefinedDiscrTree α) := do
+    MetaM (MatchResult α × RefinedDiscrTree α) := do
   withReducible do runTreeM d do
     let (key, keys) ← encodeExpr e (labelledStars := false)
     let pMatch : PartialMatch := { keys, score := 0, trie := default }

@@ -355,9 +355,9 @@ def main():
         help="Skip the initial lake build (assumes .oleans are already fresh)",
     )
     parser.add_argument(
-        "--no-resume",
+        "--resume",
         action="store_true",
-        help="Ignore progress from a previous interrupted run",
+        help="Resume a previous interrupted run, skipping already-processed modules",
     )
     parser.add_argument(
         "--global-timeout",
@@ -399,7 +399,7 @@ def main():
 
     # Step 3b: filter out modules completed in a previous run
     resumed = 0
-    if not args.no_resume:
+    if args.resume:
         progress = load_progress()
         if progress:
             to_skip = []

@@ -46,7 +46,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 - [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
 
-- [Rote, *The Generalized Combinatorial Lason-Alon-Zippel-Schwartz
+- [Rote, *The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
   Nullstellensatz Lemma*][Rote_2023]
 
 -/

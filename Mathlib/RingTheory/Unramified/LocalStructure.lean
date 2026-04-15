@@ -201,7 +201,6 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [IsUnramifiedAt R Q] :
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
@@ -210,6 +209,11 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
   #adaptation_note /-- Needed after nightly-2023-02-23 -/
   have : p.IsPrime := Ideal.IsPrime.under R Q
   classical
+  #adaptation_note /-- After nightly-2026-04-06, typeclass synthesis fails to find these
+  instances; provide them explicitly. -/
+  letI : Module p.ResidueField (p.Fiber S) := TensorProduct.leftModule
+  letI : IsScalarTower p.ResidueField (p.Fiber S) (p.Fiber S) := IsScalarTower.right
+  letI : Module.Finite p.ResidueField (p.Fiber S) := Module.Finite.base_change R p.ResidueField S
   have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
   let α := PrimeSpectrum.primesOverOrderIsoFiber R S p
   obtain ⟨x, hx0, hx⟩ : ∃ x : Q.ResidueField, x ≠ 0 ∧ p.ResidueField[x] = ⊤ := by

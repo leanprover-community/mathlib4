@@ -129,7 +129,6 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
     f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This proves map_smul' of gnsNonUnitalStarAlgHom so that map_zero' can be proven as a direct
 consequence.

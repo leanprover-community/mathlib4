@@ -88,7 +88,7 @@ lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ :
   dsimp [extClass, SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  dsimp [singleδ, triangleOfSESδ]
+  dsimp [- Q_obj_single_obj, singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
     singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom,
     NatTrans.id_app, Category.id_comp, NatTrans.id_app]

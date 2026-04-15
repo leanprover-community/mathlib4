@@ -161,6 +161,9 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
+@[deprecated (since := "2026-04-03")]
+alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
+
 lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x

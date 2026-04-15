@@ -43,7 +43,7 @@ the action of `S = [[0, -1], [1, 0]]`.
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 1. **Write as absolutely convergent series**: Express `G2` as an absolutely convergent double sum
-  by adding and subtracting telescoping terms:
+   by adding and subtracting telescoping terms:
    `G₂(z) = 2ζ(2) + ∑' m n, 1/((mz+n)²(mz+n+1)) + δ(m,n)`
    where `δ` is a correction for boundary terms.
 
@@ -136,7 +136,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
       exact tsum_congr (fun b ↦ by simp [eisSummand, G2Term, aux_identity z a b, zpow_ofNat])
     · simpa only [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z, add_zero]
         using (G2Term_prod_summable z).prod
-  · grind [(G2Term_prod_summable z).prod.congr]
+  · exact (G2Term_prod_summable z).prod
   · exact summable_zero.congr
       fun b ↦ by simp [← tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z b]
 

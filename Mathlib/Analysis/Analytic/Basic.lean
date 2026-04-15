@@ -749,7 +749,6 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.uniform_geometric_approx h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taylor formula for an analytic function within a set, `IsBigO` version. -/
 theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesWithinAt f p s x) (n : ℕ) :
@@ -773,7 +772,6 @@ theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   simpa using hf.isBigO_sub_partialSum_pow n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has formal power series `∑ n, pₙ` in a set, within a ball of radius `r`, then
 for `y, z` in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is
 bounded above by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property

@@ -51,7 +51,6 @@ theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ)
 theorem rpow_zero (x : ℝ≥0) : x ^ (0 : ℝ) = 1 :=
   NNReal.eq <| Real.rpow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_zero_pos (x : ℝ≥0) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
 @[simp]
@@ -94,19 +93,15 @@ theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y 
 theorem rpow_add' (h : y + z ≠ 0) (x : ℝ≥0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_add_intCast (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n := by
   ext; exact Real.rpow_add_intCast (mod_cast hx) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_add_natCast (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * x ^ n := by
   ext; exact Real.rpow_add_natCast (mod_cast hx) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_sub_intCast (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
   ext; exact Real.rpow_sub_intCast (mod_cast hx) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_sub_natCast (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
   ext; exact Real.rpow_sub_natCast (mod_cast hx) _ _
 
@@ -344,7 +339,6 @@ theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0} {y z : ℝ} (hx0 : 0 < x) (hx1
     x ^ y ≤ x ^ z :=
   Real.rpow_le_rpow_of_exponent_ge hx0 hx1 hyz
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_pos {p : ℝ} {x : ℝ≥0} (hx_pos : 0 < x) : 0 < x ^ p := by
   have rpow_pos_of_nonneg : ∀ {p : ℝ}, 0 < p → 0 < x ^ p := by
     intro p hp_pos
@@ -382,7 +376,6 @@ theorem one_le_rpow_of_pos_of_le_one_of_nonpos {x : ℝ≥0} {z : ℝ} (hx1 : 0 
     (hz : z ≤ 0) : 1 ≤ x ^ z :=
   Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 hz
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_le_self_of_le_one {x : ℝ≥0} {z : ℝ} (hx : x ≤ 1) (h_one_le : 1 ≤ z) : x ^ z ≤ x := by
   rcases eq_bot_or_bot_lt x with (rfl | (h : 0 < x))
   · have : z ≠ 0 := by linarith
@@ -402,13 +395,11 @@ theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0 => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_right_inj {y z : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
   rw [← pos_iff_ne_zero] at hx₀
   rify at *
   grind [Real.rpow_right_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_eq_rpow_right_iff {y z : ℝ} :
     x ^ y = x ^ z ↔ y = z ∨ x = 1 ∨ (x = 0 ∧ (y = 0 ↔ z = 0)) := by
   obtain rfl | hx₀ := eq_or_ne x 0
@@ -569,7 +560,6 @@ theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
     simp only [NNReal.rpow_one, ite_eq_right_iff, top_ne_coe, and_imp]
     exact fun _ => zero_le_one.not_gt
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
   rw [← coe_one, ← coe_rpow_of_ne_zero one_ne_zero]
@@ -706,7 +696,6 @@ lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
     (x * y) ^ z = if (x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0) ∧ z < 0 then ⊤ else x ^ z * y ^ z := by
   rcases eq_or_ne z 0 with (rfl | hz); · simp
@@ -837,7 +826,6 @@ theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ �
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
     x ^ y < x ^ z := by
@@ -846,7 +834,6 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
   simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_trans zero_lt_one hx)),
     NNReal.rpow_lt_rpow_of_exponent_lt hx hyz]
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr] theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0∞} {y z : ℝ} (hx : 1 ≤ x) (hyz : y ≤ z) :
     x ^ y ≤ x ^ z := by
   cases x
@@ -908,7 +895,6 @@ theorem rpow_le_one {x : ℝ≥0∞} {z : ℝ} (hx : x ≤ 1) (hz : 0 ≤ z) : x
   simp only [coe_le_one_iff] at hx
   simp [← coe_rpow_of_nonneg _ hz, NNReal.rpow_le_one hx hz]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_lt_one_of_one_lt_of_neg {x : ℝ≥0∞} {z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
   cases x
   · simp [top_rpow_of_neg hz, zero_lt_one]
@@ -916,7 +902,6 @@ theorem rpow_lt_one_of_one_lt_of_neg {x : ℝ≥0∞} {z : ℝ} (hx : 1 < x) (hz
     simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_trans zero_lt_one hx)),
       NNReal.rpow_lt_one_of_one_lt_of_neg hx hz]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_le_one_of_one_le_of_neg {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (hz : z < 0) : x ^ z ≤ 1 := by
   cases x
   · simp [top_rpow_of_neg hz]
@@ -1213,7 +1198,6 @@ theorem IsNat.nnreal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : 
     Nat.cast_pow, NNReal.pow_rpow_inv_natCast]
   positivity
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsNNRat.nnreal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ≥0) ^ b) nr) (hden : IsNat ((da : ℝ≥0) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by

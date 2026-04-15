@@ -231,7 +231,6 @@ abbrev HolderConjugate (p q : ℝ≥0) := HolderTriple p q 1
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
 def conjExponent (p : ℝ≥0) : ℝ≥0 := p / (p - 1)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma holderTriple_coe_iff {p q r : ℝ≥0} :
     Real.HolderTriple (p : ℝ) (q : ℝ) (r : ℝ) ↔ HolderTriple p q r := by
@@ -308,7 +307,6 @@ lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := by
   have := h.symm.inv_lt_inv.le
   exact_mod_cast h.coe.inv_sub_inv_eq_inv
 
-set_option backward.isDefEq.respectTransparency false in
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
   inv_add_inv_eq_inv := by
     simp [div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
@@ -347,11 +345,9 @@ lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := tsub_eq_of_eq_add h.symm.inv_add_inv_
 theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_eq_add : p * q = p + q := by
   simpa [mul_add, add_mul, h.ne_zero, h.symm.ne_zero, add_comm q] using congr(p * $(h.inv_eq) * q)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
   linear_combination -h.sub_one_mul_conj
@@ -416,7 +412,6 @@ lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponen
 
 variable {a b p q r : ℝ≥0∞}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
     HolderTriple (p : ℝ≥0∞) (q : ℝ≥0∞) (r : ℝ≥0∞) ↔ NNReal.HolderTriple p q r := by
@@ -436,7 +431,6 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma holderConjugate_coe_iff {p q : ℝ≥0} :
     HolderConjugate (p : ℝ≥0∞) (q : ℝ≥0∞) ↔ NNReal.HolderConjugate p q :=

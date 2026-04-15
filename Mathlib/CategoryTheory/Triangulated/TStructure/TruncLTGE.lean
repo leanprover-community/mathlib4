@@ -21,6 +21,12 @@ part of a distinguished triangle
 with `(t.truncLT n).obj X < n` and `(t.truncGE n).obj X ≥ n`.
 
 We obtain various properties of these truncation functors.
+Variants `truncGT` and `truncLE` are introduced in the file
+`Mathlib/CategoryTheory/Triangulated/TStucture/TruncLEGT.lean`.
+Extensions to indices in `EInt` instead of `ℤ` are introduced in the file
+`Mathlib/CategoryTheory/Triangulated/TStucture/ETrunc.lean`.
+The spectral object attached to an object `X : C` is constructed in the file
+`Mathlib/CategoryTheory/Triangulated/TStucture/SpectralObject.lean`.
 
 -/
 

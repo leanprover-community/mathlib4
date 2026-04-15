@@ -41,15 +41,13 @@ lemma Algebra.FormallySmooth.of_algebraicIndependent {v : ι → L}
   exact .of_equiv IntermediateField.topEquiv
 
 /-- Separably generated extensions are formally smooth. -/
-lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable [EssFiniteType K L]
+lemma Algebra.FormallySmooth.of_algebraicIndependent_of_isSeparable
     {v : ι → L} (hb : AlgebraicIndependent K v)
     [Algebra.IsSeparable (IntermediateField.adjoin K (Set.range v)) L] :
     Algebra.FormallySmooth K L := by
-  have := Algebra.FormallySmooth.adjoin_of_algebraicIndependent hb
-  have : EssFiniteType (IntermediateField.adjoin K (Set.range v)) L :=
-    .of_comp K _ _
+  have := FormallySmooth.adjoin_of_algebraicIndependent hb
   have : FormallyEtale (IntermediateField.adjoin K (Set.range v)) L :=
-    (FormallyEtale.iff_isSeparable _ _).mpr inferInstance
+    Algebra.FormallyEtale.of_isSeparable _ L
   exact .comp _ (IntermediateField.adjoin K (Set.range v)) _
 
 instance (priority := low) Algebra.FormallySmooth.of_perfectField

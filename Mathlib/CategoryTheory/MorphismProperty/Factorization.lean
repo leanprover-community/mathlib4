@@ -188,24 +188,17 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
   obj f :=
-    { obj := fun j => (data.factorizationData (f.hom.app j)).Z
-      map := fun φ => data.mapZ
-        { left := f.left.map φ
-          right := f.right.map φ }
-      map_id := fun j => by
-        dsimp
+    { obj j := (data.factorizationData (f.hom.app j)).Z
+      map φ := data.mapZ (Arrow.homMk (f.left.map φ) (f.right.map φ))
+      map_id j := by
         rw [← data.mapZ_id (f.hom.app j)]
         congr <;> simp
-      map_comp := fun _ _ => by
-        dsimp
+      map_comp _ _ := by
         rw [← data.mapZ_comp]
         congr <;> simp }
   map τ :=
-    { app := fun j => data.mapZ
-        { left := τ.left.app j
-          right := τ.right.app j
-          w := congr_app τ.w j }
-      naturality := fun _ _ α => by
+    { app j := data.mapZ (Arrow.homMk (τ.left.app j) (τ.right.app j) (congr_app τ.w j))
+      naturality _ _ _ := by
         dsimp
         rw [← data.mapZ_comp, ← data.mapZ_comp]
         congr 1

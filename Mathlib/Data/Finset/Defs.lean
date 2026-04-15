@@ -71,6 +71,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
+@[to_dual_dont_translate]
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α

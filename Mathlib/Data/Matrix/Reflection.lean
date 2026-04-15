@@ -207,7 +207,6 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 def etaExpand {m n} (A : Matrix (Fin m) (Fin n) α) : Matrix (Fin m) (Fin n) α :=
   Matrix.of (FinVec.etaExpand fun i => FinVec.etaExpand fun j => A i j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
 example (A : Matrix (Fin 2) (Fin 2) α) :

@@ -92,9 +92,22 @@ instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
 
+lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
+    ((sSetTopAdj.unit.app S).app m a).down =
+      SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by
+  delta sSetTopAdj
+  rw [Presheaf.uliftYonedaAdjunction_unit_app_app]
+  rfl
+
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
     TopCat.toSSet.obj X ≅ (Functor.const _).obj X :=
   (NatIso.ofComponents (fun n ↦ Equiv.toIso
     ((TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace _ X).symm.trans
       (X.toSSetObjEquiv n).symm))).symm
+
+/-- The canonical map `Δ[n] ⟶ Simp(Δₜ[n])` (where `Δₜ[n]` is the topological `n`-simplex`. -/
+@[simps! -isSimp] noncomputable def SSet.stdSimplexToTop :
+    SSet.stdSimplex.{u} ⟶ SimplexCategory.toTop ⋙ TopCat.toSSet :=
+  SSet.stdSimplex.whiskerLeft sSetTopAdj.unit ≫
+    Functor.whiskerRight SSet.toTopSimplex.hom TopCat.toSSet

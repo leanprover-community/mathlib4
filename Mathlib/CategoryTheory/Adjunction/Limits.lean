@@ -79,7 +79,6 @@ def functorialityCounit :
     functorialityRightAdjoint adj K ⋙ Cocone.functoriality _ F ⟶ 𝟭 (Cocone (K ⋙ F)) where
   app c := { hom := adj.counit.app c.pt }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
 def functorialityAdjunction : Cocone.functoriality K F ⊣ functorialityRightAdjoint adj K where
   unit := functorialityUnit adj K
@@ -192,7 +191,6 @@ def functorialityCounit' :
     Cone.functoriality _ G ⋙ functorialityLeftAdjoint adj K ⟶ 𝟭 (Cone K) where
   app c := { hom := adj.counit.app c.pt }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)` is a right adjoint. -/
 def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cone.functoriality K G where
   unit := functorialityUnit' adj K

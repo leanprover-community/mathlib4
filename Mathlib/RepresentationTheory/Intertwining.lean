@@ -627,11 +627,13 @@ lemma rTensor_add (f₁ f₂ : IntertwiningMap σ τ) :
 lemma rTensor_smul (a : A) (f : IntertwiningMap σ τ) :
     rTensor ρ (a • f) = a • rTensor ρ f := tensor_smul_left _ _ _
 
-lemma rTensor_comp_lTensor (f : IntertwiningMap σ ρ) (g : IntertwiningMap ρ τ) :
-    (f.rTensor τ).comp (g.lTensor σ) = f.tensor g := by ext; simp
+variable {Q : Type*} [AddCommMonoid Q] [Module A Q] {υ : Representation A G Q}
 
-lemma lTensor_comp_rTensor (f : IntertwiningMap σ ρ) (g : IntertwiningMap ρ τ) :
-    (f.lTensor τ).comp (g.rTensor σ) = g.tensor f := by ext; simp
+lemma rTensor_comp_lTensor (f : ρ.IntertwiningMap τ) (g : σ.IntertwiningMap υ) :
+    (f.rTensor υ).comp (g.lTensor ρ) = f.tensor g := by ext; simp
+
+lemma lTensor_comp_rTensor (f : ρ.IntertwiningMap τ) (g : σ.IntertwiningMap υ) :
+    (g.lTensor τ).comp (f.rTensor σ) = f.tensor g := by ext; simp
 
 end IntertwiningMap
 

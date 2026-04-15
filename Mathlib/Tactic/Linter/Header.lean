@@ -181,7 +181,9 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
+  -- We also allow the "All rights reserved" line to be on a separate line.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
+    |>.replace ".\nAll rights reserved." ". All rights reserved."
   -- Filter out everything after the first isolated `-/`.
   let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -404,6 +406,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   let imports := getImports upToStx
+  let afterImports := firstNonImport? upToStx
+  -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
+  -- directory dependency, etc.) since they are just import-redirect stubs.
+  if let some (.node _ ``Lean.Parser.Command.deprecated_module _) := afterImports then return
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck imports
@@ -413,7 +419,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
     Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
-  let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString

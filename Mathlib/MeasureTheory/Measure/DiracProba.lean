@@ -29,7 +29,6 @@ open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [CompletelyRegularSpace X]
     {K : Set X} (K_closed : IsClosed K) {x : X} (x_notin_K : x ∉ K) :
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by

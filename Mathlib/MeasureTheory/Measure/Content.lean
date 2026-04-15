@@ -77,7 +77,6 @@ structure Content (G : Type w) [TopologicalSpace G] where
       → toFun (K₁ ⊔ K₂) = toFun K₁ + toFun K₂
   sup_le' : ∀ K₁ K₂ : Compacts G, toFun (K₁ ⊔ K₂) ≤ toFun K₁ + toFun K₂
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Inhabited (Content G) :=
   ⟨{  toFun := fun _ => 0
       mono' := by simp
@@ -115,7 +114,6 @@ theorem sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K�
 theorem lt_top (K : Compacts G) : μ K < ∞ :=
   ENNReal.coe_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem empty : μ ⊥ = 0 := by simpa [toNNReal_eq_zero_iff] using μ.sup_disjoint' ⊥ ⊥
 
 /-- Constructing the inner content of a content. From a content defined on the compact sets, we

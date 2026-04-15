@@ -453,7 +453,7 @@ instance constantsOnSelfStructure : (constantsOn M).Structure M :=
   constantsOn.structure id
 
 instance withConstantsSelfStructure : L[[M]].Structure M :=
-  Language.sumStructure _ _ M
+  inferInstanceAs <| (L.sum _).Structure M
 
 instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -461,7 +461,7 @@ instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M 
 variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
-  Language.sumStructure _ _ _
+  inferInstanceAs <| (L.sum _).Structure M
 
 instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -478,6 +478,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
     (φ.addConstants α).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ M
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by

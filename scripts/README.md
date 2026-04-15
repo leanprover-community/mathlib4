@@ -144,7 +144,7 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
   falls back to one-at-a-time removal.
-  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...]`
+  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
 
 **CI workflow**
 - `lake-build-with-retry.sh`

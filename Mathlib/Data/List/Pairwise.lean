@@ -8,7 +8,7 @@ module
 public import Batteries.Data.List.Pairwise
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Pairwise relations on a list

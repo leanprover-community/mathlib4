@@ -461,12 +461,11 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-set_option backward.inferInstanceAs.wrap false in
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance : Fintype (X q) := inferInstanceAs <| Fintype (ZMod q × ZMod q)
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
-  dsimp [X]
+  change Fintype.card (ZMod q × ZMod q) = q ^ 2
   rw [Fintype.card_prod, ZMod.card q, sq]
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
@@ -632,24 +631,11 @@ def sModNat (q : ℕ) : ℕ → ℕ
   | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
-  have h1 := calc
-    4 = 2 ^ 2 := by simp
-    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
-  | zero =>
-    rw [sModNat, sMod, Int.natCast_emod]
-    simp [h2]
-  | succ k ih =>
-    rw [sModNat, sMod, ← ih]
-    have h3 : 2 ≤ 2 ^ p - 1 := by
-      zify [h2]
-      calc (2 : ℤ)
-        _ ≤ 4 - 1 := by simp
-        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
-    zify [h2, h3]
-    rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_right, ← sub_eq_add_neg]
+  | zero => grind [sModNat, sMod]
+  | succ =>
+    have : 2 ^ 2 ≤ 2 ^ p := Nat.pow_le_pow_right (by lia) hp
+    grind [sModNat, sMod, Int.emod_eq_add_self_emod]
 
 /-- Tail-recursive version of `sModNat`. -/
 meta def sModNatTR (q k : ℕ) : ℕ :=

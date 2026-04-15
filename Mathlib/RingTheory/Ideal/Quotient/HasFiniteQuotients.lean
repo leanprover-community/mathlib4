@@ -19,9 +19,9 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
-a domain and a finite `R`-module. Then `S` has finite quotients.
+  a domain and a finite `R`-module. Then `S` has finite quotients.
 - `Ring.HasFiniteQuotients.instOfIsDomainOfFG`: A domain that is also a finite `ℤ`-module
-has finite quotients.
+  has finite quotients.
 
 -/
 

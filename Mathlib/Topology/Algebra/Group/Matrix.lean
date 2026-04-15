@@ -31,6 +31,13 @@ variable [Fintype n] [DecidableEq n] [CommRing R] [TopologicalSpace R] [IsTopolo
 
 namespace Matrix.GeneralLinearGroup
 
+omit [IsTopologicalRing R] in
+@[fun_prop]
+theorem continuous_apply {α : Type*} [TopologicalSpace α]
+    (f : α → GL n R) (hf : Continuous f) (i : n) :
+    Continuous (fun x ↦ f x i) :=
+  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
+
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
@@ -56,10 +63,21 @@ omit [IsTopologicalRing R] in
 instance : TopologicalSpace (SL n R) :=
   inferInstanceAs <| TopologicalSpace (Subtype _)
 
+omit [IsTopologicalRing R] in
+@[fun_prop]
+theorem continuous_apply {α : Type*} [TopologicalSpace α]
+    (f : α → SL n R) (hf : Continuous f) (i) :
+    Continuous (fun x ↦ f x i) :=
+  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
+
 /-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
 topology. -/
 instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
   inferInstanceAs <| DiscreteTopology (Subtype _)
+
+lemma isClosedEmbedding_val [T1Space R] :
+    Topology.IsClosedEmbedding ((↑) : SL n R → Matrix n n R) :=
+  (isClosed_singleton.preimage continuous_id.matrix_det).isClosedEmbedding_subtypeVal
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The special linear group over a topological ring is a topological group. -/
