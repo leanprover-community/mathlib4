@@ -1556,6 +1556,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvarianceTopCat
@@ -5945,6 +5946,7 @@ public import Mathlib.Order.Monotone.MonovaryOrder
 public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
+public import Mathlib.Order.NonemptyFiniteChains
 public import Mathlib.Order.Notation
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
