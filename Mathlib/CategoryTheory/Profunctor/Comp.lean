@@ -6,17 +6,50 @@ public import Mathlib.CategoryTheory.Profunctor.Basic
 
 @[expose] public section
 
-universe w v u
+universe w w' v u
 
 namespace CategoryTheory
 
+open Opposite
+
 namespace Limits
 
-open Opposite
+namespace Types
+
+variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ Type u)
+
+inductive coendRel : (W : J) × (F.obj (op W)).obj W → (W : J) × (F.obj (op W)).obj W → Prop where
+  | mk {W W' : J} (f : W ⟶ W') (x : (F.obj (op W')).obj W) :
+    coendRel ⟨_, (F.map f.op).app _ x⟩ ⟨_, (F.obj _).map f x⟩
+
+def coend : Type u := Quot (coendRel F)
+
+def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F := TypeCat.ofHom fun x ↦ Quot.mk _ ⟨j, x⟩
+
+def coend.condition {j j' : J} (f : j ⟶ j') :
+    (F.map f.op).app _ ≫ coend.ι F j = (F.obj _).map f ≫ coend.ι F j' := by
+  ext
+  apply Quot.sound
+  apply coendRel.mk
+
+def cowedge : Cowedge F := Cowedge.mk (coend F) (coend.ι F) (by intros; apply coend.condition F)
+
+def cowedgeIsColimit : IsColimit (cowedge F) where
+  desc := fun (s : Cowedge F) ↦ TypeCat.ofHom <| Quot.lift (fun x ↦ s.π x.fst x.snd) <| by
+    intro ⟨ja, ha⟩ ⟨jb, hb⟩ h
+    cases h with | mk f x => exact ConcreteCategory.congr_hom (s.condition f) _
+  fac s := by rintro (_ | _) <;> cat_disch
+  uniq s m h := by ext ⟨j⟩; exact ConcreteCategory.congr_hom (h (.right j.fst)) j.snd
+
+end Types
 
 class ChosenCoends.{v',u'} (C : Type*) [Category* C] where
   cowedge {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
   isCoend {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
+
+instance : Limits.ChosenCoends.{v, u} (Type u) where
+  cowedge := Types.cowedge
+  isCoend := Types.cowedgeIsColimit
 
 variable {C : Type*} [Category* C] [ChosenCoends.{v, u} C]
 
@@ -76,10 +109,8 @@ end Limits
 
 namespace Profunctor
 
-universe w' v₁ v₂ v₃ u₁ u₂ u₃
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {E : Type u₃} [Category.{v₃} E]
+variable {C : Type*} [Category* C] {D : Type u} [Category.{v} D]
+  {E : Type*} [Category* E]
 
 open Opposite
 
@@ -110,24 +141,19 @@ lemma compDiagramMap_comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
 
 open Limits
 
-variable [Limits.ChosenCoends.{v₂, u₂} (Type (max w w'))]
+variable [Limits.ChosenCoends.{v, u} (Type (max w w'))]
 
 @[simps! obj_obj obj_map map_app]
-noncomputable def comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) :
+def univComp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) :
     Profunctor.{max w w'} C E :=
   .ofCore {
     obj X Y := chosenCoend <| compDiagram P Q X Y
     map f g := chosenCoend.map <| compDiagramMap P Q f g }
 
+@[simps! obj_obj obj_map map_app]
+def comp (P : Profunctor.{u} C D) (Q : Profunctor.{u} D E) : Profunctor.{u} C E :=
+  Profunctor.univComp.{u, u} P Q
+
 end Profunctor
-
-open Limits in
-@[implicit_reducible]
-noncomputable def chosenCoendsType : ChosenCoends.{v, u} (Type max v u w) where
-  cowedge F := Functor.coconeTypesEquiv _ (multispanIndexCoend F).multispan.coconeTypes
-  isCoend F := Types.TypeMax.colimitCoconeIsColimit (multispanIndexCoend F).multispan
-
-noncomputable instance : Limits.ChosenCoends.{v, u} (Type (max v u)) :=
-  chosenCoendsType
 
 end CategoryTheory
