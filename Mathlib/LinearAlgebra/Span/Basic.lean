@@ -457,7 +457,27 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
+
+lemma sup_inf_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hsp : s ≤ p) (hnsp : ∀ x ∈ s, -x ∈ p) :
+    (s ⊔ t) ⊓ p = s ⊔ (t ⊓ p) := by
+  ext x; simp only [mem_sup, mem_inf]
+  constructor
+  · rintro ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩
+    refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
+    rw [← add_right_inj, neg_add_cancel_left] at hyzx
+    simpa [hyzx] using p.add_mem (hnsp y hy) hx
+  · rintro ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩
+    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
+    simpa [← hyzx] using p.add_mem (hsp hy) hz'
+
+lemma inf_sup_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hps : p ≤ s) (hnps : ∀ x ∈ p, -x ∈ s) :
+    (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := by
+  rw [sup_comm, inf_comm, ← sup_inf_assoc_of_le_of_neg_le t hps hnps, inf_comm, sup_comm]
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
@@ -471,14 +491,8 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     _ = map (-LinearMap.id) (span R s) := (map_span (-LinearMap.id) _).symm
     _ = span R s := by simp
 
-instance : IsModularLattice (Submodule R M) :=
-  ⟨fun y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
-    rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
-    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
-    rw [← add_sub_cancel_right c b, add_comm]
-    apply z.sub_mem haz (xz hb)⟩
+instance : IsModularLattice (Submodule R M) := ⟨fun x _ hxy _ _ => by
+    rwa [← sup_inf_assoc_of_le_of_neg_le x hxy (fun _ hy => neg_mem (hxy hy))]⟩
 
 lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
     (h₁ : IsCompl q r) (h₂ : q ≤ p) :
