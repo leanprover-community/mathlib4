@@ -192,11 +192,12 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 namespace LinearMap
 
 open ContinuousLinearMap in
+set_option backward.isDefEq.respectTransparency false in
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   rintro ⟨f₁, hf₁⟩
   have mem_span :
     f₁ ∈ Submodule.span 𝕜 (⇑((coeLMₛₗ _).comp (WeakBilin.eval B)) '' Set.univ) := by
-      rw [Set.image_univ, mem_span_iff_continuous _]
+      rw [Set.image_univ, mem_span_iff_continuous]
       convert hf₁
       simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
   obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
