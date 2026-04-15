@@ -53,7 +53,8 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   }
 
 /--
-`addTagEntry declName tag comment` takes as input the `Name` `declName` of a declaration and
+`addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
+whether it is a Kerodon or Stacks tag (`db`) and
 the `String`s `tag` and `comment` of the `stacks` attribute.
 It extends the `Tag` environment extension with the data `declName, tag, comment`.
 -/
