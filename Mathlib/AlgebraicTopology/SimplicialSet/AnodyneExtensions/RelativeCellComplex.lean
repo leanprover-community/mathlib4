@@ -222,6 +222,7 @@ lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
     · exact P.le t
     · rfl
 
+variable {f} in
 /-- The morphism `Δ[c.dim + 1] ⟶ f.filtration (Order.succ j)` given
 by `c : f.Cell j`, when `f` is a rank function for a proper pairing
 of a subcomplex of a simplicial set. -/
@@ -230,6 +231,7 @@ def Cell.mapToSucc {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cell j) :
   Subcomplex.lift c.map (by
     simpa using f.subcomplex_le_filtration c (Order.lt_succ _))
 
+variable {f} in
 @[reassoc (attr := simp)]
 lemma Cell.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cell j) :
     c.mapToSucc ≫ (f.filtration (Order.succ j)).ι = c.map :=
@@ -366,7 +368,7 @@ pairing of a subcomplex of a simplicial set, this is
 the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to `c.ιSigmaStdSimplex`. -/
-@[simps]
+--@[simps]
 noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
   nonDegenerate := by
@@ -376,8 +378,8 @@ noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
   notMem := by
     rintro ⟨y, hy⟩
     obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
-    rw [← FunctorToTypes.comp, ι_m, FunctorToTypes.comp,
-      ιSigmaStdSimplex_eq_iff] at hy
+    erw [← NatTrans.comp_app_apply] at hy
+    rw [ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
     obtain ⟨rfl, rfl⟩ := hy
     exact objEquiv_symm_notMem_horn_of_isIso _ _ hy'
 
@@ -397,17 +399,19 @@ noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
   notMem := by
     rintro ⟨y, hy⟩
     obtain ⟨x', ⟨y, hy'⟩, rfl⟩ := f.ιSigmaHorn_jointly_surjective y
-    rw [← FunctorToTypes.comp, ι_m, FunctorToTypes.comp,
-      ιSigmaStdSimplex_eq_iff] at hy
+    erw [← NatTrans.comp_app_apply] at hy
+    rw [ι_m, NatTrans.comp_app_apply, ιSigmaStdSimplex_eq_iff] at hy
     obtain ⟨rfl, rfl⟩ := hy
     simpa using (objEquiv_symm_δ_mem_horn_iff _ _).mp hy'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_or_of_range_m_N {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     ∃ (c : f.Cell j), s = c.type₁ ∨ s = c.type₂ := by
   obtain ⟨d, s, hs, hs', rfl⟩ := s.mk_surjective
   obtain ⟨x, s, rfl⟩ := f.ιSigmaStdSimplex_jointly_surjective s
   replace hs' : s ∉ (horn _ x.index).obj _ :=
-    fun h ↦ hs' ⟨x.ιSigmaHorn.app _ ⟨_, h⟩, by simp [← FunctorToTypes.comp]⟩
+    fun h ↦ hs' ⟨x.ιSigmaHorn.app _ ⟨_, h⟩,
+      by rw [← NatTrans.comp_app_apply]; simp⟩
   obtain ⟨g, rfl⟩ := stdSimplex.objEquiv.symm.surjective s
   rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
     Equiv.apply_symm_apply] at hs
@@ -457,20 +461,24 @@ lemma isPullback (j : ι) :
       rw [Subtype.ext_iff] at h
       dsimp at h
       subst h
-      rwa [← FunctorToTypes.comp, x.ι_b] at hy
-    refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, by simp [← FunctorToTypes.comp]⟩
-    simpa only [Subtype.ext_iff, ← FunctorToTypes.comp, x.ι_b, x.ι_t] using h.symm)⟩
+      erw [← NatTrans.comp_app_apply] at hy
+      rwa [x.ι_b] at hy
+    refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, ?_⟩
+    · erw [← NatTrans.comp_app_apply] at h ⊢
+      simpa only [Subtype.ext_iff, x.ι_t, x.ι_b] using h.symm
+    · erw [← NatTrans.comp_app_apply]
+      simp
+      rfl)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
     Set.range ((homOfLE (f.filtration_monotone (Order.le_succ j))).app d) ⊔
       Set.range ((f.b j).app d) = Set.univ := by
   ext ⟨x, hx⟩
-  -- `simp? [filtration, Subtype.ext_iff] at hx ⊢`
   simp only [filtration, Order.lt_succ_iff, Subfunctor.max_obj, Subfunctor.iSup_obj, Set.mem_union,
-    Set.mem_iUnion, exists_prop, Subfunctor.toFunctor_obj, Set.sup_eq_union, Set.mem_range,
-    Subtype.ext_iff, Subfunctor.homOfLe_app_coe, Subtype.exists, exists_eq_right, Set.mem_univ,
-    iff_true] at hx ⊢
+    Set.mem_iUnion, exists_prop, Subfunctor.toFunctor_obj, Subfunctor.homOfLe_app,
+    TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, Set.sup_eq_union, Set.mem_range, Subtype.ext_iff,
+    Subtype.exists, exists_eq_right, Set.mem_univ, iff_true] at hx ⊢
   obtain hx | ⟨i, hi, c, hx⟩ := hx
   · exact Or.inl (Or.inl hx)
   · obtain hi | rfl := hi.lt_or_eq
@@ -490,14 +498,19 @@ lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).v
   dsimp only [Cell.type₁, mapN]
   rw [← S.cast_eq_self _ (P.dim_p c.s)]
   dsimp
-  rw [S.ext_iff, ← FunctorToTypes.comp, c.ι_b]
+  rw [S.ext_iff]
+  erw [← NatTrans.comp_app_apply]
+  rw [c.ι_b]
   apply yonedaEquiv_symm_app_id
 
 @[simp]
 lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]
-  rw [S.ext_iff, ← FunctorToTypes.comp, c.ι_b, Cell.mapToSucc,
-    lift_app_coe, Cell.map_app_objEquiv_symm_δ_index]
+  rw [S.ext_iff]
+  erw [← NatTrans.comp_app_apply]
+  rw [c.ι_b, Cell.mapToSucc]
+  dsimp
+  rw [Cell.map_app_objEquiv_symm_δ_index]
 
 lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by
@@ -532,7 +545,6 @@ lemma isPushout (j : ι) :
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨d⟩⟩ ↦ by
     refine (isColimitMapCoconePushoutCoconeEquiv _ _).symm
       (IsPushout.isColimit ?_)
-    dsimp
     refine Types.isPushout_of_isPullback_of_mono'
       ((f.isPullback j).map ((CategoryTheory.evaluation _ _).obj _))
       (f.range_homOfLE_app_union_range_b_app _ _) (fun x₁ x₂ hx₁ hx₂ h ↦ ?_)
@@ -540,16 +552,19 @@ lemma isPushout (j : ι) :
     obtain ⟨s₂, g₂, _, hg₂⟩ := (Subcomplex.range (f.m j)).existsN x₂ hx₂
     obtain rfl : s₁ = s₂ := f.isPushout_aux₃ (by
       dsimp
-      rw [S.eq_iff_ofSimplex_eq,
-        ← Subcomplex.ofSimplex_map_of_epi g₁, ← FunctorToTypes.naturality,
-        ← Subcomplex.ofSimplex_map_of_epi g₂, ← FunctorToTypes.naturality,
-        hg₁, hg₂, h]
+      rw [S.eq_iff_ofSimplex_eq, ← Subcomplex.ofSimplex_map_of_epi g₁,
+        ← Subcomplex.ofSimplex_map_of_epi g₂]
+      · erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
+        dsimp at h ⊢
+        rw [hg₁, hg₂, h]
       all_goals
       · rw [Subcomplex.mem_nonDegenerate_iff]
         apply f.isPushout_aux₁)
     obtain rfl := X.unique_nonDegenerate_map (x := (((f.b _)).app _ x₁).val)
-      g₁ ⟨_, f.isPushout_aux₁ s₁⟩ (by simp [mapN, ← hg₁, FunctorToTypes.naturality])
-      g₂ ⟨_, f.isPushout_aux₁ s₁⟩ (by simp [mapN, h, ← hg₂, FunctorToTypes.naturality])
+      g₁ ⟨_, f.isPushout_aux₁ s₁⟩
+        (by simp [mapN, ← hg₁, dsimp% NatTrans.naturality_apply (f.b j)])
+      g₂ ⟨_, f.isPushout_aux₁ s₁⟩
+        (by simp [mapN, dsimp% h, ← hg₂, dsimp% NatTrans.naturality_apply (f.b j)])
     rw [← hg₁, hg₂])⟩
 
 end
