@@ -47,15 +47,14 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId â
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
-
 /-- Different settings of communicating about a tactic which made no progress:
 do nothing (keep silent), print a warning or throw an error. -/
 inductive BehaviorIfUnchanged where
-  /-- Don't log anything -/
+  /-- Stay silent if this action has no effect. -/
   | silent
-  /-- Log a warning -/
+  /-- Log a warning if this action has no effect. -/
   | warning
-  /-- Throw an error -/
+  /-- Throw an error if this action has no effect. -/
   | error
 deriving BEq, Inhabited, Repr
 
