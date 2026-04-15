@@ -102,8 +102,7 @@ lemma _root_.Topology.IsInducing.specialLinearGroup_map (hf : IsInducing f) :
 
 lemma _root_.Topology.IsEmbedding.specialLinearGroup_map (hf : IsEmbedding f) :
     IsEmbedding (map (n := n) f) :=
-  (hf.matrix_map.comp .subtypeVal).of_comp hf.continuous.specialLinearGroup_map
-    continuous_subtype_val
+  (hf.matrix_map.comp .subtypeVal).of_comp (by fun_prop) continuous_subtype_val
 
 variable [IsTopologicalRing R]
 
