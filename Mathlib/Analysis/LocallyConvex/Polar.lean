@@ -6,11 +6,8 @@ Authors: Moritz Doll, Kalle Kytölä
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
-public import Mathlib.Analysis.LocallyConvex.AbsConvex
-public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Polar set
@@ -264,23 +261,3 @@ theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
 end
 
 end StrongDual
-
-namespace LinearMap
-
-section NormedField
-
-variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-variable [Module 𝕜 E] [Module 𝕜 F]
-
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-
-open ComplexOrder in
-theorem absConvex_polar : AbsConvex 𝕜 (B.polar s) := by
-  rw [polar_eq_biInter_preimage]
-  exact AbsConvex.iInter₂ fun i hi =>
-    ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
-      (convex_RCLike_iff_convex_real.mpr (convex_closedBall 0 1)).linear_preimage _⟩
-
-end NormedField
-
-end LinearMap
