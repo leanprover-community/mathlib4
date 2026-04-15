@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of seminormed groups

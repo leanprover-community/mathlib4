@@ -43,19 +43,20 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by lia
   · rw [← spine_arrow, spine_δ_arrow_lt sx _ hlt]
     dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
+    dsimp
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+    rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
     rfl
   · rw [← spine_arrow, spine_δ_arrow_gt sx _ hgt]
-    dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
+    dsimp
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+    rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
     rfl
@@ -74,7 +75,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
         dsimp [spine_arrow, Path.map_interval, Path.map_arrow]
-        rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+        rw [← dsimp% σ₀.naturality_apply]
         apply congr_arg
         apply Subtype.ext
         ext a : 1
@@ -82,11 +83,12 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       rw [← spine_arrow, spine_δ_arrow_eq sx _ heq, hi]
       simp only [spineToDiagonal, diagonal, spineToSimplex_spine_apply]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
+      dsimp
       apply congr_arg
       apply Subtype.ext
       ext z : 1
       dsimp [horn.face]
-      rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+      rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
         Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
       rw [SSet.yonedaEquiv_map]
