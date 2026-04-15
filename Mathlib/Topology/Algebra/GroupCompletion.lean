@@ -163,7 +163,7 @@ instance isUniformAddGroup : IsUniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
-    DistribMulAction M (Completion α) :=
+    DistribMulAction M (Completion α) := fast_instance%
   { (inferInstance : MulAction M <| Completion α) with
     smul_add := fun r x y ↦
       induction_on₂ x y
@@ -192,7 +192,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
-instance instAddCommGroup : AddCommGroup (Completion α) :=
+instance instAddCommGroup : AddCommGroup (Completion α) := fast_instance%
   { (inferInstance : AddGroup <| Completion α) with
     add_comm a b :=
       Completion.induction_on₂ a b
@@ -202,7 +202,7 @@ instance instAddCommGroup : AddCommGroup (Completion α) :=
         rw [← coe_add, ← coe_add, add_comm] }
 
 instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
-    Module R (Completion α) :=
+    Module R (Completion α) := fast_instance%
   { (inferInstance : DistribMulAction R <| Completion α),
     (inferInstance : MulActionWithZero R <| Completion α) with
     add_smul := fun a b ↦
