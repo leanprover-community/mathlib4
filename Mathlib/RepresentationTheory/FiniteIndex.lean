@@ -162,7 +162,7 @@ lemma indToCoind_coindToInd : A.coindToInd ∘ₗ A.indToCoind = LinearMap.id :=
   rw [coindToInd_of_support_subset_orbit g]
   · simp
   · intro x hx
-    contrapose! hx
+    contrapose hx
     simpa using indToCoindAux_of_not_rel g x a hx
 
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
