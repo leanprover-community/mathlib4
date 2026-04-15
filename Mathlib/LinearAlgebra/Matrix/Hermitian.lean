@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-! # Hermitian matrices
@@ -154,6 +155,11 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
 
 end InvolutiveStar
 
+/-- The Hadamard product of Hermitian matrices is Hermitian. -/
+theorem IsHermitian.hadamard [CommMonoid α] [StarMul α] {A B : Matrix n n α}
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : (A ⊙ B).IsHermitian := by
+  rw [IsHermitian, conjTranspose_hadamard, hB.eq, hA.eq, hadamard_comm]
+
 section AddMonoid
 
 variable [AddMonoid α] [StarAddMonoid α]
@@ -168,6 +174,17 @@ theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h :
 lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
     IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
   simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
+
+/-- A block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
+    {M : ∀ i, Matrix (p i) (p i) α} : (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
+
+/-- A block diagonal matrix whose components are all equal is Hermitian if
+and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} :
+    (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  simpa [IsHermitian] using isHermitian_blockDiagonal'_iff
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
