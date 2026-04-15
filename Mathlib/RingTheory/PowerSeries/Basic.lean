@@ -154,6 +154,8 @@ def C : R →+* R⟦X⟧ :=
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
 
+theorem X_apply : X (R := R) = MvPowerSeries.X () := by rfl
+
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
@@ -229,7 +231,7 @@ theorem coeff_X_pow (m n : ℕ) : coeff m ((X : R⟦X⟧) ^ n) = if m = n then 1
   rw [X_pow_eq, coeff_monomial]
 
 theorem coeff_X_pow_self (n : ℕ) : coeff n ((X : R⟦X⟧) ^ n) = 1 := by
-  rw [coeff_X_pow, if_pos rfl]
+  simp
 
 @[simp]
 theorem coeff_one (n : ℕ) : coeff n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=
