@@ -613,3 +613,7 @@ def NP' : NewtonPolygon where
 variable (Γ) in
 def IsNewtonPolygon (NP : NewtonPolygon) : Prop :=
   ∃ (v : ℕ → WithTop Γ), NP.slopes = newtonPolygon_slopes v ∧ NP.lengths = newtonPolygon_lengths v
+
+variable (Γ) in
+def IsNewtonPolygon' (NP : NewtonPolygon) : Prop :=
+  ∃ (v : ℕ → WithTop Γ), NP = NP' v
