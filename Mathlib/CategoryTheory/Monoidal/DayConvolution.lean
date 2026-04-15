@@ -41,6 +41,7 @@ a monoidal structure.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a Day convolution monoidal category.
 - Case `V = Type u` and its universal property.
+- Fix the abuse of functor associativity that causes `erw [id_apply]` in a few places in this file.
 
 -/
 
@@ -230,7 +231,7 @@ def corepresentableBy₂' :
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
 `(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def associatorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
@@ -284,7 +285,10 @@ lemma associator_hom_unit_unit (x y z : C) :
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerLeft_id, Category.comp_id, Category.assoc] at this
   simp only [Category.assoc, this]
-  simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
+
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the inverse direction of the associator
@@ -306,7 +310,10 @@ lemma associator_inv_unit_unit (x y z : C) :
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
-  simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
+
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F G H} in
@@ -473,7 +480,7 @@ def corepresentableByRight [DayConvolution F U] :
 
 /-- The isomorphism of corepresentable functors that defines the left unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def leftUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -501,7 +508,7 @@ def leftUnitorCorepresentingIso :
 
 /-- The isomorphism of corepresentable functors that defines the right unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def rightUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
@@ -560,6 +567,7 @@ lemma leftUnitor_hom_unit_app (y : C) :
   simp only [Category.comp_id, this]
   simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -570,8 +578,10 @@ lemma leftUnitor_inv_app (x : C) :
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
     leftUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
     Functor.corepresentableByEquiv]
-  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+  dsimp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
@@ -610,6 +620,7 @@ lemma rightUnitor_hom_unit_app (x : C) :
   simp only [Category.comp_id, this]
   simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -619,9 +630,11 @@ lemma rightUnitor_inv_app (x : C) :
       (F ⊛ U).map (ρ_ x).hom := by
   dsimp [rightUnitor, Coyoneda.fullyFaithful, corepresentableByRight,
     rightUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
-    Functor.corepresentableByEquiv]
-  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso]
+  dsimp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
