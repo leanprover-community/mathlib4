@@ -408,8 +408,7 @@ lemma exists_or_of_range_m_N {j : ι} (s : (Subcomplex.range (f.m j)).N) :
   obtain ⟨d, s, hs, hs', rfl⟩ := s.mk_surjective
   obtain ⟨x, s, rfl⟩ := f.ιSigmaStdSimplex_jointly_surjective s
   replace hs' : s ∉ (horn _ x.index).obj _ :=
-    fun h ↦ hs' ⟨x.ιSigmaHorn.app _ ⟨_, h⟩,
-      by rw [← NatTrans.comp_app_apply]; simp⟩
+    fun h ↦ hs' ⟨x.ιSigmaHorn.app _ ⟨_, h⟩, by rw [← NatTrans.comp_app_apply]; simp⟩
   obtain ⟨g, rfl⟩ := stdSimplex.objEquiv.symm.surjective s
   rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
     Equiv.apply_symm_apply] at hs
