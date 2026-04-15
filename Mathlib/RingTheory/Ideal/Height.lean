@@ -170,7 +170,7 @@ lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
     {J : Ideal R} (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
   eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_is_prime hlt) h_height
 
-@[deprecated "Use `Ideal.height_add_one_le_of_lt_of_isPrime` instead." (since := "2026-04-04")]
+@[deprecated "Use `Ideal.height_le_ringKrullDim_of_isPrime` instead." (since := "2026-04-04")]
 private lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
 
