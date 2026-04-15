@@ -648,12 +648,12 @@ class NPow (M : Type u) where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M
 
-@[to_additive toSMul, default_instance high]
+@[default_instance high, to_additive toSMul]
 instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ :=
   ⟨fun x n ↦ NPow.npow n x⟩
 
 @[to_additive ofSMul]
-instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ x ^ n⟩
+instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M, NSMul M where
@@ -968,7 +968,7 @@ instance ZPow.toPow {M : Type*} [ZPow M] : Pow M ℤ :=
   ⟨fun x n ↦ ZPow.zpow n x⟩
 
 @[to_additive ofSMul]
-instance ZPow.ofPow {M : Type*} [Pow M ℤ] : ZPow M := ⟨fun n x ↦ x ^ n⟩
+instance ZPow.ofPow {M : Type*} [Pow M ℤ] : ZPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
 /-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
