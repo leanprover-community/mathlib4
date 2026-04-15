@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Order.WithBotTop
+public import Mathlib.Data.Seq.Basic
 
 @[expose] public section
 
@@ -206,7 +207,7 @@ def newtonPolygon_slopes : ℕ → WithTopBot ℝ :=
 
 /-- The sequence of lengths of a Newton polygon. -/
 noncomputable
-def newtonPolygon_length : ℕ → WithTop ℕ :=
+def newtonPolygon_lengths : ℕ → WithTop ℕ :=
   fun a => match newtonPolygon v a with
     | none => 0
     | some step => match step with
@@ -543,6 +544,55 @@ def coeff_seq (f : PowerSeries R) (v : R → WithTop Γ) : ℕ → WithTop Γ :=
 end PowerSeries
 
 -/
+
+-- Post Zulip discussion
+
+def newtonPolygon_IsSeq : Stream'.IsSeq (newtonPolygon v) := fun _ ↦ by grind [newtonPolygon]
+
+noncomputable
+def newtonPolygon_seq : Stream'.Seq (Step Γ) := ⟨newtonPolygon v, newtonPolygon_IsSeq v⟩
+
+class FiniteNewtonPolygon where
+  Terminates : Stream'.Seq.Terminates (newtonPolygon_seq v)
+
+noncomputable
+def finite_newtonPolygon (h : FiniteNewtonPolygon v) : List (Step Γ) :=
+    Stream'.Seq.toList (newtonPolygon_seq v) h.Terminates
+
+structure NewtonPolygon where
+  support : WithTop ℕ
+  slopes : ℕ → WithTopBot ℝ
+  lengths : ℕ → WithTop ℕ
+  increasing : ∀ n : ℕ, n + 1 < support → slopes n ≤ slopes (n + 1)
+
+lemma newtonPolygon_ge_length_none (n : ℕ) (h : ↑n + 1 < (newtonPolygon_seq v).length') :
+    newtonPolygon v (n + 1) ≠ none := by
+  by_contra
+  suffices (newtonPolygon_seq v).length' ≤ n + 1 by
+    grind
+  have h : (newtonPolygon_seq v).Terminates := by
+    use n + 1
+    aesop
+  simp only [Stream'.Seq.length', h, ↓reduceDIte, ge_iff_le]
+  suffices (newtonPolygon_seq v).length h ≤ n + 1 by
+    rw [← Nat.cast_one, ← Nat.cast_add]
+    exact ENat.coe_le_coe.mpr this
+  exact Stream'.Seq.length_le_iff.mpr this
+
+noncomputable
+def NP' : NewtonPolygon where
+  support := Stream'.Seq.length' (newtonPolygon_seq v)
+  slopes := newtonPolygon_slopes v
+  lengths := newtonPolygon_lengths v
+  increasing := by
+    intro n hn
+    have := newtonPolygon_slopes_increasing' v
+    simp_rw [newtonPolygon_slopes_increasing] at this
+    specialize this n
+    simp only [(newtonPolygon_ge_length_none v n hn), ↓reduceIte] at this
+    split_ifs at this
+    · exact this
+    · exact le_of_lt this
 
 /-
   TODO:
