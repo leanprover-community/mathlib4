@@ -57,6 +57,8 @@ instance : SetLike (Face C) M where
 
 instance : PartialOrder (Face C) := .ofSetLike (Face C) M
 
+lemma le : F ≤ C := F.isFaceOf.le
+
 @[ext]
 theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext h
 
@@ -69,7 +71,7 @@ theorem toPointedCone_lt_toPointedCone {F₁ F₂ : Face C} :
     F₁.toPointedCone < F₂.toPointedCone ↔ F₁ < F₂ := .rfl
 
 @[simp]
-theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
+theorem mem_toPointedCone {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
 
 /-! ### Infimum, supremum and lattice -/
 
@@ -104,11 +106,11 @@ instance : CompleteSemilatticeInf (Face C) where
     · simp only [sInf, Set.mem_setOf_eq, Set.iInter_exists, Set.biInter_and',
       Set.iInter_iInter_eq_right, ← toPointedCone_le_toPointedCone, toPointedCone, le_inf_iff]
       refine ⟨f.isFaceOf.le, ?_⟩
-      simpa [LE.le] using fun ⦃x⦄ a _ i ↦ (mem_coe x).mp (fS i a)
+      simpa [LE.le] using fun ⦃x⦄ a _ i ↦ (mem_toPointedCone x).mp (fS i a)
 
 instance : CompleteLattice (Face C) where
   top := ⟨C, .refl _⟩
-  le_top F := F.isFaceOf.le
+  le_top F := F.le
   __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩
@@ -149,16 +151,16 @@ def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 @[simp]
 theorem fst_prod (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
-  simpa [fst, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [fst, prod, ← mem_toPointedCone, toPointedCone] using fun _ ↦ ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
 theorem snd_prod (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
-  simpa [snd, prod, ← mem_coe, toPointedCone] using fun _ ↦ ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [snd, prod, ← mem_toPointedCone, toPointedCone] using fun _ ↦ ⟨0, F₁.toSubmodule.zero_mem⟩
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, fst, snd, ← mem_coe, toPointedCone, mem_prod, mem_map, LinearMap.fst_apply,
+  simp only [prod, fst, snd, ← mem_toPointedCone, toPointedCone, mem_prod, mem_map, LinearMap.fst_apply,
     Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]

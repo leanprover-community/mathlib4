@@ -113,7 +113,7 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
   nontriviality R using Module.subsingleton R M
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
-theorem mem_add_iff (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
+theorem add_mem_iff (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
     x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ ↦ F.add_mem hx hy⟩
   exact fun h ↦ ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
@@ -141,7 +141,7 @@ variable [AddCommGroup N] [Module R N]
 
 /-- The image of a face of a cone under an injective linear map is a face of the
 image of the cone. -/
-theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.IsFaceOf C) :
+protected theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.IsFaceOf C) :
     (F.map f).IsFaceOf (C.map f) := by
   refine ⟨map_mono hF.le, ?_⟩
   simp only [mem_map, forall_exists_index, and_imp]
@@ -157,7 +157,7 @@ theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
     (F.map (e : M →ₗ[R] N)).IsFaceOf (C.map e) := hF.map _ e.injective
 
 /-- The comap of a face of a cone under a linear map is a face of the comap of the cone. -/
-theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) : (F.comap f).IsFaceOf (C.comap f) := by
+protected theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) : (F.comap f).IsFaceOf (C.comap f) := by
   refine ⟨comap_mono hF.le, ?_⟩
   simp only [mem_comap, map_add, map_smul]
   exact hF.mem_of_smul_add_mem
@@ -239,7 +239,7 @@ section Prod
 variable [AddCommGroup N] [Module R N]
 
 /-- The product of two faces of two cones is a face of the product of the cones. -/
-theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
+protected theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
     (hF₁ : F₁.IsFaceOf C₁) (hF₂ : F₂.IsFaceOf C₂) : IsFaceOf (F₁.prod F₂) (C₁.prod C₂) := by
   refine ⟨fun x hx ↦ by simpa [mem_prod] using ⟨hF₁.le hx.1, hF₂.le hx.2⟩, ?_⟩
   simp only [mem_prod, Prod.fst_add, Prod.smul_fst, Prod.snd_add,
@@ -249,7 +249,7 @@ theorem prod {C₁ F₁ : PointedCone R M} {C₂ F₂ : PointedCone R N}
 
 /-- The projection of a face of a product cone onto the first component is a face of the
 projection of the product cone onto the first component. -/
-theorem fst {C₁ : PointedCone R M} {C₂ : PointedCone R N}
+protected theorem fst {C₁ : PointedCone R M} {C₂ : PointedCone R N}
     {F : PointedCone R (M × N)}
     (hF : F.IsFaceOf (C₁.prod C₂)) : (F.map (.fst R M N)).IsFaceOf C₁ := by
   constructor
@@ -265,10 +265,10 @@ theorem fst {C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
 /-- The projection of a face of a product cone onto the second component is a face of the
 projection of the product cone onto the second component. -/
-theorem snd {C₁ : PointedCone R M} {C₂ : PointedCone R N} {F : PointedCone R (M × N)}
+protected theorem snd {C₁ : PointedCone R M} {C₂ : PointedCone R N} {F : PointedCone R (M × N)}
     (hF : F.IsFaceOf (C₁.prod C₂)) : (F.map (.snd R M N)).IsFaceOf C₂ := by
-  have := map _ (LinearEquiv.prodComm R M N).injective hF
-  convert fst (by simpa [PointedCone.map, Submodule.map])
+  have := hF.map _ (LinearEquiv.prodComm R M N).injective
+  convert IsFaceOf.fst (by simpa [PointedCone.map, Submodule.map])
   ext; simp
 
 end Prod
