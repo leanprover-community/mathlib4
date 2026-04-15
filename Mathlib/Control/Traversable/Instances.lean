@@ -10,7 +10,7 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Set.Functor
 public import Mathlib.Data.List.Basic
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # LawfulTraversable instances

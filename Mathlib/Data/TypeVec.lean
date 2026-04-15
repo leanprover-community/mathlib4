@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Common
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 

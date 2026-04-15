@@ -8,7 +8,7 @@ module
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Data.Set.Basic
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Typeclass for types with a set-like extensionality property

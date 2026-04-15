@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Fin.Rev
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Fin is a group

@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Multiset.Bind
 public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Control.Traversable.Instances
-public meta import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Functoriality of `Multiset`.

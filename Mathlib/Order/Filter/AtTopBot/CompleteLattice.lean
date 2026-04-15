@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # `Filter.atTop` and `Filter.atBot` in (conditionally) complete lattices
