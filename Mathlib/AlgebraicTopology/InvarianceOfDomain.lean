@@ -14,9 +14,9 @@ variable (E) in class BrouwerFixedPoint : Prop where
 variable [BrouwerFixedPoint E]
 
 omit [BrouwerFixedPoint E] in
-theorem differentiable_approx_of_continuous {δ : ℝ} (hδ : 0 < δ) {U : Set E} (hUcompact : IsCompact U) (G : E → E)
-    (hG_cont : Continuous G) [Nontrivial E] : ∃ (P : E → E), Differentiable ℝ P ∧ ∀ y ∈ U, ‖P y - G y‖ < δ
-    := by
+theorem differentiable_approx_of_continuous {δ : ℝ} (hδ : 0 < δ) {U : Set E}
+    (hUcompact : IsCompact U) (G : E → E) (hG_cont : Continuous G) [Nontrivial E] :
+    ∃ (P : C(E, E)), Differentiable ℝ P ∧ ∀ y ∈ U, ‖P y - G y‖ < δ := by
   let basis := stdOrthonormalBasis ℝ E
   let n := Module.finrank ℝ E
   -- We construct the subalgebra of polynomials from `ℝ^n` to `ℝ` and show they are differentiable
@@ -117,7 +117,6 @@ theorem differentiable_approx_of_continuous {δ : ℝ} (hδ : 0 < δ) {U : Set E
   have hP_diff : Differentiable ℝ P :=
     (basis.toBasis.equivFunL.symm : (Fin n → ℝ) →L[ℝ] E).differentiable.comp
     (differentiable_pi.mpr hp_i_diff)
-
   use P
 
 
@@ -317,105 +316,8 @@ theorem invariance_of_domain_interior (f : E → E)
       have hδ_lower : ∀ y ∈ sigma1, normG y ≥ δ := fun y hy => (min_le_left _ _).trans (hmin hy)
       exact ⟨δ, hδ_pos, hδ_lt_0_1, hδ_lower⟩
     · exact ⟨0.05, by norm_num, by norm_num, fun y hy ↦ False.elim (hP ⟨y, hy⟩)⟩
-  -- Take the standard orthonormal basis
-  let basis := stdOrthonormalBasis ℝ E
-  let n := Module.finrank ℝ E
-  -- We construct the subalgebra of polynomials from `ℝ^n` to `ℝ` and show they are differentiable
-  -- Projecting onto one of the axes is continuous and differentiable
-  let coord_sigma (i : Fin n) : C(E, ℝ) :=
-    { toFun := fun x => basis.toBasis.equivFunL x i
-      continuous_toFun := by fun_prop }
-  have hcoord_diff (i : Fin n) : Differentiable ℝ (coord_sigma i) :=
-    ((ContinuousLinearMap.proj i).comp
-    (basis.toBasis.equivFunL : E →L[ℝ] (Fin n → ℝ))).differentiable
-  -- This gives us the subalgebra of polynomials.
-  let generator_sigma : Set C(E, ℝ) := Set.range coord_sigma
-  have hgen_diff : ∀ f ∈ generator_sigma, Differentiable ℝ f := by
-    rintro _ ⟨i, rfl⟩
-    exact hcoord_diff i
-  let A_sigma : Subalgebra ℝ C(E, ℝ) := Algebra.adjoin ℝ generator_sigma
-  have hA_diff : ∀ f ∈ A_sigma, Differentiable ℝ f := by
-    let D : Subalgebra ℝ C(E, ℝ) :=
-      { carrier := {f | Differentiable ℝ f}
-        zero_mem' := differentiable_const 0
-        one_mem' := differentiable_const 1
-        add_mem' := fun hf hg => hf.add hg
-        mul_mem' := fun hf hg => hf.mul hg
-        algebraMap_mem' := fun r => differentiable_const r }
-    have hgen_sub : generator_sigma ⊆ D := hgen_diff
-    have hA_sub : A_sigma ≤ D := Algebra.adjoin_le hgen_sub
-    exact fun f hf => hA_sub hf
-  -- This subalgebra of polynomials separates points.
-  have sep_sigma : A_sigma.SeparatesPoints := by
-    intro x y hxy
-    have hequiv: basis.toBasis.equivFunL x ≠ basis.toBasis.equivFunL y := by simpa
-    obtain ⟨i, hi⟩ : ∃ i : (Fin n), basis.toBasis.equivFunL x i ≠ basis.toBasis.equivFunL y i := by
-      contrapose! hequiv
-      ext i
-      exact (hequiv i)
-    have hf_mem : coord_sigma i ∈ A_sigma := Algebra.subset_adjoin (Set.mem_range_self i)
-    exact ⟨coord_sigma i, Set.mem_image_of_mem (fun f ↦ f.1) hf_mem, hi⟩
-  -- Define component functions of `G`.
-  let G_i (i : Fin n) : C(E, ℝ) :=
-    { toFun := fun y => basis.toBasis.equivFunL (G y) i, continuous_toFun := by fun_prop }
-  let coordEquiv := basis.toBasis.equivFunL
-  have hpos_symm : 0 < ‖(coordEquiv.symm : ((Fin n) → ℝ) →L[ℝ] E)‖ := by
-    refine lt_of_le_of_ne (norm_nonneg _) fun h_eq => ?_
-    let w : Fin n → ℝ := fun _ => 1
-    have hw : w ≠ 0 := by
-      have : 0 < n := Module.finrank_pos
-      haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp this
-      obtain ⟨i⟩ := (inferInstance : Nonempty (Fin n))
-      intro h
-      have : w i = 0 := congr_fun h i
-      linarith
-    have hw0 : (coordEquiv.symm : (Fin n → ℝ) →L[ℝ] E) w = 0 := by
-      rw [norm_eq_zero.1 h_eq.symm]
-      rfl
-    have hfalse : coordEquiv (coordEquiv.symm w) = coordEquiv 0 := congrArg coordEquiv hw0
-    rw [coordEquiv.apply_symm_apply w, map_zero] at hfalse
-    exact hw hfalse
-  -- Define `C` as the operator norm for l.symm
-  let C := ‖(coordEquiv.symm : (Fin n → ℝ) →L[ℝ] E)‖
-  let ε' := δ / (2 * C)
-  have hε' : 0 < ε' := div_pos (RCLike.ofReal_pos.mp hδ1) (mul_pos zero_lt_two hpos_symm)
-  -- Using the Stone-Weierstrass theorem, pick each `P_i` to be `ε'-close` to each `G_i`.
-  have approx (i : Fin n) :=
-    ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
-    sep_sigma (G_i i) hsigmacompact hε'
-  choose p_i hp_i using approx
-  -- Construct `P` as a function from `ℝ^n` to `ℝ^n` using the component functions `P_i`.
-  let P : C(E, E) :=
-    { toFun := fun y => basis.toBasis.equivFunL.symm (fun i => (p_i i : C(E, ℝ)) y),
-      continuous_toFun := by fun_prop}
-  -- The difference between `P` and `G` on `Σ` is bounded by `δ`
-  have hP_bound : ∀ y ∈ sigma , ‖P y - G y‖ < δ := by
-    intro y hy
-    let v : Fin n → ℝ := fun i => (p_i i : C(E, ℝ)) y - (basis.toBasis.equivFunL (G y)) i
-    have hv i : |v i| < ε' := by
-      have := (hp_i i).2 y hy
-      simp_all only [ ContinuousMap.coe_mk, Real.norm_eq_abs, G_i, v]
-    have hnorm_v : ‖v‖ < ε' := by rw [pi_norm_lt_iff hε']; exact fun i => hv i
-    have hP_eq : P y - G y = coordEquiv.symm v := by
-      dsimp [P, v]
-      have h_repr_eq : basis.toBasis.repr (G y) = coordEquiv (G y) := rfl
-      have hG : G y = coordEquiv.symm (coordEquiv (G y)) := (coordEquiv.symm_apply_apply (G y)).symm
-      have h_simp : coordEquiv (coordEquiv.symm (coordEquiv (G y))) = coordEquiv (G y) :=
-        by rw [coordEquiv.symm_apply_apply (G y)]
-      rw [h_repr_eq, hG, ← coordEquiv.symm.map_sub, h_simp]
-      rfl
-    rw [hP_eq]
-    calc
-      ‖coordEquiv.symm v‖
-      ≤ C * ‖v‖ := ContinuousLinearMap.le_opNorm
-          (coordEquiv.symm : (Fin n → ℝ) →L[ℝ] E) v
-    _ < C * ε' := mul_lt_mul_of_pos_left hnorm_v hpos_symm
-    _ = δ / 2 := by
-        unfold ε'
-        field_simp [ne_of_gt hpos_symm]
-        exact div_self (ne_of_gt hpos_symm)
-    _ < δ := half_lt_self hδ1
-  -- This ensures that `P` does not vanish on `Σ₁` using hδ3
+  obtain ⟨P, hP_diff, hP_bound⟩ :=
+    differentiable_approx_of_continuous hδ1 hsigmacompact (fun (y: E) => (G y : E)) (by fun_prop)
   have h0_notin_image : (0 : E) ∉ P '' sigma1 := by
     rintro ⟨y, hy, h⟩
     have hG : ‖(G y : E)‖ ≥ δ := hδ3 y hy
@@ -428,8 +330,7 @@ theorem invariance_of_domain_interior (f : E → E)
   -- `Σ₂` has measure `0`; `P` is differentiable. The image of `Σ₂` under P also has measure `0`.
   have hP_image_null : volume (P '' (sphere c ε)) = 0 :=
     MeasureTheory.addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero volume
-    ((coordEquiv.symm : (Fin n → ℝ) →L[ℝ] E).differentiable.comp (differentiable_pi.mpr
-    (fun i => hA_diff (p_i i) (hp_i i).1))).differentiableOn
+    hP_diff.differentiableOn
     (MeasureTheory.Measure.addHaar_sphere_of_ne_zero volume c (ne_of_gt hε1))
   -- As the image of `Σ₂` under P also has measure `0`, we can find a point v in the ball of radius
   -- δ that is neither in `Σ₁` nor `Σ₂`
@@ -447,7 +348,7 @@ theorem invariance_of_domain_interior (f : E → E)
     let ⟨d, _, hd⟩ := IsCompact.exists_isMinOn hsigma1compact hsigma1nonempty hP_cont
     -- Let `k` be the minimum of these two, to ensure both properties.
     let k := min ‖P d‖ δ
-    obtain ⟨v, hvnorm, hv1⟩ : ∃ a ∈ ball 0 k, a ∉ ⇑P '' sphere c ε := by
+    obtain ⟨v, hvnorm, hv1⟩ : ∃ a ∈ ball 0 k, a ∉ P '' sphere c ε := by
       rw [← Set.not_subset]
       intro hsub
       have : volume (ball (0 : E) k) ≤ 0 := by rw [← hP_image_null]; exact measure_mono hsub
@@ -586,34 +487,40 @@ theorem invariance_of_domain_partial_equiv {x : E} {s : Set E} {f : PartialEquiv
   Set.mem_image_of_mem (↑f) ha3⟩
 
 
+/-- If there is an injective map `f` from `ℝ^n` to `ℝ^m`, then `n ≤ m`. -/
 theorem invariance_of_dimension_of_injective
     {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     [BrouwerFixedPoint E] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
     (f : E → F) (hf_cont : Continuous f) (hf_inj : Function.Injective f) :
     Module.finrank ℝ E ≤ Module.finrank ℝ F := by
+  -- Suppose by contradiction that `m < n`.
   by_contra h
   rw [not_le] at h
   let n := (Module.finrank ℝ E)
   let m := (Module.finrank ℝ F)
-  have hdimlt : m < n := by exact Nat.lt_of_succ_le h
+  have hdimlt : m < n :=  Nat.lt_of_succ_le h
+  -- Get bases and isomorphisms with Euclidean space.
   let basisE := stdOrthonormalBasis ℝ E
   let basisF := stdOrthonormalBasis ℝ F
   let coordE := basisE.repr
   let coordF := basisF.repr
+  -- Takes a vector in `ℝ^m` to `ℝ^n` by filling the last entries with `0`,
+  -- `(x₀, ..., x_m) → (x₀, ..., x_m, 0, ..., 0)`
   let pad : (Fin m → ℝ) → (Fin n → ℝ) := fun v i => if hi : i.val < m then v ⟨i.val, hi⟩ else 0
   let coordF_padded : F → (Fin n → ℝ) := fun x => pad (coordF x)
   let toEuclideanE : (Fin n → ℝ) → EuclideanSpace ℝ (Fin n) :=
     (EuclideanSpace.equiv (Fin n) ℝ).symm
-  let incl : F → E := fun x => coordE.symm (toEuclideanE (coordF_padded x))
+  -- The inclusion map from `ℝ^m` to `ℝ^n`. It is continuous and injective.
+  let incl : F → E := fun x =>
+    coordE.symm (((EuclideanSpace.equiv (Fin n) ℝ).symm) (coordF_padded x))
   have hincl_cont : Continuous incl := by
     apply Continuous.comp' (LinearIsometryEquiv.continuous _)
     apply Continuous.comp' (ContinuousLinearEquiv.continuous _)
-    apply continuous_pi
-    intro i
-    simp only [coordF_padded, pad, coordF]
-    by_cases hi : i.val < m
-    · simp only [dif_pos hi]; fun_prop
-    · simp only [dif_neg hi]; exact continuous_const
+    exact continuous_pi fun i => by
+      simp only [coordF_padded, pad, coordF]
+      by_cases hi : i.val < m
+      · simp only [dif_pos hi]; fun_prop
+      · simp only [dif_neg hi]; exact continuous_const
   have hincl_inj : Function.Injective incl := by
     intro x y hxy
     apply coordF.injective
@@ -621,32 +528,46 @@ theorem invariance_of_dimension_of_injective
     have hi : i.val < m := i.isLt
     have h : coordF_padded x = coordF_padded y := by
       have := congr_arg coordE hxy
-      simp only [incl, LinearIsometryEquiv.apply_symm_apply] at this
-      simpa [toEuclideanE] using this
+      simp only [incl, LinearIsometryEquiv.apply_symm_apply,
+        PiLp.continuousLinearEquiv_symm_apply, WithLp.toLp.injEq] at this
+      exact this
     have := congr_fun h ⟨i.val, by omega⟩
     simp only [coordF_padded, pad, hi, dif_pos] at this
     exact this
+  -- The inclusion map composed with `f` gives `g`, a continuous and injective map
+  -- from `ℝ^n` to `ℝ^n`.
   let g : E → E := incl ∘ f
   have hg_cont : Continuous g := hincl_cont.comp hf_cont
   have hg_inj : Function.Injective g := hincl_inj.comp hf_inj
+  -- `ℝ^n` is open
   have hE_open : IsOpen (Set.univ : Set E) := isOpen_univ
-  have hg_open_map : IsOpen (g '' Set.univ) := invariance_of_domain_open_map g Set.univ isOpen_univ
+  -- By invariance of domain, `g` is an open mapping and so `g(ℝ^n)` is open.
+  have hg_img_open : IsOpen (g '' Set.univ) := invariance_of_domain_open_map g Set.univ isOpen_univ
     hg_cont.continuousOn hg_inj.injOn
-  rw [Metric.isOpen_iff] at hg_open_map
-  have : (g '' Set.univ).Nonempty := by exact Set.Nonempty.of_subtype
-  let x : E := this.some
-  have hx := Set.Nonempty.some_mem this
-  rcases hg_open_map x hx with ⟨ε, hε, hball⟩
+  -- Use definition of open with balls.
+  rw [Metric.isOpen_iff] at hg_img_open
+  -- the `mth` coordinate of every point in the image is `0`.
   have hlastzero : ∀ x ∈ g '' Set.univ, (EuclideanSpace.equiv (Fin n) ℝ) (coordE x) ⟨m, h⟩ = 0 := by
-    intro x ⟨y, hy1, hy2⟩
-    rw [← hy2]
+    intro x ⟨y, _, hy⟩
+    rw [← hy]
     simp only [PiLp.continuousLinearEquiv_symm_apply, Function.comp_apply,
       LinearIsometryEquiv.apply_symm_apply, PiLp.continuousLinearEquiv_apply, lt_self_iff_false,
-      ↓reduceDIte, coordE, g, incl, toEuclideanE, coordF_padded, pad]
-  let c : E →  ℝ := fun y => (EuclideanSpace.equiv (Fin n) ℝ) (coordE y) ⟨m, h⟩
+      ↓reduceDIte, coordE, g, incl, coordF_padded, pad]
+  -- Consider some point `x` in the image of `g`.
+  -- As the `mth` coordinate of every point of the image is `0`,
+  have : (g '' Set.univ).Nonempty := Set.Nonempty.of_subtype
+  let x : E := this.some
+  have hx := Set.Nonempty.some_mem this
+  -- There is a ball around it contained in `g(ℝ^n)`.
+  rcases hg_img_open x hx with ⟨ε, hε, hball⟩
+  -- `c` picks out the `mth` coordinate.
+  let c : E → ℝ := fun y => (EuclideanSpace.equiv (Fin n) ℝ) (coordE y) ⟨m, h⟩
+  -- The `mth` coordinate is `0` for every point in the ball around `x`.
   have hc_zero : ∀ y ∈ ball x ε, c y = 0 := fun y hy => (fun y hy => hlastzero y (hball hy)) y hy
+  -- Take `x` and add `ε/2` in the `mth` coordinate to get a point `x'`.
   let x' : E := x + coordE.symm ((EuclideanSpace.equiv (Fin n) ℝ).symm
     (fun i => if i = ⟨m, h⟩ then ε / 2 else 0))
+  -- `x'` is in the `ε-ball` around `x`.
   have hx'_in_ball : x' ∈ ball x ε := by
     simp only [x', mem_ball, dist_eq_norm, add_sub_cancel_left]
     have hconv : (EuclideanSpace.equiv (Fin n) ℝ).symm
@@ -661,13 +582,12 @@ theorem invariance_of_dimension_of_injective
     rw [LinearIsometryEquiv.norm_map, hconv, EuclideanSpace.norm_single,
       Real.norm_of_nonneg (by linarith)]
     linarith [half_lt_self hε]
+  -- The `mth` coordinate of `x'` is non-zero, (as it is `ε/2`).
   have hx'_nonzero : c x' ≠ 0 := by
-    have hsum : ((EuclideanSpace.equiv (Fin n) ℝ) (coordE x) +
-        (EuclideanSpace.equiv (Fin n) ℝ)
-          (coordE (coordE.symm ((EuclideanSpace.equiv (Fin n) ℝ).symm
-            fun i => if i = ⟨m, h⟩ then ε / 2 else 0)))) ⟨m, h⟩ =
-        (EuclideanSpace.equiv (Fin n) ℝ) (coordE x) ⟨m, h⟩ + ε / 2 := by
-      simp [Pi.add_apply]
+    have hsum : ((EuclideanSpace.equiv (Fin n) ℝ) (coordE x) + (EuclideanSpace.equiv (Fin n) ℝ)
+      (coordE (coordE.symm ((EuclideanSpace.equiv (Fin n) ℝ).symm
+      fun i => if i = ⟨m, h⟩ then ε / 2 else 0)))) ⟨m, h⟩ =
+      (EuclideanSpace.equiv (Fin n) ℝ) (coordE x) ⟨m, h⟩ + ε / 2 := by simp [Pi.add_apply]
     have hcx : c x = 0 := hlastzero x hx
     unfold c at hcx
     have hsum2 : (EuclideanSpace.equiv (Fin n) ℝ) (coordE x) ⟨m, h⟩ + ε / 2 = ε / 2 := by
@@ -676,16 +596,17 @@ theorem invariance_of_dimension_of_injective
     simp only [x', c, map_add]
     rw [hsum, hsum2]
     linarith [half_pos hε]
+  -- This contradicts all points in the ball having `mth` coordinate `0`.
   exact hx'_nonzero (hc_zero x' hx'_in_ball)
 
-
+-- If there is a homeomorphism between `ℝ^m` and `ℝ^n`, then `m = n`
 theorem invariance_of_dimension
     {E F : Type*}
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [BrouwerFixedPoint E]
     [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] [BrouwerFixedPoint F]
-    (h : Nonempty (E ≃ₜ F)) :
+    (φ : E ≃ₜ F) :
     Module.finrank ℝ E = Module.finrank ℝ F := by
-  let φ := h.some
+  -- From the homeomorphism, getcontinuous and injective functions both ways and apply the above.
   let f : E → F := φ
   let g : F → E := φ.symm
   exact Nat.le_antisymm (invariance_of_dimension_of_injective f (φ.continuous) (φ.injective))
