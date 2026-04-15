@@ -143,6 +143,7 @@ end Field
 
 end Subsemiring
 
+/- Deprecated -/
 
 variable {R : Type*} [CommRing R]
 
