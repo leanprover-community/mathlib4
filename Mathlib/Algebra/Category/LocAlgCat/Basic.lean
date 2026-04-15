@@ -52,9 +52,8 @@ lemma comap_algebraMap_maximalIdeal [IsLocalRing Λ] [IsLocalHom (algebraMap Λ 
 
 instance [IsLocalRing Λ] [IsLocalHom (algebraMap Λ k)] :
     Nontrivial (A ⧸ ((maximalIdeal Λ).map (algebraMap Λ A))) :=
-  Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top
-  (maximalIdeal.isMaximal A).ne_top <| ((local_hom_TFAE (algebraMap Λ A)).out 0 2).mp
-    (by infer_instance)
+  Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal A).ne_top <|
+    ((local_hom_TFAE (algebraMap Λ A)).out 0 2).mp (by infer_instance)
 
 section ofQuot
 
