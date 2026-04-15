@@ -6,7 +6,9 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Supports of subsemirings
@@ -88,5 +90,20 @@ theorem _root_.AddSubmonoid.IsSpanning.hasIdealSupport (hS : S.IsSpanning) : S.H
     have := S.mem_or_neg_mem hS x
     have : ∀ x y, -x ∈ S → -y ∈ S → x * y ∈ S := fun _ _ hx hy ↦ by simpa using mul_mem hx hy
     aesop (add 80% this)
+
+@[aesop safe forward, aesop 50%]
+theorem _root_.AddSubmonoid.IsPointed.hasIdealSupport (hS : S.IsPointed) : S.HasIdealSupport where
+
+@[simp]
+theorem support_eq_bot (hS : S.IsPointed) :
+    have := hS.hasIdealSupport
+    S.support = ⊥ := by
+  apply_fun Submodule.toAddSubgroup using Submodule.toAddSubgroup_injective
+  rw [← toAddSubmonoid_support, hS.support_eq_bot, Submodule.bot_toAddSubgroup]
+
+@[aesop simp, aesop safe forward]
+theorem _root_.AddSubmonoid.IsPointed.neg_one_notMem [Nontrivial R]
+    (hS : S.IsPointed) : -1 ∉ S := fun hc ↦ by
+  simpa [S.eq_zero_of_mem_of_neg_mem hS (by simp) hc] using zero_ne_one' R
 
 end Subsemiring
