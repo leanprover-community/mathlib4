@@ -592,10 +592,10 @@ end lift
 section mkOfAdjoinEqTop
 
 variable [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
-    {α : S} {hα : IsIntegral R α} {hα₂ : Algebra.adjoin R {α} = ⊤}
+    {α : S} (hα : IsIntegral R α) (hα₂ : Algebra.adjoin R {α} = ⊤)
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+@[simps]
 def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
   map := aeval α
   map_surjective := by
@@ -605,7 +605,6 @@ def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
     ext
     simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
@@ -613,7 +612,7 @@ abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R
 
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
-  simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
+  simp [IsAdjoinRoot.root]
 
 end mkOfAdjoinEqTop
 
@@ -650,7 +649,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
 
 /-- If `α` generates `S` as an algebra and `S` is free and finite,
 then `S` is given by adjoining a root of `minpoly R α`.
-Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop` -/
+Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
 @[simps]
 def mkOfAdjoinEqTop'
     [Module.Finite R S] [Module.Free R S]
