@@ -41,9 +41,9 @@ instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := .of_equiv _ 
 lemma exists_apply_ne_one_iff_exists_monoidHom (a : Mˣ) :
     (∃ χ : MulChar M R, χ a ≠ 1) ↔ ∃ φ : Mˣ →* Rˣ, φ a ≠ 1 := by
   refine ⟨fun ⟨χ, hχ⟩ ↦ ⟨χ.toUnitHom, ?_⟩, fun ⟨φ, hφ⟩ ↦ ⟨ofUnitHom φ, ?_⟩⟩
-  · contrapose! hχ
+  · contrapose hχ
     rwa [Units.ext_iff, coe_toUnitHom] at hχ
-  · contrapose! hφ
+  · contrapose hφ
     simpa only [ofUnitHom_eq, equivToUnitHom_symm_coe, Units.val_eq_one] using hφ
 
 variable (M R)
@@ -57,7 +57,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity [Nontrivial R] {a : M} (ha 
   by_cases hu : IsUnit a
   · refine (exists_apply_ne_one_iff_exists_monoidHom hu.unit).mpr ?_
     refine CommGroup.exists_apply_ne_one_of_hasEnoughRootsOfUnity Mˣ R ?_
-    contrapose! ha
+    contrapose ha
     rw [← hu.unit_spec, ha, Units.val_eq_one]
   · exact ⟨1, by simpa only [map_nonunit _ hu] using zero_ne_one⟩
 
