@@ -142,29 +142,29 @@ lemma toAlgHom_mapOfQuot_apply (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)
 
 /-- The quotient of a local algebra by the `n`-th power of its maximal ideal.
 Geometrically, this represents an infinitesimal neighborhood of the closed point. -/
-abbrev infinitesimalNeighborhood {n : ℕ} (hn : n ≠ 0) (A : LocAlgCat.{w} Λ k) : LocAlgCat Λ k :=
+abbrev infinitesimalNeighborhood (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) : LocAlgCat Λ k :=
   letI : Nontrivial (A ⧸ (maximalIdeal A) ^ n) := by
     rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self hn⟩
+    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self (NeZero.ne n)⟩
   A.ofQuot (maximalIdeal A ^ n)
 
 /-- The canonical quotient morphism from `A` to its infinitesimal neighborhood. -/
-abbrev toInfinitesimalNeighborhood {n : ℕ} (hn : n ≠ 0) (A : LocAlgCat.{w} Λ k) :
-    A ⟶ A.infinitesimalNeighborhood hn :=
+abbrev toInfinitesimalNeighborhood (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) :
+    A ⟶ A.infinitesimalNeighborhood n :=
   letI : Nontrivial (A ⧸ (maximalIdeal A) ^ n) := by
     rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self hn⟩
+    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self (NeZero.ne n)⟩
   toOfQuot ..
 
 /-- The morphism between infinitesimal neighborhoods induced by a morphism in `LocAlgCat`. -/
-abbrev mapInfinitesimalNeighborhood {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) (hmn : n ≤ m) (f : A ⟶ B) :
-    A.infinitesimalNeighborhood hm ⟶ B.infinitesimalNeighborhood hn :=
+abbrev mapInfinitesimalNeighborhood (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
+    A.infinitesimalNeighborhood m ⟶ B.infinitesimalNeighborhood n :=
   letI : Nontrivial (A ⧸ (maximalIdeal A) ^ m) := by
     rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self hm⟩
+    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, Ideal.pow_le_self (NeZero.ne m)⟩
   letI : Nontrivial (B ⧸ (maximalIdeal B) ^ n) := by
     rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-    exact ⟨maximalIdeal B, maximalIdeal.isMaximal B, Ideal.pow_le_self hn⟩
+    exact ⟨maximalIdeal B, maximalIdeal.isMaximal B, Ideal.pow_le_self (NeZero.ne n)⟩
   mapOfQuot f (le_trans (Ideal.pow_le_pow_right hmn) (f.comap_maximalIdeal_eq ▸
       Ideal.le_comap_pow f.toAlgHom n))
 
