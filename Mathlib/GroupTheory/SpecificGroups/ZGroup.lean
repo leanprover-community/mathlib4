@@ -96,7 +96,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
   refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
-  contrapose! h
+  contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
   exact hP.isComplement' rfl
 
@@ -212,7 +212,7 @@ theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
 /-- If a cyclic `p`-subgroup `P` acts by conjugation on a subgroup `K` of coprime order, then
   either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
-    (hP : IsPGroup p P) (hKP : K ≤ Subgroup.normalizer (P : Subgroup G))
+    (hP : IsPGroup p P) (hKP : K ≤ Subgroup.normalizer P)
     (hPK : (Nat.card P).Coprime (Nat.card K)) : ⁅K, P⁆ = ⊥ ∨ ⁅K, P⁆ = P := by
   let _ := MulDistribMulAction.compHom P (P.normalizerMonoidHom.comp (Subgroup.inclusion hKP))
   refine (smul_mul_inv_trivial_or_surjective hP hPK).imp (fun h ↦ ?_) fun h ↦ ?_
@@ -249,18 +249,19 @@ theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P �
 /-- A cyclic Sylow subgroup is either central in its normalizer or contained in the commutator
   subgroup. -/
 theorem normalizer_le_centralizer_or_le_commutator :
-    Subgroup.normalizer (P : Subgroup G) ≤ Subgroup.centralizer (P : Set G) ∨ P ≤ commutator G := by
-  let Q : Sylow p (Subgroup.normalizer (P : Subgroup G)) := P.subtype P.le_normalizer
+    Subgroup.normalizer P ≤ Subgroup.centralizer (P : Set G) ∨ P ≤ commutator G := by
+  let Q : Sylow p (Subgroup.normalizer P) := P.subtype P.le_normalizer
   have : Q.Normal := P.normal_in_normalizer
   have : IsCyclic Q :=
     isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective
   refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
       ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
-      (Subgroup.normalizer ((P : Subgroup G) : Set G)).range_subtype] at h
+      (Subgroup.normalizer (P : Set G)).range_subtype] at h
     replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
-    rwa [← Subgroup.coe_map, P.coe_subtype, Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
-  · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype,
+    rwa [← Subgroup.coe_map, P.coe_subtype, ← P.coe_coe,
+      Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
+  · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype, ← P.coe_coe,
       Subgroup.map_subgroupOf_eq_of_le P.le_normalizer, Subgroup.map_subtype_commutator] at h
     exact h.trans (Subgroup.commutator_mono le_top le_top)
 
