@@ -424,8 +424,8 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     exact P.2
   replace hp := mt orderOf_eq_one_iff.mpr (ne_of_eq_of_ne hx hp.1.ne_one)
   rw [← zpowers_eq_bot, ← Ne, ← bot_lt_iff_ne_bot, ←
-    comap_lt_comap_of_surjective (QuotientGroup.mk'_surjective _), MonoidHom.comap_bot,
-    QuotientGroup.ker_mk'] at hp
+    comap_lt_comap_of_surjective (QuotientGroup.mk'_surjective _), MonoidHom.comap_bot] at hp
+  erw [QuotientGroup.ker_mk'] at hp
   exact hp.ne' (P.3 hQ hp.le)
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
