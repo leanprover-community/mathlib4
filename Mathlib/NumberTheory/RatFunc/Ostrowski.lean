@@ -257,7 +257,7 @@ lemma valuation_isEquiv_adic_of_valuation_X_le_one (hle : v X ≤ 1) :
 A discrete valuation of rank 1 that is trivial on `K` is equivalent either to the valuation
 at infinity or to the `p`-adic valuation for a unique maximal ideal `p` of `K[X]`. -/
 theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
-    Xor' (v.IsEquiv (RatFunc.inftyValuation K))
+    Xor (v.IsEquiv (RatFunc.inftyValuation K))
       (∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _)) := by
   rcases lt_or_ge 1 (v X) with hlt | hge
   /- Infinity case -/
