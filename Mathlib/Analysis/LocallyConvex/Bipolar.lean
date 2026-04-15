@@ -39,9 +39,10 @@ variable {𝕜 E F : Type*} [CommSemiring 𝕜] [AddCommMonoid E]
 noncomputable def linearEquiv : WeakBilin B ≃ₗ[𝕜] E :=
   LinearEquiv.refl ..
 
-/-- The dual pairing between `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` and `F`. It is necessary to use
-this pairing instead of `B` itself when it is necessary to consider statements involving the
-weak topology induced by the pairing, such as the bipolar theorem. -/
+/-- The dual pairing between `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` and `F`. In order to avoid abuse
+of the definitional equality between `E` and `WeakBilin B`, it is necessary to use this pairing
+instead of `B` itself when considering statements involving the weak topology induced by the
+pairing, such as the bipolar theorem. -/
 noncomputable def pairing : WeakBilin B →ₗ[𝕜] F →ₗ[𝕜] 𝕜 :=
   (linearEquiv B).symm.arrowCongr (.refl _ _) B
 
