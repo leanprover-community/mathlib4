@@ -85,7 +85,6 @@ lemma HasGaussNorm_MvHasGaussNorm (h : HasGaussNorm v c f) :
 
 -- Note: not convinced that foo + HasGaussNorm... is the best way to do this
 
-@[simp]
 theorem gaussNorm_zero (vZero : v 0 = 0) : gaussNorm v c 0 = 0 :=
   MvPowerSeries.gaussNorm_zero v (fun _ ↦ c) vZero
 
