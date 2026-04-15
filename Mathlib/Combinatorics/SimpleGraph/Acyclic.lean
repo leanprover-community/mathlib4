@@ -525,7 +525,7 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
   -- Get the longest possible path `p` between some `u` and `v`.
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
-  have ⟨walk_xy, h_walk_is_path⟩ := hTree.isConnected.exists_isPath x y
+  have ⟨walk_xy, h_walk_is_path⟩ := hTree.connected.exists_isPath x y
   have h_len_ge_1 : 1 ≤ p.length := by grind [nil_iff_length_eq, walk_xy.not_nil_of_ne hxy]
   classical
   -- Helper: Proves the start of a maximal path has degree 1.
@@ -534,16 +534,17 @@ theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel 
       (h_len_ge_1 : 1 ≤ path.length) : G.degree v1 = 1 := by
     -- Assume degree isn't 1 for a proof by contradiction
     by_contra h_deg_not_1
-    have h_ge_2 : 2 ≤ G.degree v1 := by
+    have h_g_1 : 1 < G.degree v1 := by
       have h_pos : 0 < G.degree v1 := G.degree_pos_iff_exists_adj v1 |>.mpr
         ⟨_, path.adj_snd <| not_nil_iff_lt_length.mpr <| by lia⟩
       lia
     -- Find a neighbor `w` that isn't the next vertex on the path.
-    obtain ⟨w, hw_not_next, hw_adj⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (path.getVert 1)
+    obtain ⟨w, hw_not_next, hw_adj⟩ := exists_ne_adj_of_one_lt_degree
+      (v := v1) G h_g_1 (path.getVert 1)
     -- Prove `w` isn't already in the path (which would create a cycle)
     have hw_not_in_p: w ∉ path.support := by
       by_contra hw_in_p
-      have h_acyclic := hTree.IsAcyclic
+      have h_acyclic := hTree.isAcyclic
       rw [SimpleGraph.isAcyclic_iff_path_unique] at h_acyclic
       let p1 : G.Walk v1 w := SimpleGraph.Adj.toWalk hw_adj
       have hp1_path : p1.IsPath := by
