@@ -77,6 +77,20 @@ instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalR
 
 end IsRegularLocalRing
 
+/-!
+
+# Definition of Regular Ring
+
+In this section, we define regular rings as noetherian rings whose localization at every prime are
+regular local rings.
+(Note that regular local ring is not natrually regular ring in this definition).
+
+## TODO
+Show that regular local rings are regular under this definition.
+This follows from localizations of regular local rings being regular (@Thmoas-Guan).
+
+-/
+
 /-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing (R : Type*) [CommRing R] : Prop extends IsNoetherianRing R where
   isRegularLocalRing_localization : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
