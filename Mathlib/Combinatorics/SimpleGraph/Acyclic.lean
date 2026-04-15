@@ -671,7 +671,7 @@ section Star
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
-  SimpleGraph.fromRel (fun x _ => x = r)
+ .fromRel fun v _ ↦ v = r
 
 instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj := by
   unfold starGraph; infer_instance
