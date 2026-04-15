@@ -211,20 +211,15 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3 / 2) * ‖z‖ := by
-  apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
-  have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
-    rw [inv_eq_one_div, div_le_iff₀]
-    · linarith
-    · linarith
-  have hz4 : ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖ / 2 * 2 / 2 := by
-    gcongr
-    · rw [inv_nonneg]
-      linarith
-    · rw [sq, div_eq_mul_one_div]
-      gcongr
-  simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-    IsUnit.div_mul_cancel] at hz4
-  linarith
+  refine (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one)).trans ?_
+  have hz0 : 0 ≤ ‖z‖ := norm_nonneg z
+  have hdiv : (1 - ‖z‖)⁻¹ / 2 ≤ (1 : ℝ) := by
+    have h1 : (1 - ‖z‖)⁻¹ ≤ 2 := by
+      rw [inv_eq_one_div, div_le_iff₀] <;> linarith
+    linarith
+  have hquad : ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖ ^ 2 := by
+    nlinarith [sq_nonneg ‖z‖, hdiv]
+  nlinarith [hz, hz0, hquad]
 
 /-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/

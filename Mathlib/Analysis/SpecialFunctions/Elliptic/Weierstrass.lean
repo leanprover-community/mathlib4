@@ -479,19 +479,13 @@ private lemma weierstrassP_add_coe_aux (z : ℂ) (l : L.lattice) (hl : l.1 / 2 �
 
 @[simp]
 lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z := by
-  let G : AddSubgroup ℂ :=
-    { carrier := { z | (℘[L] <| · + z) = ℘[L] }
-      add_mem' := by simp_all [funext_iff, ← add_assoc]
-      zero_mem' := by simp
-      neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
-  have : L.lattice ≤ G.toIntSubmodule := by
-    rw [lattice, Submodule.span_le]
-    rintro _ (rfl | rfl)
-    · ext i
-      exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
-    · ext i
-      exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
-  exact congr_fun (this l.2) _
+  obtain ⟨m, n, hmn⟩ := L.mem_lattice.mp l.2
+  have hω₁ : ℘[L].Periodic L.ω₁ := fun w ↦
+    L.weierstrassP_add_coe_aux w ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
+  have hω₂ : ℘[L].Periodic L.ω₂ := fun w ↦
+    L.weierstrassP_add_coe_aux w ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
+  rw [← hmn]
+  simpa [add_assoc] using (hω₁.int_mul m).add_period (hω₂.int_mul n) z
 
 lemma periodic_weierstrassP (l : L.lattice) : ℘[L].Periodic l :=
   (L.weierstrassP_add_coe · l)

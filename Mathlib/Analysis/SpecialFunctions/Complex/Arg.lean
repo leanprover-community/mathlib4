@@ -325,16 +325,12 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
 
 -- TODO: Replace the next two lemmas by general facts about periodic functions
 lemma norm_eq_one_iff' : ‖x‖ = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
-  rw [norm_eq_one_iff]
   constructor
-  · rintro ⟨θ, rfl⟩
-    refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
-    · convert toIocMod_mem_Ioc _ _ _
-      ring
-    · rw [eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
-      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · intro hx
+    refine ⟨arg x, arg_mem_Ioc x, ?_⟩
+    simpa [hx] using norm_mul_exp_arg_mul_I x
   · rintro ⟨θ, _, rfl⟩
-    exact ⟨θ, rfl⟩
+    exact Complex.norm_exp_ofReal_mul_I θ
 
 lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
   ext; simpa using norm_eq_one_iff'.symm

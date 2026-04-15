@@ -56,31 +56,27 @@ lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
   by the continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the
   fact that `x^p` is monotone for `p ∈ [0,1]` (`CFC.monotone_nnrpow`) and that the set of
   monotone functions is closed (`isClosed_monotoneOn`) to conclude the proof. -/
-  let s := {a : A | IsStrictlyPositive a}
-  let f (p : ℝ) := fun a => if a ∈ s then cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a else 0
-  let g := fun a => if a ∈ s then log (A := A) a else 0
-  have hg : s.EqOn g (log (A := A)) := by simp +contextual [g, Set.EqOn]
-  refine MonotoneOn.congr ?_ hg
-  refine isClosed_monotoneOn.mem_of_tendsto (f := f) (b := (𝓝[>] 0)) ?tendsto ?eventually
+  rw [Set.monotoneOn_iff_monotone]
+  let f (p : ℝ) (a : {a : A | IsStrictlyPositive a}) :=
+    cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a
+  refine isClosed_monotone.mem_of_tendsto (f := f) (b := 𝓝[>] 0) ?tendsto ?eventually
   case tendsto =>
     rw [tendsto_pi_nhds]
     intro a
-    by_cases ha : a ∈ s
-    · have hf : ∀ p, cfc (fun x => p⁻¹ * (x ^ p - 1)) a = f p a := by simp [f, ha]
-      exact (hg ha ▸ tendsto_cfc_rpow_sub_one_log ha).congr hf
-    · simp [g, f, ha]
+    simpa [f] using (tendsto_cfc_rpow_sub_one_log (A := A) (a := a) a.2)
   case eventually =>
-    have h₁ : ∀ᶠ (p : ℝ) in 𝓝[>] 0, 0 < p ∧ p < 1 := nhdsGT_basis 0 |>.mem_of_mem zero_lt_one
-    filter_upwards [h₁] with p ⟨hp, hp'⟩
-    have hf : s.EqOn (fun a : A => p⁻¹ • (a ^ p - 1)) (f p) := by
-      intro a ha
-      simp only [ha, ↓reduceIte, f, ← smul_eq_mul]
+    filter_upwards [nhdsGT_basis 0 |>.mem_of_mem zero_lt_one] with p hp
+    have hf (a : {a : A | IsStrictlyPositive a}) : f p a = p⁻¹ • ((a : A) ^ p - 1) := by
+      simp only [f, ← smul_eq_mul]
       rw [cfc_smul _ (hf := by fun_prop (disch := grind -abstractProof)),
         cfc_sub _ _ (hf := by fun_prop (disch := grind -abstractProof)),
         cfc_const_one .., rpow_eq_cfc_real ..]
-    refine MonotoneOn.congr (fun a ha b hb hab ↦ ?_) hf
-    gcongr
-    grind
+    intro a b hab
+    rw [hf a, hf b]
+    have hp0 : 0 ≤ p⁻¹ := by simpa [one_div] using (_root_.inv_nonneg.mpr hp.1.le)
+    exact smul_le_smul_of_nonneg_left
+      (sub_le_sub_right (CFC.monotone_rpow ⟨hp.1.le, hp.2.le⟩ (show (a : A) ≤ b from hab)) (1 : A))
+      hp0
 
 @[gcongr]
 lemma CFC.log_le_log {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :

@@ -97,13 +97,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      rcases le_or_gt 0 c with (h | h)
-      · rw [uIoc_of_le h] at hy
-        rw [abs_of_nonneg h, abs_of_pos hy.1]
-        exact hy.2
-      · rw [uIoc_of_ge h.le] at hy
-        rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
-        exact hy.1.le
+      simpa using Set.abs_sub_left_of_mem_uIcc (Set.uIoc_subset_uIcc hy)
     rw [norm_mul, norm_I, one_mul, two_mul]
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy

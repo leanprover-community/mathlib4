@@ -391,23 +391,16 @@ lemma monotoneOn_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) (ht : 0 < t) :
 
 lemma integrableOn_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₁₂ p · x) (Ioi 0) := by
-  have hmain : (rpowIntegrand₁₂ p · x)
-      =ᵐ[volume.restrict (Ioi 0)] (x * rpowIntegrand₀₁ (p-1) · x) := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioi] with a ha
-    rw [rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ha]
-  rw [integrableOn_congr_fun_ae hmain]
-  refine Integrable.const_mul ?_ _
-  exact integrableOn_rpowIntegrand₀₁_Ioi (by grind) hx
+  exact (integrableOn_congr_fun (fun t ht ↦ rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ht)
+    measurableSet_Ioi).2 <|
+      Integrable.const_mul (integrableOn_rpowIntegrand₀₁_Ioi (by grind) hx) _
 
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (1, 2)`) . -/
 lemma rpow_eq_const_mul_integral_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) (hx : 0 ≤ x) :
     x ^ p
       = (∫ t in Ioi 0, rpowIntegrand₀₁ (p - 1) t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₁₂ p t x := by
-  have hmain : (rpowIntegrand₁₂ p · x)
-      =ᵐ[volume.restrict (Ioi 0)] (x * rpowIntegrand₀₁ (p-1) · x) := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioi] with a ha
-    rw [rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ha]
-  rw [integral_congr_ae hmain, integral_const_mul_of_integrable
+  rw [setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦
+      rpowIntegrand₁₂_eq_mul_rpowIntegrand₀₁ hx ht), integral_const_mul_of_integrable
       (integrableOn_rpowIntegrand₀₁_Ioi (by grind) hx)]
   have h₁ : x ^ p = x * x ^ (p - 1) := by
     rw [mul_comm, ← rpow_add_one' hx (by grind)]
