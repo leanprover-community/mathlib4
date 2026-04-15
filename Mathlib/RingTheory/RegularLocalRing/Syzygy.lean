@@ -24,13 +24,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
-lemma IsRegularLocalRing.of_isRegularRing [IsLocalRing R] [IsRegularRing R] :
-    IsRegularLocalRing R := by
-  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
-  let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
-    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
-  exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
-
 set_option backward.isDefEq.respectTransparency false in
 theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] {ι : Type*} [Finite ι] :
     globalDimension.{v} (MvPolynomial ι k) = Nat.card ι := by
