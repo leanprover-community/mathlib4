@@ -7561,6 +7561,7 @@ public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.Category
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 public import Mathlib.Topology.Convenient.GeneratedBy
+public import Mathlib.Topology.Convenient.Localization
 public import Mathlib.Topology.Covering
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
