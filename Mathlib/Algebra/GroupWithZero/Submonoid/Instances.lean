@@ -53,4 +53,9 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
 instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
     CommGroupWithZero (MonoidHom.mrange f) where
 
+lemma mker_inverse [CommGroupWithZero H] :
+    MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by
+  ext
+  simp
+
 end MonoidWithZeroHom
