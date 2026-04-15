@@ -114,17 +114,13 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
     exact concaveOn_const _ (convex_Ici _)
   · simp only [mem_singleton_iff] at hp
     simp only [hp]
-    have : (Ici (0 : A)).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id := fun a ha => CFC.nnrpow_one _ ha
-    exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) this.symm
+    exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) nnrpow_one_eqOn.symm
 
 /-- The square root is operator concave. -/
 lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
   eta_expand
   simp_rw [sqrt_eq_nnrpow]
   exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
-
-  --have : (sqrt : A → A) = fun a => a ^ (1 / 2 : ℝ≥0) := by ext; rw [sqrt_eq_nnrpow]
-  --rw [this]
 
 end NonUnitalCStarAlgebra
 
@@ -164,10 +160,7 @@ lemma concaveOn_rpow {p : ℝ} (hp : p ∈ Icc 0 1) :
     exact concaveOn_nnrpow hp
   | inr hq =>
     simp only [hq, NNReal.coe_zero]
-    have : (Ici (0 : A)).EqOn (fun a => a ^ (0 : ℝ)) (fun _ => 1) := by
-      intro a ha
-      simp [rpow_zero a ha]
-    exact ConcaveOn.congr (concaveOn_const _ (convex_Ici _)) this.symm
+    exact ConcaveOn.congr (concaveOn_const _ (convex_Ici _)) rpow_zero_eqOn.symm
 
 end UnitalCStarAlgebra
 
