@@ -26,7 +26,7 @@ respectively. This will require a refactor of `Ordinal` first, as the `simp`-nor
 currently set the other way around.
 -/
 
-public section
+@[expose] public section
 
 /-- A typeclass for `succ x = x + 1`. -/
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where
