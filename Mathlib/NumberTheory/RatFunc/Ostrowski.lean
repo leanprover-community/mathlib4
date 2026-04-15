@@ -40,7 +40,7 @@ lemma valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X {f : RatFunc
   | f p q hq =>
     rw [intDegree_div (by grind only) (by grind only), v.map_div, zpow_sub₀ (ne_zero_of_lt hlt)]
     simp_rw [intDegree_polynomial, zpow_natCast, ← coePolynomial_eq_algebraMap]
-    have hp : p ≠ 0 := by contrapose! hf; simp [hf]
+    have hp : p ≠ 0 := by contrapose hf; simp [hf]
     rw [valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ hlt hp,
       valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ hlt hq]
 
@@ -257,7 +257,7 @@ lemma valuation_isEquiv_adic_of_valuation_X_le_one (hle : v X ≤ 1) :
 A discrete valuation of rank 1 that is trivial on `K` is equivalent either to the valuation
 at infinity or to the `p`-adic valuation for a unique maximal ideal `p` of `K[X]`. -/
 theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
-    Xor' (v.IsEquiv (FunctionField.inftyValuation K))
+    Xor' (v.IsEquiv (RatFunc.inftyValuation K))
       (∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _)) := by
   rcases lt_or_ge 1 (v X) with hlt | hge
   /- Infinity case -/
@@ -272,7 +272,7 @@ theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
       fun hv ↦ absurd (hw.symm.trans hv) (adicValuation_not_isEquiv_infty_valuation pw)⟩
 
 lemma valuation_isEquiv_adic_of_not_isEquiv_infty [DecidableEq (RatFunc K)]
-    (hni : ¬ v.IsEquiv (FunctionField.inftyValuation K)) :
+    (hni : ¬ v.IsEquiv (RatFunc.inftyValuation K)) :
     ∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _) :=
   valuation_isEquiv_infty_or_adic.or.resolve_left hni
 
