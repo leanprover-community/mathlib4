@@ -4,6 +4,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.End
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Profunctor.Basic
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
