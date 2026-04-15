@@ -89,6 +89,17 @@ lemma δ_eq_iff (i : Fin (d + 2)) :
 
 end
 
+include hxy in
+lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
+  have := hxy
+  obtain ⟨d, x, rfl⟩ := x.mk_surjective
+  obtain ⟨d', y, rfl⟩ := y.mk_surjective
+  obtain rfl : d' = d + 1 := hxy.dim_eq
+  simp only [opEquiv_symm_apply, iff]
+  refine ⟨(hxy.index rfl).rev, by simpa using hxy.δ_index rfl, fun i hi ↦ ?_⟩
+  obtain ⟨i, rfl⟩ := i.rev_surjective
+  simpa [← hxy.δ_eq_iff rfl] using hi
+
 end IsUniquelyCodimOneFace
 
 end SSet.S
