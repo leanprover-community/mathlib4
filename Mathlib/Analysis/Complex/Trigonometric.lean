@@ -501,11 +501,10 @@ theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
   simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
-  rw [← cosh_mul_I, show (3 * x) * I = 3 * (x * I) by ring, cosh_three_mul, cosh_mul_I]
+  rw [← cosh_mul_I, mul_assoc, cosh_three_mul, cosh_mul_I]
 
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
-  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, show (3 * x) * I = 3 * (x * I) by ring,
-    sinh_three_mul, sinh_mul_I]
+  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, mul_assoc, sinh_three_mul, sinh_mul_I]
   grind [I_sq]
 
 theorem exp_mul_I : exp (x * I) = cos x + sin x * I :=
