@@ -5,29 +5,38 @@ Authors: Vasily Ilin
 -/
 module
 
-public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.LocallyFinite
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
-# Piecewise linear interpolation on regular grids
+# Piecewise linear interpolation
 
-Given a sequence of values `y : ℤ → E` and slopes `c : ℤ → E` on a regular grid with
-step size `h > 0` starting at `a`, this file defines piecewise linear interpolation
-using `toIcoDiv` from `Mathlib.Algebra.Order.ToIntervalMod` to assign each point to its
-grid cell.
+Given a grid `x : ℤ → K`, values `y : ℤ → E`, and slopes `c : ℤ → E`, this file defines
+`piecewiseLinear x y c : K → E`, equal to `y n + (t - x n) • c n` on the cell
+`[x n, x (n + 1))` where `n = gridIdx x t`. It is continuous when the step condition
+`y (n + 1) = y n + (x (n + 1) - x n) • c n` holds, and has right derivative `c n` on each
+cell.
+
+For the value-based interpolant (slopes derived from consecutive values), use
+`continuous_piecewiseLinear_ofValues`.
 
 ## Main definitions
 
-* `piecewiseLinear (y c : ℤ → E) (hh : 0 < h) (a t : ℝ)`: the piecewise linear interpolation,
-  equal to `y n + (t - (a + n • h)) • c n` on cell `n = toIcoDiv hh a t`.
+* `gridIdx (x : ℤ → K) (t : K) : ℤ`: the index `n` such that `t ∈ Ico (x n) (x (n + 1))`
+  when `x` tends to `±∞`.
+* `piecewiseLinear (x : ℤ → K) (y c : ℤ → E) (t : K) : E`: the piecewise linear function.
 
 ## Main results
 
-* `piecewiseLinear_eq_on_Ico`: evaluation on the `n`-th cell.
-* `piecewiseLinear_apply_grid`: evaluation at grid points.
-* `continuous_piecewiseLinear`: continuity (given the step condition).
-* `hasDerivWithinAt_piecewiseLinear`: the right derivative is `c (toIcoDiv hh a t)`.
+* `locallyFinite_Icc_of_tendsto`: for arbitrary `f g : α → K` with `f` tending to `atTop`
+  and `g` tending to `atBot`, the family `n ↦ Icc (f n) (g n)` is locally finite.
+* `continuous_piecewiseLinear`: continuity under the step condition.
+* `continuous_piecewiseLinear_ofValues`: continuity of the value-based interpolant.
+* `hasDerivWithinAt_piecewiseLinear`: the right derivative on each cell is `c (gridIdx x t)`.
 
 -/
 
@@ -35,96 +44,160 @@ grid cell.
 
 open Set Filter
 
-/-! ### Locally finite regular grid -/
+/-! ### Cell index for a grid tending to `±∞` -/
 
-section RegularGrid
+section GridIdx
 
-variable {K : Type*} [AddCommGroup K] [LinearOrder K] [IsOrderedAddMonoid K] [Archimedean K]
-  [TopologicalSpace K] [OrderTopology K]
+variable {K : Type*} [LinearOrder K]
 
-/-- The regular grid `[a + n • h, a + (n + 1) • h]` is locally finite when `h > 0`. -/
-theorem locallyFinite_Icc_regularGrid {h : K} (hh : 0 < h) (a : K) :
-    LocallyFinite fun n : ℤ => Icc (a + n • h) (a + (n + 1) • h) := by
+/-- The index of the cell containing `t` on a grid `x : ℤ → K`, defined as
+`sSup {n : ℤ | x n ≤ t}`. When `x` tends to `±∞` (and `K` has no maximum),
+`t ∈ Ico (x (gridIdx x t)) (x (gridIdx x t + 1))`. -/
+noncomputable def gridIdx (x : ℤ → K) (t : K) : ℤ := sSup {n : ℤ | x n ≤ t}
+
+/-- On a strictly monotone grid, `gridIdx x t = n` whenever `t ∈ Ico (x n) (x (n + 1))`. -/
+theorem gridIdx_eq_of_mem_Ico {x : ℤ → K} (hx : StrictMono x)
+    {n : ℤ} {t : K} (ht : t ∈ Ico (x n) (x (n + 1))) :
+    gridIdx x t = n := by
+  have hub : ∀ m, x m ≤ t → m ≤ n := fun m hm =>
+    Int.lt_add_one_iff.mp (hx.lt_iff_lt.mp (hm.trans_lt ht.2))
+  exact le_antisymm (csSup_le ⟨n, ht.1⟩ hub) (le_csSup ⟨n, hub⟩ ht.1)
+
+/-- If `x : ℤ → K` tends to `±∞` (and `K` has no maximum), then `t` lies in the half-open
+cell indexed by `gridIdx x t`. -/
+theorem gridIdx_mem_Ico [NoMaxOrder K] {x : ℤ → K}
+    (h_atTop : Tendsto x atTop atTop) (h_atBot : Tendsto x atBot atBot) (t : K) :
+    t ∈ Ico (x (gridIdx x t)) (x (gridIdx x t + 1)) := by
+  have hne : {n : ℤ | x n ≤ t}.Nonempty :=
+    (h_atBot.eventually (eventually_le_atBot t)).exists
+  obtain ⟨t', ht'⟩ := exists_gt t
+  obtain ⟨N, hN⟩ := eventually_atTop.mp (h_atTop.eventually (eventually_ge_atTop t'))
+  have hba : BddAbove {n : ℤ | x n ≤ t} :=
+    ⟨N, fun n hn => not_lt.mp fun hlt => not_lt.mpr hn (ht'.trans_le (hN n hlt.le))⟩
+  refine ⟨Int.csSup_mem hne hba, lt_of_not_ge fun h => ?_⟩
+  have : gridIdx x t + 1 ≤ gridIdx x t := le_csSup hba h
+  omega
+
+end GridIdx
+
+/-! ### Locally finite families of closed intervals -/
+
+section Grid
+
+variable {K : Type*} [LinearOrder K] [TopologicalSpace K] [OrderTopology K]
+
+/-- If `f : α → K` tends to `atTop` at `atTop` and `g : α → K` tends to `atBot` at `atBot`,
+then the family `n ↦ Icc (f n) (g n)` is locally finite. -/
+theorem locallyFinite_Icc_of_tendsto {α : Type*} [NoMaxOrder K] [NoMinOrder K]
+    [TopologicalSpace α] [LinearOrder α] [LocallyFiniteOrder α]
+    {f g : α → K} (h_atTop : Tendsto f atTop atTop) (h_atBot : Tendsto g atBot atBot) :
+    LocallyFinite fun n : α => Icc (f n) (g n) := by
   intro x
-  set n := toIcoDiv hh a x
-  obtain ⟨ha1, ha2⟩ := sub_toIcoDiv_zsmul_mem_Ico hh a x
-  refine ⟨Ioo (x - h) (x + h), Ioo_mem_nhds (sub_lt_self x hh) (lt_add_of_pos_right x hh),
-    (Set.finite_Icc (n - 1) (n + 1)).subset fun m ⟨z, ⟨hz1, hz2⟩, hz3, hz4⟩ => ⟨?_, ?_⟩⟩
-  · suffices n - 1 < m + 1 by omega
-    simp only [← zsmul_lt_zsmul_iff_left hh, sub_one_zsmul, add_one_zsmul] at hz2 ⊢
-    grind
-  · suffices m < n + 2 by omega
-    simp only [← zsmul_lt_zsmul_iff_left hh, add_one_zsmul, (by ring : (n + 2 : ℤ) = n + 1 + 1)]
-    grind
+  cases isEmpty_or_nonempty α
+  · exact ⟨univ, univ_mem, by simp [Subsingleton.elim _ (∅ : Set α)]⟩
+  obtain ⟨x_R, hx_R⟩ := exists_gt x
+  obtain ⟨x_L, hx_L⟩ := exists_lt x
+  obtain ⟨N₂, hN₂⟩ := eventually_atTop.mp (h_atTop.eventually (eventually_ge_atTop x_R))
+  obtain ⟨N₁, hN₁⟩ := eventually_atBot.mp (h_atBot.eventually (eventually_le_atBot x_L))
+  refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc N₁ N₂).subset ?_⟩
+  rintro n ⟨y, ⟨hf, hg⟩, ⟨hxL, hxR⟩⟩
+  refine ⟨?_, ?_⟩
+  · contrapose! hxL; exact hg.trans (hN₁ n hxL.le)
+  · contrapose! hxR; exact (hN₂ n hxR.le).trans hf
 
-/-- A function continuous on each cell of a regular grid is continuous. -/
-theorem continuous_of_regularGrid {E : Type*} [TopologicalSpace E]
-    {f : K → E} {h : K} (hh : 0 < h) {a : K}
-    (hf : ∀ n : ℤ, ContinuousOn f (Icc (a + n • h) (a + (n + 1) • h))) :
-    Continuous f :=
-  (locallyFinite_Icc_regularGrid hh a).continuous
-    (iUnion_Icc_add_zsmul hh a) (fun _ => isClosed_Icc) hf
+/-- A function continuous on each cell `Icc (x n) (x (n + 1))` of a grid `x : ℤ → K`
+tending to `±∞` is continuous. -/
+theorem continuous_of_grid {E : Type*} [NoMaxOrder K] [NoMinOrder K]
+    [TopologicalSpace E] {x : ℤ → K} {f : K → E}
+    (h_atTop : Tendsto x atTop atTop) (h_atBot : Tendsto x atBot atBot)
+    (hf : ∀ n : ℤ, ContinuousOn f (Icc (x n) (x (n + 1)))) :
+    Continuous f := by
+  have hshift : Tendsto (fun n : ℤ => x (n + 1)) atBot atBot :=
+    h_atBot.comp (Filter.tendsto_atBot_add_const_right atBot 1 tendsto_id)
+  refine (locallyFinite_Icc_of_tendsto h_atTop hshift).continuous
+    (eq_univ_of_forall fun t => ?_) (fun _ => isClosed_Icc) hf
+  obtain ⟨h1, h2⟩ := gridIdx_mem_Ico h_atTop h_atBot t
+  exact mem_iUnion.mpr ⟨gridIdx x t, h1, h2.le⟩
 
-end RegularGrid
+end Grid
 
 /-! ### Piecewise linear interpolation -/
 
 section PiecewiseLinear
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {y : ℤ → E} {c : ℤ → E} {h : ℝ} {a : ℝ}
+variable {K : Type*} [Field K] [LinearOrder K]
+  {E : Type*} [AddCommGroup E] [Module K E]
+  {x : ℤ → K} {y c : ℤ → E}
 
-/-- The piecewise linear interpolation of a sequence `y` with slopes `c` on a regular grid
-with step size `h > 0` starting at `a`. On the `n`-th cell `[a + n • h, a + (n + 1) • h)`,
-the value is `y n + (t - (a + n • h)) • c n`, where `n = toIcoDiv hh a t`. -/
-noncomputable def piecewiseLinear (y : ℤ → E) (c : ℤ → E) {h : ℝ} (hh : 0 < h)
-    (a : ℝ) (t : ℝ) : E :=
-  let n := toIcoDiv hh a t
-  y n + (t - (a + n • h)) • c n
+/-- The piecewise linear function: on the cell `[x n, x (n + 1))`,
+`piecewiseLinear x y c t = y n + (t - x n) • c n` where `n = gridIdx x t`. -/
+noncomputable def piecewiseLinear (x : ℤ → K) (y c : ℤ → E) (t : K) : E :=
+  let n := gridIdx x t
+  y n + (t - x n) • c n
 
-/-- The piecewise linear interpolation at a regular grid point equals `y n`. -/
+/-- Closed form for `piecewiseLinear` on the `n`-th cell. -/
+theorem piecewiseLinear_eq_on_Ico (hx : StrictMono x) {n : ℤ} {t : K}
+    (ht : t ∈ Ico (x n) (x (n + 1))) :
+    piecewiseLinear x y c t = y n + (t - x n) • c n := by
+  simp [piecewiseLinear, gridIdx_eq_of_mem_Ico hx ht]
+
+/-- `piecewiseLinear` at a grid point equals `y n`. -/
 @[simp]
-theorem piecewiseLinear_apply_grid (hh : 0 < h) (a : ℝ) (n : ℤ) :
-    piecewiseLinear y c hh a (a + n * h) = y n := by
-  simp [piecewiseLinear, zsmul_eq_mul]
+theorem piecewiseLinear_apply_grid (hx : StrictMono x) (n : ℤ) :
+    piecewiseLinear x y c (x n) = y n := by
+  rw [piecewiseLinear_eq_on_Ico hx ⟨le_rfl, hx (lt_add_one n)⟩, sub_self, zero_smul, add_zero]
 
-/-- The piecewise linear interpolation equals `y n + (t - (a + n • h)) • c n`
-on `[a + n • h, a + (n + 1) • h)`. -/
-theorem piecewiseLinear_eq_on_Ico (hh : 0 < h) {n : ℤ} {t : ℝ}
-    (ht : t ∈ Ico (a + n • h) (a + (n + 1) • h)) :
-    piecewiseLinear y c hh a t = y n + (t - (a + n • h)) • c n := by
-  have hmem : t - n • h ∈ Ico a (a + h) := by grind
-  simp [piecewiseLinear, (toIcoDiv_eq_iff hh).mpr hmem]
+section Continuity
 
-/-- A piecewise linear function whose grid values satisfy `y (n + 1) = y n + h • c n`
-is continuous. -/
-theorem continuous_piecewiseLinear (hh : 0 < h)
-    (hstep : ∀ n : ℤ, y (n + 1) = y n + h • c n) :
-    Continuous (piecewiseLinear y c hh a) :=
-  continuous_of_regularGrid hh fun n => by
-    refine (show ContinuousOn (fun t => y n + (t - (a + n • h)) • c n) _ by fun_prop).congr ?_
+variable [IsStrictOrderedRing K] [TopologicalSpace K] [OrderTopology K]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul K E]
+
+/-- Under the step condition `y (n + 1) = y n + (x (n + 1) - x n) • c n`, the piecewise
+linear function is continuous. -/
+theorem continuous_piecewiseLinear (hx : StrictMono x)
+    (h_atTop : Tendsto x atTop atTop) (h_atBot : Tendsto x atBot atBot)
+    (hstep : ∀ n : ℤ, y (n + 1) = y n + (x (n + 1) - x n) • c n) :
+    Continuous (piecewiseLinear x y c) :=
+  continuous_of_grid h_atTop h_atBot fun n => by
+    refine (show ContinuousOn (fun t => y n + (t - x n) • c n) _ from by fun_prop).congr ?_
     rintro t ht
     rcases eq_or_lt_of_le ht.2 with rfl | h_lt
-    · simp only [zsmul_eq_mul]
-      rw [piecewiseLinear_apply_grid hh a (n + 1), hstep n]
-      push_cast; module
-    · exact piecewiseLinear_eq_on_Ico hh ⟨ht.1, h_lt⟩
+    · rw [piecewiseLinear_apply_grid hx (n + 1), hstep n]
+    · exact piecewiseLinear_eq_on_Ico hx ⟨ht.1, h_lt⟩
 
-/-- The right derivative of the piecewise linear function is the piecewise constant slope
-`c (toIcoDiv hh a t)`. -/
-theorem hasDerivWithinAt_piecewiseLinear (hh : 0 < h) {t : ℝ} :
-    HasDerivWithinAt (piecewiseLinear y c hh a)
-      (c (toIcoDiv hh a t)) (Ici t) t := by
-  obtain ⟨h1, h2⟩ := sub_toIcoDiv_zsmul_mem_Ico hh a t
-  set n := toIcoDiv hh a t
-  simp only [zsmul_eq_mul] at h1 h2
-  have hlt : t < a + (n + 1) • h := by
-    simp only [zsmul_eq_mul, Int.cast_add, Int.cast_one]; linarith
-  exact hasDerivWithinAt_Ioi_iff_Ici.mp
-    (((hasDerivAt_id t).sub_const (a + n • h) |>.smul_const (c n)
-      |>.const_add (y n)).hasDerivWithinAt.congr_of_eventuallyEq (by
-        filter_upwards [Ioo_mem_nhdsGT hlt] with x hx
-        exact piecewiseLinear_eq_on_Ico hh ⟨by simp only [zsmul_eq_mul]; linarith [hx.1], hx.2⟩)
-      (by simp [piecewiseLinear, n]) |>.congr_deriv (one_smul _ _))
+/-- The piecewise linear interpolant of values `y` on a grid `x`, with slopes computed
+from consecutive values, is continuous. -/
+theorem continuous_piecewiseLinear_ofValues (hx : StrictMono x)
+    (h_atTop : Tendsto x atTop atTop) (h_atBot : Tendsto x atBot atBot) :
+    Continuous (piecewiseLinear x y
+      (fun n => (x (n + 1) - x n)⁻¹ • (y (n + 1) - y n))) := by
+  refine continuous_piecewiseLinear hx h_atTop h_atBot fun n => ?_
+  have hne : x (n + 1) - x n ≠ 0 := sub_ne_zero.mpr (hx (lt_add_one n)).ne'
+  rw [smul_inv_smul₀ hne]; abel
+
+end Continuity
 
 end PiecewiseLinear
+
+/-! ### Derivative of piecewise linear functions -/
+
+section Deriv
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {x : ℤ → ℝ} {y c : ℤ → E}
+
+/-- The right derivative of the piecewise linear function at `t` is the slope
+`c (gridIdx x t)` of the cell containing `t`. -/
+theorem hasDerivWithinAt_piecewiseLinear (hx : StrictMono x)
+    (h_atTop : Tendsto x atTop atTop) (h_atBot : Tendsto x atBot atBot) {t : ℝ} :
+    HasDerivWithinAt (piecewiseLinear x y c) (c (gridIdx x t)) (Ici t) t := by
+  obtain ⟨h1, h2⟩ := gridIdx_mem_Ico h_atTop h_atBot t
+  set n := gridIdx x t
+  exact hasDerivWithinAt_Ioi_iff_Ici.mp
+    (((hasDerivAt_id t).sub_const (x n) |>.smul_const (c n)
+      |>.const_add (y n)).hasDerivWithinAt.congr_of_eventuallyEq (by
+        filter_upwards [Ioo_mem_nhdsGT h2] with s hs
+        exact piecewiseLinear_eq_on_Ico hx ⟨h1.trans hs.1.le, hs.2⟩)
+      (by simp [piecewiseLinear, n]) |>.congr_deriv (one_smul _ _))
+
+end Deriv
