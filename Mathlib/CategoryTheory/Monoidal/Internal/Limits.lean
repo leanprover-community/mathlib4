@@ -5,8 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory  -- shake: keep
-public import Mathlib.CategoryTheory.Monoidal.Limits.Basic  -- shake: keep
+public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Creates
 
@@ -23,7 +23,7 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 @[expose] public section
 
 
-open CategoryTheory Limits Monoidal MonoidalCategory
+open CategoryTheory Limits MonoidalCategory
 
 universe v u w
 
