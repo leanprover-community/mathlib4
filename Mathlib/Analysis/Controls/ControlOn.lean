@@ -47,6 +47,8 @@ control function, modulus of continuity, rough paths, superadditive, restricted 
 
 open scoped NNReal
 
+/-- A Control on a set `s` of type `α` is a superadditive function of two variables, continuous on
+  the ordered 2-simplex restricted to `s`, vanishing on the diagonal -/
 structure ControlOn (α) [PartialOrder α] [TopologicalSpace α] (s : Set α) where
   /-- The underlying two-variable function. -/
   toFun : α → α → ℝ≥0
