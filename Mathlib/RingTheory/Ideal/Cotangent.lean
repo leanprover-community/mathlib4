@@ -372,7 +372,7 @@ lemma Ideal.mapCotangent_surjective_of_comap_eq (surj : Function.Surjective (alg
 lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraMap A B))
     {I : Ideal B} {J : Ideal A} (eq : I.comap (algebraMap A B) = RingHom.ker (algebraMap A B) ⊔ J) :
     (Ideal.mapCotangent J I (Algebra.ofId A B) (le_of_le_of_eq le_sup_right eq.symm)).ker =
-      (Submodule.comap J.subtype ((RingHom.ker (algebraMap A B)) ⊓ J)).map J.toCotangent  := by
+      (Submodule.comap J.subtype ((RingHom.ker (algebraMap A B)) ⊓ J)).map J.toCotangent := by
   have eqmap := Ideal.eq_map_of_comap_eq_ker_sup _ surj eq
   refine le_antisymm (fun x hx ↦ ?_) ?_
   · rcases J.toCotangent_surjective x with ⟨x', hx'⟩
