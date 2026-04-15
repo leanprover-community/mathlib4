@@ -131,7 +131,7 @@ lemma isNilpotent_e :
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
         convert hk₁ using 1
         module
-      · contrapose! hij
+      · contrapose hij
         rw [root_eq_neg_iff] at hij
         rw [hij, ← indexNeg_neg, neg_neg]
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
@@ -361,7 +361,7 @@ instance instIsIrreducible [Nonempty ι] :
   suffices ∃ i, v b i ∈ U by obtain ⟨i, hi⟩ := this; exact instIsIrreducible_aux₂ hi
   let U' : LieSubmodule K H (b.support ⊕ ι → K) := { U with lie_mem := U.lie_mem }
   apply instIsIrreducible_aux₁ U'
-  contrapose! hU
+  contrapose hU
   replace hU : U ≤ span K (range (u (b := b))) := by rwa [← coe_genWeightSpace_zero_eq_span_range_u]
   refine (LieSubmodule.eq_bot_iff _).mpr fun x hx ↦ ?_
   obtain ⟨c, hc⟩ : ∃ c : b.support → K, ∑ i, c i • u i = x :=
