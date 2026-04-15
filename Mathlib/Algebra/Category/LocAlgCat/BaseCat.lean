@@ -161,8 +161,8 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
       · apply ih m h; exact hm
       · exact u_surj
     change Module.length (A.obj ⧸ Ideal.span {x}) (A.obj ⧸ Ideal.span {x}) = m at hm
-    have := Submodule.length_le_length_restrictScalars A.obj (R := (A.obj ⧸ Ideal.span {x}))
-      (M := (A.obj ⧸ Ideal.span {x})) ⊤
+    have := Submodule.length_le_length_restrictScalars (R := (A.obj ⧸ Ideal.span {x}))
+      (M := (A.obj ⧸ Ideal.span {x})) A.obj ⊤
     rw [Module.length_top, restrictScalars_top, Module.length_top] at this
     rw [← ENat.coe_lt_coe, ← hlen, ← hm]
     exact lt_of_le_of_lt this (length_quotient_lt (Ideal.span {x}) (by simpa))
