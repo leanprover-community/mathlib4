@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Judith Ludwig and Junyan Xu. All rights reserved.
+Copyright (c) 2025 Judith Ludwig, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Junyan Xu
 -/
@@ -11,29 +11,16 @@ public import Mathlib.Order.Quotient
 
 /-! # Convex subgroups of a linearly ordered abelian group -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
 
 /-- A subgroup `H` of a linearly ordered abelian group is convex, if for any `a ≤ b ≤ 1`,
 `a ∈ H` implies `b ∈ H`. -/
-@[to_additive /-- A subgroup `H` of a linearly ordered additive abelian group is convex,
+@[expose, to_additive /-- A subgroup `H` of a linearly ordered additive abelian group is convex,
 if for any `a ≤ b ≤ 0`, `a ∈ H` implies `b ∈ H`. -/]
 def IsConvexSubgroup (H : Subgroup α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H
-
-/-- The type of convex subgroups of a linearly ordered additive abelian group. -/
-structure ConvexAddSubgroup (α) [AddCommGroup α] [LinearOrder α] extends AddSubgroup α where
-  convex : IsConvexAddSubgroup toAddSubgroup
-
-variable (α) in
-/-- The type of convex subgroups of a linearly ordered abelian group. -/
-@[to_additive (attr := ext)] structure ConvexSubgroup extends Subgroup α where
-  convex : IsConvexSubgroup toSubgroup
-
-@[to_additive] lemma ConvexSubgroup.toSubgroup_injective :
-    Function.Injective (ConvexSubgroup.toSubgroup : ConvexSubgroup α → Subgroup α) :=
-  fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp
 
 section
 
@@ -62,6 +49,26 @@ end
 @[to_additive] lemma isConvexSubgroup_ker (f : α →*o β) : IsConvexSubgroup f.ker :=
   fun a b aleb ble1 fa1 ↦ le_antisymm (by simpa using f.monotone' ble1) <| by
     rw [← fa1]; exact f.monotone' aleb
+
+open MulArchimedeanClass in
+@[to_additive] theorem FiniteMulArchimedeanClass.isConvexSubgroup_subgroup [IsOrderedMonoid α]
+    (s : UpperSet (FiniteMulArchimedeanClass α)) : IsConvexSubgroup (subgroup s) :=
+  fun _a _b hab b_le ha b_ne ↦
+    s.upper (mk_monotoneOn (hab.trans b_le) b_le hab)
+      (ha <| mk_eq_top_iff.not.mpr (hab.trans_lt (b_le.lt_of_ne <| mk_eq_top_iff.not.mp b_ne)).ne)
+
+/-- The type of convex subgroups of a linearly ordered additive abelian group. -/
+structure ConvexAddSubgroup (α) [AddCommGroup α] [LinearOrder α] extends AddSubgroup α where
+  convex : IsConvexAddSubgroup toAddSubgroup
+
+variable (α) in
+/-- The type of convex subgroups of a linearly ordered abelian group. -/
+@[to_additive (attr := ext)] structure ConvexSubgroup extends Subgroup α where
+  convex : IsConvexSubgroup toSubgroup
+
+@[to_additive] lemma ConvexSubgroup.toSubgroup_injective :
+    Function.Injective (ConvexSubgroup.toSubgroup : ConvexSubgroup α → Subgroup α) :=
+  fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp
 
 @[to_additive] instance : SetLike (ConvexSubgroup α) α where
   coe G := G.toSubgroup
@@ -212,13 +219,6 @@ def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
 end ConvexSubgroup
 
 variable [IsOrderedMonoid α]
-
-open MulArchimedeanClass in
-@[to_additive] theorem FiniteMulArchimedeanClass.isConvexSubgroup_subgroup
-    (s : UpperSet (FiniteMulArchimedeanClass α)) : IsConvexSubgroup (subgroup s) :=
-  fun _a _b hab b_le ha b_ne ↦
-    s.upper (mk_monotoneOn (hab.trans b_le) b_le hab)
-      (ha <| mk_eq_top_iff.not.mpr (hab.trans_lt (b_le.lt_of_ne <| mk_eq_top_iff.not.mp b_ne)).ne)
 
 @[to_additive] theorem ConvexSubgroup.mem_of_finiteMulArchimedeanClass_mk_le
     {G : ConvexSubgroup α} {a b : α} {ha1 : a ≠ 1} {hb1 : b ≠ 1}

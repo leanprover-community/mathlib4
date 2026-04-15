@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Judith Ludwig and Junyan Xu. All rights reserved.
+Copyright (c) 2025 Judith Ludwig, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Junyan Xu
 -/
@@ -12,7 +12,7 @@ public import Mathlib.Order.Birkhoff
 
 /-! # Height of a totally ordered abelian group -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [CommGroup α] [LinearOrder α]
 
@@ -20,7 +20,7 @@ namespace LinearOrderedCommGroup
 
 variable (α) in
 /-- The height of a totally ordered abelian group is the number of non-trivial convex subgroups. -/
-@[to_additive /-- The height of a totally ordered additive abelian group
+@[expose, to_additive /-- The height of a totally ordered additive abelian group
 is the number of non-trivial convex subgroups. -/]
 noncomputable def height : ℕ∞ := .card {G : ConvexSubgroup α // G ≠ ⊥}
 
