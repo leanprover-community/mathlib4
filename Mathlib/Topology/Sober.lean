@@ -250,7 +250,6 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
 open Order in
-local instance {X : Type*} [TopologicalSpace X] : Preorder X := specializationPreorder X in
 /--
 In a sober space `α` set of points with coheight `0` in the specialization order is order iso to
 the set of irreducible components of `α`.
@@ -273,7 +272,7 @@ noncomputable
 def QuasiSober.withTopLift [DecidableEq α] [IrreducibleSpace β] [QuasiSober β] (f : α → β) :
     WithTop α → β := fun a ↦ if h : a = ⊤ then genericPoint β else f (WithTop.untop a h)
 
-local instance : Preorder α := specializationPreorder α in
+attribute [local instance] specializationPreorder in
 lemma QuasiSober.withTopLift_strictMono [DecidableEq α]
     [QuasiSober β] [IrreducibleSpace β]
     (f : α → β) (hf : @StrictMono _ _ (specializationPreorder α) (specializationPreorder β) f)
@@ -290,7 +289,7 @@ lemma QuasiSober.val_lt_genericPoint_of_closure_ne_top [QuasiSober α] [Irreduci
   simp_all [specializes_iff_closure_subset]
 
 open Order in
-local instance : Preorder α := specializationPreorder α in
+attribute [local instance] specializationPreorder in
 /--
 In a quasisober, irreducible space `X`, any set `p` which is not dense satisfies that the
 set of points in `X` which lie in `p` and have coheight `1` in the specialization order on `X` have
