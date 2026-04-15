@@ -91,7 +91,7 @@ noncomputable def botTreeDecomp [Nonempty V] : (⊥ : SimpleGraph V).TreeDecomp 
   W := V
   𝓧 := fun x => {x}
   T := starGraph (Classical.arbitrary V)
-  isTree := starGraph_isTree _
+  isTree := isTree_starGraph _
   edgeCover _ _ h := h.elim
   connectedBags := connectedBags_of_exists_mem fun v =>
     ⟨⟨v, Finset.mem_singleton.mpr rfl⟩, by
@@ -103,6 +103,11 @@ noncomputable def botTreeDecomp [Nonempty V] : (⊥ : SimpleGraph V).TreeDecomp 
 lemma width_botTreeDecomp [Nonempty V] : (botTreeDecomp (V := V)).width = 0 := by
   change ⨆ x : V, ((#({x} : Finset V) - 1 : ℕ) : ℕ∞) = 0
   simp
+
+lemma TreeDecomp.mono {G H : SimpleGraph V} (h : H ≤ G) : G.TreeDecomp → Nonempty H.TreeDecomp := by
+  intro t
+  rw [← exists_true_iff_nonempty]
+  sorry
 
 /-- On a finite vertex type, every tree decomposition has width at most `card V - 1`. -/
 lemma TreeDecomp.width_le_card [Fintype V] (t : TreeDecomp G) :
