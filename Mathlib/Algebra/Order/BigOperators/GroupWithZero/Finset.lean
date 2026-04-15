@@ -43,7 +43,7 @@ lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i)
     simp only [prod_cons, forall_mem_cons] at h0 h1 ⊢
     have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     gcongr
-    exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
+    exacts [prod_nonneg h0.2, h1.1, ih h0.2 h1.2]
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/

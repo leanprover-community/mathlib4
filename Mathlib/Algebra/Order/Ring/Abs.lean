@@ -171,10 +171,11 @@ private theorem abs_geomSum_le [IsOrderedRing α] : |geomSum a b n| ≤ (n + 1) 
   induction n with | zero => simp [geomSum] | succ n ih => ?_
   refine (abs_add_le ..).trans ?_
   rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
-  refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
-  rw [pow_succ, ← mul_assoc, mul_comm |a|]
-  gcongr
-  exacts [abs_nonneg _, (abs_nonneg _).trans ih, le_sup_left]
+  gcongr ?_ + ?_; swap
+  · gcongr; exact le_sup_right
+  · rw [pow_succ, ← mul_assoc, mul_comm |a|]
+    gcongr
+    exact le_sup_left
 
 omit [LinearOrder α] in
 private theorem pow_sub_pow_eq_sub_mul_geomSum :
@@ -188,8 +189,7 @@ theorem abs_pow_sub_pow_le [IsOrderedRing α] :
   obtain _ | n := n; · simp
   rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
   gcongr
-  · exact abs_nonneg _
-  · exact abs_geomSum_le ..
+  exact abs_geomSum_le ..
 
 end LinearOrderedCommRing
 
