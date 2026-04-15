@@ -142,29 +142,23 @@ theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
+    (b - a) • dslope f a b = f b := by
+  by_cases h : b = a
+  · simp [h, hf]
+  · have h_dslope : dslope f a b = (b - a)⁻¹ • f b := by simp [dslope, slope, h, hf]
+    have h_sub_ne_zero : b - a ≠ 0 := sub_ne_zero.mpr h
+    rw [h_dslope, smul_smul]
+    simp [h_sub_ne_zero]
 
-/-- If `f a = 0`, then `f b = (b - a) • dslope f a b`. -/
-lemma eq_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
-    f b = (b - a) • dslope f a b := by
-  simp [hf]
-
-/-- If `f` and its first `n-1` iterated dslopes at `a` vanish,
-then `f b = (b - a) ^ n • (Function.swap dslope a)^[n] f b`. -/
-lemma eq_pow_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
+lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
     (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
-    f b = (b - a) ^ n • (Function.swap dslope a)^[n] f b := by
-  induction n with
+    (b - a) ^ n • (Function.swap dslope a)^[n] f b = f b := by
+  induction n generalizing f with
   | zero => simp
   | succ n ih =>
-    have h_lt : ∀ k < n, (Function.swap dslope a)^[k] f a = 0 :=
+    rw [Function.iterate_succ_apply', pow_succ, mul_smul]
+    have hf_n : (Function.swap dslope a)^[n] f a = 0 := hf n (Nat.lt_succ_self n)
+    have hf_lt : ∀ k < n, (Function.swap dslope a)^[k] f a = 0 :=
       fun k hk => hf k (Nat.lt_trans hk (Nat.lt_succ_self n))
-    rw [ih h_lt]
-    have h_zero : (Function.swap dslope a)^[n] f a = 0 :=
-      hf n (Nat.lt_succ_self n)
-    have h_dslope := eq_smul_dslope_of_zero h_zero b
-    rw [h_dslope]
-    -- スカラー倍の結合法則と、累乗の定義を使って美しく整理する
-    rw [← mul_smul, ← pow_succ]
-    rw [Function.iterate_succ_apply']
+    rw [sub_smul_dslope_of_zero hf_n b, ih hf_lt]
