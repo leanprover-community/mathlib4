@@ -79,7 +79,7 @@ namespace Profunctor
 universe w' v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {E : Type u₃} [Category.{v₃} E] [Limits.ChosenCoends.{v₂, u₂} (Type (max w w'))]
+  {E : Type u₃} [Category.{v₃} E]
 
 open Opposite
 
@@ -97,33 +97,27 @@ def compDiagramMap (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
     compDiagram P Q X Y' ⟶ compDiagram P Q X' Y where
   app d := { app d' := TypeCat.ofHom (Prod.map ((P.map f).app d) ((Q.obj d').map g.op)) }
 
+@[simp]
+lemma compDiagramMap_id (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : E) :
+    P.compDiagramMap Q (𝟙 X) (𝟙 Y) = 𝟙 _ := by
+  cat_disch
+
+@[simp]
+lemma compDiagramMap_comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
+    {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : E} (f : X₁ ⟶ X₂) (f' : X₂ ⟶ X₃) (g : Y₁ ⟶ Y₂) (g' : Y₂ ⟶ Y₃) :
+    P.compDiagramMap Q (f ≫ f') (g ≫ g') = P.compDiagramMap Q f g' ≫ P.compDiagramMap Q f' g := by
+  cat_disch
+
 open Limits
 
-abbrev compObj (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : E) : Type max w w' :=
-  chosenCoend <| compDiagram P Q X Y
-
-noncomputable abbrev compMap (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
-    {X X' : C} {Y Y' : E} (f : X ⟶ X') (g : Y ⟶ Y') :
-    compObj P Q X Y' ⟶ compObj P Q X' Y :=
-  chosenCoend.map <| compDiagramMap P Q f g
-
-@[simp]
-lemma compMap_id (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : E) :
-    P.compMap Q (𝟙 X) (𝟙 Y) = 𝟙 _ := by
-  convert chosenCoend.map_id
-  cat_disch
-
-@[simp]
-lemma compMap_comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
-    {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : E} (f : X₁ ⟶ X₂) (f' : X₂ ⟶ X₃) (g : Y₁ ⟶ Y₂) (g' : Y₂ ⟶ Y₃) :
-    P.compMap Q (f ≫ f') (g ≫ g') = P.compMap Q f g' ≫ P.compMap Q f' g := by
-  convert (chosenCoend.map_comp _ _).symm
-  cat_disch
+variable [Limits.ChosenCoends.{v₂, u₂} (Type (max w w'))]
 
 @[simps! obj_obj obj_map map_app]
 noncomputable def comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) :
     Profunctor.{max w w'} C E :=
-  .ofCore { obj X Y := compObj P Q X Y, map f g := compMap P Q f g }
+  .ofCore {
+    obj X Y := chosenCoend <| compDiagram P Q X Y
+    map f g := chosenCoend.map <| compDiagramMap P Q f g }
 
 end Profunctor
 
