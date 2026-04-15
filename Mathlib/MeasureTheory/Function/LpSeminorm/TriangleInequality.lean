@@ -60,83 +60,18 @@ theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurab
   repeat rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_add_le hf hg hp1_real
 
-/-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
-for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
-noncomputable def LpAddConst (p : ℝ≥0∞) : ℝ≥0∞ :=
-  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
-
-theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ (h.2.trans_le hp)
-
-theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ h.1
-
-theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
-  rw [LpAddConst]
-  split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
-    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
-    exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
-  · exact ENNReal.one_lt_top
-
-end MeasureTheory
-
-namespace ENNReal
-
-open MeasureTheory
-open scoped ENNReal
-
-/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
-valid for all `0 ≤ p` (not just `1 ≤ p`). -/
-theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 0 ≤ p) :
-    (z₁ + z₂) ^ p ≤ LpAddConst (ENNReal.ofReal p)⁻¹ * (z₁ ^ p + z₂ ^ p) := by
-  by_cases h : 1 < p
-  · have hmem : (ENNReal.ofReal p)⁻¹ ∈ Set.Ioo (0 : ℝ≥0∞) 1 := by
-      constructor
-      · simp
-      · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
-    rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
-        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
-      rw [LpAddConst, if_pos hmem]]
-    simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
-    rw [ENNReal.toReal_ofReal hp]
-    exact ENNReal.rpow_add_le_mul_rpow_add_rpow _ _ h.le
-  · have hp1 : p ≤ 1 := not_lt.mp h
-    rw [LpAddConst_of_one_le (ENNReal.one_le_inv.mpr (ENNReal.ofReal_le_one.mpr hp1)), one_mul]
-    exact ENNReal.rpow_add_le_add_rpow _ _ hp hp1
-
-/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow'` with `p : ℝ≥0∞`. -/
-theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞} :
-    (z₁ + z₂) ^ p.toReal⁻¹ ≤
-      LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
-  by_cases p_zero : p = 0
-  · simp [p_zero, LpAddConst_zero]
-  convert rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
-  rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
-
-end ENNReal
-
-namespace MeasureTheory
-
-variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
-  [TopologicalSpace ε] [ESeminormedAddMonoid ε] [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε']
-  {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → ε}
-
 theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f + g) p μ ≤ ENNReal.LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp
   rcases lt_or_ge p 1 with (h'p | h'p)
   · simp only [eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne]
     convert eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
-      simp only [LpAddConst, if_pos this]
+      simp only [ENNReal.LpAddConst, if_pos this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
-  · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg h'p
+  · simpa [ENNReal.LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg h'p
 
 variable (μ ε) in
 /-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
@@ -149,34 +84,37 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
         ∀ (f g : α → ε), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
           eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
+    Tendsto (fun η : ℝ≥0∞ => ENNReal.LpAddConst p * (η + η)) (𝓝[>] 0)
+        (𝓝 (ENNReal.LpAddConst p * (0 + 0))) :=
     (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
-          (Or.inr (LpAddConst_lt_top p).ne)).mono_left
+          (Or.inr (ENNReal.LpAddConst_lt_top p).ne)).mono_left
       nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
   refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
   calc
-    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
-    _ ≤ LpAddConst p * (η + η) := by gcongr
+    eLpNorm (f + g) p μ ≤ ENNReal.LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
+      eLpNorm_add_le' hf hg p
+    _ ≤ ENNReal.LpAddConst p * (η + η) := by gcongr
     _ < δ := hη
 
 theorem eLpNorm_sub_le' {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f - g) p μ ≤ ENNReal.LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' hf hg.neg p
 
 theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
-  simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
+  simpa [ENNReal.LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
 
 theorem eLpNorm_add_lt_top (hf : MemLp f p μ) (hg : MemLp g p μ) :
     eLpNorm (f + g) p μ < ∞ :=
   calc
-    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
+    eLpNorm (f + g) p μ ≤ ENNReal.LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
       eLpNorm_add_le' hf.aestronglyMeasurable hg.aestronglyMeasurable p
     _ < ∞ := by
-      apply ENNReal.mul_lt_top (LpAddConst_lt_top p)
+      apply ENNReal.mul_lt_top (ENNReal.LpAddConst_lt_top p)
       exact ENNReal.add_lt_top.2 ⟨hf.2, hg.2⟩
 
 theorem eLpNorm'_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι}
