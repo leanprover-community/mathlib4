@@ -115,7 +115,6 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
       (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
     gcongr
-    assumption
   · simp [hF₀ _ H]
 
 open Filter in
