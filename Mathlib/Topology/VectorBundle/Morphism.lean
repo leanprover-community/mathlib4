@@ -679,7 +679,7 @@ lemma continuous_symm_of_fiberBijective {Φ : TotalSpace F₁ E₁ → TotalSpac
       have : ContinuousAt ((ContinuousLinearMap.inverse ∘ A) ∘ (baseMap.symm ∘ Prod.fst))
           (e₂ ⟨baseMap x, w⟩) := by
         refine ContinuousAt.comp ?_ (baseMap.symm.continuous.continuousAt.comp continuousAt_fst)
-        convert ((trivializationCoord_isInvertible (baseMap := baseMap) hφ_bij x x
+        convert ((trivializationCoord_isInvertible hφ_bij x x
           (mem_baseSet_trivializationAt F₁ E₁ x) hx₂).contDiffAt_map_inverse
             (n := 0)).continuousAt.comp
           (continuousAt_trivializationCoord hΦ_cont hcompat x) using 1
