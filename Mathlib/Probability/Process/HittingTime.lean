@@ -290,28 +290,46 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
 
 @[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
 
-theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
+theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
       by_contra h
       simp_rw [hittingBtwn, if_neg h, ← not_le] at h'
       exact h' hi
-    exact ⟨hittingBtwn u s n m ω, ⟨le_hittingBtwn_of_exists h, h'⟩, hittingBtwn_mem_set h⟩
+    have hni : n < i := (le_hittingBtwn_of_exists h).trans_lt h'
+    have h_le := le_hittingBtwn (u := u) (s := s) (hni.le.trans hi) ω
+    rw [hittingBtwn, if_pos h, csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h
+    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
+    obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
+    exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 
 @[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
-lemma hittingAfter_lt_iff [WellFoundedLT ι] :
+lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
+    have h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s := by
+      rw [ne_eq, hittingAfter_eq_top_iff] at h_top
+      push Not at h_top
+      exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
-    lift (hittingAfter u s n ω) to ι using h_top with i'
-    norm_cast at h' h_le
+    rw [hittingAfter, if_pos h_exists] at h'
+    norm_cast at h'
+    rw [csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h_exists
+    simp only [Set.mem_setOf_eq] at h'
+    obtain ⟨j, hj₁, hj₂⟩ := h'
+    exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
     refine lt_of_le_of_lt ?_ (mod_cast hj₁.2 : (j : WithTop ι) < i)
     exact hittingAfter_le_of_mem hj₁.1 hj₂
@@ -338,7 +356,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hEF]
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
@@ -352,7 +370,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hEF]
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
@@ -388,7 +406,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
   simp only [hittingBtwn]
   split_ifs with h_n h_n' h_n'
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_n']
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · obtain ⟨t, ht⟩ := h_n
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · have ⟨t, ht⟩ := h_n'
@@ -402,7 +420,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   split_ifs with h_n h_m h_m
   · norm_cast
     gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_m]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · simp
   · have ⟨t, ht⟩ := h_m
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n

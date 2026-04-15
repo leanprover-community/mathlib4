@@ -11,27 +11,48 @@ public import Mathlib.RingTheory.DividedPowers.Basic
 /-!
 # The universal divided power algebra
 
-Let `R` be a ring and `M` be an `R`-module. In this file we define `Γ_R(M)`, the universal
-divided power algebra of `M`, as the ring quotient of the polynomial ring in the variables `ℕ × M`
-by the relation `DividedPowerAlgebra.Rel`.
+Let `R` be a (commutative) semiring and `M` be an `R`-module. In this file we define `Γ_R(M)`,
+the universal divided power algebra of `M`, as the ring quotient of the polynomial ring
+in the variables `ℕ × M` by the relation `DividedPowerAlgebra.Rel`.
 
 `DividedPowerAlgebra R M` satisfies a weak universal property for morphisms to rings with
-divided_powers.
+divided powers.
 
 ## Main definitions
 
 * `DividedPowerAlgebra.Rel`: the type coding the basic relations that will give rise to the
-  divided power algebra. The class of `X (n, a)` will be equal to `dpow n a`, for `a ∈ M`.
+  divided power algebra.
 
-* `DividedPowerAlgebra R M`: the universal divided power algebra of the `R`-module `M`.
+* `DividedPowerAlgebra R M`: the universal divided power algebra of the `R`-module `M`,
+  defined as `RingQuot` of `DividedPowerAlgebra.Rel R M`.
 
-* `DividedPowerAlgebra.dp R n m`: the equivalence class of `X (⟨n, m⟩)` in
-  `DividedPowerAlgebra R M`.
+* `DividedPowerAlgebra.dp R n m`: for `n : ℕ` and `m : M`, this is the equivalence class of
+  `MvPolynomial.X (⟨n, m⟩)` in `DividedPowerAlgebra R M`.
+
+  When that algebra is endowed with its canonical divided power structure (to be defined),
+  the image of `MvPolynomial.X (n, m)`, for any `n : ℕ` and `m : M`, is equal to
+  the `n`th divided power of the image of `m`.
+
+  The API will be setup so that it is never (never say never…) necessary to lift to `MvPolynomial`.
+
+## References
+
+* [P. Berthelot (1974), *Cohomologie cristalline des schémas de
+  caractéristique $p$ > 0*][Berthelot-1974]
+
+* [P. Berthelot and A. Ogus (1978), *Notes on crystalline
+  cohomology*][BerthelotOgus-1978]
+
+* [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
+  modules*][Roby-1963]
+
+* [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
 ## TODO
 
 * Add the weak universal property of `DividedPowerAlgebra R M`.
 * Show in upcoming files that `DividedPowerAlgebra R M` has divided powers.
+
 
 -/
 
@@ -45,8 +66,8 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 namespace DividedPowerAlgebra
 
 /-- The type coding the basic relations that will give rise to the divided power algebra.
-  The class of `X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
-inductive Rel : (MvPolynomial (ℕ × M) R) → (MvPolynomial (ℕ × M) R) → Prop
+  The class of `MvPolynomial.X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
+inductive Rel : MvPolynomial (ℕ × M) R → MvPolynomial (ℕ × M) R → Prop
   | rfl_zero : Rel 0 0 -- Needed for technical reasons.
   | zero {a : M} : Rel (X (0, a)) 1
   | smul {r : R} {n : ℕ} {a : M} : Rel (X (n, r • a)) (r ^ n • X (n, a))
@@ -62,7 +83,7 @@ end DividedPowerAlgebra
 /-- The divided power algebra of a module M is defined as the ring quotient of the polynomial ring
   in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
   We will later show that that `DividedPowerAlgebra R M` has divided powers.
-  It satisfies a weak universal property for morphisms to rings with divided_powers. -/
+  It satisfies a weak universal property for morphisms to rings with divided powers. -/
 abbrev DividedPowerAlgebra := RingQuot (DividedPowerAlgebra.Rel R M)
 
 namespace DividedPowerAlgebra
@@ -82,8 +103,7 @@ lemma mkRingHom_C (a : R) :
     mkRingHom (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← mkAlgHom_C, mkAlgHom, AlgHom.coe_mk]
 
-variable (R)
-
+variable (R) in
 /-- `dp R n m` is the equivalence class of `X (⟨n, m⟩)` in `DividedPowerAlgebra R M`. -/
 def dp (n : ℕ) (m : M) : DividedPowerAlgebra R M := mkAlgHom R (Rel R M) (X ⟨n, m⟩)
 
@@ -110,23 +130,24 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
 
 @[elab_as_elim]
 protected theorem induction_on {P : DividedPowerAlgebra R M → Prop} (f : DividedPowerAlgebra R M)
-    (h_C : ∀ a, P (algebraMap R _ a)) (h_add : ∀ f g, P f → P g → P (f + g))
-    (h_dp : ∀ (f : DividedPowerAlgebra R M) (n : ℕ) (m : M), P f → P (f * dp R n m)) : P f :=
-  DividedPowerAlgebra.induction_on' R f (fun a => by rw [mkAlgHom_C]; exact h_C a) h_add h_dp
+    (C : ∀ a, P (algebraMap R _ a)) (add : ∀ f g, P f → P g → P (f + g))
+    (dp : ∀ (f : DividedPowerAlgebra R M) (n : ℕ) (m : M), P f → P (f * dp R n m)) : P f :=
+  DividedPowerAlgebra.induction_on' f (fun a => by rw [mkAlgHom_C]; exact C a) add dp
 
 theorem dp_eq_mkRingHom (n : ℕ) (m : M) :
     dp R n m = mkRingHom (Rel R M) (X (⟨n, m⟩)) := by
   simp [dp, mkRingHom, mkAlgHom]
 
-theorem dp_zero (m : M) : dp R 0 m = 1 := by
+@[simp]
+theorem dp_zero {m : M} : dp R 0 m = 1 := by
   rw [dp_def, ← map_one (mkAlgHom R (Rel R M))]
   exact RingQuot.mkAlgHom_rel R Rel.zero
 
-theorem dp_smul (r : R) (n : ℕ) (m : M) : dp R n (r • m) = r ^ n • dp R n m := by
+theorem dp_smul {r : R} {n : ℕ} {m : M} : dp R n (r • m) = r ^ n • dp R n m := by
   rw [dp_def, dp_def, ← map_smul]
   exact mkAlgHom_rel R Rel.smul
 
-theorem dp_null (n : ℕ) : dp R n (0 : M) = if n = 0 then 1 else 0 := by
+theorem dp_null {n : ℕ} : dp R n (0 : M) = if n = 0 then 1 else 0 := by
   cases Nat.eq_zero_or_pos n with
   | inl hn =>
     rw [if_pos hn, hn, dp_zero]
@@ -135,14 +156,14 @@ theorem dp_null (n : ℕ) : dp R n (0 : M) = if n = 0 then 1 else 0 := by
     rw [zero_pow (Nat.pos_iff_ne_zero.mp hn), zero_smul]
 
 theorem dp_null_of_ne_zero {n : ℕ} (hn : n ≠ 0) : dp R n (0 : M) = 0 := by
-  rw [dp_null R n, if_neg hn]
+  rw [dp_null, if_neg hn]
 
-theorem dp_mul (n p : ℕ) (m : M) :
+theorem dp_mul {n p : ℕ} {m : M} :
     dp R n m * dp R p m = (n + p).choose n • dp R (n + p) m := by
   simp only [dp_def, ← _root_.map_mul, ← map_nsmul]
   exact mkAlgHom_rel R Rel.mul
 
-theorem dp_add (n : ℕ) (x y : M) :
+theorem dp_add {n : ℕ} {x y : M} :
     dp R n (x + y) = (antidiagonal n).sum fun k => dp R k.1 x * dp R k.2 y := by
   simp only [dp_def]
   rw [mkAlgHom_rel (A := MvPolynomial (ℕ × M) R) R Rel.add, map_sum,
@@ -151,8 +172,8 @@ theorem dp_add (n : ℕ) (x y : M) :
 theorem dp_sum {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (x : ι → M) :
     dp R q (s.sum x) =
       (Finset.sym s q).sum fun k => s.prod fun i => dp R (Multiset.count i k) (x i) :=
-  DividedPowers.dpow_sum' (I := ⊤) _ (fun {m} _ ↦ dp_zero R m)
-    (fun {n x y} _ _ ↦ dp_add R n x y) (dp_null_of_ne_zero R) (fun _ _ ↦ trivial)
+  DividedPowers.dpow_sum' (I := ⊤) _ (fun _ ↦ dp_zero)
+    (fun _ _ ↦ dp_add) dp_null_of_ne_zero (fun _ _ ↦ trivial)
 
 theorem dp_sum_smul {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (a : ι → R) (x : ι → M) :
     dp R q (s.sum fun i => a i • x i) =
@@ -162,7 +183,7 @@ theorem dp_sum_smul {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (a :
   simp_rw [dp_sum, dp_smul, Algebra.smul_def, map_prod, ← Finset.prod_mul_distrib]
 
 open Nat in
-lemma prod_dp {ι : Type*} (s : Finset ι) {n : ι → ℕ} (m : M) :
+lemma prod_dp {ι : Type*} {s : Finset ι} {n : ι → ℕ} {m : M} :
     ∏ i ∈ s, (dp R (n i) m) = (Nat.multinomial s n) * dp R (s.sum n) m := by
   classical
   induction s using Finset.induction with
@@ -184,20 +205,18 @@ theorem natFactorial_mul_dp_eq (n : ℕ) (x : M) :
     rw [pow_succ, ← h, mul_assoc, dp_mul, nsmul_eq_mul, ← mul_assoc, ← Nat.cast_mul]
     simp [mul_comm _ (n + 1), Nat.factorial_succ]
 
-variable (M) in
+variable (R M) in
 /-- The canonical linear map `M →ₗ[R] DividedPowerAlgebra R M`. -/
 def embed : M →ₗ[R] DividedPowerAlgebra R M where
-  toFun m   := dp R 1 m
-  map_add' _ _  := by simp [dp_add, Nat.antidiagonal_succ, dp_zero, add_comm]
+  toFun m := dp R 1 m
+  map_add' _ _ := by simp [dp_add, Nat.antidiagonal_succ, dp_zero, add_comm]
   map_smul' _ _ := by simp [dp_smul, pow_one, RingHom.id_apply]
 
 theorem embed_def (m : M) : embed R M m = dp R 1 m := rfl
 
-variable {R}
-
 theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
     {f g : DividedPowerAlgebra R M →ₐ[R] A} :
-    (f = g) ↔ (∀ n m, f (dp R n m) = g (dp R n m)) := by
+    f = g ↔ ∀ n m, f (dp R n m) = g (dp R n m) := by
   refine ⟨fun h _ _ ↦ by rw [h], fun h ↦ ?_⟩
   rw [DFunLike.ext'_iff]
   apply Function.Surjective.injective_comp_right mkAlgHom_surjective
@@ -226,11 +245,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
   intro p hp
   clear hp
   induction p using DividedPowerAlgebra.induction_on with
-  | h_C r =>
+  | C r =>
     simp only [Algebra.algebraMap_eq_smul_one]
     exact smul_mem _ _ (subset_span ⟨0, by simp⟩)
-  | h_add x y hx hy => exact Submodule.add_mem _ hx hy
-  | h_dp x k m hx =>
+  | add x y hx hy => exact Submodule.add_mem _ hx hy
+  | dp x k m hx =>
     have hm : m ∈ span R (Set.range v) := by simp [hv, mem_top]
     induction hm using span_induction generalizing x k with
     | zero => rw [dp_null]; split_ifs <;> simp [hx]
@@ -242,11 +261,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       | mem x hx =>
         obtain ⟨n, rfl⟩ := hx
         simp only
-        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero R (v i)), mul_comm,
+        rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i)), mul_comm,
           ← mul_assoc, dp_mul, nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul]
         refine smul_of_tower_mem _ _ (mem_span_of_mem ⟨Finsupp.single i k + n, ?_⟩)
         simp only
-        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero _ (v i))]
+        rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i))]
         simp
       | add x y hxmem hymem hx hy =>
         rw [add_mul]
