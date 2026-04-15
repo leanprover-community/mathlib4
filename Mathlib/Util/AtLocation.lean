@@ -104,7 +104,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
   -- `applySimpResultToLocalDeclCore`
   if tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
     match ifUnchanged with
-    | .warning => logWarning m!"`{proc}` made no progress at {Expr.fvar fvarId}"
+    | .warning => logWarning m!"`{proc}` made no progress at `{Expr.fvar fvarId}`"
     | .error => throwError "`{proc}` made no progress at `{Expr.fvar fvarId}`"
     | .silent => pure ()
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
